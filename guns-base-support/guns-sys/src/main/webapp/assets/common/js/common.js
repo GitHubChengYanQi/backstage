@@ -141,7 +141,7 @@ layui.config({
         complete: function (XMLHttpRequest, textStatus) {
 
             //如果超时就处理 ，指定要跳转的页面
-            if (XMLHttpRequest.responseJSON.code === 1500) {
+            if (XMLHttpRequest.getResponseHeader("Guns-Session-Timeout") === "true") {
                 window.location = Feng.ctxPath + "/global/sessionError";
             }
 
