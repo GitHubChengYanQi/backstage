@@ -18,16 +18,16 @@ public class AddDatabaseInfoSql extends AbstractSql {
 
     @Override
     protected String sqlServer() {
-        return "INSERT INTO [database_info] ([db_id], [db_name], [jdbc_driver], [user_name], [password], [jdbc_url], [remarks], [create_time]) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        return "";
     }
 
     @Override
     protected String pgSql() {
-        return "INSERT INTO `database_info`(`db_id`, `db_name`, `jdbc_driver`, `user_name`, `password`, `jdbc_url`, `remarks`, `create_time`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        return "";
     }
 
     @Override
     protected String oracle() {
-        return "INSERT INTO database_info VALUES (?, ?, ?, ?, ?, ?, ?, to_date(?, 'yyyy-mm-dd hh24:mi:ss'))";
+        return "";
     }
 }

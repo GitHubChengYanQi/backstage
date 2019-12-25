@@ -11,6 +11,7 @@ import cn.stylefeng.roses.core.reqres.response.SuccessResponseData;
 import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.RequestEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +37,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-06-27
      */
     @RequestMapping("/addItem")
-    public ResponseData addItem(PositionParam positionParam) {
+    public ResponseData addItem(@RequestBody PositionParam positionParam) {
         this.restPositionService.add(positionParam);
         return ResponseData.success();
     }
@@ -48,7 +49,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-06-27
      */
     @RequestMapping("/editItem")
-    public ResponseData editItem(PositionParam positionParam) {
+    public ResponseData editItem(@RequestBody PositionParam positionParam) {
         this.restPositionService.update(positionParam);
         return ResponseData.success();
     }
@@ -60,7 +61,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-06-27
      */
     @RequestMapping("/delete")
-    public ResponseData delete(PositionParam positionParam) {
+    public ResponseData delete(@RequestBody PositionParam positionParam) {
         this.restPositionService.delete(positionParam);
         return ResponseData.success();
     }
@@ -72,7 +73,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-06-27
      */
     @RequestMapping("/detail")
-    public ResponseData detail(PositionParam positionParam) {
+    public ResponseData detail(@RequestBody PositionParam positionParam) {
         RestPosition detail = this.restPositionService.getById(positionParam.getPositionId());
         return ResponseData.success(detail);
     }

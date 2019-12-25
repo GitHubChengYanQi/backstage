@@ -15,7 +15,7 @@
     <version>1.0.0</version>
 
     <name>guns-vip</name>
-    <description>guns的vip版本</description>
+    <description>guns企业单体版</description>
 
     <packaging>pom</packaging>
 
@@ -29,9 +29,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <mysql-connector-java.version>8.0.11</mysql-connector-java.version>
-        <oracle.version>11.2.0.3</oracle.version>
-        <sqlserver.version>1.3.1</sqlserver.version>
-        <pgsql.version>42.2.5</pgsql.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <beetl.version>2.9.3</beetl.version>
         <swagger.version>2.9.2</swagger.version>
@@ -40,6 +37,7 @@
         <just.auth.version>1.9.5</just.auth.version>
         <activiti.version>6.0.0</activiti.version>
         <batik.version>1.7</batik.version>
+        <docker.img.version>latest</docker.img.version>
     </properties>
 
     <dependencyManagement>
@@ -50,7 +48,7 @@
             <dependency>
                 <groupId>cn.stylefeng.roses</groupId>
                 <artifactId>kernel-core</artifactId>
-                <version>1.2.6</version>
+                <version>1.2.8</version>
             </dependency>
 
             <!--数据库驱动,可根据自己需要自行删减-->
@@ -59,21 +57,6 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
             </dependency>
-            <!--            <dependency>-->
-            <!--                <groupId>net.sourceforge.jtds</groupId>-->
-            <!--                <artifactId>jtds</artifactId>-->
-            <!--                <version>${sqlserver.version}</version>-->
-            <!--            </dependency>-->
-            <!--            <dependency>-->
-            <!--                <groupId>com.oracle</groupId>-->
-            <!--                <artifactId>ojdbc6</artifactId>-->
-            <!--                <version>${oracle.version}</version>-->
-            <!--            </dependency>-->
-            <!--            <dependency>-->
-            <!--                <groupId>org.postgresql</groupId>-->
-            <!--                <artifactId>postgresql</artifactId>-->
-            <!--                <version>${pgsql.version}</version>-->
-            <!--            </dependency>-->
 
             <!--beetl模板引擎-->
             <dependency>

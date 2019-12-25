@@ -30,10 +30,7 @@ import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.core.reqres.response.ResponseData;
 import cn.stylefeng.roses.core.reqres.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -72,7 +69,7 @@ public class RestDeptController extends BaseController {
      */
     @BussinessLog(value = "添加部门", key = "simpleName", dict = DeptDict.class)
     @RequestMapping(value = "/add")
-    public ResponseData add(RestDept restDept) {
+    public ResponseData add(@RequestBody RestDept restDept) {
         this.restDeptService.addDept(restDept);
         return SUCCESS_TIP;
     }
@@ -118,7 +115,7 @@ public class RestDeptController extends BaseController {
      */
     @BussinessLog(value = "修改部门", key = "simpleName", dict = DeptDict.class)
     @RequestMapping(value = "/update")
-    public ResponseData update(RestDept restDept) {
+    public ResponseData update(@RequestBody RestDept restDept) {
         restDeptService.editDept(restDept);
         return SUCCESS_TIP;
     }
@@ -131,7 +128,7 @@ public class RestDeptController extends BaseController {
      */
     @BussinessLog(value = "删除部门", key = "deptId", dict = DeptDict.class)
     @RequestMapping(value = "/delete")
-    public ResponseData delete(@RequestParam Long deptId) {
+    public ResponseData delete(@RequestParam("deptId") Long deptId) {
         restDeptService.deleteDept(deptId);
         return SUCCESS_TIP;
     }

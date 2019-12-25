@@ -25,9 +25,6 @@ layui.use(['form', 'admin', 'ax'], function () {
     var form = layui.form;
     var admin = layui.admin;
 
-    //让当前iframe弹层高度适应
-    admin.iframeAuto();
-
     //获取详情信息，填充表单
     var ajax = new $ax(Feng.ctxPath + "/${lowerEntity}/detail?${keyPropertyName}=" + Feng.getUrlParam("${keyPropertyName}"));
     var result = ajax.start();

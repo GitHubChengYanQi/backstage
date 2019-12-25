@@ -25,6 +25,7 @@ import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.core.util.SaltUtil;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
+import cn.stylefeng.guns.sys.modular.rest.model.UserQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
 import cn.stylefeng.guns.sys.modular.system.model.UserDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.UserWrapper;
@@ -37,11 +38,9 @@ import cn.stylefeng.roses.kernel.model.exception.RequestEmptyException;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
@@ -111,27 +110,25 @@ public class RestUserMgrController extends BaseController {
      * @Date 2018/12/24 22:43
      */
     @RequestMapping("/list")
-    public Object list(@RequestParam(required = false) String name,
-                       @RequestParam(required = false) String timeLimit,
-                       @RequestParam(required = false) Long deptId) {
+    public Object list(@RequestBody UserQueryParam userQueryParam) {
 
         //拼接查询条件
         String beginTime = "";
         String endTime = "";
 
-        if (ToolUtil.isNotEmpty(timeLimit)) {
-            String[] split = timeLimit.split(" - ");
+        if (ToolUtil.isNotEmpty(userQueryParam.getTimeLimit())) {
+            String[] split = userQueryParam.getTimeLimit().split(" - ");
             beginTime = split[0];
             endTime = split[1];
         }
 
         if (LoginContextHolder.getContext().isAdmin()) {
-            Page<Map<String, Object>> users = restUserService.selectUsers(null, name, beginTime, endTime, deptId);
+            Page<Map<String, Object>> users = restUserService.selectUsers(null, userQueryParam.getName(), beginTime, endTime, userQueryParam.getDeptId());
             Page wrapped = new UserWrapper(users).wrap();
             return LayuiPageFactory.createPageInfo(wrapped);
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            Page<Map<String, Object>> users = restUserService.selectUsers(dataScope, name, beginTime, endTime, deptId);
+            Page<Map<String, Object>> users = restUserService.selectUsers(dataScope, userQueryParam.getName(), beginTime, endTime, userQueryParam.getDeptId());
             Page wrapped = new UserWrapper(users).wrap();
             return LayuiPageFactory.createPageInfo(wrapped);
         }
@@ -145,10 +142,7 @@ public class RestUserMgrController extends BaseController {
      */
     @RequestMapping("/add")
     @BussinessLog(value = "添加管理员", key = "account", dict = UserDict.class)
-    public ResponseData add(@Valid UserDto user, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
-        }
+    public ResponseData add(@RequestBody UserDto user) {
         this.restUserService.addUser(user);
         return SUCCESS_TIP;
     }
@@ -161,10 +155,7 @@ public class RestUserMgrController extends BaseController {
      */
     @RequestMapping("/edit")
     @BussinessLog(value = "修改管理员", key = "account", dict = UserDict.class)
-    public ResponseData edit(@Valid UserDto user, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
-        }
+    public ResponseData edit(@RequestBody UserDto user) {
         this.restUserService.editUser(user);
         return SUCCESS_TIP;
     }

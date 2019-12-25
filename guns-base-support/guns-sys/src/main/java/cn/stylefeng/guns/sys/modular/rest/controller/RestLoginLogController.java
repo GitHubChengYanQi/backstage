@@ -18,6 +18,7 @@ package cn.stylefeng.guns.sys.modular.rest.controller;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.sys.modular.rest.model.LogQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.service.RestLoginLogService;
 import cn.stylefeng.guns.sys.modular.system.warpper.LogWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
@@ -25,8 +26,8 @@ import cn.stylefeng.roses.core.reqres.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -52,15 +53,14 @@ public class RestLoginLogController extends BaseController {
      * @Date 2018/12/23 5:51 PM
      */
     @RequestMapping("/list")
-    public LayuiPageInfo list(@RequestParam(required = false) String beginTime,
-                              @RequestParam(required = false) String endTime,
-                              @RequestParam(required = false) String logName) {
+    public LayuiPageInfo list(@RequestBody LogQueryParam logQueryParam) {
 
         //获取分页参数
         Page page = LayuiPageFactory.defaultPage();
 
         //根据条件查询日志
-        List<Map<String, Object>> result = restLoginLogService.getLoginLogs(page, beginTime, endTime, logName);
+        List<Map<String, Object>> result = restLoginLogService.getLoginLogs(page,
+                logQueryParam.getBeginTime(), logQueryParam.getEndTime(), logQueryParam.getLogName());
         page.setRecords(new LogWrapper(result).wrap());
 
         return LayuiPageFactory.createPageInfo(page);

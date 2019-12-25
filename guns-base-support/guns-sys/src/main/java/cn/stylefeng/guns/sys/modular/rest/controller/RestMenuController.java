@@ -27,6 +27,7 @@ import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.core.log.LogObjectHolder;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestMenu;
 import cn.stylefeng.guns.sys.modular.rest.factory.MenuFactory;
+import cn.stylefeng.guns.sys.modular.rest.model.MenuQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.model.MenuTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.service.RestMenuService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
@@ -38,10 +39,7 @@ import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -70,7 +68,7 @@ public class RestMenuController extends BaseController {
      */
     @RequestMapping(value = "/edit")
     @BussinessLog(value = "修改菜单", key = "name", dict = MenuDict.class)
-    public ResponseData edit(MenuDto menu) {
+    public ResponseData edit(@RequestBody MenuDto menu) {
 
         //如果修改了编号，则该菜单的子菜单也要修改对应编号
         this.restMenuService.updateMenu(menu);
@@ -88,10 +86,9 @@ public class RestMenuController extends BaseController {
      * @Date 2018/12/23 5:53 PM
      */
     @RequestMapping(value = "/list")
-    public LayuiPageInfo list(@RequestParam(required = false) String menuName,
-                              @RequestParam(required = false) String level,
-                              @RequestParam(required = false) Long menuId) {
-        Page<Map<String, Object>> menus = this.restMenuService.selectMenus(menuName, level, menuId);
+    public LayuiPageInfo list(@RequestBody MenuQueryParam menuQueryParam) {
+        Page<Map<String, Object>> menus = this.restMenuService.selectMenus(
+                menuQueryParam.getMenuName(), menuQueryParam.getLevel(), menuQueryParam.getMenuId());
         Page<Map<String, Object>> wrap = new MenuWrapper(menus).wrap();
         return LayuiPageFactory.createPageInfo(wrap);
     }
@@ -103,9 +100,8 @@ public class RestMenuController extends BaseController {
      * @Date 2019年2月23日22:01:47
      */
     @RequestMapping(value = "/listTree")
-    public LayuiPageInfo listTree(@RequestParam(required = false) String menuName,
-                                  @RequestParam(required = false) String level) {
-        List<Map<String, Object>> menus = this.restMenuService.selectMenuTree(menuName, level);
+    public LayuiPageInfo listTree(@RequestBody MenuQueryParam menuQueryParam) {
+        List<Map<String, Object>> menus = this.restMenuService.selectMenuTree(menuQueryParam.getMenuName(), menuQueryParam.getLevel());
         List<Map<String, Object>> menusWrap = new MenuWrapper(menus).wrap();
 
         //构建树
@@ -124,7 +120,7 @@ public class RestMenuController extends BaseController {
      */
     @RequestMapping(value = "/add")
     @BussinessLog(value = "菜单新增", key = "name", dict = MenuDict.class)
-    public ResponseData add(MenuDto menu) {
+    public ResponseData add(@RequestBody MenuDto menu) {
         this.restMenuService.addMenu(menu);
         return SUCCESS_TIP;
     }

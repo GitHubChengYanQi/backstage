@@ -3,17 +3,17 @@ package cn.stylefeng.guns.base.db.dao.sqls;
 import lombok.Getter;
 
 /**
- * 删除数据源sql
+ * 获取某个表的所有字段的sql
  *
  * @author fengshuonan
  * @date 2019-07-16-13:06
  */
 @Getter
-public class DeleteDatabaseInfoSql extends AbstractSql {
+public class TableFieldListSql extends AbstractSql {
 
     @Override
     protected String mysql() {
-        return "DELETE from database_info where db_name = ?";
+        return "select COLUMN_NAME as columnName,COLUMN_COMMENT as columnComment from information_schema.COLUMNS where table_name = ? and table_schema = ?";
     }
 
     @Override

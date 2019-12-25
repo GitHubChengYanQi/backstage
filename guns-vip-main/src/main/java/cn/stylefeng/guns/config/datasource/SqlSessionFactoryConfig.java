@@ -61,13 +61,13 @@ public class SqlSessionFactoryConfig {
      * 多数据源sqlSessionTemplate切换模板
      */
     @Bean(name = "gunsSqlSessionTemplate")
-    public OptionalSqlSessionTemplate gunsSqlSessionTemplate(@Qualifier("sqlSessionFactoryPrimary") SqlSessionFactory sqlSessionFactoryPrimary,
+    public OptionalSqlSessionTemplate gunsSqlSessionTemplate(@Qualifier("dataSourcePrimary") DataSource dataSourcePrimary,
+                                                             @Qualifier("sqlSessionFactoryPrimary") SqlSessionFactory sqlSessionFactoryPrimary,
                                                              SqlSessionFactoryCreator sqlSessionFactoryCreator,
                                                              DruidProperties druidProperties) {
-
         //初始化数据源容器
         try {
-            DataSourceContext.initDataSource(druidProperties);
+            DataSourceContext.initDataSource(druidProperties, dataSourcePrimary);
         } catch (Exception e) {
             log.error("初始化数据源容器错误!", e);
             throw new DataSourceInitException(DataSourceInitException.ExEnum.INIT_DATA_SOURCE_ERROR);

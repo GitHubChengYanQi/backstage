@@ -61,19 +61,17 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.26.1</version>
                 <configuration>
-                    <dockerHost>tcp://demo.stylefeng.cn:2376</dockerHost>
-                    <certPath>_dockerCerts</certPath>
+                    <dockerHost>unix:///var/run/docker.sock</dockerHost>
                     <images>
                         <image>
-                            <alias>service</alias>
-                            <name>stylefeng/${project.artifactId}-advanced:latest</name>
+                            <name>localhost:6001/guns-api:${docker.img.version}</name>
                             <build>
                                 <from>java:8</from>
                                 <assembly>
                                     <descriptor>docker-assembly.xml</descriptor>
                                 </assembly>
                                 <cmd>
-                                    <shell>java -jar /maven/${project.artifactId}.jar</shell>
+                                    <shell>java -jar -Xms512m -Xmx512m -Xss1024K -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m /maven/${project.artifactId}.jar</shell>
                                 </cmd>
                             </build>
                         </image>

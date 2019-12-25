@@ -1,8 +1,8 @@
 package cn.stylefeng.guns.base.db.context;
 
 import cn.stylefeng.guns.base.db.dao.DataBaseInfoDao;
+import cn.stylefeng.guns.base.db.factory.AtomikosFactory;
 import cn.stylefeng.roses.core.config.properties.DruidProperties;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class DataSourceContext {
      * @author fengshuonan
      * @Date 2019-06-12 13:48
      */
-    public static void initDataSource(DruidProperties masterDataSourceProperties) {
+    public static void initDataSource(DruidProperties masterDataSourceProperties, DataSource dataSourcePrimary) {
 
         //清空数据库中的主数据源信息
         new DataBaseInfoDao(masterDataSourceProperties).deleteMasterDatabaseInfo();
@@ -58,9 +58,14 @@ public class DataSourceContext {
             String dbName = entry.getKey();
             DruidProperties druidProperties = entry.getValue();
 
-            //通过property创建DataSource
-            DataSource dataSource = createDataSource(dbName, druidProperties);
-            DATA_SOURCES.put(dbName, dataSource);
+            //如果是主数据源，不用初始化第二遍，如果是其他数据源就通过property初始化
+            if (dbName.equalsIgnoreCase(MASTER_DATASOURCE_NAME)) {
+                DATA_SOURCES_CONF.put(dbName, druidProperties);
+                DATA_SOURCES.put(dbName, dataSourcePrimary);
+            } else {
+                DataSource dataSource = createDataSource(dbName, druidProperties);
+                DATA_SOURCES.put(dbName, dataSource);
+            }
         }
     }
 
@@ -102,13 +107,7 @@ public class DataSourceContext {
         //添加到全局配置里
         DATA_SOURCES_CONF.put(dataSourceName, druidProperties);
 
-        AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
-        atomikosDataSourceBean.setXaDataSourceClassName("com.alibaba.druid.pool.xa.DruidXADataSource");
-        atomikosDataSourceBean.setUniqueResourceName(dataSourceName);
-        atomikosDataSourceBean.setMaxPoolSize(20);
-        atomikosDataSourceBean.setBorrowConnectionTimeout(60);
-        atomikosDataSourceBean.setXaProperties(druidProperties.createProperties());
-        return atomikosDataSourceBean;
+        return AtomikosFactory.create(dataSourceName, druidProperties);
     }
 
 }

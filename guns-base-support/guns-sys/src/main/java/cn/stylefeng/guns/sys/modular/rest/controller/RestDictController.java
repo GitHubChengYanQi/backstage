@@ -10,6 +10,7 @@ import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.core.reqres.response.ResponseData;
 import cn.stylefeng.roses.core.reqres.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +38,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/addItem")
-    public ResponseData addItem(DictParam dictParam) {
+    public ResponseData addItem(@RequestBody DictParam dictParam) {
         this.restDictService.add(dictParam);
         return ResponseData.success();
     }
@@ -49,7 +50,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/editItem")
-    public ResponseData editItem(DictParam dictParam) {
+    public ResponseData editItem(@RequestBody DictParam dictParam) {
         this.restDictService.update(dictParam);
         return ResponseData.success();
     }
@@ -61,7 +62,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/delete")
-    public ResponseData delete(DictParam dictParam) {
+    public ResponseData delete(@RequestBody DictParam dictParam) {
         this.restDictService.delete(dictParam);
         return ResponseData.success();
     }
@@ -73,7 +74,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/detail")
-    public ResponseData detail(DictParam dictParam) {
+    public ResponseData detail(@RequestBody DictParam dictParam) {
         DictResult dictResult = this.restDictService.dictDetail(dictParam.getDictId());
         return ResponseData.success(dictResult);
     }
@@ -85,7 +86,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/list")
-    public LayuiPageInfo list(DictParam dictParam) {
+    public LayuiPageInfo list(@RequestBody DictParam dictParam) {
         return this.restDictService.findPageBySpec(dictParam);
     }
 
@@ -120,7 +121,8 @@ public class RestDictController extends BaseController {
      * @Date 2018/12/23 4:56 PM
      */
     @RequestMapping(value = "/ztree")
-    public List<ZTreeNode> ztree(@RequestParam("dictTypeId") Long dictTypeId, @RequestParam(value = "dictId", required = false) Long dictId) {
+    public List<ZTreeNode> ztree(@RequestParam("dictTypeId") Long dictTypeId,
+                                 @RequestParam(value = "dictId", required = false) Long dictId) {
         return this.restDictService.dictTreeList(dictTypeId, dictId);
     }
 

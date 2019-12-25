@@ -15,9 +15,9 @@
  */
 package cn.stylefeng.guns.config.datasource;
 
+import cn.stylefeng.guns.base.db.factory.AtomikosFactory;
 import cn.stylefeng.roses.core.config.properties.DruidProperties;
 import cn.stylefeng.roses.core.mutidatasource.aop.MultiSourceExAop;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
-
-import java.util.Properties;
 
 import static cn.stylefeng.guns.base.db.context.DataSourceContext.MASTER_DATASOURCE_NAME;
 
@@ -57,25 +55,7 @@ public class DataSourceConfig {
     @Primary
     @Bean
     public DataSource dataSourcePrimary(@Qualifier("druidProperties") DruidProperties druidProperties) {
-
-        AtomikosDataSourceBean atomikosDataSourceBean = new AtomikosDataSourceBean();
-        atomikosDataSourceBean.setXaDataSourceClassName("com.alibaba.druid.pool.xa.DruidXADataSource");
-        atomikosDataSourceBean.setUniqueResourceName(MASTER_DATASOURCE_NAME);
-        atomikosDataSourceBean.setMaxPoolSize(100);
-        atomikosDataSourceBean.setBorrowConnectionTimeout(60);
-
-        Properties properties = druidProperties.createProperties();
-
-        //解决oracle数据库包connection holder is null
-        if (druidProperties.getUrl().contains("oracle")) {
-            properties.setProperty("removeAbandoned", "true");
-            properties.setProperty("removeAbandonedTimeoutMillis", "10000");
-            properties.setProperty("poolPreparedStatements", "false");
-        }
-
-        atomikosDataSourceBean.setXaProperties(properties);
-
-        return atomikosDataSourceBean;
+        return AtomikosFactory.create(MASTER_DATASOURCE_NAME, druidProperties);
     }
 
     /**

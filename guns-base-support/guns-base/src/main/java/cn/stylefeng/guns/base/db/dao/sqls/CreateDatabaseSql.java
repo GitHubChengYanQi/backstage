@@ -3,17 +3,17 @@ package cn.stylefeng.guns.base.db.dao.sqls;
 import lombok.Getter;
 
 /**
- * 删除数据源sql
+ * 创建数据库的sql
  *
  * @author fengshuonan
  * @date 2019-07-16-13:06
  */
 @Getter
-public class DeleteDatabaseInfoSql extends AbstractSql {
+public class CreateDatabaseSql extends AbstractSql {
 
     @Override
     protected String mysql() {
-        return "DELETE from database_info where db_name = ?";
+        return "CREATE DATABASE IF NOT EXISTS ? DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
     }
 
     @Override

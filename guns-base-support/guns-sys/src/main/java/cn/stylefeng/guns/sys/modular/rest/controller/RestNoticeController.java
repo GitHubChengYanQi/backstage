@@ -32,10 +32,7 @@ import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.Map;
@@ -86,7 +83,7 @@ public class RestNoticeController extends BaseController {
      */
     @RequestMapping(value = "/add")
     @BussinessLog(value = "新增通知", key = "title", dict = NoticeMap.class)
-    public Object add(RestNotice restNotice) {
+    public Object add(@RequestBody RestNotice restNotice) {
         if (ToolUtil.isOneEmpty(restNotice, restNotice.getTitle(), restNotice.getContent())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
@@ -119,7 +116,7 @@ public class RestNoticeController extends BaseController {
      */
     @RequestMapping(value = "/update")
     @BussinessLog(value = "修改通知", key = "title", dict = NoticeMap.class)
-    public Object update(Notice notice) {
+    public Object update(@RequestBody Notice notice) {
         if (ToolUtil.isOneEmpty(notice, notice.getNoticeId(), notice.getTitle(), notice.getContent())) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }

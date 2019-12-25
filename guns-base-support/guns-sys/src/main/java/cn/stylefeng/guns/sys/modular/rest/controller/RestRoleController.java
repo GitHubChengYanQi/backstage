@@ -37,10 +37,7 @@ import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +83,7 @@ public class RestRoleController extends BaseController {
      */
     @RequestMapping(value = "/add")
     @BussinessLog(value = "添加角色", key = "name", dict = RoleDict.class)
-    public ResponseData add(RestRole restRole) {
+    public ResponseData add(@RequestBody RestRole restRole) {
         this.restRoleService.addRole(restRole);
         return SUCCESS_TIP;
     }
@@ -99,7 +96,7 @@ public class RestRoleController extends BaseController {
      */
     @RequestMapping(value = "/edit")
     @BussinessLog(value = "修改角色", key = "name", dict = RoleDict.class)
-    public ResponseData edit(RoleDto roleDto) {
+    public ResponseData edit(@RequestBody RoleDto roleDto) {
         this.restRoleService.editRole(roleDto);
         return SUCCESS_TIP;
     }

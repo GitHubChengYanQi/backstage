@@ -11,9 +11,9 @@
 #spring:
 #  datasource:
 #    driverClassName: net.sourceforge.jtds.jdbc.Driver
-#    url: jdbc:jtds:sqlserver://127.0.0.1:1433;DatabaseName=guns
-#    username: root
-#    password: root
+#    url: jdbc:jtds:sqlserver://127.0.0.1:3433;DatabaseName=guns
+#    username: guns
+#    password: 123456
 #    filters: wall,mergeStat
 
 #PostgreSQL配置
@@ -21,6 +21,15 @@
 #  datasource:
 #    driverClassName: org.postgresql.Driver
 #    url: jdbc:postgresql://127.0.0.1:5432/guns
+#    username: postgres
+#    password: 123456
+#    filters: wall,mergeStat
+
+# Mysql数据库
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/guns?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
 #    username: root
 #    password: root
 #    filters: wall,mergeStat

@@ -9,6 +9,7 @@ import cn.stylefeng.roses.core.reqres.response.ResponseData;
 import cn.stylefeng.roses.core.reqres.response.SuccessResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class RestDictTypeController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/addItem")
-    public ResponseData addItem(DictTypeParam dictTypeParam) {
+    public ResponseData addItem(@RequestBody DictTypeParam dictTypeParam) {
         this.restDictTypeService.add(dictTypeParam);
         return ResponseData.success();
     }
@@ -47,7 +48,7 @@ public class RestDictTypeController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/editItem")
-    public ResponseData editItem(DictTypeParam dictTypeParam) {
+    public ResponseData editItem(@RequestBody DictTypeParam dictTypeParam) {
         this.restDictTypeService.update(dictTypeParam);
         return ResponseData.success();
     }
@@ -59,7 +60,7 @@ public class RestDictTypeController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/delete")
-    public ResponseData delete(DictTypeParam dictTypeParam) {
+    public ResponseData delete(@RequestBody DictTypeParam dictTypeParam) {
         this.restDictTypeService.delete(dictTypeParam);
         return ResponseData.success();
     }
@@ -71,7 +72,7 @@ public class RestDictTypeController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/detail")
-    public ResponseData detail(DictTypeParam dictTypeParam) {
+    public ResponseData detail(@RequestBody DictTypeParam dictTypeParam) {
         RestDictType detail = this.restDictTypeService.getById(dictTypeParam.getDictTypeId());
         return ResponseData.success(detail);
     }
@@ -83,7 +84,7 @@ public class RestDictTypeController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/list")
-    public LayuiPageInfo list(DictTypeParam dictTypeParam) {
+    public LayuiPageInfo list(@RequestBody DictTypeParam dictTypeParam) {
         return this.restDictTypeService.findPageBySpec(dictTypeParam);
     }
 

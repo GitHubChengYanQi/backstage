@@ -1,7 +1,12 @@
 package cn.stylefeng.guns.base.db.util;
 
+import cn.stylefeng.guns.base.db.dao.sqls.CreateDatabaseSql;
+import cn.stylefeng.guns.base.db.dao.sqls.TableFieldListSql;
+import cn.stylefeng.guns.base.db.dao.sqls.TableListSql;
 import cn.stylefeng.guns.base.db.entity.DatabaseInfo;
+import cn.stylefeng.guns.base.db.exception.DataSourceInitException;
 import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -29,29 +34,37 @@ public class DbUtil {
      * @Date 2019-05-04 20:30
      */
     public static List<Map<String, Object>> selectTables(DatabaseInfo dbInfo) {
-        ArrayList<Map<String, Object>> list = new ArrayList<>();
+        List<Map<String, Object>> tables = new ArrayList<>();
         try {
             Class.forName(dbInfo.getJdbcDriver());
-            Connection conn = DriverManager.getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
+            Connection conn = DriverManager.getConnection(
+                    dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
 
             //获取数据库名称
             String dbName = getDbName(dbInfo);
 
-            PreparedStatement preparedStatement = conn.prepareStatement(
-                    "select TABLE_NAME as tableName,TABLE_COMMENT as tableComment from information_schema.`TABLES` where TABLE_SCHEMA = '" + dbName + "'");
+            //构造查询语句
+            PreparedStatement preparedStatement = conn.prepareStatement(new TableListSql().getSql(dbInfo.getJdbcUrl()));
+
+            //拼接设置数据库名称
+            if (!dbInfo.getJdbcUrl().contains("sqlserver") && !dbInfo.getJdbcUrl().contains("postgresql")) {
+                preparedStatement.setString(1, dbName);
+            }
+
             ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 HashMap<String, Object> map = new HashMap<>();
                 String tableName = resultSet.getString("tableName");
                 String tableComment = resultSet.getString("tableComment");
                 map.put("tableName", tableName);
                 map.put("tableComment", tableComment);
-                list.add(map);
+                tables.add(map);
             }
-            return list;
+            return tables;
         } catch (Exception ex) {
-            log.error("执行sql出现问题！", ex);
-            return null;
+            log.error("查询所有表错误！", ex);
+            throw new DataSourceInitException(DataSourceInitException.ExEnum.QUERY_DATASOURCE_INFO_ERROR);
         }
     }
 
@@ -62,29 +75,41 @@ public class DbUtil {
      * @Date 2019-05-04 20:31
      */
     public static List<Map<String, Object>> getTableFields(DatabaseInfo dbInfo, String tableName) {
-        ArrayList<Map<String, Object>> list = new ArrayList<>();
+        ArrayList<Map<String, Object>> fieldList = new ArrayList<>();
         try {
             Class.forName(dbInfo.getJdbcDriver());
-            Connection conn = DriverManager.getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
+            Connection conn = DriverManager.getConnection(
+                    dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
 
-            //获取数据库名称
-            String dbName = getDbName(dbInfo);
+            PreparedStatement preparedStatement = conn.prepareStatement(new TableFieldListSql().getSql(dbInfo.getJdbcUrl()));
 
-            PreparedStatement preparedStatement = conn.prepareStatement(
-                    "select COLUMN_NAME as columnName,COLUMN_COMMENT as columnComment from information_schema.COLUMNS where table_name = '" + tableName + "' and table_schema = '" + dbName + "'");
+            if (dbInfo.getJdbcUrl().contains("oracle")) {
+                preparedStatement.setString(1, tableName);
+            } else if (dbInfo.getJdbcUrl().contains("postgresql")) {
+                preparedStatement.setString(1, tableName);
+            } else if (dbInfo.getJdbcUrl().contains("sqlserver")) {
+                preparedStatement.setString(1, tableName);
+            } else {
+                String dbName = getDbName(dbInfo);
+                preparedStatement.setString(1, tableName);
+                preparedStatement.setString(2, dbName);
+            }
+
+            //执行查询
             ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 HashMap<String, Object> map = new HashMap<>();
                 String columnName = resultSet.getString("columnName");
                 String columnComment = resultSet.getString("columnComment");
                 map.put("columnName", columnName);
                 map.put("columnComment", columnComment);
-                list.add(map);
+                fieldList.add(map);
             }
-            return list;
+            return fieldList;
         } catch (Exception ex) {
-            log.error("执行sql出现问题！", ex);
-            return null;
+            log.error("查询表的所有字段错误！", ex);
+            throw new DataSourceInitException(DataSourceInitException.ExEnum.QUERY_DATASOURCE_INFO_ERROR);
         }
     }
 
@@ -100,7 +125,9 @@ public class DbUtil {
             Connection conn = DriverManager.getConnection(druidProperties.getUrl(), druidProperties.getUsername(), druidProperties.getPassword());
 
             //创建sql
-            String sql = "CREATE DATABASE IF NOT EXISTS " + databaseName + " DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
+            String sql = new CreateDatabaseSql().getSql(druidProperties.getUrl());
+            sql = sql.replaceAll("\\?", databaseName);
+
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
             int i = preparedStatement.executeUpdate();
@@ -108,6 +135,7 @@ public class DbUtil {
 
         } catch (Exception ex) {
             log.error("执行sql出现问题！", ex);
+            throw new ServiceException(500, "创建多租户-执行sql出现问题！");
         }
     }
 
@@ -118,9 +146,31 @@ public class DbUtil {
      * @Date 2019-06-18 15:25
      */
     private static String getDbName(DatabaseInfo dbInfo) {
-        String jdbcUrl = dbInfo.getJdbcUrl();
-        int first = jdbcUrl.lastIndexOf("/") + 1;
-        int last = jdbcUrl.indexOf("?");
-        return jdbcUrl.substring(first, last);
+
+        if (dbInfo.getJdbcUrl().contains("oracle")) {
+
+            //如果是oracle，直接返回username
+            return dbInfo.getUserName();
+
+        } else if (dbInfo.getJdbcUrl().contains("postgresql")) {
+
+            //postgresql，直接返回最后一个/后边的字符
+            int first = dbInfo.getJdbcUrl().lastIndexOf("/") + 1;
+            return dbInfo.getJdbcUrl().substring(first);
+
+        } else if (dbInfo.getJdbcUrl().contains("sqlserver")) {
+
+            //sqlserver，直接返回最后一个=后边的字符
+            int first = dbInfo.getJdbcUrl().lastIndexOf("=") + 1;
+            return dbInfo.getJdbcUrl().substring(first);
+
+        } else {
+
+            //mysql，返回/和?之间的字符
+            String jdbcUrl = dbInfo.getJdbcUrl();
+            int first = jdbcUrl.lastIndexOf("/") + 1;
+            int last = jdbcUrl.indexOf("?");
+            return jdbcUrl.substring(first, last);
+        }
     }
 }

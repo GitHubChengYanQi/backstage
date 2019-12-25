@@ -18,16 +18,16 @@ public class DatabaseListSql extends AbstractSql {
 
     @Override
     protected String sqlServer() {
-        return "select db_name,jdbc_driver,jdbc_url,user_name,password from database_info";
+        return "";
     }
 
     @Override
     protected String pgSql() {
-        return "select db_name,jdbc_driver,jdbc_url,user_name,password from database_info";
+        return "";
     }
 
     @Override
     protected String oracle() {
-        return "select db_name,jdbc_driver,jdbc_url,user_name,password from database_info";
+        return "";
     }
 }
