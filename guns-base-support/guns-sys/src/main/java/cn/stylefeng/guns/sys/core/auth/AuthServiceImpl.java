@@ -157,6 +157,7 @@ public class AuthServiceImpl implements AuthService {
             if (tokenHeader.equalsIgnoreCase(cookie.getName())) {
                 Cookie temp = new Cookie(cookie.getName(), "");
                 temp.setMaxAge(0);
+                temp.setPath("/");
                 HttpContext.getResponse().addCookie(temp);
             }
         }
