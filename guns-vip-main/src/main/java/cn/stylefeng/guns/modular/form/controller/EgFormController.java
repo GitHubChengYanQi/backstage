@@ -5,7 +5,7 @@ import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
 import cn.stylefeng.guns.modular.form.entity.EgForm;
 import cn.stylefeng.guns.modular.form.model.EgFormParam;
 import cn.stylefeng.roses.core.base.controller.BaseController;
-import cn.stylefeng.roses.core.reqres.response.ResponseData;
+import cn.stylefeng.roses.kernel.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

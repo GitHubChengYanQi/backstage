@@ -25,7 +25,7 @@ import cn.stylefeng.guns.sys.modular.rest.model.LogQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.service.RestOperationLogService;
 import cn.stylefeng.guns.sys.modular.system.warpper.LogWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
-import cn.stylefeng.roses.core.reqres.response.ResponseData;
+import cn.stylefeng.roses.kernel.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;

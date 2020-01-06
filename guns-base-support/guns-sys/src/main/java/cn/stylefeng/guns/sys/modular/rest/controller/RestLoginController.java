@@ -17,10 +17,10 @@ package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.stylefeng.guns.base.auth.service.AuthService;
 import cn.stylefeng.roses.core.base.controller.BaseController;
-import cn.stylefeng.roses.core.reqres.response.ResponseData;
-import cn.stylefeng.roses.core.reqres.response.SuccessResponseData;
 import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.RequestEmptyException;
+import cn.stylefeng.roses.kernel.model.response.ResponseData;
+import cn.stylefeng.roses.kernel.model.response.SuccessResponseData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
