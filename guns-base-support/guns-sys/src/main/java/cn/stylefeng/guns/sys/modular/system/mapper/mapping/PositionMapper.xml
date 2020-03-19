@@ -40,6 +40,32 @@
         order by sort asc
     </select>
 
+    <select id="customList" resultType="cn.stylefeng.guns.sys.modular.system.model.result.PositionResult" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="pgsql">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="customList" resultType="cn.stylefeng.guns.sys.modular.system.model.result.PositionResult" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="oracle">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
+        </if>
+        order by sort asc
+    </select>
+
     <select id="customMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam">
         select
         <include refid="Base_Column_List"/>
@@ -49,6 +75,32 @@
         </if>
         <if test="paramCondition.code != null and paramCondition.code != ''">
             and code like CONCAT('%',#{paramCondition.code},'%')
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="pgsql">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="oracle">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
         </if>
         order by sort asc
     </select>
@@ -68,6 +120,36 @@
         order by sort asc
     </select>
 
+    <select id="customPageList" resultType="cn.stylefeng.guns.sys.modular.system.model.result.PositionResult" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="pgsql">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position
+        <where>
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                and name like '%' || #{paramCondition.name} || '%'
+            </if>
+            <if test="paramCondition.code != null and paramCondition.code != ''">
+                or code like '%' || #{paramCondition.code} || '%'
+            </if>
+        </where>
+        order by sort asc
+    </select>
+
+    <select id="customPageList" resultType="cn.stylefeng.guns.sys.modular.system.model.result.PositionResult" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="oracle">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position
+        <where>
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                and name like '%' || #{paramCondition.name} || '%'
+            </if>
+            <if test="paramCondition.code != null and paramCondition.code != ''">
+                or code like '%' || #{paramCondition.code} || '%'
+            </if>
+        </where>
+        order by sort asc
+    </select>
+
     <select id="customPageMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam">
         select
         <include refid="Base_Column_List"/>
@@ -77,6 +159,32 @@
         </if>
         <if test="paramCondition.code != null and paramCondition.code != ''">
             and code like CONCAT('%',#{paramCondition.code},'%')
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="pgsql">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
+        </if>
+        order by sort asc
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.stylefeng.guns.sys.modular.system.model.params.PositionParam" databaseId="oracle">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_position where 1 = 1
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like '%' || #{paramCondition.name} || '%'
+        </if>
+        <if test="paramCondition.code != null and paramCondition.code != ''">
+            and code like '%' || #{paramCondition.code} || '%'
         </if>
         order by sort asc
     </select>

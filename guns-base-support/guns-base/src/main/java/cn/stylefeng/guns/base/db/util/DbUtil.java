@@ -1,10 +1,12 @@
 package cn.stylefeng.guns.base.db.util;
 
+import cn.hutool.core.util.StrUtil;
 import cn.stylefeng.guns.base.db.dao.sqls.CreateDatabaseSql;
 import cn.stylefeng.guns.base.db.dao.sqls.TableFieldListSql;
 import cn.stylefeng.guns.base.db.dao.sqls.TableListSql;
 import cn.stylefeng.guns.base.db.entity.DatabaseInfo;
 import cn.stylefeng.guns.base.db.exception.DataSourceInitException;
+import cn.stylefeng.guns.base.db.model.TableFieldInfo;
 import cn.stylefeng.roses.core.config.properties.DruidProperties;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -74,8 +76,8 @@ public class DbUtil {
      * @author fengshuonan
      * @Date 2019-05-04 20:31
      */
-    public static List<Map<String, Object>> getTableFields(DatabaseInfo dbInfo, String tableName) {
-        ArrayList<Map<String, Object>> fieldList = new ArrayList<>();
+    public static List<TableFieldInfo> getTableFields(DatabaseInfo dbInfo, String tableName) {
+        ArrayList<TableFieldInfo> fieldList = new ArrayList<>();
         try {
             Class.forName(dbInfo.getJdbcDriver());
             Connection conn = DriverManager.getConnection(
@@ -99,12 +101,13 @@ public class DbUtil {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                HashMap<String, Object> map = new HashMap<>();
+                TableFieldInfo tableFieldInfo = new TableFieldInfo();
                 String columnName = resultSet.getString("columnName");
                 String columnComment = resultSet.getString("columnComment");
-                map.put("columnName", columnName);
-                map.put("columnComment", columnComment);
-                fieldList.add(map);
+                tableFieldInfo.setColumnName(columnName);
+                tableFieldInfo.setColumnComment(columnComment);
+                tableFieldInfo.setCamelFieldName(StrUtil.toCamelCase(columnName));
+                fieldList.add(tableFieldInfo);
             }
             return fieldList;
         } catch (Exception ex) {

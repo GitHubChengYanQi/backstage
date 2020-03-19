@@ -3,6 +3,8 @@ package cn.stylefeng.guns.sys.modular.system.service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.stylefeng.guns.base.auth.context.LoginContextHolder;
 import cn.stylefeng.guns.base.auth.model.LoginUser;
+import cn.stylefeng.guns.base.oauth2.entity.OauthUserInfo;
+import cn.stylefeng.guns.base.oauth2.service.OauthUserInfoService;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.sys.core.constant.Const;
@@ -17,13 +19,13 @@ import cn.stylefeng.guns.sys.modular.system.factory.UserFactory;
 import cn.stylefeng.guns.sys.modular.system.mapper.UserMapper;
 import cn.stylefeng.guns.sys.modular.system.model.UserDto;
 import cn.stylefeng.roses.core.datascope.DataScope;
+import cn.stylefeng.roses.core.util.SpringContextHolder;
 import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,7 +124,13 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         this.setStatus(userId, ManagerStatus.DELETED.getCode());
 
         //删除对应的oauth2绑定表
-        SqlRunner.db().delete("delete from oauth_user_info where user_id = {0}", userId);
+        OauthUserInfoService oauthUserInfoService = null;
+        try {
+            oauthUserInfoService = SpringContextHolder.getBean(OauthUserInfoService.class);
+            oauthUserInfoService.remove(new QueryWrapper<OauthUserInfo>().eq("user_id", userId));
+        } catch (Exception e) {
+            //没有集成oauth2模块，不操作
+        }
 
         //删除职位关联
         userPosService.remove(new QueryWrapper<UserPos>().eq("user_id", userId));

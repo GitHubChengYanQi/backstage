@@ -21,9 +21,12 @@ import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.RequestEmptyException;
 import cn.stylefeng.roses.kernel.model.response.ResponseData;
 import cn.stylefeng.roses.kernel.model.response.SuccessResponseData;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -36,6 +39,7 @@ import javax.annotation.Resource;
  */
 @Controller
 @RequestMapping("/rest")
+@Api(tags = "系统登录")
 public class RestLoginController extends BaseController {
 
     @Resource
@@ -49,10 +53,9 @@ public class RestLoginController extends BaseController {
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData restLogin() {
-
-        String username = super.getPara("username");
-        String password = super.getPara("password");
+    @ApiOperation("登录接口")
+    public ResponseData restLogin(@RequestParam("username") String username,
+                                  @RequestParam("password") String password) {
 
         if (ToolUtil.isOneEmpty(username, password)) {
             throw new RequestEmptyException("账号或密码为空！");
@@ -64,4 +67,17 @@ public class RestLoginController extends BaseController {
         return new SuccessResponseData(token);
     }
 
+    /**
+     * 退出接口
+     *
+     * @author fengshuonan
+     * @Date 2020/2/16 22:26
+     */
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation("退出接口")
+    public ResponseData logout() {
+        authService.logout();
+        return new SuccessResponseData();
+    }
 }

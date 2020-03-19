@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.stylefeng.guns.email.config.ServiceAutoConfiguration

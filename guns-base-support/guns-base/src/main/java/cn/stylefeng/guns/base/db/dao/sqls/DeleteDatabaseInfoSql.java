@@ -18,16 +18,16 @@ public class DeleteDatabaseInfoSql extends AbstractSql {
 
     @Override
     protected String sqlServer() {
-        return "";
+        return "DELETE from database_info where db_name = ?";
     }
 
     @Override
     protected String pgSql() {
-        return "";
+        return "DELETE from database_info where db_name = ?";
     }
 
     @Override
     protected String oracle() {
-        return "";
+        return "DELETE from database_info where db_name = ?";
     }
 }

@@ -23,8 +23,8 @@ import cn.stylefeng.guns.sys.modular.rest.service.RestLoginLogService;
 import cn.stylefeng.guns.sys.modular.system.warpper.LogWrapper;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.kernel.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.toolkit.SqlRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,7 +75,7 @@ public class RestLoginLogController extends BaseController {
     @BussinessLog("清空登录日志")
     @RequestMapping("/delLoginLog")
     public ResponseData delLog() {
-        SqlRunner.db().delete("delete from sys_login_log");
+        restLoginLogService.remove(new QueryWrapper<>());
         return SUCCESS_TIP;
     }
 }

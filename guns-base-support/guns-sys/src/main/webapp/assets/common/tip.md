@@ -4,7 +4,7 @@ login.css中的修改：
 
 ```js
 //由于路径的原因，第四行图片地址改为：
-background-image: url("../images/bg_login2.svg");
+background-image: url("../images/bg_login2.png");
 
 //39行  43行改为78
 width: 78px;
@@ -19,19 +19,8 @@ common.js的修改：
 这个改动比较大，建议直接覆盖然后用git对比
 ```
 
-admin.js的修改：
-```js
-//427行改下地址
-content: o ? o : Feng.ctxPath + '/system/theme'
-
-//445行改下地址
-content: o ? o : Feng.ctxPath + '/system/message'
-
-```
-
 index.js的修改：
 ```js
 //第20行开启默认的单页标签
 pageTabs: false,
-
 ```

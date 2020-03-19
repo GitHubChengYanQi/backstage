@@ -144,6 +144,17 @@ public class SystemController extends BaseController {
     }
 
     /**
+     * 锁屏界面
+     *
+     * @author fengshuonan
+     * @Date 2020/3/8 17:19
+     */
+    @RequestMapping("/lock")
+    public String lock() {
+        return "/modular/frame/lock-screen.html";
+    }
+
+    /**
      * 跳转到修改密码界面
      *
      * @author fengshuonan

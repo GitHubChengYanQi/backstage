@@ -31,25 +31,6 @@
             <version>1.0.0</version>
         </dependency>
 
-        <!-- 最新代码生成模块 -->
-        <dependency>
-            <groupId>cn.stylefeng</groupId>
-            <artifactId>guns-vip-gen</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <!-- 第三方登录-->
-        <dependency>
-            <groupId>me.zhyd.oauth</groupId>
-            <artifactId>JustAuth</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!--swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
@@ -58,6 +39,11 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.6</version>
         </dependency>
 
         <!--百度UeEditor-->

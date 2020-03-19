@@ -15,6 +15,7 @@ import cn.stylefeng.guns.sys.modular.system.service.UserService;
 import cn.stylefeng.roses.kernel.model.exception.ServiceException;
 import cn.stylefeng.roses.kernel.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,6 +40,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/excel")
+@Slf4j
 public class ExcelController {
 
     @Autowired
@@ -67,6 +69,7 @@ public class ExcelController {
         try {
             file.transferTo(new File(fileSavePath + name));
         } catch (Exception e) {
+            log.error("上传那文件出错！", e);
             throw new ServiceException(BizExceptionEnum.UPLOAD_ERROR);
         }
 

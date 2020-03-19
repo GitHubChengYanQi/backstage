@@ -21,7 +21,7 @@ spring:
         max-actives: -1
 
 mybatis-plus:
-  mapper-locations: classpath*:cn/stylefeng/guns/**/mapping/*.xml
+  mapper-locations: classpath*:cn/stylefeng/**/mapping/*.xml
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true

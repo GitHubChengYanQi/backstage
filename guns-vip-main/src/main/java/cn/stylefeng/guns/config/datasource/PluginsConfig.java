@@ -13,10 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date 2019/5/10 21:33
  */
 @Configuration
-@MapperScan(basePackages = {
-        "cn.stylefeng.guns.sys.modular.*.mapper",
-        "cn.stylefeng.guns.modular.*.mapper",
-        "cn.stylefeng.guns.sms.modular.mapper"})
+@MapperScan(basePackages = {"cn.stylefeng.**.mapper"})
 public class PluginsConfig {
 
     /**

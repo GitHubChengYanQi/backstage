@@ -1,22 +1,22 @@
-DROP DATABASE IF EXISTS guns;
-CREATE DATABASE IF NOT EXISTS guns DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+DROP DATABASE IF EXISTS guns_advanced;
+CREATE DATABASE IF NOT EXISTS guns_advanced DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
-USE guns;
+USE guns_advanced;
 
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost
+ Source Server         : local-vmware
  Source Server Type    : MySQL
- Source Server Version : 50727
- Source Host           : localhost:3306
- Source Schema         : guns
+ Source Server Version : 50729
+ Source Host           : 192.168.11.128:3306
+ Source Schema         : guns_advanced
 
  Target Server Type    : MySQL
- Target Server Version : 50727
+ Target Server Version : 50729
  File Encoding         : 65001
 
- Date: 29/10/2019 18:04:11
+ Date: 19/03/2020 21:05:27
 */
 
 SET NAMES utf8mb4;
@@ -42,7 +42,28 @@ CREATE TABLE `database_info`  (
 -- ----------------------------
 -- Records of database_info
 -- ----------------------------
-INSERT INTO `database_info` VALUES (1189120156506480641, 'master', 'com.mysql.cj.jdbc.Driver', 'root', 'root', 'jdbc:mysql://127.0.0.1:3306/guns?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT', '主数据源，项目启动数据源！', '2019-10-29 18:01:52');
+INSERT INTO `database_info` VALUES (1240625039548657665, 'master', 'com.mysql.cj.jdbc.Driver', 'root', 'root', 'jdbc:mysql://192.168.11.128:3306/guns_advanced?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT', '主数据源，项目启动数据源！', '2020-03-19 21:03:53');
+
+-- ----------------------------
+-- Table structure for excel_export_deploy
+-- ----------------------------
+DROP TABLE IF EXISTS `excel_export_deploy`;
+CREATE TABLE `excel_export_deploy`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'excel导出配置名称',
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文件名称',
+  `nid` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '唯一标识',
+  `template` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '模版路径',
+  `data_source` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '数据源',
+  `status` tinyint(3) NULL DEFAULT NULL COMMENT '0开启1关闭',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `E_E_D_NID`(`nid`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'excel导出配置' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of excel_export_deploy
+-- ----------------------------
+INSERT INTO `excel_export_deploy` VALUES (1, '测试导出excel', '#{name}导出文件', 'test', '/uploadFiles/excelExportTemplate/1240266064118456322.xlsx', 'import cn.stylefeng.roses.core.data.SqlExe;\n\nimport javax.servlet.http.HttpServletRequest;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\npublic class Engine {\n    public Map<String, Object> run(HttpServletRequest request) {\n        Map<String, Object> map = new HashMap<String, Object>();\n        // 通过request 可获取前台传来的参数\n        // 通过 GroovyTool.findManyRowData(sql, dataSource) 可获得对应的数据源\n        // 可像正常的使用java一样调用java类、方法以及Spring的bean\n        List<Map<String, Object>> list = SqlExe.selectList(\"SELECT * FROM `sys_dict`\", null);\n        map.put(\"name\", \"系统字典属性内容\");\n        map.put(\"list\", list);\n        System.out.println(\"123123123\");\n        return map;\n    }\n}', 0);
 
 -- ----------------------------
 -- Table structure for oauth_user_info
@@ -100,10 +121,10 @@ INSERT INTO `sys_config` VALUES (1143387225019510785, '验证码短信失效时�
 INSERT INTO `sys_config` VALUES (1143468689664876546, '管理系统名称', 'GUNS_SYSTEM_NAME', 'N', NULL, 'Guns快速开发平台', '管理系统名称', '2019-06-25 18:39:15', 1, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1143468867767607297, '默认系统密码', 'GUNS_DEFAULT_PASSWORD', 'N', NULL, '111111', '默认系统密码', '2019-06-25 18:39:57', 1, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1143469008025133058, 'OAuth2登录用户的账号标识', 'GUNS_OAUTH2_PREFIX', 'N', NULL, 'oauth2', 'OAuth2登录用户的账号标识', '2019-06-25 18:40:31', 1, NULL, NULL);
-INSERT INTO `sys_config` VALUES (1145207130463191041, '顶部导航条是否开启', 'GUNS_DEFAULT_ADVERT', 'Y', 1106120265689055233, 'ENABLE', '顶部Guns广告是否开启', '2019-06-30 13:47:11', 1, '2019-06-30 13:47:20', 1);
-INSERT INTO `sys_config` VALUES (1145915627211370498, 'Guns发布的编号', 'GUNS_SYSTEM_RELEASE_VERSION', 'N', NULL, '20191029', '用于防止浏览器缓存相关的js和css', '2019-07-02 12:42:30', 1, NULL, NULL);
-INSERT INTO `sys_config` VALUES (1145915627211370499, '文件上传路径', 'GUNS_FILE_UPLOAD_PATH', 'N', NULL, '/Users/stylefeng/tmp/gunsTempFiles/', '文件上传默认目录', '2019-08-30 09:10:40', 1, NULL, NULL);
-INSERT INTO `sys_config` VALUES (1145915627211370500, 'BPMN文件上传路径', 'GUNS_BPMN_FILE_UPLOAD_PATH', 'N', NULL, '/Users/stylefeng/tmp/gunsTempFiles/', '工作流文件上传默认目录', '2019-08-30 09:10:40', 1, NULL, NULL);
+INSERT INTO `sys_config` VALUES (1145207130463191041, '顶部导航条是否开启', 'GUNS_DEFAULT_ADVERT', 'Y', 1106120265689055233, 'DISABLE', '顶部Guns广告是否开启', '2019-06-30 13:47:11', 1, '2020-01-01 17:22:52', 1);
+INSERT INTO `sys_config` VALUES (1145915627211370498, 'Guns发布的编号', 'GUNS_SYSTEM_RELEASE_VERSION', 'N', NULL, '20200318', '用于防止浏览器缓存相关的js和css', '2019-07-02 12:42:30', 1, NULL, NULL);
+INSERT INTO `sys_config` VALUES (1145915627211370499, '文件上传路径', 'GUNS_FILE_UPLOAD_PATH', 'N', NULL, 'D:/tmp/', '文件上传默认目录', '2019-08-30 09:10:40', 1, NULL, NULL);
+INSERT INTO `sys_config` VALUES (1145915627211370500, 'BPMN文件上传路径', 'GUNS_BPMN_FILE_UPLOAD_PATH', 'N', NULL, 'D:/tmp/', '工作流文件上传默认目录', '2019-08-30 09:10:40', 1, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1145915627211370501, '获取系统地密钥过期时间', 'GUNS_JWT_SECRET_EXPIRE', 'N', NULL, '86400', '获取系统地密钥过期时间（单位：秒），默认1天', '2019-10-16 23:02:39', 1, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1145915627211370502, '获取token的header标识', 'GUNS_TOKEN_HEADER_NAME', 'N', NULL, 'Authorization', '获取token的header标识', '2019-10-16 23:02:39', 1, NULL, NULL);
 INSERT INTO `sys_config` VALUES (1145915627211370503, '获取租户是否开启的标识', 'GUNS_TENANT_OPEN', 'Y', 1106120265689055233, 'DISABLE', '获取租户是否开启的标识，默认是关的', '2019-10-16 23:02:39', 1, NULL, NULL);
@@ -169,7 +190,7 @@ INSERT INTO `sys_dict` VALUES (1106120825993543682, 1106120322450571266, 'FREEZE
 INSERT INTO `sys_dict` VALUES (1106120875872206849, 1106120322450571266, 'DELETED', '已删除', 0, '[0]', 'ENABLE', -1221, '', '2019-03-14 17:12:22', '2019-03-16 10:56:53', 1, 1);
 INSERT INTO `sys_dict` VALUES (1106120935070613505, 1106120388036902914, 'Y', '删除', 0, '[0]', 'ENABLE', 23333, '', '2019-03-14 17:12:36', '2019-03-16 10:58:53', 1, 1);
 INSERT INTO `sys_dict` VALUES (1106120968910258177, 1106120388036902914, 'N', '未删除', 0, '[0]', 'ENABLE', 1212211221, '', '2019-03-14 17:12:44', '2019-03-16 10:59:03', 1, 1);
-INSERT INTO `sys_dict` VALUES (1149218674746355713, 1149217131989069826, 'BASE_SYSTEM', '系统管理', 0, '[0]', 'ENABLE', 1, '系统管理平台', '2019-07-11 15:27:38', '2019-07-11 20:27:14', 1, 1);
+INSERT INTO `sys_dict` VALUES (1149218674746355713, 1149217131989069826, 'BASE_SYSTEM', '基础功能', 0, '[0]', 'ENABLE', 1, '系统管理平台', '2019-07-11 15:27:38', '2020-01-01 17:14:45', 1, 1);
 INSERT INTO `sys_dict` VALUES (1160533174626959361, 1160532704105742337, '00101', '办公审批', 0, '[0]', 'ENABLE', 10, '', '2019-08-11 20:47:25', NULL, 1, NULL);
 INSERT INTO `sys_dict` VALUES (1160533264645111810, 1160532704105742337, '00102', '行政审批', 0, '[0]', 'ENABLE', 20, '', '2019-08-11 20:47:47', NULL, 1, NULL);
 INSERT INTO `sys_dict` VALUES (1160533377727741954, 1160532775455047681, 'KEY_LEAVE', '请假流程标识', 0, '[0]', 'ENABLE', 10, '', '2019-08-11 20:48:14', NULL, 1, NULL);
@@ -181,6 +202,7 @@ INSERT INTO `sys_dict` VALUES (1160533765403066370, 1160532886713155585, '00404'
 INSERT INTO `sys_dict` VALUES (1160533863834992641, 1160532886713155585, '00405', '公假', 0, '[0]', 'ENABLE', 50, '', '2019-08-11 20:50:09', NULL, 1, NULL);
 INSERT INTO `sys_dict` VALUES (1160533945309347841, 1160532886713155585, '00406', '年假', 0, '[0]', 'ENABLE', 60, '', '2019-08-11 20:50:29', NULL, 1, NULL);
 INSERT INTO `sys_dict` VALUES (1160534007389241346, 1160532886713155585, '00407', '其他', 0, '[0]', 'ENABLE', 70, '', '2019-08-11 20:50:44', NULL, 1, NULL);
+INSERT INTO `sys_dict` VALUES (1212300736972668929, 1149217131989069826, 'ENT_FUNC', '企业功能', 0, '[0]', 'ENABLE', 20, '企业功能', '2020-01-01 17:13:14', NULL, 1, NULL);
 
 -- ----------------------------
 -- Table structure for sys_dict_type
@@ -251,6 +273,11 @@ CREATE TABLE `sys_login_log`  (
   `ip_address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '登录ip',
   PRIMARY KEY (`login_log_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_login_log
+-- ----------------------------
+INSERT INTO `sys_login_log` VALUES (1240625083123281921, '登录日志', 1, '2020-03-19 21:04:04', '成功', NULL, '0:0:0:0:0:0:0:1');
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -338,25 +365,26 @@ INSERT INTO `sys_menu` VALUES (166, 'to_user_edit', 'mgr', '[0],[system],[mgr],'
 INSERT INTO `sys_menu` VALUES (167, 'mgr_list', 'mgr', '[0],[system],[mgr],', '用户列表', '', '/mgr/list', 10, 3, 'N', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', NULL, '2019-06-30 13:48:07', NULL, 1);
 INSERT INTO `sys_menu` VALUES (171, 'dev_tools', '0', '[0],', '开发管理', 'layui-icon layui-icon-code-circle', '#', 30, 1, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', NULL, '2019-05-11 13:40:27', NULL, 1);
 INSERT INTO `sys_menu` VALUES (172, 'dashboard', '0', '[0],', '主控面板', 'layui-icon layui-icon-home', '#', 10, 1, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', NULL, '2019-04-08 22:48:15', NULL, 1);
-INSERT INTO `sys_menu` VALUES (1110777136265838594, 'demos_show', 'dev_tools', '[0],[dev_tools],', '模板页面', 'layui-icon layui-icon-template', '#', 40, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-27 13:34:41', '2019-06-15 18:13:11', 1, 1);
-INSERT INTO `sys_menu` VALUES (1110777366856089602, 'excel_import', 'demos_show', '[0],[dev_tools],[demos_show],', 'excel导入', '', '/excel/import', 10, 3, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-27 13:35:36', '2019-06-15 18:13:11', 1, 1);
-INSERT INTO `sys_menu` VALUES (1110777491464667137, 'excel_export', 'demos_show', '[0],[dev_tools],[demos_show],', 'excel导出', '', '/excel/export', 20, 3, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-27 13:36:06', '2019-06-15 18:13:11', 1, 1);
-INSERT INTO `sys_menu` VALUES (1110787391943098370, 'advanced_form', 'demos_show', '[0],[dev_tools],[demos_show],', '高级表单', '', '/egForm', 30, 3, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-27 14:15:26', '2019-06-15 18:13:11', 1, 1);
-INSERT INTO `sys_menu` VALUES (1110839216310329346, 'pdf_view', 'demos_show', '[0],[dev_tools],[demos_show],', '文档预览', '', '/loadPdfFile', 40, 3, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-27 17:41:22', '2019-06-15 18:13:11', 1, 1);
+INSERT INTO `sys_menu` VALUES (1110777136265838594, 'demos_show', '0', '[0],', '高级组件', 'layui-icon-diamond', '#', 60, 1, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-03-27 13:34:41', '2020-01-01 18:23:50', 1, 1);
+INSERT INTO `sys_menu` VALUES (1110777366856089602, 'excel_import', 'EXCEL_PROCESS', '[0],[EXCEL_PROCESS],', 'excel导入', 'layui-icon-rate-solid', '/excel/import', 10, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-03-27 13:35:36', '2020-01-01 18:22:18', 1, 1);
+INSERT INTO `sys_menu` VALUES (1110777491464667137, 'excel_export', 'EXCEL_PROCESS', '[0],[EXCEL_PROCESS],', 'excel导出', 'layui-icon-rate-solid', '/excel/export', 20, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-03-27 13:36:06', '2020-01-01 18:22:18', 1, 1);
+INSERT INTO `sys_menu` VALUES (1110787391943098370, 'advanced_form', 'demos_show', '[0],[demos_show],', '高级表单', '', '/egForm', 30, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-03-27 14:15:26', '2020-01-01 18:23:50', 1, 1);
+INSERT INTO `sys_menu` VALUES (1110839216310329346, 'pdf_view', 'demos_show', '[0],[demos_show],', '文档预览', '', '/loadPdfFile', 40, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-03-27 17:41:22', '2020-01-01 18:23:50', 1, 1);
 INSERT INTO `sys_menu` VALUES (1111545968697860098, 'console', 'dashboard', '[0],[dashboard],', '项目介绍', '', '/system/console', 10, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-29 16:29:45', '2019-04-09 20:57:08', 1, 1);
 INSERT INTO `sys_menu` VALUES (1111546189892870145, 'console2', 'dashboard', '[0],[dashboard],', '统计报表', '', '/system/console2', 20, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-03-29 16:30:38', '2019-04-08 22:49:48', 1, 1);
 INSERT INTO `sys_menu` VALUES (1127085735660421122, 'code_generate', 'dev_tools', '[0],[dev_tools],', '代码生成', '', '/gen', 20, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-05-11 13:39:14', '2019-06-15 18:12:45', 1, 1);
-INSERT INTO `sys_menu` VALUES (1139826657964593154, 'meta_data', 'dev_tools', '[0],[dev_tools],', '系统配置', '', '#', 10, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-06-15 17:27:07', '2019-06-15 18:12:35', 1, 1);
-INSERT INTO `sys_menu` VALUES (1139827152854716418, 'data_source', 'meta_data', '[0],[dev_tools],[meta_data],', '数据源管理', '', '/databaseInfo', 10, 3, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-06-15 17:29:05', '2019-06-15 18:12:35', 1, 1);
-INSERT INTO `sys_menu` VALUES (1142957882422112257, 'SYS_CONFIG', 'meta_data', '[0],[dev_tools],[meta_data],', '参数配置', 'fa-star', '/sysConfig', 5, 3, 'Y', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2019-06-24 08:57:34', 1, 1);
-INSERT INTO `sys_menu` VALUES (1142957882422112258, 'SYS_CONFIG_ADD', 'SYS_CONFIG', '[0],[dev_tools],[meta_data],[SYS_CONFIG],', '参数配置添加', 'fa-star', '', 999, 4, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2019-06-24 08:57:34', 1, 1);
-INSERT INTO `sys_menu` VALUES (1142957882422112259, 'SYS_CONFIG_EDIT', 'SYS_CONFIG', '[0],[dev_tools],[meta_data],[SYS_CONFIG],', '参数配置修改', 'fa-star', '', 999, 4, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2019-06-24 08:57:34', 1, 1);
-INSERT INTO `sys_menu` VALUES (1142957882426306562, 'SYS_CONFIG_DELETE', 'SYS_CONFIG', '[0],[dev_tools],[meta_data],[SYS_CONFIG],', '参数配置删除', 'fa-star', '', 999, 4, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2019-06-24 08:57:34', 1, 1);
+INSERT INTO `sys_menu` VALUES (1139827152854716418, 'data_source', '0', '[0],', '数据容器', 'layui-icon-template-1', '/databaseInfo', 40, 1, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2019-06-15 17:29:05', '2020-01-01 18:23:17', 1, 1);
+INSERT INTO `sys_menu` VALUES (1142957882422112257, 'SYS_CONFIG', 'dev_tools', '[0],[dev_tools],', '参数配置', 'fa-star', '/sysConfig', 30, 2, 'Y', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2020-01-01 18:33:09', 1, 1);
+INSERT INTO `sys_menu` VALUES (1142957882422112258, 'SYS_CONFIG_ADD', 'SYS_CONFIG', '[0],[dev_tools],[SYS_CONFIG],', '参数配置添加', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2020-01-01 18:33:09', 1, 1);
+INSERT INTO `sys_menu` VALUES (1142957882422112259, 'SYS_CONFIG_EDIT', 'SYS_CONFIG', '[0],[dev_tools],[SYS_CONFIG],', '参数配置修改', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2020-01-01 18:33:09', 1, 1);
+INSERT INTO `sys_menu` VALUES (1142957882426306562, 'SYS_CONFIG_DELETE', 'SYS_CONFIG', '[0],[dev_tools],[SYS_CONFIG],', '参数配置删除', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-24 08:49:28', '2020-01-01 18:33:09', 1, 1);
 INSERT INTO `sys_menu` VALUES (1144441072852684801, 'SYS_POSITION', 'system', '[0],[system],', '职位管理', 'fa-star', '/position', 35, 2, 'Y', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-28 11:03:09', '2019-06-28 11:06:42', 1, 1);
 INSERT INTO `sys_menu` VALUES (1144441072852684802, 'SYS_POSITION_ADD', 'SYS_POSITION', '[0],[system],[SYS_POSITION],', '职位表添加', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-28 11:03:09', '2019-06-28 11:06:42', 1, 1);
 INSERT INTO `sys_menu` VALUES (1144441072852684803, 'SYS_POSITION_EDIT', 'SYS_POSITION', '[0],[system],[SYS_POSITION],', '职位表修改', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-28 11:03:09', '2019-06-28 11:06:42', 1, 1);
 INSERT INTO `sys_menu` VALUES (1144441072852684804, 'SYS_POSITION_DELETE', 'SYS_POSITION', '[0],[system],[SYS_POSITION],', '职位表删除', 'fa-star', '', 999, 3, 'N', '', 'ENABLE', '', '', 'BASE_SYSTEM', '2019-06-28 11:03:09', '2019-06-28 11:06:42', 1, 1);
 INSERT INTO `sys_menu` VALUES (1149955324929765378, 'system_info', 'dashboard', '[0],[dashboard],', '系统监控', 'layui-icon-star-fill', '/system/systemInfo', 40, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'BASE_SYSTEM', '2019-07-13 16:14:49', NULL, 1, NULL);
+INSERT INTO `sys_menu` VALUES (1212299504967204865, 'EXCEL_PROCESS', '0', '[0],', 'excel处理', 'layui-icon-template', '#', 10, 1, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2020-01-01 17:08:20', '2020-01-01 18:22:18', 1, 1);
+INSERT INTO `sys_menu` VALUES (1212299802154614786, 'EXCEL_PROCESS_EXPORT', 'EXCEL_PROCESS', '[0],[EXCEL_PROCESS],', '模板配置', 'layui-icon-template', '/excelExportDeploy', 5, 2, 'Y', NULL, 'ENABLE', NULL, NULL, 'ENT_FUNC', '2020-01-01 17:09:31', '2020-01-01 18:22:18', 1, 1);
 
 -- ----------------------------
 -- Table structure for sys_notice
@@ -399,8 +427,10 @@ CREATE TABLE `sys_operation_log`  (
 -- ----------------------------
 -- Records of sys_operation_log
 -- ----------------------------
-INSERT INTO `sys_operation_log` VALUES (1189120665279750145, '业务日志', '清空业务日志', 1, 'cn.stylefeng.guns.sys.modular.system.controller.LogController', 'delLog', '2019-10-29 18:03:54', '成功', '主键id=null');
-INSERT INTO `sys_operation_log` VALUES (1189120674465275906, '业务日志', '清空登录日志', 1, 'cn.stylefeng.guns.sys.modular.system.controller.LoginLogController', 'delLog', '2019-10-29 18:03:56', '成功', '主键id=null');
+INSERT INTO `sys_operation_log` VALUES (1240625204678406146, '业务日志', '配置权限', 1, 'cn.stylefeng.guns.sys.modular.system.controller.RoleController', 'setAuthority', '2020-03-19 21:04:33', '成功', '角色名称=超级管理员,资源名称=系统管理,用户管理,添加用户,修改用户,删除用户,重置密码,冻结用户,解除冻结用户,分配角色,分配角色跳转,编辑用户跳转,用户列表,角色管理,添加角色,修改角色,删除角色,配置权限,修改角色跳转,角色分配跳转,角色列表,菜单管理,添加菜单,修改菜单,删除菜单,菜单编辑跳转,菜单列表,业务日志,清空日志,日志列表,日志详情,监控管理,部门管理,添加部门,修改部门,删除部门,修改部门跳转,部门列表,部门详情,字典管理,添加字典,修改字典,删除字典,修改菜单跳转,字典列表,字典详情,登录日志,清空登录日志,登录日志列表,通知管理,添加通知,修改通知,删除通知,职位管理,职位表添加,职位表修改,职位表删除,开发管理,接口文档,代码生成,参数配置,参数配置添加,参数配置修改,参数配置删除,主控面板,消息通知,项目介绍,统计报表,系统监控,高级组件,高级表单,文档预览,数据容器,excel处理,excel导入,excel导出,模板配置');
+INSERT INTO `sys_operation_log` VALUES (1240625232142708737, '业务日志', '删除菜单', 1, 'cn.stylefeng.guns.sys.modular.system.controller.MenuController', 'remove', '2020-03-19 21:04:40', '成功', '菜单名称=在线办公');
+INSERT INTO `sys_operation_log` VALUES (1240625246839549953, '业务日志', '删除菜单', 1, 'cn.stylefeng.guns.sys.modular.system.controller.MenuController', 'remove', '2020-03-19 21:04:43', '成功', '菜单名称=国际化');
+INSERT INTO `sys_operation_log` VALUES (1240625258407440385, '业务日志', '删除菜单', 1, 'cn.stylefeng.guns.sys.modular.system.controller.MenuController', 'remove', '2020-03-19 21:04:46', '成功', '菜单名称=租户管理');
 
 -- ----------------------------
 -- Table structure for sys_position
@@ -441,100 +471,101 @@ CREATE TABLE `sys_relation`  (
 -- ----------------------------
 -- Records of sys_relation
 -- ----------------------------
-INSERT INTO `sys_relation` VALUES (1189120624192348162, 105, 1);
-INSERT INTO `sys_relation` VALUES (1189120624200736769, 106, 1);
-INSERT INTO `sys_relation` VALUES (1189120624209125378, 107, 1);
-INSERT INTO `sys_relation` VALUES (1189120624221708290, 108, 1);
-INSERT INTO `sys_relation` VALUES (1189120624225902594, 109, 1);
-INSERT INTO `sys_relation` VALUES (1189120624234291201, 110, 1);
-INSERT INTO `sys_relation` VALUES (1189120624242679809, 111, 1);
-INSERT INTO `sys_relation` VALUES (1189120624242679810, 112, 1);
-INSERT INTO `sys_relation` VALUES (1189120624251068417, 113, 1);
-INSERT INTO `sys_relation` VALUES (1189120624259457026, 165, 1);
-INSERT INTO `sys_relation` VALUES (1189120624263651329, 166, 1);
-INSERT INTO `sys_relation` VALUES (1189120624272039937, 167, 1);
-INSERT INTO `sys_relation` VALUES (1189120624276234242, 114, 1);
-INSERT INTO `sys_relation` VALUES (1189120624284622850, 115, 1);
-INSERT INTO `sys_relation` VALUES (1189120624293011457, 116, 1);
-INSERT INTO `sys_relation` VALUES (1189120624301400066, 117, 1);
-INSERT INTO `sys_relation` VALUES (1189120624309788674, 118, 1);
-INSERT INTO `sys_relation` VALUES (1189120624313982978, 162, 1);
-INSERT INTO `sys_relation` VALUES (1189120624322371585, 163, 1);
-INSERT INTO `sys_relation` VALUES (1189120624326565890, 164, 1);
-INSERT INTO `sys_relation` VALUES (1189120624334954498, 119, 1);
-INSERT INTO `sys_relation` VALUES (1189120624343343105, 120, 1);
-INSERT INTO `sys_relation` VALUES (1189120624347537410, 121, 1);
-INSERT INTO `sys_relation` VALUES (1189120624355926018, 122, 1);
-INSERT INTO `sys_relation` VALUES (1189120624360120321, 150, 1);
-INSERT INTO `sys_relation` VALUES (1189120624372703234, 151, 1);
-INSERT INTO `sys_relation` VALUES (1189120624381091842, 128, 1);
-INSERT INTO `sys_relation` VALUES (1189120624381091843, 134, 1);
-INSERT INTO `sys_relation` VALUES (1189120624393674754, 158, 1);
-INSERT INTO `sys_relation` VALUES (1189120624393674755, 159, 1);
-INSERT INTO `sys_relation` VALUES (1189120624402063362, 130, 1);
-INSERT INTO `sys_relation` VALUES (1189120624410451970, 131, 1);
-INSERT INTO `sys_relation` VALUES (1189120624418840577, 135, 1);
-INSERT INTO `sys_relation` VALUES (1189120624423034882, 136, 1);
-INSERT INTO `sys_relation` VALUES (1189120624431423489, 137, 1);
-INSERT INTO `sys_relation` VALUES (1189120624435617794, 152, 1);
-INSERT INTO `sys_relation` VALUES (1189120624444006401, 153, 1);
-INSERT INTO `sys_relation` VALUES (1189120624448200706, 154, 1);
-INSERT INTO `sys_relation` VALUES (1189120624448200707, 132, 1);
-INSERT INTO `sys_relation` VALUES (1189120624456589314, 138, 1);
-INSERT INTO `sys_relation` VALUES (1189120624464977921, 139, 1);
-INSERT INTO `sys_relation` VALUES (1189120624473366530, 140, 1);
-INSERT INTO `sys_relation` VALUES (1189120624481755138, 155, 1);
-INSERT INTO `sys_relation` VALUES (1189120624485949441, 156, 1);
-INSERT INTO `sys_relation` VALUES (1189120624494338050, 157, 1);
-INSERT INTO `sys_relation` VALUES (1189120624502726658, 133, 1);
-INSERT INTO `sys_relation` VALUES (1189120624511115265, 160, 1);
-INSERT INTO `sys_relation` VALUES (1189120624519503874, 161, 1);
-INSERT INTO `sys_relation` VALUES (1189120624519503875, 141, 1);
-INSERT INTO `sys_relation` VALUES (1189120624527892482, 142, 1);
-INSERT INTO `sys_relation` VALUES (1189120624536281089, 143, 1);
-INSERT INTO `sys_relation` VALUES (1189120624536281090, 144, 1);
-INSERT INTO `sys_relation` VALUES (1189120624544669698, 1144441072852684801, 1);
-INSERT INTO `sys_relation` VALUES (1189120624553058305, 1144441072852684802, 1);
-INSERT INTO `sys_relation` VALUES (1189120624561446913, 1144441072852684803, 1);
-INSERT INTO `sys_relation` VALUES (1189120624574029826, 1144441072852684804, 1);
-INSERT INTO `sys_relation` VALUES (1189120624582418433, 171, 1);
-INSERT INTO `sys_relation` VALUES (1189120624586612738, 149, 1);
-INSERT INTO `sys_relation` VALUES (1189120624595001346, 1110777136265838594, 1);
-INSERT INTO `sys_relation` VALUES (1189120624603389953, 1110777366856089602, 1);
-INSERT INTO `sys_relation` VALUES (1189120624603389954, 1110777491464667137, 1);
-INSERT INTO `sys_relation` VALUES (1189120624611778562, 1110787391943098370, 1);
-INSERT INTO `sys_relation` VALUES (1189120624620167170, 1110839216310329346, 1);
-INSERT INTO `sys_relation` VALUES (1189120624620167171, 1127085735660421122, 1);
-INSERT INTO `sys_relation` VALUES (1189120624628555778, 1139826657964593154, 1);
-INSERT INTO `sys_relation` VALUES (1189120624632750082, 1139827152854716418, 1);
-INSERT INTO `sys_relation` VALUES (1189120624641138690, 1142957882422112257, 1);
-INSERT INTO `sys_relation` VALUES (1189120624645332994, 1142957882422112258, 1);
-INSERT INTO `sys_relation` VALUES (1189120624645332995, 1142957882422112259, 1);
-INSERT INTO `sys_relation` VALUES (1189120624653721602, 1142957882426306562, 1);
-INSERT INTO `sys_relation` VALUES (1189120624662110209, 172, 1);
-INSERT INTO `sys_relation` VALUES (1189120624662110210, 145, 1);
-INSERT INTO `sys_relation` VALUES (1189120624670498817, 1111545968697860098, 1);
-INSERT INTO `sys_relation` VALUES (1189120624678887426, 1111546189892870145, 1);
-INSERT INTO `sys_relation` VALUES (1189120624678887427, 1149955324929765378, 1);
-INSERT INTO `sys_relation` VALUES (1189120635936399361, 105, 5);
-INSERT INTO `sys_relation` VALUES (1189120635944787970, 132, 5);
-INSERT INTO `sys_relation` VALUES (1189120635953176578, 138, 5);
-INSERT INTO `sys_relation` VALUES (1189120635961565185, 139, 5);
-INSERT INTO `sys_relation` VALUES (1189120635969953794, 140, 5);
-INSERT INTO `sys_relation` VALUES (1189120635978342401, 155, 5);
-INSERT INTO `sys_relation` VALUES (1189120635978342402, 156, 5);
-INSERT INTO `sys_relation` VALUES (1189120635990925313, 157, 5);
-INSERT INTO `sys_relation` VALUES (1189120635999313922, 141, 5);
-INSERT INTO `sys_relation` VALUES (1189120636003508225, 142, 5);
-INSERT INTO `sys_relation` VALUES (1189120636003508226, 143, 5);
-INSERT INTO `sys_relation` VALUES (1189120636011896834, 144, 5);
-INSERT INTO `sys_relation` VALUES (1189120636020285442, 171, 5);
-INSERT INTO `sys_relation` VALUES (1189120636024479746, 149, 5);
-INSERT INTO `sys_relation` VALUES (1189120636032868353, 1127085735660421122, 5);
-INSERT INTO `sys_relation` VALUES (1189120636041256962, 172, 5);
-INSERT INTO `sys_relation` VALUES (1189120636041256963, 145, 5);
-INSERT INTO `sys_relation` VALUES (1189120636049645569, 1111545968697860098, 5);
-INSERT INTO `sys_relation` VALUES (1189120636058034177, 1111546189892870145, 5);
+INSERT INTO `sys_relation` VALUES (1184839164297945090, 105, 5);
+INSERT INTO `sys_relation` VALUES (1184839164306333697, 132, 5);
+INSERT INTO `sys_relation` VALUES (1184839164310528002, 138, 5);
+INSERT INTO `sys_relation` VALUES (1184839164318916609, 139, 5);
+INSERT INTO `sys_relation` VALUES (1184839164323110913, 140, 5);
+INSERT INTO `sys_relation` VALUES (1184839164327305218, 155, 5);
+INSERT INTO `sys_relation` VALUES (1184839164335693826, 156, 5);
+INSERT INTO `sys_relation` VALUES (1184839164339888130, 157, 5);
+INSERT INTO `sys_relation` VALUES (1184839164344082434, 141, 5);
+INSERT INTO `sys_relation` VALUES (1184839164348276737, 142, 5);
+INSERT INTO `sys_relation` VALUES (1184839164360859649, 143, 5);
+INSERT INTO `sys_relation` VALUES (1184839164365053953, 144, 5);
+INSERT INTO `sys_relation` VALUES (1184839164373442561, 171, 5);
+INSERT INTO `sys_relation` VALUES (1184839164377636866, 149, 5);
+INSERT INTO `sys_relation` VALUES (1184839164381831170, 1127085735660421122, 5);
+INSERT INTO `sys_relation` VALUES (1184839164390219778, 172, 5);
+INSERT INTO `sys_relation` VALUES (1184839164394414081, 145, 5);
+INSERT INTO `sys_relation` VALUES (1184839164398608386, 1111545968697860098, 5);
+INSERT INTO `sys_relation` VALUES (1184839164402802690, 1111546189892870145, 5);
+INSERT INTO `sys_relation` VALUES (1240625203508195330, 105, 1);
+INSERT INTO `sys_relation` VALUES (1240625203520778242, 106, 1);
+INSERT INTO `sys_relation` VALUES (1240625203529166850, 107, 1);
+INSERT INTO `sys_relation` VALUES (1240625203537555457, 108, 1);
+INSERT INTO `sys_relation` VALUES (1240625203545944066, 109, 1);
+INSERT INTO `sys_relation` VALUES (1240625203554332673, 110, 1);
+INSERT INTO `sys_relation` VALUES (1240625203554332674, 111, 1);
+INSERT INTO `sys_relation` VALUES (1240625203566915585, 112, 1);
+INSERT INTO `sys_relation` VALUES (1240625203571109889, 113, 1);
+INSERT INTO `sys_relation` VALUES (1240625203579498498, 165, 1);
+INSERT INTO `sys_relation` VALUES (1240625203583692802, 166, 1);
+INSERT INTO `sys_relation` VALUES (1240625203592081410, 167, 1);
+INSERT INTO `sys_relation` VALUES (1240625203604664322, 114, 1);
+INSERT INTO `sys_relation` VALUES (1240625203613052930, 115, 1);
+INSERT INTO `sys_relation` VALUES (1240625203617247233, 116, 1);
+INSERT INTO `sys_relation` VALUES (1240625203625635841, 117, 1);
+INSERT INTO `sys_relation` VALUES (1240625203634024449, 118, 1);
+INSERT INTO `sys_relation` VALUES (1240625203638218753, 162, 1);
+INSERT INTO `sys_relation` VALUES (1240625203646607362, 163, 1);
+INSERT INTO `sys_relation` VALUES (1240625203654995969, 164, 1);
+INSERT INTO `sys_relation` VALUES (1240625203659190273, 119, 1);
+INSERT INTO `sys_relation` VALUES (1240625203663384578, 120, 1);
+INSERT INTO `sys_relation` VALUES (1240625203671773185, 121, 1);
+INSERT INTO `sys_relation` VALUES (1240625203675967489, 122, 1);
+INSERT INTO `sys_relation` VALUES (1240625203680161794, 150, 1);
+INSERT INTO `sys_relation` VALUES (1240625203688550401, 151, 1);
+INSERT INTO `sys_relation` VALUES (1240625203696939009, 128, 1);
+INSERT INTO `sys_relation` VALUES (1240625203696939010, 134, 1);
+INSERT INTO `sys_relation` VALUES (1240625203705327617, 158, 1);
+INSERT INTO `sys_relation` VALUES (1240625203713716226, 159, 1);
+INSERT INTO `sys_relation` VALUES (1240625203717910530, 130, 1);
+INSERT INTO `sys_relation` VALUES (1240625203726299137, 131, 1);
+INSERT INTO `sys_relation` VALUES (1240625203726299138, 135, 1);
+INSERT INTO `sys_relation` VALUES (1240625203738882049, 136, 1);
+INSERT INTO `sys_relation` VALUES (1240625203738882050, 137, 1);
+INSERT INTO `sys_relation` VALUES (1240625203751464962, 152, 1);
+INSERT INTO `sys_relation` VALUES (1240625203755659265, 153, 1);
+INSERT INTO `sys_relation` VALUES (1240625203764047874, 154, 1);
+INSERT INTO `sys_relation` VALUES (1240625203764047875, 132, 1);
+INSERT INTO `sys_relation` VALUES (1240625203772436482, 138, 1);
+INSERT INTO `sys_relation` VALUES (1240625203780825090, 139, 1);
+INSERT INTO `sys_relation` VALUES (1240625203785019394, 140, 1);
+INSERT INTO `sys_relation` VALUES (1240625203793408001, 155, 1);
+INSERT INTO `sys_relation` VALUES (1240625203797602306, 156, 1);
+INSERT INTO `sys_relation` VALUES (1240625203797602307, 157, 1);
+INSERT INTO `sys_relation` VALUES (1240625203805990914, 133, 1);
+INSERT INTO `sys_relation` VALUES (1240625203814379522, 160, 1);
+INSERT INTO `sys_relation` VALUES (1240625203818573826, 161, 1);
+INSERT INTO `sys_relation` VALUES (1240625203818573827, 141, 1);
+INSERT INTO `sys_relation` VALUES (1240625203831156737, 142, 1);
+INSERT INTO `sys_relation` VALUES (1240625203835351042, 143, 1);
+INSERT INTO `sys_relation` VALUES (1240625203839545346, 144, 1);
+INSERT INTO `sys_relation` VALUES (1240625203847933953, 1144441072852684801, 1);
+INSERT INTO `sys_relation` VALUES (1240625203847933954, 1144441072852684802, 1);
+INSERT INTO `sys_relation` VALUES (1240625203852128258, 1144441072852684803, 1);
+INSERT INTO `sys_relation` VALUES (1240625203860516865, 1144441072852684804, 1);
+INSERT INTO `sys_relation` VALUES (1240625203860516866, 171, 1);
+INSERT INTO `sys_relation` VALUES (1240625203868905474, 149, 1);
+INSERT INTO `sys_relation` VALUES (1240625203877294081, 1127085735660421122, 1);
+INSERT INTO `sys_relation` VALUES (1240625203877294082, 1142957882422112257, 1);
+INSERT INTO `sys_relation` VALUES (1240625203885682689, 1142957882422112258, 1);
+INSERT INTO `sys_relation` VALUES (1240625203889876993, 1142957882422112259, 1);
+INSERT INTO `sys_relation` VALUES (1240625203898265602, 1142957882426306562, 1);
+INSERT INTO `sys_relation` VALUES (1240625203902459905, 172, 1);
+INSERT INTO `sys_relation` VALUES (1240625203902459906, 145, 1);
+INSERT INTO `sys_relation` VALUES (1240625203915042817, 1111545968697860098, 1);
+INSERT INTO `sys_relation` VALUES (1240625203919237122, 1111546189892870145, 1);
+INSERT INTO `sys_relation` VALUES (1240625203923431426, 1149955324929765378, 1);
+INSERT INTO `sys_relation` VALUES (1240625203931820034, 1110777136265838594, 1);
+INSERT INTO `sys_relation` VALUES (1240625203931820035, 1110787391943098370, 1);
+INSERT INTO `sys_relation` VALUES (1240625203940208641, 1110839216310329346, 1);
+INSERT INTO `sys_relation` VALUES (1240625203948597250, 1139827152854716418, 1);
+INSERT INTO `sys_relation` VALUES (1240625203952791554, 1212299504967204865, 1);
+INSERT INTO `sys_relation` VALUES (1240625203952791555, 1110777366856089602, 1);
+INSERT INTO `sys_relation` VALUES (1240625203965374466, 1110777491464667137, 1);
+INSERT INTO `sys_relation` VALUES (1240625203965374467, 1212299802154614786, 1);
 
 -- ----------------------------
 -- Table structure for sys_role

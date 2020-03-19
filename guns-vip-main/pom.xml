@@ -24,12 +24,33 @@
             <version>1.0.0</version>
         </dependency>
 
-        <!-- 分布式job -->
-        <!--        <dependency>-->
-        <!--            <groupId>cn.stylefeng</groupId>-->
-        <!--            <artifactId>guns-base-timers</artifactId>-->
-        <!--            <version>1.0.0</version>-->
-        <!--        </dependency>-->
+        <!-- excel高级导出 -->
+        <dependency>
+            <groupId>cn.stylefeng</groupId>
+            <artifactId>guns-excel</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- 代码生成器 -->
+        <dependency>
+            <groupId>cn.stylefeng</groupId>
+            <artifactId>guns-generator</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- 数据源容器 -->
+        <dependency>
+            <groupId>cn.stylefeng</groupId>
+            <artifactId>guns-dbctn</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- oauth2认证 -->
+        <dependency>
+            <groupId>cn.stylefeng</groupId>
+            <artifactId>guns-oauth2</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -64,7 +85,7 @@
                     <dockerHost>unix:///var/run/docker.sock</dockerHost>
                     <images>
                         <image>
-                            <name>localhost:6001/guns-api:${docker.img.version}</name>
+                            <name>snexus.stylefeng.cn:6001/guns-api:${docker.img.version}</name>
                             <build>
                                 <from>java:8</from>
                                 <assembly>

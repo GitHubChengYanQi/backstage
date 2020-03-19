@@ -1,4 +1,4 @@
-﻿/** EasyWeb iframe v3.1.5 date:2019-10-05 License By http://easyweb.vip */
+﻿/** EasyWeb iframe v3.1.7 date:2020-03-11 License By http://easyweb.vip */
 
 // 用common.js必须加上Feng.addCtx("${ctxPath}");
 Feng.info = function (info) {
@@ -103,27 +103,25 @@ layui.config({
     version: Feng.version,
     base: Feng.ctxPath + '/assets/common/module/'
 }).extend({
-    formSelects: 'formSelects/formSelects-v4',
-    treetable: 'treetable-lay/treetable',
-    dropdown: 'dropdown/dropdown',
+    steps: 'steps/steps',
     notice: 'notice/notice',
-    step: 'step-lay/step',
-    dtree: 'dtree/dtree',
-    citypicker: 'city-picker/city-picker',
-    tableSelect: 'tableSelect/tableSelect',
-    Cropper: 'Cropper/Cropper',
-    zTree: 'zTree/zTree',
-    introJs: 'introJs/introJs',
-    fileChoose: 'fileChoose/fileChoose',
-    tagsInput: 'tagsInput/tagsInput',
-    Drag: 'Drag/Drag',
-    CKEDITOR: 'ckeditor/ckeditor',
-    Split: 'Split/Split',
     cascader: 'cascader/cascader',
+    dropdown: 'dropdown/dropdown',
+    fileChoose: 'fileChoose/fileChoose',
+    treeTable: 'treeTable/treeTable',
+    Split: 'Split/Split',
+    Cropper: 'Cropper/Cropper',
+    tagsInput: 'tagsInput/tagsInput',
+    citypicker: 'city-picker/city-picker',
+    introJs: 'introJs/introJs',
+    zTree: 'zTree/zTree',
+
+    //一下是Guns用的插件
+    formSelects: '../../expand/module/formSelects/formSelects-v4',
     selectPlus: '../../expand/module/selectPlus/selectPlus',
-    ax: '../../expand/module/ax/ax',
-    ztree: '../../expand/module/ztree/ztree-object',
     iconPicker: '../../expand/module/iconPicker/iconPicker',
+    ztree: '../../expand/module/ztree/ztree-object',
+    ax: '../../expand/module/ax/ax',
     func: '../../expand/module/func/func'
 }).use(['layer', 'admin'], function () {
     var $ = layui.jquery;
@@ -133,7 +131,7 @@ layui.config({
     // 移除loading动画
     setTimeout(function () {
         admin.removeLoading();
-    }, window == top ? 600 : 100);
+    }, window === top ? 300 : 0);
 
     //注册session超时的操作
     $.ajaxSetup({

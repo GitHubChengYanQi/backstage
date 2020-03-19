@@ -18,11 +18,12 @@
     <modules>
         <module>guns-base</module>
         <module>guns-base-auth</module>
-        <module>guns-base-email</module>
-        <module>guns-base-sms</module>
         <module>guns-base-timers</module>
         <module>guns-sys</module>
-        <module>guns-vip-gen</module>
+        <module>guns-excel</module>
+        <module>guns-generator</module>
+        <module>guns-dbctn</module>
+        <module>guns-oauth2</module>
     </modules>
 
 </project>

@@ -2,6 +2,7 @@ package cn.stylefeng.guns.config.security;
 
 import cn.stylefeng.guns.sys.core.auth.entrypoint.JwtAuthenticationEntryPoint;
 import cn.stylefeng.guns.sys.core.auth.filter.JwtAuthorizationTokenFilter;
+import cn.stylefeng.guns.sys.core.auth.filter.NoneAuthedResources;
 import cn.stylefeng.guns.sys.core.auth.userdetail.JwtUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -42,69 +43,41 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable()
 
-                //开启跨域
-                .cors().and()
+        //csrf关闭
+        httpSecurity.csrf().disable();
 
-                //自定义退出
-                .logout().disable()
+        //开启跨域
+        httpSecurity.cors();
 
-                //禁用匿名用户
-                //.anonymous().disable()
+        //自定义退出
+        httpSecurity.logout().disable();
 
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+        //禁用匿名用户
+        //httpSecurity.anonymous().disable();
 
-                // 全局不创建session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        httpSecurity.exceptionHandling().authenticationEntryPoint(unauthorizedHandler);
 
-                .authorizeRequests()
+        // 全局不创建session
+        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-                .antMatchers("/").permitAll()
+        //放开一些接口的权限校验
+        for (String notAuthedResource : NoneAuthedResources.BACKEND_RESOURCES) {
+            httpSecurity.authorizeRequests().antMatchers(notAuthedResource).permitAll();
+        }
 
-                //获取验证码
-                .antMatchers("/kaptcha").permitAll()
+        //其他接口都需要权限
+        httpSecurity.authorizeRequests().anyRequest().authenticated();
 
-                //rest方式获取token入口
-                .antMatchers("/rest/login").permitAll()
+        //添加自定义的过滤器
+        httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-                //oauth登录的接口
-                .antMatchers("/oauth/render/*").permitAll()
-                .antMatchers("/oauth/callback/*").permitAll()
-
-                //单点登录接口
-                .antMatchers("/ssoLogin").permitAll()
-                .antMatchers("/sysTokenLogin").permitAll()
-
-                // 登录接口放开过滤
-                .antMatchers("/login").permitAll()
-
-                // session登录失效之后的跳转
-                .antMatchers("/global/sessionError").permitAll()
-
-                // 图片预览 头像
-                .antMatchers("/system/preview/*").permitAll()
-
-                // 错误页面的接口
-                .antMatchers("/error").permitAll()
-                .antMatchers("/global/error").permitAll()
-
-                // 测试多数据源的接口，可以去掉
-                .antMatchers("/tran/**").permitAll()
-
-                //获取租户列表的接口
-                .antMatchers("/tenantInfo/listTenants").permitAll()
-
-                .anyRequest().authenticated();
-
-        httpSecurity
-                .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // disable page caching
+        //disable page caching
         httpSecurity
                 .headers()
                 .frameOptions().sameOrigin()
                 .cacheControl();
+
     }
 
     @Override
