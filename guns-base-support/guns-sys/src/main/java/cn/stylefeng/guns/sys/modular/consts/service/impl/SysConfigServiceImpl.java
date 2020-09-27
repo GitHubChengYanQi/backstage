@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,6 +36,7 @@ import static cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum.ALREAD
 public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig> implements SysConfigService {
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void add(SysConfigParam param) {
         SysConfig entity = getEntity(param);
 
@@ -52,13 +54,14 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             entity.setValue(param.getDictValue());
         }
 
+        this.save(entity);
+
         //添加字典context
         ConstantsContext.putConstant(entity.getCode(), entity.getValue());
-
-        this.save(entity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(SysConfigParam param) {
 
         //不能删除系统常量
@@ -67,13 +70,14 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             throw new ServiceException(BizExceptionEnum.SYSTEM_CONSTANT_ERROR);
         }
 
+        this.removeById(getKey(param));
+
         //删除字典context
         ConstantsContext.deleteConstant(sysConfig.getCode());
-
-        this.removeById(getKey(param));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(SysConfigParam param) {
         SysConfig oldEntity = getOldEntity(param);
         SysConfig newEntity = getEntity(param);
@@ -89,10 +93,10 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             newEntity.setDictFlag("N");
         }
 
+        this.updateById(newEntity);
+
         //添加字典context
         ConstantsContext.putConstant(newEntity.getCode(), newEntity.getValue());
-
-        this.updateById(newEntity);
     }
 
     @Override
