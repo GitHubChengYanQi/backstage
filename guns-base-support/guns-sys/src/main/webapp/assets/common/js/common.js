@@ -1,4 +1,4 @@
-﻿/** EasyWeb iframe v3.1.7 date:2020-03-11 License By http://easyweb.vip */
+/** EasyWeb iframe v3.1.8 date:2020-05-04 License By http://easyweb.vip */
 
 // 用common.js必须加上Feng.addCtx("${ctxPath}");
 Feng.info = function (info) {
@@ -108,7 +108,6 @@ layui.config({
     cascader: 'cascader/cascader',
     dropdown: 'dropdown/dropdown',
     fileChoose: 'fileChoose/fileChoose',
-    treeTable: 'treeTable/treeTable',
     Split: 'Split/Split',
     Cropper: 'Cropper/Cropper',
     tagsInput: 'tagsInput/tagsInput',

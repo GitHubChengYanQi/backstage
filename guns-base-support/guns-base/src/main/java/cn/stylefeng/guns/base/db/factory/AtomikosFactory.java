@@ -20,6 +20,7 @@ public class AtomikosFactory {
         atomikosDataSourceBean.setUniqueResourceName(dataSourceName);
         atomikosDataSourceBean.setMaxPoolSize(100);
         atomikosDataSourceBean.setBorrowConnectionTimeout(60);
+        atomikosDataSourceBean.setMinPoolSize(0);
 
         Properties properties = druidProperties.createProperties();
         atomikosDataSourceBean.setXaProperties(properties);
