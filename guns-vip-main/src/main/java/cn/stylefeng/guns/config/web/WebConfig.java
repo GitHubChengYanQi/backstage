@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -50,6 +51,15 @@ import java.util.Properties;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    //解决跨域问题
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "DELETE", "PUT");
+    }
 
     /**
      * 配置string解析器放在json解析器前边

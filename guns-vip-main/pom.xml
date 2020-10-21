@@ -92,7 +92,9 @@
                                     <descriptor>docker-assembly.xml</descriptor>
                                 </assembly>
                                 <cmd>
-                                    <shell>java -jar -Xms512m -Xmx512m -Xss1024K -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=256m /maven/${project.artifactId}.jar</shell>
+                                    <shell>java -jar -Xms512m -Xmx512m -Xss1024K -XX:MetaspaceSize=256m
+                                        -XX:MaxMetaspaceSize=256m /maven/${project.artifactId}.jar
+                                    </shell>
                                 </cmd>
                             </build>
                         </image>
