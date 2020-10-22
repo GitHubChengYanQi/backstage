@@ -162,7 +162,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 11:14 上午
      */
     @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData unAuth(AuthException e) {
         return new ErrorResponseData(e.getCode(), e.getMessage());
@@ -175,7 +175,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 11:14 上午
      */
     @ExceptionHandler(PermissionException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData permissionExpection(PermissionException e) {
         return new ErrorResponseData(e.getCode(), e.getMessage());

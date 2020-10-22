@@ -16,6 +16,7 @@
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.stylefeng.guns.base.auth.service.AuthService;
+import cn.stylefeng.guns.sys.modular.rest.model.params.LoginParam;
 import cn.stylefeng.roses.core.base.controller.BaseController;
 import cn.stylefeng.roses.core.util.ToolUtil;
 import cn.stylefeng.roses.kernel.model.exception.RequestEmptyException;
@@ -24,12 +25,10 @@ import cn.stylefeng.roses.kernel.model.response.SuccessResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 /**
  * rest方式的登录控制器
@@ -54,12 +53,10 @@ public class RestLoginController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation("登录接口")
-    public ResponseData restLogin(@RequestParam("username") String username,
-                                  @RequestParam("password") String password) {
+    public ResponseData restLogin(@RequestBody @Valid LoginParam loginParam) {
 
-        if (ToolUtil.isOneEmpty(username, password)) {
-            throw new RequestEmptyException("账号或密码为空！");
-        }
+        String username = loginParam.getUserName();
+        String password = loginParam.getPassword();
 
         //登录并创建token
         String token = authService.login(username, password);
