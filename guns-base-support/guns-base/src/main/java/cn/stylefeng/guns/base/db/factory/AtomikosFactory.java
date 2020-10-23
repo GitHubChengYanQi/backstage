@@ -1,6 +1,6 @@
 package cn.stylefeng.guns.base.db.factory;
 
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.atomikos.jdbc.AtomikosSQLException;
 

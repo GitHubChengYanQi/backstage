@@ -16,7 +16,7 @@
 package cn.stylefeng.guns.sys.modular.system.controller;
 
 import cn.stylefeng.guns.base.consts.ConstantsContext;
-import cn.stylefeng.roses.core.util.FileUtil;
+import cn.atsoft.dasheng.core.util.FileUtil;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 import org.springframework.beans.factory.annotation.Autowired;

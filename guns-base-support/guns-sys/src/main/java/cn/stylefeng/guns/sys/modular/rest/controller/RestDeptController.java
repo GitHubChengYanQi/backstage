@@ -26,9 +26,9 @@ import cn.stylefeng.guns.sys.modular.rest.model.DeptTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.service.RestDeptService;
 import cn.stylefeng.guns.sys.modular.system.model.DeptDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.DeptWrapper;
-import cn.stylefeng.roses.core.base.controller.BaseController;
-import cn.stylefeng.roses.kernel.model.response.ResponseData;
-import cn.stylefeng.roses.kernel.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

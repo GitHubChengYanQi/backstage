@@ -5,7 +5,7 @@ import cn.stylefeng.guns.base.db.dao.sqls.AddDatabaseInfoSql;
 import cn.stylefeng.guns.base.db.dao.sqls.DatabaseListSql;
 import cn.stylefeng.guns.base.db.dao.sqls.DeleteDatabaseInfoSql;
 import cn.stylefeng.guns.base.db.exception.DataSourceInitException;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 

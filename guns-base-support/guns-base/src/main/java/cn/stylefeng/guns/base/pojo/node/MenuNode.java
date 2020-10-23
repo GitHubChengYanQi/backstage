@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns.base.pojo.node;
 
-import cn.stylefeng.roses.kernel.model.enums.YesOrNotEnum;
+import cn.atsoft.dasheng.model.enums.YesOrNotEnum;
 import lombok.Data;
 
 import java.io.Serializable;

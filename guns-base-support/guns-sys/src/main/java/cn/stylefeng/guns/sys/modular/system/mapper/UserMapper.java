@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.modular.system.mapper;
 
 import cn.stylefeng.guns.sys.modular.system.entity.User;
-import cn.stylefeng.roses.core.datascope.DataScope;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

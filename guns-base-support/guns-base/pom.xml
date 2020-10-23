@@ -19,12 +19,14 @@
 
         <!--核心组件-->
         <dependency>
-            <groupId>cn.stylefeng.roses</groupId>
+            <groupId>cn.atsoft</groupId>
             <artifactId>kernel-core</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>cn.stylefeng.roses</groupId>
+            <groupId>cn.atsoft</groupId>
             <artifactId>kernel-validator</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <!--数据库驱动,可根据自己需要自行删减-->

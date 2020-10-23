@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.config.web;
 
 import cn.hutool.core.date.DateUtil;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;

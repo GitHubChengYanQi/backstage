@@ -1,13 +1,13 @@
 package ${package.ServiceImpl};
 
-import cn.stylefeng.roses.core.page.PageFactory;
-import cn.stylefeng.roses.kernel.model.page.PageResult;
+import cn.atsoft.dasheng.core.page.PageFactory;
+import cn.atsoft.dasheng.model.page.PageResult;
 import ${package.Entity}.${entity};
 import ${package.Mapper}.${table.mapperName};
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;
 import  ${package.Service}.${table.serviceName};
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import ${superServiceImplClassPackage};

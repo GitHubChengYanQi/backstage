@@ -3,7 +3,7 @@ package cn.stylefeng.guns.sys.core.auth.filter;
 import cn.stylefeng.guns.base.auth.jwt.JwtTokenUtil;
 import cn.stylefeng.guns.sys.core.auth.cache.SessionManager;
 import cn.stylefeng.guns.sys.core.auth.util.TokenUtil;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

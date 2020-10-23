@@ -5,7 +5,7 @@ import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
 import cn.stylefeng.guns.sys.core.util.SaltUtil;
 import cn.stylefeng.guns.sys.modular.system.entity.User;
 import cn.stylefeng.guns.base.oauth2.entity.OauthUserInfo;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import me.zhyd.oauth.enums.AuthUserGender;
 import me.zhyd.oauth.model.AuthUser;
 

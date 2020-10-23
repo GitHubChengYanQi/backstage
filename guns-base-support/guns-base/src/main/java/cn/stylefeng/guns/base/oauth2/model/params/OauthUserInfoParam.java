@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.base.oauth2.model.params;
 
 import lombok.Data;
-import cn.stylefeng.roses.kernel.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 

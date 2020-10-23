@@ -2,7 +2,7 @@ package cn.stylefeng.guns.base.db.util;
 
 import cn.stylefeng.guns.base.db.context.DataSourceContext;
 import cn.stylefeng.guns.base.db.context.SqlSessionFactoryContext;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

@@ -22,6 +22,7 @@
     <modules>
         <module>guns-base-support</module>
         <module>guns-vip-main</module>
+        <module>dasheng</module>
     </modules>
 
     <properties>

@@ -7,8 +7,8 @@ import cn.stylefeng.guns.base.db.dao.sqls.TableListSql;
 import cn.stylefeng.guns.base.db.entity.DatabaseInfo;
 import cn.stylefeng.guns.base.db.exception.DataSourceInitException;
 import cn.stylefeng.guns.base.db.model.TableFieldInfo;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;

@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns.sys.core.log;
 
-import cn.stylefeng.roses.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;

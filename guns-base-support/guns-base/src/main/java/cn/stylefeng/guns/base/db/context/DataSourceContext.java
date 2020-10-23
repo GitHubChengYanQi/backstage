@@ -2,7 +2,7 @@ package cn.stylefeng.guns.base.db.context;
 
 import cn.stylefeng.guns.base.db.dao.DataBaseInfoDao;
 import cn.stylefeng.guns.base.db.factory.AtomikosFactory;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
 
 import javax.sql.DataSource;
 import java.util.Map;

@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns.sys.core.exception.enums;
 
-import cn.stylefeng.roses.kernel.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.model.exception.AbstractBaseExceptionEnum;
 
 /**
  * @author fengshuonan

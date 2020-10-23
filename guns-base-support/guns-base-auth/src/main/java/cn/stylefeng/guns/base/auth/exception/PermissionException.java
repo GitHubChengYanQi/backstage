@@ -1,6 +1,6 @@
 package cn.stylefeng.guns.base.auth.exception;
 
-import cn.stylefeng.roses.kernel.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.model.exception.AbstractBaseExceptionEnum;
 import lombok.Data;
 
 import static cn.stylefeng.guns.base.auth.exception.enums.AuthExceptionEnum.NO_PERMISSION;

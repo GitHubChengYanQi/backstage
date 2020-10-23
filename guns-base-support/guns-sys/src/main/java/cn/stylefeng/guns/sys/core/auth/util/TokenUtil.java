@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.core.auth.util;
 
-import cn.stylefeng.roses.core.util.HttpContext;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

@@ -23,7 +23,7 @@ import cn.stylefeng.guns.sys.core.log.LogManager;
 import cn.stylefeng.guns.sys.core.log.LogObjectHolder;
 import cn.stylefeng.guns.sys.core.log.factory.LogTaskFactory;
 import cn.stylefeng.guns.sys.core.util.Contrast;
-import cn.stylefeng.roses.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.HttpContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;

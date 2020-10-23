@@ -1,6 +1,6 @@
 package cn.stylefeng.guns.sys.modular.system.model.params;
 
-import cn.stylefeng.roses.kernel.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
 
 import java.io.Serializable;

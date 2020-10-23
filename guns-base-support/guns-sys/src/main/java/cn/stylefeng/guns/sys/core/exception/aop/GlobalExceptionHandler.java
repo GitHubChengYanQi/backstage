@@ -23,8 +23,8 @@ import cn.stylefeng.guns.sys.core.exception.InvalidKaptchaException;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.core.log.LogManager;
 import cn.stylefeng.guns.sys.core.log.factory.LogTaskFactory;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
-import cn.stylefeng.roses.kernel.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.core.annotation.Order;
@@ -45,8 +45,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Set;
 
-import static cn.stylefeng.roses.core.util.HttpContext.getIp;
-import static cn.stylefeng.roses.core.util.HttpContext.getRequest;
+import static cn.atsoft.dasheng.core.util.HttpContext.getIp;
+import static cn.atsoft.dasheng.core.util.HttpContext.getRequest;
 
 /**
  * 全局的的异常拦截器（拦截所有的控制器）（带有@RequestMapping注解的方法上都会拦截）

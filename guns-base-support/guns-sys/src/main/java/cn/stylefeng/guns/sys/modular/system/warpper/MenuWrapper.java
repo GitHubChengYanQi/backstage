@@ -16,8 +16,8 @@
 package cn.stylefeng.guns.sys.modular.system.warpper;
 
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
-import cn.stylefeng.roses.core.base.warpper.BaseControllerWrapper;
-import cn.stylefeng.roses.kernel.model.enums.YesOrNotEnum;
+import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
+import cn.atsoft.dasheng.model.enums.YesOrNotEnum;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;

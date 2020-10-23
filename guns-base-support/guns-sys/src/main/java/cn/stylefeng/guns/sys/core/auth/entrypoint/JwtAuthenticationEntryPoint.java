@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.core.auth.entrypoint;
 
 import cn.stylefeng.guns.base.auth.exception.enums.AuthExceptionEnum;
-import cn.stylefeng.roses.kernel.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import com.alibaba.fastjson.JSON;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

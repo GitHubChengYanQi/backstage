@@ -1,6 +1,6 @@
 package ${package.Service};
 
-import cn.stylefeng.roses.kernel.model.page.PageResult;
+import cn.atsoft.dasheng.model.page.PageResult;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;

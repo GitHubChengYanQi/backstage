@@ -17,7 +17,7 @@ package cn.stylefeng.guns.config.web;
 
 import cn.stylefeng.guns.sys.core.exception.page.GunsErrorView;
 import cn.stylefeng.guns.sys.core.listener.ConfigListener;
-import cn.stylefeng.roses.core.xss.XssFilter;
+import cn.atsoft.dasheng.core.xss.XssFilter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;

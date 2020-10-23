@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.core.util;
 
-import cn.stylefeng.roses.core.util.MD5Util;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.MD5Util;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 
 /**
  * 密码加盐的工具

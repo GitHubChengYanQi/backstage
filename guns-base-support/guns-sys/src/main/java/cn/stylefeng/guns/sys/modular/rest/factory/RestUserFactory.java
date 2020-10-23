@@ -20,7 +20,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
 import cn.stylefeng.guns.sys.modular.system.model.UserDto;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Date;

@@ -2,7 +2,7 @@ package cn.stylefeng.guns.base.consts;
 
 import cn.stylefeng.guns.base.enums.CommonStatus;
 import cn.stylefeng.guns.base.sms.AliyunSmsProperties;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static cn.stylefeng.guns.base.consts.ConfigConstant.SYSTEM_CONSTANT_PREFIX;
-import static cn.stylefeng.roses.core.util.ToolUtil.getTempPath;
+import static cn.atsoft.dasheng.core.util.ToolUtil.getTempPath;
 
 /**
  * 系统常量的容器

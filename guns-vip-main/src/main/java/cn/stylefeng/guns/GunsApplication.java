@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns;
 
-import cn.stylefeng.roses.core.config.MybatisDataSourceAutoConfiguration;
+import cn.atsoft.dasheng.core.config.MybatisDataSourceAutoConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;

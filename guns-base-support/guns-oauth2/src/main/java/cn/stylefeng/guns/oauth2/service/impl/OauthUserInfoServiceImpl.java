@@ -7,7 +7,7 @@ import cn.stylefeng.guns.base.oauth2.entity.OauthUserInfo;
 import cn.stylefeng.guns.oauth2.mapper.OauthUserInfoMapper;
 import cn.stylefeng.guns.base.oauth2.model.params.OauthUserInfoParam;
 import cn.stylefeng.guns.base.oauth2.model.result.OauthUserInfoResult;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

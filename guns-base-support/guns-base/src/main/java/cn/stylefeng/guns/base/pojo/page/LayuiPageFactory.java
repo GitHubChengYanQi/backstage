@@ -15,8 +15,8 @@
  */
 package cn.stylefeng.guns.base.pojo.page;
 
-import cn.stylefeng.roses.core.util.HttpContext;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 

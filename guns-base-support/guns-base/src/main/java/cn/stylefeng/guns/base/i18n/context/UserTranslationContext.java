@@ -1,8 +1,8 @@
 package cn.stylefeng.guns.base.i18n.context;
 
 import cn.stylefeng.guns.base.i18n.enums.TranslationEnum;
-import cn.stylefeng.roses.core.util.HttpContext;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.Cookie;

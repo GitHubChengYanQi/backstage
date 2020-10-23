@@ -16,8 +16,8 @@
 package cn.stylefeng.guns.modular.demos.controller;
 
 import cn.stylefeng.guns.modular.demos.service.TranTestService;
-import cn.stylefeng.roses.core.base.controller.BaseController;
-import cn.stylefeng.roses.kernel.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

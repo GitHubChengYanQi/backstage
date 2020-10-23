@@ -18,7 +18,7 @@ package cn.stylefeng.guns.sys.core.constant.dictmap.factory;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.sys.core.constant.factory.IConstantFactory;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 
 import java.lang.reflect.Method;
 

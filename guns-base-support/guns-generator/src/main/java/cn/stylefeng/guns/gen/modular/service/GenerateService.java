@@ -8,11 +8,11 @@ import cn.stylefeng.guns.gen.core.enums.GenSessionKeyFlags;
 import cn.stylefeng.guns.gen.modular.model.FieldConfig;
 import cn.stylefeng.guns.gen.modular.model.GenSessionFieldConfigs;
 import cn.stylefeng.guns.gen.modular.model.params.SaveFieldConfigParam;
-import cn.stylefeng.roses.core.util.HttpContext;
-import cn.stylefeng.roses.core.util.SpringContextHolder;
-import cn.stylefeng.roses.core.util.ToolUtil;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
-import cn.stylefeng.roses.kernel.validator.stereotype.ParamValidator;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.validator.stereotype.ParamValidator;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;

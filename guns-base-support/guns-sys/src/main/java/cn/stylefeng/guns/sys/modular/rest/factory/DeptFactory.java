@@ -2,7 +2,7 @@ package cn.stylefeng.guns.sys.modular.rest.factory;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.sys.modular.rest.model.DeptTreeNode;
-import cn.stylefeng.roses.core.treebuild.DefaultTreeBuildFactory;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.config.datasource;
 
 import cn.stylefeng.guns.base.auth.context.LoginContextHolder;
-import cn.stylefeng.roses.core.metadata.CustomMetaObjectHandler;
+import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

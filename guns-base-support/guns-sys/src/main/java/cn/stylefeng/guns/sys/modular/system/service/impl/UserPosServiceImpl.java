@@ -7,7 +7,7 @@ import cn.stylefeng.guns.sys.modular.system.mapper.UserPosMapper;
 import cn.stylefeng.guns.sys.modular.system.model.params.UserPosParam;
 import cn.stylefeng.guns.sys.modular.system.model.result.UserPosResult;
 import  cn.stylefeng.guns.sys.modular.system.service.UserPosService;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

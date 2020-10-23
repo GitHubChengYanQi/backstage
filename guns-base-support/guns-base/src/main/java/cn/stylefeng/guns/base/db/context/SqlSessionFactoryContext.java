@@ -3,8 +3,8 @@ package cn.stylefeng.guns.base.db.context;
 import cn.stylefeng.guns.base.db.collector.SqlSessionFactoryCreator;
 import cn.stylefeng.guns.base.db.entity.DatabaseInfo;
 import cn.stylefeng.guns.base.db.factory.DruidFactory;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
-import cn.stylefeng.roses.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.sql.DataSource;

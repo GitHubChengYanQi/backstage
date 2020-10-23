@@ -1,6 +1,6 @@
 package cn.stylefeng.guns.sys.core.util;
 
-import cn.stylefeng.roses.core.util.FileUtil;
+import cn.atsoft.dasheng.core.util.FileUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;

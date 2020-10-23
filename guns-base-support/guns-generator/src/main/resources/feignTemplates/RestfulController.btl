@@ -2,13 +2,13 @@ package ${controllerPackage};
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import cn.stylefeng.roses.kernel.model.page.PageResult;
-import cn.stylefeng.roses.kernel.model.response.ResponseData;
+import cn.atsoft.dasheng.model.page.PageResult;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import ${package.EntitySpecParams}.${entity}Param;
 import ${package.EntitySpecResult}.${entity}Result;
 import ${package.Service}.${table.serviceName};
-import cn.stylefeng.roses.kernel.scanner.modular.annotation.PostResource;
-import cn.stylefeng.roses.kernel.scanner.modular.stereotype.ApiResource;
+import cn.atsoft.dasheng.scanner.modular.annotation.PostResource;
+import cn.atsoft.dasheng.scanner.modular.stereotype.ApiResource;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;

@@ -23,7 +23,7 @@ import cn.stylefeng.guns.base.auth.jwt.payload.JwtPayLoad;
 import cn.stylefeng.guns.base.auth.model.LoginUser;
 import cn.stylefeng.guns.sys.core.util.DefaultImages;
 import cn.stylefeng.guns.sys.modular.system.service.UserService;
-import cn.stylefeng.roses.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

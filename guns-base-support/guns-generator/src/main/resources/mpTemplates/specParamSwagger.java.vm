@@ -1,7 +1,7 @@
 package ${package.EntitySpecParams};
 
 import lombok.Data;
-import cn.stylefeng.roses.kernel.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import java.math.BigDecimal;

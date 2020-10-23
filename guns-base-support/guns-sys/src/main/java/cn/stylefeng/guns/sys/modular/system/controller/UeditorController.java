@@ -3,7 +3,7 @@ package cn.stylefeng.guns.sys.modular.system.controller;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.stylefeng.guns.sys.core.util.UeditorUtil;
 import cn.stylefeng.guns.sys.modular.system.model.UeditorFileResult;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

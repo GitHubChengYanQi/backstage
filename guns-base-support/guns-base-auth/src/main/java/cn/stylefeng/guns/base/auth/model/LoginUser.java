@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns.base.auth.model;
 
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.Data;
 import org.springframework.security.core.userdetails.UserDetails;
 

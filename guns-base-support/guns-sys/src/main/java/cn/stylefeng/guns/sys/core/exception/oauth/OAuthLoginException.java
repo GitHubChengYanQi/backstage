@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.core.exception.oauth;
 
-import cn.stylefeng.roses.kernel.model.exception.AbstractBaseExceptionEnum;
-import cn.stylefeng.roses.kernel.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 
 /**
  * 第三方登录异常

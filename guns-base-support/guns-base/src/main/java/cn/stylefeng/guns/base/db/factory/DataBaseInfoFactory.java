@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.base.db.factory;
 
 import cn.stylefeng.guns.base.db.model.params.DatabaseInfoParam;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
 
 /**
  * 数据库信息工厂

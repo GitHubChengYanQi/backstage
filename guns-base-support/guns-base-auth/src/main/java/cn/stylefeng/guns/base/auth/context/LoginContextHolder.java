@@ -1,6 +1,6 @@
 package cn.stylefeng.guns.base.auth.context;
 
-import cn.stylefeng.roses.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 
 /**
  * 当前登录用户信息获取的接口

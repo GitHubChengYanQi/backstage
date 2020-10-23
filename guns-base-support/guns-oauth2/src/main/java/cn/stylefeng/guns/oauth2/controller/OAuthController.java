@@ -4,7 +4,7 @@ import cn.stylefeng.guns.base.auth.context.LoginContextHolder;
 import cn.stylefeng.guns.oauth2.factory.OAuthRequestFactory;
 import cn.stylefeng.guns.oauth2.service.LoginService;
 import cn.stylefeng.guns.base.oauth2.service.OauthUserInfoService;
-import cn.stylefeng.roses.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.base.controller .BaseController;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;

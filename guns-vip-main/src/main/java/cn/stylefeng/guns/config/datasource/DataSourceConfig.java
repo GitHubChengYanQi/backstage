@@ -16,8 +16,8 @@
 package cn.stylefeng.guns.config.datasource;
 
 import cn.stylefeng.guns.base.db.factory.AtomikosFactory;
-import cn.stylefeng.roses.core.config.properties.DruidProperties;
-import cn.stylefeng.roses.core.mutidatasource.aop.MultiSourceExAop;
+import cn.atsoft.dasheng.core.config.properties.DruidProperties;
+import cn.atsoft.dasheng.core.mutidatasource.aop.MultiSourceExAop;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

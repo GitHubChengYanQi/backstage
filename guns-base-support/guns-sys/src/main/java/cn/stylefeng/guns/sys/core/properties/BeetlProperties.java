@@ -15,7 +15,7 @@
  */
 package cn.stylefeng.guns.sys.core.properties;
 
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 

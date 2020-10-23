@@ -39,9 +39,9 @@ import cn.stylefeng.guns.sys.modular.system.factory.UserFactory;
 import cn.stylefeng.guns.sys.modular.system.mapper.MenuMapper;
 import cn.stylefeng.guns.sys.modular.system.mapper.UserMapper;
 import cn.stylefeng.guns.sys.modular.system.service.DictService;
-import cn.stylefeng.roses.core.util.HttpContext;
-import cn.stylefeng.roses.core.util.SpringContextHolder;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.HttpContext;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,7 @@ import java.util.*;
 
 import static cn.stylefeng.guns.base.consts.ConstantsContext.getJwtSecretExpireSec;
 import static cn.stylefeng.guns.base.consts.ConstantsContext.getTokenHeaderName;
-import static cn.stylefeng.roses.core.util.HttpContext.getIp;
+import static cn.atsoft.dasheng.core.util.HttpContext.getIp;
 
 @Service
 @DependsOn("springContextHolder")

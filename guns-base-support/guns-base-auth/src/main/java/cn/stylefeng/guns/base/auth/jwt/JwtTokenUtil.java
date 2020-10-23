@@ -17,7 +17,7 @@ package cn.stylefeng.guns.base.auth.jwt;
 
 import cn.stylefeng.guns.base.auth.jwt.payload.JwtPayLoad;
 import cn.stylefeng.guns.base.consts.ConstantsContext;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import io.jsonwebtoken.*;
 
 import java.util.Date;

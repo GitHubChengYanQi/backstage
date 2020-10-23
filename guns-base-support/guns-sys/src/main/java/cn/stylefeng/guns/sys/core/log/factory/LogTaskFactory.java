@@ -22,8 +22,8 @@ import cn.stylefeng.guns.sys.modular.system.entity.LoginLog;
 import cn.stylefeng.guns.sys.modular.system.entity.OperationLog;
 import cn.stylefeng.guns.sys.modular.system.mapper.LoginLogMapper;
 import cn.stylefeng.guns.sys.modular.system.mapper.OperationLogMapper;
-import cn.stylefeng.roses.core.util.SpringContextHolder;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

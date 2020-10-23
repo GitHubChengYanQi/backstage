@@ -1,0 +1,10 @@
+# AutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cn.atsoft.dasheng.core.config.AopAutoConfiguration,\
+cn.atsoft.dasheng.core.config.RedisAutoConfiguration,\
+cn.atsoft.dasheng.core.config.FastjsonAutoConfiguration,\
+cn.atsoft.dasheng.core.config.MybatisDataSourceAutoConfiguration,\
+cn.atsoft.dasheng.core.config.PropertiesAutoConfiguration,\
+cn.atsoft.dasheng.core.config.UtilAutoConfiguration,\
+cn.atsoft.dasheng.core.config.DbInitializerAutoConfiguration,\
+cn.atsoft.dasheng.core.config.MybatisPluginAutoConfiguration

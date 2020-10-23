@@ -6,7 +6,7 @@ import cn.stylefeng.guns.base.i18n.entity.Translation;
 import cn.stylefeng.guns.base.i18n.enums.DefaultDicts;
 import cn.stylefeng.guns.base.i18n.enums.TranslationEnum;
 import cn.stylefeng.guns.base.i18n.service.TranslationService;
-import cn.stylefeng.roses.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

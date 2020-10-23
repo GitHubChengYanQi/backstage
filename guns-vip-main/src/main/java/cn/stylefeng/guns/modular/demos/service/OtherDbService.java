@@ -4,7 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.stylefeng.guns.sys.modular.system.entity.User;
 import cn.stylefeng.guns.sys.modular.system.mapper.UserMapper;
 import cn.stylefeng.guns.sys.modular.system.service.UserService;
-import cn.stylefeng.roses.core.mutidatasource.annotion.DataSource;
+import cn.atsoft.dasheng.core.mutidatasource.annotion.DataSource;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

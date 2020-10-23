@@ -1,8 +1,8 @@
 package cn.stylefeng.guns.gen.modular.model.params;
 
 import cn.stylefeng.guns.gen.modular.model.FieldConfig;
-import cn.stylefeng.roses.core.util.ToolUtil;
-import cn.stylefeng.roses.kernel.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;

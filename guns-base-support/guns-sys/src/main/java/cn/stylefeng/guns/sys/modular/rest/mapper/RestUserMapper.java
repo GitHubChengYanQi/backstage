@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.sys.modular.rest.mapper;
 
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
-import cn.stylefeng.roses.core.datascope.DataScope;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;

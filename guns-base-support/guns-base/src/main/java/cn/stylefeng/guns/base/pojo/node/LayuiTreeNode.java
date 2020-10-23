@@ -1,7 +1,7 @@
 package cn.stylefeng.guns.base.pojo.node;
 
-import cn.stylefeng.roses.core.util.ToolUtil;
-import cn.stylefeng.roses.kernel.model.tree.Tree;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.tree.Tree;
 import lombok.Data;
 
 import java.util.ArrayList;

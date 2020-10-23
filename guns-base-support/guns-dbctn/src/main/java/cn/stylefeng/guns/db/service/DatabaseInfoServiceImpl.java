@@ -10,7 +10,7 @@ import cn.stylefeng.guns.base.db.model.params.DatabaseInfoParam;
 import cn.stylefeng.guns.base.db.model.result.DatabaseInfoResult;
 import cn.stylefeng.guns.base.db.service.DatabaseInfoService;
 import cn.stylefeng.guns.base.tenant.consts.TenantConstants;
-import cn.stylefeng.roses.core.util.ToolUtil;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
