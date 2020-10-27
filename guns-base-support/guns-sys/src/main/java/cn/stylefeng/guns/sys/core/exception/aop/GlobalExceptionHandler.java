@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/5 11:50 下午
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MissingServletRequestParameterException e) {
         log.warn("Missing Request Parameter", e);
@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 10:18 上午
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MethodArgumentTypeMismatchException e) {
         log.warn("Method Argument Type Mismatch", e);
@@ -96,7 +96,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 10:19 上午
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(MethodArgumentNotValidException e) {
         log.warn("Method Argument Not Valid", e);
@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 9:49 上午
      */
     @ExceptionHandler(BindException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(BindException e) {
         log.warn("Bind Exception", e);
@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/8 12:20
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(ConstraintViolationException e) {
         log.warn("Constraint Violation", e);
@@ -147,7 +147,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 9:49 上午
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData handleError(HttpMessageNotReadableException e) {
         log.warn("HttpMessageNotReadableException ", e);
@@ -188,7 +188,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 11:14 上午
      */
     @ExceptionHandler(InvalidKaptchaException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData credentials(InvalidKaptchaException e) {
         String username = getRequest().getParameter("username");

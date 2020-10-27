@@ -15,6 +15,7 @@
  */
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import cn.stylefeng.guns.base.auth.context.LoginContextHolder;
 import cn.stylefeng.guns.base.consts.ConstantsContext;
 import cn.stylefeng.guns.base.log.BussinessLog;
@@ -36,6 +37,7 @@ import cn.atsoft.dasheng.model.exception.RequestEmptyException;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -260,6 +262,15 @@ public class RestUserMgrController extends BaseController {
         this.restUserService.assertAuth(userId);
         this.restUserService.setRoles(userId, roleIds);
         return SUCCESS_TIP;
+    }
+    @RequestMapping("/getMyInfo")
+    public ResponseData getMyInfo(){
+        Map<String, Object> userIndexInfo = restUserService.getUserIndexInfo();
+        if (userIndexInfo == null) {
+
+            return new ErrorResponseData("用户信息不存在");
+        }
+        return new SuccessResponseData(userIndexInfo);
     }
 
     /**

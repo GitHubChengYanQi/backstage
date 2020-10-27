@@ -11,6 +11,7 @@ import cn.stylefeng.guns.sys.core.constant.Const;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
+import cn.stylefeng.guns.sys.core.util.DefaultImages;
 import cn.stylefeng.guns.sys.core.util.SaltUtil;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUserPos;
@@ -291,6 +292,33 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 //        LoginUser shiroUser = userAuthService.shiroUser(currentUser);
 //        LoginUser lastUser = LoginContextHolder.getContext().getUser();
 //        BeanUtil.copyProperties(shiroUser, lCastUser);
+    }
+
+    /**
+     * 获取用户首页信息
+     *
+     * @author fengshuonan
+     * @Date 2019/10/17 16:18
+     */
+    public Map<String, Object> getUserIndexInfo() {
+
+        //获取当前用户角色列表
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        List<Long> roleList = user.getRoleList();
+
+        //用户没有角色无法显示首页信息
+        if (roleList == null || roleList.size() == 0) {
+            return null;
+        }
+
+        List<Map<String, Object>> menus = this.getUserMenuNodes(roleList);
+
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("menus", menus);
+        result.put("avatar", DefaultImages.defaultAvatarUrl());
+        result.put("name", user.getName());
+
+        return result;
     }
 
     /**

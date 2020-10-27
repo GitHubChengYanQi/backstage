@@ -31,7 +31,7 @@ public class ResponseData {
 
     public static final String DEFAULT_ERROR_MESSAGE = "网络异常";
 
-    public static final Integer DEFAULT_SUCCESS_CODE = 200;
+    public static final Integer DEFAULT_SUCCESS_CODE = 0;
 
     public static final Integer DEFAULT_ERROR_CODE = 500;
 
@@ -43,7 +43,7 @@ public class ResponseData {
     /**
      * 响应状态码
      */
-    private Integer code;
+    private Integer errCode;
 
     /**
      * 响应信息
@@ -60,7 +60,7 @@ public class ResponseData {
 
     public ResponseData(Boolean success, Integer code, String message, Object data) {
         this.success = success;
-        this.code = code;
+        this.errCode = code;
         this.message = message;
         this.data = data;
     }
