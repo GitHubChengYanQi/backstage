@@ -203,7 +203,7 @@ public class GlobalExceptionHandler {
      * @Date 2020/2/6 11:14 上午
      */
     @ExceptionHandler(ServiceException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ErrorResponseData bussiness(ServiceException e) {
         log.error("业务异常:", e);

@@ -16,10 +16,12 @@
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.atsoft.dasheng.model.response.ErrorResponseData;
+import cn.stylefeng.guns.base.auth.annotion.Permission;
 import cn.stylefeng.guns.base.auth.context.LoginContextHolder;
 import cn.stylefeng.guns.base.consts.ConstantsContext;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
 import cn.stylefeng.guns.sys.core.constant.Const;
 import cn.stylefeng.guns.sys.core.constant.dictmap.UserDict;
 import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
@@ -27,6 +29,7 @@ import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.core.util.SaltUtil;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
 import cn.stylefeng.guns.sys.modular.rest.model.UserQueryParam;
+import cn.stylefeng.guns.sys.modular.rest.model.params.UserStatus;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
 import cn.stylefeng.guns.sys.modular.system.model.UserDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.UserWrapper;
@@ -127,12 +130,12 @@ public class RestUserMgrController extends BaseController {
         if (LoginContextHolder.getContext().isAdmin()) {
             Page<Map<String, Object>> users = restUserService.selectUsers(null, userQueryParam.getName(), beginTime, endTime, userQueryParam.getDeptId());
             Page wrapped = new UserWrapper(users).wrap();
-            return LayuiPageFactory.createPageInfo(wrapped);
+            return PageFactory.createPageInfo(wrapped);
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
             Page<Map<String, Object>> users = restUserService.selectUsers(dataScope, userQueryParam.getName(), beginTime, endTime, userQueryParam.getDeptId());
             Page wrapped = new UserWrapper(users).wrap();
-            return LayuiPageFactory.createPageInfo(wrapped);
+            return PageFactory.createPageInfo(wrapped);
         }
     }
 
@@ -204,45 +207,43 @@ public class RestUserMgrController extends BaseController {
      * @author fengshuonan
      * @Date 2018/12/24 22:44
      */
-    @RequestMapping("/changeStatus")
-    public ResponseData changeStatus(@RequestParam("userId") Long userId, @RequestParam("status") String status) {
-
-        //冻结用户
-        if (status.equals("freeze")) {
-
-            if (ToolUtil.isEmpty(userId)) {
-                throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
-            }
-
-            //不能冻结超级管理员
-            if (userId.equals(Const.ADMIN_ID)) {
-                throw new ServiceException(BizExceptionEnum.CANT_FREEZE_ADMIN);
-            }
-
-            this.restUserService.assertAuth(userId);
-            this.restUserService.setStatus(userId, ManagerStatus.FREEZED.getCode());
-
-            return SUCCESS_TIP;
-
-        } else if (status.equals("unfreeze")) {
-
-            //解除冻结用户
-            if (ToolUtil.isEmpty(userId)) {
-                throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
-            }
-
-            this.restUserService.assertAuth(userId);
-            this.restUserService.setStatus(userId, ManagerStatus.OK.getCode());
-
-            return SUCCESS_TIP;
-
-        } else {
-
-            return SUCCESS_TIP;
-
+    @RequestMapping("/freeze")
+    @BussinessLog(value = "冻结用户", key = "userId", dict = UserDict.class)
+    @Permission(Const.ADMIN_NAME)
+    @ResponseBody
+    public ResponseData freeze(@RequestBody UserStatus userStatus) {
+        Long userId = userStatus.getUserId();
+        if (ToolUtil.isEmpty(userId)) {
+            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
+        //不能冻结超级管理员
+        if (userId.equals(Const.ADMIN_ID)) {
+            throw new ServiceException(BizExceptionEnum.CANT_FREEZE_ADMIN);
+        }
+        this.restUserService.assertAuth(userId);
+        this.restUserService.setStatus(userId, ManagerStatus.FREEZED.getCode());
+        return SUCCESS_TIP;
     }
 
+    /**
+     * 解除冻结用户
+     *
+     * @author fengshuonan
+     * @Date 2018/12/24 22:44
+     */
+    @RequestMapping("/unfreeze")
+    @BussinessLog(value = "解除冻结用户", key = "userId", dict = UserDict.class)
+    @Permission(Const.ADMIN_NAME)
+    @ResponseBody
+    public ResponseData unfreeze(@RequestBody UserStatus userStatus) {
+        Long userId = userStatus.getUserId();
+        if (ToolUtil.isEmpty(userId)) {
+            throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
+        }
+        this.restUserService.assertAuth(userId);
+        this.restUserService.setStatus(userId, ManagerStatus.OK.getCode());
+        return SUCCESS_TIP;
+    }
     /**
      * 分配角色
      *
