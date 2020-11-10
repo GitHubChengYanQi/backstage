@@ -1,6 +1,7 @@
 package cn.stylefeng.guns.sys.modular.rest.service;
 
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestPosition;
 import cn.stylefeng.guns.sys.modular.system.model.params.PositionParam;
 import cn.stylefeng.guns.sys.modular.system.model.result.PositionResult;
@@ -64,7 +65,7 @@ public interface RestPositionService extends IService<RestPosition> {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    LayuiPageInfo findPageBySpec(PositionParam param);
+    PageInfo findPageBySpec(PositionParam param);
 
     /**
      * 获取多选框的职位列表
@@ -72,6 +73,6 @@ public interface RestPositionService extends IService<RestPosition> {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    LayuiPageInfo listPositions(Long userId);
+    PageInfo listPositions(Long userId);
 
 }

@@ -15,6 +15,8 @@
  */
 package cn.stylefeng.guns.sys.modular.system.warpper;
 
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
+import cn.stylefeng.guns.base.pojo.node.TreeviewNode;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.atsoft.dasheng.model.enums.YesOrNotEnum;
@@ -57,4 +59,23 @@ public class MenuWrapper extends BaseControllerWrapper {
 
     }
 
+    public static void clearNull(List<CascaderNode> list) {
+        if (list == null) {
+            return;
+        } else {
+            if (list.size() == 0) {
+                return;
+            } else {
+                for (CascaderNode node : list) {
+                    if (node.getChildren() != null) {
+                        if (node.getChildren().size() == 0) {
+                            node.setChildren(null);
+                        } else {
+                            clearNull(node.getChildren());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

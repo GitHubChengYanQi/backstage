@@ -2,6 +2,8 @@ package cn.stylefeng.guns.sys.modular.rest.service.impl;
 
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestPosition;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUserPos;
 import cn.stylefeng.guns.sys.modular.rest.mapper.RestPositionMapper;
@@ -65,14 +67,14 @@ public class RestPositionServiceImpl extends ServiceImpl<RestPositionMapper, Res
     }
 
     @Override
-    public LayuiPageInfo findPageBySpec(PositionParam param) {
+    public PageInfo findPageBySpec(PositionParam param) {
         Page pageContext = getPageContext();
         IPage page = this.baseMapper.customPageList(pageContext, param);
-        return LayuiPageFactory.createPageInfo(page);
+        return PageFactory.createPageInfo(page);
     }
 
     @Override
-    public LayuiPageInfo listPositions(Long userId) {
+    public PageInfo listPositions(Long userId) {
 
         //找出所有职位
         List<Map<String, Object>> list = this.baseMapper.getAllPositionMap();
@@ -96,9 +98,9 @@ public class RestPositionServiceImpl extends ServiceImpl<RestPositionMapper, Res
             }
         }
 
-        LayuiPageInfo layuiPageInfo = new LayuiPageInfo();
-        layuiPageInfo.setData(list);
-        return layuiPageInfo;
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setData(list);
+        return pageInfo;
 
     }
 

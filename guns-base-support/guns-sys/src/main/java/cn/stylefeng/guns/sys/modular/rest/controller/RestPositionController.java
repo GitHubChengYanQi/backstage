@@ -2,6 +2,7 @@ package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.stylefeng.guns.base.enums.CommonStatus;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestPosition;
 import cn.stylefeng.guns.sys.modular.rest.service.RestPositionService;
 import cn.stylefeng.guns.sys.modular.system.model.params.PositionParam;
@@ -85,7 +86,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-06-27
      */
     @RequestMapping("/list")
-    public LayuiPageInfo list(@RequestParam(value = "condition", required = false) String condition) {
+    public PageInfo list(@RequestParam(value = "condition", required = false) String condition) {
 
         PositionParam positionParam = new PositionParam();
         if (ToolUtil.isNotEmpty(condition)) {
@@ -129,7 +130,7 @@ public class RestPositionController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/listPositions")
-    public LayuiPageInfo listlistPositionsTypes(@RequestParam(value = "userId", required = false) Long userId) {
+    public PageInfo listlistPositionsTypes(@RequestParam(value = "userId", required = false) Long userId) {
         return this.restPositionService.listPositions(userId);
     }
 

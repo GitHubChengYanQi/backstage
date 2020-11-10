@@ -28,7 +28,9 @@
     <sql id="Base_Column_List">
         menu_id AS "menuId", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
-
+    <sql id="Tree_Column_List">
+        code AS "value",code AS "id", pcode AS "parentId", name AS "label"
+    </sql>
     <select id="selectMenus" resultType="map">
         select
         <include refid="Base_Column_List"/>
@@ -342,5 +344,16 @@
             #{i}
         </foreach>
     </select>
-
+    <select id="treeviewNodes" resultType="cn.stylefeng.guns.base.pojo.node.CascaderNode">
+        select
+        <include refid="Tree_Column_List"/>
+        from sys_menu
+        where status = 'ENABLE'
+        <if test="condition != null and condition != ''">
+            and (name like '%' || #{condition} || '%' or code like '%' || #{condition} || '%')
+        </if>
+        <if test="level != null and level != ''">
+            and levels = #{level}
+        </if>
+    </select>
 </mapper>

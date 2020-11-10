@@ -1,5 +1,7 @@
 package cn.stylefeng.guns.sys.modular.rest.mapper;
 
+import cn.atsoft.dasheng.model.tree.Cascader;
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestMenu;
@@ -50,7 +52,7 @@ public interface RestMenuMapper extends BaseMapper<RestMenu> {
      * @return
      * @date 2017年2月19日 下午1:33:51
      */
-    List<ZTreeNode> menuTreeList();
+    List<CascaderNode> treeviewNodes();
 
     /**
      * 获取菜单列表树

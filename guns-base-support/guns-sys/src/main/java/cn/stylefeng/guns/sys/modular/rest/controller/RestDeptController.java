@@ -18,17 +18,17 @@ package cn.stylefeng.guns.sys.modular.rest.controller;
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.core.constant.dictmap.DeptDict;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDept;
-import cn.stylefeng.guns.sys.modular.rest.factory.DeptFactory;
-import cn.stylefeng.guns.sys.modular.rest.model.DeptTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.service.RestDeptService;
 import cn.stylefeng.guns.sys.modular.system.model.DeptDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.DeptWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,15 +81,12 @@ public class RestDeptController extends BaseController {
      * @Date 2018/12/23 4:57 PM
      */
     @RequestMapping(value = "/list")
-    public Object list(@RequestParam(value = "condition", required = false) String condition,
-                       @RequestParam(value = "deptId", required = false) Long deptId) {
-        List<Map<String, Object>> list = this.restDeptService.list(condition, deptId);
-        List<Map<String, Object>> wrap = new DeptWrapper(list).wrap();
+    public PageInfo list(@RequestParam(value = "condition", required = false) String condition,
+                         @RequestParam(value = "deptId", required = false) Long deptId) {
+        Page<Map<String, Object>> list = this.restDeptService.list(condition, deptId);
+        Page<Map<String, Object>> wrap = new DeptWrapper(list).wrap();
 
-        //创建部门树
-        List<DeptTreeNode> deptTreeNodes = DeptFactory.buildTreeNodes(wrap);
-
-        return new SuccessResponseData(deptTreeNodes);
+        return PageFactory.createPageInfo(wrap);
     }
 
     /**
@@ -122,9 +119,6 @@ public class RestDeptController extends BaseController {
 
     /**
      * 删除部门
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 4:57 PM
      */
     @BussinessLog(value = "删除部门", key = "deptId", dict = DeptDict.class)
     @RequestMapping(value = "/delete")

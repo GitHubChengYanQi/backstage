@@ -2,11 +2,13 @@ package cn.stylefeng.guns.sys.modular.rest.service;
 
 import cn.stylefeng.guns.base.pojo.node.TreeviewNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
+import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDept;
 import cn.stylefeng.guns.sys.modular.rest.mapper.RestDeptMapper;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,9 +101,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
 
     /**
      * 获取ztree的节点列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 5:16 PM
+
      */
     public List<TreeviewNode> treeviewNodes() {
         return this.baseMapper.treeviewNodes();
@@ -109,12 +109,10 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
 
     /**
      * 获取所有部门列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 5:16 PM
      */
-    public List<Map<String, Object>> list(String condition, Long deptId) {
-        return this.baseMapper.listNotPage(condition, deptId);
+    public Page<Map<String, Object>> list(String condition, Long deptId) {
+        Page page = LayuiPageFactory.defaultPage();
+        return this.baseMapper.list(page, condition, deptId);
     }
 
     /**

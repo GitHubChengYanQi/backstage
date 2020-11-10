@@ -1,7 +1,9 @@
 package cn.stylefeng.guns.sys.modular.rest.service;
 
+import cn.atsoft.dasheng.model.tree.Cascader;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
@@ -210,8 +212,8 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
      * @return
      * @date 2017年2月19日 下午1:33:51
      */
-    public List<ZTreeNode> menuTreeList() {
-        return this.baseMapper.menuTreeList();
+    public List<CascaderNode> menuTreeList() {
+        return this.baseMapper.treeviewNodes();
     }
 
     /**

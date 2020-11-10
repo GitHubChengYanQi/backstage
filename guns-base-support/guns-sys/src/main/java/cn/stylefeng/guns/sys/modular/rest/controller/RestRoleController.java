@@ -1,25 +1,10 @@
-/**
- * Copyright 2018-2020 stylefeng & fengshuonan (https://gitee.com/stylefeng)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
-import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
-import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.core.constant.dictmap.DeleteDict;
 import cn.stylefeng.guns.sys.core.constant.dictmap.RoleDict;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
@@ -45,9 +30,6 @@ import java.util.Map;
 
 /**
  * 角色控制器
- *
- * @author fengshuonan
- * @Date 2017年2月12日21:59:14
  */
 @RestController
 @RequestMapping("/rest/role")
@@ -64,22 +46,16 @@ public class RestRoleController extends BaseController {
 
     /**
      * 获取角色列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/list")
-    public LayuiPageInfo list(@RequestParam(value = "roleName", required = false) String roleName) {
+    public PageInfo list(@RequestParam(value = "roleName", required = false) String roleName) {
         Page<Map<String, Object>> roles = this.restRoleService.selectRoles(roleName);
         Page<Map<String, Object>> wrap = new RoleWrapper(roles).wrap();
-        return LayuiPageFactory.createPageInfo(wrap);
+        return PageFactory.createPageInfo(wrap);
     }
 
     /**
      * 角色新增
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/add")
     @BussinessLog(value = "添加角色", key = "name", dict = RoleDict.class)
@@ -90,9 +66,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 角色修改
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/edit")
     @BussinessLog(value = "修改角色", key = "name", dict = RoleDict.class)
@@ -103,9 +76,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 删除角色
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/remove")
     @BussinessLog(value = "删除角色", key = "roleId", dict = DeleteDict.class)
@@ -116,9 +86,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 查看角色
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/view/{roleId}")
     public ResponseData view(@PathVariable Long roleId) {
@@ -148,9 +115,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 配置权限
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping("/setAuthority")
     @BussinessLog(value = "配置权限", key = "roleId,ids", dict = RoleDict.class)
@@ -164,9 +128,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 获取角色列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/roleTreeList")
     public List<ZTreeNode> roleTreeList() {
@@ -177,9 +138,6 @@ public class RestRoleController extends BaseController {
 
     /**
      * 获取角色列表，通过用户id
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 6:31 PM
      */
     @RequestMapping(value = "/roleTreeListByUserId/{userId}")
     public List<ZTreeNode> roleTreeListByUserId(@PathVariable Long userId) {
