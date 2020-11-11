@@ -13,6 +13,9 @@ public interface Cascader {
      */
     String getNodeParentId();
 
+    List getNodeParentIds();
+
+    void setNodeParentIds(List parentIds);
     /**
      * 设置children
      */

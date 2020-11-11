@@ -16,6 +16,7 @@
 package cn.atsoft.dasheng.core.treebuild;
 
 import cn.atsoft.dasheng.core.treebuild.abst.AbstractTreeBuildFactory;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.tree.Cascader;
 import cn.atsoft.dasheng.model.tree.Tree;
 import lombok.Data;
@@ -72,8 +73,15 @@ public class DefaultCascaderBuildFactory<T extends Cascader> extends AbstractTre
      */
     private List<T> getSubChildsLevelOne(List<T> list, T node) {
         List<T> nodeList = new ArrayList<>();
+
         for (T nodeItem : list) {
+            List<String> parentNodeLists = new ArrayList<>();
             if (nodeItem.getNodeParentId().equals(node.getNodeId())) {
+                if (ToolUtil.isNotEmpty(node.getNodeParentIds())) {
+                    parentNodeLists.addAll(node.getNodeParentIds());
+                }
+                parentNodeLists.add(nodeItem.getNodeParentId());
+                nodeItem.setNodeParentIds(parentNodeLists);
                 nodeList.add(nodeItem);
             }
         }
@@ -90,7 +98,10 @@ public class DefaultCascaderBuildFactory<T extends Cascader> extends AbstractTre
 
     @Override
     protected List<T> executeBuilding(List<T> nodes) {
+//        List<String> parentNodeLists = new ArrayList<>();
         for (T treeNode : nodes) {
+//            parentNodeLists.add("0")
+//            treeNode.setNodeParentIds();
             this.buildChildNodes(nodes, treeNode, new ArrayList<>());
         }
         return nodes;

@@ -21,6 +21,11 @@ public class CascaderNode implements Cascader {
     private String parentId;
 
     /**
+     * 父级id数组
+     */
+    private List<String> parentIds;
+
+    /**
      * 节点名称
      */
     private String label;
@@ -38,6 +43,16 @@ public class CascaderNode implements Cascader {
     @Override
     public String getNodeParentId() {
         return parentId;
+    }
+
+    @Override
+    public List<String> getNodeParentIds() {
+        return parentIds;
+    }
+
+    @Override
+    public void setNodeParentIds(List parentIds) {
+        this.parentIds = parentIds;
     }
 
     @Override

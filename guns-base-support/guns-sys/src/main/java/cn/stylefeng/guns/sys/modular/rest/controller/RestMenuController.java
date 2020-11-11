@@ -37,6 +37,7 @@ import cn.stylefeng.guns.sys.modular.rest.model.MenuQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.model.MenuTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.service.RestMenuService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
+import cn.stylefeng.guns.sys.modular.system.factory.CascaderFactory;
 import cn.stylefeng.guns.sys.modular.system.model.MenuDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.DeptTreeWrapper;
 import cn.stylefeng.guns.sys.modular.system.warpper.MenuWrapper;
@@ -209,9 +210,10 @@ public class RestMenuController extends BaseController {
 
         List<CascaderNode> roleTreeList = this.restMenuService.menuTreeList();
 
+        roleTreeList.add(CascaderFactory.createRoot());
         //构建树
         DefaultCascaderBuildFactory<CascaderNode> factory = new DefaultCascaderBuildFactory<>();
-        factory.setRootParentId("0");
+        factory.setRootParentId("-1");
         List<CascaderNode> results = factory.doTreeBuild(roleTreeList);
 
         //把子节点为空的设为null
