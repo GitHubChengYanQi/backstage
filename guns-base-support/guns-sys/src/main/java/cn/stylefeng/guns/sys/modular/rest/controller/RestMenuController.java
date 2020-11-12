@@ -213,7 +213,7 @@ public class RestMenuController extends BaseController {
         roleTreeList.add(CascaderFactory.createRoot());
         //构建树
         DefaultCascaderBuildFactory<CascaderNode> factory = new DefaultCascaderBuildFactory<>();
-        factory.setRootParentId("-1");
+        factory.setRootParentId("0");
         List<CascaderNode> results = factory.doTreeBuild(roleTreeList);
 
         //把子节点为空的设为null
@@ -225,22 +225,21 @@ public class RestMenuController extends BaseController {
     /**
      * 获取菜单列表(选择父级菜单用)
      */
-//    @RequestMapping(value = "/selectMenuTreeList")
-//    public List<ZTreeNode> selectMenuTreeList() {
-//        List<ZTreeNode> roleTreeList = this.restMenuService.menuTreeList();
-//        roleTreeList.add(ZTreeNode.createParent());
-//        return roleTreeList;
-//
-//        //构建树
-//        DefaultTreeBuildFactory<TreeviewNode> factory = new DefaultTreeBuildFactory<>();
-//        factory.setRootParentId("0");
-//        List<TreeviewNode> results = factory.doTreeBuild(treeviewNodes);
-//
-//        //把子节点为空的设为null
-//        DeptTreeWrapper.clearNull(results);
-//
-//        return results;
-//    }
+    @RequestMapping(value = "/selectMenuTreeList")
+    public ResponseData selectMenuTreeList() {
+        List<CascaderNode> roleTreeList = this.restMenuService.menuTreeList();
+
+        roleTreeList.add(CascaderFactory.createRoot());
+        //构建树
+        DefaultCascaderBuildFactory<CascaderNode> factory = new DefaultCascaderBuildFactory<>();
+        factory.setRootParentId("-1");
+        List<CascaderNode> results = factory.doTreeBuild(roleTreeList);
+
+        //把子节点为空的设为null
+        MenuWrapper.clearNull(results);
+
+        return ResponseData.success(results);
+    }
 
     /**
      * 获取角色的菜单列表

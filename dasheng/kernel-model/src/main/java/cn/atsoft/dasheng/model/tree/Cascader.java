@@ -8,6 +8,8 @@ public interface Cascader {
      */
     String getNodeId();
 
+    String getValue();
+
     /**
      * 获取节点父id
      */
