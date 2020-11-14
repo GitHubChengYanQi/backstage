@@ -2,6 +2,7 @@ package cn.stylefeng.guns.sys.modular.rest.mapper;
 
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDict;
+import cn.stylefeng.guns.sys.modular.system.entity.Dict;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,4 +27,6 @@ public interface RestDictMapper extends BaseMapper<RestDict> {
      * where parentIds like ''
      */
     List<RestDict> likeParentIds(@Param("dictId") Long dictId);
+
+    List<RestDict> radio(@Param("dictTypeId") Long dictTypeId);
 }

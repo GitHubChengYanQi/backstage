@@ -66,4 +66,12 @@
         </if>
     </select>
 
+    <select id="radio" resultType="cn.stylefeng.guns.base.pojo.node.RadioNode">
+        select
+        code AS "value",
+        name AS "label"
+        from sys_dict
+        where dict_type_id = #{dictTypeId}
+    </select>
+
 </mapper>

@@ -254,6 +254,18 @@ public class RestDictService extends ServiceImpl<RestDictMapper, RestDict> {
 
     }
 
+    public List<RestDict> radioDicts(Long dictTypeId) {
+
+        List<RestDict> list = this.baseMapper.radio(dictTypeId);
+
+        if (list == null) {
+            return new ArrayList<>();
+        } else {
+            return list;
+        }
+
+    }
+
     /**
      * 查询字典列表，通过字典类型code
      *
@@ -269,6 +281,14 @@ public class RestDictService extends ServiceImpl<RestDictMapper, RestDict> {
         return listDicts(one.getDictTypeId());
     }
 
+    public List<RestDict> radioDictsByCode(String dictTypeCode) {
+
+        QueryWrapper<RestDictType> wrapper = new QueryWrapper<>();
+        wrapper.eq("code", dictTypeCode);
+
+        RestDictType one = this.restDictTypeService.getOne(wrapper);
+        return radioDicts(one.getDictTypeId());
+    }
     /**
      * 查询字典列表，通过字典类型code
      *

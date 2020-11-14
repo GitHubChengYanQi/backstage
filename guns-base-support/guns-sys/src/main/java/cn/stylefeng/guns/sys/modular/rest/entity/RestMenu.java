@@ -32,6 +32,9 @@ public class RestMenu implements Serializable {
     @TableField("code")
     private String code;
 
+    @TableField("pid")
+    private Long pid;
+
     /**
      * 菜单父编号
      */
@@ -43,6 +46,9 @@ public class RestMenu implements Serializable {
      */
     @TableField("pcodes")
     private String pcodes;
+
+    @TableField("pids")
+    private String pids;
 
     /**
      * 菜单名称
@@ -133,5 +139,12 @@ public class RestMenu implements Serializable {
      */
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
+
+    public String getPids() {
+        if (pids != null) {
+            return pids;
+        }
+        return "0";
+    }
 
 }

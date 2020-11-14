@@ -76,7 +76,7 @@ public class DefaultCascaderBuildFactory<T extends Cascader> extends AbstractTre
 
         for (T nodeItem : list) {
             List<String> parentNodeLists = new ArrayList<>();
-            if (nodeItem.getNodeParentId().equals(node.getValue())) {
+            if (nodeItem.getNodeParentId().equals(node.getNodeId())) {
                 if (ToolUtil.isNotEmpty(node.getNodeParentIds())) {
                     parentNodeLists.addAll(node.getNodeParentIds());
                 }

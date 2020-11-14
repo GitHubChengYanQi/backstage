@@ -24,6 +24,8 @@ public class MenuModel {
      */
     private String code;
 
+    private Long pid;
+
     /**
      * 菜单父编号
      */
@@ -34,6 +36,7 @@ public class MenuModel {
      */
     private String pcodes;
 
+    private String pids;
     /**
      * 菜单名称
      */

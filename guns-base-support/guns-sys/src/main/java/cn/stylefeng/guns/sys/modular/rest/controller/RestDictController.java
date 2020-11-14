@@ -5,15 +5,13 @@ import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDict;
 import cn.stylefeng.guns.sys.modular.rest.service.RestDictService;
 import cn.stylefeng.guns.sys.modular.system.model.params.DictParam;
+import cn.stylefeng.guns.sys.modular.system.model.params.DictTypeParam;
 import cn.stylefeng.guns.sys.modular.system.model.result.DictResult;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -109,8 +107,16 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/listDictsByCode")
-    public ResponseData listDictsByCode(@RequestParam("dictTypeCode") String dictTypeCode) {
+    public ResponseData listDictsByCode(@RequestBody DictTypeParam dictTypeParam) {
+        String dictTypeCode = dictTypeParam.getDictTypeCode();
         List<RestDict> dicts = this.restDictService.listDictsByCode(dictTypeCode);
+        return new SuccessResponseData(dicts);
+    }
+
+    @RequestMapping("/radioDictsByCode")
+    public ResponseData radioDictsByCode(@RequestBody DictTypeParam dictTypeParam) {
+        String dictTypeCode = dictTypeParam.getDictTypeCode();
+        List<RestDict> dicts = this.restDictService.radioDictsByCode(dictTypeCode);
         return new SuccessResponseData(dicts);
     }
 

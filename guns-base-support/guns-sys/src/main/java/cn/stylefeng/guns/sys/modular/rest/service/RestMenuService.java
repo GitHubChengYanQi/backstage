@@ -294,11 +294,14 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
             resultMenu.setPcode("0");
             resultMenu.setPcodes("[0],");
             resultMenu.setLevels(1);
+            resultMenu.setPid(0L);
+            resultMenu.setPids("0,");
         } else {
             Long pid = menuParam.getPid();
             RestMenu pMenu = this.getById(pid);
             Integer pLevels = pMenu.getLevels();
             resultMenu.setPcode(pMenu.getCode());
+            resultMenu.setPid(pMenu.getMenuId());
 
             //如果编号和父编号一致会导致无限递归
             if (menuParam.getCode().equals(menuParam.getPcode())) {
@@ -306,7 +309,8 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
             }
 
             resultMenu.setLevels(pLevels + 1);
-            resultMenu.setPcodes(pMenu.getPcodes() + "[" + pMenu.getCode() + "],");
+            resultMenu.setPcodes(pMenu.getPcodes() + "[" + pMenu.getMenuId() + "],");
+            resultMenu.setPids(pMenu.getPids() + pMenu.getMenuId() + ",");
         }
 
         return resultMenu;

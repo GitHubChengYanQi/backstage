@@ -329,6 +329,12 @@
                 <spring.active>dev</spring.active>
             </properties>
         </profile>
+        <profile>
+            <id>home</id>
+            <properties>
+                <spring.active>home</spring.active>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
