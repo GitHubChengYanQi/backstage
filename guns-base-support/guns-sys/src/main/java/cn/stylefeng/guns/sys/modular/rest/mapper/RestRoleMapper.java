@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.sys.modular.rest.mapper;
 
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -42,7 +43,7 @@ public interface RestRoleMapper extends BaseMapper<RestRole> {
      * @return
      * @date 2017年2月18日 上午10:32:04
      */
-    List<ZTreeNode> roleTreeList();
+    List<CascaderNode> roleTreeList();
 
     /**
      * 获取角色列表树

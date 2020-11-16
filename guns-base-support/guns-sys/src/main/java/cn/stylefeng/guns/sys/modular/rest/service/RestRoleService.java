@@ -2,6 +2,7 @@ package cn.stylefeng.guns.sys.modular.rest.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.sys.core.constant.Const;
@@ -18,6 +19,7 @@ import cn.atsoft.dasheng.model.exception.RequestEmptyException;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +54,7 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
      * @Date 2018/12/23 6:40 PM
      */
     @Transactional(rollbackFor = Exception.class)
-    public void addRole(RestRole role) {
+    public void addRole(RoleDto role) {
 
         if (ToolUtil.isOneEmpty(role, role.getName(), role.getPid(), role.getDescription())) {
             throw new RequestEmptyException();
@@ -60,7 +62,9 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
 
         role.setRoleId(null);
 
-        this.save(role);
+        RestRole restRole = this.roleSetPids(role);
+
+        this.save(restRole);
     }
 
     /**
@@ -78,7 +82,10 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
 
         RestRole old = this.getById(roleDto.getRoleId());
         BeanUtil.copyProperties(roleDto, old);
-        this.updateById(old);
+
+        RestRole restRole = this.roleSetPids(roleDto);
+
+        this.updateById(restRole);
     }
 
     /**
@@ -162,7 +169,7 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
      * @return
      * @date 2017年2月18日 上午10:32:04
      */
-    public List<ZTreeNode> roleTreeList() {
+    public List<CascaderNode> roleTreeList() {
         return this.baseMapper.roleTreeList();
     }
 
@@ -174,6 +181,26 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
      */
     public List<ZTreeNode> roleTreeListByRoleId(Long[] roleId) {
         return this.baseMapper.roleTreeListByRoleId(roleId);
+    }
+
+    public RestRole roleSetPids(RoleDto roleDto) {
+        RestRole restRole = new RestRole();
+        BeanUtils.copyProperties(roleDto, restRole);
+
+        if (ToolUtil.isEmpty(roleDto.getPid()) || roleDto.getPid().equals(0L)) {
+            restRole.setPid(0L);
+            restRole.setPids("0,");
+        } else {
+            Long pid = roleDto.getPid();
+            RestRole pRole = this.getById(pid);
+
+            if (roleDto.getPid().equals(roleDto.getRoleId())) {
+                throw new ServiceException(500, "上级角色选择错误");
+            }
+            restRole.setPid(pRole.getRoleId());
+            restRole.setPids(pRole.getPids() + pRole.getRoleId() + ",");
+        }
+        return restRole;
     }
 
 }

@@ -208,13 +208,13 @@ public class RestMenuController extends BaseController {
     @RequestMapping(value = "/menuTreeList")
     public ResponseData menuTreeList() {
 
-        List<CascaderNode> roleTreeList = this.restMenuService.menuTreeList();
+        List<CascaderNode> menuTreeList = this.restMenuService.menuTreeList();
 
-        roleTreeList.add(CascaderFactory.createRoot());
+        menuTreeList.add(CascaderFactory.createRoot());
         //构建树
         DefaultCascaderBuildFactory<CascaderNode> factory = new DefaultCascaderBuildFactory<>();
         factory.setRootParentId("0");
-        List<CascaderNode> results = factory.doTreeBuild(roleTreeList);
+        List<CascaderNode> results = factory.doTreeBuild(menuTreeList);
 
         //把子节点为空的设为null
         MenuWrapper.clearNull(results);

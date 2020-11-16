@@ -1,7 +1,9 @@
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
+import cn.atsoft.dasheng.core.treebuild.DefaultCascaderBuildFactory;
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.PageFactory;
 import cn.stylefeng.guns.base.pojo.page.PageInfo;
@@ -11,9 +13,11 @@ import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestRole;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
+import cn.stylefeng.guns.sys.modular.rest.model.params.RoleParam;
 import cn.stylefeng.guns.sys.modular.rest.service.RestMenuService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestRoleService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
+import cn.stylefeng.guns.sys.modular.system.factory.CascaderFactory;
 import cn.stylefeng.guns.sys.modular.system.model.RoleDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.RoleWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -59,7 +63,7 @@ public class RestRoleController extends BaseController {
      */
     @RequestMapping(value = "/add")
     @BussinessLog(value = "添加角色", key = "name", dict = RoleDict.class)
-    public ResponseData add(@RequestBody RestRole restRole) {
+    public ResponseData add(@RequestBody RoleDto restRole) {
         this.restRoleService.addRole(restRole);
         return SUCCESS_TIP;
     }
@@ -87,8 +91,9 @@ public class RestRoleController extends BaseController {
     /**
      * 查看角色
      */
-    @RequestMapping(value = "/view/{roleId}")
-    public ResponseData view(@PathVariable Long roleId) {
+    @RequestMapping(value = "/view")
+    public ResponseData view(@RequestParam Long roleId) {
+//        Long roleId = roleParam.getRoleId();
         if (ToolUtil.isEmpty(roleId)) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
@@ -130,33 +135,39 @@ public class RestRoleController extends BaseController {
      * 获取角色列表
      */
     @RequestMapping(value = "/roleTreeList")
-    public List<ZTreeNode> roleTreeList() {
-        List<ZTreeNode> roleTreeList = this.restRoleService.roleTreeList();
-        roleTreeList.add(ZTreeNode.createParent());
-        return roleTreeList;
+    public ResponseData roleTreeList() {
+        List<CascaderNode> roleTreeList = this.restRoleService.roleTreeList();
+        roleTreeList.add(CascaderFactory.createRoot());
+
+        //构建树
+        DefaultCascaderBuildFactory<CascaderNode> factory = new DefaultCascaderBuildFactory<>();
+        factory.setRootParentId("-1");
+        List<CascaderNode> results = factory.doTreeBuild(roleTreeList);
+
+        return ResponseData.success(results);
     }
 
     /**
      * 获取角色列表，通过用户id
      */
-    @RequestMapping(value = "/roleTreeListByUserId/{userId}")
-    public List<ZTreeNode> roleTreeListByUserId(@PathVariable Long userId) {
-        RestUser theUser = this.restUserService.getById(userId);
-        String roleId = theUser.getRoleId();
-        if (ToolUtil.isEmpty(roleId)) {
-            return this.restRoleService.roleTreeList();
-        } else {
-
-            String[] strArray = roleId.split(",");
-
-            //转化成Long[]
-            Long[] longArray = new Long[strArray.length];
-            for (int i = 0; i < strArray.length; i++) {
-                longArray[i] = Long.valueOf(strArray[i]);
-            }
-
-            return this.restRoleService.roleTreeListByRoleId(longArray);
-        }
-    }
+//    @RequestMapping(value = "/roleTreeListByUserId/{userId}")
+//    public List<ZTreeNode> roleTreeListByUserId(@PathVariable Long userId) {
+//        RestUser theUser = this.restUserService.getById(userId);
+//        String roleId = theUser.getRoleId();
+//        if (ToolUtil.isEmpty(roleId)) {
+//            return this.restRoleService.roleTreeList();
+//        } else {
+//
+//            String[] strArray = roleId.split(",");
+//
+//            //转化成Long[]
+//            Long[] longArray = new Long[strArray.length];
+//            for (int i = 0; i < strArray.length; i++) {
+//                longArray[i] = Long.valueOf(strArray[i]);
+//            }
+//
+//            return this.restRoleService.roleTreeListByRoleId(longArray);
+//        }
+//    }
 
 }

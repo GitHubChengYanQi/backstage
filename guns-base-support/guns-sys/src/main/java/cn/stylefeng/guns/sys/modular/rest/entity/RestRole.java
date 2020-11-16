@@ -30,6 +30,8 @@ public class RestRole implements Serializable {
     @TableField("pid")
     private Long pid;
 
+    @TableField("pids")
+    private String pids;
     /**
      * 角色名称
      */
@@ -93,6 +95,14 @@ public class RestRole implements Serializable {
 
     public void setPid(Long pid) {
         this.pid = pid;
+    }
+
+    public String getPids() {
+        return pids;
+    }
+
+    public void setPids(String pid) {
+        this.pids = pid;
     }
 
     public String getName() {
