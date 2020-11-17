@@ -5,10 +5,12 @@ import cn.stylefeng.guns.base.enums.CommonStatus;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDict;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDictType;
 import cn.stylefeng.guns.sys.modular.rest.mapper.RestDictMapper;
+import cn.stylefeng.guns.sys.modular.system.entity.Dict;
 import cn.stylefeng.guns.sys.modular.system.model.params.DictParam;
 import cn.stylefeng.guns.sys.modular.system.model.result.DictResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -18,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
@@ -134,11 +137,8 @@ public class RestDictService extends ServiceImpl<RestDictMapper, RestDict> {
 
     /**
      * 查询分页数据，Specification模式
-     *
-     * @author stylefeng
-     * @Date 2019-03-13
      */
-    public LayuiPageInfo findPageBySpec(DictParam param) {
+    public PageInfo findPageBySpec(@RequestBody(required = false) DictParam param) {
         QueryWrapper<RestDict> objectQueryWrapper = new QueryWrapper<>();
         objectQueryWrapper.eq("dict_type_id", param.getDictTypeId());
 
@@ -150,14 +150,16 @@ public class RestDictService extends ServiceImpl<RestDictMapper, RestDict> {
 
         List<RestDict> list = this.list(objectQueryWrapper);
 
-        //创建根节点
-        RestDict dict = new RestDict();
-        dict.setName("根节点");
-        dict.setDictId(0L);
-        dict.setParentId(-999L);
-        list.add(dict);
+        //去除根节点为0的
+        if (list.size() > 0) {
+            for (RestDict dict : list) {
+                if (dict.getParentId() != null && dict.getParentId().equals(0L)) {
+                    dict.setParentId(null);
+                }
+            }
+        }
 
-        LayuiPageInfo result = new LayuiPageInfo();
+        PageInfo result = new PageInfo();
         result.setData(list);
 
         return result;

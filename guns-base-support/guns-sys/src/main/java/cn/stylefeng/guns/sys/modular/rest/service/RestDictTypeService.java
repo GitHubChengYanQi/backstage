@@ -3,6 +3,8 @@ package cn.stylefeng.guns.sys.modular.rest.service;
 import cn.stylefeng.guns.base.enums.CommonStatus;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDict;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDictType;
@@ -130,7 +132,7 @@ public class RestDictTypeService extends ServiceImpl<RestDictTypeMapper, RestDic
      * @author stylefeng
      * @Date 2019-03-13
      */
-    public LayuiPageInfo findPageBySpec(DictTypeParam param) {
+    public PageInfo findPageBySpec(DictTypeParam param) {
         Page pageContext = getPageContext();
         QueryWrapper<RestDictType> objectQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(param.getCondition())) {
@@ -146,7 +148,7 @@ public class RestDictTypeService extends ServiceImpl<RestDictTypeMapper, RestDic
         pageContext.setAsc("sort");
 
         IPage page = this.page(pageContext, objectQueryWrapper);
-        return LayuiPageFactory.createPageInfo(page);
+        return PageFactory.createPageInfo(page);
     }
 
     private Serializable getKey(DictTypeParam param) {

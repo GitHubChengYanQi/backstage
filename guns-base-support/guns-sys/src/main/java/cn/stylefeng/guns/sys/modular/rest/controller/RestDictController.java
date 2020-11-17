@@ -2,6 +2,7 @@ package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDict;
 import cn.stylefeng.guns.sys.modular.rest.service.RestDictService;
 import cn.stylefeng.guns.sys.modular.system.model.params.DictParam;
@@ -84,7 +85,7 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/list")
-    public LayuiPageInfo list(@RequestBody DictParam dictParam) {
+    public PageInfo list(@RequestBody DictParam dictParam) {
         return this.restDictService.findPageBySpec(dictParam);
     }
 
