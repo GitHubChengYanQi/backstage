@@ -73,8 +73,8 @@ public class RestDictController extends BaseController {
      * @Date 2019-03-13
      */
     @RequestMapping("/detail")
-    public ResponseData detail(@RequestBody DictParam dictParam) {
-        DictResult dictResult = this.restDictService.dictDetail(dictParam.getDictId());
+    public ResponseData detail(@RequestParam Long dictId) {
+        DictResult dictResult = this.restDictService.dictDetail(dictId);
         return ResponseData.success(dictResult);
     }
 
