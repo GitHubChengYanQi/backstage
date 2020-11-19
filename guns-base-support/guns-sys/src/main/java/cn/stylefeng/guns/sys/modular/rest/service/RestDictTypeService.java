@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -169,4 +170,8 @@ public class RestDictTypeService extends ServiceImpl<RestDictTypeMapper, RestDic
         return entity;
     }
 
+    public List<Map<String, Object>> selectList(String name) {
+        // this.list(objectQueryWrapper);
+        return this.baseMapper.dictTypeSelect(name);
+    }
 }

@@ -348,7 +348,8 @@ public class RestDictService extends ServiceImpl<RestDictMapper, RestDict> {
     }
 
     private void dictSetPids(RestDict param) {
-        if (param.getParentId().equals(0L)) {
+        if (ToolUtil.isEmpty(param.getParentId()) || param.getParentId().equals(0L)) {
+            param.setParentId(0L);
             param.setParentIds("[0]");
         } else {
             //获取父级的pids

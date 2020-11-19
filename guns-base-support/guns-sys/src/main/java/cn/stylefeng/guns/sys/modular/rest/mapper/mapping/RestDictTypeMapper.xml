@@ -22,4 +22,14 @@
         dict_type_id AS "dictTypeId", code AS "code", name AS "name", description AS "description", system_flag AS "systemFlag", status AS "status", sort AS "sort", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
     </sql>
 
+    <select id="dictTypeSelect" resultType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_dict_type
+        where 1=1
+        <if test="name != null and name != ''">
+            and name like CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
 </mapper>

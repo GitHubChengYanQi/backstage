@@ -1,13 +1,17 @@
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDictType;
 import cn.stylefeng.guns.sys.modular.rest.service.RestDictTypeService;
+import cn.stylefeng.guns.sys.modular.rest.wrapper.DictTypeWrapper;
 import cn.stylefeng.guns.sys.modular.system.model.params.DictTypeParam;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.stylefeng.guns.sys.modular.system.warpper.UserWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -75,13 +80,29 @@ public class RestDictTypeController extends BaseController {
      * 查询所有字典
      */
     @RequestMapping("/listTypes")
-    public ResponseData listTypes() {
+    public ResponseData listTypes(@RequestBody(required = false) DictTypeParam dictTypeParam) {
 
         QueryWrapper<RestDictType> objectQueryWrapper = new QueryWrapper<>();
         objectQueryWrapper.select("dict_type_id", "code", "name");
 
         List<RestDictType> list = this.restDictTypeService.list(objectQueryWrapper);
         return new SuccessResponseData(list);
+    }
+
+    @RequestMapping("/select")
+    public ResponseData listSelect(@RequestBody(required = false) DictTypeParam dictTypeParam) {
+
+        // QueryWrapper<Map<String, Object>> objectQueryWrapper = new QueryWrapper<>();
+        // objectQueryWrapper.select("dict_type_id", "code", "name");
+
+        String name = "";
+        if(ToolUtil.isNotEmpty(dictTypeParam)){
+            name = dictTypeParam.getName();
+        }
+        List<Map<String, Object>> list = this.restDictTypeService.selectList(name);
+
+        List wrapped = new DictTypeWrapper(list).wrap();
+        return new SuccessResponseData(wrapped);
     }
 
 }
