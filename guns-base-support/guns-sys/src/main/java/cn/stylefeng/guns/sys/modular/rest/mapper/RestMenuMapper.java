@@ -3,6 +3,7 @@ package cn.stylefeng.guns.sys.modular.rest.mapper;
 import cn.atsoft.dasheng.model.tree.Cascader;
 import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestMenu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -32,11 +33,8 @@ public interface RestMenuMapper extends BaseMapper<RestMenu> {
 
     /**
      * 根据条件查询菜单
-     *
-     * @return
-     * @date 2017年2月12日 下午9:14:34
      */
-    List<Long> getMenuIdsByRoleId(@Param("roleId") Long roleId);
+    List<String> getMenuIdsByRoleId(@Param("roleId") Long roleId);
 
     /**
      * 获取菜单的名称
@@ -54,13 +52,15 @@ public interface RestMenuMapper extends BaseMapper<RestMenu> {
      */
     List<CascaderNode> treeviewNodes();
 
+    List<TreeNode> treeNodes();
+
     /**
      * 获取菜单列表树
      *
      * @return
      * @date 2017年2月19日 下午1:33:51
      */
-    List<ZTreeNode> menuTreeListByMenuIds(List<Long> menuIds);
+    List<TreeNode> menuTreeListByMenuIds(List<Long> menuIds);
 
     /**
      * 删除menu关联的relation

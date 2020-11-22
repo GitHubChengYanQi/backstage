@@ -8,6 +8,7 @@ import cn.stylefeng.guns.sys.modular.system.model.result.PositionResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -69,10 +70,8 @@ public interface RestPositionService extends IService<RestPosition> {
 
     /**
      * 获取多选框的职位列表
-     *
-     * @author stylefeng
-     * @Date 2019-06-27
      */
     PageInfo listPositions(Long userId);
 
+    List<Map<String, Object>> listPositions();
 }

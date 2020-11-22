@@ -31,7 +31,7 @@
         menu_id AS "menuId", code AS "code", pcode AS "pcode", pcodes AS "pcodes", name AS "name", icon AS "icon", url AS "url", sort AS "sort", levels AS "levels", menu_flag AS "menuFlag", description AS "description", status AS "status", new_page_flag AS "newPageFlag", open_flag AS "openFlag", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
     <sql id="Tree_Column_List">
-        menu_id AS "value",menu_id AS "id", pid AS "parentId", name AS "label"
+        menu_id AS "key",menu_id AS "value",menu_id AS "id", pid AS "parentId", name AS "label", name AS "title"
     </sql>
     <select id="selectMenus" resultType="map">
         select
@@ -65,7 +65,7 @@
         </if>
     </select>
 
-    <select id="getMenuIdsByRoleId" resultType="long">
+    <select id="getMenuIdsByRoleId" resultType="String">
         select menu_id from
         sys_relation where role_id = #{roleId} ORDER BY menu_id
     </select>
@@ -347,6 +347,18 @@
         </foreach>
     </select>
     <select id="treeviewNodes" resultType="cn.stylefeng.guns.base.pojo.node.CascaderNode">
+        select
+        <include refid="Tree_Column_List"/>
+        from sys_menu
+        where status = 'ENABLE'
+        <if test="condition != null and condition != ''">
+            and (name like '%' || #{condition} || '%' or code like '%' || #{condition} || '%')
+        </if>
+        <if test="level != null and level != ''">
+            and levels = #{level}
+        </if>
+    </select>
+    <select id="treeNodes" resultType="cn.stylefeng.guns.base.pojo.node.TreeNode">
         select
         <include refid="Tree_Column_List"/>
         from sys_menu

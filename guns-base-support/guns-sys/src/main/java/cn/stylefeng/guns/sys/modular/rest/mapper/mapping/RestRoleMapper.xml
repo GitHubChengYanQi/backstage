@@ -45,11 +45,17 @@
 		delete from sys_relation where role_id = #{roleId}
 	</delete>
 
+    <select id="roleTree" resultType="cn.stylefeng.guns.base.pojo.node.TreeNode">
+		select role_id AS "key", pid as "parentId",
+		name as "title" from sys_role
+	</select>
+
     <select id="roleTreeList" resultType="cn.stylefeng.guns.base.pojo.node.CascaderNode">
 		select role_id AS id,role_id AS "value", pid as "parentId",
 		name as name,name as "label", (case when (pid = 0 or pid is null) then 'true'
 		else 'false' end) as "open" from sys_role
 	</select>
+
 
     <select id="roleTreeList" resultType="cn.stylefeng.guns.base.pojo.node.ZTreeNode" databaseId="oracle">
 		select role_id AS id, pid as "pId",

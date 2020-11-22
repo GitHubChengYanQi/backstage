@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.sys.modular.rest.mapper;
 
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.TreeviewNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestDept;
@@ -23,7 +24,7 @@ public interface RestDeptMapper extends BaseMapper<RestDept> {
     /**
      * 获取ztree的节点列表
      */
-    List<ZTreeNode> tree();
+    List<TreeNode> tree();
 
     /**
      * 获取所有部门列表

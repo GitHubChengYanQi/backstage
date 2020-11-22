@@ -149,8 +149,8 @@ public class RestSystemController extends BaseController {
      * @author fengshuonan
      * @Date 2019/7/27 20:33
      */
-    @RequestMapping("/preview/{fileId}")
-    public Object preview(@PathVariable("fileId") String fileId, HttpServletResponse response) {
+    @RequestMapping("/preview")
+    public Object preview(@RequestParam String fileId, HttpServletResponse response) {
 
         byte[] decode = null;
 

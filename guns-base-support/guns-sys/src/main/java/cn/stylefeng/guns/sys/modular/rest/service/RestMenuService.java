@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.stylefeng.guns.base.pojo.node.CascaderNode;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
@@ -202,27 +203,25 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
      * @return
      * @date 2017年2月12日 下午9:14:34
      */
-    public List<Long> getMenuIdsByRoleId(Long roleId) {
+    public List<String> getMenuIdsByRoleId(Long roleId) {
         return this.baseMapper.getMenuIdsByRoleId(roleId);
     }
 
     /**
      * 获取菜单列表树
-     *
-     * @return
-     * @date 2017年2月19日 下午1:33:51
      */
     public List<CascaderNode> menuTreeList() {
         return this.baseMapper.treeviewNodes();
     }
 
+    public List<TreeNode> menuTree() {
+        return this.baseMapper.treeNodes();
+    }
+
     /**
      * 获取菜单列表树
-     *
-     * @return
-     * @date 2017年2月19日 下午1:33:51
      */
-    public List<ZTreeNode> menuTreeListByMenuIds(List<Long> menuIds) {
+    public List<TreeNode> menuTreeListByMenuIds(List<Long> menuIds) {
         return this.baseMapper.menuTreeListByMenuIds(menuIds);
     }
 

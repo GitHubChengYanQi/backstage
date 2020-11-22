@@ -1,9 +1,11 @@
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
 import cn.atsoft.dasheng.core.treebuild.DefaultCascaderBuildFactory;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.node.CascaderNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.PageFactory;
 import cn.stylefeng.guns.base.pojo.page.PageInfo;
@@ -14,6 +16,7 @@ import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestRole;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
 import cn.stylefeng.guns.sys.modular.rest.model.params.RoleParam;
+import cn.stylefeng.guns.sys.modular.rest.model.params.RoleSetParam;
 import cn.stylefeng.guns.sys.modular.rest.service.RestMenuService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestRoleService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
@@ -29,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +109,7 @@ public class RestRoleController extends BaseController {
         roleMap.put("pName", pName);
 
         //获取角色绑定的菜单
-        List<Long> menuIds = this.restMenuService.getMenuIdsByRoleId(roleId);
+        List<String> menuIds = this.restMenuService.getMenuIdsByRoleId(roleId);
         List<String> menuNames = this.restMenuService.getBaseMapper().getMenuNamesByRoleId(roleId);
         if (ToolUtil.isNotEmpty(menuIds)) {
             roleMap.put("menuIds", menuIds);
@@ -123,7 +127,9 @@ public class RestRoleController extends BaseController {
      */
     @RequestMapping("/setAuthority")
     @BussinessLog(value = "配置权限", key = "roleId,ids", dict = RoleDict.class)
-    public ResponseData setAuthority(@RequestParam("roleId") Long roleId, @RequestParam("ids") String ids) {
+    public ResponseData setAuthority(@RequestBody RoleSetParam roleSetParam) {
+        Long roleId = roleSetParam.getRoleId();
+        String ids = roleSetParam.getIds();
         if (ToolUtil.isOneEmpty(roleId)) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }
@@ -147,27 +153,34 @@ public class RestRoleController extends BaseController {
         return ResponseData.success(results);
     }
 
+    @RequestMapping(value = "/roleTree")
+    public ResponseData roleTree() {
+        List<TreeNode> roleTree = this.restRoleService.roleTree();
+        roleTree.add(TreeNode.createParent());
+
+        //构建树
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("-1");
+        List<TreeNode> results = factory.doTreeBuild(roleTree);
+
+        return ResponseData.success(results);
+    }
+
     /**
      * 获取角色列表，通过用户id
      */
-//    @RequestMapping(value = "/roleTreeListByUserId/{userId}")
-//    public List<ZTreeNode> roleTreeListByUserId(@PathVariable Long userId) {
-//        RestUser theUser = this.restUserService.getById(userId);
-//        String roleId = theUser.getRoleId();
-//        if (ToolUtil.isEmpty(roleId)) {
-//            return this.restRoleService.roleTreeList();
-//        } else {
-//
-//            String[] strArray = roleId.split(",");
-//
-//            //转化成Long[]
-//            Long[] longArray = new Long[strArray.length];
-//            for (int i = 0; i < strArray.length; i++) {
-//                longArray[i] = Long.valueOf(strArray[i]);
-//            }
-//
-//            return this.restRoleService.roleTreeListByRoleId(longArray);
-//        }
-//    }
+    @RequestMapping(value = "/roleTreeListByUserId")
+    public ResponseData roleTreeListByUserId(@RequestParam Long userId) {
+        RestUser theUser = this.restUserService.getById(userId);
+        String roleId = theUser.getRoleId();
+
+        String[] strArray = null;
+        if (ToolUtil.isNotEmpty(roleId)) {
+            strArray = roleId.split(",");
+        }
+        Map<String,String[]> result = new HashMap<>();
+        result.put("checked",strArray);
+        return ResponseData.success(result);
+    }
 
 }

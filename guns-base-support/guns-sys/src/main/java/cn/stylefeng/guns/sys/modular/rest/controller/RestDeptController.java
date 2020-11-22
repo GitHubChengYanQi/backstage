@@ -15,8 +15,12 @@
  */
 package cn.stylefeng.guns.sys.modular.rest.controller;
 
+import cn.atsoft.dasheng.core.treebuild.DefaultCascaderBuildFactory;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
+import cn.stylefeng.guns.base.pojo.node.CascaderNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.PageFactory;
 import cn.stylefeng.guns.base.pojo.page.PageInfo;
@@ -55,10 +59,14 @@ public class RestDeptController extends BaseController {
      * @Date 2018/12/23 4:56 PM
      */
     @RequestMapping(value = "/tree")
-    public List<ZTreeNode> tree() {
-        List<ZTreeNode> tree = this.restDeptService.tree();
-        tree.add(ZTreeNode.createParent());
-        return tree;
+    public ResponseData tree() {
+        List<TreeNode> tree = this.restDeptService.tree();
+        tree.add(TreeNode.createParent());
+        //构建树
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("-1");
+        List<TreeNode> results = factory.doTreeBuild(tree);
+        return ResponseData.success(results);
     }
 
     /**

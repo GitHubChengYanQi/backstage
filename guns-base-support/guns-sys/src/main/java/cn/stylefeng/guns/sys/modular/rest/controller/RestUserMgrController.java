@@ -29,6 +29,7 @@ import cn.stylefeng.guns.sys.core.exception.enums.BizExceptionEnum;
 import cn.stylefeng.guns.sys.core.util.SaltUtil;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestUser;
 import cn.stylefeng.guns.sys.modular.rest.model.UserQueryParam;
+import cn.stylefeng.guns.sys.modular.rest.model.params.UserRoleParam;
 import cn.stylefeng.guns.sys.modular.rest.model.params.UserStatus;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
 import cn.stylefeng.guns.sys.modular.system.model.UserDto;
@@ -246,13 +247,14 @@ public class RestUserMgrController extends BaseController {
     }
     /**
      * 分配角色
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:44
      */
     @RequestMapping("/setRole")
     @BussinessLog(value = "分配角色", key = "userId,roleIds", dict = UserDict.class)
-    public ResponseData setRole(@RequestParam("userId") Long userId, @RequestParam("roleIds") String roleIds) {
+    public ResponseData setRole(@RequestBody UserRoleParam userRoleParam) {
+
+        Long userId = userRoleParam.getUserId();
+        String roleIds = userRoleParam.getRoleIds();
+
         if (ToolUtil.isOneEmpty(userId, roleIds)) {
             throw new ServiceException(BizExceptionEnum.REQUEST_NULL);
         }

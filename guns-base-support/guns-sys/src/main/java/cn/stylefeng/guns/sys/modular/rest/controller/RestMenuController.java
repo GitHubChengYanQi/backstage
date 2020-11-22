@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.hutool.core.bean.BeanUtil;
 import cn.stylefeng.guns.base.log.BussinessLog;
 import cn.stylefeng.guns.base.pojo.node.CascaderNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.TreeviewNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
@@ -37,6 +38,7 @@ import cn.stylefeng.guns.sys.modular.rest.model.MenuQueryParam;
 import cn.stylefeng.guns.sys.modular.rest.model.MenuTreeNode;
 import cn.stylefeng.guns.sys.modular.rest.service.RestMenuService;
 import cn.stylefeng.guns.sys.modular.rest.service.RestUserService;
+import cn.stylefeng.guns.sys.modular.system.entity.Role;
 import cn.stylefeng.guns.sys.modular.system.factory.CascaderFactory;
 import cn.stylefeng.guns.sys.modular.system.model.MenuDto;
 import cn.stylefeng.guns.sys.modular.system.warpper.DeptTreeWrapper;
@@ -46,9 +48,11 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.javafx.collections.MappingChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +99,7 @@ public class RestMenuController extends BaseController {
      */
     @RequestMapping(value = "/list")
     public PageInfo list(@RequestBody(required = false) MenuQueryParam menuQueryParam) {
-        String menuName = "", level="";
+        String menuName = "", level = "";
         Long menuId = 0L;
         if (ToolUtil.isNotEmpty(menuQueryParam)) {
             menuName = menuQueryParam.getMenuName();
@@ -200,10 +204,7 @@ public class RestMenuController extends BaseController {
     }
 
     /**
-     * 获取菜单列表(首页用)
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 5:54 PM
+     * 获取菜单列表
      */
     @RequestMapping(value = "/menuTreeList")
     public ResponseData menuTreeList() {
@@ -243,18 +244,28 @@ public class RestMenuController extends BaseController {
 
     /**
      * 获取角色的菜单列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 5:54 PM
      */
-//    @RequestMapping(value = "/menuTreeListByRoleId/{roleId}")
-//    public List<ZTreeNode> menuTreeListByRoleId(@PathVariable Long roleId) {
-//        List<Long> menuIds = this.restMenuService.getMenuIdsByRoleId(roleId);
+    @RequestMapping(value = "/menuTreeListByRoleId")
+    public ResponseData menuTreeListByRoleId(@RequestParam Long roleId) {
+        List<String> menuIds = this.restMenuService.getMenuIdsByRoleId(roleId);
+        Map<String,Object> result = new HashMap<>();
+        result.put("checked",menuIds);
+        return ResponseData.success(result);
 //        if (ToolUtil.isEmpty(menuIds)) {
-//            return this.restMenuService.menuTreeList();
+//            return this.restMenuService.menuTree();
 //        } else {
 //            return this.restMenuService.menuTreeListByMenuIds(menuIds);
 //        }
-//    }
+    }
+
+    @RequestMapping(value = "/menuTree")
+    public ResponseData menuTree() {
+        List<TreeNode> menuTreeList = this.restMenuService.menuTree();
+        menuTreeList.add(TreeNode.createParent());
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("-1");
+        List<TreeNode> results = factory.doTreeBuild(menuTreeList);
+        return ResponseData.success(results);
+    }
 
 }

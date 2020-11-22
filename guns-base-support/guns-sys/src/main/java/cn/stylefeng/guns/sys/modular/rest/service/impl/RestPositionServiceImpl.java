@@ -103,6 +103,10 @@ public class RestPositionServiceImpl extends ServiceImpl<RestPositionMapper, Res
         return pageInfo;
 
     }
+    @Override
+    public List<Map<String, Object>> listPositions(){
+        return this.baseMapper.getAllPositionMap();
+    }
 
     private Serializable getKey(PositionParam param) {
         return param.getPositionId();

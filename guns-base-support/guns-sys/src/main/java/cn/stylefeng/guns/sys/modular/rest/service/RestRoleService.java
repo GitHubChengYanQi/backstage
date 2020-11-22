@@ -3,6 +3,7 @@ package cn.stylefeng.guns.sys.modular.rest.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.stylefeng.guns.base.pojo.node.CascaderNode;
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
 import cn.stylefeng.guns.sys.core.constant.Const;
@@ -171,6 +172,10 @@ public class RestRoleService extends ServiceImpl<RestRoleMapper, RestRole> {
      */
     public List<CascaderNode> roleTreeList() {
         return this.baseMapper.roleTreeList();
+    }
+
+    public List<TreeNode> roleTree() {
+        return this.baseMapper.roleTree();
     }
 
     /**

@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.sys.modular.rest.service;
 
+import cn.stylefeng.guns.base.pojo.node.TreeNode;
 import cn.stylefeng.guns.base.pojo.node.TreeviewNode;
 import cn.stylefeng.guns.base.pojo.node.ZTreeNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
@@ -95,7 +96,7 @@ public class RestDeptService extends ServiceImpl<RestDeptMapper, RestDept> {
      * @author fengshuonan
      * @Date 2018/12/23 5:16 PM
      */
-    public List<ZTreeNode> tree() {
+    public List<TreeNode> tree() {
         return this.baseMapper.tree();
     }
 

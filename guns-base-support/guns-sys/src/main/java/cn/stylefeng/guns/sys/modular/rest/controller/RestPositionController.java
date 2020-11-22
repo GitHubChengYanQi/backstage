@@ -5,6 +5,7 @@ import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
 import cn.stylefeng.guns.base.pojo.page.PageInfo;
 import cn.stylefeng.guns.sys.modular.rest.entity.RestPosition;
 import cn.stylefeng.guns.sys.modular.rest.service.RestPositionService;
+import cn.stylefeng.guns.sys.modular.rest.wrapper.PositionSelectWrapper;
 import cn.stylefeng.guns.sys.modular.system.model.params.PositionParam;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -125,13 +129,13 @@ public class RestPositionController extends BaseController {
 
     /**
      * 查询所有职位
-     *
-     * @author stylefeng
-     * @Date 2019-03-13
      */
     @RequestMapping("/listPositions")
-    public PageInfo listlistPositionsTypes(@RequestParam(value = "userId", required = false) Long userId) {
-        return this.restPositionService.listPositions(userId);
+    public ResponseData listlistPositionsTypes() {
+        List<Map<String, Object>> lists = this.restPositionService.listPositions();
+        PositionSelectWrapper factory = new PositionSelectWrapper(lists);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 
