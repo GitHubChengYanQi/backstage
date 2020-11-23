@@ -36,4 +36,8 @@ public class PageInfo {
 
     private long count;
 
+    private long current;
+
+    private long pageSize;
+
 }

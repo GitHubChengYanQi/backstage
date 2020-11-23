@@ -33,6 +33,8 @@ mybatis-plus:
     db-config:
       id-type: assign_id
       table-underline: true
+      logic-delete-value: 0 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 1 # 逻辑未删除值(默认为 0)
 
 log:
   path: _app_logs

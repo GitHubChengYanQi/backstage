@@ -7,6 +7,7 @@ import cn.stylefeng.guns.base.oauth2.entity.OauthUserInfo;
 import cn.stylefeng.guns.base.oauth2.service.OauthUserInfoService;
 import cn.stylefeng.guns.base.pojo.node.MenuNode;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
 import cn.stylefeng.guns.sys.core.constant.Const;
 import cn.stylefeng.guns.sys.core.constant.factory.ConstantFactory;
 import cn.stylefeng.guns.sys.core.constant.state.ManagerStatus;
@@ -181,7 +182,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
      * @Date 2018/12/24 22:45
      */
     public Page<Map<String, Object>> selectUsers(DataScope dataScope, String name, String beginTime, String endTime, Long deptId) {
-        Page page = LayuiPageFactory.defaultPage();
+        Page page = PageFactory.defaultPage();
         return this.baseMapper.selectUsers(page, dataScope, name, beginTime, endTime, deptId);
     }
 

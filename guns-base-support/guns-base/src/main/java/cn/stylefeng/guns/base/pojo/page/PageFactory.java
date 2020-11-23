@@ -43,6 +43,8 @@ public class PageFactory {
         PageInfo result = new PageInfo();
         result.setCount(page.getTotal());
         result.setData(page.getRecords());
+        result.setCurrent(page.getCurrent());
+        result.setPageSize(page.getSize());
         return result;
     }
 }
