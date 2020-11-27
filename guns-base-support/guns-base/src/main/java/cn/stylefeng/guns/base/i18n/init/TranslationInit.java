@@ -18,9 +18,6 @@ import java.util.List;
  * <p>
  * 参数配置 服务类
  * </p>
- *
- * @author stylefeng
- * @since 2019-06-20
  */
 @Component
 @Slf4j
