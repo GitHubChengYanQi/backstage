@@ -61,7 +61,7 @@ public class DefaultLoginService implements LoginService {
 
         //先判断当前系统这个openId有没有人用
         QueryWrapper<OauthUserInfo> queryWrapper = new QueryWrapper<OauthUserInfo>()
-                .eq("source", oauthUser.getSource().name())
+                .eq("source", oauthUser.getSource())
                 .and(i -> i.eq("uuid", oauthUser.getUuid()))
                 .and(i -> i.ne("user_id", userId));
         List<OauthUserInfo> oauthUserInfos = this.oauthUserInfoService.list(queryWrapper);
@@ -87,7 +87,7 @@ public class DefaultLoginService implements LoginService {
 
         //先判断当前系统这个openId有没有人用
         QueryWrapper<OauthUserInfo> queryWrapper = new QueryWrapper<OauthUserInfo>()
-                .eq("source", oauthUser.getSource().name())
+                .eq("source", oauthUser.getSource())
                 .and(i -> i.eq("uuid", oauthUser.getUuid()));
         OauthUserInfo oauthUserInfos = this.oauthUserInfoService.getOne(queryWrapper);
 

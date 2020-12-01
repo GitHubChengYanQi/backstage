@@ -9,9 +9,14 @@ import cn.stylefeng.guns.base.db.service.DatabaseInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.stylefeng.guns.base.pojo.page.PageFactory;
+import cn.stylefeng.guns.base.pojo.page.PageInfo;
+import cn.stylefeng.guns.db.wrapper.DataBaseInfoSelectWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -146,6 +151,39 @@ public class DatabaseInfoController extends BaseController {
             return LayuiPageFactory.createPageInfo(objectPage);
         }
     }
+
+    @RequestMapping("/dbTableList")
+    @ResponseBody
+    public Object dbTableList(@RequestBody DatabaseInfoParam databaseInfoParam, HttpServletRequest request) {
+
+        Long dbId = databaseInfoParam.getDbId();
+        if (ToolUtil.isEmpty(dbId)) {
+            return new PageInfo();
+        }
+
+        //清空session中的字段条件信息
+        HttpSession session = request.getSession();
+        session.removeAttribute(CONDITION_FIELDS);
+
+        try {
+            DatabaseInfo databaseInfo = databaseInfoService.getById(dbId);
+            List<Map<String, Object>> maps = DbUtil.selectTables(databaseInfo);
+            Page<Map<String, Object>> objectPage = new Page<>();
+            objectPage.setRecords(maps);
+            return PageFactory.createPageInfo(objectPage);
+        } catch (Exception e) {
+            Page<Map<String, Object>> objectPage = new Page<>();
+            return PageFactory.createPageInfo(objectPage);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("/listSelect")
+    public ResponseData listSelect() {
+        List<Map<String,Object>> list = this.databaseInfoService.listMaps();
+
+        DataBaseInfoSelectWrapper factory = new DataBaseInfoSelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
 }
-
-

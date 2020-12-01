@@ -59,9 +59,6 @@ public class GeneratorController {
 
     /**
      * 代码生成主页
-     *
-     * @author fengshuonan
-     * @Date 2019/1/30 2:49 PM
      */
     @RequestMapping("/gen")
     public String index(Model model) {
@@ -86,9 +83,6 @@ public class GeneratorController {
 
     /**
      * 跳转到字段列表页面
-     *
-     * @author fengshuonan
-     * @Date 2019/1/30 2:49 PM
      */
     @RequestMapping("/tableFields")
     public String tableFields(@RequestParam("dbId") Long dbId,
@@ -124,9 +118,6 @@ public class GeneratorController {
 
     /**
      * 设置条件字段
-     *
-     * @author fengshuonan
-     * @Date 2019-05-04 21:50
      */
     @RequestMapping("/saveFieldsConfig")
     @ResponseBody
@@ -137,10 +128,6 @@ public class GeneratorController {
 
     /**
      * 执行代码生成
-     *
-     * @return
-     * @author fengshuonan
-     * @Date 2019-01-11
      */
     @RequestMapping(value = "/execute", method = RequestMethod.GET)
     @ResponseBody
@@ -250,11 +237,6 @@ public class GeneratorController {
 
     /**
      * 返回前台文件流
-     *
-     * @param fileName    文件名
-     * @param inputStream 输入流
-     * @return
-     * @author 0x0001
      */
     private ResponseEntity<InputStreamResource> renderFile(String fileName, InputStream inputStream) {
         InputStreamResource resource = new InputStreamResource(inputStream);
@@ -272,9 +254,6 @@ public class GeneratorController {
 
     /**
      * 返回前台文件流
-     *
-     * @author fengshuonan
-     * @date 2017年2月28日 下午2:53:19
      */
     private ResponseEntity<InputStreamResource> renderFile(String fileName, String filePath) {
         try {
@@ -287,9 +266,6 @@ public class GeneratorController {
 
     /**
      * 返回前台文件流
-     *
-     * @author fengshuonan
-     * @date 2017年2月28日 下午2:53:19
      */
     private ResponseEntity<InputStreamResource> renderFile(String fileName, byte[] fileBytes) {
         return renderFile(fileName, new ByteArrayInputStream(fileBytes));

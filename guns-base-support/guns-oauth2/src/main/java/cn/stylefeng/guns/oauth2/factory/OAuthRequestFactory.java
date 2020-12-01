@@ -8,9 +8,6 @@ import me.zhyd.oauth.request.*;
 
 /**
  * OAuth2 请求的构建器
- *
- * @author fengshuonan
- * @Date 2019/6/9 16:49
  */
 public class OAuthRequestFactory {
 
@@ -90,11 +87,11 @@ public class OAuthRequestFactory {
                         .build());
                 break;
             case "tencentCloud":
-                authRequest = new AuthTencentCloudRequest(AuthConfig.builder()
-                        .clientId("")
-                        .clientSecret("")
-                        .redirectUri(BASE_URL + "/oauth/callback/tencentCloud")
-                        .build());
+//                authRequest = new AuthTencentCloudRequest(AuthConfig.builder()
+//                        .clientId("")
+//                        .clientSecret("")
+//                        .redirectUri(BASE_URL + "/oauth/callback/tencentCloud")
+//                        .build());
                 break;
             case "oschina":
                 authRequest = new AuthOschinaRequest(AuthConfig.builder()
@@ -113,7 +110,7 @@ public class OAuthRequestFactory {
                         .build());
                 break;
             case "wechat":
-                authRequest = new AuthWeChatRequest(AuthConfig.builder()
+                authRequest = new AuthWeChatOpenRequest(AuthConfig.builder()
                         .clientId("")
                         .clientSecret("")
                         .redirectUri(BASE_URL + "/oauth/callback/wechat")

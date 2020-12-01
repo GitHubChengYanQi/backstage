@@ -32,7 +32,7 @@ public class OAuthUserInfoFactory {
 
         //设置openId和第三方源
         oauthUserInfo.setUuid(oauthUser.getUuid());
-        oauthUserInfo.setSource(oauthUser.getSource().name());
+        oauthUserInfo.setSource(oauthUser.getSource());
 
         //设置本系统地用户id
         oauthUserInfo.setUserId(userId);
@@ -57,7 +57,7 @@ public class OAuthUserInfoFactory {
         systemUser.setSalt(salt);
 
         //利用openId设置账号
-        systemUser.setAccount(ConstantsContext.getOAuth2UserPrefix() + "_" + authUser.getSource().name() + "_" + authUser.getUsername());
+        systemUser.setAccount(ConstantsContext.getOAuth2UserPrefix() + "_" + authUser.getSource() + "_" + authUser.getUsername());
         systemUser.setName(authUser.getNickname());
         systemUser.setBirthday(new Date());
         systemUser.setSex(AuthUserGender.MALE.equals(authUser.getGender()) ? "M" : "F");

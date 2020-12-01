@@ -69,7 +69,7 @@ public class GunsMpVelocityTemplateEngine extends VelocityTemplateEngine {
 
     @Override
     public void writer(Map<String, Object> objectMap, String templatePath, String outputFile) throws Exception {
-        if (StringUtils.isEmpty(templatePath)) {
+        if (StringUtils.isBlank(templatePath)) {
             return;
         }
         Template template = velocityEngine.getTemplate(templatePath, ConstVal.UTF8);
