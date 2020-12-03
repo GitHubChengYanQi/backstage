@@ -4,9 +4,6 @@ import cn.stylefeng.guns.gen.modular.model.GenSessionFieldConfigs;
 
 /**
  * 临时变量存放
- *
- * @author fengshuonan
- * @date 2019-05-06-18:33
  */
 public class FieldsConfigHolder {
 

@@ -14,9 +14,6 @@ import java.util.Map;
 
 /**
  * 代码生成器规范
- *
- * @author fengshuonan
- * @date 2018-12-12-2:41 PM
  */
 @Slf4j
 public abstract class AbstractMpGenerator extends Generator {
@@ -54,9 +51,6 @@ public abstract class AbstractMpGenerator extends Generator {
 
     /**
      * 执行mybatis-plus的代码生成
-     *
-     * @author fengshuonan
-     * @Date 2018/12/13 11:36 AM
      */
     @Override
     public void doGeneration() {

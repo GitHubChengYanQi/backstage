@@ -2,9 +2,6 @@ package cn.stylefeng.guns.gen.core.enums;
 
 /**
  * 代码生成下载方式枚举
- *
- * @author stylefeng
- * @date 2020/1/15
  */
 public enum GenDownloadEnum {
 

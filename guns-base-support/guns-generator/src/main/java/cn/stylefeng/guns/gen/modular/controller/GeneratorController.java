@@ -8,6 +8,7 @@ import cn.stylefeng.guns.base.db.service.DatabaseInfoService;
 import cn.stylefeng.guns.base.pojo.page.LayuiPageInfo;
 import cn.stylefeng.guns.gen.core.enums.GenDownloadEnum;
 import cn.stylefeng.guns.gen.core.enums.GenSessionKeyFlags;
+import cn.stylefeng.guns.gen.core.generator.at.AtApiExecutor;
 import cn.stylefeng.guns.gen.core.generator.base.model.ContextParam;
 import cn.stylefeng.guns.gen.core.generator.guns.GunsExecutor;
 import cn.stylefeng.guns.gen.core.generator.restful.RestfulApiExecutor;
@@ -215,8 +216,9 @@ public class GeneratorController {
             //如果是Guns单体版本生成
             if (executeParam.getVersion().equalsIgnoreCase("single")) {
                 GunsExecutor.executor(contextParam, mpContextParam);
-            } else {
-
+            } else if(executeParam.getVersion().equalsIgnoreCase("at")){
+                AtApiExecutor.executor(contextParam, mpContextParam);
+            }else {
                 //如果是微服务版本代码生成
                 RestfulApiExecutor.executor(contextParam, mpContextParam);
             }

@@ -15,26 +15,16 @@
  */
 package cn.stylefeng.guns;
 
-import cn.atsoft.dasheng.core.config.MybatisDataSourceAutoConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
- * SpringBoot方式启动类
- *
- * @author stylefeng
- * @Date 2017/5/21 12:06
+ * Guns Web程序启动类
  */
-@SpringBootApplication(exclude = {MybatisDataSourceAutoConfiguration.class})
-public class Application {
+public class ServletInitializer extends SpringBootServletInitializer {
 
-    private final static Logger logger = LoggerFactory.getLogger(Application.class);
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-        logger.info(Application.class.getSimpleName() + " is success!");
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(Application.class);
     }
-
 }

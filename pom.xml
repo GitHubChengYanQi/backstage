@@ -14,14 +14,14 @@
     <artifactId>guns-vip</artifactId>
     <version>1.0.0</version>
 
-    <name>guns-vip</name>
-    <description>guns的vip版本</description>
+    <name>dasheng</name>
+    <description>大圣</description>
 
     <packaging>pom</packaging>
 
     <modules>
         <module>guns-base-support</module>
-        <module>guns-vip-main</module>
+        <module>dasheng-app-main</module>
         <module>dasheng</module>
     </modules>
 

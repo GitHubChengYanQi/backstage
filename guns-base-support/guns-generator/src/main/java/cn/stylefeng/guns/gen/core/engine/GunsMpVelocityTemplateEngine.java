@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
  * <p>
  * 重写Mybatis-Plus的Velocity模板引擎实现
  * </p>
- *
- * @author hubin, fengshuonan
- * @since 2018-01-10
  */
 public class GunsMpVelocityTemplateEngine extends VelocityTemplateEngine {
 
@@ -92,9 +89,6 @@ public class GunsMpVelocityTemplateEngine extends VelocityTemplateEngine {
 
     /**
      * 重写父类的方法，增加一个变量，为了在mapping.xml的Base_Column_List增加base前缀
-     *
-     * @author fengshuonan
-     * @Date 2019/1/10 12:51 PM
      */
     @Override
     public Map<String, Object> getObjectMap(TableInfo tableInfo) {
