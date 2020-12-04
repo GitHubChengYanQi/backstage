@@ -192,7 +192,7 @@ public class GeneratorController {
         } else if (Objects.equals(GenDownloadEnum.PROJECT_PATH.name(), executeParam.getGenLocation())) {
 
             //获取项目的绝对路径 TODO 可作为参数变量
-            outputPath = new File("").getAbsolutePath() + File.separator + "guns-vip-main" + File.separator + "src" + File.separator + "main";
+            outputPath = new File("").getAbsolutePath() + File.separator + "dasheng-app-main" + File.separator + "src" + File.separator + "main";
             contextParam.setGenDownloadEnum(GenDownloadEnum.PROJECT_PATH);
 
         }

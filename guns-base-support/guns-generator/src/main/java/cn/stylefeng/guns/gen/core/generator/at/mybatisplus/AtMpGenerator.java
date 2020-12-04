@@ -33,9 +33,6 @@ public class AtMpGenerator extends AbstractMpGenerator {
 
     /**
      * 代码生成之前，配置代码生成器所需要的配置
-     *
-     * @author fengshuonan
-     * @Date 2018/12/13 2:48 PM
      */
     @Override
     protected void beforeGeneration() {
