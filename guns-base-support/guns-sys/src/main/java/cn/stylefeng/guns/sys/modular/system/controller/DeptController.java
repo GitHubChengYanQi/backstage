@@ -37,10 +37,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -122,7 +119,7 @@ public class DeptController extends BaseController {
      * @author fengshuonan
      * @Date 2019-8-27 15:24
      */
-    @RequestMapping(value = "/tree")
+    @RequestMapping(value = "/tree", method = RequestMethod.GET)
     @ResponseBody
     public List<ZTreeNode> tree() {
         List<ZTreeNode> tree = this.deptService.tree();

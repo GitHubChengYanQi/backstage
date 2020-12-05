@@ -133,8 +133,10 @@ public class AtMpGenerator extends AbstractMpGenerator {
         }
 
         //自定义specification model的生成
-        String SpecParamsTemplatePath = "/mpTemplates/specParam.java.vm";
-        String SpecResultTemplatePath = "/mpTemplates/specResult.java.vm";
+//        String SpecParamsTemplatePath = "/mpTemplates/specParam.java.vm";
+//        String SpecResultTemplatePath = "/mpTemplates/specResult.java.vm";
+        String SpecParamsTemplatePath = "/mpTemplates/specParamSwagger.java.vm";
+        String SpecResultTemplatePath = "/mpTemplates/specResultSwagger.java.vm";
         List<FileOutConfig> focList = new ArrayList<>();
 
         String paramsParentPackage = this.contextParam.getProPackage().replaceAll("\\.", "/") + "/model/params";

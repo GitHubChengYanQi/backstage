@@ -42,9 +42,6 @@ public abstract class AbstractCustomGenerator extends Generator {
 
     /**
      * 执行代码生成
-     *
-     * @author fengshuonan
-     * @Date 2018/12/12 3:13 PM
      */
     @Override
     public void doGeneration() {
@@ -128,9 +125,6 @@ public abstract class AbstractCustomGenerator extends Generator {
 
     /**
      * 绑定添加和修改页面 input框元素 需要的参数
-     *
-     * @author fengshuonan
-     * @Date 2019/1/19 2:18 PM
      */
     public void bindingInputsParams(Template template) {
 
@@ -167,9 +161,6 @@ public abstract class AbstractCustomGenerator extends Generator {
 
     /**
      * 绑定查询参数
-     *
-     * @author stylefeng
-     * @date 2020/1/17
      */
     public void bindingConditionParams(Template template) {
 
@@ -189,25 +180,17 @@ public abstract class AbstractCustomGenerator extends Generator {
 
     /**
      * 获取代码生成的模板
-     *
-     * @author fengshuonan
-     * @Date 2018/12/13 9:46 AM
+
      */
     public abstract String getTemplateResourcePath();
 
     /**
      * 获取代码生成的目标路径（临时路径，用在打包下载）
-     *
-     * @author fengshuonan
-     * @Date 2018/12/13 9:46 AM
      */
     public abstract String getGenerateFileTempPath();
 
     /**
      * 获取代码生成的目标路径（指定路径，用在下载到项目的目录直接）
-     *
-     * @author fengshuonan
-     * @Date 2018/12/13 9:46 AM
      */
     public abstract String getGenerateFileDirectPath();
 }

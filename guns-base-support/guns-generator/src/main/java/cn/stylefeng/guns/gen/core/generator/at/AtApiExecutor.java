@@ -1,5 +1,6 @@
 package cn.stylefeng.guns.gen.core.generator.at;
 
+import cn.stylefeng.guns.gen.core.generator.at.controller.AtControllerGenerator;
 import cn.stylefeng.guns.gen.core.generator.at.mybatisplus.AtMpGenerator;
 import cn.stylefeng.guns.gen.core.generator.base.model.ContextParam;
 import cn.stylefeng.guns.gen.core.generator.restful.mybatisplus.param.MpParam;
@@ -20,6 +21,9 @@ public class AtApiExecutor {
         //遍历所有表
         for (TableInfo tableInfo : tableInfos) {
             Map<String, Object> map = everyTableContexts.get(tableInfo.getName());
+            AtControllerGenerator atControllerGenerator = new AtControllerGenerator(map);
+            atControllerGenerator.initContext(contextParam);
+            atControllerGenerator.doGeneration();
         }
     }
 }

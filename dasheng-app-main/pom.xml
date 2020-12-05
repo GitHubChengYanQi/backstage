@@ -23,6 +23,9 @@
 <!--            <version>2.2.13</version>-->
 <!--        </dependency>-->
 
+        <!-- https://mvnrepository.com/artifact/cn.stylefeng.roses/kernel-scanner -->
+
+
         <!-- guns-vip基础框架 -->
         <dependency>
             <groupId>cn.stylefeng</groupId>
