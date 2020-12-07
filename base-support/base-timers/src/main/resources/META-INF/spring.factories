@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cn.atsoft.dasheng.timer.config.JobExecutorConfig,\
+cn.atsoft.dasheng.timer.config.JobHandlerConfig

@@ -1,0 +1,96 @@
+package ${controllerPackage};
+
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import ${package.Entity}.${entity};
+import ${package.EntitySpecParams}.${entity}Param;
+import ${package.Service}.${table.serviceName};
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.model.response.ResponseData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+<% var lowerEntityService = lowerEntity + 'Service'; %>
+
+/**
+ * ${tool.cleanWhite(table.comment)}控制器
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+@RestController
+@RequestMapping("/${lowerEntity}")
+@Api(tags = "${tool.cleanWhite(table.comment)}")
+public class ${entity}Controller extends BaseController {
+
+    @Autowired
+    private ${entity}Service ${lowerEntityService};
+
+    /**
+     * 新增接口
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody ${entity}Param ${lowerEntity}Param) {
+        this.${lowerEntity}Service.add(${lowerEntity}Param);
+        return ResponseData.success();
+    }
+
+    /**
+     * 编辑接口
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData update(@RequestBody ${entity}Param ${lowerEntity}Param) {
+        this.${lowerEntity}Service.update(${lowerEntity}Param);
+        return ResponseData.success();
+    }
+
+    /**
+     * 删除接口
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData delete(@RequestBody ${entity}Param ${lowerEntity}Param)  {
+        this.${lowerEntity}Service.delete(${lowerEntity}Param);
+        return ResponseData.success();
+    }
+
+    /**
+     * 查看详情接口
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
+        ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
+        return ResponseData.success(detail);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author ${author}
+     * @Date ${date}
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo list(@RequestBody(required = false) ${entity}Param ${lowerEntity}Param) {
+        return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
+    }
+
+}
+
+

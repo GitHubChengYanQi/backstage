@@ -10,8 +10,8 @@
         <version>2.1.6.RELEASE</version>
     </parent>
 
-    <groupId>cn.stylefeng</groupId>
-    <artifactId>guns-vip</artifactId>
+    <groupId>cn.atsoft</groupId>
+    <artifactId>dasheng</artifactId>
     <version>1.0.0</version>
 
     <name>dasheng</name>
@@ -20,9 +20,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>guns-base-support</module>
-        <module>dasheng-app-main</module>
+        <module>base-support</module>
+        <module>main</module>
         <module>dasheng</module>
+        <module>app</module>
     </modules>
 
     <properties>
@@ -50,14 +51,14 @@
 
             <!--核心组件-->
             <dependency>
-                <groupId>cn.stylefeng.roses</groupId>
+                <groupId>cn.atsoft</groupId>
                 <artifactId>kernel-core</artifactId>
-                <version>${kernel.version}</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>cn.stylefeng.roses</groupId>
+                <groupId>cn.atsoft</groupId>
                 <artifactId>kernel-validator</artifactId>
-                <version>${kernel.version}</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>cn.stylefeng.roses</groupId>
