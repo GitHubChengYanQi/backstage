@@ -49,6 +49,9 @@ public class TemplateUtil {
     public static String lowerFirst(String value) {
         return StrUtil.lowerFirst(value);
     }
+    public static String upperFirst(String value) {
+        return StrUtil.upperFirst(value);
+    }
 
     /**
      * 清理空白字符

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.gen.core.generator.at;
 
 import cn.atsoft.dasheng.gen.core.generator.at.mybatisplus.AtMpGenerator;
+import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageApiGenerator;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;
 import cn.atsoft.dasheng.gen.core.generator.at.controller.AtControllerGenerator;
 import cn.atsoft.dasheng.gen.core.generator.restful.mybatisplus.param.MpParam;
@@ -26,6 +27,13 @@ public class AtApiExecutor {
             AtControllerGenerator atControllerGenerator = new AtControllerGenerator(map);
             atControllerGenerator.initContext(contextParam);
             atControllerGenerator.doGeneration();
+
+            // 生成接口路径文件
+            AtPageApiGenerator  atPageApiGenerator = new AtPageApiGenerator(map);
+            atPageApiGenerator.initContext(contextParam);
+            atPageApiGenerator.doGeneration();
+
+            // 生成列表JS
         }
     }
 }

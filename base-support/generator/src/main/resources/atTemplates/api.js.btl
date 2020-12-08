@@ -1,0 +1,24 @@
+export const ${lowerEntity}Add = {
+  url: '/${lowerEntity}/add',
+  method: 'POST',
+};
+
+export const ${lowerEntity}Edit = {
+  url: '/${lowerEntity}/edit',
+  method: 'POST',
+};
+
+export const ${lowerEntity}Delete = {
+  url: '/${lowerEntity}/delete',
+  method: 'POST',
+};
+
+export const ${lowerEntity}Detail = {
+  url: '/${lowerEntity}/detail',
+  method: 'POST',
+};
+
+export const ${lowerEntity}List = {
+  url: '/${lowerEntity}/list',
+  method: 'POST',
+};
