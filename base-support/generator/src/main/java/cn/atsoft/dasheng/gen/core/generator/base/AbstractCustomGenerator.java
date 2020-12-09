@@ -61,7 +61,7 @@ public abstract class AbstractCustomGenerator extends Generator {
         tableContext.put("lowerEntity", TemplateUtil.lowerFirst((String) tableContext.get("entity")));
 
         //实体名称的首字母大写的名称
-        tableContext.put("bigLowerEntity", TemplateUtil.upperFirst((String) tableContext.get("entity")));
+        tableContext.put("bigEntity", TemplateUtil.upperFirst((String) tableContext.get("entity")));
 
         //获取主键的字段名称
         String keyPropertyName = "";

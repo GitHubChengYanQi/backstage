@@ -1,0 +1,69 @@
+/**
+ * ${tool.cleanWhite(table.comment)}列表页
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+
+import React, {useRef} from 'react';
+import Table from '@/components/Table';
+import {Table as AntTable} from 'antd';
+import DelButton from '@/components/DelButton';
+import Drawer from '@/components/Drawer';
+import AddButton from '@/components/AddButton';
+import EditButton from '@/components/EditButton';
+import {${lowerEntity}Delete, ${lowerEntity}List} from '../${lowerEntity}Url';
+import ${bigEntity}Edit from '../${lowerEntity}Edit';
+
+const {Column} = AntTable;
+
+const MenuList = () => {
+  const ref = useRef(null);
+  const tableRef = useRef(null);
+  const actions = () => {
+    return (
+      <>
+        <AddButton onClick={() => {
+          ref.current.open(false);
+        }}/>
+      </>
+    );
+  };
+
+  return (
+    <>
+      <Table
+        title={<h2>列表</h2>}
+        api={${lowerEntity}List}
+        rowKey="${keyPropertyName}"
+        actions={actions()}
+        ref={tableRef}
+      >
+      <% for(item in table.fields!){      %>
+      <%     if(!item.keyFlag){            %>
+        <Column title="${item.comment}" dataIndex="${item.propertyName}"/>
+      <%     }                            %>
+      <% }                                %>
+        <Column/>
+        <Column title="操作" align="right" render={(value, record) => {
+          return (
+            <>
+              <EditButton onClick={() => {
+                ref.current.open(record.${keyPropertyName});
+              }}/>
+              <DelButton api={${lowerEntity}Delete} value={record.${keyPropertyName}} onSuccess={()=>{
+                tableRef.current.refresh();
+              }}/>
+            </>
+          );
+        }} width={300}/>
+      </Table>
+      <Drawer width={800} title="编辑" component={${bigEntity}Edit} onSuccess={() => {
+        tableRef.current.refresh();
+        ref.current.close();
+      }} ref={ref}/>
+    </>
+  );
+};
+
+export default MenuList;

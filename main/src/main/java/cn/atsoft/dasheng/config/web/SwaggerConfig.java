@@ -29,9 +29,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * swagger配置类
- *
- * @author fengshuonan
- * @date 2017年6月1日19:42:59
  */
 @Configuration
 @EnableSwagger2
@@ -50,10 +47,10 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Guns Doc")
-                .description("Guns Api文档")
-                .termsOfServiceUrl("https://gitee.com/stylefeng/guns")
-                .contact(new Contact("stylefeng", "https://gitee.com/stylefeng/guns", ""))
+                .title("接口文档")
+                .description("Api文档")
+//                .termsOfServiceUrl("https://gitee.com/stylefeng/guns")
+//                .contact(new Contact("stylefeng", "https://gitee.com/stylefeng/guns", ""))
                 .version("2.0")
                 .build();
     }

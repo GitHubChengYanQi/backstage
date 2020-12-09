@@ -3,11 +3,11 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Info;
-import cn.atsoft.dasheng.app.mapper.InfoMapper;
-import cn.atsoft.dasheng.app.model.params.InfoParam;
-import cn.atsoft.dasheng.app.model.result.InfoResult;
-import  cn.atsoft.dasheng.app.service.InfoService;
+import cn.atsoft.dasheng.app.entity.SysLoginLog;
+import cn.atsoft.dasheng.app.mapper.SysLoginLogMapper;
+import cn.atsoft.dasheng.app.model.params.SysLoginLogParam;
+import cn.atsoft.dasheng.app.model.result.SysLoginLogResult;
+import  cn.atsoft.dasheng.app.service.SysLoginLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,65 +19,65 @@ import java.util.List;
 
 /**
  * <p>
- * 数据库信息表 服务实现类
+ * 登录记录 服务实现类
  * </p>
  *
  * @author sing
- * @since 2020-12-07
+ * @since 2020-12-09
  */
 @Service
-public class InfoServiceImpl extends ServiceImpl<InfoMapper, Info> implements InfoService {
+public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLoginLog> implements SysLoginLogService {
 
     @Override
-    public void add(InfoParam param){
-        Info entity = getEntity(param);
+    public void add(SysLoginLogParam param){
+        SysLoginLog entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(InfoParam param){
+    public void delete(SysLoginLogParam param){
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(InfoParam param){
-        Info oldEntity = getOldEntity(param);
-        Info newEntity = getEntity(param);
+    public void update(SysLoginLogParam param){
+        SysLoginLog oldEntity = getOldEntity(param);
+        SysLoginLog newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
 
     @Override
-    public InfoResult findBySpec(InfoParam param){
+    public SysLoginLogResult findBySpec(SysLoginLogParam param){
         return null;
     }
 
     @Override
-    public List<InfoResult> findListBySpec(InfoParam param){
+    public List<SysLoginLogResult> findListBySpec(SysLoginLogParam param){
         return null;
     }
 
     @Override
-    public PageInfo findPageBySpec(InfoParam param){
+    public PageInfo findPageBySpec(SysLoginLogParam param){
         Page pageContext = getPageContext();
         IPage page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(InfoParam param){
-        return param.getDbId();
+    private Serializable getKey(SysLoginLogParam param){
+        return param.getLoginLogId();
     }
 
     private Page getPageContext() {
         return PageFactory.defaultPage();
     }
 
-    private Info getOldEntity(InfoParam param) {
+    private SysLoginLog getOldEntity(SysLoginLogParam param) {
         return this.getById(getKey(param));
     }
 
-    private Info getEntity(InfoParam param) {
-        Info entity = new Info();
+    private SysLoginLog getEntity(SysLoginLogParam param) {
+        SysLoginLog entity = new SysLoginLog();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }

@@ -2,6 +2,9 @@ package cn.atsoft.dasheng.gen.core.generator.at;
 
 import cn.atsoft.dasheng.gen.core.generator.at.mybatisplus.AtMpGenerator;
 import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageApiGenerator;
+import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageEditGenerator;
+import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageListGenerator;
+import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageRouterGenerator;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;
 import cn.atsoft.dasheng.gen.core.generator.at.controller.AtControllerGenerator;
 import cn.atsoft.dasheng.gen.core.generator.restful.mybatisplus.param.MpParam;
@@ -33,7 +36,20 @@ public class AtApiExecutor {
             atPageApiGenerator.initContext(contextParam);
             atPageApiGenerator.doGeneration();
 
+            // 生成编辑JS
+            AtPageEditGenerator atPageEditGenerator = new AtPageEditGenerator(map);
+            atPageEditGenerator.initContext(contextParam);
+            atPageEditGenerator.doGeneration();
+
             // 生成列表JS
+            AtPageListGenerator atPageListGenerator = new AtPageListGenerator(map);
+            atPageListGenerator.initContext(contextParam);
+            atPageListGenerator.doGeneration();
+
+            // 生成路由js
+            AtPageRouterGenerator atPageRouterGenerator = new AtPageRouterGenerator(map);
+            atPageRouterGenerator.initContext(contextParam);
+            atPageRouterGenerator.doGeneration();
         }
     }
 }

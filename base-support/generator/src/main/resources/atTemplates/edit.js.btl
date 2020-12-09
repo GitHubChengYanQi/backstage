@@ -1,0 +1,39 @@
+/**
+ * ${tool.cleanWhite(table.comment)}编辑页
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+
+import React, {useRef} from 'react';
+import {Input} from 'antd';
+import Form from '@/components/Form';
+import {${lowerEntity}Detail, ${lowerEntity}Add, ${lowerEntity}Edit} from '../${lowerEntity}Url';
+
+const {FormItem} = Form;
+
+const ApiConfig = {
+  view: ${lowerEntity}Detail,
+  add: ${lowerEntity}Add,
+  save: ${lowerEntity}Edit
+};
+
+const ${bigEntity}Edit = ({...props}) => {
+
+  const formRef = useRef();
+
+  return (
+    <Form
+      {...props}
+      ref={formRef}
+      api={ApiConfig}
+      fieldKey="${keyPropertyName}"
+    >
+      <% for(var i=0 ; i < fieldConfigs.~size ; i++){     %>
+      <FormItem label="${fieldConfigs[i].columnComment}" name="${fieldConfigs[i].camelFieldName}" component={Input} required/>
+      <% }                                                %>
+    </Form>
+  );
+};
+
+export default ${bigEntity}Edit;

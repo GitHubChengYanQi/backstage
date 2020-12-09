@@ -1,0 +1,17 @@
+/**
+ * ${tool.cleanWhite(table.comment)}路由文件
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+
+import React, {lazy} from 'react';
+
+export const ${bigEntity}Router = [
+  {
+    path: '/${lowerEntity}',
+    component: lazy(() => import('../${lowerEntity}List')),
+    fallback: <div>loading...</div>,
+    exact: true,
+  }
+];

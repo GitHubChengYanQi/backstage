@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Info;
-import cn.atsoft.dasheng.app.model.params.InfoParam;
-import cn.atsoft.dasheng.app.service.InfoService;
+import cn.atsoft.dasheng.app.entity.SysLoginLog;
+import cn.atsoft.dasheng.app.model.params.SysLoginLogParam;
+import cn.atsoft.dasheng.app.service.SysLoginLogService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,29 +13,29 @@ import io.swagger.annotations.ApiOperation;
 
 
 /**
- * 数据库信息表控制器
+ * 登录记录控制器
  *
  * @author sing
- * @Date 2020-12-07 17:16:39
+ * @Date 2020-12-09 15:30:08
  */
 @RestController
-@RequestMapping("/info")
-@Api(tags = "数据库信息表")
-public class InfoController extends BaseController {
+@RequestMapping("/sysLoginLog")
+@Api(tags = "登录记录")
+public class SysLoginLogController extends BaseController {
 
     @Autowired
-    private InfoService infoService;
+    private SysLoginLogService sysLoginLogService;
 
     /**
      * 新增接口
      *
      * @author sing
-     * @Date 2020-12-07
+     * @Date 2020-12-09
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody InfoParam infoParam) {
-        this.infoService.add(infoParam);
+    public ResponseData addItem(@RequestBody SysLoginLogParam sysLoginLogParam) {
+        this.sysLoginLogService.add(sysLoginLogParam);
         return ResponseData.success();
     }
 
@@ -43,12 +43,12 @@ public class InfoController extends BaseController {
      * 编辑接口
      *
      * @author sing
-     * @Date 2020-12-07
+     * @Date 2020-12-09
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody InfoParam infoParam) {
-        this.infoService.update(infoParam);
+    public ResponseData update(@RequestBody SysLoginLogParam sysLoginLogParam) {
+        this.sysLoginLogService.update(sysLoginLogParam);
         return ResponseData.success();
     }
 
@@ -56,12 +56,12 @@ public class InfoController extends BaseController {
      * 删除接口
      *
      * @author sing
-     * @Date 2020-12-07
+     * @Date 2020-12-09
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InfoParam infoParam)  {
-        this.infoService.delete(infoParam);
+    public ResponseData delete(@RequestBody SysLoginLogParam sysLoginLogParam)  {
+        this.sysLoginLogService.delete(sysLoginLogParam);
         return ResponseData.success();
     }
 
@@ -69,12 +69,12 @@ public class InfoController extends BaseController {
      * 查看详情接口
      *
      * @author sing
-     * @Date 2020-12-07
+     * @Date 2020-12-09
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody InfoParam infoParam) {
-        Info detail = this.infoService.getById(infoParam.getDbId());
+    public ResponseData detail(@RequestBody SysLoginLogParam sysLoginLogParam) {
+        SysLoginLog detail = this.sysLoginLogService.getById(sysLoginLogParam.getLoginLogId());
         return ResponseData.success(detail);
     }
 
@@ -82,12 +82,12 @@ public class InfoController extends BaseController {
      * 查询列表
      *
      * @author sing
-     * @Date 2020-12-07
+     * @Date 2020-12-09
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo list(@RequestBody(required = false) InfoParam infoParam) {
-        return this.infoService.findPageBySpec(infoParam);
+    public PageInfo list(@RequestBody(required = false) SysLoginLogParam sysLoginLogParam) {
+        return this.sysLoginLogService.findPageBySpec(sysLoginLogParam);
     }
 
 }

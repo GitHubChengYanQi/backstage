@@ -13,11 +13,6 @@ public class AtPageApiGenerator extends AbstractCustomGenerator {
     }
 
     @Override
-    public void bindingOthers(Template template) {
-        super.bindingConditionParams(template);
-    }
-
-    @Override
     public String getTemplateResourcePath() {
         return "/atTemplates/api.js.btl";
     }

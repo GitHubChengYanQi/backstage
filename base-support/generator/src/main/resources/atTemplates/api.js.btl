@@ -1,24 +1,36 @@
+/**
+ * ${tool.cleanWhite(table.comment)}接口配置
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+
 export const ${lowerEntity}Add = {
   url: '/${lowerEntity}/add',
   method: 'POST',
+  rowKey:'${keyPropertyName}'
 };
 
 export const ${lowerEntity}Edit = {
   url: '/${lowerEntity}/edit',
   method: 'POST',
+  rowKey:'${keyPropertyName}'
 };
 
 export const ${lowerEntity}Delete = {
   url: '/${lowerEntity}/delete',
   method: 'POST',
+  rowKey:'${keyPropertyName}'
 };
 
 export const ${lowerEntity}Detail = {
   url: '/${lowerEntity}/detail',
   method: 'POST',
+  rowKey:'${keyPropertyName}'
 };
 
 export const ${lowerEntity}List = {
   url: '/${lowerEntity}/list',
   method: 'POST',
+  rowKey:'${keyPropertyName}'
 };
