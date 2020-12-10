@@ -1,30 +1,15 @@
-/**
- * Copyright 2018-2020 stylefeng & fengshuonan (sn93@qq.com)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package cn.atsoft.dasheng.model.response;
 
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * 返回给前台的通用包装
- *
- * @author stylefeng
- * @Date 2018/1/4 22:37
  */
 @Data
+@ApiModel(description = "通用返回结果")
 public class ResponseData {
 
     public static final String DEFAULT_SUCCESS_MESSAGE = "请求成功";
@@ -43,6 +28,7 @@ public class ResponseData {
     /**
      * 响应状态码
      */
+    @ApiModelProperty("业务状态码")
     private Integer errCode;
 
     /**

@@ -15,29 +15,34 @@
  */
 package cn.atsoft.dasheng.base.pojo.page;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
 
 /**
  * 分页结果的封装(for Layui Table)
- *
- * @author fengshuonan
- * @Date 2019年1月25日22:07:36
  */
 @Data
+@ApiModel(description = "统一翻页交结果")
 public class PageInfo {
 
+    @ApiModelProperty("业务状态码")
     private Integer errCode = 0;
 
     private String msg = "请求成功";
 
+    @ApiModelProperty("列表数据")
     private List data;
 
+    @ApiModelProperty("总数")
     private long count;
 
+    @ApiModelProperty("当前页")
     private long current;
 
+    @ApiModelProperty("每页条数")
     private long pageSize;
 
 }
