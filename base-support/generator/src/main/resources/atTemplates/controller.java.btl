@@ -3,6 +3,7 @@ package ${controllerPackage};
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import ${package.Entity}.${entity};
 import ${package.EntitySpecParams}.${entity}Param;
+import ${package.EntitySpecResult}.${entity}Result;
 import ${package.Service}.${table.serviceName};
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -74,7 +75,7 @@ public class ${entity}Controller extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
+    public ResponseData<${entity}> detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
         ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
         return ResponseData.success(detail);
     }
@@ -87,7 +88,7 @@ public class ${entity}Controller extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo list(@RequestBody(required = false) ${entity}Param ${lowerEntity}Param) {
+    public PageInfo<${entity}Result> list(@RequestBody(required = false) ${entity}Param ${lowerEntity}Param) {
         return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
     }
 

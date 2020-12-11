@@ -67,7 +67,7 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
      * @author ${author}
      * @Date ${date}
      */
-     PageInfo findPageBySpec(${entity}Param param);
+     PageInfo<${entity}Result> findPageBySpec(${entity}Param param);
 
 }
 #end

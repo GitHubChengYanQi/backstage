@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(description = "统一翻页交结果")
-public class PageInfo {
+public class PageInfo<T> {
 
     @ApiModelProperty("业务状态码")
     private Integer errCode = 0;
@@ -34,7 +34,7 @@ public class PageInfo {
     private String msg = "请求成功";
 
     @ApiModelProperty("列表数据")
-    private List data;
+    private List<T> data;
 
     @ApiModelProperty("总数")
     private long count;

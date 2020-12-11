@@ -17,21 +17,18 @@ package cn.atsoft.dasheng.model.response;
 
 /**
  * 请求成功的返回
- *
- * @author stylefeng
- * @Date 2018/1/4 22:38
  */
-public class SuccessResponseData extends ResponseData {
+public class SuccessResponseData<T> extends ResponseData<T> {
 
     public SuccessResponseData() {
         super(true, DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MESSAGE, null);
     }
 
-    public SuccessResponseData(Object object) {
+    public SuccessResponseData(T object) {
         super(true, DEFAULT_SUCCESS_CODE, DEFAULT_SUCCESS_MESSAGE, object);
     }
 
-    public SuccessResponseData(Integer code, String message, Object object) {
+    public SuccessResponseData(Integer code, String message, T object) {
         super(true, code, message, object);
     }
 }

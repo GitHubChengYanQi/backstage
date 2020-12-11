@@ -64,6 +64,6 @@ public interface SysLoginLogService extends IService<SysLoginLog> {
      * @author sing
      * @Date 2020-12-09
      */
-     PageInfo findPageBySpec(SysLoginLogParam param);
+     PageInfo<SysLoginLogResult> findPageBySpec(SysLoginLogParam param);
 
 }

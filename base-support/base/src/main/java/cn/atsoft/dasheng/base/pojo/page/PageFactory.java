@@ -15,13 +15,14 @@ public class PageFactory {
     /**
      * 获取 table的分页参数
      */
-    public static Page defaultPage() {
+    public static<T> Page<T> defaultPage() {
         HttpServletRequest request = HttpContext.getRequest();
 
         int limit = 20;
         int page = 1;
 
         //每页多少条数据
+        assert request != null;
         String limitString = request.getParameter("limit");
         if (ToolUtil.isNotEmpty(limitString)) {
             limit = Integer.parseInt(limitString);
@@ -33,14 +34,14 @@ public class PageFactory {
             page = Integer.parseInt(pageString);
         }
 
-        return new Page(page, limit);
+        return new Page<T>(page, limit);
     }
 
     /**
      * 创建能识别的分页响应参数
      */
-    public static PageInfo createPageInfo(IPage page) {
-        PageInfo result = new PageInfo();
+    public static<T> PageInfo<T> createPageInfo(IPage<T> page) {
+        PageInfo<T> result = new PageInfo<T>();
         result.setCount(page.getTotal());
         result.setData(page.getRecords());
         result.setCurrent(page.getCurrent());

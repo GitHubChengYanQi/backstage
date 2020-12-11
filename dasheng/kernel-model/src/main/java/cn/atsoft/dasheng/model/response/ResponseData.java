@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel(description = "通用返回结果")
-public class ResponseData {
+public class ResponseData<T> {
 
     public static final String DEFAULT_SUCCESS_MESSAGE = "请求成功";
 
@@ -39,28 +39,28 @@ public class ResponseData {
     /**
      * 响应对象
      */
-    private Object data;
+    private T data;
 
     public ResponseData() {
     }
 
-    public ResponseData(Boolean success, Integer code, String message, Object data) {
+    public ResponseData(Boolean success, Integer code, String message, T data) {
         this.success = success;
         this.errCode = code;
         this.message = message;
         this.data = data;
     }
 
-    public static SuccessResponseData success() {
-        return new SuccessResponseData();
+    public static<T> SuccessResponseData<T> success() {
+        return new SuccessResponseData<T>();
     }
 
-    public static SuccessResponseData success(Object object) {
-        return new SuccessResponseData(object);
+    public static<T> SuccessResponseData<T> success(T object) {
+        return new SuccessResponseData<T>(object);
     }
 
-    public static SuccessResponseData success(Integer code, String message, Object object) {
-        return new SuccessResponseData(code, message, object);
+    public static<T> SuccessResponseData<T> success(Integer code, String message, T object) {
+        return new SuccessResponseData<T>(code, message, object);
     }
 
     public static ErrorResponseData error(String message) {
@@ -71,7 +71,7 @@ public class ResponseData {
         return new ErrorResponseData(code, message);
     }
 
-    public static ErrorResponseData error(Integer code, String message, Object object) {
+    public static<T> ErrorResponseData error(Integer code, String message, T object) {
         return new ErrorResponseData(code, message, object);
     }
 }

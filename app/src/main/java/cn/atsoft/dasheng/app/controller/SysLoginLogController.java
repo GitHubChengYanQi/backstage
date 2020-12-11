@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.SysLoginLogResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.SysLoginLog;
 import cn.atsoft.dasheng.app.model.params.SysLoginLogParam;
@@ -73,7 +74,7 @@ public class SysLoginLogController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData detail(@RequestBody SysLoginLogParam sysLoginLogParam) {
+    public ResponseData<SysLoginLog> detail(@RequestBody SysLoginLogParam sysLoginLogParam) {
         SysLoginLog detail = this.sysLoginLogService.getById(sysLoginLogParam.getLoginLogId());
         return ResponseData.success(detail);
     }
@@ -86,7 +87,7 @@ public class SysLoginLogController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo list(@RequestBody(required = false) SysLoginLogParam sysLoginLogParam) {
+    public PageInfo<SysLoginLogResult> list(@RequestBody(required = false) SysLoginLogParam sysLoginLogParam) {
         return this.sysLoginLogService.findPageBySpec(sysLoginLogParam);
     }
 

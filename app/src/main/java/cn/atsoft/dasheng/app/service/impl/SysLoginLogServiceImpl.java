@@ -58,9 +58,9 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
     }
 
     @Override
-    public PageInfo findPageBySpec(SysLoginLogParam param){
-        Page pageContext = getPageContext();
-        IPage page = this.baseMapper.customPageList(pageContext, param);
+    public PageInfo<SysLoginLogResult> findPageBySpec(SysLoginLogParam param){
+        Page<SysLoginLogResult> pageContext = getPageContext();
+        IPage<SysLoginLogResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
@@ -68,7 +68,7 @@ public class SysLoginLogServiceImpl extends ServiceImpl<SysLoginLogMapper, SysLo
         return param.getLoginLogId();
     }
 
-    private Page getPageContext() {
+    private Page<SysLoginLogResult> getPageContext() {
         return PageFactory.defaultPage();
     }
 

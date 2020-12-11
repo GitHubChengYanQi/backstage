@@ -63,9 +63,9 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     @Override
-    public PageInfo findPageBySpec(${entity}Param param){
-        Page pageContext = getPageContext();
-        IPage page = this.baseMapper.customPageList(pageContext, param);
+    public PageInfo<${entity}Result> findPageBySpec(${entity}Param param){
+        Page<${entity}Result> pageContext = getPageContext();
+        IPage<${entity}Result> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
@@ -82,7 +82,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
         #end
     }
 
-    private Page getPageContext() {
+    private Page<${entity}Result> getPageContext() {
         return PageFactory.defaultPage();
     }
 
