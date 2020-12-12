@@ -33,9 +33,6 @@ public class GenerateService {
      * 获取某个db容器下，某个表的字段配置
      * <p>
      * 如果之前设置过，则从缓存中拿出
-     *
-     * @author fengshuonan
-     * @Date 2020/1/23 10:54 下午
      */
     public List<FieldConfig> getTableFieldsConfig(Long dbId, String tableName) {
 
@@ -66,6 +63,23 @@ public class GenerateService {
         }).collect(Collectors.toList());
     }
 
+    public List<TableFieldInfo> getTableFields(Long dbId, String tableName) {
+
+        //查找数据库元数据信息
+        DatabaseInfoService databaseInfoService = null;
+        try {
+            databaseInfoService = SpringContextHolder.getBean(DatabaseInfoService.class);
+        } catch (Exception e) {
+            throw new ServiceException(500, "请先开启数据源容器模块！");
+        }
+        DatabaseInfo databaseInfo = databaseInfoService.getById(dbId);
+
+        //获取对应表的所有字段
+        List<TableFieldInfo> tableFields = DbUtil.getTableFields(databaseInfo, tableName);
+
+        //将表的所有字段信息转化为配置信息
+        return tableFields;
+    }
     /**
      * 设置表的字段配置
      *

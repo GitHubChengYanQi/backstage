@@ -176,9 +176,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
     /**
      * 根据条件查询用户列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:45
      */
     public Page<Map<String, Object>> selectUsers(DataScope dataScope, String name, String beginTime, String endTime, Long deptId) {
         Page page = PageFactory.defaultPage();

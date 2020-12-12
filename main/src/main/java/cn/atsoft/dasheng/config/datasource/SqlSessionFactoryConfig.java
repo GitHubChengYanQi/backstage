@@ -38,9 +38,6 @@ import static cn.atsoft.dasheng.base.db.context.DataSourceContext.MASTER_DATASOU
  * 多数据源配置<br/>
  * <p>
  * 注：由于引入多数据源，所以让spring事务的aop要在多数据源切换aop的后面
- *
- * @author stylefeng
- * @Date 2017/5/20 21:58
  */
 @Slf4j
 @Configuration

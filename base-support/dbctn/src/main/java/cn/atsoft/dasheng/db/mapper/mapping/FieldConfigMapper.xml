@@ -4,14 +4,18 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.db.entity.FieldConfig">
-        <id column="field_name" property="fieldName" />
+        <id column="field_id" property="fieldId" />
+        <result column="field_name" property="fieldName" />
+        <result column="table" property="table" />
         <result column="type" property="type" />
         <result column="config" property="config" />
+        <result column="showList" property="showList" />
+        <result column="isSearch" property="isSearch" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        field_name AS "fieldName", type AS "type", config AS "config"
+        field_id AS "fieldId", field_name AS "fieldName", table AS "table", type AS "type", config AS "config", showList AS "showList", isSearch AS "isSearch"
     </sql>
 
 

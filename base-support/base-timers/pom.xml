@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>guns-base-timers</artifactId>
+    <artifactId>base-timers</artifactId>
 
     <packaging>jar</packaging>
 

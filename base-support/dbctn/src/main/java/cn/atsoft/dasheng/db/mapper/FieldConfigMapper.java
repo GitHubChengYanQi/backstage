@@ -17,7 +17,7 @@ import java.util.Map;
  * </p>
  *
  * @author Sing
- * @since 2020-12-11
+ * @since 2020-12-12
  */
 public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
 
@@ -25,7 +25,7 @@ public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
      * 获取列表
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     List<FieldConfigResult> customList(@Param("paramCondition") FieldConfigParam paramCondition);
 
@@ -33,7 +33,7 @@ public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
      * 获取map列表
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") FieldConfigParam paramCondition);
 
@@ -41,7 +41,7 @@ public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
      * 获取分页实体列表
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     Page<FieldConfigResult> customPageList(@Param("page") Page page, @Param("paramCondition") FieldConfigParam paramCondition);
 
@@ -49,7 +49,7 @@ public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
      * 获取分页map列表
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") FieldConfigParam paramCondition);
 
