@@ -61,4 +61,4 @@ mail:
   from: sn93@qq.com
 
 server:
-  port: 8081
+  port: 80
