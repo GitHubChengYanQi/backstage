@@ -23,7 +23,7 @@ import java.util.List;
  * </p>
  *
  * @author Sing
- * @since 2020-12-11
+ * @since 2020-12-12
  */
 @Service
 public class FieldConfigServiceImpl extends ServiceImpl<FieldConfigMapper, FieldConfig> implements FieldConfigService {
@@ -65,7 +65,7 @@ public class FieldConfigServiceImpl extends ServiceImpl<FieldConfigMapper, Field
     }
 
     private Serializable getKey(FieldConfigParam param){
-        return param.getFieldName();
+        return param.getFieldId();
     }
 
     private Page<FieldConfigResult> getPageContext() {

@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author Sing
- * @since 2020-12-11
+ * @since 2020-12-12
  */
 public interface FieldConfigService extends IService<FieldConfig> {
 
@@ -22,7 +22,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 新增
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     void add(FieldConfigParam param);
 
@@ -30,7 +30,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 删除
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     void delete(FieldConfigParam param);
 
@@ -38,7 +38,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 更新
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     void update(FieldConfigParam param);
 
@@ -46,7 +46,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 查询单条数据，Specification模式
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     FieldConfigResult findBySpec(FieldConfigParam param);
 
@@ -54,7 +54,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 查询列表，Specification模式
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     List<FieldConfigResult> findListBySpec(FieldConfigParam param);
 
@@ -62,7 +62,7 @@ public interface FieldConfigService extends IService<FieldConfig> {
      * 查询分页数据，Specification模式
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
      PageInfo<FieldConfigResult> findPageBySpec(FieldConfigParam param);
 

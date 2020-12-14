@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author Sing
- * @since 2020-12-11
+ * @since 2020-12-12
  */
 @Data
 @ApiModel
@@ -24,10 +24,22 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
 
 
     /**
+     * 主键
+     */
+    @ApiModelProperty("主键")
+    private Long fieldId;
+
+    /**
      * 字段名
      */
     @ApiModelProperty("字段名")
     private String fieldName;
+
+    /**
+     * 表名
+     */
+    @ApiModelProperty("表名")
+    private String table;
 
     /**
      * 字段类型
@@ -40,6 +52,18 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("数据配置")
     private String config;
+
+    /**
+     * 是否列表显示
+     */
+    @ApiModelProperty("是否列表显示")
+    private Boolean showList;
+
+    /**
+     * 是否搜索
+     */
+    @ApiModelProperty("是否搜索")
+    private Boolean isSearch;
 
     @Override
     public String checkParam() {

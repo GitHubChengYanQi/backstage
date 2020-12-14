@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.gen.modular.controller;
 
+import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.gen.core.enums.GenSessionKeyFlags;
 import cn.atsoft.dasheng.gen.core.generator.at.AtApiExecutor;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;
@@ -117,6 +120,20 @@ public class GeneratorController {
         return layuiPageInfo;
     }
 
+    @RequestMapping("/getTableField")
+    @ResponseBody
+    public PageInfo<FieldConfigResult> getTableField(@RequestParam("dbId") Long dbId,
+                                  @RequestParam("tableName") String tableName) {
+
+        //获取这个表的所有字段以及其他信息
+        List<FieldConfigResult> tableFields = tableService.getTableFields(dbId, tableName);
+
+        PageInfo<FieldConfigResult> PageInfo = new PageInfo<>();
+        PageInfo.setData(tableFields);
+        PageInfo.setCount(tableFields.size());
+
+        return PageInfo;
+    }
     /**
      * 设置条件字段
      */

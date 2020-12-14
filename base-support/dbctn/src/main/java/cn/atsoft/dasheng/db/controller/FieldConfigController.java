@@ -17,7 +17,7 @@ import io.swagger.annotations.ApiOperation;
  * 字段配置控制器
  *
  * @author Sing
- * @Date 2020-12-11 16:52:57
+ * @Date 2020-12-12 10:33:42
  */
 @RestController
 @RequestMapping("/fieldConfig")
@@ -31,7 +31,7 @@ public class FieldConfigController extends BaseController {
      * 新增接口
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -44,7 +44,7 @@ public class FieldConfigController extends BaseController {
      * 编辑接口
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
@@ -57,7 +57,7 @@ public class FieldConfigController extends BaseController {
      * 删除接口
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
@@ -70,12 +70,12 @@ public class FieldConfigController extends BaseController {
      * 查看详情接口
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<FieldConfig> detail(@RequestBody FieldConfigParam fieldConfigParam) {
-        FieldConfig detail = this.fieldConfigService.getById(fieldConfigParam.getFieldName());
+        FieldConfig detail = this.fieldConfigService.getById(fieldConfigParam.getFieldId());
         return ResponseData.success(detail);
     }
 
@@ -83,7 +83,7 @@ public class FieldConfigController extends BaseController {
      * 查询列表
      *
      * @author Sing
-     * @Date 2020-12-11
+     * @Date 2020-12-12
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")

@@ -20,9 +20,6 @@ import java.util.Properties;
 
 /**
  * 数据范围的拦截器
- *
- * @author fengshuonan
- * @date 2017-07-23 21:26
  */
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class DataScopeInterceptor implements Interceptor {
