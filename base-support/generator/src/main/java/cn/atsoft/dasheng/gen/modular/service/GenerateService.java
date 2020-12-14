@@ -4,6 +4,9 @@ import cn.atsoft.dasheng.base.db.entity.DatabaseInfo;
 import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import cn.atsoft.dasheng.base.db.service.DatabaseInfoService;
 import cn.atsoft.dasheng.base.db.util.DbUtil;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.gen.core.enums.GenSessionKeyFlags;
 import cn.atsoft.dasheng.gen.modular.model.FieldConfig;
 import cn.atsoft.dasheng.gen.modular.model.GenSessionFieldConfigs;
@@ -13,6 +16,7 @@ import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.validator.stereotype.ParamValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -28,6 +32,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class GenerateService {
+
+
+    @Autowired
+    private FieldConfigService fieldConfigService;
 
     /**
      * 获取某个db容器下，某个表的字段配置
@@ -63,7 +71,7 @@ public class GenerateService {
         }).collect(Collectors.toList());
     }
 
-    public List<TableFieldInfo> getTableFields(Long dbId, String tableName) {
+    public List<FieldConfigResult> getTableFields(Long dbId, String tableName) {
 
         //查找数据库元数据信息
         DatabaseInfoService databaseInfoService = null;
@@ -77,9 +85,36 @@ public class GenerateService {
         //获取对应表的所有字段
         List<TableFieldInfo> tableFields = DbUtil.getTableFields(databaseInfo, tableName);
 
+        FieldConfigParam fieldConfigParam = new FieldConfigParam();
+        fieldConfigParam.setTable(tableName);
+        List<FieldConfigResult> result = fieldConfigService.findListBySpec(fieldConfigParam);
+
         //将表的所有字段信息转化为配置信息
-        return tableFields;
+        return tableFields.stream().map(i -> {
+            FieldConfigResult fieldConfigResult = new FieldConfigResult();
+            ToolUtil.copyProperties(i, fieldConfigResult);
+            if(ToolUtil.isNotEmpty(result)){
+                for (FieldConfigResult fieldConfig : result) {
+                    if (fieldConfig.getFieldName().equals(i.getColumnName())) {
+                        ToolUtil.copyProperties(fieldConfig, fieldConfigResult);
+                    }
+                }
+            }
+
+//            if(ToolUtil.isEmpty(fieldConfigResult.getShowList())){
+//                fieldConfigResult.setShowList(true);
+//            }else{
+//                fieldConfigResult.setShowList(false);
+//            }
+//            if(ToolUtil.isEmpty(fieldConfigResult.getIsSearch())){
+//                fieldConfigResult.setIsSearch(true);
+//            }else{
+//                fieldConfigResult.setIsSearch(false);
+//            }
+            return fieldConfigResult;
+        }).collect(Collectors.toList());
     }
+
     /**
      * 设置表的字段配置
      *

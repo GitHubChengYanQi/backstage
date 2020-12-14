@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.db.model.result;
 
+import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Data
 @ApiModel
-public class FieldConfigResult implements Serializable {
+public class FieldConfigResult extends TableFieldInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
