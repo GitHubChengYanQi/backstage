@@ -1,14 +1,14 @@
-package cn.atsoft.dasheng.db.service.impl;
+package cn.atsoft.dasheng.sys.modular.rest.service.impl;
 
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.db.entity.FieldConfig;
-import cn.atsoft.dasheng.db.mapper.FieldConfigMapper;
-import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
-import  cn.atsoft.dasheng.db.service.FieldConfigService;
+import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
+import cn.atsoft.dasheng.sys.modular.rest.mapper.RestFieldConfigMapper;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.rest.service.FieldConfigService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -26,11 +26,11 @@ import java.util.List;
  * @since 2020-12-12
  */
 @Service
-public class FieldConfigServiceImpl extends ServiceImpl<FieldConfigMapper, FieldConfig> implements FieldConfigService {
+public class FieldConfigServiceImpl extends ServiceImpl<RestFieldConfigMapper, DBFieldConfig> implements FieldConfigService {
 
     @Override
     public void add(FieldConfigParam param){
-        FieldConfig entity = getEntity(param);
+        DBFieldConfig entity = getEntity(param);
         this.save(entity);
     }
 
@@ -41,8 +41,8 @@ public class FieldConfigServiceImpl extends ServiceImpl<FieldConfigMapper, Field
 
     @Override
     public void update(FieldConfigParam param){
-        FieldConfig oldEntity = getOldEntity(param);
-        FieldConfig newEntity = getEntity(param);
+        DBFieldConfig oldEntity = getOldEntity(param);
+        DBFieldConfig newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
@@ -72,12 +72,12 @@ public class FieldConfigServiceImpl extends ServiceImpl<FieldConfigMapper, Field
         return PageFactory.defaultPage();
     }
 
-    private FieldConfig getOldEntity(FieldConfigParam param) {
+    private DBFieldConfig getOldEntity(FieldConfigParam param) {
         return this.getById(getKey(param));
     }
 
-    private FieldConfig getEntity(FieldConfigParam param) {
-        FieldConfig entity = new FieldConfig();
+    private DBFieldConfig getEntity(FieldConfigParam param) {
+        DBFieldConfig entity = new DBFieldConfig();
         ToolUtil.copyProperties(param, entity);
         return entity;
     }

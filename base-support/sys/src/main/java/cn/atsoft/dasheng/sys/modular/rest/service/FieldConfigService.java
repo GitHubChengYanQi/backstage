@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.db.service;
+package cn.atsoft.dasheng.sys.modular.rest.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.db.entity.FieldConfig;
-import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Sing
  * @since 2020-12-12
  */
-public interface FieldConfigService extends IService<FieldConfig> {
+public interface FieldConfigService extends IService<DBFieldConfig> {
 
     /**
      * 新增

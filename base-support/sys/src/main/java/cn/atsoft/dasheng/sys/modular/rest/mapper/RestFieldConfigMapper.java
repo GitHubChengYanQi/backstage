@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.db.mapper;
+package cn.atsoft.dasheng.sys.modular.rest.mapper;
 
-import cn.atsoft.dasheng.db.entity.FieldConfig;
-import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,7 +18,7 @@ import java.util.Map;
  * @author Sing
  * @since 2020-12-12
  */
-public interface FieldConfigMapper extends BaseMapper<FieldConfig> {
+public interface RestFieldConfigMapper extends BaseMapper<DBFieldConfig> {
 
     /**
      * 获取列表

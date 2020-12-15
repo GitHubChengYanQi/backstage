@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.db.mapper.FieldConfigMapper">
+<mapper namespace="cn.atsoft.dasheng.sys.modular.rest.mapper.RestFieldConfigMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.db.entity.FieldConfig">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig">
         <id column="field_id" property="fieldId" />
         <result column="field_name" property="fieldName" />
         <result column="table" property="table" />
@@ -19,28 +19,28 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.db.model.result.FieldConfigResult" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult" parameterType="cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from database_info_field_config where 1 = 1
+        from sys_field_config where 1 = 1
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from database_info_field_config where 1 = 1
+        from sys_field_config where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.db.model.result.FieldConfigResult" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult" parameterType="cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from database_info_field_config where 1 = 1
+        from sys_field_config where 1 = 1
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from database_info_field_config where 1 = 1
+        from sys_field_config where 1 = 1
     </select>
 
 </mapper>
