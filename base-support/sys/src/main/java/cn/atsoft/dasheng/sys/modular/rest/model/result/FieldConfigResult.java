@@ -1,10 +1,10 @@
-package cn.atsoft.dasheng.db.model.params;
+package cn.atsoft.dasheng.sys.modular.rest.model.result;
 
+import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-import java.util.Date;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -18,7 +18,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @Data
 @ApiModel
-public class FieldConfigParam implements Serializable, BaseValidatingParam {
+public class FieldConfigResult extends TableFieldInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,17 +57,12 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
      * 是否列表显示
      */
     @ApiModelProperty("是否列表显示")
-    private Boolean showList;
+    private String showList;
 
     /**
      * 是否搜索
      */
     @ApiModelProperty("是否搜索")
-    private Boolean isSearch;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
+    private String isSearch;
 
 }

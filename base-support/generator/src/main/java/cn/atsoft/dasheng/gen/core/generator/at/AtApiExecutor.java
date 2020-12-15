@@ -1,8 +1,5 @@
 package cn.atsoft.dasheng.gen.core.generator.at;
 
-import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
-import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.gen.core.generator.at.mybatisplus.AtMpGenerator;
 import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageApiGenerator;
 import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageEditGenerator;
@@ -11,10 +8,7 @@ import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageRouterGenerator;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;
 import cn.atsoft.dasheng.gen.core.generator.at.controller.AtControllerGenerator;
 import cn.atsoft.dasheng.gen.core.generator.restful.mybatisplus.param.MpParam;
-import cn.atsoft.dasheng.gen.modular.service.GenerateService;
-import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;

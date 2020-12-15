@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.db.entity;
+package cn.atsoft.dasheng.sys.modular.rest.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -14,15 +14,15 @@ import java.io.Serializable;
  * @author Sing
  * @since 2020-12-12
  */
-@TableName("database_info_field_config")
-public class FieldConfig implements Serializable {
+@TableName("sys_field_config")
+public class DBFieldConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键
      */
-      @TableId(value = "field_id", type = IdType.AUTO)
+    @TableId(value = "field_id", type = IdType.ID_WORKER)
     private Long fieldId;
 
     /**
@@ -62,13 +62,13 @@ public class FieldConfig implements Serializable {
      * 是否列表显示
      */
     @TableField("showList")
-    private Boolean showList;
+    private String showList;
 
     /**
      * 是否搜索
      */
     @TableField("isSearch")
-    private Boolean isSearch;
+    private String isSearch;
 
 
     public Long getFieldId() {
@@ -111,19 +111,19 @@ public class FieldConfig implements Serializable {
         this.config = config;
     }
 
-    public Boolean getShowList() {
+    public String getShowList() {
         return showList;
     }
 
-    public void setShowList(Boolean showList) {
+    public void setShowList(String showList) {
         this.showList = showList;
     }
 
-    public Boolean getIsSearch() {
+    public String getIsSearch() {
         return isSearch;
     }
 
-    public void setIsSearch(Boolean isSearch) {
+    public void setIsSearch(String isSearch) {
         this.isSearch = isSearch;
     }
 
