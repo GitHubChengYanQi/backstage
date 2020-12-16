@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.db.mapper.RestFieldConfigMapper;
 import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
 import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,8 +54,12 @@ public class FieldConfigServiceImpl extends ServiceImpl<RestFieldConfigMapper, D
     }
 
     @Override
-    public List<FieldConfigResult> findListBySpec(FieldConfigParam param){
-        return null;
+    public List<DBFieldConfig> findListBySpec(FieldConfigParam param){
+        //return this.baseMapper.customList(param);
+        QueryWrapper<DBFieldConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("table_name",param.getTableName());
+        return this.list(queryWrapper);
+//        return this.baseMapper.getByTableName(param.getTableName());
     }
 
     @Override

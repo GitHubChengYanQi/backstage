@@ -3,23 +3,30 @@
 <mapper namespace="cn.atsoft.dasheng.db.mapper.RestFieldConfigMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.db.entity.DBFieldConfig">
-        <id column="field_id" property="fieldId" />
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.db.model.result.FieldConfigResult">
+        <id column="field_id" property="fieldId"/>
         <result column="field_name" property="fieldName" />
-        <result column="table" property="table" />
-        <result column="type" property="type" />
-        <result column="config" property="config" />
-        <result column="showList" property="showList" />
-        <result column="isSearch" property="isSearch" />
+        <result column="table_name" property="tableName" />
+        <result column="type" property="type"/>
+        <result column="config" property="config" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler" />
+        <result column="showList" property="showList" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler" />
+        <result column="isSearch" property="isSearch" typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        field_id AS "fieldId", field_name AS "fieldName", table AS "table", type AS "type", config AS "config", showList AS "showList", isSearch AS "isSearch"
+        field_id AS "fieldId", field_name AS "fieldName", table_name AS "tableName", type AS "type", config AS "config", showList AS "showList", isSearch AS "isSearch"
     </sql>
 
+    <select id="getByTableName" resultMap="BaseResultMap">
+        select
+            field_id AS "field_id", field_name AS "field_name", table_name AS "table_name", type AS "type", config AS "config", showList AS "showList", isSearch AS "isSearch"
+        from sys_field_config where 1 = 1
+        AND table_name =#{tableName}
+    </select>
 
-    <select id="customList" resultType="cn.atsoft.dasheng.db.model.result.FieldConfigResult" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
+
+    <select id="customList" resultType="cn.atsoft.dasheng.db.entity.DBFieldConfig" parameterType="cn.atsoft.dasheng.db.model.params.FieldConfigParam">
         select
         <include refid="Base_Column_List"/>
         from sys_field_config where 1 = 1

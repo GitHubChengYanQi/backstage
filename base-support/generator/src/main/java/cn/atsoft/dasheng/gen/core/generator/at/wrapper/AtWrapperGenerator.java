@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.gen.core.generator.at.controller;
+package cn.atsoft.dasheng.gen.core.generator.at.wrapper;
 
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -14,9 +14,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class AtControllerGenerator extends AbstractCustomGenerator {
+public class AtWrapperGenerator extends AbstractCustomGenerator {
 
-    public AtControllerGenerator(Map<String, Object> tableContext) {
+    public AtWrapperGenerator(Map<String, Object> tableContext) {
         super(tableContext);
     }
 
@@ -33,33 +33,26 @@ public class AtControllerGenerator extends AbstractCustomGenerator {
         List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
 
         template.binding("titleField", "");
-        template.binding("parentField", "");
 
         for (DBFieldConfig dbFieldConfig : result) {
             // 绑定title字段，生成select接口
             if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title")) {
                 template.binding("titleField", dbFieldConfig.getFieldName());
             }
-            // 绑定print字段，生成Tree接口
-            if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("parentKey")) {
-                template.binding("parentField", dbFieldConfig.getFieldName());
-            }
         }
-
-        template.binding("wrapperPackage", contextParam.getProPackage() + ".wrapper." + tableContext.get("entity") + "SelectWrapper");
-        template.binding("controllerPackage", contextParam.getProPackage() + ".controller");
+        template.binding("wrapperPackage", contextParam.getProPackage() + ".wrapper");
     }
 
     @Override
     public String getTemplateResourcePath() {
-        return "/atTemplates/controller.java.btl";
+        return "/atTemplates/wrapper.java.btl";
     }
 
     @Override
     public String getGenerateFileTempPath() {
         String proPackage = this.contextParam.getProPackage();
         String proPath = proPackage.replaceAll("\\.", "/");
-        File file = new File(contextParam.getOutputPath() + "/" + proPath + "/controller/" + tableContext.get("entity") + "Controller.java");
+        File file = new File(contextParam.getOutputPath() + "/" + proPath + "/wrapper/" + tableContext.get("entity") + "SelectWrapper.java");
         return file.getAbsolutePath();
     }
 
@@ -67,7 +60,7 @@ public class AtControllerGenerator extends AbstractCustomGenerator {
     public String getGenerateFileDirectPath() {
         String proPackage = this.contextParam.getProPackage();
         String proPath = proPackage.replaceAll("\\.", "/");
-        File file = new File(contextParam.getOutputPath() + "/java/" + proPath + "/controller/" + tableContext.get("entity") + "Controller.java");
+        File file = new File(contextParam.getOutputPath() + "/java/" + proPath + "/wrapper/" + tableContext.get("entity") + "SelectWrapper.java");
         return file.getAbsolutePath();
     }
 }

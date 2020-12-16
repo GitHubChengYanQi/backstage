@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.db.entity.DatabaseInfo;
 import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import cn.atsoft.dasheng.base.db.service.DatabaseInfoService;
 import cn.atsoft.dasheng.base.db.util.DbUtil;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
 import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
 import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.db.service.FieldConfigService;
@@ -86,31 +87,20 @@ public class GenerateService {
         List<TableFieldInfo> tableFields = DbUtil.getTableFields(databaseInfo, tableName);
 
         FieldConfigParam fieldConfigParam = new FieldConfigParam();
-        fieldConfigParam.setTable(tableName);
-        List<FieldConfigResult> result = fieldConfigService.findListBySpec(fieldConfigParam);
+        fieldConfigParam.setTableName(tableName);
+        List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
 
         //将表的所有字段信息转化为配置信息
         return tableFields.stream().map(i -> {
             FieldConfigResult fieldConfigResult = new FieldConfigResult();
             ToolUtil.copyProperties(i, fieldConfigResult);
             if(ToolUtil.isNotEmpty(result)){
-                for (FieldConfigResult fieldConfig : result) {
+                for (DBFieldConfig fieldConfig : result) {
                     if (fieldConfig.getFieldName().equals(i.getColumnName())) {
                         ToolUtil.copyProperties(fieldConfig, fieldConfigResult);
                     }
                 }
             }
-
-//            if(ToolUtil.isEmpty(fieldConfigResult.getShowList())){
-//                fieldConfigResult.setShowList(true);
-//            }else{
-//                fieldConfigResult.setShowList(false);
-//            }
-//            if(ToolUtil.isEmpty(fieldConfigResult.getIsSearch())){
-//                fieldConfigResult.setIsSearch(true);
-//            }else{
-//                fieldConfigResult.setIsSearch(false);
-//            }
             return fieldConfigResult;
         }).collect(Collectors.toList());
     }

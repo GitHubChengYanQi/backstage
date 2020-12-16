@@ -10,7 +10,13 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiOperation;<%
+if(titleField!=""){
+%>
+import ${wrapperPackage}
+<%
+}
+%>
 
 <% var lowerEntityService = lowerEntity + 'Service'; %>
 
@@ -91,6 +97,27 @@ public class ${entity}Controller extends BaseController {
     public PageInfo<${entity}Result> list(@RequestBody(required = false) ${entity}Param ${lowerEntity}Param) {
         return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
     }
+
+    <%
+    if(titleField!=""){
+    %>
+    /**
+    * 选择列表
+    *
+    * @author ${author}
+    * @Date ${date}
+    */
+    @RequestMapping("/listSelect")
+    public ResponseData listSelect() {
+        List<Map<String,Object>> list = this.${lowerEntity}Service.listMaps();
+
+        ${entity}SelectWrapper factory = new ${entity}SelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
+    <%
+    }
+    %>
 
 }
 

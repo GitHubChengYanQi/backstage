@@ -39,7 +39,7 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
      * 表名
      */
     @ApiModelProperty("表名")
-    private String table;
+    private String tableName;
 
     /**
      * 字段类型
@@ -57,13 +57,13 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
      * 是否列表显示
      */
     @ApiModelProperty("是否列表显示")
-    private String showList;
+    private String[] showList;
 
     /**
      * 是否搜索
      */
     @ApiModelProperty("是否搜索")
-    private String isSearch;
+    private String[] isSearch;
 
     @Override
     public String checkParam() {

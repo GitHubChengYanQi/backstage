@@ -56,7 +56,7 @@ public interface FieldConfigService extends IService<DBFieldConfig> {
      * @author Sing
      * @Date 2020-12-12
      */
-    List<FieldConfigResult> findListBySpec(FieldConfigParam param);
+    List<DBFieldConfig> findListBySpec(FieldConfigParam param);
 
     /**
      * 查询分页数据，Specification模式

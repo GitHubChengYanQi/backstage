@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.db.model.params.FieldConfigPostParam;
 import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -57,10 +58,14 @@ public class RestFieldConfigController extends BaseController {
                 throw new ServiceException(500, "参数错误");
             }
             ToolUtil.copyProperties(fieldConfigParam, fieldConfig);
-            fieldConfig.setTable(tableName);
-            fieldConfigParam.setTable(tableName);
+            fieldConfig.setTableName(tableName);
+            fieldConfigParam.setTableName(tableName);
+            fieldConfig.setFieldId(null);
             fieldConfigs.add(fieldConfig);
         }
+        QueryWrapper<DBFieldConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("table_name",tableName);
+        this.fieldConfigService.remove(queryWrapper);
         this.fieldConfigService.saveBatch(fieldConfigs);
         return ResponseData.success();
     }

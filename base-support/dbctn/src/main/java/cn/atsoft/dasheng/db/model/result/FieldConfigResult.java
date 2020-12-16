@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.db.model.result;
 
 import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
+import com.alibaba.fastjson.JSONArray;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -39,7 +40,7 @@ public class FieldConfigResult extends TableFieldInfo implements Serializable {
      * 表名
      */
     @ApiModelProperty("表名")
-    private String table;
+    private String tableName;
 
     /**
      * 字段类型
@@ -51,18 +52,18 @@ public class FieldConfigResult extends TableFieldInfo implements Serializable {
      * 数据配置
      */
     @ApiModelProperty("数据配置")
-    private String config;
+    private JSONArray config;
 
     /**
      * 是否列表显示
      */
     @ApiModelProperty("是否列表显示")
-    private String showList;
+    private JSONArray showList;
 
     /**
      * 是否搜索
      */
     @ApiModelProperty("是否搜索")
-    private String isSearch;
+    private JSONArray isSearch;
 
 }

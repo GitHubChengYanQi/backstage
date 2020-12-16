@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.db.entity;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+
 import java.io.Serializable;
 
 /**
@@ -14,7 +17,7 @@ import java.io.Serializable;
  * @author Sing
  * @since 2020-12-12
  */
-@TableName("sys_field_config")
+@TableName(value = "sys_field_config",autoResultMap = true)
 public class DBFieldConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,7 +38,7 @@ public class DBFieldConfig implements Serializable {
      * 表名
      */
     @TableField("table_name")
-    private String table;
+    private String tableName;
 
     /**
      * 字段类型，根据type影响controller生成的结果
@@ -54,21 +57,24 @@ public class DBFieldConfig implements Serializable {
 
     /**
      * 数据配置
+     * @TableName(autoResultMap = true)
      */
-    @TableField("config")
-    private String config;
+    @TableField(value = "config",typeHandler = FastjsonTypeHandler.class)
+    private JSONArray config;
 
     /**
      * 是否列表显示
+     * @TableName(autoResultMap = true)
      */
-    @TableField("showList")
-    private String showList;
+    @TableField(value = "showList",typeHandler = FastjsonTypeHandler.class)
+    private JSONArray showList;
 
     /**
      * 是否搜索
+     * @TableName(autoResultMap = true)
      */
-    @TableField("isSearch")
-    private String isSearch;
+    @TableField(value = "isSearch",typeHandler = FastjsonTypeHandler.class)
+    private JSONArray isSearch;
 
 
     public Long getFieldId() {
@@ -87,12 +93,12 @@ public class DBFieldConfig implements Serializable {
         this.fieldName = fieldName;
     }
 
-    public String getTable() {
-        return table;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setTableName(String table) {
+        this.tableName = table;
     }
 
     public String getType() {
@@ -103,27 +109,27 @@ public class DBFieldConfig implements Serializable {
         this.type = type;
     }
 
-    public String getConfig() {
+    public JSONArray getConfig() {
         return config;
     }
 
-    public void setConfig(String config) {
+    public void setConfig(JSONArray config) {
         this.config = config;
     }
 
-    public String getShowList() {
+    public JSONArray getShowList() {
         return showList;
     }
 
-    public void setShowList(String showList) {
+    public void setShowList(JSONArray showList) {
         this.showList = showList;
     }
 
-    public String getIsSearch() {
+    public JSONArray getIsSearch() {
         return isSearch;
     }
 
-    public void setIsSearch(String isSearch) {
+    public void setIsSearch(JSONArray isSearch) {
         this.isSearch = isSearch;
     }
 
@@ -132,7 +138,7 @@ public class DBFieldConfig implements Serializable {
         return "FieldConfig{" +
         "fieldId=" + fieldId +
         ", fieldName=" + fieldName +
-        ", table=" + table +
+        ", table=" + tableName +
         ", type=" + type +
         ", config=" + config +
         ", showList=" + showList +

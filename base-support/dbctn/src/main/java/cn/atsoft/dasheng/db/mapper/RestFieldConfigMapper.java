@@ -28,6 +28,8 @@ public interface RestFieldConfigMapper extends BaseMapper<DBFieldConfig> {
      */
     List<FieldConfigResult> customList(@Param("paramCondition") FieldConfigParam paramCondition);
 
+    List<FieldConfigResult> getByTableName(@Param("tableName") String tableName);
+
     /**
      * 获取map列表
      *
