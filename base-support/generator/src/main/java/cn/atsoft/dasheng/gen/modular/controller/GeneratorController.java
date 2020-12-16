@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.gen.modular.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.gen.core.enums.GenSessionKeyFlags;
 import cn.atsoft.dasheng.gen.core.generator.at.AtApiExecutor;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;

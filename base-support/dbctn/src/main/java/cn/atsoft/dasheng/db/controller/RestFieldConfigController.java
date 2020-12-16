@@ -1,13 +1,13 @@
-package cn.atsoft.dasheng.sys.modular.rest.controller;
+package cn.atsoft.dasheng.db.controller;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigPostParam;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.params.FieldConfigPostParam;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.sys.modular.rest.service.FieldConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;

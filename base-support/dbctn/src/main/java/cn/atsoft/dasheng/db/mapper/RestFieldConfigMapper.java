@@ -1,8 +1,8 @@
-package cn.atsoft.dasheng.sys.modular.rest.mapper;
+package cn.atsoft.dasheng.db.mapper;
 
-import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;

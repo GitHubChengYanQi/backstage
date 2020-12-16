@@ -1,14 +1,14 @@
-package cn.atsoft.dasheng.sys.modular.rest.service.impl;
+package cn.atsoft.dasheng.db.service.impl;
 
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
-import cn.atsoft.dasheng.sys.modular.rest.mapper.RestFieldConfigMapper;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.mapper.RestFieldConfigMapper;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.sys.modular.rest.service.FieldConfigService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

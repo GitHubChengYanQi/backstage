@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.sys.modular.rest.entity;
+package cn.atsoft.dasheng.db.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -34,7 +34,7 @@ public class DBFieldConfig implements Serializable {
     /**
      * 表名
      */
-    @TableField("table")
+    @TableField("table_name")
     private String table;
 
     /**

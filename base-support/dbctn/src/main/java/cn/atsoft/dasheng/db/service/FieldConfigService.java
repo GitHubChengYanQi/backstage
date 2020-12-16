@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.sys.modular.rest.service;
+package cn.atsoft.dasheng.db.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.sys.modular.rest.entity.DBFieldConfig;
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

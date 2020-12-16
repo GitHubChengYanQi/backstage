@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.sys.modular.rest.model.params;
+package cn.atsoft.dasheng.db.model.params;
 
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;

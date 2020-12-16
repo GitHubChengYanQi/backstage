@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.gen.core.generator.at.controller;
 
-import cn.atsoft.dasheng.sys.modular.rest.model.params.FieldConfigParam;
-import cn.atsoft.dasheng.sys.modular.rest.model.result.FieldConfigResult;
-import cn.atsoft.dasheng.sys.modular.rest.service.FieldConfigService;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.model.result.FieldConfigResult;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.gen.core.generator.base.AbstractCustomGenerator;
 import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
