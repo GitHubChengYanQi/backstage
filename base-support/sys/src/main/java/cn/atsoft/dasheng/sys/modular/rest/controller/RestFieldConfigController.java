@@ -50,24 +50,18 @@ public class RestFieldConfigController extends BaseController {
 
         Collection<DBFieldConfig> fieldConfigs = new ArrayList<>();
         List<FieldConfigParam> fieldLists = fieldConfigPostParam.getFieldLists();
-        FieldConfigParam fieldConfigParam = new FieldConfigParam();
 
-        fieldConfigParam.setTable(tableName);
-        fieldConfigParam.setFieldName("id");
-        this.fieldConfigService.add(fieldConfigParam);
-
-//        for (FieldConfigParam fieldConfigParam : fieldLists) {
-//            DBFieldConfig fieldConfig = new DBFieldConfig();
-//            if (ToolUtil.isEmpty(fieldConfigParam.getFieldName())) {
-//                throw new ServiceException(500, "参数错误");
-//            }
-//            ToolUtil.copyProperties(fieldConfigParam, fieldConfig);
-//            fieldConfig.setTable(tableName);
-//            fieldConfigParam.setTable(tableName);
-//            fieldConfigs.add(fieldConfig);
-//            this.fieldConfigService.add(fieldConfigParam);
-//        }
-//        this.fieldConfigService.saveBatch(fieldConfigs);
+        for (FieldConfigParam fieldConfigParam : fieldLists) {
+            DBFieldConfig fieldConfig = new DBFieldConfig();
+            if (ToolUtil.isEmpty(fieldConfigParam.getFieldName())) {
+                throw new ServiceException(500, "参数错误");
+            }
+            ToolUtil.copyProperties(fieldConfigParam, fieldConfig);
+            fieldConfig.setTable(tableName);
+            fieldConfigParam.setTable(tableName);
+            fieldConfigs.add(fieldConfig);
+        }
+        this.fieldConfigService.saveBatch(fieldConfigs);
         return ResponseData.success();
     }
 }

@@ -34,7 +34,7 @@ public class DBFieldConfig implements Serializable {
     /**
      * 表名
      */
-    @TableField("table")
+    @TableField("table_name")
     private String table;
 
     /**
