@@ -32,12 +32,25 @@ public class AtWrapperGenerator extends AbstractCustomGenerator {
         FieldConfigService fieldConfigService = SpringContextHolder.getBean(FieldConfigService.class);
         List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
 
+        template.binding("keyField", "");
         template.binding("titleField", "");
 
         for (DBFieldConfig dbFieldConfig : result) {
+
+            // 设置主键字段
+            for (TableField tableField : fields) {
+                if (tableField.isKeyFlag() && tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    template.binding("keyField", dbFieldConfig.getFieldName());
+                }
+            }
+
             // 绑定title字段，生成select接口
             if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title")) {
-                template.binding("titleField", dbFieldConfig.getFieldName());
+                for (TableField tableField : fields) {
+                    if(tableField.getName().equals(dbFieldConfig.getFieldName())){
+                        template.binding("titleField", dbFieldConfig.getFieldName());
+                    }
+                }
             }
         }
         template.binding("wrapperPackage", contextParam.getProPackage() + ".wrapper");

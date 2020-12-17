@@ -32,17 +32,33 @@ public class AtControllerGenerator extends AbstractCustomGenerator {
         FieldConfigService fieldConfigService = SpringContextHolder.getBean(FieldConfigService.class);
         List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
 
+        template.binding("keyField", "");
         template.binding("titleField", "");
         template.binding("parentField", "");
 
         for (DBFieldConfig dbFieldConfig : result) {
+            // 设置主键字段
+            for (TableField tableField : fields) {
+                if (tableField.isKeyFlag() && tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    template.binding("keyField", dbFieldConfig.getFieldName());
+                }
+            }
+
             // 绑定title字段，生成select接口
             if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title")) {
-                template.binding("titleField", dbFieldConfig.getFieldName());
+                for (TableField tableField : fields) {
+                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                        template.binding("titleField", dbFieldConfig.getFieldName());
+                    }
+                }
             }
             // 绑定print字段，生成Tree接口
             if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("parentKey")) {
-                template.binding("parentField", dbFieldConfig.getFieldName());
+                for (TableField tableField : fields) {
+                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                        template.binding("parentField", dbFieldConfig.getFieldName());
+                    }
+                }
             }
         }
 

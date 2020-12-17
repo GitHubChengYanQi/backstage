@@ -6,19 +6,24 @@ import cn.hutool.core.convert.Convert;
 import java.util.List;
 import java.util.Map;
 
-public class DataBaseInfoSelectWrapper extends BaseControllerWrapper {
+public class ${entity}SelectWrapper extends BaseControllerWrapper {
 
-    public DataBaseInfoSelectWrapper(List<Map<String, Object>> multi) {
+    public ${entity}SelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("${titleField}}"));
-        String value = Convert.toStr(map.get("${keyPropertyName}"));
+        <%
+        if(titleField!=""){
+        %>
+        String label = Convert.toStr(map.get("${titleField}"));
+        String value = Convert.toStr(map.get("${keyField}"));
         map.clear();
         map.put("label",label);
         map.put("value",value);
+        <%
+        }
+        %>
     }
-
 }
