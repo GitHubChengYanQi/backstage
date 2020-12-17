@@ -6,17 +6,20 @@ import cn.atsoft.dasheng.db.entity.DBFieldConfig;
 import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
 import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.gen.core.generator.base.AbstractCustomGenerator;
+import cn.atsoft.dasheng.gen.core.util.TemplateUtil;
 import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import org.beetl.core.Template;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AtPageApiGenerator extends AbstractCustomGenerator {
+public class AtPageFieldGenerator extends AbstractCustomGenerator {
 
-    public AtPageApiGenerator(Map<String, Object> tableContext) {
+    public AtPageFieldGenerator(Map<String, Object> tableContext) {
         super(tableContext);
     }
 
@@ -25,7 +28,6 @@ public class AtPageApiGenerator extends AbstractCustomGenerator {
 
         TableInfo table = (TableInfo) tableContext.get("table");
         List<TableField> fields = table.getFields();
-
         String tableName = table.getName();
         FieldConfigParam fieldConfigParam = new FieldConfigParam();
         fieldConfigParam.setTableName(tableName);
@@ -33,46 +35,42 @@ public class AtPageApiGenerator extends AbstractCustomGenerator {
         FieldConfigService fieldConfigService = SpringContextHolder.getBean(FieldConfigService.class);
         List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
 
-        template.binding("titleField", "");
-        template.binding("parentField", "");
+        List<Map<String,Object>> fieldConfigs = new ArrayList<>();
 
         for (DBFieldConfig dbFieldConfig : result) {
-
-            // 绑定title字段，生成select接口
-            if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title")) {
-                for (TableField tableField : fields) {
-                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
-                        template.binding("titleField", dbFieldConfig.getFieldName());
-                    }
-                }
-            }
-            // 绑定print字段，生成Tree接口
-            if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("parentKey")) {
-                for (TableField tableField : fields) {
-                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
-                        template.binding("parentField", dbFieldConfig.getFieldName());
-                    }
+            for (TableField tableField : fields) {
+                if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    Map<String,Object> field = new HashMap<>();
+                    field.put("propertyName", TemplateUtil.upperFirst(tableField.getPropertyName()));
+                    field.put("keyFlag", tableField.isKeyFlag());
+                    field.put("type",dbFieldConfig.getType());
+                    field.put("config",dbFieldConfig.getConfig());
+                    field.put("showList",dbFieldConfig.getShowList());
+                    field.put("isSearch",dbFieldConfig.getIsSearch());
+                    fieldConfigs.add(field);
+                    break;
                 }
             }
         }
+        template.binding("sysFieldConfigs", fieldConfigs);
     }
 
     @Override
     public String getTemplateResourcePath() {
-        return "/atTemplates/api.js.btl";
+        return "/atTemplates/field.js.btl";
     }
 
     @Override
     public String getGenerateFileTempPath() {
         String lowerEntity = (String) this.tableContext.get("lowerEntity");
-        File file = new File(contextParam.getOutputPath() + "/page/" + lowerEntity + "/" + lowerEntity + "Url/index.jsx");
+        File file = new File(contextParam.getOutputPath() + "/page/" + lowerEntity + "/" + lowerEntity + "Field/index.jsx");
         return file.getAbsolutePath();
     }
 
     @Override
     public String getGenerateFileDirectPath() {
         String lowerEntity = (String) this.tableContext.get("lowerEntity");
-        File file = new File(contextParam.getOutputPath() + "/page/" + lowerEntity + "/" + lowerEntity + "Url/index.jsx");
+        File file = new File(contextParam.getOutputPath() + "/page/" + lowerEntity + "/" + lowerEntity + "Field/index.jsx");
         return file.getAbsolutePath();
     }
 }

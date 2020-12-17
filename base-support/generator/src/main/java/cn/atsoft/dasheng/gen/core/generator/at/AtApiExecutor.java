@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.gen.core.generator.at;
 
 import cn.atsoft.dasheng.gen.core.generator.at.mybatisplus.AtMpGenerator;
-import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageApiGenerator;
-import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageEditGenerator;
-import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageListGenerator;
-import cn.atsoft.dasheng.gen.core.generator.at.page.AtPageRouterGenerator;
+import cn.atsoft.dasheng.gen.core.generator.at.page.*;
 import cn.atsoft.dasheng.gen.core.generator.at.wrapper.AtWrapperGenerator;
 import cn.atsoft.dasheng.gen.core.generator.base.model.ContextParam;
 import cn.atsoft.dasheng.gen.core.generator.at.controller.AtControllerGenerator;
@@ -40,6 +37,11 @@ public class AtApiExecutor {
             AtWrapperGenerator atWrapperGenerator = new AtWrapperGenerator(map);
             atWrapperGenerator.initContext(contextParam);
             atWrapperGenerator.doGeneration();
+
+            // 生成字段配置文件
+            AtPageFieldGenerator atPageFieldGenerator = new AtPageFieldGenerator(map);
+            atPageFieldGenerator.initContext(contextParam);
+            atPageFieldGenerator.doGeneration();
 
             // 生成接口路径文件
             AtPageApiGenerator  atPageApiGenerator = new AtPageApiGenerator(map);

@@ -34,3 +34,23 @@ export const ${lowerEntity}List = {
   method: 'POST',
   rowKey:'${keyPropertyName}'
 };
+<%
+if(titleField!=""){
+%>
+export const ${lowerEntity}ListSelect = {
+  url: '/${lowerEntity}/listSelect',
+  method: 'POST',
+  rowKey:'${keyPropertyName}'
+};
+<%
+if(parentField!=""){
+%>
+export const ${lowerEntity}TreeView = {
+  url: '/${lowerEntity}/treeView',
+  method: 'POST',
+  rowKey:'${keyPropertyName}'
+};
+<%
+}
+}
+%>

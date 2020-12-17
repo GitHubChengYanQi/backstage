@@ -1,0 +1,27 @@
+import React from 'react';
+import {Input} from 'antd';
+import Tree from "@/components/Tree";
+import {${lowerEntity}treeView} from '../${lowerEntity}Url';
+
+<% for(item in sysFieldConfigs!){      %>
+<%     if(!item.keyFlag && item.propertyName!="CREATE_TIME" && item.propertyName!="UPDATE_TIME" && item.propertyName!="CREATE_USER" && item.propertyName!="UPDATE_USER" ){            %>
+export const ${item.propertyName} = (props) =>{
+<%
+if(item.type=="input" || item.type=="title" || item.type==""){
+%>
+  return (<Input {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="parentKey"){
+%>
+  return (<Tree api={${lowerEntity}treeView} {...props}/>);
+<%
+}
+%>
+}
+<%
+}
+}
+%>
