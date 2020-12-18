@@ -9,6 +9,7 @@ import React, {useRef} from 'react';
 import {Input} from 'antd';
 import Form from '@/components/Form';
 import {${lowerEntity}Detail, ${lowerEntity}Add, ${lowerEntity}Edit} from '../${lowerEntity}Url';
+import * as SysField from '../sysDeptField';
 
 const {FormItem} = Form;
 
@@ -29,9 +30,11 @@ const ${bigEntity}Edit = ({...props}) => {
       api={ApiConfig}
       fieldKey="${keyPropertyName}"
     >
-      <% for(var i=0 ; i < fieldConfigs.~size ; i++){     %>
-      <FormItem label="${fieldConfigs[i].columnComment}" name="${fieldConfigs[i].camelFieldName}" component={Input} required/>
-      <% }                                                %>
+      <% for(item in sysFieldConfigs!){ %>
+      <%     if(!item.keyFlag && (item.inEdit!=null && item.inEdit.~size>0)){            %>
+      <FormItem label="${item.comment}" name="${item.camelFieldName}" component={SysField.${item.propertyName}} required/>
+      <% } %>
+      <% } %>
     </Form>
   );
 };

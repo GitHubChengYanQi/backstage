@@ -1,10 +1,18 @@
+/**
+ * ${tool.cleanWhite(table.comment)}字段配置页
+ *
+ * @author ${author}
+ * @Date ${tool.currentTime()}
+ */
+
 import React from 'react';
-import {Input} from 'antd';
-import Tree from "@/components/Tree";
-import {${lowerEntity}treeView} from '../${lowerEntity}Url';
+import {Input,InputNumber} from 'antd';
+import Tree from '@/components/Tree';
+import Cascader from '@/components/Cascader';
+import {${lowerEntity}TreeView} from '../${lowerEntity}Url';
 
 <% for(item in sysFieldConfigs!){      %>
-<%     if(!item.keyFlag && item.propertyName!="CREATE_TIME" && item.propertyName!="UPDATE_TIME" && item.propertyName!="CREATE_USER" && item.propertyName!="UPDATE_USER" ){            %>
+<%     if(!item.keyFlag && ((item.isSearch!=null && item.isSearch.~size>0) || (item.inEdit!=null && item.inEdit.~size>0))){            %>
 export const ${item.propertyName} = (props) =>{
 <%
 if(item.type=="input" || item.type=="title" || item.type==""){
@@ -14,13 +22,27 @@ if(item.type=="input" || item.type=="title" || item.type==""){
 }
 %>
 <%
-if(item.type=="parentKey"){
+if(item.type=="number"){
 %>
-  return (<Tree api={${lowerEntity}treeView} {...props}/>);
+  return (<InputNumber {...props}/>);
 <%
 }
 %>
+<%
+if(item.type=="textArea"){
+%>
+  return (<Input.TextArea {...props}/>);
+<%
 }
+%>
+<%
+if(item.type=="parentKey"){
+%>
+  return (<Cascader api={${lowerEntity}TreeView} {...props}/>);
+<%
+}
+%>
+};
 <%
 }
 }

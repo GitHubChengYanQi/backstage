@@ -76,6 +76,13 @@ public class DBFieldConfig implements Serializable {
     @TableField(value = "isSearch",typeHandler = FastjsonTypeHandler.class)
     private JSONArray isSearch;
 
+    /**
+     * 是否编辑页显示
+     * @TableName(autoResultMap = true)
+     */
+    @TableField(value = "inEdit",typeHandler = FastjsonTypeHandler.class)
+    private JSONArray inEdit;
+
 
     public Long getFieldId() {
         return fieldId;
@@ -131,6 +138,14 @@ public class DBFieldConfig implements Serializable {
 
     public void setIsSearch(JSONArray isSearch) {
         this.isSearch = isSearch;
+    }
+
+    public JSONArray getInEdit() {
+        return inEdit;
+    }
+
+    public void setInEdit(JSONArray inEdit) {
+        this.inEdit = inEdit;
     }
 
     @Override

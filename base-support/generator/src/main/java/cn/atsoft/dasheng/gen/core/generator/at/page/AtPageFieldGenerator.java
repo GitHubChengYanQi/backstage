@@ -47,6 +47,7 @@ public class AtPageFieldGenerator extends AbstractCustomGenerator {
                     field.put("config",dbFieldConfig.getConfig());
                     field.put("showList",dbFieldConfig.getShowList());
                     field.put("isSearch",dbFieldConfig.getIsSearch());
+                    field.put("inEdit",dbFieldConfig.getInEdit());
                     fieldConfigs.add(field);
                     break;
                 }

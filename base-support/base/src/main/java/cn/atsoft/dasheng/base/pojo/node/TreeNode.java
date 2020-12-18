@@ -42,6 +42,7 @@ public class TreeNode implements Tree {
      * 节点名称
      */
     private String title;
+    private String label;
 
 
     private List<TreeNode> children;

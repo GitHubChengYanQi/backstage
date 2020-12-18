@@ -153,6 +153,7 @@ public class ${entity}Controller extends BaseController {
             treeNode.setKey(Convert.toStr(item.get("${keyField}")));
             treeNode.setValue(Convert.toStr(item.get("${keyField}")));
             treeNode.setTitle(Convert.toStr(item.get("${titleField}")));
+            treeNode.setLabel(Convert.toStr(item.get("${titleField}")));
             treeViewNodes.add(treeNode);
         }
         //构建树

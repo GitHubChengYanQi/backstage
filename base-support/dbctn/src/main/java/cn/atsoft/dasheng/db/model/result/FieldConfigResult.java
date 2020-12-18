@@ -66,4 +66,7 @@ public class FieldConfigResult extends TableFieldInfo implements Serializable {
     @ApiModelProperty("是否搜索")
     private JSONArray isSearch;
 
+    @ApiModelProperty("编辑页显示")
+    private JSONArray inEdit;
+
 }

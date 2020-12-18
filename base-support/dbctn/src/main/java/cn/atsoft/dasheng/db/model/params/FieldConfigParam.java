@@ -65,6 +65,9 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("是否搜索")
     private String[] isSearch;
 
+    @ApiModelProperty("编辑页显示")
+    private String[] inEdit;
+
     @Override
     public String checkParam() {
         return null;
