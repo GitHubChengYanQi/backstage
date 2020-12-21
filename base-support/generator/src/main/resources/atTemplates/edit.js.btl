@@ -32,7 +32,11 @@ const ${bigEntity}Edit = ({...props}) => {
     >
       <% for(item in sysFieldConfigs!){ %>
       <%     if(!item.keyFlag && (item.inEdit!=null && item.inEdit.~size>0)){            %>
+      <%    if(parentField==item.camelFieldName){    %>
+      <FormItem label="${item.comment}" name="${item.camelFieldName}Value" component={SysField.${item.propertyName}} required/>
+      <%    }else{%>
       <FormItem label="${item.comment}" name="${item.camelFieldName}" component={SysField.${item.propertyName}} required/>
+      <% } %>
       <% } %>
       <% } %>
     </Form>

@@ -12,12 +12,15 @@ import DelButton from '@/components/DelButton';
 import Drawer from '@/components/Drawer';
 import AddButton from '@/components/AddButton';
 import EditButton from '@/components/EditButton';
+import Form from '@/components/Form';
 import {${lowerEntity}Delete, ${lowerEntity}List} from '../${lowerEntity}Url';
 import ${bigEntity}Edit from '../${lowerEntity}Edit';
+import * as SysField from '../sysDeptField';
 
 const {Column} = AntTable;
+const {FormItem} = Form;
 
-const MenuList = () => {
+const ${bigEntity}List = () => {
   const ref = useRef(null);
   const tableRef = useRef(null);
   const actions = () => {
@@ -30,18 +33,35 @@ const MenuList = () => {
     );
   };
 
+ const searchForm = () => {
+   return (
+     <>
+        <% for(item in sysFieldConfigs!){ %>
+        <%     if(!item.keyFlag && (item.isSearch!=null && item.isSearch.~size>0)){            %>
+        <%    if(parentField==item.camelFieldName){    %>
+       <FormItem label="${item.comment}" name="${item.camelFieldName}Value" component={SysField.${item.propertyName}}/>
+        <%    }else{%>
+       <FormItem label="${item.comment}" name="${item.camelFieldName}" component={SysField.${item.propertyName}}/>
+        <%  }   %>
+        <%  }   %>
+        <%  }   %>
+      </>
+    );
+  };
+
   return (
     <>
       <Table
         title={<h2>列表</h2>}
         api={${lowerEntity}List}
         rowKey="${keyPropertyName}"
+        searchForm={searchForm}
         actions={actions()}
         ref={tableRef}
       >
-      <% for(item in table.fields!){      %>
-      <%     if(!item.keyFlag){            %>
-        <Column title="${item.comment}" dataIndex="${item.propertyName}"/>
+      <% for(item in sysFieldConfigs!){      %>
+      <%     if(!item.keyFlag && (item.showList!=null && item.showList.~size>0)){            %>
+        <Column title="${item.comment}" dataIndex="${item.camelFieldName}"/>
       <%     }                            %>
       <% }                                %>
         <Column/>
@@ -66,4 +86,4 @@ const MenuList = () => {
   );
 };
 
-export default MenuList;
+export default ${bigEntity}List;

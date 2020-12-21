@@ -55,6 +55,24 @@ public class ${entity}Controller extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ${entity}Param ${lowerEntity}Param) {
+        <%
+        if(titleField!=""){
+        if(parentField!=""){
+        %>
+        List<String>  pidValue = ${lowerEntity}Param.getPidValue();
+        <%
+        if(parentType=="LONG"){
+        %>
+        ${lowerEntity}Param.set${bigParentField}(Long.valueOf(pidValue.get(pidValue.size()-1)));
+        <%
+        }else{
+        %>
+        ${lowerEntity}Param.set${bigParentField}(pidValue.get(pidValue.size()-1));
+        <%
+        }
+        }
+        }
+        %>
         this.${lowerEntity}Service.add(${lowerEntity}Param);
         return ResponseData.success();
     }
@@ -68,6 +86,25 @@ public class ${entity}Controller extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ${entity}Param ${lowerEntity}Param) {
+
+        <%
+        if(titleField!=""){
+        if(parentField!=""){
+        %>
+        List<String>  pidValue = ${lowerEntity}Param.getPidValue();
+        <%
+        if(parentType=="LONG"){
+        %>
+        ${lowerEntity}Param.set${bigParentField}(Long.valueOf(pidValue.get(pidValue.size()-1)));
+        <%
+        }else{
+        %>
+        ${lowerEntity}Param.set${bigParentField}(pidValue.get(pidValue.size()-1));
+        <%
+        }
+        }
+        }
+        %>
         this.${lowerEntity}Service.update(${lowerEntity}Param);
         return ResponseData.success();
     }
@@ -93,9 +130,22 @@ public class ${entity}Controller extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<${entity}> detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
+    public ResponseData<${entity}Result> detail(@RequestBody ${entity}Param ${lowerEntity}Param) {
         ${entity} detail = this.${lowerEntity}Service.getById(${lowerEntity}Param.get${bigKeyPropertyName}());
-        return ResponseData.success(detail);
+        ${entity}Result result = new ${entity}Result();
+        ToolUtil.copyProperties(detail, result);
+
+        <%
+        if(titleField!=""){
+            if(parentField!=""){
+            %>
+        List<Map<String,Object>> list = this.${lowerEntity}Service.listMaps();
+        List<String> parentValue = ${entity}SelectWrapper.fetchParentKey(list, Convert.toStr(detail.get${bigParentField}()));
+            <%
+            }
+        }%>
+        result.set${bigParentField}Value(parentValue);
+        return ResponseData.success(result);
     }
 
     /**
@@ -107,6 +157,31 @@ public class ${entity}Controller extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<${entity}Result> list(@RequestBody(required = false) ${entity}Param ${lowerEntity}Param) {
+        if(ToolUtil.isEmpty(${lowerEntity}Param)){
+            ${lowerEntity}Param = new ${entity}Param();
+        }
+        <%
+        if(titleField!=""){
+        if(parentField!=""){
+        %>
+        if(ToolUtil.isNotEmpty(${lowerEntity}Param.getPidValue())){
+            List<String>  pidValue = ${lowerEntity}Param.getPidValue();
+            <%
+            if(parentType=="LONG"){
+            %>
+            ${lowerEntity}Param.set${bigParentField}(Long.valueOf(pidValue.get(pidValue.size()-1)));
+            <%
+            }else{
+            %>
+            ${lowerEntity}Param.set${bigParentField}(pidValue.get(pidValue.size()-1));
+            <%
+            }
+            %>
+        }
+        <%
+        }
+        }
+        %>
         return this.${lowerEntity}Service.findPageBySpec(${lowerEntity}Param);
     }
 
@@ -147,6 +222,14 @@ public class ${entity}Controller extends BaseController {
         }
         List<TreeNode>  treeViewNodes = new ArrayList<>();
 
+        TreeNode rootTreeNode = new TreeNode();
+        rootTreeNode.setKey("0");
+        rootTreeNode.setValue("0");
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setParentId("-1");
+        treeViewNodes.add(rootTreeNode);
+
         for(Map<String, Object> item:list){
             TreeNode treeNode = new TreeNode();
             treeNode.setParentId(Convert.toStr(item.get("${parentField}")));
@@ -158,7 +241,7 @@ public class ${entity}Controller extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("0");
+        factory.setRootParentId("-1");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

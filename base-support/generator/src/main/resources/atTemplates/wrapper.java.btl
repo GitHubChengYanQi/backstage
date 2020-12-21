@@ -3,6 +3,7 @@ package ${wrapperPackage};
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,31 @@ public class ${entity}SelectWrapper extends BaseControllerWrapper {
         }
         %>
     }
+    <%
+    if(titleField!="" && parentField!=""){
+    %>
+    public static List<String> fetchParentKey(List<Map<String, Object>> list, String key) {
+
+        if(key.equals("0")){
+            List<String> tmp = new ArrayList<>();
+            tmp.add("0");
+            return tmp;
+        }
+        List<String> result = new ArrayList<>();
+        List<String> parentResult = new ArrayList<>();
+
+        for (Map<String, Object> item : list) {
+            String value = Convert.toStr(item.get("${keyField}"));
+            String parentValue = Convert.toStr(item.get("${parentField}"));
+            if (key.equals(value)) {
+                result.add(value);
+                parentResult = fetchParentKey(list, parentValue);
+                parentResult.addAll(result);
+            }
+        }
+        return parentResult;
+    }
+    <%
+    }
+    %>
 }

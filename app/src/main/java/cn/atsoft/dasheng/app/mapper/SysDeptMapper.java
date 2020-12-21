@@ -17,7 +17,7 @@ import java.util.Map;
  * </p>
  *
  * @author 
- * @since 2020-12-18
+ * @since 2020-12-21
  */
 public interface SysDeptMapper extends BaseMapper<SysDept> {
 
@@ -25,7 +25,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * 获取列表
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     List<SysDeptResult> customList(@Param("paramCondition") SysDeptParam paramCondition);
 
@@ -33,7 +33,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * 获取map列表
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") SysDeptParam paramCondition);
 
@@ -41,7 +41,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * 获取分页实体列表
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     Page<SysDeptResult> customPageList(@Param("page") Page page, @Param("paramCondition") SysDeptParam paramCondition);
 
@@ -49,7 +49,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * 获取分页map列表
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") SysDeptParam paramCondition);
 

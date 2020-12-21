@@ -38,10 +38,16 @@
         select
         <include refid="Base_Column_List"/>
         from ${table.name} where 1 = 1
-        #foreach($field in ${mapperConditions})
+        #foreach($field in ${sysFieldConfigs})
+            #if($field.isSearch.size() > 0)
             <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
+            #if($field.type=="input" || $field.type=="title" || $field.type=="")
                 and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
+            #else
+                and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+            #end
             </if>
+            #end
         #end
     </select>
 
@@ -49,10 +55,16 @@
         select
         <include refid="Base_Column_List"/>
         from ${table.name} where 1 = 1
-        #foreach($field in ${mapperConditions})
-            <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
-                and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
-            </if>
+        #foreach($field in ${sysFieldConfigs})
+            #if($field.isSearch.size() > 0)
+                <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
+                    #if($field.type=="input" || $field.type=="title" || $field.type=="")
+                        and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
+                    #else
+                        and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                    #end
+                </if>
+            #end
         #end
     </select>
 
@@ -60,10 +72,16 @@
         select
         <include refid="Base_Column_List"/>
         from ${table.name} where 1 = 1
-        #foreach($field in ${mapperConditions})
-            <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
-                and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
-            </if>
+        #foreach($field in ${sysFieldConfigs})
+            #if($field.isSearch.size() > 0)
+                <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
+                    #if($field.type=="input" || $field.type=="title" || $field.type=="")
+                        and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
+                    #else
+                        and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                    #end
+                </if>
+            #end
         #end
     </select>
 
@@ -71,10 +89,16 @@
         select
         <include refid="Base_Column_List"/>
         from ${table.name} where 1 = 1
-        #foreach($field in ${mapperConditions})
-            <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
-                and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
-            </if>
+        #foreach($field in ${sysFieldConfigs})
+            #if($field.isSearch.size() > 0)
+                <if test="paramCondition.${field.camelFieldName} != null and paramCondition.${field.camelFieldName} != ''">
+                    #if($field.type=="input" || $field.type=="title" || $field.type=="")
+                        and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
+                    #else
+                        and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                    #end
+                </if>
+            #end
         #end
     </select>
 

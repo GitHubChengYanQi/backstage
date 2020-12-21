@@ -21,43 +21,6 @@ public class AtPageApiGenerator extends AbstractCustomGenerator {
     }
 
     @Override
-    public void bindingOthers(Template template) {
-
-        TableInfo table = (TableInfo) tableContext.get("table");
-        List<TableField> fields = table.getFields();
-
-        String tableName = table.getName();
-        FieldConfigParam fieldConfigParam = new FieldConfigParam();
-        fieldConfigParam.setTableName(tableName);
-
-        FieldConfigService fieldConfigService = SpringContextHolder.getBean(FieldConfigService.class);
-        List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
-
-        template.binding("titleField", "");
-        template.binding("parentField", "");
-
-        for (DBFieldConfig dbFieldConfig : result) {
-
-            // 绑定title字段，生成select接口
-            if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title")) {
-                for (TableField tableField : fields) {
-                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
-                        template.binding("titleField", dbFieldConfig.getFieldName());
-                    }
-                }
-            }
-            // 绑定print字段，生成Tree接口
-            if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("parentKey")) {
-                for (TableField tableField : fields) {
-                    if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
-                        template.binding("parentField", dbFieldConfig.getFieldName());
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public String getTemplateResourcePath() {
         return "/atTemplates/api.js.btl";
     }

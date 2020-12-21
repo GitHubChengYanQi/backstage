@@ -15,14 +15,22 @@
  */
 package cn.atsoft.dasheng.gen.core.engine;
 
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
+import cn.atsoft.dasheng.gen.core.util.TemplateUtil;
 import cn.atsoft.dasheng.gen.modular.model.FieldConfig;
 import cn.atsoft.dasheng.gen.modular.model.GenSessionFieldConfigs;
 import cn.atsoft.dasheng.gen.core.util.FieldsConfigHolder;
 import cn.atsoft.dasheng.gen.core.util.TableInfoUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 import org.apache.velocity.Template;
@@ -33,9 +41,7 @@ import org.apache.velocity.app.VelocityEngine;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -104,6 +110,59 @@ public class GunsMpVelocityTemplateEngine extends VelocityTemplateEngine {
                 .collect(Collectors.toList());
 
         objectMap.put("mapperConditions", conditionFields);
+
+        List<TableField> fields = tableInfo.getFields();
+        String tableName = tableInfo.getName();
+        FieldConfigParam fieldConfigParam = new FieldConfigParam();
+        fieldConfigParam.setTableName(tableName);
+
+        FieldConfigService fieldConfigService = SpringContextHolder.getBean(FieldConfigService.class);
+        List<DBFieldConfig> result = fieldConfigService.findListBySpec(fieldConfigParam);
+
+        List<Map<String,Object>> sysFieldConfigs = new ArrayList<>();
+
+        objectMap.put("keyField", "");
+        objectMap.put("titleField", "");
+        objectMap.put("parentType", "");
+        objectMap.put("parentField", "");
+        objectMap.put("bigParentField", "");
+
+        for (DBFieldConfig dbFieldConfig : result) {
+            for (TableField tableField : fields) {
+
+                if (tableField.isKeyFlag() && tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    objectMap.put("keyField", dbFieldConfig.getFieldName());
+                }
+
+                if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("parentKey") && tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    objectMap.put("parentType", tableField.getColumnType());
+                    objectMap.put("parentField", dbFieldConfig.getFieldName());
+                    objectMap.put("bigParentField", StrUtil.upperFirst(dbFieldConfig.getFieldName()));
+                }
+                // 绑定title字段，生成select接口
+                if (ToolUtil.isNotEmpty(dbFieldConfig.getType()) && dbFieldConfig.getType().equals("title") && tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    objectMap.put("titleField", dbFieldConfig.getFieldName());
+                }
+
+                if (tableField.getName().equals(dbFieldConfig.getFieldName())) {
+                    Map<String,Object> field = new HashMap<>();
+                    field.put("propertyName", TemplateUtil.upperFirst(tableField.getPropertyName()));
+                    field.put("comment", tableField.getComment());
+                    field.put("camelFieldName", tableField.getPropertyName());
+                    field.put("columnName", tableField.getColumnName());
+                    field.put("keyFlag", tableField.isKeyFlag());
+                    field.put("type",dbFieldConfig.getType());
+                    field.put("config",dbFieldConfig.getConfig());
+                    field.put("showList",ToolUtil.isNotEmpty(dbFieldConfig.getShowList())?dbFieldConfig.getShowList(): new ArrayList<>());
+                    field.put("isSearch",ToolUtil.isNotEmpty(dbFieldConfig.getIsSearch())?dbFieldConfig.getIsSearch(): new ArrayList<>());
+                    field.put("inEdit",ToolUtil.isNotEmpty(dbFieldConfig.getInEdit())?dbFieldConfig.getInEdit(): new ArrayList<>());//dbFieldConfig.getInEdit());
+                    sysFieldConfigs.add(field);
+                    break;
+                }
+            }
+        }
+        objectMap.put("sysFieldConfigs", sysFieldConfigs);
+
         return objectMap;
     }
 }

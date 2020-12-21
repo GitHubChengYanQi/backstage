@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2020-12-18
+ * @since 2020-12-21
  */
 public interface SysDeptService extends IService<SysDept> {
 
@@ -22,7 +22,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 新增
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     void add(SysDeptParam param);
 
@@ -30,7 +30,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 删除
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     void delete(SysDeptParam param);
 
@@ -38,7 +38,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 更新
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     void update(SysDeptParam param);
 
@@ -46,7 +46,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 查询单条数据，Specification模式
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     SysDeptResult findBySpec(SysDeptParam param);
 
@@ -54,7 +54,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 查询列表，Specification模式
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     List<SysDeptResult> findListBySpec(SysDeptParam param);
 
@@ -62,7 +62,7 @@ public interface SysDeptService extends IService<SysDept> {
      * 查询分页数据，Specification模式
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
      PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param);
 

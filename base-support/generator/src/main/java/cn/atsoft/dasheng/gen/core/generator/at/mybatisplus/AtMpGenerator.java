@@ -1,16 +1,24 @@
 package cn.atsoft.dasheng.gen.core.generator.at.mybatisplus;
 
+import cn.atsoft.dasheng.core.util.SpringContextHolder;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.db.entity.DBFieldConfig;
+import cn.atsoft.dasheng.db.model.params.FieldConfigParam;
+import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.gen.core.generator.base.AbstractMpGenerator;
 import cn.atsoft.dasheng.gen.core.enums.GenDownloadEnum;
 import cn.atsoft.dasheng.gen.core.generator.restful.mybatisplus.param.MpParam;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.config.FileOutConfig;
+import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import org.beetl.core.Template;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,6 +38,7 @@ public class AtMpGenerator extends AbstractMpGenerator {
     public AtMpGenerator(MpParam mpContextParam) {
         this.mpContextParam = mpContextParam;
     }
+
 
     /**
      * 代码生成之前，配置代码生成器所需要的配置
@@ -135,8 +144,8 @@ public class AtMpGenerator extends AbstractMpGenerator {
         //自定义specification model的生成
 //        String SpecParamsTemplatePath = "/mpTemplates/specParam.java.vm";
 //        String SpecResultTemplatePath = "/mpTemplates/specResult.java.vm";
-        String SpecParamsTemplatePath = "/mpTemplates/specParamSwagger.java.vm";
-        String SpecResultTemplatePath = "/mpTemplates/specResultSwagger.java.vm";
+        String SpecParamsTemplatePath = "/atTemplates/specParamSwagger.java.vm";
+        String SpecResultTemplatePath = "/atTemplates/specResultSwagger.java.vm";
         List<FileOutConfig> focList = new ArrayList<>();
 
         String paramsParentPackage = this.contextParam.getProPackage().replaceAll("\\.", "/") + "/model/params";
@@ -169,6 +178,7 @@ public class AtMpGenerator extends AbstractMpGenerator {
         HashMap<String, Object> contexMap = new HashMap<>();
         contexMap.put("EntitySpecParams", this.contextParam.getProPackage() + ".model.params");
         contexMap.put("EntitySpecResult", this.contextParam.getProPackage() + ".model.result");
+
         injectionConfig.setMap(contexMap);
     }
 

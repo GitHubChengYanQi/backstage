@@ -25,7 +25,7 @@ import java.util.Map;
  * 部门表控制器
  *
  * @author 
- * @Date 2020-12-18 15:10:02
+ * @Date 2020-12-21 17:16:04
  */
 @RestController
 @RequestMapping("/sysDept")
@@ -39,11 +39,13 @@ public class SysDeptController extends BaseController {
      * 新增接口
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody SysDeptParam sysDeptParam) {
+        List<String>  pidValue = sysDeptParam.getPidValue();
+        sysDeptParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.sysDeptService.add(sysDeptParam);
         return ResponseData.success();
     }
@@ -52,11 +54,14 @@ public class SysDeptController extends BaseController {
      * 编辑接口
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SysDeptParam sysDeptParam) {
+
+        List<String>  pidValue = sysDeptParam.getPidValue();
+        sysDeptParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.sysDeptService.update(sysDeptParam);
         return ResponseData.success();
     }
@@ -65,7 +70,7 @@ public class SysDeptController extends BaseController {
      * 删除接口
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
@@ -78,28 +83,37 @@ public class SysDeptController extends BaseController {
      * 查看详情接口
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<SysDept> detail(@RequestBody SysDeptParam sysDeptParam) {
+    public ResponseData<SysDeptResult> detail(@RequestBody SysDeptParam sysDeptParam) {
         SysDept detail = this.sysDeptService.getById(sysDeptParam.getDeptId());
+        SysDeptResult result = new SysDeptResult();
+        ToolUtil.copyProperties(detail, result);
 
         List<Map<String,Object>> list = this.sysDeptService.listMaps();
-//        SysDeptSelectWrapper factory = new SysDeptSelectWrapper(list);
-        SysDeptSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
-        return ResponseData.success(detail);
+        List<String> parentValue = SysDeptSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
+        result.setPidValue(parentValue);
+        return ResponseData.success(result);
     }
 
     /**
      * 查询列表
      *
      * @author 
-     * @Date 2020-12-18
+     * @Date 2020-12-21
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<SysDeptResult> list(@RequestBody(required = false) SysDeptParam sysDeptParam) {
+        if(ToolUtil.isEmpty(sysDeptParam)){
+            sysDeptParam = new SysDeptParam();
+        }
+        if(ToolUtil.isNotEmpty(sysDeptParam.getPidValue())){
+            List<String>  pidValue = sysDeptParam.getPidValue();
+            sysDeptParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
+        }
         return this.sysDeptService.findPageBySpec(sysDeptParam);
     }
 
@@ -107,7 +121,7 @@ public class SysDeptController extends BaseController {
     * 选择列表
     *
     * @author 
-    * @Date 2020-12-18
+    * @Date 2020-12-21
     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
@@ -122,7 +136,7 @@ public class SysDeptController extends BaseController {
      * tree列表，treeview格式
      *
      * @author 
-         * @Date 2020-12-18
+         * @Date 2020-12-21
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
@@ -133,6 +147,14 @@ public class SysDeptController extends BaseController {
             return ResponseData.success();
         }
         List<TreeNode>  treeViewNodes = new ArrayList<>();
+
+        TreeNode rootTreeNode = new TreeNode();
+        rootTreeNode.setKey("0");
+        rootTreeNode.setValue("0");
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setParentId("-1");
+        treeViewNodes.add(rootTreeNode);
 
         for(Map<String, Object> item:list){
             TreeNode treeNode = new TreeNode();
@@ -145,7 +167,7 @@ public class SysDeptController extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("0");
+        factory.setRootParentId("-1");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

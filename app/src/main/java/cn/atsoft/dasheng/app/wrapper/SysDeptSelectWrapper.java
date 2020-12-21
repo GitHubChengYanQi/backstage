@@ -18,19 +18,25 @@ public class SysDeptSelectWrapper extends BaseControllerWrapper {
         String label = Convert.toStr(map.get("full_name"));
         String value = Convert.toStr(map.get("dept_id"));
         map.clear();
-        map.put("label", label);
-        map.put("value", value);
+        map.put("label",label);
+        map.put("value",value);
     }
-
     public static List<String> fetchParentKey(List<Map<String, Object>> list, String key) {
-        
+
+        if(key.equals("0")){
+            List<String> tmp = new ArrayList<>();
+            tmp.add("0");
+            return tmp;
+        }
         List<String> result = new ArrayList<>();
         List<String> parentResult = new ArrayList<>();
 
         for (Map<String, Object> item : list) {
-            if (key.equals(item.get("pid"))) {
-                result.add(Convert.toStr(item.get("pid")));
-                parentResult = fetchParentKey(list, Convert.toStr(item.get("pid")));
+            String value = Convert.toStr(item.get("dept_id"));
+            String parentValue = Convert.toStr(item.get("pid"));
+            if (key.equals(value)) {
+                result.add(value);
+                parentResult = fetchParentKey(list, parentValue);
                 parentResult.addAll(result);
             }
         }

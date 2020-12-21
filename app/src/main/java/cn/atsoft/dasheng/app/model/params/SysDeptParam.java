@@ -4,9 +4,9 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * </p>
  *
  * @author 
- * @since 2020-12-18
+ * @since 2020-12-21
  */
 @Data
 @ApiModel
@@ -94,6 +94,9 @@ public class SysDeptParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    @ApiModelProperty("父ID顺序数组")
+    private List<String> pidValue;
 
     @Override
     public String checkParam() {

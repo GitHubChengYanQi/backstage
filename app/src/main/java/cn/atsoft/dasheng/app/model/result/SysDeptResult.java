@@ -3,17 +3,16 @@ package cn.atsoft.dasheng.app.model.result;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
+import java.util.List;
 /**
  * <p>
  * 部门表
  * </p>
  *
  * @author 
- * @since 2020-12-18
+ * @since 2020-12-21
  */
 @Data
 @ApiModel
@@ -93,5 +92,6 @@ public class SysDeptResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
+    @ApiModelProperty("父ID顺序数组")
+    private List<String> pidValue;
 }
