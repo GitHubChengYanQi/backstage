@@ -25,7 +25,7 @@ import java.util.Map;
  * 部门表控制器
  *
  * @author 
- * @Date 2020-12-21 17:16:04
+ * @Date 2020-12-22 09:28:13
  */
 @RestController
 @RequestMapping("/sysDept")
@@ -39,7 +39,7 @@ public class SysDeptController extends BaseController {
      * 新增接口
      *
      * @author 
-     * @Date 2020-12-21
+     * @Date 2020-12-22
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -54,7 +54,7 @@ public class SysDeptController extends BaseController {
      * 编辑接口
      *
      * @author 
-     * @Date 2020-12-21
+     * @Date 2020-12-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
@@ -70,7 +70,7 @@ public class SysDeptController extends BaseController {
      * 删除接口
      *
      * @author 
-     * @Date 2020-12-21
+     * @Date 2020-12-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
@@ -83,7 +83,7 @@ public class SysDeptController extends BaseController {
      * 查看详情接口
      *
      * @author 
-     * @Date 2020-12-21
+     * @Date 2020-12-22
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
@@ -102,7 +102,7 @@ public class SysDeptController extends BaseController {
      * 查询列表
      *
      * @author 
-     * @Date 2020-12-21
+     * @Date 2020-12-22
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
@@ -121,7 +121,7 @@ public class SysDeptController extends BaseController {
     * 选择列表
     *
     * @author 
-    * @Date 2020-12-21
+    * @Date 2020-12-22
     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
@@ -136,7 +136,7 @@ public class SysDeptController extends BaseController {
      * tree列表，treeview格式
      *
      * @author 
-         * @Date 2020-12-21
+         * @Date 2020-12-22
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")

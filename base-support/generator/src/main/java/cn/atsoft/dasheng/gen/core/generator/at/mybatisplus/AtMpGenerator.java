@@ -116,8 +116,8 @@ public class AtMpGenerator extends AbstractMpGenerator {
         // 自定义模板配置，可以 copy 源码 mybatis-plus/src/main/resources/templates 下面内容修改，
         // 放置自己项目的 src/main/resources/templates 目录下, 默认名称一下可以不配置，也可以自定义模板名称
         templateConfig.setController(null);
-        templateConfig.setXml("/mpTemplates/mapper.xml.vm");
-        templateConfig.setMapper("/mpTemplates/mapper.java.vm");
+        templateConfig.setXml("/atTemplates/mapper.xml.vm");
+        templateConfig.setMapper("/atTemplates/mapper.java.vm");
 
         //如果不生成接口，就走不生成接口的模板
         if (!this.mpContextParam.getGeneratorInterface()) {

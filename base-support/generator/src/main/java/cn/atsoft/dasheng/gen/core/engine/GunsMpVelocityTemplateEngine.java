@@ -150,6 +150,7 @@ public class GunsMpVelocityTemplateEngine extends VelocityTemplateEngine {
                     field.put("comment", tableField.getComment());
                     field.put("camelFieldName", tableField.getPropertyName());
                     field.put("columnName", tableField.getColumnName());
+                    field.put("columnType", tableField.getColumnType());
                     field.put("keyFlag", tableField.isKeyFlag());
                     field.put("type",dbFieldConfig.getType());
                     field.put("config",dbFieldConfig.getConfig());

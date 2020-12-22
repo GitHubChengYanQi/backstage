@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 
- * @since 2020-12-21
+ * @since 2020-12-22
  */
 @TableName("sys_dept")
 public class SysDept implements Serializable {
