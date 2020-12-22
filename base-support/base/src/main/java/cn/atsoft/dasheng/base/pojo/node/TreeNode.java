@@ -16,6 +16,8 @@
 package cn.atsoft.dasheng.base.pojo.node;
 
 import cn.atsoft.dasheng.model.tree.Tree;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -24,32 +26,39 @@ import java.util.List;
  * tree 插件的节点
  */
 @Data
+@ApiModel
 public class TreeNode implements Tree {
 
     /**
      * 节点id
      */
+    @ApiModelProperty("Tree组件key")
     private String key;
 
+    @ApiModelProperty("Tree组件key")
     private String value;
 
     /**
      * 父节点id
      */
+    @ApiModelProperty("Tree组件父级Id")
     private String parentId;
 
     /**
-     * 节点名称
-     */
+    * 节点名称
+    */
+    @ApiModelProperty("Tree组件名称")
     private String title;
+
+    @ApiModelProperty("Tree组件名称")
     private String label;
 
-
+    @ApiModelProperty("Tree组件子集")
     private List<TreeNode> children;
 
 
     /**
-     * 创建ztree的父级节点
+     * 创建tree的父级节点
      */
     public static TreeNode createParent() {
         TreeNode TreeNode = new TreeNode();
