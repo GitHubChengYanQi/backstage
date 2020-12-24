@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {Input,InputNumber} from 'antd';
+import {Input,InputNumber,TimePicker,DatePicker} from 'antd';
 import Tree from '@/components/Tree';
 import Cascader from '@/components/Cascader';
 import {${lowerEntity}TreeView} from '../${lowerEntity}Url';
@@ -25,6 +25,20 @@ if(item.type=="input" || item.type=="title" || item.type==""){
 if(item.type=="number"){
 %>
   return (<InputNumber {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="time"){
+%>
+  return (<TimePicker {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="date"){
+%>
+  return (<DatePicker {...props}/>);
 <%
 }
 %>
