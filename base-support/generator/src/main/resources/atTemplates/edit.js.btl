@@ -9,7 +9,7 @@ import React, {useRef} from 'react';
 import {Input} from 'antd';
 import Form from '@/components/Form';
 import {${lowerEntity}Detail, ${lowerEntity}Add, ${lowerEntity}Edit} from '../${lowerEntity}Url';
-import * as SysField from '../sysDeptField';
+import * as SysField from '../${lowerEntity}Field';
 
 const {FormItem} = Form;
 
