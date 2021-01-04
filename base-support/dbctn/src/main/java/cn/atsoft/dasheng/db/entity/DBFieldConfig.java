@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.db.entity;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -60,7 +61,7 @@ public class DBFieldConfig implements Serializable {
      * @TableName(autoResultMap = true)
      */
     @TableField(value = "config",typeHandler = FastjsonTypeHandler.class)
-    private JSONArray config;
+    private JSONObject config;
 
     /**
      * 是否列表显示
@@ -116,11 +117,11 @@ public class DBFieldConfig implements Serializable {
         this.type = type;
     }
 
-    public JSONArray getConfig() {
+    public JSONObject getConfig() {
         return config;
     }
 
-    public void setConfig(JSONArray config) {
+    public void setConfig(JSONObject config) {
         this.config = config;
     }
 
