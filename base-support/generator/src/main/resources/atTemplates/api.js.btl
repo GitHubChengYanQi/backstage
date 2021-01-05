@@ -54,3 +54,22 @@ export const ${lowerEntity}TreeView = {
 }
 }
 %>
+
+<% for(item in sysFieldConfigs!){      %>
+<%
+if(item.type=="cascader"){
+%>
+export const ${item.camelFieldName}Cascader = {
+  url: '${item.config.apiUrl}',
+  method: 'POST'
+};
+<% } %>
+<%
+if(item.type=="select"){
+%>
+export const ${item.camelFieldName}Select = {
+  url: '${item.config.apiUrl}',
+  method: 'POST'
+};
+<% } %>
+<% } %>
