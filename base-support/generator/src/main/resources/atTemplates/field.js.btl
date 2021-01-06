@@ -6,13 +6,19 @@
  */
 
 import React from 'react';
-import {Input,InputNumber,TimePicker,DatePicker} from 'antd';
+import {Input,InputNumber,TimePicker,DatePicker,Select as AntdSelect,Checkbox,Radio} from 'antd';
 import Tree from '@/components/Tree';
 import Cascader from '@/components/Cascader';
-import {${lowerEntity}TreeView} from '../${lowerEntity}Url';
+import Select from '@/components/Select';
+import * as apiUrl from '../${lowerEntity}Url';
 
 <% for(item in sysFieldConfigs!){      %>
 <%     if(!item.keyFlag && ((item.isSearch!=null && item.isSearch.~size>0) || (item.inEdit!=null && item.inEdit.~size>0))){            %>
+<% if(item.type=="date" && item.isSearch!=null && item.isSearch.~size>0){  %>
+export const ${item.propertyName}Search = (props) =>{
+    return (<DatePicker.RangePicker {...props}/>);
+};
+<% } %>
 export const ${item.propertyName} = (props) =>{
 <%
 if(item.type=="input" || item.type=="title" || item.type==""){
@@ -52,7 +58,42 @@ if(item.type=="textArea"){
 <%
 if(item.type=="parentKey"){
 %>
-  return (<Cascader api={${lowerEntity}TreeView} {...props}/>);
+  return (<Cascader api={apiUrl.${lowerEntity}TreeView} {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="cascader"){
+%>
+  return (<Cascader api={apiUrl.${item.camelFieldName}Cascader} {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="select"){
+%>
+  return (<Select api={apiUrl.${item.camelFieldName}Select} {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="selectValue"){
+%>
+  return (<AntdSelect options={[<% for(option in item.config.config.options!){  %>{label:'${option.label}',label:'${option.value}'}<% } %>]} {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="checkbox"){
+%>
+  return (<Checkbox.Group options={[<% for(option in item.config.config.options!){  %>{label:'${option.label}',label:'${option.value}'}<% } %>]} {...props}/>);
+<%
+}
+%>
+<%
+if(item.type=="radio"){
+%>
+  return (<Radio.Group options={[<% for(option in item.config.config.options!){  %>{label:'${option.label}',value:'${option.value}'}<% } %>]} {...props}/>);
 <%
 }
 %>
