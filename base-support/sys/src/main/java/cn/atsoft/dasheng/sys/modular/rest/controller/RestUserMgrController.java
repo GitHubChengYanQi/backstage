@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.sys.modular.rest.model.UserQueryParam;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.UserRoleParam;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.UserStatus;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
+import cn.atsoft.dasheng.sys.modular.system.model.params.ChangePwdParam;
 import cn.atsoft.dasheng.sys.modular.system.warpper.UserWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
@@ -94,12 +95,13 @@ public class RestUserMgrController extends BaseController {
 
     /**
      * 修改当前用户的密码
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:43
      */
     @RequestMapping("/changePwd")
-    public Object changePwd(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
+    public SuccessResponseData changePwd(@RequestBody ChangePwdParam changePwdParam) {
+
+        String oldPassword = changePwdParam.getOldPassword();
+        String newPassword = changePwdParam.getNewPassword();
+
         if (ToolUtil.isOneEmpty(oldPassword, newPassword)) {
             throw new RequestEmptyException();
         }
@@ -202,9 +204,6 @@ public class RestUserMgrController extends BaseController {
 
     /**
      * 冻结用户
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:44
      */
     @RequestMapping("/freeze")
     @BussinessLog(value = "冻结用户", key = "userId", dict = UserDict.class)
@@ -226,9 +225,6 @@ public class RestUserMgrController extends BaseController {
 
     /**
      * 解除冻结用户
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:44
      */
     @RequestMapping("/unfreeze")
     @BussinessLog(value = "解除冻结用户", key = "userId", dict = UserDict.class)
