@@ -204,9 +204,6 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
 
     /**
      * 获取用户菜单列表
-     *
-     * @author fengshuonan
-     * @Date 2018/12/24 22:46
      */
     public List<Map<String, Object>> getUserMenuNodes(List<Long> roleList) {
         if (roleList == null || roleList.size() == 0) {
