@@ -357,6 +357,7 @@
         <if test="level != null and level != ''">
             and levels = #{level}
         </if>
+        ORDER BY sort ASC
     </select>
     <select id="treeNodes" resultType="cn.atsoft.dasheng.base.pojo.node.TreeNode">
         select
