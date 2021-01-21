@@ -24,7 +24,7 @@
     </sql>
 
     <select id="tree" resultType="cn.atsoft.dasheng.base.pojo.node.TreeNode">
-		select dept_id AS id,dept_id AS "key", pid as "pId", pid as "parentId", simple_name as name,simple_name as "title",
+		select dept_id AS id,dept_id AS "key", pid as "pId", pid as "parentId", simple_name as name,simple_name as "title",simple_name as "label",
 		(
 		CASE
 		WHEN (pid = 0 OR pid IS NULL) THEN
@@ -54,8 +54,8 @@
         <if test="condition != null and condition != ''">
             and simple_name like CONCAT('%',#{condition},'%') or full_name like CONCAT('%',#{condition},'%')
         </if>
-        <if test="deptId != null and deptId != ''">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[', #{deptId}, '$]%') escape '$' ))
+        <if test="deptId != null">
+            and pid = #{deptId}
         </if>
         order by sort ASC
     </select>

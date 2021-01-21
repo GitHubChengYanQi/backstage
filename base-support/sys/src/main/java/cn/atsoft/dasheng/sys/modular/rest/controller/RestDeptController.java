@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.sys.core.constant.dictmap.DeptDict;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.modular.rest.entity.RestDept;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.DeptParam;
 import cn.atsoft.dasheng.sys.modular.system.model.DeptDto;
 import cn.atsoft.dasheng.sys.modular.system.warpper.DeptWrapper;
 import cn.hutool.core.bean.BeanUtil;
@@ -86,8 +87,9 @@ public class RestDeptController extends BaseController {
      * @Date 2018/12/23 4:57 PM
      */
     @RequestMapping(value = "/list")
-    public PageInfo list(@RequestParam(value = "condition", required = false) String condition,
-                         @RequestParam(value = "deptId", required = false) Long deptId) {
+    public PageInfo list(@RequestBody(required = false) DeptParam deptParam) {
+        String condition = deptParam.getCondition();
+        Long deptId = deptParam.getDeptId();
         Page<Map<String, Object>> list = this.restDeptService.list(condition, deptId);
         Page<Map<String, Object>> wrap = new DeptWrapper(list).wrap();
 
@@ -96,24 +98,19 @@ public class RestDeptController extends BaseController {
 
     /**
      * 部门详情
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 4:57 PM
      */
-    @RequestMapping(value = "/detail/{deptId}")
-    public Object detail(@PathVariable("deptId") Long deptId) {
+    @RequestMapping(value = "/detail")
+    public ResponseData detail(@RequestBody RestDept restDept) {
+        Long deptId = restDept.getDeptId();
         RestDept dept = restDeptService.getById(deptId);
         DeptDto deptDto = new DeptDto();
         BeanUtil.copyProperties(dept, deptDto);
         deptDto.setPName(ConstantFactory.me().getDeptName(deptDto.getPid()));
-        return deptDto;
+        return ResponseData.success(deptDto);
     }
 
     /**
      * 修改部门
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 4:57 PM
      */
     @BussinessLog(value = "修改部门", key = "simpleName", dict = DeptDict.class)
     @RequestMapping(value = "/update")
@@ -127,7 +124,8 @@ public class RestDeptController extends BaseController {
      */
     @BussinessLog(value = "删除部门", key = "deptId", dict = DeptDict.class)
     @RequestMapping(value = "/delete")
-    public ResponseData delete(@RequestParam("deptId") Long deptId) {
+    public ResponseData delete(@RequestBody RestDept restDept) {
+        Long deptId = restDept.getDeptId();
         restDeptService.deleteDept(deptId);
         return SUCCESS_TIP;
     }

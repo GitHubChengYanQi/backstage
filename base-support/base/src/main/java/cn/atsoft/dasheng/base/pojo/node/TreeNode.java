@@ -63,7 +63,9 @@ public class TreeNode implements Tree {
     public static TreeNode createParent() {
         TreeNode TreeNode = new TreeNode();
         TreeNode.setKey("0");
+        TreeNode.setValue("0");
         TreeNode.setTitle("顶级");
+        TreeNode.setLabel("顶级");
         TreeNode.setParentId("-1");
         return TreeNode;
     }
