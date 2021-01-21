@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.db.model.params;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -51,7 +52,7 @@ public class FieldConfigParam implements Serializable, BaseValidatingParam {
      * 数据配置
      */
     @ApiModelProperty("数据配置")
-    private String config;
+    private JSONObject config;
 
     /**
      * 是否列表显示

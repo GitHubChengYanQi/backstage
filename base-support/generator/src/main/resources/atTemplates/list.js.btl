@@ -37,13 +37,17 @@ const ${bigEntity}List = () => {
    return (
      <>
         <% for(item in sysFieldConfigs!){ %>
-        <%     if(!item.keyFlag && (item.isSearch!=null && item.isSearch.~size>0)){            %>
-        <%    if(parentField==item.camelFieldName){    %>
+            <%     if(!item.keyFlag && (item.isSearch!=null && item.isSearch.~size>0)){            %>
+                <% if(item.type=="date"){  %>
+       <FormItem label="${item.comment}" name="${item.camelFieldName}" component={SysField.${item.propertyName}Search}/>
+                <% }else{ %>
+                    <%    if(parentField==item.camelFieldName){    %>
        <FormItem label="${item.comment}" name="${item.camelFieldName}Value" component={SysField.${item.propertyName}}/>
-        <%    }else{%>
+                    <%    }else{%>
        <FormItem label="${item.comment}" name="${item.camelFieldName}" component={SysField.${item.propertyName}}/>
-        <%  }   %>
-        <%  }   %>
+                    <%  }   %>
+                <% } %>
+            <%  }   %>
         <%  }   %>
      </>
     );

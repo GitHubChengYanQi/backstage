@@ -273,9 +273,6 @@ public class DictService extends ServiceImpl<DictMapper, Dict> {
 
     /**
      * 查询字典列表，通过字典类型code
-     *
-     * @author fengshuonan
-     * @Date 2019-06-20 15:14
      */
     public List<Map<String, Object>> getDictsByCodes(List<String> dictCodes) {
 

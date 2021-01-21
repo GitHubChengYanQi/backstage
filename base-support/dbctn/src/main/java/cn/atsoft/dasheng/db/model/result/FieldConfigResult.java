@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.db.model.result;
 
 import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -52,7 +53,7 @@ public class FieldConfigResult extends TableFieldInfo implements Serializable {
      * 数据配置
      */
     @ApiModelProperty("数据配置")
-    private JSONArray config;
+    private JSONObject config;
 
     /**
      * 是否列表显示

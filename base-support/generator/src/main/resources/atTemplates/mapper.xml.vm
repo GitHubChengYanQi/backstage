@@ -44,7 +44,10 @@
             #if($field.type=="input" || $field.type=="title" || $field.type=="")
                 and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
             #else
-                and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                #if($field.type=="date")
+                #else
+                    and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                #end
             #end
             </if>
             #end
@@ -61,7 +64,10 @@
                     #if($field.type=="input" || $field.type=="title" || $field.type=="")
                         and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
                     #else
-                        and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                        #if($field.type=="date")
+                        #else
+                            and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                        #end
                     #end
                 </if>
             #end
@@ -78,7 +84,10 @@
                     #if($field.type=="input" || $field.type=="title" || $field.type=="")
                         and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
                     #else
-                        and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                        #if($field.type=="date")
+                        #else
+                            and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                        #end
                     #end
                 </if>
             #end
@@ -95,7 +104,10 @@
                     #if($field.type=="input" || $field.type=="title" || $field.type=="")
                         and ${field.columnName} like CONCAT('%',#{paramCondition.${field.camelFieldName}},'%')
                     #else
+                        #if($field.type=="date")
+                        #else
                         and ${field.columnName} = #{paramCondition.${field.camelFieldName}}
+                        #end
                     #end
                 </if>
             #end
