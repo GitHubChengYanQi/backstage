@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.db.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.mutidatasource.annotion.DataSource;
 import cn.atsoft.dasheng.db.service.FieldConfigService;
 import cn.atsoft.dasheng.db.entity.DBFieldConfig;
 import cn.atsoft.dasheng.db.mapper.RestFieldConfigMapper;
@@ -16,6 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -85,6 +87,10 @@ public class FieldConfigServiceImpl extends ServiceImpl<RestFieldConfigMapper, D
         DBFieldConfig entity = new DBFieldConfig();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    public boolean saveBatch(Collection<DBFieldConfig>  fieldConfig){
+        return super.saveBatch(fieldConfig);
     }
 
 }

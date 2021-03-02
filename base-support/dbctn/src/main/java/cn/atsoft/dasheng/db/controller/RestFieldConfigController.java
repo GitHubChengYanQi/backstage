@@ -52,6 +52,8 @@ public class RestFieldConfigController extends BaseController {
         Collection<DBFieldConfig> fieldConfigs = new ArrayList<>();
         List<FieldConfigParam> fieldLists = fieldConfigPostParam.getFieldLists();
 
+
+
         for (FieldConfigParam fieldConfigParam : fieldLists) {
             DBFieldConfig fieldConfig = new DBFieldConfig();
             if (ToolUtil.isEmpty(fieldConfigParam.getFieldName())) {
@@ -59,14 +61,17 @@ public class RestFieldConfigController extends BaseController {
             }
             ToolUtil.copyProperties(fieldConfigParam, fieldConfig);
             fieldConfig.setTableName(tableName);
-            fieldConfigParam.setTableName(tableName);
+//            fieldConfigParam.setTableName(tableName);
             fieldConfig.setFieldId(null);
             fieldConfigs.add(fieldConfig);
         }
         QueryWrapper<DBFieldConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("table_name",tableName);
         this.fieldConfigService.remove(queryWrapper);
-        this.fieldConfigService.saveBatch(fieldConfigs);
+        for (DBFieldConfig configItem : fieldConfigs) {
+            this.fieldConfigService.save(configItem);
+        }
+//        this.fieldConfigService.saveBatch(fieldConfigs);
         return ResponseData.success();
     }
 }

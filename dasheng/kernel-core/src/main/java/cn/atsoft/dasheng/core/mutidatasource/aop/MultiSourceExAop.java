@@ -60,16 +60,16 @@ public class MultiSourceExAop implements Ordered {
         //如果有DataSource注解，则设置DataSourceContextHolder为注解上的名称
         if (datasource != null) {
             DataSourceContextHolder.setDataSourceType(datasource.name());
-            log.debug("设置数据源为：" + datasource.name());
+            log.info("设置数据源为：" + datasource.name());
         } else {
             DataSourceContextHolder.setDataSourceType(names[0]);
-            log.debug("设置数据源为：dataSourceCurrent");
+            log.info("设置数据源为：dataSourceCurrent");
         }
 
         try {
             return point.proceed();
         } finally {
-            log.debug("清空数据源信息！");
+            log.info("清空数据源信息！");
             DataSourceContextHolder.clearDataSourceType();
         }
     }
