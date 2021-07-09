@@ -22,7 +22,7 @@
     <modules>
         <module>base-support</module>
         <module>main</module>
-        <module>dasheng</module>
+        <module>dasheng-core</module>
         <module>app</module>
     </modules>
 
