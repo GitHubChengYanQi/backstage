@@ -9,8 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.atsoft</groupId>
-    <artifactId>dasheng-core</artifactId>
+    <artifactId>dasheng</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>kernel-core</module>
