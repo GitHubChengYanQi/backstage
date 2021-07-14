@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.ItemsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Items">
+        <id column="item_id" property="itemId" />
+        <result column="name" property="name" />
+        <result column="shelf_life" property="shelfLife" />
+        <result column="inventory" property="inventory" />
+        <result column="production_time" property="productionTime" />
+        <result column="important" property="important" />
+        <result column="weight" property="weight" />
+        <result column="material_id" property="materialId" />
+        <result column="cost" property="cost" />
+        <result column="vulnerability" property="vulnerability" />
+        <result column="display" property="display" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        item_id AS "itemId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_Items where 1 = 1
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                    and name = #{paramCondition.name}
+            </if>
+            <if test="paramCondition.materialId != null">
+                    and material_id = #{paramCondition.materialId}
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_Items where 1 = 1
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                            and name = #{paramCondition.name}
+                </if>
+                <if test="paramCondition.materialId != null">
+                            and material_id = #{paramCondition.materialId}
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_Items where 1 = 1
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                            and name = #{paramCondition.name}
+                </if>
+                <if test="paramCondition.materialId != null">
+                            and material_id = #{paramCondition.materialId}
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_Items where 1 = 1
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name = #{paramCondition.name}
+                </if>
+                <if test="paramCondition.materialId != null">
+                        and material_id = #{paramCondition.materialId}
+                </if>
+    </select>
+
+</mapper>
