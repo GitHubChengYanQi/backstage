@@ -108,14 +108,7 @@ public class StockDetailsController extends BaseController {
         return this.stockDetailsService.findPageBySpec(stockDetailsParam);
     }
 
-    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.stockDetailsService.listMaps();
-        StockDetailsSelectWrapper stockSelectWrapper = new StockDetailsSelectWrapper(list);
-        List<Map<String, Object>> result = stockSelectWrapper.wrap();
-        return ResponseData.success(result);
-    }
+
 
 
 }

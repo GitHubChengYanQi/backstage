@@ -17,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
+       brand_name AS "brandName", name AS "itemName", parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 
 
@@ -39,22 +39,16 @@
                 </if>
     </select>
 
+
+
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_parts where 1 = 1
-                <if test="paramCondition.itemId != null">
-                            and item_id = #{paramCondition.itemId}
-                </if>
+        from parts_view where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_parts where 1 = 1
-                <if test="paramCondition.itemId != null">
-                        and item_id = #{paramCondition.itemId}
-                </if>
-    </select>
 
 </mapper>

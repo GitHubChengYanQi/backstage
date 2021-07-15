@@ -33,6 +33,9 @@ public class PartsResult implements Serializable {
     @ApiModelProperty("物品id")
     private Long itemId;
 
+    private String itemName;
+
+    private String brandName;
     /**
      * 品牌id
      */
@@ -48,6 +51,7 @@ public class PartsResult implements Serializable {
     /**
      * 状态
      */
+
     @ApiModelProperty("状态")
     private Integer display;
 

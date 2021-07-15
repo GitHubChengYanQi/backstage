@@ -16,10 +16,10 @@ public class StockSelectWrapper extends BaseControllerWrapper {
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
         String label = Convert.toStr(map.get("stock_id"));
-        String value = Convert.toStr(map.get("item_id"));
+        String value = Convert.toStr(map.get("stock_id"));
         map.clear();
         map.put("label",label);
         map.put("value",value);
-        System.err.println(label+value+"----------------------------------------------------------------------------------------------");
+
     }
 }

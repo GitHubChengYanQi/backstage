@@ -46,6 +46,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("零件数量")
     private Integer number;
 
+
+
     /**
      * 状态
      */
@@ -57,6 +59,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Date createTime;
+
+
 
     /**
      * 修改时间

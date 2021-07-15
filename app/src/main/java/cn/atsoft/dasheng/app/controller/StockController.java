@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.StockDetailsSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.StockParam;
@@ -104,7 +106,14 @@ public class StockController extends BaseController {
         return this.stockService.findPageBySpec(stockParam);
     }
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.stockService.listMaps();
+        StockSelectWrapper stockSelectWrapper =new StockSelectWrapper(list);
+        List<Map<String, Object>> result = stockSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }

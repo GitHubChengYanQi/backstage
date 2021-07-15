@@ -75,6 +75,9 @@ public class StockResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    private String  iname;
+    private  String pname;
+    private  String bname;
     /**
      * 状态
      */
