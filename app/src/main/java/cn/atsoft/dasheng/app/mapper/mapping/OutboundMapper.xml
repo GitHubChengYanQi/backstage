@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.OutboundMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Outbound">
+        <id column="outbound_id" property="outboundId" />
+        <result column="stock_id" property="stockId" />
+        <result column="item_id" property="itemId" />
+        <result column="number" property="number" />
+        <result column="outtime" property="outtime" />
+        <result column="place_id" property="placeId" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="display" property="display" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        outbound_id AS "outboundId", stock_id AS "stockId", item_id AS "itemId", number AS "number", outtime AS "outtime", place_id AS "placeId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OutboundResult" parameterType="cn.atsoft.dasheng.app.model.params.OutboundParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_outbound where 1 = 1
+            <if test="paramCondition.itemId != null">
+                    and item_id = #{paramCondition.itemId}
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OutboundParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_outbound where 1 = 1
+                <if test="paramCondition.itemId != null">
+                            and item_id = #{paramCondition.itemId}
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.OutboundResult" parameterType="cn.atsoft.dasheng.app.model.params.OutboundParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_outbound where 1 = 1
+                <if test="paramCondition.itemId != null">
+                            and item_id = #{paramCondition.itemId}
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OutboundParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_outbound where 1 = 1
+                <if test="paramCondition.itemId != null">
+                        and item_id = #{paramCondition.itemId}
+                </if>
+    </select>
+
+</mapper>
