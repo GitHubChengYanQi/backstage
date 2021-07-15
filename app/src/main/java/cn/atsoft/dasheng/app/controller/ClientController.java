@@ -23,7 +23,7 @@ import java.util.Map;
  * 客户表控制器
  *
  * @author 
- * @Date 2021-07-15 17:19:17
+ * @Date 2021-07-15 17:41:40
  */
 @RestController
 @RequestMapping("/client")
@@ -86,7 +86,7 @@ public class ClientController extends BaseController {
         ClientResult result = new ClientResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

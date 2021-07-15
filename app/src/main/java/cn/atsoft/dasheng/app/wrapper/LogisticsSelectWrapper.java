@@ -15,5 +15,11 @@ public class LogisticsSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+            String label =Convert.toStr(map.get("logistics_id"));
+            String value=Convert.toStr(map.get("logistics_id"));
+            map.clear();
+            map.put("label",label);
+            map.put("value",value);
+            
     }
 }

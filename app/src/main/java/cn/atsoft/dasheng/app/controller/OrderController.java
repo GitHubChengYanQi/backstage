@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.OrderSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Order;
 import cn.atsoft.dasheng.app.model.params.OrderParam;
@@ -22,7 +24,7 @@ import java.util.Map;
  * 发货表控制器
  *
  * @author 
- * @Date 2021-07-15 17:19:17
+ * @Date 2021-07-15 17:41:40
  */
 @RestController
 @RequestMapping("/order")
@@ -85,7 +87,7 @@ public class OrderController extends BaseController {
         OrderResult result = new OrderResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -105,7 +107,16 @@ public class OrderController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.orderService.listMaps();
+//        BrandSelectWrapper factory = new BrandSelectWrapper(list);
+        OrderSelectWrapper orderSelectWrapper = new OrderSelectWrapper(list);
+//        ItemsSelectWrapper itemsSelectWrapper =new ItemsSelectWrapper(list);
+        List<Map<String, Object>> result = orderSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

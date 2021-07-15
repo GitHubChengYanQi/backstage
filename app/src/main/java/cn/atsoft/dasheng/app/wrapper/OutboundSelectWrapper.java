@@ -15,5 +15,10 @@ public class OutboundSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("outbound_id"));
+        String value = Convert.toStr(map.get("outbound_id"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }

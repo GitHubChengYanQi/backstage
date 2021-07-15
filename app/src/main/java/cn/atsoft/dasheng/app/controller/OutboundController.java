@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.OrderSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.OutboundSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outbound;
 import cn.atsoft.dasheng.app.model.params.OutboundParam;
@@ -22,7 +24,7 @@ import java.util.Map;
  * 出库表控制器
  *
  * @author 
- * @Date 2021-07-15 17:19:17
+ * @Date 2021-07-15 17:41:40
  */
 @RestController
 @RequestMapping("/outbound")
@@ -85,7 +87,7 @@ public class OutboundController extends BaseController {
         OutboundResult result = new OutboundResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -104,7 +106,16 @@ public class OutboundController extends BaseController {
         return this.outboundService.findPageBySpec(outboundParam);
     }
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.outboundService.listMaps();
+
+        OrderSelectWrapper orderSelectWrapper = new OrderSelectWrapper(list);
+        OutboundSelectWrapper outboundSelectWrapper = new OutboundSelectWrapper(list);
+        List<Map<String, Object>> result = outboundSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }

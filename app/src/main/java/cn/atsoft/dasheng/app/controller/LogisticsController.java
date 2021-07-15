@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.ClientSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.LogisticsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Logistics;
 import cn.atsoft.dasheng.app.model.params.LogisticsParam;
@@ -22,7 +24,7 @@ import java.util.Map;
  * 物流表控制器
  *
  * @author 
- * @Date 2021-07-15 17:19:17
+ * @Date 2021-07-15 17:41:40
  */
 @RestController
 @RequestMapping("/logistics")
@@ -85,7 +87,7 @@ public class LogisticsController extends BaseController {
         LogisticsResult result = new LogisticsResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -104,6 +106,15 @@ public class LogisticsController extends BaseController {
         return this.logisticsService.findPageBySpec(logisticsParam);
     }
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String,Object>>> listSelect() {
+        List<Map<String,Object>> list = this.logisticsService.listMaps();
+        LogisticsSelectWrapper logisticsSelectWrapper =new LogisticsSelectWrapper(list);
+
+        List<Map<String,Object>> result = logisticsSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 
