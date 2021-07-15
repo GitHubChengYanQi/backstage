@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.PlaceSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.StockDetailsSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +25,7 @@ import java.util.Map;
 /**
  * 仓库物品明细表控制器
  *
- * @author 
+ * @author
  * @Date 2021-07-15 11:13:02
  */
 @RestController
@@ -35,7 +39,7 @@ public class StockDetailsController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -48,7 +52,7 @@ public class StockDetailsController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +66,12 @@ public class StockDetailsController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StockDetailsParam stockDetailsParam)  {
+    public ResponseData delete(@RequestBody StockDetailsParam stockDetailsParam) {
         this.stockDetailsService.delete(stockDetailsParam);
         return ResponseData.success();
     }
@@ -75,7 +79,7 @@ public class StockDetailsController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -92,19 +96,26 @@ public class StockDetailsController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StockDetailsResult> list(@RequestBody(required = false) StockDetailsParam stockDetailsParam) {
-        if(ToolUtil.isEmpty(stockDetailsParam)){
+        if (ToolUtil.isEmpty(stockDetailsParam)) {
             stockDetailsParam = new StockDetailsParam();
         }
         return this.stockDetailsService.findPageBySpec(stockDetailsParam);
     }
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.stockDetailsService.listMaps();
+        StockDetailsSelectWrapper stockSelectWrapper = new StockDetailsSelectWrapper(list);
+        List<Map<String, Object>> result = stockSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }
