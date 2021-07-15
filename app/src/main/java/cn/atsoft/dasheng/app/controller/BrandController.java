@@ -115,7 +115,6 @@ public class BrandController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String,Object>>> listSelect() {
         List<Map<String,Object>> list = this.brandService.listMaps();
-
         BrandSelectWrapper factory = new BrandSelectWrapper(list);
         List<Map<String,Object>> result = factory.wrap();
         return ResponseData.success(result);

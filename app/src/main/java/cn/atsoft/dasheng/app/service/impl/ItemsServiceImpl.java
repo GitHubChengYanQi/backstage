@@ -61,6 +61,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
     public PageInfo<ItemsResult> findPageBySpec(ItemsParam param){
         Page<ItemsResult> pageContext = getPageContext();
         IPage<ItemsResult> page = this.baseMapper.customPageList(pageContext, param);
+
         return PageFactory.createPageInfo(page);
     }
 

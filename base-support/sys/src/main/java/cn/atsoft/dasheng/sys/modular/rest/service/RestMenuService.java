@@ -50,7 +50,7 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
     @Transactional
     public void addMenu(MenuDto menuDto) {
 
-        if (ToolUtil.isOneEmpty(menuDto, menuDto.getCode(), menuDto.getName(), menuDto.getPid(), menuDto.getMenuFlag(), menuDto.getUrl(), menuDto.getSystemType())) {
+        if (ToolUtil.isOneEmpty(menuDto, menuDto.getCode(), menuDto.getName(), menuDto.getMenuFlag(), menuDto.getUrl(), menuDto.getSystemType())) {
             throw new RequestEmptyException();
         }
 

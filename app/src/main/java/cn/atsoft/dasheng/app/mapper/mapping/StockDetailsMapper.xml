@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.StockDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.StockDetails">
+        <id column="stock_item_id" property="stockItemId" />
+        <result column="stock_id" property="stockId" />
+        <result column="price" property="price" />
+        <result column="storage_time" property="storageTime" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_stock_details where 1 = 1
+            <if test="paramCondition.stockId != null">
+                    and stock_id = #{paramCondition.stockId}
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_stock_details where 1 = 1
+                <if test="paramCondition.stockId != null">
+                            and stock_id = #{paramCondition.stockId}
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_stock_details where 1 = 1
+                <if test="paramCondition.stockId != null">
+                            and stock_id = #{paramCondition.stockId}
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_stock_details where 1 = 1
+                <if test="paramCondition.stockId != null">
+                        and stock_id = #{paramCondition.stockId}
+                </if>
+    </select>
+
+</mapper>

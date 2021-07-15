@@ -69,6 +69,13 @@ public class ItemsResult implements Serializable {
     @ApiModelProperty("材质id")
     private Long materialId;
 
+    /***
+     *材质姓名
+     */
+
+    private String materialName;
+
+
     /**
      * 成本
      */

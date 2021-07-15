@@ -23,14 +23,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        item_id AS "itemId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
+        item_id AS "itemId", name AS "name",shelf_life AS "shelfLife", inventory AS "inventory",material_id AS "materialId",materialName AS "materialName", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
     </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_Items where 1 = 1
+        from daoxin_items where 1 = 1
             <if test="paramCondition.name != null and paramCondition.name != ''">
                     and name = #{paramCondition.name}
             </if>
@@ -42,7 +42,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_Items where 1 = 1
+        from daoxin_items where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                             and name = #{paramCondition.name}
                 </if>
@@ -54,7 +54,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_Items where 1 = 1
+        from view_items where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                             and name = #{paramCondition.name}
                 </if>
@@ -66,7 +66,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_Items where 1 = 1
+        from daoxin_items where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name = #{paramCondition.name}
                 </if>
