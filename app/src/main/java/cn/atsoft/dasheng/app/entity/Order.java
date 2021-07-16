@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 发货表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @TableName("daoxin_order")
@@ -24,7 +27,7 @@ public class Order implements Serializable {
     /**
      * 发货编号
      */
-      @TableId(value = "order_id", type = IdType.ID_WORKER)
+    @TableId(value = "order_id", type = IdType.ID_WORKER)
     private Long orderId;
 
     /**
@@ -42,8 +45,7 @@ public class Order implements Serializable {
     /**
      * 收货人
      */
-    @TableField("client_id")
-    private Long clientId;
+
 
     /**
      * 收货地址
@@ -51,11 +53,6 @@ public class Order implements Serializable {
     @TableField("shipping")
     private String shipping;
 
-    /**
-     * 发货时间
-     */
-    @TableField("outtime")
-    private Date outtime;
 
     /**
      * 发货价格
@@ -75,16 +72,16 @@ public class Order implements Serializable {
     @TableField("area")
     private Long area;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     @TableField("display")
@@ -115,13 +112,6 @@ public class Order implements Serializable {
         this.consignor = consignor;
     }
 
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
 
     public String getShipping() {
         return shipping;
@@ -131,13 +121,6 @@ public class Order implements Serializable {
         this.shipping = shipping;
     }
 
-    public Date getOuttime() {
-        return outtime;
-    }
-
-    public void setOuttime(Date outtime) {
-        this.outtime = outtime;
-    }
 
     public Integer getPrice() {
         return price;
@@ -206,20 +189,18 @@ public class Order implements Serializable {
     @Override
     public String toString() {
         return "Order{" +
-        "orderId=" + orderId +
-        ", outboundId=" + outboundId +
-        ", consignor=" + consignor +
-        ", clientId=" + clientId +
-        ", shipping=" + shipping +
-        ", outtime=" + outtime +
-        ", price=" + price +
-        ", weight=" + weight +
-        ", area=" + area +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "orderId=" + orderId +
+                ", outboundId=" + outboundId +
+                ", consignor=" + consignor +
+                ", shipping=" + shipping +
+                 ", price=" + price +
+                ", weight=" + weight +
+                ", area=" + area +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

@@ -7,9 +7,7 @@
         <id column="order_id" property="orderId" />
         <result column="outbound_id" property="outboundId" />
         <result column="consignor" property="consignor" />
-        <result column="client_id" property="clientId" />
         <result column="shipping" property="shipping" />
-        <result column="outtime" property="outtime" />
         <result column="price" property="price" />
         <result column="weight" property="weight" />
         <result column="area" property="area" />
@@ -22,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        order_id AS "orderId", outbound_id AS "outboundId", consignor AS "consignor", client_id AS "clientId", shipping AS "shipping", outtime AS "outtime", price AS "price", weight AS "weight", area AS "area", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        order_id AS "orderId", outbound_id AS "outboundId", consignor AS "consignor", shipping AS "shipping", price AS "price", weight AS "weight", area AS "area", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 

@@ -8,6 +8,7 @@
         <result column="order_id" property="orderId" />
         <result column="client_id" property="clientId" />
         <result column="position" property="position" />
+        <result column="outtime" property="outtime" />
         <result column="adress" property="adress" />
         <result column="phone" property="phone" />
         <result column="create_time" property="createTime" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        logistics_id AS "logisticsId", order_id AS "orderId", client_id AS "clientId", position AS "position", adress AS "adress", phone AS "phone", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        outtime AS "outtime" ,logistics_id AS "logisticsId", order_id AS "orderId", client_id AS "clientId", position AS "position", adress AS "adress", phone AS "phone", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 

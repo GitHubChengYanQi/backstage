@@ -63,11 +63,7 @@ public class Client implements Serializable {
     @TableField("price")
     private Integer price;
 
-    /**
-     * 物流id
-     */
-    @TableField("logistics_id")
-    private Long logisticsId;
+
 
     /**
      * 创建时间
@@ -156,13 +152,7 @@ public class Client implements Serializable {
         this.price = price;
     }
 
-    public Long getLogisticsId() {
-        return logisticsId;
-    }
 
-    public void setLogisticsId(Long logisticsId) {
-        this.logisticsId = logisticsId;
-    }
 
     public Date getCreateTime() {
         return createTime;
@@ -214,7 +204,7 @@ public class Client implements Serializable {
         ", orderId=" + orderId +
         ", orderTime=" + orderTime +
         ", price=" + price +
-        ", logisticsId=" + logisticsId +
+
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", createUser=" + createUser +

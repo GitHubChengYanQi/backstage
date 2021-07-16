@@ -65,11 +65,6 @@ public class ClientParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("价格")
     private Integer price;
 
-    /**
-     * 物流id
-     */
-    @ApiModelProperty("物流id")
-    private Long logisticsId;
 
     /**
      * 创建时间

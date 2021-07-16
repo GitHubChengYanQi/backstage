@@ -57,6 +57,8 @@ public class LogisticsResult implements Serializable {
     @ApiModelProperty("物流电话")
     private Long phone;
 
+    private Date outtime;
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 

@@ -41,11 +41,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("发货人")
     private String consignor;
 
-    /**
-     * 收货人
-     */
-    @ApiModelProperty("收货人")
-    private Long clientId;
+
 
     /**
      * 收货地址
@@ -53,11 +49,6 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("收货地址")
     private String shipping;
 
-    /**
-     * 发货时间
-     */
-    @ApiModelProperty("发货时间")
-    private Date outtime;
 
     /**
      * 发货价格

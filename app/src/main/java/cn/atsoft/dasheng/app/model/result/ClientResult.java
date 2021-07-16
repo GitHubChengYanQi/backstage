@@ -46,12 +46,6 @@ public class ClientResult implements Serializable {
     private Long phone;
 
     /**
-     * 订单号
-     */
-    @ApiModelProperty("订单号")
-    private Long orderId;
-
-    /**
      * 下单时间
      */
     @ApiModelProperty("下单时间")
@@ -63,11 +57,6 @@ public class ClientResult implements Serializable {
     @ApiModelProperty("价格")
     private Integer price;
 
-    /**
-     * 物流id
-     */
-    @ApiModelProperty("物流id")
-    private Long logisticsId;
 
     /**
      * 创建时间
@@ -93,6 +82,7 @@ public class ClientResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    private  Long orderId;
     /**
      * 状态
      */

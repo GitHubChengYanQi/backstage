@@ -20,6 +20,15 @@ import java.io.Serializable;
 public class Logistics implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private  Date outtime;
+
+    public Date getOuttime() {
+        return outtime;
+    }
+
+    public void setOuttime(Date outtime) {
+        this.outtime = outtime;
+    }
 
     /**
      * 物流id
@@ -169,6 +178,7 @@ public class Logistics implements Serializable {
         ", clientId=" + clientId +
         ", position=" + position +
         ", adress=" + adress +
+                ", outtime=" + outtime +
         ", phone=" + phone +
         ", createTime=" + createTime +
         ", createUser=" + createUser +

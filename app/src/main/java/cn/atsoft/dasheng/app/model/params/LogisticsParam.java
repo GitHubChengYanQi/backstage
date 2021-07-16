@@ -53,6 +53,7 @@ public class LogisticsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("到货地址")
     private String adress;
 
+     private  Date outtime;
     /**
      * 物流电话
      */

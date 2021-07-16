@@ -11,7 +11,7 @@
         <result column="order_id" property="orderId" />
         <result column="order_time" property="orderTime" />
         <result column="price" property="price" />
-        <result column="logistics_id" property="logisticsId" />
+
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="create_user" property="createUser" />
@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        client_id AS "clientId", name AS "name", adress AS "adress", phone AS "phone", order_id AS "orderId", order_time AS "orderTime", price AS "price", logistics_id AS "logisticsId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+        client_id AS "clientId", name AS "name", adress AS "adress", phone AS "phone", order_id AS "orderId", order_time AS "orderTime", price AS "price", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
