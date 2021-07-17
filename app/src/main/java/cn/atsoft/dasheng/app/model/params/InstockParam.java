@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -21,7 +24,8 @@ import java.util.List;
 public class InstockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private String name;
+    private String brandName;
 
     /**
      * 物品编号
@@ -35,11 +39,26 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("物品名称")
     private Long itemId;
 
+    public String getRegisterTime() {
+        if (registerTime != null && !registerTime.equals("")) {
+            StringBuffer stringBuffer = new StringBuffer(registerTime);
+            String date = stringBuffer.substring(0, 10);
+            return date;
+        } else {
+            return registerTime;
+        }
+
+    }
+
+    public void setRegisterTime(String registerTime) {
+        this.registerTime = registerTime;
+    }
+
     /**
      * 登记时间
      */
     @ApiModelProperty("登记时间")
-    private Date registerTime;
+    private String registerTime;
 
     /**
      * 入库数量
