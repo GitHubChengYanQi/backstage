@@ -10,61 +10,52 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 物流表
+ * 入库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
-@TableName("daoxin_logistics")
-public class Logistics implements Serializable {
+@TableName("daoxin_instock")
+public class Instock implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  Date outtime;
-
-    public Date getOuttime() {
-        return outtime;
-    }
-
-    public void setOuttime(Date outtime) {
-        this.outtime = outtime;
-    }
 
     /**
-     * 物流id
+     * 物品编号
      */
-      @TableId(value = "logistics_id", type = IdType.ID_WORKER)
-    private Long logisticsId;
+      @TableId(value = "instock_id", type = IdType.ID_WORKER)
+    private Long instockId;
 
     /**
-     * 发货编号
+     * 物品名称
      */
-    @TableField("order_id")
-    private Long orderId;
+    @TableField("item_id")
+    private Long itemId;
 
     /**
-     * 到货地址
+     * 登记时间
      */
-    @TableField("client_id")
-    private Long clientId;
+    @TableField("register_time")
+    private Date registerTime;
 
     /**
-     * 当前位置
+     * 入库数量
      */
-    @TableField("position")
-    private String position;
+    @TableField("number")
+    private Long number;
 
     /**
-     * 到货地址
+     * 价格
      */
-    @TableField("adress")
-    private String adress;
+    @TableField("price")
+    private Integer price;
 
     /**
-     * 物流电话
+     * 品牌
      */
-    @TableField("phone")
-    private Long phone;
+    @TableField("brand_id")
+    private String brandId;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -82,52 +73,52 @@ public class Logistics implements Serializable {
     private Integer display;
 
 
-    public Long getLogisticsId() {
-        return logisticsId;
+    public Long getInstockId() {
+        return instockId;
     }
 
-    public void setLogisticsId(Long logisticsId) {
-        this.logisticsId = logisticsId;
+    public void setInstockId(Long instockId) {
+        this.instockId = instockId;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Date getRegisterTime() {
+        return registerTime;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
     }
 
-    public String getPosition() {
-        return position;
+    public Long getNumber() {
+        return number;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
-    public String getAdress() {
-        return adress;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public Long getPhone() {
-        return phone;
+    public String getBrandId() {
+        return brandId;
     }
 
-    public void setPhone(Long phone) {
-        this.phone = phone;
+    public void setBrandId(String brandId) {
+        this.brandId = brandId;
     }
 
     public Date getCreateTime() {
@@ -172,14 +163,13 @@ public class Logistics implements Serializable {
 
     @Override
     public String toString() {
-        return "Logistics{" +
-        "logisticsId=" + logisticsId +
-        ", orderId=" + orderId +
-        ", clientId=" + clientId +
-        ", position=" + position +
-        ", adress=" + adress +
-                ", outtime=" + outtime +
-        ", phone=" + phone +
+        return "Instock{" +
+        "instockId=" + instockId +
+        ", itemId=" + itemId +
+        ", registerTime=" + registerTime +
+        ", number=" + number +
+        ", price=" + price +
+        ", brandId=" + brandId +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +

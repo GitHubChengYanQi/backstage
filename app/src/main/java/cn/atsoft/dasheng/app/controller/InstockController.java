@@ -1,12 +1,12 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.OrderSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Order;
-import cn.atsoft.dasheng.app.model.params.OrderParam;
-import cn.atsoft.dasheng.app.model.result.OrderResult;
-import cn.atsoft.dasheng.app.service.OrderService;
+import cn.atsoft.dasheng.app.entity.Instock;
+import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.app.model.result.InstockResult;
+import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -21,70 +21,70 @@ import java.util.Map;
 
 
 /**
- * 发货表控制器
+ * 入库表控制器
  *
- * @author 
- * @Date 2021-07-15 17:41:40
+ * @author song
+ * @Date 2021-07-17 10:46:08
  */
 @RestController
-@RequestMapping("/order")
-@Api(tags = "发货表")
-public class OrderController extends BaseController {
+@RequestMapping("/instock")
+@Api(tags = "入库表")
+public class InstockController extends BaseController {
 
     @Autowired
-    private OrderService orderService;
+    private InstockService instockService;
 
     /**
      * 新增接口
      *
-     * @author 
-     * @Date 2021-07-15
+     * @author song
+     * @Date 2021-07-17
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody OrderParam orderParam) {
-        this.orderService.add(orderParam);
+    public ResponseData addItem(@RequestBody InstockParam instockParam) {
+        this.instockService.add(instockParam);
         return ResponseData.success();
     }
 
     /**
      * 编辑接口
      *
-     * @author 
-     * @Date 2021-07-15
+     * @author song
+     * @Date 2021-07-17
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody OrderParam orderParam) {
+    public ResponseData update(@RequestBody InstockParam instockParam) {
 
-        this.orderService.update(orderParam);
+        this.instockService.update(instockParam);
         return ResponseData.success();
     }
 
     /**
      * 删除接口
      *
-     * @author 
-     * @Date 2021-07-15
+     * @author song
+     * @Date 2021-07-17
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrderParam orderParam)  {
-        this.orderService.delete(orderParam);
+    public ResponseData delete(@RequestBody InstockParam instockParam)  {
+        this.instockService.delete(instockParam);
         return ResponseData.success();
     }
 
     /**
      * 查看详情接口
      *
-     * @author 
-     * @Date 2021-07-15
+     * @author song
+     * @Date 2021-07-17
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<OrderResult> detail(@RequestBody OrderParam orderParam) {
-        Order detail = this.orderService.getById(orderParam.getOrderId());
-        OrderResult result = new OrderResult();
+    public ResponseData<InstockResult> detail(@RequestBody InstockParam instockParam) {
+        Instock detail = this.instockService.getById(instockParam.getInstockId());
+        InstockResult result = new InstockResult();
         ToolUtil.copyProperties(detail, result);
 
 //        result.setValue(parentValue);
@@ -94,27 +94,26 @@ public class OrderController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
-     * @Date 2021-07-15
+     * @author song
+     * @Date 2021-07-17
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OrderResult> list(@RequestBody(required = false) OrderParam orderParam) {
-        if(ToolUtil.isEmpty(orderParam)){
-            orderParam = new OrderParam();
+    public PageInfo<InstockResult> list(@RequestBody(required = false) InstockParam instockParam) {
+        if(ToolUtil.isEmpty(instockParam)){
+            instockParam = new InstockParam();
         }
-        return this.orderService.findPageBySpec(orderParam);
+        return this.instockService.findPageBySpec(instockParam);
     }
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.orderService.listMaps();
-//        BrandSelectWrapper factory = new BrandSelectWrapper(list);
-        OrderSelectWrapper orderSelectWrapper = new OrderSelectWrapper(list);
-//        ItemsSelectWrapper itemsSelectWrapper =new ItemsSelectWrapper(list);
-        List<Map<String, Object>> result = orderSelectWrapper.wrap();
+        List<Map<String, Object>> list = this.instockService.listMaps();
+
+        InstockSelectWrapper instockSelectWrapper = new InstockSelectWrapper(list);
+        List<Map<String, Object>> result = instockSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 

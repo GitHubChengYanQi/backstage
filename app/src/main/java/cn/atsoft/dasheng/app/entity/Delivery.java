@@ -6,6 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 
 /**
@@ -13,31 +15,32 @@ import java.io.Serializable;
  * 出库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
-@TableName("daoxin_outbound")
-public class Outbound implements Serializable {
+@TableName("daoxin_delivery")
+public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 出库id
      */
-      @TableId(value = "outbound_id", type = IdType.ID_WORKER)
-    private Long outboundId;
+      @TableId(value = "delivery_id", type = IdType.ID_WORKER)
+    private Long deliveryId;
 
     /**
-     * 仓库id
+     * 库存id
      */
     @TableField("stock_id")
     private Long stockId;
 
     /**
-     * 出库物品
+     * 出库时间
      */
-    @TableField("item_id")
-    private Long itemId;
+
+    @TableField("delivery_time")
+    private Date deliveryTime;
 
     /**
      * 出库数量
@@ -46,16 +49,16 @@ public class Outbound implements Serializable {
     private Long number;
 
     /**
-     * 出库时间
+     * 出库价格
      */
-    @TableField("outtime")
-    private Date outtime;
+    @TableField("price")
+    private Integer price;
 
     /**
-     * 出库地点
+     * 出库品牌
      */
-    @TableField("place_id")
-    private Long placeId;
+    @TableField("brand")
+    private String brand;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -73,12 +76,12 @@ public class Outbound implements Serializable {
     private Integer display;
 
 
-    public Long getOutboundId() {
-        return outboundId;
+    public Long getDeliveryId() {
+        return deliveryId;
     }
 
-    public void setOutboundId(Long outboundId) {
-        this.outboundId = outboundId;
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
     }
 
     public Long getStockId() {
@@ -89,12 +92,12 @@ public class Outbound implements Serializable {
         this.stockId = stockId;
     }
 
-    public Long getItemId() {
-        return itemId;
+    public Date getDeliveryTime() {
+        return deliveryTime;
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
+    public void setDeliveryTime(Date deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
     public Long getNumber() {
@@ -105,20 +108,20 @@ public class Outbound implements Serializable {
         this.number = number;
     }
 
-    public Date getOuttime() {
-        return outtime;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setOuttime(Date outtime) {
-        this.outtime = outtime;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Date getCreateTime() {
@@ -163,13 +166,13 @@ public class Outbound implements Serializable {
 
     @Override
     public String toString() {
-        return "Outbound{" +
-        "outboundId=" + outboundId +
+        return "Delivery{" +
+        "deliveryId=" + deliveryId +
         ", stockId=" + stockId +
-        ", itemId=" + itemId +
+        ", delivery time=" + deliveryTime +
         ", number=" + number +
-        ", outtime=" + outtime +
-        ", placeId=" + placeId +
+        ", price=" + price +
+        ", brand=" + brand +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +

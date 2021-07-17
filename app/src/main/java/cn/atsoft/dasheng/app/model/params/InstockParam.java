@@ -10,55 +10,54 @@ import java.util.List;
 
 /**
  * <p>
- * 物流表
+ * 入库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
 @Data
 @ApiModel
-public class LogisticsParam implements Serializable, BaseValidatingParam {
+public class InstockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 物流id
+     * 物品编号
      */
-    @ApiModelProperty("物流id")
-    private Long logisticsId;
+    @ApiModelProperty("物品编号")
+    private Long instockId;
 
     /**
-     * 发货编号
+     * 物品名称
      */
-    @ApiModelProperty("发货编号")
-    private Long orderId;
+    @ApiModelProperty("物品名称")
+    private Long itemId;
 
     /**
-     * 到货地址
+     * 登记时间
      */
-    @ApiModelProperty("到货地址")
-    private Long clientId;
+    @ApiModelProperty("登记时间")
+    private Date registerTime;
 
     /**
-     * 当前位置
+     * 入库数量
      */
-    @ApiModelProperty("当前位置")
-    private String position;
+    @ApiModelProperty("入库数量")
+    private Long number;
 
     /**
-     * 到货地址
+     * 价格
      */
-    @ApiModelProperty("到货地址")
-    private String adress;
+    @ApiModelProperty("价格")
+    private Integer price;
 
-     private  Date outtime;
     /**
-     * 物流电话
+     * 品牌
      */
-    @ApiModelProperty("物流电话")
-    private Long phone;
+    @ApiModelProperty("品牌")
+    private String brandId;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
