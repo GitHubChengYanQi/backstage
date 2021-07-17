@@ -22,11 +22,15 @@ public class InstockResult implements Serializable {
 
    private  String name;
    private  String brandName;
+   private String placeName;
     /**
      * 物品编号
      */
     @ApiModelProperty("物品编号")
     private Long instockId;
+
+ @ApiModelProperty("地点id")
+ private Long palceId;
 
     /**
      * 物品名称
@@ -56,7 +60,7 @@ public class InstockResult implements Serializable {
      * 品牌
      */
     @ApiModelProperty("品牌")
-    private String brandId;
+    private long brandId;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

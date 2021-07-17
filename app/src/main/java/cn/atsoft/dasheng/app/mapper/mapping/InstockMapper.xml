@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Instock">
         <id column="instock_id" property="instockId" />
         <result column="item_id" property="itemId" />
+        <result column="palce_id" property="palceId" />
         <result column="register_time" property="registerTime" />
         <result column="number" property="number" />
         <result column="price" property="price" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-      name AS "name", brand_name AS "brandName",  instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        placeName AS "placeName" ,palce_id AS "palceId" , name AS "name", brand_name AS "brandName",  instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -46,7 +47,7 @@
         <include refid="Base_Column_List"/>
         from instock_view where 1 = 1
                 <if test="paramCondition.itemId != null">
-                            and item_id = #{paramCondition.itemId}
+                and item_id = #{paramCondition.itemId}
                 </if>
         <if test="paramCondition.name!=null">
             and name like CONCAT('%',#{paramCondition.name},'%')
@@ -56,6 +57,9 @@
         </if>
         <if test="paramCondition.registerTime!=null">
             and register_time like CONCAT('%',#{paramCondition.registerTime},'%')
+        </if>
+        <if test="paramCondition.placeName!=null">
+            and placeName like CONCAT('%',#{paramCondition.placeName},'%')
         </if>
     </select>
 

@@ -1,5 +1,10 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
+import cn.atsoft.dasheng.app.model.params.StockParam;
+import cn.atsoft.dasheng.app.model.result.StockResult;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -18,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
 
 
 /**
@@ -33,6 +39,10 @@ public class InstockController extends BaseController {
 
     @Autowired
     private InstockService instockService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     /**
      * 新增接口
@@ -43,9 +53,90 @@ public class InstockController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InstockParam instockParam) {
+
         this.instockService.add(instockParam);
+
+        StockParam stockParam = new StockParam();
+
+        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
+
+        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+
+        if (pageBySpec.getData().size() == 0){
+            Long id = 100L;
+            stockParam.setStockId(id);
+            stockParam.setItemId(instockParam.getItemId());
+            stockParam.setBrandId(instockParam.getBrandId());
+            stockParam.setPalceId(instockParam.getPalceId());
+            stockParam.setInventory(instockParam.getNumber());
+            this.stockService.add(stockParam);
+
+            stockDetailsParam.setStockId(id);
+            stockDetailsParam.setPrice(instockParam.getPrice());
+            stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
+
+            for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
+
+                this.stockDetailsService.add(stockDetailsParam);
+            }
+
+
+        }else {
+            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
+                if (pageBySpec.getData().get(i).getItemId().equals(instockParam.getItemId())) {
+                    stockParam.setStockId(pageBySpec.getData().get(i).getStockId());
+                    stockParam.setItemId(instockParam.getItemId());
+                    stockParam.setBrandId(instockParam.getBrandId());
+                    stockParam.setPalceId(instockParam.getPalceId());
+                    stockParam.setInventory(instockParam.getNumber()+pageBySpec.getData().get(i).getInventory());
+                    this.stockService.update(stockParam);
+
+
+                    stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
+                    stockDetailsParam.setPrice(instockParam.getPrice());
+                    stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
+                    for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
+
+                        this.stockDetailsService.add(stockDetailsParam);
+                    }
+
+
+                    break;
+                }else  {
+                    if ( i == pageBySpec.getData().size() - 1 ){
+                        stockParam.setStockId(pageBySpec.getData().get(pageBySpec.getData().size()-1).getStockId()+1);
+                        stockParam.setItemId(instockParam.getItemId());
+                        stockParam.setBrandId(instockParam.getBrandId());
+                        stockParam.setPalceId(instockParam.getPalceId());
+                        stockParam.setInventory(instockParam.getNumber());
+
+
+                        this.stockService.add(stockParam);
+
+
+
+                        stockDetailsParam.setStockId(pageBySpec.getData().get(pageBySpec.getData().size()-1).getStockId()+1);
+                        stockDetailsParam.setPrice(instockParam.getPrice());
+                        stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
+                        for (int j = 0; j < instockParam.getNumber(); j++) {
+
+                            this.stockDetailsService.add(stockDetailsParam);
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+
+
         return ResponseData.success();
     }
+
+
+
 
     /**
      * 编辑接口

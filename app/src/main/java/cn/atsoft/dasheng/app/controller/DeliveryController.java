@@ -1,5 +1,11 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
+import cn.atsoft.dasheng.app.model.params.StockParam;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.app.model.result.StockResult;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
@@ -32,6 +38,13 @@ public class DeliveryController extends BaseController {
     @Autowired
     private DeliveryService deliveryService;
 
+    @Autowired
+    private StockService stockService;
+
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
+
     /**
      * 新增接口
      *
@@ -41,9 +54,48 @@ public class DeliveryController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody DeliveryParam deliveryParam) {
-//        System.err.println(deliveryParam);
-        this.deliveryService.add(deliveryParam);
-        return ResponseData.success();
+
+
+
+        StockParam stockParam = new StockParam();
+
+        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
+
+            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
+                if (pageBySpec.getData().get(i).getStockId().equals(deliveryParam.getStockId())) {
+                    if (pageBySpec.getData().get(i).getInventory()>=deliveryParam.getNumber()){
+                        stockParam.setStockId(pageBySpec.getData().get(i).getStockId());
+                        stockParam.setItemId(pageBySpec.getData().get(i).getItemId());
+                        stockParam.setBrandId(pageBySpec.getData().get(i).getBrandId());
+                        stockParam.setPalceId(pageBySpec.getData().get(i).getPalceId());
+                        stockParam.setInventory(pageBySpec.getData().get(i).getInventory()-deliveryParam.getNumber());
+                        this.stockService.update(stockParam);
+                        this.deliveryService.add(deliveryParam);
+
+
+                        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+                        stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
+
+                        PageInfo<StockDetailsResult> pageBySpec1 = this.stockDetailsService.findPageBySpec(stockDetailsParam);
+
+
+                        for (int j = 0 ; j < deliveryParam.getNumber() ; j++ ){
+                            stockDetailsParam.setStockItemId(pageBySpec1.getData().get(j).getStockItemId());
+                            this.stockDetailsService.delete(stockDetailsParam);
+                        }
+
+
+
+
+                        return ResponseData.success();
+                    }
+
+                }
+            }
+
+
+
+        return ResponseData.error("出库失败!");
     }
 
     /**
@@ -100,9 +152,6 @@ public class DeliveryController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<DeliveryResult> list(@RequestBody(required = false) DeliveryParam deliveryParam) {
-
-
-
         if(ToolUtil.isEmpty(deliveryParam)){
             deliveryParam = new DeliveryParam();
         }

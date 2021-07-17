@@ -26,6 +26,16 @@ public class Instock implements Serializable {
      */
       @TableId(value = "instock_id", type = IdType.ID_WORKER)
     private Long instockId;
+    @TableField("palce_id")
+    private Long palceId;
+
+    public Long getPalceId() {
+        return palceId;
+    }
+
+    public void setPalceId(Long palceId) {
+        this.palceId = palceId;
+    }
 
     /**
      * 物品名称
@@ -55,7 +65,7 @@ public class Instock implements Serializable {
      * 品牌
      */
     @TableField("brand_id")
-    private String brandId;
+    private long brandId;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -113,11 +123,11 @@ public class Instock implements Serializable {
         this.price = price;
     }
 
-    public String getBrandId() {
+    public long getBrandId() {
         return brandId;
     }
 
-    public void setBrandId(String brandId) {
+    public void setBrandId(long brandId) {
         this.brandId = brandId;
     }
 
