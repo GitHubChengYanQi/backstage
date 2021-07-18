@@ -20,6 +20,5 @@ public class ClientSelectWrapper extends BaseControllerWrapper {
         map.clear();
         map.put("label",label);
         map.put("value",value);
-
     }
 }

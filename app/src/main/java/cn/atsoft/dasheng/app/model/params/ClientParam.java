@@ -10,11 +10,11 @@ import java.util.List;
 
 /**
  * <p>
- * 客户表
+ * 客户管理表
  * </p>
  *
  * @author 
- * @since 2021-07-15
+ * @since 2021-07-16
  */
 @Data
 @ApiModel
@@ -30,22 +30,28 @@ public class ClientParam implements Serializable, BaseValidatingParam {
     private Long clientId;
 
     /**
-     * 姓名
+     * 客户名称
      */
-    @ApiModelProperty("姓名")
+    @ApiModelProperty("客户名称")
     private String name;
 
     /**
-     * 居住地址
+     * 客户地址id
      */
-    @ApiModelProperty("居住地址")
-    private String adress;
+    @ApiModelProperty("客户地址id")
+    private String adressId;
 
     /**
      * 联系电话
      */
     @ApiModelProperty("联系电话")
-    private Long phone;
+    private Long phone1;
+
+    /**
+     * 固定电话
+     */
+    @ApiModelProperty("固定电话")
+    private Long phone2;
 
     /**
      * 订单号
@@ -60,23 +66,46 @@ public class ClientParam implements Serializable, BaseValidatingParam {
     private Date orderTime;
 
     /**
-     * 价格
+     * 成立时间
      */
-    @ApiModelProperty("价格")
-    private Integer price;
-
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
+    @ApiModelProperty("成立时间")
+    private Date setup;
 
     /**
-     * 修改时间
+     * 法定代表人
      */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
+    @ApiModelProperty("法定代表人")
+    private String legal;
+
+    /**
+     * 统一社会信用代码
+     */
+    @ApiModelProperty("统一社会信用代码")
+    private Long utscc;
+
+    /**
+     * 公司类型
+     */
+    @ApiModelProperty("公司类型")
+    private String companyType;
+
+    /**
+     * 营业期限
+     */
+    @ApiModelProperty("营业期限")
+    private Long businessTerm;
+
+    /**
+     * 注册地址
+     */
+    @ApiModelProperty("注册地址")
+    private String signIn;
+
+    /**
+     * 简介
+     */
+    @ApiModelProperty("简介")
+    private String introduction;
 
     /**
      * 创建者
@@ -89,6 +118,18 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
 
     /**
      * 状态

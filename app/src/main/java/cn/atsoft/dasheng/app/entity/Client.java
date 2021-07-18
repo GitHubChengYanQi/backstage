@@ -10,11 +10,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 客户表
+ * 客户管理表
  * </p>
  *
  * @author 
- * @since 2021-07-15
+ * @since 2021-07-16
  */
 @TableName("daoxin_client")
 public class Client implements Serializable {
@@ -28,22 +28,28 @@ public class Client implements Serializable {
     private Long clientId;
 
     /**
-     * 姓名
+     * 客户名称
      */
     @TableField("name")
     private String name;
 
     /**
-     * 居住地址
+     * 客户地址id
      */
-    @TableField("adress")
-    private String adress;
+    @TableField("adress_id")
+    private String adressId;
 
     /**
      * 联系电话
      */
-    @TableField("phone")
-    private Long phone;
+    @TableField("phone1")
+    private Long phone1;
+
+    /**
+     * 固定电话
+     */
+    @TableField("phone2")
+    private Long phone2;
 
     /**
      * 订单号
@@ -58,24 +64,46 @@ public class Client implements Serializable {
     private Date orderTime;
 
     /**
-     * 价格
+     * 成立时间
      */
-    @TableField("price")
-    private Integer price;
-
-
+    @TableField("setup")
+    private Date setup;
 
     /**
-     * 创建时间
+     * 法定代表人
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
+    @TableField("legal")
+    private String legal;
 
     /**
-     * 修改时间
+     * 统一社会信用代码
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
+    @TableField("utscc")
+    private Long utscc;
+
+    /**
+     * 公司类型
+     */
+    @TableField("company_type")
+    private String companyType;
+
+    /**
+     * 营业期限
+     */
+    @TableField("business_term")
+    private Long businessTerm;
+
+    /**
+     * 注册地址
+     */
+    @TableField("sign_in")
+    private String signIn;
+
+    /**
+     * 简介
+     */
+    @TableField("introduction")
+    private String introduction;
 
     /**
      * 创建者
@@ -88,6 +116,18 @@ public class Client implements Serializable {
      */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
 
     /**
      * 状态
@@ -112,20 +152,28 @@ public class Client implements Serializable {
         this.name = name;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getAdressId() {
+        return adressId;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setAdressId(String adressId) {
+        this.adressId = adressId;
     }
 
-    public Long getPhone() {
-        return phone;
+    public Long getPhone1() {
+        return phone1;
     }
 
-    public void setPhone(Long phone) {
-        this.phone = phone;
+    public void setPhone1(Long phone1) {
+        this.phone1 = phone1;
+    }
+
+    public Long getPhone2() {
+        return phone2;
+    }
+
+    public void setPhone2(Long phone2) {
+        this.phone2 = phone2;
     }
 
     public Long getOrderId() {
@@ -144,30 +192,60 @@ public class Client implements Serializable {
         this.orderTime = orderTime;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Date getSetup() {
+        return setup;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setSetup(Date setup) {
+        this.setup = setup;
     }
 
-
-
-    public Date getCreateTime() {
-        return createTime;
+    public String getLegal() {
+        return legal;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setLegal(String legal) {
+        this.legal = legal;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public Long getUtscc() {
+        return utscc;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setUtscc(Long utscc) {
+        this.utscc = utscc;
+    }
+
+    public String getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(String companyType) {
+        this.companyType = companyType;
+    }
+
+    public Long getBusinessTerm() {
+        return businessTerm;
+    }
+
+    public void setBusinessTerm(Long businessTerm) {
+        this.businessTerm = businessTerm;
+    }
+
+    public String getSignIn() {
+        return signIn;
+    }
+
+    public void setSignIn(String signIn) {
+        this.signIn = signIn;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
     public Long getCreateUser() {
@@ -186,6 +264,22 @@ public class Client implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
     public Integer getDisplay() {
         return display;
     }
@@ -199,16 +293,22 @@ public class Client implements Serializable {
         return "Client{" +
         "clientId=" + clientId +
         ", name=" + name +
-        ", adress=" + adress +
-        ", phone=" + phone +
+        ", adressId=" + adressId +
+        ", phone1=" + phone1 +
+        ", phone2=" + phone2 +
         ", orderId=" + orderId +
         ", orderTime=" + orderTime +
-        ", price=" + price +
-
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
+        ", setup=" + setup +
+        ", legal=" + legal +
+        ", utscc=" + utscc +
+        ", companyType=" + companyType +
+        ", businessTerm=" + businessTerm +
+        ", signIn=" + signIn +
+        ", introduction=" + introduction +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
         ", display=" + display +
         "}";
     }

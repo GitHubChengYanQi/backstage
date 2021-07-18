@@ -19,11 +19,11 @@ import java.util.List;
 
 /**
  * <p>
- * 客户表 服务实现类
+ * 客户管理表 服务实现类
  * </p>
  *
  * @author 
- * @since 2021-07-15
+ * @since 2021-07-16
  */
 @Service
 public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> implements ClientService {
