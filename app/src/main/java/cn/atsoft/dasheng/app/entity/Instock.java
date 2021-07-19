@@ -10,52 +10,62 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 出库表
+ * 入库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
-@TableName("daoxin_outbound")
-public class Outbound implements Serializable {
+@TableName("daoxin_instock")
+public class Instock implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 出库id
+     * 物品编号
      */
-      @TableId(value = "outbound_id", type = IdType.ID_WORKER)
-    private Long outboundId;
+      @TableId(value = "instock_id", type = IdType.ID_WORKER)
+    private Long instockId;
+    @TableField("palce_id")
+    private Long palceId;
+
+    public Long getPalceId() {
+        return palceId;
+    }
+
+    public void setPalceId(Long palceId) {
+        this.palceId = palceId;
+    }
 
     /**
-     * 仓库id
-     */
-    @TableField("stock_id")
-    private Long stockId;
-
-    /**
-     * 出库物品
+     * 物品名称
      */
     @TableField("item_id")
     private Long itemId;
 
     /**
-     * 出库数量
+     * 登记时间
+     */
+    @TableField("register_time")
+    private Date registerTime;
+
+    /**
+     * 入库数量
      */
     @TableField("number")
     private Long number;
 
     /**
-     * 出库时间
+     * 价格
      */
-    @TableField("outtime")
-    private Date outtime;
+    @TableField("price")
+    private Integer price;
 
     /**
-     * 出库地点
+     * 品牌
      */
-    @TableField("place_id")
-    private Long placeId;
+    @TableField("brand_id")
+    private long brandId;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -73,20 +83,12 @@ public class Outbound implements Serializable {
     private Integer display;
 
 
-    public Long getOutboundId() {
-        return outboundId;
+    public Long getInstockId() {
+        return instockId;
     }
 
-    public void setOutboundId(Long outboundId) {
-        this.outboundId = outboundId;
-    }
-
-    public Long getStockId() {
-        return stockId;
-    }
-
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
+    public void setInstockId(Long instockId) {
+        this.instockId = instockId;
     }
 
     public Long getItemId() {
@@ -97,6 +99,14 @@ public class Outbound implements Serializable {
         this.itemId = itemId;
     }
 
+    public Date getRegisterTime() {
+        return registerTime;
+    }
+
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
+    }
+
     public Long getNumber() {
         return number;
     }
@@ -105,20 +115,20 @@ public class Outbound implements Serializable {
         this.number = number;
     }
 
-    public Date getOuttime() {
-        return outtime;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setOuttime(Date outtime) {
-        this.outtime = outtime;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public long getBrandId() {
+        return brandId;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setBrandId(long brandId) {
+        this.brandId = brandId;
     }
 
     public Date getCreateTime() {
@@ -163,13 +173,13 @@ public class Outbound implements Serializable {
 
     @Override
     public String toString() {
-        return "Outbound{" +
-        "outboundId=" + outboundId +
-        ", stockId=" + stockId +
+        return "Instock{" +
+        "instockId=" + instockId +
         ", itemId=" + itemId +
+        ", registerTime=" + registerTime +
         ", number=" + number +
-        ", outtime=" + outtime +
-        ", placeId=" + placeId +
+        ", price=" + price +
+        ", brandId=" + brandId +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +

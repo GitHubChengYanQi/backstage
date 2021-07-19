@@ -30,6 +30,9 @@
             <if test="paramCondition.name != null and paramCondition.name != ''">
                 and name like CONCAT('%',#{paramCondition.name},'%')
             </if>
+        <if test="paramCondition.position != null and paramCondition.position != ''">
+            and position like CONCAT('%',#{paramCondition.position},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
@@ -39,6 +42,9 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
+        <if test="paramCondition.position != null and paramCondition.position != ''">
+            and position like CONCAT('%',#{paramCondition.position},'%')
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PlaceResult" parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
@@ -48,6 +54,9 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
+        <if test="paramCondition.position != null and paramCondition.position != ''">
+            and position like CONCAT('%',#{paramCondition.position},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
@@ -57,6 +66,10 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
+
+                <if test="paramCondition.position != null and paramCondition.position != ''">
+                 and position like CONCAT('%',#{paramCondition.position},'%')
+                 </if>
     </select>
 
 </mapper>

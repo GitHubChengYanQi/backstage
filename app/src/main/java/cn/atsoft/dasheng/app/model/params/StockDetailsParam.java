@@ -45,7 +45,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
      * 入库时间
      */
     @ApiModelProperty("入库时间")
-    private Date storageTime;
+    private String storageTime;
 
     /**
      * 创建者

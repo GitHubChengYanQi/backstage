@@ -1,63 +1,66 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-
 /**
  * <p>
- * 出库表
+ * 入库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
 @Data
 @ApiModel
-public class OutboundParam implements Serializable, BaseValidatingParam {
+public class InstockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+   private  String name;
+   private  String brandName;
+   private String placeName;
+    /**
+     * 物品编号
+     */
+    @ApiModelProperty("物品编号")
+    private Long instockId;
+
+ @ApiModelProperty("地点id")
+ private Long palceId;
 
     /**
-     * 出库id
+     * 物品名称
      */
-    @ApiModelProperty("出库id")
-    private Long outboundId;
-
-    /**
-     * 仓库id
-     */
-    @ApiModelProperty("仓库id")
-    private Long stockId;
-
-    /**
-     * 出库物品
-     */
-    @ApiModelProperty("出库物品")
+    @ApiModelProperty("物品名称")
     private Long itemId;
 
     /**
-     * 出库数量
+     * 登记时间
      */
-    @ApiModelProperty("出库数量")
+    @ApiModelProperty("登记时间")
+    private Date registerTime;
+
+    /**
+     * 入库数量
+     */
+    @ApiModelProperty("入库数量")
     private Long number;
 
     /**
-     * 出库时间
+     * 价格
      */
-    @ApiModelProperty("出库时间")
-    private Date outtime;
+    @ApiModelProperty("价格")
+    private Integer price;
 
     /**
-     * 出库地点
+     * 品牌
      */
-    @ApiModelProperty("出库地点")
-    private Long placeId;
+    @ApiModelProperty("品牌")
+    private long brandId;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;
@@ -73,13 +76,6 @@ public class OutboundParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

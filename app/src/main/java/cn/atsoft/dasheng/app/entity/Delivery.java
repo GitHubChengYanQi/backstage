@@ -6,65 +6,59 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 物流表
+ * 出库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
-@TableName("daoxin_logistics")
-public class Logistics implements Serializable {
+@TableName("daoxin_delivery")
+public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  Date outtime;
-
-    public Date getOuttime() {
-        return outtime;
-    }
-
-    public void setOuttime(Date outtime) {
-        this.outtime = outtime;
-    }
 
     /**
-     * 物流id
+     * 出库id
      */
-      @TableId(value = "logistics_id", type = IdType.ID_WORKER)
-    private Long logisticsId;
+      @TableId(value = "delivery_id", type = IdType.ID_WORKER)
+    private Long deliveryId;
 
     /**
-     * 发货编号
+     * 库存id
      */
-    @TableField("order_id")
-    private Long orderId;
+    @TableField("stock_id")
+    private Long stockId;
 
     /**
-     * 到货地址
+     * 出库时间
      */
-    @TableField("client_id")
-    private Long clientId;
+
+    @TableField("delivery_time")
+    private Date deliveryTime;
 
     /**
-     * 当前位置
+     * 出库数量
      */
-    @TableField("position")
-    private String position;
+    @TableField("number")
+    private Long number;
 
     /**
-     * 到货地址
+     * 出库价格
      */
-    @TableField("adress")
-    private String adress;
+    @TableField("price")
+    private Integer price;
 
     /**
-     * 物流电话
+     * 出库品牌
      */
-    @TableField("phone")
-    private Long phone;
+    @TableField("brand")
+    private String brand;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -82,52 +76,52 @@ public class Logistics implements Serializable {
     private Integer display;
 
 
-    public Long getLogisticsId() {
-        return logisticsId;
+    public Long getDeliveryId() {
+        return deliveryId;
     }
 
-    public void setLogisticsId(Long logisticsId) {
-        this.logisticsId = logisticsId;
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getStockId() {
+        return stockId;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Date getDeliveryTime() {
+        return deliveryTime;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setDeliveryTime(Date deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
-    public String getPosition() {
-        return position;
+    public Long getNumber() {
+        return number;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
-    public String getAdress() {
-        return adress;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public Long getPhone() {
-        return phone;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setPhone(Long phone) {
-        this.phone = phone;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Date getCreateTime() {
@@ -172,14 +166,13 @@ public class Logistics implements Serializable {
 
     @Override
     public String toString() {
-        return "Logistics{" +
-        "logisticsId=" + logisticsId +
-        ", orderId=" + orderId +
-        ", clientId=" + clientId +
-        ", position=" + position +
-        ", adress=" + adress +
-                ", outtime=" + outtime +
-        ", phone=" + phone +
+        return "Delivery{" +
+        "deliveryId=" + deliveryId +
+        ", stockId=" + stockId +
+        ", delivery time=" + deliveryTime +
+        ", number=" + number +
+        ", price=" + price +
+        ", brand=" + brand +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +
