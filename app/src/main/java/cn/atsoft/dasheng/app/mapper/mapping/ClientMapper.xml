@@ -7,10 +7,8 @@
         <id column="client_id" property="clientId" />
         <result column="name" property="name" />
         <result column="adress_id" property="adressId" />
-        <result column="phone1" property="phone1" />
-        <result column="phone2" property="phone2" />
-        <result column="order_id" property="orderId" />
-        <result column="order_time" property="orderTime" />
+        <result column="contacts_id" property="contactsId" />
+        <result column="tel" property="tel" />
         <result column="setup" property="setup" />
         <result column="legal" property="legal" />
         <result column="utscc" property="utscc" />
@@ -27,7 +25,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        client_id AS "clientId", name AS "name", adress_id AS "adressId", phone1 AS "phone1", phone2 AS "phone2", order_id AS "orderId", order_time AS "orderTime", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        client_id AS "clientId", name AS "name", adress_id AS "adressId", contacts_id AS "contactsId", tel AS "tel", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -38,11 +36,8 @@
             <if test="paramCondition.name != null and paramCondition.name != ''">
                 and name like CONCAT('%',#{paramCondition.name},'%')
             </if>
-            <if test="paramCondition.phone1 != null">
-                and phone1 like CONCAT('%',#{paramCondition.phone1},'%')
-            </if>
-            <if test="paramCondition.phone2 != null">
-                and phone2 like CONCAT('%',#{paramCondition.phone2},'%')
+            <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+                and company_type like CONCAT('%',#{paramCondition.companyType},'%')
             </if>
     </select>
 
@@ -53,11 +48,8 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
-                <if test="paramCondition.phone1 != null">
-                        and phone1 like CONCAT('%',#{paramCondition.phone1},'%')
-                </if>
-                <if test="paramCondition.phone2 != null">
-                        and phone2 like CONCAT('%',#{paramCondition.phone2},'%')
+                <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
                 </if>
     </select>
 
@@ -68,11 +60,8 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
-                <if test="paramCondition.phone1 != null">
-                        and phone1 like CONCAT('%',#{paramCondition.phone1},'%')
-                </if>
-                <if test="paramCondition.phone2 != null">
-                        and phone2 like CONCAT('%',#{paramCondition.phone2},'%')
+                <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
                 </if>
     </select>
 
@@ -83,11 +72,8 @@
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
-                <if test="paramCondition.phone1 != null">
-                        and phone1 like CONCAT('%',#{paramCondition.phone1},'%')
-                </if>
-                <if test="paramCondition.phone2 != null">
-                        and phone2 like CONCAT('%',#{paramCondition.phone2},'%')
+                <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
+                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
                 </if>
     </select>
 

@@ -1,51 +1,55 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-
 /**
  * <p>
- * 经纬度表
+ * 联系人表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
 @Data
 @ApiModel
-public class LalParam implements Serializable, BaseValidatingParam {
+public class ContactsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 客户名称
+     * 表id
      */
-    @ApiModelProperty("客户名称")
+    @ApiModelProperty("表id")
+    private Long id;
+
+    /**
+     * 联系人id
+     */
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
+
+    /**
+     * 联系人姓名
+     */
+    @ApiModelProperty("联系人姓名")
     private String name;
 
     /**
-     * 经纬度id
+     * 职务
      */
-    @ApiModelProperty("经纬度id")
-    private Long lalId;
+    @ApiModelProperty("职务")
+    private String job;
 
     /**
-     * 经度
+     * 联系电话
      */
-    @ApiModelProperty("经度")
-    private Integer ewItude;
-
-    /**
-     * 纬度
-     */
-    @ApiModelProperty("纬度")
-    private Integer snItude;
+    @ApiModelProperty("联系电话")
+    private Long phone;
 
     /**
      * 创建者
@@ -76,13 +80,6 @@ public class LalParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

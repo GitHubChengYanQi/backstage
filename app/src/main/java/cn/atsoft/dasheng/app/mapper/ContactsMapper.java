@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.app.mapper;
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.model.params.AdressParam;
-import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.model.params.ContactsParam;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,13 +13,13 @@ import java.util.Map;
 
 /**
  * <p>
- * 客户地址表 Mapper 接口
+ * 联系人表 Mapper 接口
  * </p>
  *
  * @author ta
  * @since 2021-07-19
  */
-public interface AdressMapper extends BaseMapper<Adress> {
+public interface ContactsMapper extends BaseMapper<Contacts> {
 
     /**
      * 获取列表
@@ -27,7 +27,7 @@ public interface AdressMapper extends BaseMapper<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    List<AdressResult> customList(@Param("paramCondition") AdressParam paramCondition);
+    List<ContactsResult> customList(@Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取map列表
@@ -35,7 +35,7 @@ public interface AdressMapper extends BaseMapper<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    List<Map<String, Object>> customMapList(@Param("paramCondition") AdressParam paramCondition);
+    List<Map<String, Object>> customMapList(@Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取分页实体列表
@@ -43,7 +43,7 @@ public interface AdressMapper extends BaseMapper<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    Page<AdressResult> customPageList(@Param("page") Page page, @Param("paramCondition") AdressParam paramCondition);
+    Page<ContactsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取分页map列表
@@ -51,6 +51,6 @@ public interface AdressMapper extends BaseMapper<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AdressParam paramCondition);
+    Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
 
 }

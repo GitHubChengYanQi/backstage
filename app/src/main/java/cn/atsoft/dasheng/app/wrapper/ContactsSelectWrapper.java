@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LalSelectWrapper extends BaseControllerWrapper {
+public class ContactsSelectWrapper extends BaseControllerWrapper {
 
-    public LalSelectWrapper(List<Map<String, Object>> multi) {
+    public ContactsSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 

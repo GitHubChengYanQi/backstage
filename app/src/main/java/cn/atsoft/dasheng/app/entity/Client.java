@@ -13,8 +13,8 @@ import java.io.Serializable;
  * 客户管理表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
 @TableName("daoxin_client")
 public class Client implements Serializable {
@@ -40,28 +40,16 @@ public class Client implements Serializable {
     private String adressId;
 
     /**
-     * 联系电话
+     * 联系人id
      */
-    @TableField("phone1")
-    private Long phone1;
+    @TableField("contacts_id")
+    private Long contactsId;
 
     /**
      * 固定电话
      */
-    @TableField("phone2")
-    private Long phone2;
-
-    /**
-     * 订单号
-     */
-    @TableField("order_id")
-    private Long orderId;
-
-    /**
-     * 下单时间
-     */
-    @TableField("order_time")
-    private Date orderTime;
+    @TableField("tel")
+    private Long tel;
 
     /**
      * 成立时间
@@ -79,7 +67,7 @@ public class Client implements Serializable {
      * 统一社会信用代码
      */
     @TableField("utscc")
-    private Long utscc;
+    private String utscc;
 
     /**
      * 公司类型
@@ -91,7 +79,7 @@ public class Client implements Serializable {
      * 营业期限
      */
     @TableField("business_term")
-    private Long businessTerm;
+    private String businessTerm;
 
     /**
      * 注册地址
@@ -160,36 +148,20 @@ public class Client implements Serializable {
         this.adressId = adressId;
     }
 
-    public Long getPhone1() {
-        return phone1;
+    public Long getContactsId() {
+        return contactsId;
     }
 
-    public void setPhone1(Long phone1) {
-        this.phone1 = phone1;
+    public void setContactsId(Long contactsId) {
+        this.contactsId = contactsId;
     }
 
-    public Long getPhone2() {
-        return phone2;
+    public Long getTel() {
+        return tel;
     }
 
-    public void setPhone2(Long phone2) {
-        this.phone2 = phone2;
-    }
-
-    public Long getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public Date getOrderTime() {
-        return orderTime;
-    }
-
-    public void setOrderTime(Date orderTime) {
-        this.orderTime = orderTime;
+    public void setTel(Long tel) {
+        this.tel = tel;
     }
 
     public Date getSetup() {
@@ -208,11 +180,11 @@ public class Client implements Serializable {
         this.legal = legal;
     }
 
-    public Long getUtscc() {
+    public String getUtscc() {
         return utscc;
     }
 
-    public void setUtscc(Long utscc) {
+    public void setUtscc(String utscc) {
         this.utscc = utscc;
     }
 
@@ -224,11 +196,11 @@ public class Client implements Serializable {
         this.companyType = companyType;
     }
 
-    public Long getBusinessTerm() {
+    public String getBusinessTerm() {
         return businessTerm;
     }
 
-    public void setBusinessTerm(Long businessTerm) {
+    public void setBusinessTerm(String businessTerm) {
         this.businessTerm = businessTerm;
     }
 
@@ -294,10 +266,8 @@ public class Client implements Serializable {
         "clientId=" + clientId +
         ", name=" + name +
         ", adressId=" + adressId +
-        ", phone1=" + phone1 +
-        ", phone2=" + phone2 +
-        ", orderId=" + orderId +
-        ", orderTime=" + orderTime +
+        ", contactsId=" + contactsId +
+        ", tel=" + tel +
         ", setup=" + setup +
         ", legal=" + legal +
         ", utscc=" + utscc +

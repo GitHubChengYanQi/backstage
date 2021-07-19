@@ -10,40 +10,46 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 经纬度表
+ * 联系人表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
-@TableName("daoxin_lal")
-public class Lal implements Serializable {
+@TableName("daoxin_contacts")
+public class Contacts implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 客户名称
+     * 表id
+     */
+      @TableId(value = "id", type = IdType.ID_WORKER)
+    private Long id;
+
+    /**
+     * 联系人id
+     */
+    @TableField("contacts_id")
+    private Long contactsId;
+
+    /**
+     * 联系人姓名
      */
     @TableField("name")
     private String name;
 
     /**
-     * 经纬度id
+     * 职务
      */
-      @TableId(value = "lal_id", type = IdType.ID_WORKER)
-    private Long lalId;
+    @TableField("job")
+    private String job;
 
     /**
-     * 经度
+     * 联系电话
      */
-    @TableField("ew_itude")
-    private Integer ewItude;
-
-    /**
-     * 纬度
-     */
-    @TableField("sn_itude")
-    private Integer snItude;
+    @TableField("phone")
+    private Long phone;
 
     /**
      * 创建者
@@ -76,6 +82,22 @@ public class Lal implements Serializable {
     private Integer display;
 
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getContactsId() {
+        return contactsId;
+    }
+
+    public void setContactsId(Long contactsId) {
+        this.contactsId = contactsId;
+    }
+
     public String getName() {
         return name;
     }
@@ -84,28 +106,20 @@ public class Lal implements Serializable {
         this.name = name;
     }
 
-    public Long getLalId() {
-        return lalId;
+    public String getJob() {
+        return job;
     }
 
-    public void setLalId(Long lalId) {
-        this.lalId = lalId;
+    public void setJob(String job) {
+        this.job = job;
     }
 
-    public Integer getEwItude() {
-        return ewItude;
+    public Long getPhone() {
+        return phone;
     }
 
-    public void setEwItude(Integer ewItude) {
-        this.ewItude = ewItude;
-    }
-
-    public Integer getSnItude() {
-        return snItude;
-    }
-
-    public void setSnItude(Integer snItude) {
-        this.snItude = snItude;
+    public void setPhone(Long phone) {
+        this.phone = phone;
     }
 
     public Long getCreateUser() {
@@ -150,11 +164,12 @@ public class Lal implements Serializable {
 
     @Override
     public String toString() {
-        return "Lal{" +
-        "name=" + name +
-        ", lalId=" + lalId +
-        ", ewItude=" + ewItude +
-        ", snItude=" + snItude +
+        return "Contacts{" +
+        "id=" + id +
+        ", contactsId=" + contactsId +
+        ", name=" + name +
+        ", job=" + job +
+        ", phone=" + phone +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
