@@ -1,12 +1,9 @@
 package cn.atsoft.dasheng.app.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -55,6 +52,7 @@ public class Client implements Serializable {
      * 成立时间
      */
     @TableField("setup")
+
     private Date setup;
 
     /**
@@ -67,7 +65,7 @@ public class Client implements Serializable {
      * 统一社会信用代码
      */
     @TableField("utscc")
-    private String utscc;
+    private Long utscc;
 
     /**
      * 公司类型
@@ -79,7 +77,7 @@ public class Client implements Serializable {
      * 营业期限
      */
     @TableField("business_term")
-    private String businessTerm;
+    private Date businessTerm;
 
     /**
      * 注册地址
@@ -180,11 +178,11 @@ public class Client implements Serializable {
         this.legal = legal;
     }
 
-    public String getUtscc() {
+    public Long getUtscc() {
         return utscc;
     }
 
-    public void setUtscc(String utscc) {
+    public void setUtscc(Long utscc) {
         this.utscc = utscc;
     }
 
@@ -196,11 +194,11 @@ public class Client implements Serializable {
         this.companyType = companyType;
     }
 
-    public String getBusinessTerm() {
+    public Date getBusinessTerm() {
         return businessTerm;
     }
 
-    public void setBusinessTerm(String businessTerm) {
+    public void setBusinessTerm(Date businessTerm) {
         this.businessTerm = businessTerm;
     }
 

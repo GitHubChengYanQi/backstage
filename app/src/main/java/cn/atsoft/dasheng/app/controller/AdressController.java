@@ -1,21 +1,22 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class AdressController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AdressParam adressParam) {
+    public ResponseData delete(@RequestBody AdressParam adressParam)  {
         this.adressService.delete(adressParam);
         return ResponseData.success();
     }
@@ -86,7 +87,6 @@ public class AdressController extends BaseController {
         Adress detail = this.adressService.getById(adressParam.getAdressId());
         AdressResult result = new AdressResult();
         ToolUtil.copyProperties(detail, result);
-
 //        result.setValue(parentValue);
         return ResponseData.success(result);
     }
@@ -100,19 +100,17 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
-        if (ToolUtil.isEmpty(adressParam)) {
+        if(ToolUtil.isEmpty(adressParam)){
             adressParam = new AdressParam();
         }
         return this.adressService.findPageBySpec(adressParam);
     }
 
-
-
   /**
    * 选择列表
    *
-   * @author 1
-   * @Date 2021-07-14
+   * @author ta
+   * @Date 2021-07-19
    */
   @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
   @ApiOperation("Select数据接口")
@@ -122,7 +120,6 @@ public class AdressController extends BaseController {
     List<Map<String,Object>> result = factory.wrap();
     return ResponseData.success(result);
   }
-
 
 
 }

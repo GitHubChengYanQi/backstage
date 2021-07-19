@@ -1,21 +1,22 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.wrapper.ClientSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
-import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.Map;
 
@@ -100,12 +101,12 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
+      System.err.println(contactsParam);
         if(ToolUtil.isEmpty(contactsParam)){
             contactsParam = new ContactsParam();
         }
         return this.contactsService.findPageBySpec(contactsParam);
     }
-
 
   /**
    * 选择列表
@@ -121,6 +122,7 @@ public class ContactsController extends BaseController {
     List<Map<String,Object>> result = factory.wrap();
     return ResponseData.success(result);
   }
+
 
 }
 
