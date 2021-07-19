@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 报价表
@@ -19,8 +23,10 @@ import java.util.List;
 public class QuotationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    private String name;
+    private String iname;
+    private String note;
+    private  String time;
     /**
      * 报价编号
      */

@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 商机表
@@ -19,7 +23,10 @@ import java.util.List;
 public class BusinessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private String iname;
+    private Long stockId;
+    private  String sname;
+    private  Long sourceId;
 
     /**
      * 商机id
@@ -33,17 +40,14 @@ public class BusinessResult implements Serializable {
     @ApiModelProperty("客户id")
     private Long clitenId;
 
-    /**
-     * 机会来源
-     */
-    @ApiModelProperty("机会来源")
-    private String source;
+
+
 
     /**
      * 立项日期
      */
     @ApiModelProperty("立项日期")
-    private Date time;
+    private String time;
 
     /**
      * 商机状态
@@ -61,7 +65,7 @@ public class BusinessResult implements Serializable {
      * 负责人
      */
     @ApiModelProperty("负责人")
-    private String person;
+    private Long person;
 
     /**
      * 创建时间
@@ -86,6 +90,7 @@ public class BusinessResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+    private String name;
 
     /**
      * 状态

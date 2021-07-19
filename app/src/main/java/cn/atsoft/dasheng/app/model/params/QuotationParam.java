@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -21,7 +24,33 @@ import java.util.List;
 public class QuotationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private String name;
+    private String iname;
+    private String note;
+    private String time;
 
+    public String getTime() {
+//        if(time!=null&&!time.equals("")){
+//            StringBuffer stringBuffer = new StringBuffer(time);
+//            String data = stringBuffer.substring(0, 10);
+//            return data;
+//        }else {
+//            return time;
+//        }
+        if (time != null && !time.equals("")) {
+            StringBuffer stringBuffer = new StringBuffer(time);
+            String date = stringBuffer.substring(0, 10);
+            return date;
+        } else {
+            return time;
+        }
+
+    }
+
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
     /**
      * 报价编号

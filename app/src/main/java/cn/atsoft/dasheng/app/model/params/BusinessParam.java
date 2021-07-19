@@ -22,7 +22,9 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+ private  String iname;
+private  String sname;
+private  Long sourceId;
     /**
      * 商机id
      */
@@ -38,14 +40,28 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
     /**
      * 机会来源
      */
-    @ApiModelProperty("机会来源")
-    private String source;
+
+    private  long stockId;
+    public String getTime() {
+        if (time!=null&&!time.equals("")){
+            StringBuffer stringBuffer = new StringBuffer(time);
+            String date = stringBuffer.substring(0,10);
+            return date;
+        }else {
+            return time;
+        }
+
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 
     /**
      * 立项日期
      */
     @ApiModelProperty("立项日期")
-    private Date time;
+    private String time;
 
     /**
      * 商机状态
@@ -63,8 +79,9 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
      * 负责人
      */
     @ApiModelProperty("负责人")
-    private String person;
+    private long person;
 
+    private  String name;
     /**
      * 创建时间
      */
@@ -97,6 +114,7 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 
     @Override
     public String checkParam() {

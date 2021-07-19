@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,10 +24,11 @@ public class Quotation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private  String time;
     /**
      * 报价编号
      */
-      @TableId(value = "quotation_id", type = IdType.ID_WORKER)
+    @TableId(value = "quotation_id", type = IdType.ID_WORKER)
     private Long quotationId;
 
     /**
@@ -33,11 +37,21 @@ public class Quotation implements Serializable {
     @TableField("business_id")
     private Long businessId;
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     /**
      * 商品名称
      */
     @TableField("stock_id")
     private Long stockId;
+
+    private String note;
 
     /**
      * 报价金额
@@ -60,25 +74,25 @@ public class Quotation implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
 
@@ -108,6 +122,14 @@ public class Quotation implements Serializable {
 
     public Integer getMoney() {
         return money;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public void setMoney(Integer money) {
@@ -165,16 +187,18 @@ public class Quotation implements Serializable {
     @Override
     public String toString() {
         return "Quotation{" +
-        "quotationId=" + quotationId +
-        ", businessId=" + businessId +
-        ", stockId=" + stockId +
-        ", money=" + money +
-        ", number=" + number +
-        ", stage=" + stage +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        "}";
+                "quotationId=" + quotationId +
+                ", businessId=" + businessId +
+                ", stockId=" + stockId +
+                ", money=" + money +
+                ", number=" + number +
+                ", stage=" + stage +
+                ", note=" + note +
+                ", createTime=" + createTime +
+                ", time=" + time +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                "}";
     }
 }

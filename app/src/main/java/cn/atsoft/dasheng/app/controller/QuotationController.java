@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class QuotationController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody QuotationParam quotationParam)  {
+    public ResponseData delete(@RequestBody QuotationParam quotationParam) {
         this.quotationService.delete(quotationParam);
         return ResponseData.success();
     }
@@ -98,13 +99,11 @@ public class QuotationController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<QuotationResult> list(@RequestBody(required = false) QuotationParam quotationParam) {
-        if(ToolUtil.isEmpty(quotationParam)){
+        if (ToolUtil.isEmpty(quotationParam)) {
             quotationParam = new QuotationParam();
         }
         return this.quotationService.findPageBySpec(quotationParam);
     }
-
-
 
 
 }

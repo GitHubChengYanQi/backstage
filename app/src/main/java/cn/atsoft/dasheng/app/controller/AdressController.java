@@ -69,7 +69,7 @@ public class AdressController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AdressParam adressParam)  {
+    public ResponseData delete(@RequestBody AdressParam adressParam) {
         this.adressService.delete(adressParam);
         return ResponseData.success();
     }
@@ -100,12 +100,13 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
-        if(ToolUtil.isEmpty(adressParam)){
+        if (ToolUtil.isEmpty(adressParam)) {
             adressParam = new AdressParam();
         }
         return this.adressService.findPageBySpec(adressParam);
     }
-    }
+
+
 
   /**
    * 选择列表

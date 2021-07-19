@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,10 +24,20 @@ public class Business implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    @TableField("source_id")
+    private  Long sourceId;
     /**
      * 商机id
      */
-      @TableId(value = "business_id", type = IdType.ID_WORKER)
+    @TableId(value = "business_id", type = IdType.ID_WORKER)
     private Long businessId;
 
     /**
@@ -33,17 +46,25 @@ public class Business implements Serializable {
     @TableField("cliten_id")
     private Long clitenId;
 
+    public long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(long stockId) {
+        this.stockId = stockId;
+    }
+    @TableField("stock_id")
+    private long stockId;
     /**
      * 机会来源
      */
-    @TableField("source")
-    private String source;
+
 
     /**
      * 立项日期
      */
     @TableField("time")
-    private Date time;
+    private String time;
 
     /**
      * 商机状态
@@ -61,30 +82,30 @@ public class Business implements Serializable {
      * 负责人
      */
     @TableField("person")
-    private String person;
+    private Long person;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建用户
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改用户
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -110,19 +131,13 @@ public class Business implements Serializable {
         this.clitenId = clitenId;
     }
 
-    public String getSource() {
-        return source;
-    }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
 
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -142,11 +157,11 @@ public class Business implements Serializable {
         this.stage = stage;
     }
 
-    public String getPerson() {
+    public long getPerson() {
         return person;
     }
 
-    public void setPerson(String person) {
+    public void setPerson(Long person) {
         this.person = person;
     }
 
@@ -193,18 +208,19 @@ public class Business implements Serializable {
     @Override
     public String toString() {
         return "Business{" +
-        "businessId=" + businessId +
-        ", clitenId=" + clitenId +
-        ", source=" + source +
-        ", time=" + time +
-        ", state=" + state +
-        ", stage=" + stage +
-        ", person=" + person +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "businessId=" + businessId +
+                ", clitenId=" + clitenId +
+
+                ", time=" + time +
+                ", state=" + state +
+                ", stage=" + stage +
+                ", person=" + person +
+                ", createTime=" + createTime +
+                ", stockId=" + stockId +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

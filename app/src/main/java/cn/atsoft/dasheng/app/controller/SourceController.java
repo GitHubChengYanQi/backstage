@@ -1,12 +1,12 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.BusinessSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.ClientSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.SourceSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Business;
-import cn.atsoft.dasheng.app.model.params.BusinessParam;
-import cn.atsoft.dasheng.app.model.result.BusinessResult;
-import cn.atsoft.dasheng.app.service.BusinessService;
+import cn.atsoft.dasheng.app.entity.Source;
+import cn.atsoft.dasheng.app.model.params.SourceParam;
+import cn.atsoft.dasheng.app.model.result.SourceResult;
+import cn.atsoft.dasheng.app.service.SourceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -21,70 +21,70 @@ import java.util.Map;
 
 
 /**
- * 商机表控制器
+ * 来源表控制器
  *
- * @author cheng
- * @Date 2021-07-19 15:13:58
+ * @author 
+ * @Date 2021-07-19 17:59:08
  */
 @RestController
-@RequestMapping("/business")
-@Api(tags = "商机表")
-public class BusinessController extends BaseController {
+@RequestMapping("/source")
+@Api(tags = "来源表")
+public class SourceController extends BaseController {
 
     @Autowired
-    private BusinessService businessService;
+    private SourceService sourceService;
 
     /**
      * 新增接口
      *
-     * @author cheng
+     * @author 
      * @Date 2021-07-19
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody BusinessParam businessParam) {
-        this.businessService.add(businessParam);
+    public ResponseData addItem(@RequestBody SourceParam sourceParam) {
+        this.sourceService.add(sourceParam);
         return ResponseData.success();
     }
 
     /**
      * 编辑接口
      *
-     * @author cheng
+     * @author 
      * @Date 2021-07-19
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody BusinessParam businessParam) {
+    public ResponseData update(@RequestBody SourceParam sourceParam) {
 
-        this.businessService.update(businessParam);
+        this.sourceService.update(sourceParam);
         return ResponseData.success();
     }
 
     /**
      * 删除接口
      *
-     * @author cheng
+     * @author 
      * @Date 2021-07-19
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BusinessParam businessParam)  {
-        this.businessService.delete(businessParam);
+    public ResponseData delete(@RequestBody SourceParam sourceParam)  {
+        this.sourceService.delete(sourceParam);
         return ResponseData.success();
     }
 
     /**
      * 查看详情接口
      *
-     * @author cheng
+     * @author 
      * @Date 2021-07-19
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<BusinessResult> detail(@RequestBody BusinessParam businessParam) {
-        Business detail = this.businessService.getById(businessParam.getBusinessId());
-        BusinessResult result = new BusinessResult();
+    public ResponseData<SourceResult> detail(@RequestBody SourceParam sourceParam) {
+        Source detail = this.sourceService.getById(sourceParam.getSourceId());
+        SourceResult result = new SourceResult();
         ToolUtil.copyProperties(detail, result);
 
 //        result.setValue(parentValue);
@@ -94,28 +94,28 @@ public class BusinessController extends BaseController {
     /**
      * 查询列表
      *
-     * @author cheng
+     * @author 
      * @Date 2021-07-19
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<BusinessResult> list(@RequestBody(required = false) BusinessParam businessParam) {
-        if(ToolUtil.isEmpty(businessParam)){
-            businessParam = new BusinessParam();
+    public PageInfo<SourceResult> list(@RequestBody(required = false) SourceParam sourceParam) {
+        if(ToolUtil.isEmpty(sourceParam)){
+            sourceParam = new SourceParam();
         }
-        return this.businessService.findPageBySpec(businessParam);
+        return this.sourceService.findPageBySpec(sourceParam);
     }
-
-
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String, Object>> list = this.businessService.listMaps();
-        BusinessSelectWrapper businessSelectWrapper = new BusinessSelectWrapper(list);
-        List<Map<String, Object>> result = businessSelectWrapper.wrap();
+        List<Map<String,Object>> list = this.sourceService.listMaps();
+        SourceSelectWrapper factory = new SourceSelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
 
-    }
+
+
+}
 
 
