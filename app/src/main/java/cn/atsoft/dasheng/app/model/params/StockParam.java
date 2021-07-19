@@ -22,6 +22,9 @@ public class StockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String  iname;
+    private  String pname;
+    private  String bname;
 
     /**
      * 仓库id

@@ -4,49 +4,57 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Parts">
-        <id column="parts_id" property="partsId" />
-        <result column="item_id" property="itemId" />
-        <result column="brand_id" property="brandId" />
-        <result column="number" property="number" />
-        <result column="display" property="display" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
+        <id column="parts_id" property="partsId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="number" property="number"/>
+        <result column="display" property="display"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-       brand_name AS "brandName", name AS "itemName", parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
+        brand_name
+        AS "brandName", name AS "itemName", parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_parts where 1 = 1
-            <if test="paramCondition.itemId != null">
-                    and item_id = #{paramCondition.itemId}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_parts where 1 = 1
-                <if test="paramCondition.itemId != null">
-                            and item_id = #{paramCondition.itemId}
-                </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
     </select>
 
 
-
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
         select
         <include refid="Base_Column_List"/>
         from parts_view where 1 = 1
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.name">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.brandName">
+            and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
         </if>
     </select>
 

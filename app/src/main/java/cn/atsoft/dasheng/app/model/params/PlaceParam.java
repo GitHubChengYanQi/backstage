@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -21,7 +24,17 @@ import java.util.List;
 public class PlaceParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 纬度
+     */
+    @ApiModelProperty("纬度")
+    private BigDecimal latitude;
 
+    /**
+     * 经度
+     */
+    @ApiModelProperty("经度")
+    private BigDecimal longitude;
 
     /**
      * 仓库id
@@ -35,11 +48,6 @@ public class PlaceParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("名称")
     private String name;
 
-    /**
-     * 地点
-     */
-    @ApiModelProperty("地点")
-    private String position;
 
     /**
      * 位置

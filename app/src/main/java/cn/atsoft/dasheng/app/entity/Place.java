@@ -2,7 +2,10 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.math.BigDecimal;
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -15,7 +18,7 @@ import java.io.Serializable;
  * 地点表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -25,9 +28,38 @@ public class Place implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 纬度
+     */
+    @TableField("latitude")
+    private BigDecimal latitude;
+
+    /**
+     * 经度
+     */
+    @TableField("longitude")
+    private BigDecimal longitude;
+
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    /**
      * 仓库id
      */
-      @TableId(value = "palce_id", type = IdType.ID_WORKER)
+    @TableId(value = "palce_id", type = IdType.ID_WORKER)
     private Long palceId;
 
     /**
@@ -36,11 +68,6 @@ public class Place implements Serializable {
     @TableField("name")
     private String name;
 
-    /**
-     * 地点
-     */
-    @TableField("position")
-    private String position;
 
     /**
      * 位置
@@ -63,25 +90,25 @@ public class Place implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -107,13 +134,6 @@ public class Place implements Serializable {
         this.name = name;
     }
 
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
 
     public String getPalce() {
         return palce;
@@ -132,7 +152,8 @@ public class Place implements Serializable {
     }
 
     public Long getcapacity() {
-        return capacity; }
+        return capacity;
+    }
 
     public void setcapacity(Long capacity) {
         this.capacity = capacity;
@@ -181,17 +202,18 @@ public class Place implements Serializable {
     @Override
     public String toString() {
         return "Place{" +
-        "palceId=" + palceId +
-        ", name=" + name +
-        ", position=" + position +
-        ", palce=" + palce +
-        ", measure=" + measure +
-        ", capacity=" + capacity +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "palceId=" + palceId +
+                ", name=" + name +
+                ", palce=" + palce +
+                ", measure=" + measure +
+                ", capacity=" + capacity +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                "}";
     }
 }

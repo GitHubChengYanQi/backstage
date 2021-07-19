@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 仓库物品明细表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -19,7 +23,10 @@ import java.util.List;
 public class StockDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private Long placeId;
+    private Long itemsId;
+    private String iname;
+    private String pname;
 
     /**
      * 明细id

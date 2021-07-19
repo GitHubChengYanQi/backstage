@@ -4,34 +4,38 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Place">
-        <id column="palce_id" property="palceId" />
-        <result column="name" property="name" />
-        <result column="position" property="position" />
-        <result column="palce" property="palce" />
-        <result column="measure" property="measure" />
-        <result column="capacity" property="capacity" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
+        <id column="palce_id" property="palceId"/>
+        <result column="name" property="name"/>
+        <result column="palce" property="palce"/>
+        <result column="measure" property="measure"/>
+        <result column="capacity" property="capacity"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="latitude" property="latitude"/>
+        <result column="longitude" property="longitude"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        palce_id AS "palceId", name AS "name", position AS "position", palce AS "palce", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    <sql id="Base_Column_List">longitude AS "longitude",palce_id AS "palceId", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PlaceResult" parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PlaceResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_place where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
-            </if>
-        <if test="paramCondition.position != null and paramCondition.position != ''">
-            and position like CONCAT('%',#{paramCondition.position},'%')
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
         </if>
     </select>
 
@@ -39,23 +43,30 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_place where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-        <if test="paramCondition.position != null and paramCondition.position != ''">
-            and position like CONCAT('%',#{paramCondition.position},'%')
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
         </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PlaceResult" parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PlaceResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.PlaceParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_place where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-        <if test="paramCondition.position != null and paramCondition.position != ''">
-            and position like CONCAT('%',#{paramCondition.position},'%')
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
         </if>
     </select>
 
@@ -63,13 +74,16 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_place where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
 
-                <if test="paramCondition.position != null and paramCondition.position != ''">
-                 and position like CONCAT('%',#{paramCondition.position},'%')
-                 </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
     </select>
 
 </mapper>

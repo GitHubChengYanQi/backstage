@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +22,17 @@ import java.util.List;
 public class PlaceResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 纬度
+     */
 
+    private BigDecimal latitude;
+
+    /**
+     * 经度
+     */
+
+    private BigDecimal longitude;
 
     /**
      * 仓库id
@@ -33,16 +46,12 @@ public class PlaceResult implements Serializable {
     @ApiModelProperty("名称")
     private String name;
 
-    /**
-     * 地点
-     */
-    @ApiModelProperty("地点")
-    private String position;
+
 
     /**
      * 位置
      */
-    @ApiModelProperty("位置")
+
     private String palce;
 
     /**
@@ -55,8 +64,7 @@ public class PlaceResult implements Serializable {
      * 容量
      */
     @ApiModelProperty("容量")
-    private Long 
-capacity;
+    private Long capacity;
 
     /**
      * 创建时间

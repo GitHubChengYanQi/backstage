@@ -74,7 +74,8 @@ public class InstockController extends BaseController {
             stockDetailsParam.setStockId(id);
             stockDetailsParam.setPrice(instockParam.getPrice());
             stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
-
+            stockDetailsParam.setItemsId(instockParam.getItemId());
+            stockDetailsParam.setPlaceId(instockParam.getPalceId());
             for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
 
                 this.stockDetailsService.add(stockDetailsParam);
@@ -95,6 +96,8 @@ public class InstockController extends BaseController {
                     stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
                     stockDetailsParam.setPrice(instockParam.getPrice());
                     stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
+                    stockDetailsParam.setItemsId(instockParam.getItemId());
+                    stockDetailsParam.setPlaceId(instockParam.getPalceId());
                     for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
 
                         this.stockDetailsService.add(stockDetailsParam);
@@ -118,6 +121,8 @@ public class InstockController extends BaseController {
                         stockDetailsParam.setStockId(pageBySpec.getData().get(pageBySpec.getData().size()-1).getStockId()+1);
                         stockDetailsParam.setPrice(instockParam.getPrice());
                         stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
+                        stockDetailsParam.setItemsId(instockParam.getItemId());
+                        stockDetailsParam.setPlaceId(instockParam.getPalceId());
                         for (int j = 0; j < instockParam.getNumber(); j++) {
 
                             this.stockDetailsService.add(stockDetailsParam);

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
  * 仓库物品明细表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -22,7 +25,11 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private String iname;
+    private String pname;
 
+    private Long placeId;
+    private Long itemsId;
     /**
      * 明细id
      */
@@ -34,6 +41,21 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("仓库id")
     private Long stockId;
+
+    public String getStorageTime() {
+        if (storageTime != null && !storageTime.equals("")) {
+            StringBuffer stringBuffer = new StringBuffer(storageTime);
+            String date = stringBuffer.substring(0, 10);
+            return date;
+        } else {
+            return storageTime;
+        }
+
+    }
+
+    public void setStorageTime(String storageTime) {
+        this.storageTime = storageTime;
+    }
 
     /**
      * 价格

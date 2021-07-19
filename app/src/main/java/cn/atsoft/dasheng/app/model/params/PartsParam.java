@@ -22,6 +22,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private  String brandName;
+    private  String name;
     /**
      * 清单id
      */

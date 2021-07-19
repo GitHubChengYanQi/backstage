@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 仓库物品明细表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @TableName("daoxin_stock_details")
@@ -21,10 +24,13 @@ public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long placeId;
+    private Long itemsId;
+
     /**
      * 明细id
      */
-      @TableId(value = "stock_item_id", type = IdType.ID_WORKER)
+    @TableId(value = "stock_item_id", type = IdType.ID_WORKER)
     private Long stockItemId;
 
     /**
@@ -48,25 +54,25 @@ public class StockDetails implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -106,6 +112,22 @@ public class StockDetails implements Serializable {
 
     public void setStorageTime(Date storageTime) {
         this.storageTime = storageTime;
+    }
+
+    public Long getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(Long placeId) {
+        this.placeId = placeId;
+    }
+
+    public Long getItemsId() {
+        return itemsId;
+    }
+
+    public void setItemsId(Long itemsId) {
+        this.itemsId = itemsId;
     }
 
     public Long getCreateUser() {
@@ -151,15 +173,17 @@ public class StockDetails implements Serializable {
     @Override
     public String toString() {
         return "StockDetails{" +
-        "stockItemId=" + stockItemId +
-        ", stockId=" + stockId +
-        ", price=" + price +
-        ", storageTime=" + storageTime +
-        ", createUser=" + createUser +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "stockItemId=" + stockItemId +
+                ", stockId=" + stockId +
+                ", price=" + price +
+                ", storageTime=" + storageTime +
+                ", createUser=" + createUser +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", itemsId=" + itemsId +
+                ", placeId=" + placeId +
+                "}";
     }
 }
