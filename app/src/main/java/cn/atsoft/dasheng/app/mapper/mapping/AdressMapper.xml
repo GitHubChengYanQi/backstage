@@ -6,10 +6,9 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Adress">
         <id column="adress_id" property="adressId" />
         <result column="name" property="name" />
-        <result column="adress1_id" property="adress1Id" />
-        <result column="adress1" property="adress1" />
-        <result column="adress2_id" property="adress2Id" />
-        <result column="adress2" property="adress2" />
+        <result column="location" property="location" />
+        <result column="longitude" property="longitude" />
+        <result column="latitude" property="latitude" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -19,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        name AS "name", adress_id AS "adressId", adress1_id AS "adress1Id", adress1 AS "adress1", adress2_id AS "adress2Id", adress2 AS "adress2", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        adress_id AS "adressId", name AS "name", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 

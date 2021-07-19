@@ -13,19 +13,13 @@ import java.io.Serializable;
  * 客户地址表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
 @TableName("daoxin_adress")
 public class Adress implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 客户名称
-     */
-    @TableField("name")
-    private String name;
 
     /**
      * 地址id
@@ -34,28 +28,28 @@ public class Adress implements Serializable {
     private Long adressId;
 
     /**
-     * 地址1id
+     * 客户名称
      */
-    @TableField("adress1_id")
-    private Long adress1Id;
+    @TableField("name")
+    private String name;
 
     /**
-     * 地址1
+     * 地址
      */
-    @TableField("adress1")
-    private String adress1;
+    @TableField("location")
+    private String location;
 
     /**
-     * 地址2id
+     * 经度
      */
-    @TableField("adress2_id")
-    private Long adress2Id;
+    @TableField("longitude")
+    private String longitude;
 
     /**
-     * 地址2
+     * 纬度
      */
-    @TableField("adress2")
-    private String adress2;
+    @TableField("latitude")
+    private String latitude;
 
     /**
      * 创建者
@@ -88,14 +82,6 @@ public class Adress implements Serializable {
     private Integer display;
 
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Long getAdressId() {
         return adressId;
     }
@@ -104,36 +90,36 @@ public class Adress implements Serializable {
         this.adressId = adressId;
     }
 
-    public Long getAdress1Id() {
-        return adress1Id;
+    public String getName() {
+        return name;
     }
 
-    public void setAdress1Id(Long adress1Id) {
-        this.adress1Id = adress1Id;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getAdress1() {
-        return adress1;
+    public String getLocation() {
+        return location;
     }
 
-    public void setAdress1(String adress1) {
-        this.adress1 = adress1;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public Long getAdress2Id() {
-        return adress2Id;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setAdress2Id(Long adress2Id) {
-        this.adress2Id = adress2Id;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
-    public String getAdress2() {
-        return adress2;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setAdress2(String adress2) {
-        this.adress2 = adress2;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public Long getCreateUser() {
@@ -179,12 +165,11 @@ public class Adress implements Serializable {
     @Override
     public String toString() {
         return "Adress{" +
-        "name=" + name +
-        ", adressId=" + adressId +
-        ", adress1Id=" + adress1Id +
-        ", adress1=" + adress1 +
-        ", adress2Id=" + adress2Id +
-        ", adress2=" + adress2 +
+        "adressId=" + adressId +
+        ", name=" + name +
+        ", location=" + location +
+        ", longitude=" + longitude +
+        ", latitude=" + latitude +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

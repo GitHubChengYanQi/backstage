@@ -11,8 +11,8 @@ import java.util.List;
  * 客户地址表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
 @Data
 @ApiModel
@@ -22,40 +22,34 @@ public class AdressResult implements Serializable {
 
 
     /**
-     * 客户名称
-     */
-    @ApiModelProperty("客户名称")
-    private String name;
-
-    /**
      * 地址id
      */
     @ApiModelProperty("地址id")
     private Long adressId;
 
     /**
-     * 地址1id
+     * 客户名称
      */
-    @ApiModelProperty("地址1id")
-    private Long adress1Id;
+    @ApiModelProperty("客户名称")
+    private String name;
 
     /**
-     * 地址1
+     * 地址
      */
-    @ApiModelProperty("地址1")
-    private String adress1;
+    @ApiModelProperty("地址")
+    private String location;
 
     /**
-     * 地址2id
+     * 经度
      */
-    @ApiModelProperty("地址2id")
-    private Long adress2Id;
+    @ApiModelProperty("经度")
+    private String longitude;
 
     /**
-     * 地址2
+     * 纬度
      */
-    @ApiModelProperty("地址2")
-    private String adress2;
+    @ApiModelProperty("纬度")
+    private String latitude;
 
     /**
      * 创建者

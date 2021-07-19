@@ -1,22 +1,22 @@
 package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.model.params.AdressParam;
-import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.model.params.ContactsParam;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * <p>
- * 客户地址表 服务类
+ * 联系人表 服务类
  * </p>
  *
  * @author ta
  * @since 2021-07-19
  */
-public interface AdressService extends IService<Adress> {
+public interface ContactsService extends IService<Contacts> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    void add(AdressParam param);
+    void add(ContactsParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    void delete(AdressParam param);
+    void delete(ContactsParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    void update(AdressParam param);
+    void update(ContactsParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    AdressResult findBySpec(AdressParam param);
+    ContactsResult findBySpec(ContactsParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-    List<AdressResult> findListBySpec(AdressParam param);
+    List<ContactsResult> findListBySpec(ContactsParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface AdressService extends IService<Adress> {
      * @author ta
      * @Date 2021-07-19
      */
-     PageInfo<AdressResult> findPageBySpec(AdressParam param);
+     PageInfo<ContactsResult> findPageBySpec(ContactsParam param);
 
 }

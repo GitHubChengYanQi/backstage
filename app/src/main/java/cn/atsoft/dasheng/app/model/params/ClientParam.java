@@ -13,8 +13,8 @@ import java.util.List;
  * 客户管理表
  * </p>
  *
- * @author 
- * @since 2021-07-16
+ * @author ta
+ * @since 2021-07-19
  */
 @Data
 @ApiModel
@@ -42,28 +42,16 @@ public class ClientParam implements Serializable, BaseValidatingParam {
     private String adressId;
 
     /**
-     * 联系电话
+     * 联系人id
      */
-    @ApiModelProperty("联系电话")
-    private Long phone1;
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
 
     /**
      * 固定电话
      */
     @ApiModelProperty("固定电话")
-    private Long phone2;
-
-    /**
-     * 订单号
-     */
-    @ApiModelProperty("订单号")
-    private Long orderId;
-
-    /**
-     * 下单时间
-     */
-    @ApiModelProperty("下单时间")
-    private Date orderTime;
+    private Long tel;
 
     /**
      * 成立时间
@@ -81,7 +69,7 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      * 统一社会信用代码
      */
     @ApiModelProperty("统一社会信用代码")
-    private Long utscc;
+    private String utscc;
 
     /**
      * 公司类型
@@ -93,7 +81,7 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      * 营业期限
      */
     @ApiModelProperty("营业期限")
-    private Long businessTerm;
+    private String businessTerm;
 
     /**
      * 注册地址
