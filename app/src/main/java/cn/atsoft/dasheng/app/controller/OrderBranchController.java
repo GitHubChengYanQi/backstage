@@ -85,7 +85,7 @@ public class OrderBranchController extends BaseController {
         OrderBranchResult result = new OrderBranchResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

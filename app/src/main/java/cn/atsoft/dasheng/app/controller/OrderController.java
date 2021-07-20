@@ -85,7 +85,7 @@ public class OrderController extends BaseController {
         OrderResult result = new OrderResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
