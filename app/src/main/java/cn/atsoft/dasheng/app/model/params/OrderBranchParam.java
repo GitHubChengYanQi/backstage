@@ -10,54 +10,48 @@ import java.util.List;
 
 /**
  * <p>
- * 客户地址表
+ * 订单分表
  * </p>
  *
  * @author ta
- * @since 2021-07-19
+ * @since 2021-07-20
  */
 @Data
 @ApiModel
-public class AdressParam implements Serializable, BaseValidatingParam {
+public class OrderBranchParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 地址id
+     * id
      */
-    @ApiModelProperty("地址id")
-    private Long adressId;
-  /**
-   * 客户id
-   */
-  @ApiModelProperty("客户id")
-  private Long client_id;
+    @ApiModelProperty("id")
+    private Long id;
 
     /**
-     * 客户名称
+     * 订单编号
      */
-    @ApiModelProperty("客户名称")
+    @ApiModelProperty("订单编号")
+    private Long orderId;
+
+    /**
+     * 物品id
+     */
+    @ApiModelProperty("物品id")
+    private Long itemId;
+
+    /**
+     * 物品名称
+     */
+    @ApiModelProperty("物品名称")
     private String name;
 
-
     /**
-     * 地址
+     * 物品单价
      */
-    @ApiModelProperty("地址")
-    private String location;
-
-    /**
-     * 经度
-     */
-    @ApiModelProperty("经度")
-    private String longitude;
-
-    /**
-     * 纬度
-     */
-    @ApiModelProperty("纬度")
-    private String latitude;
+    @ApiModelProperty("物品单价")
+    private Integer price;
 
     /**
      * 创建者

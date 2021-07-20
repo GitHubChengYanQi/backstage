@@ -23,6 +23,11 @@ public class Adress implements Serializable {
      */
       @TableId(value = "adress_id", type = IdType.ID_WORKER)
     private Long adressId;
+  /**
+   * 客户id
+   */
+  @TableField("client_id")
+  private Long client_id;
 
     /**
      * 客户名称
@@ -40,13 +45,13 @@ public class Adress implements Serializable {
      * 经度
      */
     @TableField("longitude")
-    private String longitude;
+    private Double longitude;
 
     /**
      * 纬度
      */
     @TableField("latitude")
-    private String latitude;
+    private Double latitude;
 
     /**
      * 创建者
@@ -79,99 +84,109 @@ public class Adress implements Serializable {
     private Integer display;
 
 
-    public Long getAdressId() {
-        return adressId;
-    }
+  public Long getAdressId() {
+    return adressId;
+  }
 
-    public void setAdressId(Long adressId) {
-        this.adressId = adressId;
-    }
+  public void setAdressId(Long adressId) {
+    this.adressId = adressId;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public Long getClient_id() {
+    return client_id;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setClient_id(Long client_id) {
+    this.client_id = client_id;
+  }
 
-    public String getLocation() {
-        return location;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getLongitude() {
-        return longitude;
-    }
+  public String getLocation() {
+    return location;
+  }
 
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
-    public String getLatitude() {
-        return latitude;
-    }
+  public Double getLongitude() {
+    return longitude;
+  }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
+  public void setLongitude(Double longitude) {
+    this.longitude = longitude;
+  }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
+  public Double getLatitude() {
+    return latitude;
+  }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+  }
 
-    public Long getUpdateUser() {
-        return updateUser;
-    }
+  public Long getCreateUser() {
+    return createUser;
+  }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
-    }
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+  public Long getUpdateUser() {
+    return updateUser;
+  }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
-    public Integer getDisplay() {
-        return display;
-    }
+  public Date getUpdateTime() {
+    return updateTime;
+  }
 
-    public void setDisplay(Integer display) {
-        this.display = display;
-    }
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
 
-    @Override
-    public String toString() {
-        return "Adress{" +
-        "adressId=" + adressId +
-        ", name=" + name +
-        ", location=" + location +
-        ", longitude=" + longitude +
-        ", latitude=" + latitude +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
-    }
+  public Integer getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
+
+
+  @Override
+  public String toString() {
+    return "Adress{" +
+      "adressId=" + adressId +
+      ", client_id=" + client_id +
+      ", name='" + name + '\'' +
+      ", location='" + location + '\'' +
+      ", longitude=" + longitude +
+      ", latitude=" + latitude +
+      ", createUser=" + createUser +
+      ", updateUser=" + updateUser +
+      ", createTime=" + createTime +
+      ", updateTime=" + updateTime +
+      ", display=" + display +
+      '}';
+  }
 }

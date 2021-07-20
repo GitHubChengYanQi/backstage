@@ -10,54 +10,84 @@ import java.util.List;
 
 /**
  * <p>
- * 客户地址表
+ * 订单表
  * </p>
  *
  * @author ta
- * @since 2021-07-19
+ * @since 2021-07-20
  */
 @Data
 @ApiModel
-public class AdressParam implements Serializable, BaseValidatingParam {
+public class OrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 地址id
+     * id
      */
-    @ApiModelProperty("地址id")
-    private Long adressId;
-  /**
-   * 客户id
-   */
-  @ApiModelProperty("客户id")
-  private Long client_id;
+    @ApiModelProperty("id")
+    private Long id;
 
     /**
-     * 客户名称
+     * 订单编号
      */
-    @ApiModelProperty("客户名称")
+    @ApiModelProperty("订单编号")
+    private Long orderId;
+
+    /**
+     * 订单人姓名
+     */
+    @ApiModelProperty("订单人姓名")
     private String name;
 
+    /**
+     * 订单地址
+     */
+    @ApiModelProperty("订单地址")
+    private String adressId;
 
     /**
-     * 地址
+     * 订单数量
      */
-    @ApiModelProperty("地址")
-    private String location;
+    @ApiModelProperty("订单数量")
+    private Long numbers;
 
     /**
-     * 经度
+     * 订单状态
      */
-    @ApiModelProperty("经度")
-    private String longitude;
+    @ApiModelProperty("订单状态")
+    private String state;
 
     /**
-     * 纬度
+     * 联系电话
      */
-    @ApiModelProperty("纬度")
-    private String latitude;
+    @ApiModelProperty("联系电话")
+    private Long phone;
+
+    /**
+     * 订单时间
+     */
+    @ApiModelProperty("订单时间")
+    private Date orderTime;
+
+    /**
+     * 付款时间
+     */
+    @ApiModelProperty("付款时间")
+    private Date payTime;
+
+    /**
+     * 发货时间
+     */
+    @ApiModelProperty("发货时间")
+    private Date deliveryTime;
+
+    /**
+     * 订单总金额
+     */
+    @ApiModelProperty("订单总金额")
+    private Integer total;
 
     /**
      * 创建者

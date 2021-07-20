@@ -26,7 +26,11 @@ public class AdressResult implements Serializable {
      */
     @ApiModelProperty("地址id")
     private Long adressId;
-
+  /**
+   * 客户id
+   */
+  @ApiModelProperty("客户id")
+  private Long client_id;
     /**
      * 客户名称
      */

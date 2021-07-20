@@ -22,7 +22,6 @@ public class ClientParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
     /**
      * 客户id
      */
