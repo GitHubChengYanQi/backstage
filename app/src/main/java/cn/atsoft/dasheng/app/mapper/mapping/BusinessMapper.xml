@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Business">
         <id column="business_id" property="businessId"/>
-        <result column="cliten_id" property="clitenId"/>
+        <result column="clitent_id" property="clitenId"/>
         <result column="source_id" property="sourceId" />
         <result column="time" property="time"/>
         <result column="state" property="state"/>
@@ -20,8 +20,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        source_id AS "sourceId"
-  ,   sname AS "sname",   iname AS "iname", name AS "name" , business_id AS "businessId", cliten_id AS "clitenId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+         source_id AS "sourceId", account AS "account"
+  ,   sname AS "sname",   iname AS "iname", name AS "name" , business_id AS "businessId", clitent_id AS "clitenId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -78,7 +78,7 @@
         <include refid="Base_Column_List"/>
         from business_view where 1 = 1
         <if test="paramCondition.clitenId != null">
-            and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
+            and clitent_id like CONCAT('%',#{paramCondition.clitenId},'%')
         </if>
         <if test="paramCondition.sourceId != null and paramCondition.sourceId != ''">
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
@@ -105,6 +105,9 @@
         </if>
         <if test="paramCondition.sname != null and paramCondition.sname != ''">
             and sname like CONCAT('%',#{paramCondition.sname},'%')
+        </if>
+        <if test="paramCondition.account != null and paramCondition.account != ''">
+            and account like CONCAT('%',#{paramCondition.account},'%')
         </if>
 
     </select>

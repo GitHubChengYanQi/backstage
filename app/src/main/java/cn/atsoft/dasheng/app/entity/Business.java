@@ -43,7 +43,7 @@ public class Business implements Serializable {
     /**
      * 客户id
      */
-    @TableField("cliten_id")
+    @TableField("clitent_id")
     private Long clitenId;
 
     public long getStockId() {
@@ -209,7 +209,7 @@ public class Business implements Serializable {
     public String toString() {
         return "Business{" +
                 "businessId=" + businessId +
-                ", clitenId=" + clitenId +
+                ", clitentId=" + clitenId +
 
                 ", time=" + time +
                 ", state=" + state +

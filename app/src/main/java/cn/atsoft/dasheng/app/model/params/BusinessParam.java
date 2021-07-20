@@ -21,10 +21,11 @@ import java.util.List;
 public class BusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+private  String account;
  private  String iname;
 private  String sname;
 private  Long sourceId;
+
     /**
      * 商机id
      */

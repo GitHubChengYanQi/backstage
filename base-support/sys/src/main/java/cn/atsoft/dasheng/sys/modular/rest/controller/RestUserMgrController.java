@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.sys.modular.rest.entity.RestUser;
 import cn.atsoft.dasheng.sys.modular.rest.model.UserQueryParam;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.UserRoleParam;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.UserStatus;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.RestUserSelectWrapper;
 import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
 import cn.atsoft.dasheng.sys.modular.system.model.params.ChangePwdParam;
 import cn.atsoft.dasheng.sys.modular.system.warpper.UserWrapper;
@@ -42,11 +43,13 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -287,5 +290,14 @@ public class RestUserMgrController extends BaseController {
             throw new ServiceException(BizExceptionEnum.UPLOAD_ERROR);
         }
         return new SuccessResponseData(pictureName);
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String,Object>>> listSelect() {
+        List<Map<String, Object>> list = this.restUserService.listMaps();
+        RestUserSelectWrapper restUserSelectWrapper = new RestUserSelectWrapper(list);
+        List<Map<String, Object>> result = restUserSelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 }
