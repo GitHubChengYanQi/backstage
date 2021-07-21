@@ -33,11 +33,14 @@ public class OrderResult implements Serializable {
     @ApiModelProperty("订单编号")
     private Long orderId;
 
+
     /**
      * 订单人姓名
      */
     @ApiModelProperty("订单人姓名")
     private String name;
+
+
 
     /**
      * 订单地址
@@ -87,6 +90,19 @@ public class OrderResult implements Serializable {
     @ApiModelProperty("订单总金额")
     private Integer total;
 
+    private Double longitude;
+    private Double latitude;
+      private Date delivery_time;
+      private Date pay_time;
+      private Date order_time;
+      private String name1;
+      private Long order_id;
+      private Long adress_id;
+      private Long client_id;
+       private Long contacts_id;
+       private Long tel;
+     private String  location;
+
     /**
      * 创建者
      */
@@ -115,6 +131,7 @@ public class OrderResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
+
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.OrderBranchSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.OrderSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OrderBranch;
 import cn.atsoft.dasheng.app.model.params.OrderBranchParam;
@@ -106,7 +108,20 @@ public class OrderBranchController extends BaseController {
 
 
 
-
+  /**
+   * 选择列表
+   *
+   * @author ta
+   * @Date 2021-07-19
+   */
+  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+  @ApiOperation("Select数据接口")
+  public ResponseData<List<Map<String,Object>>> listSelect() {
+    List<Map<String,Object>> list = this.orderBranchService.listMaps();
+    OrderBranchSelectWrapper factory = new OrderBranchSelectWrapper(list);
+    List<Map<String,Object>> result = factory.wrap();
+    return ResponseData.success(result);
+  }
 }
 
 

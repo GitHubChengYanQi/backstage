@@ -29,6 +29,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("id")
     private Long id;
 
+
     /**
      * 订单编号
      */
@@ -40,6 +41,7 @@ public class OrderParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("订单人姓名")
     private String name;
+
 
     /**
      * 订单地址
@@ -89,6 +91,18 @@ public class OrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("订单总金额")
     private Integer total;
 
+  private Double longitude;
+  private Double latitude;
+  private Date delivery_time;
+  private Date pay_time;
+  private Date order_time;
+  private String name1;
+  private Long order_id;
+  private Long adress_id;
+  private Long client_id;
+  private Long contacts_id;
+  private Long tel;
+  private String  location;
     /**
      * 创建者
      */
