@@ -37,7 +37,7 @@ public class ContactsController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -50,7 +50,7 @@ public class ContactsController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -64,12 +64,12 @@ public class ContactsController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ContactsParam contactsParam)  {
+    public ResponseData delete(@RequestBody ContactsParam contactsParam) {
         this.contactsService.delete(contactsParam);
         return ResponseData.success();
     }
@@ -77,7 +77,7 @@ public class ContactsController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -94,13 +94,14 @@ public class ContactsController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
-        if(ToolUtil.isEmpty(contactsParam)){
+    public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam,String name) {
+        System.err.println(contactsParam+name);
+        if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
         }
         return this.contactsService.findPageBySpec(contactsParam);
@@ -109,13 +110,12 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.contactsService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.contactsService.listMaps();
         ContactsSelectWrapper contactsSelectWrapper = new ContactsSelectWrapper(list);
-        List<Map<String,Object>> result = contactsSelectWrapper.wrap();
+        List<Map<String, Object>> result = contactsSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+
 }
-
-

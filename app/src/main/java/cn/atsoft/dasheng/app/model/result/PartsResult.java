@@ -19,7 +19,9 @@ import java.util.List;
 public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+  private  Long items;
+  private  String itemlistName;
+  private  int  itemlistNumber;
   private  String name;
     /**
      * 清单id

@@ -20,6 +20,16 @@ import java.io.Serializable;
 public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("items")
+     private  Long items;
+
+    public long getItems() {
+        return items;
+    }
+
+    public void setItems(Long items) {
+        this.items = items;
+    }
 
     /**
      * 清单id

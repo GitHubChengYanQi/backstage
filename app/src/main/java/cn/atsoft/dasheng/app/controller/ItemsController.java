@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.app.model.result.PlaceResult;
 import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -44,6 +46,13 @@ public class ItemsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ItemsParam itemsParam) {
+//        PartsResult partsResult = new PartsResult();
+//        if(partsResult!=null){
+//            if( partsResult.getItemId()==itemsParam.getItemId()){
+//                partsResult.setItemName(itemsParam.getName());
+//            }
+//        }
+
         this.itemsService.add(itemsParam);
         return ResponseData.success();
     }

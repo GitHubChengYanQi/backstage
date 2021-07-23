@@ -21,9 +21,11 @@ import java.util.List;
 public class PartsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private  Long items;
     private  String brandName;
     private  String name;
+    private  String itemlistName;
+    private  int  itemlistNumber;
     /**
      * 清单id
      */

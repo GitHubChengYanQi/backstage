@@ -8,6 +8,7 @@
         <result column="item_id" property="itemId"/>
         <result column="brand_id" property="brandId"/>
         <result column="number" property="number"/>
+        <result column="items" property="items"/>
         <result column="display" property="display"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -17,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        brand_name
+      item_name AS "itemlistName", item_number AS "itemlistNumber" ,items AS "items",brand_name
         AS "brandName", name AS "itemName", parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 

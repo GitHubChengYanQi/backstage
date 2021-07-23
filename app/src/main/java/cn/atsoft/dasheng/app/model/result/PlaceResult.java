@@ -25,7 +25,7 @@ public class PlaceResult implements Serializable {
     /**
      * 纬度
      */
-
+    private String itemName;
     private BigDecimal latitude;
 
     /**
