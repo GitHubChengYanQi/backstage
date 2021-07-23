@@ -101,7 +101,11 @@ public class PartsController extends BaseController {
     public PageInfo<PartsResult> list(@RequestBody(required = false) PartsParam partsParam) {
         if(ToolUtil.isEmpty(partsParam)){
             partsParam = new PartsParam();
+            for (int i = 0; i < partsService.list().size(); i++) {
+                System.out.println(partsParam.getPartsId());
+            }
         }
+
         return this.partsService.findPageBySpec(partsParam);
     }
 
