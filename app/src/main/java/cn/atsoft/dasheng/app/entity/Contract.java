@@ -10,40 +10,52 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 联系人表
+ * 合同表
  * </p>
  *
  * @author 
- * @since 2021-07-23
+ * @since 2021-07-21
  */
-@TableName("daoxin_contacts")
-public class Contacts implements Serializable {
+@TableName("daoxin_contract")
+public class Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 联系人id
+     * 合同id
      */
-      @TableId(value = "contacts_id", type = IdType.ID_WORKER)
-    private Long contactsId;
+      @TableId(value = "contract_id", type = IdType.ID_WORKER)
+    private Long contractId;
 
     /**
-     * 联系人姓名
+     * 合同名称
      */
-    @TableField("contacts_name")
-    private String contactsName;
+    @TableField("name")
+    private String name;
 
     /**
-     * 职务
+     * 负责人id
      */
-    @TableField("job")
-    private String job;
+    @TableField("user_id")
+    private String userId;
 
     /**
-     * 联系电话
+     * 备注
      */
-    @TableField("phone")
-    private Long phone;
+    @TableField("note")
+    private String note;
+
+    /**
+     * 创建时间
+     */
+    @TableField("time")
+    private Date time;
+
+    /**
+     * 内容
+     */
+    @TableField("content")
+    private String content;
 
     /**
      * 创建者
@@ -75,49 +87,53 @@ public class Contacts implements Serializable {
     @TableField("display")
     private Integer display;
 
-    /**
-     * 部门编号
-     */
-    @TableField("deptId")
-    private Long deptId;
 
-    /**
-     * 客户id
-     */
-    @TableField("client_id")
-    private Long clientId;
-
-
-    public Long getContactsId() {
-        return contactsId;
+    public Long getContractId() {
+        return contractId;
     }
 
-    public void setContactsId(Long contactsId) {
-        this.contactsId = contactsId;
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
     }
 
-    public String getContactsName() {
-        return contactsName;
+    public String getName() {
+        return name;
     }
 
-    public void setContactsName(String contactsName) {
-        this.contactsName = contactsName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getJob() {
-        return job;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setJob(String job) {
-        this.job = job;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public Long getPhone() {
-        return phone;
+    public String getNote() {
+        return note;
     }
 
-    public void setPhone(Long phone) {
-        this.phone = phone;
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Long getCreateUser() {
@@ -160,36 +176,20 @@ public class Contacts implements Serializable {
         this.display = display;
     }
 
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
-
     @Override
     public String toString() {
-        return "Contacts{" +
-        "contactsId=" + contactsId +
-        ", contactsName=" + contactsName +
-        ", job=" + job +
-        ", phone=" + phone +
+        return "Contract{" +
+        "contractId=" + contractId +
+        ", name=" + name +
+        ", userId=" + userId +
+        ", note=" + note +
+        ", time=" + time +
+        ", content=" + content +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", display=" + display +
-        ", deptId=" + deptId +
-        ", clientId=" + clientId +
         "}";
     }
 }

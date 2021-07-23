@@ -13,14 +13,15 @@ import java.util.List;
  * 客户管理表
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 @Data
 @ApiModel
 public class ClientParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 客户id
@@ -32,25 +33,19 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      * 客户名称
      */
     @ApiModelProperty("客户名称")
-    private String name;
+    private String clientName;
 
     /**
      * 客户地址id
      */
     @ApiModelProperty("客户地址id")
-    private String adressId;
+    private Long adressId;
 
     /**
      * 联系人id
      */
     @ApiModelProperty("联系人id")
     private Long contactsId;
-
-    /**
-     * 固定电话
-     */
-    @ApiModelProperty("固定电话")
-    private Long tel;
 
     /**
      * 成立时间
@@ -80,7 +75,7 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      * 营业期限
      */
     @ApiModelProperty("营业期限")
-    private String businessTerm;
+    private Date businessTerm;
 
     /**
      * 注册地址
@@ -123,6 +118,12 @@ public class ClientParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

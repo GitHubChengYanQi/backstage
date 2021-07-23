@@ -13,8 +13,8 @@ import java.util.List;
  * 客户地址表
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 @Data
 @ApiModel
@@ -28,18 +28,6 @@ public class AdressParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("地址id")
     private Long adressId;
-  /**
-   * 客户id
-   */
-  @ApiModelProperty("客户id")
-  private Long client_id;
-
-    /**
-     * 客户名称
-     */
-    @ApiModelProperty("客户名称")
-    private String name;
-
 
     /**
      * 地址
@@ -51,13 +39,13 @@ public class AdressParam implements Serializable, BaseValidatingParam {
      * 经度
      */
     @ApiModelProperty("经度")
-    private String longitude;
+    private Double longitude;
 
     /**
      * 纬度
      */
     @ApiModelProperty("纬度")
-    private String latitude;
+    private Double latitude;
 
     /**
      * 创建者
@@ -88,6 +76,18 @@ public class AdressParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门id")
+    private Long deptId;
+
+    /**
+     * 客户id
+     */
+    @ApiModelProperty("客户id")
+    private Long clientId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

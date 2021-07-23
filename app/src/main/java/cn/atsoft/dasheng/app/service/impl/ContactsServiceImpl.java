@@ -22,8 +22,8 @@ import java.util.List;
  * 联系人表 服务实现类
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 @Service
 public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> implements ContactsService {
@@ -65,7 +65,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     }
 
     private Serializable getKey(ContactsParam param){
-        return param.getId();
+        return param.getContactsId();
     }
 
     private Page<ContactsResult> getPageContext() {

@@ -5,10 +5,9 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Client">
         <id column="client_id" property="clientId" />
-        <result column="name" property="name" />
+        <result column="client_name" property="clientName" />
         <result column="adress_id" property="adressId" />
         <result column="contacts_id" property="contactsId" />
-        <result column="tel" property="tel" />
         <result column="setup" property="setup" />
         <result column="legal" property="legal" />
         <result column="utscc" property="utscc" />
@@ -21,11 +20,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        client_id AS "clientId", name AS "name", adress_id AS "adressId", contacts_id AS "contactsId", tel AS "tel", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        client_id AS "clientId", client_name AS "clientName", adress_id AS "adressId", contacts_id AS "contactsId", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -33,11 +33,14 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_client where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
+            <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
+                and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+            </if>
+            <if test="paramCondition.contactsId != null">
+                    and contacts_id = #{paramCondition.contactsId}
             </if>
             <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
-                and company_type like CONCAT('%',#{paramCondition.companyType},'%')
+                    and company_type = #{paramCondition.companyType}
             </if>
     </select>
 
@@ -45,11 +48,14 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_client where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
+                        and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+                </if>
+                <if test="paramCondition.contactsId != null">
+                            and contacts_id = #{paramCondition.contactsId}
                 </if>
                 <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
-                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
+                            and company_type = #{paramCondition.companyType}
                 </if>
     </select>
 
@@ -57,11 +63,14 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_client where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
+                        and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+                </if>
+                <if test="paramCondition.contactsId != null">
+                            and contacts_id = #{paramCondition.contactsId}
                 </if>
                 <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
-                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
+                            and company_type = #{paramCondition.companyType}
                 </if>
     </select>
 
@@ -69,11 +78,14 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_client where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
+                        and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+                </if>
+                <if test="paramCondition.contactsId != null">
+                        and contacts_id = #{paramCondition.contactsId}
                 </if>
                 <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
-                        and company_type like CONCAT('%',#{paramCondition.companyType},'%')
+                        and company_type = #{paramCondition.companyType}
                 </if>
     </select>
 

@@ -13,8 +13,8 @@ import java.util.List;
  * 联系人表
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 @Data
 @ApiModel
@@ -22,12 +22,6 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
-    /**
-     * 表id
-     */
-    @ApiModelProperty("表id")
-    private Long id;
 
     /**
      * 联系人id
@@ -39,7 +33,7 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
      * 联系人姓名
      */
     @ApiModelProperty("联系人姓名")
-    private String name;
+    private String contactsName;
 
     /**
      * 职务
@@ -82,6 +76,18 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
+
+    /**
+     * 客户id
+     */
+    @ApiModelProperty("客户id")
+    private Long clientId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

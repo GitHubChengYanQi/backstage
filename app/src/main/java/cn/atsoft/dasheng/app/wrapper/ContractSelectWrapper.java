@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AdressSelectWrapper extends BaseControllerWrapper {
+public class ContractSelectWrapper extends BaseControllerWrapper {
 
-    public AdressSelectWrapper(List<Map<String, Object>> multi) {
+    public ContractSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-
     }
 }

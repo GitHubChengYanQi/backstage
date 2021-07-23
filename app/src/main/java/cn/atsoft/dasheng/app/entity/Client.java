@@ -1,17 +1,20 @@
 package cn.atsoft.dasheng.app.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
 
 /**
  * <p>
  * 客户管理表
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 @TableName("daoxin_client")
 public class Client implements Serializable {
@@ -27,14 +30,14 @@ public class Client implements Serializable {
     /**
      * 客户名称
      */
-    @TableField("name")
-    private String name;
+    @TableField("client_name")
+    private String clientName;
 
     /**
      * 客户地址id
      */
     @TableField("adress_id")
-    private String adressId;
+    private Long adressId;
 
     /**
      * 联系人id
@@ -43,16 +46,9 @@ public class Client implements Serializable {
     private Long contactsId;
 
     /**
-     * 固定电话
-     */
-    @TableField("tel")
-    private Long tel;
-
-    /**
      * 成立时间
      */
     @TableField("setup")
-
     private Date setup;
 
     /**
@@ -65,7 +61,7 @@ public class Client implements Serializable {
      * 统一社会信用代码
      */
     @TableField("utscc")
-    private Long utscc;
+    private String utscc;
 
     /**
      * 公司类型
@@ -121,6 +117,12 @@ public class Client implements Serializable {
     @TableField("display")
     private Integer display;
 
+    /**
+     * 部门编号
+     */
+    @TableField("deptId")
+    private Long deptId;
+
 
     public Long getClientId() {
         return clientId;
@@ -130,19 +132,19 @@ public class Client implements Serializable {
         this.clientId = clientId;
     }
 
-    public String getName() {
-        return name;
+    public String getClientName() {
+        return clientName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
-    public String getAdressId() {
+    public Long getAdressId() {
         return adressId;
     }
 
-    public void setAdressId(String adressId) {
+    public void setAdressId(Long adressId) {
         this.adressId = adressId;
     }
 
@@ -152,14 +154,6 @@ public class Client implements Serializable {
 
     public void setContactsId(Long contactsId) {
         this.contactsId = contactsId;
-    }
-
-    public Long getTel() {
-        return tel;
-    }
-
-    public void setTel(Long tel) {
-        this.tel = tel;
     }
 
     public Date getSetup() {
@@ -178,11 +172,11 @@ public class Client implements Serializable {
         this.legal = legal;
     }
 
-    public Long getUtscc() {
+    public String getUtscc() {
         return utscc;
     }
 
-    public void setUtscc(Long utscc) {
+    public void setUtscc(String utscc) {
         this.utscc = utscc;
     }
 
@@ -258,14 +252,21 @@ public class Client implements Serializable {
         this.display = display;
     }
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
         "clientId=" + clientId +
-        ", name=" + name +
+        ", clientName=" + clientName +
         ", adressId=" + adressId +
         ", contactsId=" + contactsId +
-        ", tel=" + tel +
         ", setup=" + setup +
         ", legal=" + legal +
         ", utscc=" + utscc +
@@ -278,6 +279,7 @@ public class Client implements Serializable {
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", display=" + display +
+        ", deptId=" + deptId +
         "}";
     }
 }

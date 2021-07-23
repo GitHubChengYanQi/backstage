@@ -16,40 +16,40 @@ import java.util.Map;
  * 客户地址表 Mapper 接口
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 public interface AdressMapper extends BaseMapper<Adress> {
 
     /**
      * 获取列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<AdressResult> customList(@Param("paramCondition") AdressParam paramCondition);
 
     /**
      * 获取map列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") AdressParam paramCondition);
 
     /**
      * 获取分页实体列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     Page<AdressResult> customPageList(@Param("page") Page page, @Param("paramCondition") AdressParam paramCondition);
 
     /**
      * 获取分页map列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") AdressParam paramCondition);
 

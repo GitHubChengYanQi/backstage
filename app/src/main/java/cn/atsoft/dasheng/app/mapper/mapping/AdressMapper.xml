@@ -5,8 +5,6 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Adress">
         <id column="adress_id" property="adressId" />
-      <result column="client_id" property="client_id"/>
-        <result column="name" property="name" />
         <result column="location" property="location" />
         <result column="longitude" property="longitude" />
         <result column="latitude" property="latitude" />
@@ -15,11 +13,13 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
+        <result column="client_id" property="clientId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-       client_id,adress_id AS "adressId", name AS "name", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", client_id AS "clientId"
     </sql>
 
 
@@ -27,8 +27,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_adress where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
+            <if test="paramCondition.clientId != null">
+                    and client_id = #{paramCondition.clientId}
             </if>
     </select>
 
@@ -36,8 +36,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_adress where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientId != null">
+                            and client_id = #{paramCondition.clientId}
                 </if>
     </select>
 
@@ -45,8 +45,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_adress where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientId != null">
+                            and client_id = #{paramCondition.clientId}
                 </if>
     </select>
 
@@ -54,8 +54,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_adress where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.clientId != null">
+                        and client_id = #{paramCondition.clientId}
                 </if>
     </select>
 

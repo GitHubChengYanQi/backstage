@@ -13,56 +13,56 @@ import java.util.List;
  * 联系人表 服务类
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 public interface ContactsService extends IService<Contacts> {
 
     /**
      * 新增
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void add(ContactsParam param);
 
     /**
      * 删除
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void delete(ContactsParam param);
 
     /**
      * 更新
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void update(ContactsParam param);
 
     /**
      * 查询单条数据，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     ContactsResult findBySpec(ContactsParam param);
 
     /**
      * 查询列表，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<ContactsResult> findListBySpec(ContactsParam param);
 
     /**
      * 查询分页数据，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
      PageInfo<ContactsResult> findPageBySpec(ContactsParam param);
 

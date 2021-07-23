@@ -13,56 +13,56 @@ import java.util.List;
  * 客户地址表 服务类
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 public interface AdressService extends IService<Adress> {
 
     /**
      * 新增
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void add(AdressParam param);
 
     /**
      * 删除
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void delete(AdressParam param);
 
     /**
      * 更新
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     void update(AdressParam param);
 
     /**
      * 查询单条数据，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     AdressResult findBySpec(AdressParam param);
 
     /**
      * 查询列表，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<AdressResult> findListBySpec(AdressParam param);
 
     /**
      * 查询分页数据，Specification模式
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
      PageInfo<AdressResult> findPageBySpec(AdressParam param);
 

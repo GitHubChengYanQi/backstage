@@ -16,40 +16,40 @@ import java.util.Map;
  * 联系人表 Mapper 接口
  * </p>
  *
- * @author ta
- * @since 2021-07-19
+ * @author 
+ * @since 2021-07-23
  */
 public interface ContactsMapper extends BaseMapper<Contacts> {
 
     /**
      * 获取列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<ContactsResult> customList(@Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取map列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取分页实体列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     Page<ContactsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取分页map列表
      *
-     * @author ta
-     * @Date 2021-07-19
+     * @author 
+     * @Date 2021-07-23
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
 

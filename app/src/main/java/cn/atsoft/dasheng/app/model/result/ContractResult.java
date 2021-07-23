@@ -8,42 +8,54 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 客户地址表
+ * 合同表
  * </p>
  *
  * @author 
- * @since 2021-07-23
+ * @since 2021-07-21
  */
 @Data
 @ApiModel
-public class AdressResult implements Serializable {
+public class ContractResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 地址id
+     * 合同id
      */
-    @ApiModelProperty("地址id")
-    private Long adressId;
+    @ApiModelProperty("合同id")
+    private Long contractId;
 
     /**
-     * 地址
+     * 合同名称
      */
-    @ApiModelProperty("地址")
-    private String location;
+    @ApiModelProperty("合同名称")
+    private String name;
 
     /**
-     * 经度
+     * 负责人id
      */
-    @ApiModelProperty("经度")
-    private Double longitude;
+    @ApiModelProperty("负责人id")
+    private String userId;
 
     /**
-     * 纬度
+     * 备注
      */
-    @ApiModelProperty("纬度")
-    private Double latitude;
+    @ApiModelProperty("备注")
+    private String note;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty("创建时间")
+    private Date time;
+
+    /**
+     * 内容
+     */
+    @ApiModelProperty("内容")
+    private String content;
 
     /**
      * 创建者
@@ -74,18 +86,6 @@ public class AdressResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
-    /**
-     * 部门id
-     */
-    @ApiModelProperty("部门id")
-    private Long deptId;
-
-    /**
-     * 客户id
-     */
-    @ApiModelProperty("客户id")
-    private Long clientId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
