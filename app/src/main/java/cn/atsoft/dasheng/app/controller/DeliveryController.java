@@ -76,13 +76,11 @@ public class DeliveryController extends BaseController {
                         StockDetailsParam stockDetailsParam = new StockDetailsParam();
                         stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
 
-                        PageInfo<StockDetailsResult> pageBySpec1 = this.stockDetailsService.findPageBySpec(stockDetailsParam);
-
-
+                        List<StockDetailsResult> listBySpec = this.stockDetailsService.findListBySpec(stockDetailsParam);
 
 
                         for (int j = 0 ; j < deliveryParam.getNumber() ; j++ ){
-                            stockDetailsParam.setStockItemId(pageBySpec1.getData().get(j).getStockItemId());
+                            stockDetailsParam.setStockItemId(listBySpec.get(j).getStockItemId());
                             this.stockDetailsService.delete(stockDetailsParam);
                         }
 

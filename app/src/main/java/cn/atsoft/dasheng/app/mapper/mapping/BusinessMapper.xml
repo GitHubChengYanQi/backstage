@@ -86,9 +86,7 @@
         </if>
         <if test="paramCondition.time != null and paramCondition.time != ''">
         </if>
-        <if test="paramCondition.state != null">
-            and state = #{paramCondition.state}
-        </if>
+
         <if test="paramCondition.stage != null and paramCondition.stage != ''">
             and stage = #{paramCondition.stage}
         </if>

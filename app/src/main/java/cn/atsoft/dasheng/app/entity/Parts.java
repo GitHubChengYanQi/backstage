@@ -21,7 +21,7 @@ import java.util.List;
  * @author 1
  * @since 2021-07-14
  */
-@TableName("daoxin_parts")
+@TableName("daoxin_erp_parts")
 public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;

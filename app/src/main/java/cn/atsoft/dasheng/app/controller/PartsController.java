@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.service.impl.PartsServiceImpl;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -105,12 +106,16 @@ public class PartsController extends BaseController {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
-        PageInfo<PartsResult> pageBySpec = partsService.findPageBySpec(partsParam);
-        int size = pageBySpec.getData().size();
-        for (int i = 0; i < size; i++) {
-            Long itemId = pageBySpec.getData().get(i).getItemId();
-            System.out.println(itemId+"====================================================================================");
-        }
+//        PageInfo<PartsResult> pageBySpec = partsService.findPageBySpec(partsParam);
+////        int size = pageBySpec.getData().size();
+////        for (int i = 0; i < size; i++) {
+////            Long itemId = pageBySpec.getData().get(i).getItemId();
+////            System.out.println(itemId+"====================================================================================");
+////        }
+
+        PartsService partsService = new PartsServiceImpl();
+        List<PartsResult> listBySpec = partsService.findListBySpec(partsParam);
+        System.out.println(listBySpec);
         return this.partsService.findPageBySpec(partsParam);
     }
 

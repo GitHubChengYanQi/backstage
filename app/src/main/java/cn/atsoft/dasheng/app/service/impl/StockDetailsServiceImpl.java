@@ -54,7 +54,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public List<StockDetailsResult> findListBySpec(StockDetailsParam param){
-        return null;
+        List<StockDetailsResult> stockDetailsResults = this.baseMapper.customList(param);
+        return stockDetailsResults;
     }
 
     @Override

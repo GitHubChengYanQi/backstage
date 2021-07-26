@@ -56,7 +56,6 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
     public List<ItemsResult> findListBySpec(ItemsParam param){
         return null;
     }
-
     @Override
     public PageInfo<ItemsResult> findPageBySpec(ItemsParam param){
         Page<ItemsResult> pageContext = getPageContext();
