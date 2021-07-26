@@ -27,17 +27,17 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from details_view where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>
 
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
+    <select id="customMapList" resultType="cn.atsoft.dasheng.app.model.result.StockDetailsResult" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from details_view where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>

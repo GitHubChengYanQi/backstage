@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -54,7 +55,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
 
     @Override
     public List<StockDetailsResult> findListBySpec(StockDetailsParam param){
-        return null;
+        List<StockDetailsResult> stockDetailsResults = this.baseMapper.customList(param);
+        return stockDetailsResults;
     }
 
     @Override
