@@ -24,14 +24,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id AS "id", order_id AS "orderId", name AS "name", adress_id AS "adressId", numbers AS "numbers", state AS "state", phone AS "phone", order_time AS "orderTime", pay_time AS "payTime", delivery_time AS "deliveryTime", total AS "total", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        order_id AS "id", order_id AS "orderId", name AS "name", adress_id AS "adressId", numbers AS "numbers", state AS "state", phone AS "phone", order_time AS "orderTime", pay_time AS "payTime", delivery_time AS "deliveryTime", total AS "total", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OrderResult" parameterType="cn.atsoft.dasheng.app.model.params.OrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_order where 1 = 1
+        from daoxin_erp_order where 1 = 1
             <if test="paramCondition.orderId != null">
                 and order_id like CONCAT('%',#{paramCondition.orderId},'%')
             </if>
@@ -46,7 +46,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_order where 1 = 1
+        from daoxin_erp_order where 1 = 1
                 <if test="paramCondition.orderId != null">
                         and order_id like CONCAT('%',#{paramCondition.orderId},'%')
                 </if>
@@ -76,7 +76,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_order where 1 = 1
+        from daoxin_erp_order where 1 = 1
                 <if test="paramCondition.orderId != null">
                         and order_id like CONCAT('%',#{paramCondition.orderId},'%')
                 </if>

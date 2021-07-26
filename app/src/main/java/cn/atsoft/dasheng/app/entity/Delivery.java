@@ -18,7 +18,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-07-17
  */
-@TableName("daoxin_delivery")
+@TableName("daoxin_erp_outstock")
 public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;

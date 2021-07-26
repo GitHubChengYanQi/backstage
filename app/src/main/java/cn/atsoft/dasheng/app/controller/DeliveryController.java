@@ -79,6 +79,8 @@ public class DeliveryController extends BaseController {
                         PageInfo<StockDetailsResult> pageBySpec1 = this.stockDetailsService.findPageBySpec(stockDetailsParam);
 
 
+
+
                         for (int j = 0 ; j < deliveryParam.getNumber() ; j++ ){
                             stockDetailsParam.setStockItemId(pageBySpec1.getData().get(j).getStockItemId());
                             this.stockDetailsService.delete(stockDetailsParam);

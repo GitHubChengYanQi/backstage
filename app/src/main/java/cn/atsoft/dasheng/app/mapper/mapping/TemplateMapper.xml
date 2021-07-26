@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.TemplateResult" parameterType="cn.atsoft.dasheng.app.model.params.TemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_template where 1 = 1
+        from daoxin_crm_template where 1 = 1
             <if test="paramCondition.name != null and paramCondition.name != ''">
                 and name like CONCAT('%',#{paramCondition.name},'%')
             </if>
@@ -32,7 +32,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.TemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_template where 1 = 1
+        from daoxin_crm_template where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
@@ -41,7 +41,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.TemplateResult" parameterType="cn.atsoft.dasheng.app.model.params.TemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_template where 1 = 1
+        from daoxin_crm_template where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
@@ -50,7 +50,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.TemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_template where 1 = 1
+        from daoxin_crm_template where 1 = 1
                 <if test="paramCondition.name != null and paramCondition.name != ''">
                         and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>

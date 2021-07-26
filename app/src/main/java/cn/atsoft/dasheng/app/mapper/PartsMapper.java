@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.mapper;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
@@ -52,5 +53,8 @@ public interface PartsMapper extends BaseMapper<Parts> {
      * @Date 2021-07-14
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
+
+
+
 
 }

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,10 +16,10 @@ import java.io.Serializable;
  * 客户管理表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
-@TableName("daoxin_client")
+@TableName("daoxin_crm_customer")
 public class Client implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +27,7 @@ public class Client implements Serializable {
     /**
      * 客户id
      */
-      @TableId(value = "client_id", type = IdType.AUTO)
+    @TableId(value = "client_id", type = IdType.AUTO)
     private Long clientId;
 
     /**
@@ -36,14 +39,10 @@ public class Client implements Serializable {
     /**
      * 客户地址id
      */
-    @TableField("adress_id")
-    private Long adressId;
 
-    /**
-     * 联系人id
-     */
-    @TableField("contacts_id")
-    private Long contactsId;
+
+
+
 
     /**
      * 成立时间
@@ -90,25 +89,25 @@ public class Client implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -140,21 +139,8 @@ public class Client implements Serializable {
         this.clientName = clientName;
     }
 
-    public Long getAdressId() {
-        return adressId;
-    }
 
-    public void setAdressId(Long adressId) {
-        this.adressId = adressId;
-    }
 
-    public Long getContactsId() {
-        return contactsId;
-    }
-
-    public void setContactsId(Long contactsId) {
-        this.contactsId = contactsId;
-    }
 
     public Date getSetup() {
         return setup;
@@ -263,23 +249,21 @@ public class Client implements Serializable {
     @Override
     public String toString() {
         return "Client{" +
-        "clientId=" + clientId +
-        ", clientName=" + clientName +
-        ", adressId=" + adressId +
-        ", contactsId=" + contactsId +
-        ", setup=" + setup +
-        ", legal=" + legal +
-        ", utscc=" + utscc +
-        ", companyType=" + companyType +
-        ", businessTerm=" + businessTerm +
-        ", signIn=" + signIn +
-        ", introduction=" + introduction +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "clientId=" + clientId +
+                ", clientName=" + clientName +
+                ", setup=" + setup +
+                ", legal=" + legal +
+                ", utscc=" + utscc +
+                ", companyType=" + companyType +
+                ", businessTerm=" + businessTerm +
+                ", signIn=" + signIn +
+                ", introduction=" + introduction +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

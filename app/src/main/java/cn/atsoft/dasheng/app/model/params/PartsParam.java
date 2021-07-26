@@ -1,12 +1,17 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -21,11 +26,11 @@ import java.util.List;
 public class PartsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  Long items;
-    private  String brandName;
-    private  String name;
-    private  String itemlistName;
-    private  int  itemlistNumber;
+    private Long items;
+    private String brandName;
+    private String itemName;
+    private String name;
+
     /**
      * 清单id
      */
@@ -51,7 +56,6 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private Integer number;
 
 
-
     /**
      * 状态
      */
@@ -63,7 +67,6 @@ public class PartsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Date createTime;
-
 
 
     /**
@@ -86,6 +89,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    private Map<Integer, String> value;
 
     @Override
     public String checkParam() {

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.ItemsParam;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import cn.atsoft.dasheng.app.wrapper.PartsSelectWrapper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +71,7 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PartsParam partsParam)  {
+    public ResponseData delete(@RequestBody PartsParam partsParam) {
         this.partsService.delete(partsParam);
         return ResponseData.success();
     }
@@ -99,32 +102,33 @@ public class PartsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PartsResult> list(@RequestBody(required = false) PartsParam partsParam) {
-        if(ToolUtil.isEmpty(partsParam)){
+        if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
-            for (int i = 0; i < partsService.list().size(); i++) {
-                System.out.println(partsParam.getPartsId());
-            }
         }
-
+        PageInfo<PartsResult> pageBySpec = partsService.findPageBySpec(partsParam);
+        int size = pageBySpec.getData().size();
+        for (int i = 0; i < size; i++) {
+            Long itemId = pageBySpec.getData().get(i).getItemId();
+            System.out.println(itemId+"====================================================================================");
+        }
         return this.partsService.findPageBySpec(partsParam);
     }
 
     /**
-    * 选择列表
-    *
-    * @author 1
-    * @Date 2021-07-14
-    */
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.partsService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.partsService.listMaps();
 
         PartsSelectWrapper factory = new PartsSelectWrapper(list);
-        List<Map<String,Object>> result = factory.wrap();
+        List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
 
 
 }

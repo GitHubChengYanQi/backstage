@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @since 2021-07-15
  */
 @Data
-@TableName("daoxin_place")
+@TableName("daoxin_erp_storehouse")
 public class Place implements Serializable {
 
     private static final long serialVersionUID = 1L;

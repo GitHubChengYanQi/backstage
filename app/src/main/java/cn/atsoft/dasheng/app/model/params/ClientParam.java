@@ -38,14 +38,11 @@ public class ClientParam implements Serializable, BaseValidatingParam {
     /**
      * 客户地址id
      */
-    @ApiModelProperty("客户地址id")
-    private Long adressId;
 
     /**
      * 联系人id
      */
-    @ApiModelProperty("联系人id")
-    private Long contactsId;
+
 
     /**
      * 成立时间

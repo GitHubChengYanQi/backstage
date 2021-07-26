@@ -44,7 +44,18 @@ public class ClientController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ClientParam clientParam) {
         this.clientService.add(clientParam);
-        return ResponseData.success();
+        Long clent = null;
+        PageInfo<ClientResult> pageBySpec = clientService.findPageBySpec(clientParam);
+
+        for (int i = 0; i <pageBySpec.getData().size() ; i++) {
+            if (i == pageBySpec.getData().size()-1) {
+                clent = pageBySpec.getData().get(i).getClientId();
+            }
+        }
+
+        return ResponseData.success(clent);
+
+
     }
 
     /**

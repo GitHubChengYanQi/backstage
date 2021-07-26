@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Business">
         <id column="business_id" property="businessId"/>
         <result column="clitent_id" property="clitenId"/>
-        <result column="source_id" property="sourceId" />
+        <result column="source_id" property="sourceId"/>
         <result column="time" property="time"/>
         <result column="state" property="state"/>
         <result column="stage" property="stage"/>
@@ -20,8 +20,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         source_id AS "sourceId", account AS "account"
-  ,   sname AS "sname",   iname AS "iname", name AS "name" , business_id AS "businessId", clitent_id AS "clitenId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+        source_id
+        AS "sourceId", account AS "account"
+  ,   sname AS "sname",   iname AS "iname", cname AS "name" , business_id AS "businessId", clitent_id AS "clitenId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -29,7 +30,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.BusinessParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_business where 1 = 1
+        from daoxin_crm_business where 1 = 1
         <if test="paramCondition.clitenId != null">
             and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
         </if>
@@ -52,7 +53,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_business where 1 = 1
+        from daoxin_crm_business where 1 = 1
         <if test="paramCondition.clitenId != null">
             and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
         </if>
@@ -115,7 +116,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_business where 1 = 1
+        from daoxin_crm_business where 1 = 1
         <if test="paramCondition.clitenId != null">
             and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
         </if>

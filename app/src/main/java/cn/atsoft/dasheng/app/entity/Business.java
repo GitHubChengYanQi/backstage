@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author cheng
  * @since 2021-07-19
  */
-@TableName("daoxin_business")
+@TableName("daoxin_crm_business")
 public class Business implements Serializable {
 
     private static final long serialVersionUID = 1L;

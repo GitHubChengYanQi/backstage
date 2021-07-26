@@ -43,6 +43,7 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
+        adressParam.setClientId(clientId);
         this.adressService.add(adressParam);
         return ResponseData.success();
     }
@@ -56,7 +57,7 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody AdressParam adressParam) {
-
+        adressParam.setClientId(clientId);
         this.adressService.update(adressParam);
         return ResponseData.success();
     }
@@ -97,9 +98,11 @@ public class AdressController extends BaseController {
      * @author 
      * @Date 2021-07-23
      */
+    Long clientId;
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
+        clientId = adressParam.getClientId();
         if(ToolUtil.isEmpty(adressParam)){
             adressParam = new AdressParam();
         }

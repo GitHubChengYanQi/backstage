@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author cheng
  * @since 2021-07-19
  */
-@TableName("daoxin_quotation")
+@TableName("daoxin_crm_track")
 public class Quotation implements Serializable {
 
     private static final long serialVersionUID = 1L;

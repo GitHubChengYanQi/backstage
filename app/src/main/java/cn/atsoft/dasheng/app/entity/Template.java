@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author 
  * @since 2021-07-21
  */
-@TableName("daoxin_template")
+@TableName("daoxin_crm_template")
 public class Template implements Serializable {
 
     private static final long serialVersionUID = 1L;

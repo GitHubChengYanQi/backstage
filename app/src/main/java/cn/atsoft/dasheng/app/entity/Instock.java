@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-07-17
  */
-@TableName("daoxin_instock")
+@TableName("daoxin_erp_instock")
 public class Instock implements Serializable {
 
     private static final long serialVersionUID = 1L;

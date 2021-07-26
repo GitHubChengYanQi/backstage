@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 清单
@@ -19,10 +24,9 @@ import java.util.List;
 public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-  private  Long items;
-  private  String itemlistName;
-  private  int  itemlistNumber;
-  private  String name;
+    private Long items;
+
+    private String name;
     /**
      * 清单id
      */
@@ -35,7 +39,7 @@ public class PartsResult implements Serializable {
     @ApiModelProperty("物品id")
     private Long itemId;
 
-    private String itemName;
+  private String itemName;
 
     private String brandName;
     /**

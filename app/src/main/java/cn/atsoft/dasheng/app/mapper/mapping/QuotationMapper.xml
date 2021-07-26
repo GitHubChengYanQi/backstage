@@ -28,7 +28,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.QuotationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_quotation where 1 = 1
+        from daoxin_crm_track where 1 = 1
         <if test="paramCondition.businessId != null">
             and business_id like CONCAT('%',#{paramCondition.businessId},'%')
         </if>
@@ -43,7 +43,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.QuotationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_quotation where 1 = 1
+        from daoxin_crm_track where 1 = 1
         <if test="paramCondition.businessId != null">
             and business_id like CONCAT('%',#{paramCondition.businessId},'%')
         </if>
@@ -83,7 +83,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.QuotationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_quotation where 1 = 1
+        from daoxin_crm_track where 1 = 1
         <if test="paramCondition.businessId != null">
             and business_id like CONCAT('%',#{paramCondition.businessId},'%')
         </if>

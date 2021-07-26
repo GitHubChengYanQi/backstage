@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author 1
  * @since 2021-07-14
  */
-@TableName("daoxin_items")
+@TableName("daoxin_erp_items")
 public class Items implements Serializable {
 
     private static final long serialVersionUID = 1L;

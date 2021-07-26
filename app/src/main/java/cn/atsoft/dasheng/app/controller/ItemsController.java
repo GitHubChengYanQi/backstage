@@ -19,6 +19,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class ItemsController extends BaseController {
 
     @Autowired
     private ItemsService itemsService;
-
+     public  static Map map= new HashMap();
     /**
      * 新增接口
      *
@@ -120,13 +121,14 @@ public class ItemsController extends BaseController {
 
     public ResponseData<List<Map<String, Object>>> listSelect() {
         List<Map<String, Object>> list = this.itemsService.listMaps();
-//        BrandSelectWrapper factory = new BrandSelectWrapper(list);
         ItemsSelectWrapper itemsSelectWrapper =new ItemsSelectWrapper(list);
         List<Map<String, Object>> result = itemsSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+    public static void addPartName(){
 
+    }
 }
 
 

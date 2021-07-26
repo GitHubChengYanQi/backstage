@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author 
  * @since 2021-07-21
  */
-@TableName("daoxin_contract")
+@TableName("daoxin_crm_contract")
 public class Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
