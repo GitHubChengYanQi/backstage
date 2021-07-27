@@ -18,8 +18,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        brand_name
-        AS "brandName", name AS "itemName", items AS "items",
+        name
+        as "name", items
+        AS "items",  brand_name AS "brandName",
     parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 
@@ -29,9 +30,7 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
-        </if>
+
     </select>
 
 
@@ -39,26 +38,34 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
-        </if>
+
     </select>
 
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam"
+            resultMap="PartsResult">
         select
         <include refid="Base_Column_List"/>
-        from parts_view where 1 = 1
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
+        from parts_view
+        where 1 = 1
+        <if test="paramCondition.name != null">
+            and name = #{paramCondition.name}
         </if>
-        <if test="paramCondition.name !=null">
-            and name like CONCAT('%',#{paramCondition.name},'%')
+        <if test="paramCondition.brandName != null">
+            and brand_name = #{paramCondition.brandName}
         </if>
-        <if test="paramCondition.brandName!=null">
-            and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
-        </if>
-    </select>
 
+
+    </select>
+    <resultMap id="PartsResult" type="cn.atsoft.dasheng.app.model.result.PartsResult">
+
+        <collection property="getitem" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam" javaType="ArrayList"
+                    column="items" select="getitem"/>
+    </resultMap>
+    <select id="getitem" resultType="cn.atsoft.dasheng.app.model.params.ItemsParam">
+        select item_id, name
+        from daoxin_erp_items
+        where item_id = #{items}
+    </select>
 </mapper>

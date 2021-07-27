@@ -31,6 +31,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private String itemName;
     private String name;
 
+    private   List<Items>  getitem;
     /**
      * 清单id
      */

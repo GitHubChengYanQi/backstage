@@ -36,6 +36,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
     public void setProductionTime(String productionTime) {
         this.productionTime = productionTime;
     }
+
     private  String materialName;
     /**
      * 物品Id

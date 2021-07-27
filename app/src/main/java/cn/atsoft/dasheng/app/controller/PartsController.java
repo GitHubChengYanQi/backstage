@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.impl.PartsServiceImpl;
@@ -106,18 +107,19 @@ public class PartsController extends BaseController {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
-//        PageInfo<PartsResult> pageBySpec = partsService.findPageBySpec(partsParam);
-////        int size = pageBySpec.getData().size();
-////        for (int i = 0; i < size; i++) {
-////            Long itemId = pageBySpec.getData().get(i).getItemId();
-////            System.out.println(itemId+"====================================================================================");
-////        }
+        List<PartsResult> data = partsService.findPageBySpec(partsParam).getData();
 
-        PartsService partsService = new PartsServiceImpl();
-        List<PartsResult> listBySpec = partsService.findListBySpec(partsParam);
-        System.out.println(listBySpec);
+        int size = partsService.findPageBySpec(partsParam).getData().size();
+        for (int i = 0; i < size; i++) {
+            Long partsId = partsService.findPageBySpec(partsParam).getData().get(i).getPartsId();
+            String iname = partsService.findPageBySpec(partsParam).getData().get(i).getName();
+            System.err.println(partsId+"-----------------------------------------------------------------------------------------------------------------");
+            System.err.println(partsService.findPageBySpec(partsParam));
+            System.err.println("物品名称：+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+iname);
+        }
+
         return this.partsService.findPageBySpec(partsParam);
-    }
+}
 
     /**
      * 选择列表
