@@ -9,6 +9,7 @@
         <result column="origin_id" property="originId"/>
         <result column="time" property="time"/>
         <result column="state" property="state"/>
+        <result column="stock_id" property="stockId" />
         <result column="stage" property="stage"/>
         <result column="person" property="person"/>
         <result column="create_time" property="createTime"/>
@@ -21,8 +22,8 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         origin_id
-        AS "originId", account AS "account"
-  ,   name AS "sname",   iname AS "iname", iname AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+        AS "originId", account AS "account", stock_id AS "stockId"
+  ,   sname AS "sname",   iname AS "iname", client_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 

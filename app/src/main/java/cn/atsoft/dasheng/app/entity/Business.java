@@ -24,16 +24,7 @@ public class Business implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Long getSourceId() {
-        return sourceId;
-    }
 
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
-
-    @TableField("source_id")
-    private  Long sourceId;
     /**
      * 商机id
      */
@@ -45,7 +36,8 @@ public class Business implements Serializable {
      */
     @TableField("customer_id")
     private Long customerId;
-
+    @TableField("stock_id")
+    private  Long stockId;
     public long getStockId() {
         return originId;
     }
@@ -55,6 +47,11 @@ public class Business implements Serializable {
     }
     @TableField("origin_id")
     private long originId;
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
+    }
+
     /**
      * 机会来源
      */
