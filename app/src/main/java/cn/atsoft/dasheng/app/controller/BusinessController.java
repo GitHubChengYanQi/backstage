@@ -43,6 +43,7 @@ public class BusinessController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody BusinessParam businessParam) {
+        System.err.println(businessParam);
         Long add = this.businessService.add(businessParam);
         return ResponseData.success(add);
     }

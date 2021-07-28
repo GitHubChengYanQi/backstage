@@ -38,13 +38,11 @@ public class Business implements Serializable {
     private Long customerId;
     @TableField("stock_id")
     private  Long stockId;
-    public long getStockId() {
-        return originId;
+
+    public Long getStockId() {
+        return stockId;
     }
 
-    public void setStockId(long stockId) {
-        this.originId = stockId;
-    }
     @TableField("origin_id")
     private long originId;
 
