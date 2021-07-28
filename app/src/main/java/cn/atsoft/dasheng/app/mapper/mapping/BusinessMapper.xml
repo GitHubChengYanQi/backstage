@@ -7,6 +7,7 @@
         <id column="business_id" property="businessId"/>
         <result column="customer_d" property="customerId"/>
         <result column="origin_id" property="originId"/>
+        <result column="stock_id" property="stockId"/>
         <result column="time" property="time"/>
         <result column="state" property="state"/>
         <result column="stage" property="stage"/>
@@ -22,7 +23,7 @@
     <sql id="Base_Column_List">
         origin_id
         AS "originId", account AS "account"
-  ,   name AS "sname",   iname AS "iname", iname AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+  ,   sname AS "sname", stock_id AS "stockId" , iname AS "iname", client_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
