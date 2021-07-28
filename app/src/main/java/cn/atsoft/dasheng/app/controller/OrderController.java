@@ -41,8 +41,8 @@ public class OrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OrderParam orderParam) {
-        this.orderService.add(orderParam);
-        return ResponseData.success();
+        Long add = this.orderService.add(orderParam);
+        return ResponseData.success(add);
     }
 
     /**

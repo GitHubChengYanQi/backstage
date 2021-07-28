@@ -29,9 +29,10 @@ import java.util.List;
 public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements StockService {
 
     @Override
-    public void add(StockParam param){
+    public Long add(StockParam param){
         Stock entity = getEntity(param);
         this.save(entity);
+        return entity.getStockId();
     }
 
     @Override

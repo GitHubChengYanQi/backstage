@@ -29,9 +29,10 @@ import java.util.List;
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
 
     @Override
-    public void add(CustomerParam param){
+    public Long add(CustomerParam param){
         Customer entity = getEntity(param);
         this.save(entity);
+        return entity.getCustomerId();
     }
 
     @Override

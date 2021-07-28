@@ -29,9 +29,10 @@ import java.util.List;
 public class BusinessServiceImpl extends ServiceImpl<BusinessMapper, Business> implements BusinessService {
 
     @Override
-    public void add(BusinessParam param){
+    public Long add(BusinessParam param){
         Business entity = getEntity(param);
         this.save(entity);
+        return entity.getBusinessId();
     }
 
     @Override

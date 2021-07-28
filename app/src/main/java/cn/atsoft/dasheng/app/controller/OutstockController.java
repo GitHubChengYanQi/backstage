@@ -68,7 +68,7 @@ public class OutstockController extends BaseController {
                         stockParam.setStorehouseId(pageBySpec.getData().get(i).getStorehouseId());
                         stockParam.setInventory(pageBySpec.getData().get(i).getInventory()- outstockParam.getNumber());
                         this.stockService.update(stockParam);
-                        this.outstockService.add(outstockParam);
+                        Long add = this.outstockService.add(outstockParam);
 
 
                         StockDetailsParam stockDetailsParam = new StockDetailsParam();
@@ -85,7 +85,7 @@ public class OutstockController extends BaseController {
 
 
 
-                        return ResponseData.success();
+                        return ResponseData.success(add);
                     }
 
                 }

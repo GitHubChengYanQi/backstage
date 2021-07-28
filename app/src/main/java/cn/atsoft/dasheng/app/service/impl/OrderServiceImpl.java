@@ -29,9 +29,10 @@ import java.util.List;
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Override
-    public void add(OrderParam param){
+    public Long add(OrderParam param){
         Order entity = getEntity(param);
         this.save(entity);
+        return entity.getOrderId();
     }
 
     @Override

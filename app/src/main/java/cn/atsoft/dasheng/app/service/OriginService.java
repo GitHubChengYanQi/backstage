@@ -24,7 +24,7 @@ public interface OriginService extends IService<Origin> {
      * @author 
      * @Date 2021-07-19
      */
-    void add(OriginParam param);
+    Long add(OriginParam param);
 
     /**
      * 删除

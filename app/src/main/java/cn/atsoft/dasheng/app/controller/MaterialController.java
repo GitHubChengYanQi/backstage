@@ -42,8 +42,8 @@ public class MaterialController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody MaterialParam materialParam) {
-        this.materialService.add(materialParam);
-        return ResponseData.success();
+        Long add = this.materialService.add(materialParam);
+        return ResponseData.success(add);
     }
 
     /**

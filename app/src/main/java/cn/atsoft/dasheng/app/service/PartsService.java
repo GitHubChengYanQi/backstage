@@ -24,7 +24,7 @@ public interface PartsService extends IService<Parts> {
      * @author 1
      * @Date 2021-07-14
      */
-    void add(PartsParam param);
+    Long add(PartsParam param);
 
     /**
      * 删除

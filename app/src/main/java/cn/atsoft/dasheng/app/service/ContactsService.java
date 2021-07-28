@@ -24,7 +24,7 @@ public interface ContactsService extends IService<Contacts> {
      * @author 
      * @Date 2021-07-23
      */
-    void add(ContactsParam param);
+    Long add(ContactsParam param);
 
     /**
      * 删除

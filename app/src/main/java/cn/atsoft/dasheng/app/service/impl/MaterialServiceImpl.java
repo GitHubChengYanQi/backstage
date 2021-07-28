@@ -29,9 +29,10 @@ import java.util.List;
 public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements MaterialService {
 
     @Override
-    public void add(MaterialParam param){
+    public Long add(MaterialParam param){
         Material entity = getEntity(param);
         this.save(entity);
+        return entity.getMaterialId();
     }
 
     @Override

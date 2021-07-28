@@ -24,7 +24,7 @@ public interface BusinessService extends IService<Business> {
      * @author cheng
      * @Date 2021-07-19
      */
-    void add(BusinessParam param);
+    Long add(BusinessParam param);
 
     /**
      * 删除

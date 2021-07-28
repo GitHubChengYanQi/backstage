@@ -29,9 +29,10 @@ import java.util.List;
 public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> implements InstockService {
 
     @Override
-    public void add(InstockParam param){
+    public Long add(InstockParam param){
         Instock entity = getEntity(param);
         this.save(entity);
+        return entity.getInstockId();
     }
 
     @Override

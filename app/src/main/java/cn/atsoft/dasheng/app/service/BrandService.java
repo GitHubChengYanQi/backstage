@@ -24,7 +24,7 @@ public interface BrandService extends IService<Brand> {
      * @author 1
      * @Date 2021-07-14
      */
-    void add(BrandParam param);
+    Long add(BrandParam param);
 
     /**
      * 删除

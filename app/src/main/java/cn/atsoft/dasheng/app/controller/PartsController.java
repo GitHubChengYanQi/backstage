@@ -47,12 +47,18 @@ public class PartsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
-        this.partsService.add(partsParam);
-        if(partsParam.getNumber()>0){
-            return ResponseData.success();
-        }else {
-            return ResponseData.error("请输入正确值");
+        Long add = this.partsService.add(partsParam);
+        if (partsParam.getNumber() == null) {
+            return ResponseData.success(add);
+        } else {
+
+            if (partsParam.getNumber() > 0) {
+                return ResponseData.success(add);
+            } else {
+                return ResponseData.error("请输入正确值");
+            }
         }
+
 
     }
 
@@ -65,7 +71,6 @@ public class PartsController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody PartsParam partsParam) {
-
         this.partsService.update(partsParam);
         return ResponseData.success();
     }

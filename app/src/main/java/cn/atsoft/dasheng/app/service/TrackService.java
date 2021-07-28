@@ -24,7 +24,7 @@ public interface TrackService extends IService<Track> {
      * @author cheng
      * @Date 2021-07-19
      */
-    void add(TrackParam param);
+    Long add(TrackParam param);
 
     /**
      * 删除

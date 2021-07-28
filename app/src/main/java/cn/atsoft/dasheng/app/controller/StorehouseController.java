@@ -41,9 +41,9 @@ public class StorehouseController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehouseParam storehouseParam) {
-        this.storehouseService.add(storehouseParam);
+        Long add = this.storehouseService.add(storehouseParam);
         if(storehouseParam.getCapacity()>0 && storehouseParam.getMeasure()>0){
-            return ResponseData.success();
+            return ResponseData.success(add);
         }else {
             return  ResponseData.error("请输入正确值");
         }

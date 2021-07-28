@@ -29,9 +29,10 @@ import java.util.List;
 public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storehouse> implements StorehouseService {
 
     @Override
-    public void add(StorehouseParam param){
+    public Long add(StorehouseParam param){
         Storehouse entity = getEntity(param);
         this.save(entity);
+        return entity.getStorehouseId();
     }
 
     @Override

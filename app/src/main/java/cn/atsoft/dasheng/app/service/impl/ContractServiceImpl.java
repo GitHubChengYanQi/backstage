@@ -29,9 +29,10 @@ import java.util.List;
 public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> implements ContractService {
 
     @Override
-    public void add(ContractParam param){
+    public Long add(ContractParam param){
         Contract entity = getEntity(param);
         this.save(entity);
+        return entity.getContractId();
     }
 
     @Override

@@ -29,9 +29,10 @@ import java.util.List;
 public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements ItemsService {
 
     @Override
-    public void add(ItemsParam param){
+    public Long add(ItemsParam param){
         Items entity = getEntity(param);
         this.save(entity);
+        return entity.getItemId();
     }
 
     @Override

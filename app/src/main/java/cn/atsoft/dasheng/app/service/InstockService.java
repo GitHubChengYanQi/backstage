@@ -24,7 +24,7 @@ public interface InstockService extends IService<Instock> {
      * @author song
      * @Date 2021-07-17
      */
-    void add(InstockParam param);
+    Long add(InstockParam param);
 
     /**
      * 删除

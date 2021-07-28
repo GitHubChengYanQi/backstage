@@ -43,9 +43,8 @@ public class ItemsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ItemsParam itemsParam) {
 
-
-        this.itemsService.add(itemsParam);
-        return ResponseData.success();
+        Long add = this.itemsService.add(itemsParam);
+        return ResponseData.success(add);
     }
 
     /**

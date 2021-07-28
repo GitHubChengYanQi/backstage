@@ -37,8 +37,8 @@ public class TrackController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody TrackParam trackParam) {
-        this.trackService.add(trackParam);
-        return ResponseData.success();
+        Long add = this.trackService.add(trackParam);
+        return ResponseData.success(add);
     }
 
     /**

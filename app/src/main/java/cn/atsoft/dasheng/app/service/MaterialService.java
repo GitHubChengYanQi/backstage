@@ -24,7 +24,7 @@ public interface MaterialService extends IService<Material> {
      * @author 1
      * @Date 2021-07-14
      */
-    void add(MaterialParam param);
+    Long add(MaterialParam param);
 
     /**
      * 删除

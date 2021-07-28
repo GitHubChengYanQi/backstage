@@ -29,9 +29,10 @@ import java.util.List;
 public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> implements OutstockService {
 
     @Override
-    public void add(OutstockParam param){
+    public Long add(OutstockParam param){
         Outstock entity = getEntity(param);
         this.save(entity);
+        return entity.getOutstockId();
     }
 
     @Override

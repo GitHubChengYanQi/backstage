@@ -41,8 +41,8 @@ public class OriginController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OriginParam originParam) {
-        this.originService.add(originParam);
-        return ResponseData.success();
+        Long add = this.originService.add(originParam);
+        return ResponseData.success(add);
     }
 
     /**

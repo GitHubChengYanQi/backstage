@@ -37,8 +37,8 @@ public class StockDetailsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StockDetailsParam stockDetailsParam) {
-        this.stockDetailsService.add(stockDetailsParam);
-        return ResponseData.success();
+        Long add = this.stockDetailsService.add(stockDetailsParam);
+        return ResponseData.success(add);
     }
 
     /**

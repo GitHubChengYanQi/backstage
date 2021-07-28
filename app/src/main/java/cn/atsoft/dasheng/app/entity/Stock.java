@@ -81,7 +81,6 @@ public class Stock implements Serializable {
     @TableField("display")
     private Integer display;
 
-
     public Long getStockId() {
         return stockId;
     }
@@ -90,12 +89,12 @@ public class Stock implements Serializable {
         this.stockId = stockId;
     }
 
-    public Long getPalceId() {
+    public Long getStorehouseId() {
         return storehouseId;
     }
 
-    public void setPalceId(Long palceId) {
-        this.storehouseId = palceId;
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
     }
 
     public Long getItemId() {

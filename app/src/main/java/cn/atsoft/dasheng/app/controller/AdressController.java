@@ -44,8 +44,8 @@ public class AdressController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
         adressParam.setClientId(clientId);
-        this.adressService.add(adressParam);
-        return ResponseData.success();
+        Long add = this.adressService.add(adressParam);
+        return ResponseData.success(add);
     }
 
     /**

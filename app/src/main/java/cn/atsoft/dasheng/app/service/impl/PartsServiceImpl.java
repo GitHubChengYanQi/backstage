@@ -29,9 +29,10 @@ import java.util.List;
 public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements PartsService {
 
     @Override
-    public void add(PartsParam param){
+    public Long add(PartsParam param){
         Parts entity = getEntity(param);
         this.save(entity);
+        return entity.getPartsId();
     }
 
     @Override

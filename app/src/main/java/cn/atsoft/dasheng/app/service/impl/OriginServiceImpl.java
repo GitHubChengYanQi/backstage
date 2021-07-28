@@ -29,9 +29,10 @@ import java.util.List;
 public class OriginServiceImpl extends ServiceImpl<OriginMapper, Origin> implements OriginService {
 
     @Override
-    public void add(OriginParam param){
+    public Long add(OriginParam param){
         Origin entity = getEntity(param);
         this.save(entity);
+        return entity.getOriginId();
     }
 
     @Override

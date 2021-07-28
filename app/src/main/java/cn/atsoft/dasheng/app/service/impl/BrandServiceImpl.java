@@ -29,9 +29,10 @@ import java.util.List;
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements BrandService {
 
     @Override
-    public void add(BrandParam param){
+    public Long add(BrandParam param){
         Brand entity = getEntity(param);
         this.save(entity);
+        return entity.getBrandId();
     }
 
     @Override

@@ -54,7 +54,7 @@ public class InstockController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody InstockParam instockParam) {
 
-        this.instockService.add(instockParam);
+        Long add = this.instockService.add(instockParam);
 
         StockParam stockParam = new StockParam();
 
@@ -137,7 +137,7 @@ public class InstockController extends BaseController {
 
 
 
-        return ResponseData.success();
+        return ResponseData.success(add);
     }
 
 

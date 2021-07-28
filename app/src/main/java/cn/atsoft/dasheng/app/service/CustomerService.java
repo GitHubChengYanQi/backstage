@@ -24,7 +24,7 @@ public interface CustomerService extends IService<Customer> {
      * @author 
      * @Date 2021-07-23
      */
-    void add(CustomerParam param);
+    Long add(CustomerParam param);
 
     Long addCustomer(CustomerParam param);
 

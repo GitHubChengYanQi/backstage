@@ -29,9 +29,10 @@ import java.util.List;
 public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> implements TemplateService {
 
     @Override
-    public void add(TemplateParam param){
+    public Long add(TemplateParam param){
         Template entity = getEntity(param);
         this.save(entity);
+        return entity.getTemplateId();
     }
 
     @Override

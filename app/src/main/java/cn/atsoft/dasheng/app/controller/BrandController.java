@@ -42,8 +42,8 @@ public class BrandController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody BrandParam brandParam) {
-        this.brandService.add(brandParam);
-        return ResponseData.success();
+        Long add = this.brandService.add(brandParam);
+        return ResponseData.success(add);
     }
 
     /**

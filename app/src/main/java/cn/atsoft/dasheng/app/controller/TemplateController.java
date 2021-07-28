@@ -41,8 +41,8 @@ public class TemplateController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody TemplateParam templateParam) {
-        this.templateService.add(templateParam);
-        return ResponseData.success();
+        Long add = this.templateService.add(templateParam);
+        return ResponseData.success(add);
     }
 
     /**

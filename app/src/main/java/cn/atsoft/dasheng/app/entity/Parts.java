@@ -31,7 +31,8 @@ public class Parts implements Serializable {
     @TableField("items")
     private Long items;
 
-    public long getItems() {
+
+    public Long getItems() {
         return items;
     }
 

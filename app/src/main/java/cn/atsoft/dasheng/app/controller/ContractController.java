@@ -41,8 +41,8 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
-        this.contractService.add(contractParam);
-        return ResponseData.success();
+        Long add = this.contractService.add(contractParam);
+        return ResponseData.success(add);
     }
 
     /**

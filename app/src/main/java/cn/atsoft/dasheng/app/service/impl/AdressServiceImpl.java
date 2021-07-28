@@ -29,9 +29,10 @@ import java.util.List;
 public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
 
     @Override
-    public void add(AdressParam param){
+    public Long add(AdressParam param){
         Adress entity = getEntity(param);
         this.save(entity);
+        return entity.getAdressId();
     }
 
     @Override

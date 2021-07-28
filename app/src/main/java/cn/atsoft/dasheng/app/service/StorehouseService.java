@@ -24,7 +24,7 @@ public interface StorehouseService extends IService<Storehouse> {
      * @author 
      * @Date 2021-07-15
      */
-    void add(StorehouseParam param);
+    Long add(StorehouseParam param);
 
     /**
      * 删除

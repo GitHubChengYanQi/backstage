@@ -24,7 +24,7 @@ public interface StockService extends IService<Stock> {
      * @author 
      * @Date 2021-07-15
      */
-    void add(StockParam param);
+    Long add(StockParam param);
 
     /**
      * 删除

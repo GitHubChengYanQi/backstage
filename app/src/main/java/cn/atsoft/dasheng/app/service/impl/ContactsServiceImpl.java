@@ -29,9 +29,10 @@ import java.util.List;
 public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> implements ContactsService {
 
     @Override
-    public void add(ContactsParam param){
+    public Long add(ContactsParam param){
         Contacts entity = getEntity(param);
         this.save(entity);
+        return entity.getContactsId();
     }
 
     @Override

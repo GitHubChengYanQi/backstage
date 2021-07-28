@@ -24,7 +24,7 @@ public interface AdressService extends IService<Adress> {
      * @author 
      * @Date 2021-07-23
      */
-    void add(AdressParam param);
+    Long add(AdressParam param);
 
     /**
      * 删除

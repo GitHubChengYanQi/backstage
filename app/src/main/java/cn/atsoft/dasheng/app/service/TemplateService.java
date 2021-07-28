@@ -24,7 +24,7 @@ public interface TemplateService extends IService<Template> {
      * @author 
      * @Date 2021-07-21
      */
-    void add(TemplateParam param);
+    Long add(TemplateParam param);
 
     /**
      * 删除

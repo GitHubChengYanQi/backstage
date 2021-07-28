@@ -29,9 +29,10 @@ import java.util.List;
 public class TrackServiceImpl extends ServiceImpl<TrackMapper, Track> implements TrackService {
 
     @Override
-    public void add(TrackParam param){
+    public Long add(TrackParam param){
         Track entity = getEntity(param);
         this.save(entity);
+        return entity.getTrackId();
     }
 
     @Override
