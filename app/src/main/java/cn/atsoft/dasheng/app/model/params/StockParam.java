@@ -36,7 +36,7 @@ public class StockParam implements Serializable, BaseValidatingParam {
      * 地点id
      */
     @ApiModelProperty("地点id")
-    private Long palceId;
+    private Long storehouseId;
 
     /**
      * 物品id

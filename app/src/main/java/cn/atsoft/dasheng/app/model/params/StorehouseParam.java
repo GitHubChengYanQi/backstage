@@ -1,79 +1,71 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * <p>
- * 仓库物品明细表
+ * 地点表
  * </p>
  *
- * @author
+ * @author 
  * @since 2021-07-15
  */
 @Data
 @ApiModel
-public class StockDetailsParam implements Serializable, BaseValidatingParam {
+public class StorehouseParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-    private String iname;
-    private String pname;
-
-    private Long storehouseId;
-    private Long itemsId;
     /**
-     * 明细id
+     * 纬度
      */
-    @ApiModelProperty("明细id")
-    private Long stockItemId;
+    @ApiModelProperty("纬度")
+    private BigDecimal latitude;
+
+    /**
+     * 经度
+     */
+    @ApiModelProperty("经度")
+    private BigDecimal longitude;
 
     /**
      * 仓库id
      */
     @ApiModelProperty("仓库id")
-    private Long stockId;
-
-    public String getStorageTime() {
-        if (storageTime != null && !storageTime.equals("")) {
-            StringBuffer stringBuffer = new StringBuffer(storageTime);
-            String date = stringBuffer.substring(0, 10);
-            return date;
-        } else {
-            return storageTime;
-        }
-
-    }
-
-    public void setStorageTime(String storageTime) {
-        this.storageTime = storageTime;
-    }
+    private Long storehouseId;
 
     /**
-     * 价格
+     * 名称
      */
-    @ApiModelProperty("价格")
-    private Integer price;
+    @ApiModelProperty("名称")
+    private String name;
+
 
     /**
-     * 入库时间
+     * 位置
      */
-    @ApiModelProperty("入库时间")
-    private String storageTime;
+    @ApiModelProperty("位置")
+    private String palce;
 
     /**
-     * 创建者
+     * 面积
      */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
+    @ApiModelProperty("面积")
+    private Long measure;
+
+    /**
+     * 容量
+     */
+    @ApiModelProperty("容量")
+    private Long capacity;
 
     /**
      * 创建时间
@@ -82,16 +74,22 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Date createTime;
 
     /**
-     * 修改者
+     * 创建者
      */
     @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    private Long createUser;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
 
     /**
      * 状态

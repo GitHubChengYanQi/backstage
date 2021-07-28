@@ -1,8 +1,5 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.wrapper.PlaceSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.StockDetailsSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
@@ -11,15 +8,10 @@ import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**

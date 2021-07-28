@@ -5,8 +5,8 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Business">
         <id column="business_id" property="businessId"/>
-        <result column="clitent_id" property="clitenId"/>
-        <result column="source_id" property="sourceId"/>
+        <result column="customer_d" property="customerId"/>
+        <result column="origin_id" property="originId"/>
         <result column="time" property="time"/>
         <result column="state" property="state"/>
         <result column="stage" property="stage"/>
@@ -20,9 +20,9 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        source_id
-        AS "sourceId", account AS "account"
-  ,   sname AS "sname",   iname AS "iname", cname AS "name" , business_id AS "businessId", clitent_id AS "clitenId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+        origin_id
+        AS "originId", account AS "account"
+  ,   name AS "sname",   iname AS "iname", iname AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -31,11 +31,11 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.clitenId != null">
-            and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{customerId},'%')
         </if>
-        <if test="paramCondition.sourceId != null and paramCondition.sourceId != ''">
-            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        <if test="paramCondition.originId != null and paramCondition.originId != ''">
+            and origin_id like CONCAT('%',#{originId},'%')
         </if>
         <if test="paramCondition.time != null and paramCondition.time != ''">
         </if>
@@ -54,11 +54,11 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.clitenId != null">
-            and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{customerId},'%')
         </if>
-        <if test="paramCondition.sourceId != null and paramCondition.sourceId != ''">
-            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        <if test="paramCondition.originId != null and paramCondition.originId != ''">
+            and origin_id like CONCAT('%',#{originId},'%')
         </if>
         <if test="paramCondition.time != null and paramCondition.time != ''">
         </if>
@@ -78,11 +78,11 @@
         select
         <include refid="Base_Column_List"/>
         from business_view where 1 = 1
-        <if test="paramCondition.clitenId != null">
-            and clitent_id like CONCAT('%',#{paramCondition.clitenId},'%')
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{customerId},'%')
         </if>
-        <if test="paramCondition.sourceId != null and paramCondition.sourceId != ''">
-            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        <if test="paramCondition.originId != null and paramCondition.originId != ''">
+            and origin_id like CONCAT('%',#{originId},'%')
         </if>
         <if test="paramCondition.time != null and paramCondition.time != ''">
         </if>
@@ -115,11 +115,11 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.clitenId != null">
-            and cliten_id like CONCAT('%',#{paramCondition.clitenId},'%')
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{customerId},'%')
         </if>
-        <if test="paramCondition.sourceId != null and paramCondition.sourceId != ''">
-            and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
+        <if test="paramCondition.originId != null and paramCondition.originId != ''">
+            and origin_id like CONCAT('%',#{originId},'%')
         </if>
         <if test="paramCondition.time != null and paramCondition.time != ''">
         </if>

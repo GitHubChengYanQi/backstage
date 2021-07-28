@@ -8,7 +8,7 @@
         <result column="stock_id" property="stockId"/>
         <result column="price" property="price"/>
         <result column="items_id" property="itemsId"/>
-        <result column="place_id" property="placeId"/>
+        <result column="storehouse_id" property="storehouseId"/>
         <result column="storage_time" property="storageTime"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        iname AS "iname", pname AS "pname" ,items_id AS "itemsId", place_id AS "placeId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        iname AS "iname", pname AS "pname" ,items_id AS "itemsId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 

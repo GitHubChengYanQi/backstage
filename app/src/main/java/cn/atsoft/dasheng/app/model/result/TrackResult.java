@@ -12,51 +12,56 @@ import java.util.List;
 
 /**
  * <p>
- * 仓库物品明细表
+ * 报价表
  * </p>
  *
- * @author
- * @since 2021-07-15
+ * @author cheng
+ * @since 2021-07-19
  */
 @Data
 @ApiModel
-public class StockDetailsResult implements Serializable {
+public class TrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long storehouseId;
-    private Long itemsId;
+    private String name;
     private String iname;
-    private String pname;
+    private String note;
+    private  String time;
+    /**
+     * 报价编号
+     */
+    @ApiModelProperty("报价编号")
+    private Long trackId;
 
     /**
-     * 明细id
+     * 商机编号
      */
-    @ApiModelProperty("明细id")
-    private Long stockItemId;
+    @ApiModelProperty("商机编号")
+    private Long businessId;
 
     /**
-     * 仓库id
+     * 商品名称
      */
-    @ApiModelProperty("仓库id")
+    @ApiModelProperty("商品名称")
     private Long stockId;
 
     /**
-     * 价格
+     * 报价金额
      */
-    @ApiModelProperty("价格")
-    private Integer price;
+    @ApiModelProperty("报价金额")
+    private Integer money;
 
     /**
-     * 入库时间
+     * 数量
      */
-    @ApiModelProperty("入库时间")
-    private Date storageTime;
+    @ApiModelProperty("数量")
+    private Long number;
 
     /**
-     * 创建者
+     * 报价阶段
      */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
+    @ApiModelProperty("报价阶段")
+    private Integer stage;
 
     /**
      * 创建时间
@@ -65,10 +70,10 @@ public class StockDetailsResult implements Serializable {
     private Date createTime;
 
     /**
-     * 修改者
+     * 创建者
      */
     @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    private Long createUser;
 
     /**
      * 修改时间
@@ -77,10 +82,10 @@ public class StockDetailsResult implements Serializable {
     private Date updateTime;
 
     /**
-     * 状态
+     * 修改者
      */
-    @ApiModelProperty("状态")
-    private Integer display;
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

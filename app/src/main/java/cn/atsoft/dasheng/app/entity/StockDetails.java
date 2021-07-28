@@ -24,7 +24,7 @@ public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long placeId;
+    private Long storehouseId;
     private Long itemsId;
 
     /**
@@ -75,12 +75,25 @@ public class StockDetails implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+
+    public Long getItemsId() {
+        return itemsId;
+    }
+
+    public void setItemsId(Long itemsId) {
+        this.itemsId = itemsId;
+    }
 
     public Long getStockItemId() {
         return stockItemId;
@@ -112,22 +125,6 @@ public class StockDetails implements Serializable {
 
     public void setStorageTime(Date storageTime) {
         this.storageTime = storageTime;
-    }
-
-    public Long getPlaceId() {
-        return placeId;
-    }
-
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
-    }
-
-    public Long getItemsId() {
-        return itemsId;
-    }
-
-    public void setItemsId(Long itemsId) {
-        this.itemsId = itemsId;
     }
 
     public Long getCreateUser() {
@@ -170,6 +167,14 @@ public class StockDetails implements Serializable {
         this.display = display;
     }
 
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
+
+
+
     @Override
     public String toString() {
         return "StockDetails{" +
@@ -183,7 +188,7 @@ public class StockDetails implements Serializable {
                 ", updateTime=" + updateTime +
                 ", display=" + display +
                 ", itemsId=" + itemsId +
-                ", placeId=" + placeId +
+                ", placeId=" + storehouseId +
                 "}";
     }
 }

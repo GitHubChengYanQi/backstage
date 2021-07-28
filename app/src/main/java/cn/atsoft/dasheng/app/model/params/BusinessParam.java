@@ -24,7 +24,7 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
 private  String account;
  private  String iname;
 private  String sname;
-private  Long sourceId;
+private  Long originId;
 
     /**
      * 商机id
@@ -36,7 +36,7 @@ private  Long sourceId;
      * 客户id
      */
     @ApiModelProperty("客户id")
-    private Long clitenId;
+    private Long customerId;
 
     /**
      * 机会来源

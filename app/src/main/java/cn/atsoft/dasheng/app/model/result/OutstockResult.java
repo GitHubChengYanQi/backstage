@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 入库表
+ * 出库表
  * </p>
  *
  * @author song
@@ -16,51 +17,52 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InstockResult implements Serializable {
+public class
+OutstockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-   private  String name;
-   private  String brandName;
-   private String placeName;
-    /**
-     * 物品编号
-     */
-    @ApiModelProperty("物品编号")
-    private Long instockId;
-
- @ApiModelProperty("地点id")
- private Long StorehouseId;
 
     /**
-     * 物品名称
+     * 出库id
      */
-    @ApiModelProperty("物品名称")
-    private Long itemId;
+    @ApiModelProperty("出库id")
+    private Long outstockId;
 
     /**
-     * 登记时间
+     * 库存id
      */
-    @ApiModelProperty("登记时间")
-    private Date registerTime;
+    @ApiModelProperty("库存id")
+    private Long stockId;
 
     /**
-     * 入库数量
+     * 出库时间
      */
-    @ApiModelProperty("入库数量")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ApiModelProperty("出库时间")
+    private Date deliveryTime;
+
+    /**
+     * 出库数量
+     */
+    @ApiModelProperty("出库数量")
     private Long number;
 
     /**
-     * 价格
+     * 出库价格
      */
-    @ApiModelProperty("价格")
+    @ApiModelProperty("出库价格")
     private Integer price;
 
     /**
-     * 品牌
+     * 出库品牌
      */
-    @ApiModelProperty("品牌")
-    private long brandId;
+    private  String name;
+    private String  brandName;
+
+
+    @ApiModelProperty("出库品牌")
+    private String brand;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

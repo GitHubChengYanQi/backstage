@@ -35,7 +35,7 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     private Long instockId;
 
     @ApiModelProperty("地点id")
-    private Long palceId;
+    private Long StorehouseId;
 
     /**
      * 物品名称

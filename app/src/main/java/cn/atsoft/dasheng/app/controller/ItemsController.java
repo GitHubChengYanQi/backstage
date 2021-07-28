@@ -1,8 +1,5 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.model.result.PartsResult;
-import cn.atsoft.dasheng.app.model.result.PlaceResult;
-import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Items;
@@ -12,13 +9,11 @@ import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +42,7 @@ public class ItemsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ItemsParam itemsParam) {
-//        PartsResult partsResult = new PartsResult();
-//        if(partsResult!=null){
-//            if( partsResult.getItemId()==itemsParam.getItemId()){
-//                partsResult.setItemName(itemsParam.getName());
-//            }
-//        }
+
 
         this.itemsService.add(itemsParam);
         return ResponseData.success();

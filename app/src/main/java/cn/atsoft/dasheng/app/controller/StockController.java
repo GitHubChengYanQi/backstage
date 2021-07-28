@@ -44,7 +44,9 @@ public class StockController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StockParam stockParam) {
         this.stockService.add(stockParam);
-        return ResponseData.success();
+
+            return ResponseData.success();
+
     }
 
     /**

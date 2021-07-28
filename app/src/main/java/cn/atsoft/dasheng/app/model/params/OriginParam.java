@@ -1,56 +1,39 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
-
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * <p>
- * 仓库物品明细表
+ * 来源表
  * </p>
  *
- * @author
- * @since 2021-07-15
+ * @author 
+ * @since 2021-07-19
  */
 @Data
 @ApiModel
-public class StockDetailsResult implements Serializable {
+public class OriginParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long storehouseId;
-    private Long itemsId;
-    private String iname;
-    private String pname;
+
 
     /**
-     * 明细id
+     * 来源id
      */
-    @ApiModelProperty("明细id")
-    private Long stockItemId;
+    @ApiModelProperty("来源id")
+    private Long originId;
 
     /**
-     * 仓库id
+     * 来源名称
      */
-    @ApiModelProperty("仓库id")
-    private Long stockId;
-
-    /**
-     * 价格
-     */
-    @ApiModelProperty("价格")
-    private Integer price;
-
-    /**
-     * 入库时间
-     */
-    @ApiModelProperty("入库时间")
-    private Date storageTime;
+    @ApiModelProperty("来源名称")
+    private String name;
 
     /**
      * 创建者
@@ -81,6 +64,13 @@ public class StockDetailsResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

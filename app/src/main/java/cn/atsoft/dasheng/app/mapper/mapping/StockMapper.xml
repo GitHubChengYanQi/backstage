@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Stock">
         <id column="stock_id" property="stockId" />
-        <result column="palce_id" property="palceId" />
+        <result column="storehouse_id" property="storehouseId" />
         <result column="item_id" property="itemId" />
         <result column="brand_id" property="brandId" />
         <result column="inventory" property="inventory" />
@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-         bname AS "bname" ,pname AS "pname",iname AS "iname",stock_id AS "stockId", palce_id AS "palceId", item_id AS "itemId", brand_id AS "brandId", inventory AS "inventory", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+         bname AS "bname" ,pname AS "pname",iname AS "iname",stock_id AS "stockId", storehouse_id AS "storehouseId", item_id AS "itemId", brand_id AS "brandId", inventory AS "inventory", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 

@@ -6,81 +6,82 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 仓库总表
+ * 出库表
  * </p>
  *
- * @author 
- * @since 2021-07-15
+ * @author song
+ * @since 2021-07-17
  */
-@TableName("daoxin_erp_stock")
-public class Stock implements Serializable {
+@TableName("daoxin_erp_outstock")
+public class Outstock implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 仓库id
+     * 出库id
      */
-      @TableId(value = "stock_id", type = IdType.ID_WORKER)
+      @TableId(value = "outstock_id", type = IdType.ID_WORKER)
+    private Long outstockId;
+
+    /**
+     * 库存id
+     */
+    @TableField("stock_id")
     private Long stockId;
 
     /**
-     * 地点id
+     * 出库时间
      */
-    @TableField("storehouse_id")
-    private Long storehouseId;
+
+    @TableField("delivery_time")
+    private Date deliveryTime;
 
     /**
-     * 物品id
+     * 出库数量
      */
-    @TableField("item_id")
-    private Long itemId;
+    @TableField("number")
+    private Long number;
 
     /**
-     * 品牌id
+     * 出库价格
      */
-    @TableField("brand_id")
-    private Long brandId;
+    @TableField("price")
+    private Integer price;
 
     /**
-     * 数量
+     * 出库品牌
      */
-    @TableField("inventory")
-    private Long inventory;
+    @TableField("brand")
+    private String brand;
 
-    /**
-     * 创建时间
-     */
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-    /**
-     * 创建者
-     */
       @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-    /**
-     * 修改时间
-     */
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-    /**
-     * 修改者
-     */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-    /**
-     * 状态
-     */
     @TableField("display")
     private Integer display;
 
+    public Long getOutstockId() {
+        return outstockId;
+    }
+
+    public void setOutstockId(Long outstockId) {
+        this.outstockId = outstockId;
+    }
 
     public Long getStockId() {
         return stockId;
@@ -90,36 +91,36 @@ public class Stock implements Serializable {
         this.stockId = stockId;
     }
 
-    public Long getPalceId() {
-        return storehouseId;
+    public Date getDeliveryTime() {
+        return deliveryTime;
     }
 
-    public void setPalceId(Long palceId) {
-        this.storehouseId = palceId;
+    public void setDeliveryTime(Date deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
-    public Long getItemId() {
-        return itemId;
+    public Long getNumber() {
+        return number;
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
+    public void setNumber(Long number) {
+        this.number = number;
     }
 
-    public Long getBrandId() {
-        return brandId;
+    public Integer getPrice() {
+        return price;
     }
 
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public Long getInventory() {
-        return inventory;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setInventory(Long inventory) {
-        this.inventory = inventory;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public Date getCreateTime() {
@@ -164,12 +165,13 @@ public class Stock implements Serializable {
 
     @Override
     public String toString() {
-        return "Stock{" +
-        "stockId=" + stockId +
-        ", palceId=" + storehouseId +
-        ", itemId=" + itemId +
-        ", brandId=" + brandId +
-        ", inventory=" + inventory +
+        return "Delivery{" +
+        "deliveryId=" + outstockId +
+        ", stockId=" + stockId +
+        ", delivery time=" + deliveryTime +
+        ", number=" + number +
+        ", price=" + price +
+        ", brand=" + brand +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +

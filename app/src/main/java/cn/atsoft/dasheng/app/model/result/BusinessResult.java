@@ -26,7 +26,7 @@ public class BusinessResult implements Serializable {
     private String iname;
     private Long stockId;
     private  String sname;
-    private  Long sourceId;
+    private  Long originId;
   private  String account;
     /**
      * 商机id
@@ -38,7 +38,7 @@ public class BusinessResult implements Serializable {
      * 客户id
      */
     @ApiModelProperty("客户id")
-    private Long clitentd;
+    private Long customerId;
 
 
 

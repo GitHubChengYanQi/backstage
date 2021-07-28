@@ -43,18 +43,18 @@ public class Business implements Serializable {
     /**
      * 客户id
      */
-    @TableField("clitent_id")
-    private Long clitenId;
+    @TableField("customer_id")
+    private Long customerId;
 
     public long getStockId() {
-        return stockId;
+        return originId;
     }
 
     public void setStockId(long stockId) {
-        this.stockId = stockId;
+        this.originId = stockId;
     }
-    @TableField("stock_id")
-    private long stockId;
+    @TableField("origin_id")
+    private long originId;
     /**
      * 机会来源
      */
@@ -114,6 +114,9 @@ public class Business implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     public Long getBusinessId() {
         return businessId;
@@ -123,15 +126,21 @@ public class Business implements Serializable {
         this.businessId = businessId;
     }
 
-    public Long getClitenId() {
-        return clitenId;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setClitenId(Long clitenId) {
-        this.clitenId = clitenId;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
+    public long getOriginId() {
+        return originId;
+    }
 
+    public void setOriginId(long originId) {
+        this.originId = originId;
+    }
 
     public String getTime() {
         return time;
@@ -157,7 +166,7 @@ public class Business implements Serializable {
         this.stage = stage;
     }
 
-    public long getPerson() {
+    public Long getPerson() {
         return person;
     }
 
@@ -209,14 +218,14 @@ public class Business implements Serializable {
     public String toString() {
         return "Business{" +
                 "businessId=" + businessId +
-                ", clitentId=" + clitenId +
+                ", clitentId=" + customerId +
 
                 ", time=" + time +
                 ", state=" + state +
                 ", stage=" + stage +
                 ", person=" + person +
                 ", createTime=" + createTime +
-                ", stockId=" + stockId +
+                ", stockId=" + originId +
                 ", updateTime=" + updateTime +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +

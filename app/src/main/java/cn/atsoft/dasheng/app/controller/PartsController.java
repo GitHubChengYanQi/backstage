@@ -48,7 +48,12 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
         this.partsService.add(partsParam);
-        return ResponseData.success();
+        if(partsParam.getNumber()>0){
+            return ResponseData.success();
+        }else {
+            return ResponseData.error("请输入正确值");
+        }
+
     }
 
     /**
@@ -107,19 +112,17 @@ public class PartsController extends BaseController {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
-        List<PartsResult> data = partsService.findPageBySpec(partsParam).getData();
-
-        int size = partsService.findPageBySpec(partsParam).getData().size();
-        for (int i = 0; i < size; i++) {
-            Long partsId = partsService.findPageBySpec(partsParam).getData().get(i).getPartsId();
-            String iname = partsService.findPageBySpec(partsParam).getData().get(i).getName();
-            System.err.println(partsId+"-----------------------------------------------------------------------------------------------------------------");
-            System.err.println(partsService.findPageBySpec(partsParam));
-            System.err.println("物品名称：+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"+iname);
-        }
+//        int size = partsService.findPageBySpec(partsParam).getData().size();
+//        for (int i = 0; i < size; i++) {
+//            Long partsId = partsService.findPageBySpec(partsParam).getData().get(i).getPartsId();
+//            String iname = partsService.findPageBySpec(partsParam).getData().get(i).getName();
+//            System.err.println(partsId + "-----------------------------------------------------------------------------------------------------------------");
+//            System.err.println(partsService.findPageBySpec(partsParam));
+//            System.err.println("物品名称：+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + iname);
+//        }
 
         return this.partsService.findPageBySpec(partsParam);
-}
+    }
 
     /**
      * 选择列表

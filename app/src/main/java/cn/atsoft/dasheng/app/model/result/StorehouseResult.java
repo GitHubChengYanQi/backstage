@@ -1,62 +1,70 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 仓库物品明细表
+ * 地点表
  * </p>
  *
- * @author
+ * @author 
  * @since 2021-07-15
  */
 @Data
 @ApiModel
-public class StockDetailsResult implements Serializable {
+public class StorehouseResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long storehouseId;
-    private Long itemsId;
-    private String iname;
-    private String pname;
+    /**
+     * 纬度
+     */
+    private String itemName;
+    private BigDecimal latitude;
 
     /**
-     * 明细id
+     * 经度
      */
-    @ApiModelProperty("明细id")
-    private Long stockItemId;
+
+    private BigDecimal longitude;
 
     /**
      * 仓库id
      */
     @ApiModelProperty("仓库id")
-    private Long stockId;
+    private Long storehouseId;
 
     /**
-     * 价格
+     * 名称
      */
-    @ApiModelProperty("价格")
-    private Integer price;
+    @ApiModelProperty("名称")
+    private String name;
+
+
 
     /**
-     * 入库时间
+     * 位置
      */
-    @ApiModelProperty("入库时间")
-    private Date storageTime;
+
+    private String palce;
 
     /**
-     * 创建者
+     * 面积
      */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
+    @ApiModelProperty("面积")
+    private Long measure;
+
+    /**
+     * 容量
+     */
+    @ApiModelProperty("容量")
+    private Long capacity;
 
     /**
      * 创建时间
@@ -65,16 +73,22 @@ public class StockDetailsResult implements Serializable {
     private Date createTime;
 
     /**
-     * 修改者
+     * 创建者
      */
     @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    private Long createUser;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
 
     /**
      * 状态
