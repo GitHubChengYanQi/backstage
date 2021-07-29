@@ -24,8 +24,8 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
 
-        customer_id
-        AS "customerId", client_name AS "clientName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+
+      customer_id AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -34,8 +34,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer where 1 = 1
-        <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
-            and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+        <if test="paramCondition.customerName != null and paramCondition.clientName != ''">
+            and customer_name  like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
         <if test="paramCondition.companyType != null and paramCondition.companyType != ''">
             and company_type = #{paramCondition.companyType}
@@ -49,8 +49,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer where 1 = 1
-        <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
-            and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+        <if test="paramCondition.customerName != null and paramCondition.clientName != ''">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
         <if test="paramCondition.contactsId != null">
             and contacts_id = #{paramCondition.contactsId}
@@ -68,8 +68,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer where 1 = 1
-        <if test="paramCondition.clientName != null and paramCondition.clientName != ''">
-            and client_name like CONCAT('%',#{paramCondition.clientName},'%')
+        <if test="paramCondition.customerName != null and paramCondition.clientName != ''">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
 
         <if test="paramCondition.companyType != null and paramCondition.companyType != ''">

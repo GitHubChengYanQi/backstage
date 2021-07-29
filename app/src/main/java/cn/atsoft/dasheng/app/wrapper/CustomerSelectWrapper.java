@@ -15,8 +15,8 @@ public class CustomerSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("client_name"));
-        String value = Convert.toStr(map.get("client_id"));
+        String label = Convert.toStr(map.get("customer_name"));
+        String value = Convert.toStr(map.get("customer_id"));
         map.clear();
         map.put("label",label);
         map.put("value",value);
