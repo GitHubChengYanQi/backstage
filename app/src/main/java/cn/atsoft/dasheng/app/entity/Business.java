@@ -65,7 +65,7 @@ public class Business implements Serializable {
      * 商机状态
      */
     @TableField("state")
-    private Integer state;
+    private String state;
 
     /**
      * 商机阶段
@@ -145,11 +145,11 @@ public class Business implements Serializable {
         this.time = time;
     }
 
-    public Integer getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(String state) {
         this.state = state;
     }
 

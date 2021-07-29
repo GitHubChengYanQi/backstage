@@ -53,7 +53,7 @@ public class BusinessResult implements Serializable {
      * 商机状态
      */
     @ApiModelProperty("商机状态")
-    private Integer state;
+    private String state;
 
     /**
      * 商机阶段
