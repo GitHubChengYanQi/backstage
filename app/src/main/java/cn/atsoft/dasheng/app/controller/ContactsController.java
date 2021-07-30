@@ -42,7 +42,8 @@ public class ContactsController extends BaseController {
   @RequestMapping(value = "/add", method = RequestMethod.POST)
   @ApiOperation("新增")
   public ResponseData addItem(@RequestBody ContactsParam contactsParam) {
-    contactsParam.setCustomerId(clientId);
+
+    contactsParam.setCustomerId(CustomerId);
     Long add = this.contactsService.add(contactsParam);
     return ResponseData.success(add);
   }
@@ -97,12 +98,12 @@ public class ContactsController extends BaseController {
    * @author
    * @Date 2021-07-23
    */
-  Long clientId;
+  Long CustomerId;
 
   @RequestMapping(value = "/list", method = RequestMethod.POST)
   @ApiOperation("列表")
   public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
-    clientId = contactsParam.getCustomerId();
+    CustomerId = contactsParam.getCustomerId();
     if (ToolUtil.isEmpty(contactsParam)) {
       contactsParam = new ContactsParam();
     }

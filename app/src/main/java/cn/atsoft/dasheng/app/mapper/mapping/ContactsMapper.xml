@@ -4,38 +4,40 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Contacts">
-        <id column="contacts_id" property="contactsId" />
-        <result column="contacts_name" property="contactsName" />
-        <result column="job" property="job" />
-        <result column="phone" property="phone" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
-        <result column="client_id" property="clientId" />
+        <id column="contacts_id" property="contactsId"/>
+        <result column="contacts_name" property="contactsName"/>
+        <result column="job" property="job"/>
+        <result column="phone" property="phone"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="client_id" property="clientId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        contacts_id AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
+        contacts_id
+        AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ContactsResult" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ContactsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contacts where 1 = 1
-            <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
-                and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
-            </if>
-            <if test="paramCondition.job != null and paramCondition.job != ''">
-                and job like CONCAT('%',#{paramCondition.job},'%')
-            </if>
-            <if test="paramCondition.phone != null">
-                    and phone = #{paramCondition.phone}
-            </if>
+        <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
+            and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
+        </if>
+        <if test="paramCondition.job != null and paramCondition.job != ''">
+            and job like CONCAT('%',#{paramCondition.job},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone = #{paramCondition.phone}
+        </if>
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
@@ -45,36 +47,36 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contacts where 1 = 1
-                <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
-                        and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
-                </if>
-                <if test="paramCondition.job != null and paramCondition.job != ''">
-                        and job like CONCAT('%',#{paramCondition.job},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                            and phone = #{paramCondition.phone}
-                </if>
-                <if test="paramCondition.customerId != null">
-                            and customer_id = #{paramCondition.customerId}
-                </if>
+        <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
+            and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
+        </if>
+        <if test="paramCondition.job != null and paramCondition.job != ''">
+            and job like CONCAT('%',#{paramCondition.job},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone = #{paramCondition.phone}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ContactsResult" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ContactsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contacts where 1 = 1
-                <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
-                        and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
-                </if>
-                <if test="paramCondition.job != null and paramCondition.job != ''">
-                        and job like CONCAT('%',#{paramCondition.job},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                            and phone = #{paramCondition.phone}
-                </if>
-
+        <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
+            and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
+        </if>
+        <if test="paramCondition.job != null and paramCondition.job != ''">
+            and job like CONCAT('%',#{paramCondition.job},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone = #{paramCondition.phone}
+        </if>
         <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
-            and customerId like CONCAT('%',#{paramCondition.customerId},'%')
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
     </select>
 
@@ -82,18 +84,18 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contacts where 1 = 1
-                <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
-                        and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
-                </if>
-                <if test="paramCondition.job != null and paramCondition.job != ''">
-                        and job like CONCAT('%',#{paramCondition.job},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                        and phone = #{paramCondition.phone}
-                </if>
-                <if test="paramCondition.clientId != null">
-                        and client_id = #{paramCondition.clientId}
-                </if>
+        <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
+            and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
+        </if>
+        <if test="paramCondition.job != null and paramCondition.job != ''">
+            and job like CONCAT('%',#{paramCondition.job},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone = #{paramCondition.phone}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
     </select>
 
 </mapper>
