@@ -31,7 +31,7 @@ public class CustomerResult implements Serializable {
      * 客户名称
      */
     @ApiModelProperty("客户名称")
-    private String clientName;
+    private String customerName;
 
     /**
      * 客户地址id

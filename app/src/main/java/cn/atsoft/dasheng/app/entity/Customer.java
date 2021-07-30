@@ -33,16 +33,21 @@ public class Customer implements Serializable {
     /**
      * 客户名称
      */
-    @TableField("client_name")
-    private String clientName;
+    @TableField("customer_name")
+    private String customerName;
 
     /**
      * 客户地址id
      */
 
 
+    public String getCustomerName() {
+        return customerName;
+    }
 
-
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 
     /**
      * 成立时间
@@ -132,13 +137,7 @@ public class Customer implements Serializable {
 
 
 
-    public String getClientName() {
-        return clientName;
-    }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
 
 
 
@@ -251,7 +250,7 @@ public class Customer implements Serializable {
     public String toString() {
         return "Client{" +
                 "clientId=" + customerId +
-                ", clientName=" + clientName +
+                ", clientName=" + customerName +
                 ", setup=" + setup +
                 ", legal=" + legal +
                 ", utscc=" + utscc +
