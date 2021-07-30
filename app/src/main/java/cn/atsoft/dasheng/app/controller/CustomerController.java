@@ -113,6 +113,8 @@ public class CustomerController extends BaseController {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }
+
+
         return this.customerService.findPageBySpec(customerParam);
     }
 

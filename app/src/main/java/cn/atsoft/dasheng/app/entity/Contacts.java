@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 联系人表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @TableName("daoxin_crm_contacts")
@@ -24,7 +27,7 @@ public class Contacts implements Serializable {
     /**
      * 联系人id
      */
-      @TableId(value = "contacts_id", type = IdType.ID_WORKER)
+    @TableId(value = "contacts_id", type = IdType.ID_WORKER)
     private Long contactsId;
 
     /**
@@ -48,25 +51,25 @@ public class Contacts implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -84,8 +87,8 @@ public class Contacts implements Serializable {
     /**
      * 客户id
      */
-    @TableField("client_id")
-    private Long clientId;
+    @TableField("customer_id")
+    private Long customerId;
 
 
     public Long getContactsId() {
@@ -160,6 +163,14 @@ public class Contacts implements Serializable {
         this.display = display;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     public Long getDeptId() {
         return deptId;
     }
@@ -168,28 +179,21 @@ public class Contacts implements Serializable {
         this.deptId = deptId;
     }
 
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
-    }
 
     @Override
     public String toString() {
         return "Contacts{" +
-        "contactsId=" + contactsId +
-        ", contactsName=" + contactsName +
-        ", job=" + job +
-        ", phone=" + phone +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        ", clientId=" + clientId +
-        "}";
+                "contactsId=" + contactsId +
+                ", contactsName='" + contactsName + '\'' +
+                ", job='" + job + '\'' +
+                ", phone=" + phone +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", customerId=" + customerId +
+                '}';
     }
 }

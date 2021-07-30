@@ -1,17 +1,24 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
+import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 客户管理表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -19,11 +26,27 @@ import java.util.List;
 public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private List<CrmCustomerLevel> getlevel;
+    private List<Origin> getorgin;
+    private List<User> getUser;
+    private Long orginId;
 
+    private String note;
 
+    private Long userId;
+
+    private String emall;
+
+    private String url;
+
+    private String industryOne;
+    private String industryTwo;
     /**
      * 客户id
      */
+    private String oname;
+    private String lname;
+    private String userName;
     @ApiModelProperty("客户id")
     private Long customerId;
 
@@ -37,6 +60,9 @@ public class CustomerResult implements Serializable {
      * 客户地址id
      */
 
+    private Long customerLevelId;
+
+    private Integer status;
 
 
     /**

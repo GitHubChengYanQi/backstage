@@ -1,11 +1,18 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
+import cn.atsoft.dasheng.app.entity.Origin;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +20,7 @@ import java.util.List;
  * 客户管理表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -21,8 +28,26 @@ import java.util.List;
 public class CustomerParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private  List<CrmCustomerLevel> getlevel;
+    private  List<Origin> getorgin;
+    private List<User> getUser;
+    private Long customerLevelId;
+    private Integer status;
+    private Long orginId;
 
+    private String note;
 
+    private Long userId;
+
+    private String emall;
+
+    private String url;
+
+    private String industryOne;
+    private String industryTwo;
+    private String oname;
+    private String lname;
+    private String userName;
     /**
      * 客户id
      */

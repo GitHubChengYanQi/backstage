@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
-import  cn.atsoft.dasheng.app.service.InstockService;
+import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,19 +29,19 @@ import java.util.List;
 public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> implements InstockService {
 
     @Override
-    public Long add(InstockParam param){
+    public Long add(InstockParam param) {
         Instock entity = getEntity(param);
         this.save(entity);
         return entity.getInstockId();
     }
 
     @Override
-    public void delete(InstockParam param){
+    public void delete(InstockParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(InstockParam param){
+    public void update(InstockParam param) {
         Instock oldEntity = getOldEntity(param);
         Instock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -49,23 +49,23 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     @Override
-    public InstockResult findBySpec(InstockParam param){
+    public InstockResult findBySpec(InstockParam param) {
         return null;
     }
 
     @Override
-    public List<InstockResult> findListBySpec(InstockParam param){
+    public List<InstockResult> findListBySpec(InstockParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<InstockResult> findPageBySpec(InstockParam param){
+    public PageInfo<InstockResult> findPageBySpec(InstockParam param) {
         Page<InstockResult> pageContext = getPageContext();
         IPage<InstockResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(InstockParam param){
+    private Serializable getKey(InstockParam param) {
         return param.getInstockId();
     }
 

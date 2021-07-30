@@ -1,49 +1,44 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+
 /**
  * <p>
- * 联系人表
+ * 客户级别表
  * </p>
  *
  * @author 
- * @since 2021-07-23
+ * @since 2021-07-30
  */
 @Data
 @ApiModel
-public class ContactsResult implements Serializable {
+public class CrmCustomerLevelParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 联系人id
+     * 主键
      */
-    @ApiModelProperty("联系人id")
-    private Long contactsId;
+
 
     /**
-     * 联系人姓名
+     * 客户级别id
      */
-    @ApiModelProperty("联系人姓名")
-    private String contactsName;
+    @ApiModelProperty("客户级别id")
+    private Long customerLevelId;
 
     /**
-     * 职务
+     * 级别
      */
-    @ApiModelProperty("职务")
-    private String job;
-
-    /**
-     * 联系电话
-     */
-    @ApiModelProperty("联系电话")
-    private Long phone;
+    @ApiModelProperty("级别")
+    private String level;
 
     /**
      * 创建者
@@ -75,17 +70,12 @@ public class ContactsResult implements Serializable {
     @ApiModelProperty("状态")
     private Integer display;
 
-    /**
-     * 部门编号
-     */
-    @ApiModelProperty("部门编号")
-    private Long deptId;
-
-    /**
-     * 客户id
-     */
-    @ApiModelProperty("客户id")
-    private Long customerId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

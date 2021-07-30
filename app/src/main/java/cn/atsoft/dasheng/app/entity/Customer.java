@@ -36,10 +36,74 @@ public class Customer implements Serializable {
     @TableField("customer_name")
     private String customerName;
 
+    public Long getCustomerLevelId() {
+        return customerLevelId;
+    }
+
+    public void setCustomerLevelId(Long customerLevelId) {
+        this.customerLevelId = customerLevelId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     /**
      * 客户地址id
      */
+    @TableField("customer_level_id")
+    private Long customerLevelId;
+    @TableField("status")
+    private Integer status;
+    @TableField("origin_id")
+    private Long orginId;
+    @TableField("note")
+    private String note;
+    @TableField("user_id")
+    private Long userId;
+    @TableField("emall")
+    private String emall;
+    @TableField("url")
+    private String url;
+    @TableField("industry_one")
+    private String industryOne;
 
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", customerName='" + customerName + '\'' +
+                ", customerLevelId=" + customerLevelId +
+                ", status=" + status +
+                ", orginId=" + orginId +
+                ", note='" + note + '\'' +
+                ", userId=" + userId +
+                ", emall='" + emall + '\'' +
+                ", url='" + url + '\'' +
+                ", industryOne='" + industryOne + '\'' +
+                ", industryTwo='" + industryTwo + '\'' +
+                ", setup=" + setup +
+                ", legal='" + legal + '\'' +
+                ", utscc='" + utscc + '\'' +
+                ", companyType='" + companyType + '\'' +
+                ", businessTerm=" + businessTerm +
+                ", signIn='" + signIn + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                '}';
+    }
+
+    @TableField("industry_two")
+    private String industryTwo;
 
     public String getCustomerName() {
         return customerName;
@@ -61,6 +125,62 @@ public class Customer implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getOrginId() {
+        return orginId;
+    }
+
+    public void setOrginId(Long orginId) {
+        this.orginId = orginId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getEmall() {
+        return emall;
+    }
+
+    public void setEmall(String emall) {
+        this.emall = emall;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getIndustryOne() {
+        return industryOne;
+    }
+
+    public void setIndustryOne(String industryOne) {
+        this.industryOne = industryOne;
+    }
+
+    public String getIndustryTwo() {
+        return industryTwo;
+    }
+
+    public void setIndustryTwo(String industryTwo) {
+        this.industryTwo = industryTwo;
     }
 
     /**
@@ -134,12 +254,6 @@ public class Customer implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
-
-
-
-
-
-
 
 
     public Date getSetup() {
@@ -246,24 +360,5 @@ public class Customer implements Serializable {
         this.deptId = deptId;
     }
 
-    @Override
-    public String toString() {
-        return "Client{" +
-                "clientId=" + customerId +
-                ", clientName=" + customerName +
-                ", setup=" + setup +
-                ", legal=" + legal +
-                ", utscc=" + utscc +
-                ", companyType=" + companyType +
-                ", businessTerm=" + businessTerm +
-                ", signIn=" + signIn +
-                ", introduction=" + introduction +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", display=" + display +
-                ", deptId=" + deptId +
-                "}";
-    }
+
 }

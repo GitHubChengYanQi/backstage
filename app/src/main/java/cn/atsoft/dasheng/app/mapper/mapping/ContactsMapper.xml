@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        contacts_id AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", client_id AS "clientId"
+        contacts_id AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
     </sql>
 
 
@@ -36,9 +36,9 @@
             <if test="paramCondition.phone != null">
                     and phone = #{paramCondition.phone}
             </if>
-            <if test="paramCondition.clientId != null">
-                    and client_id = #{paramCondition.clientId}
-            </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
@@ -54,8 +54,8 @@
                 <if test="paramCondition.phone != null">
                             and phone = #{paramCondition.phone}
                 </if>
-                <if test="paramCondition.clientId != null">
-                            and client_id = #{paramCondition.clientId}
+                <if test="paramCondition.customerId != null">
+                            and customer_id = #{paramCondition.customerId}
                 </if>
     </select>
 
@@ -72,11 +72,9 @@
                 <if test="paramCondition.phone != null">
                             and phone = #{paramCondition.phone}
                 </if>
-                <if test="paramCondition.clientId != null">
-                            and client_id = #{paramCondition.clientId}
-                </if>
-        <if test="paramCondition.clientId !=null and paramCondition.clientId != '' ">
-            and client_id like CONCAT('%',#{paramCondition.clientId},'%')
+
+        <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
+            and customerId like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
     </select>
 

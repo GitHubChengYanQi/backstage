@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.TemplateSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
@@ -105,7 +107,14 @@ public class TemplateController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.templateService.listMaps();
+        TemplateSelectWrapper templateSelectWrapper = new TemplateSelectWrapper(list);
+        List<Map<String, Object>> result = templateSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

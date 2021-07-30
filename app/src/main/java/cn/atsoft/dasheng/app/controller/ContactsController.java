@@ -42,7 +42,7 @@ public class ContactsController extends BaseController {
   @RequestMapping(value = "/add", method = RequestMethod.POST)
   @ApiOperation("新增")
   public ResponseData addItem(@RequestBody ContactsParam contactsParam) {
-    contactsParam.setClientId(clientId);
+    contactsParam.setCustomerId(clientId);
     Long add = this.contactsService.add(contactsParam);
     return ResponseData.success(add);
   }
@@ -102,7 +102,7 @@ public class ContactsController extends BaseController {
   @RequestMapping(value = "/list", method = RequestMethod.POST)
   @ApiOperation("列表")
   public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
-    clientId = contactsParam.getClientId();
+    clientId = contactsParam.getCustomerId();
     if (ToolUtil.isEmpty(contactsParam)) {
       contactsParam = new ContactsParam();
     }

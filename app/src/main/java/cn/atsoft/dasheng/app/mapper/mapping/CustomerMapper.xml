@@ -17,13 +17,22 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="customer_level_id" property="customerLevelId" />
+        <result column="status" property="status" />
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
+        <result column="origin_id" property="orginId"/>
+        <result column="note" property="note"/>
+        <result column="user_id" property="userId" />
+        <result column="emall" property="emall" />
+        <result column="url" property="url"/>
+        <result column="industry_one" property="industryOne" />
+        <result column="industry_two" property="industryTwo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-
+    <sql id="Base_Column_List"> level AS "lname" , name AS "oname" , account AS "userName" ,
+        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,industry_one AS "industryOne" , industry_two AS "industrytwo" ,
         customer_id
         AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -64,10 +73,10 @@
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
+            parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam"   resultMap="detail">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where 1 = 1
+        from customer_view where 1 = 1
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -79,7 +88,20 @@
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
     </select>
-
+        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.result.CustomerResult">
+            <collection property="getlevel" ofType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam" javaType="ArrayList" select="getlevel"  column="customerLevelId"/>
+            <collection property="getorgin" ofType="cn.atsoft.dasheng.app.model.params.OriginParam" javaType="ArrayList" select="getorgin"  column="orginId"/>
+            <collection property="getUser" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList"  select="getUser" column="userId" />
+        </resultMap>
+    <select id="getlevel" resultType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
+        select level from daoxin_crm_customer_level where customer_level_id =#{customerLevelId}
+    </select>
+    <select id="getorgin" resultType="cn.atsoft.dasheng.app.model.params.OriginParam">
+        select  name from daoxin_crm_origin where origin_id =#{orginId}
+    </select>
+    <select id="getUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User" >
+        select account from sys_user where user_id =#{userId}
+    </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
