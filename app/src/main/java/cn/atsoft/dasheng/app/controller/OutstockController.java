@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.OutstockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
@@ -20,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -157,6 +160,20 @@ public class OutstockController extends BaseController {
     }
 
 
+  /**
+   * 选择列表
+   *
+   * @author 1
+   * @Date 2021-07-14
+   */
+  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+  @ApiOperation("Select数据接口")
+  public ResponseData<List<Map<String,Object>>> listSelect() {
+    List<Map<String,Object>> list = this.outstockService.listMaps();
+    OutstockSelectWrapper factory = new OutstockSelectWrapper(list);
+    List<Map<String,Object>> result = factory.wrap();
+    return ResponseData.success(result);
+  }
 
 
 }

@@ -23,7 +23,7 @@
     <sql id="Base_Column_List">
         origin_id
         AS "originId", account AS "account"
-  ,   sname AS "sname", stock_id AS "stockId" , iname AS "iname", client_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+  ,   sname AS "sname", stock_id AS "stockId" , iname AS "iname", customer_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
