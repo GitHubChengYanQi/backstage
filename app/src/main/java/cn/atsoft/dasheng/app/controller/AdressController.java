@@ -43,7 +43,7 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
-        adressParam.setClientId(clientId);
+        adressParam.setCustomerId(clientId);
         Long add = this.adressService.add(adressParam);
         return ResponseData.success(add);
     }
@@ -57,7 +57,7 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody AdressParam adressParam) {
-        adressParam.setClientId(clientId);
+        adressParam.setCustomerId(clientId);
         this.adressService.update(adressParam);
         return ResponseData.success();
     }
@@ -102,7 +102,7 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
-        clientId = adressParam.getClientId();
+        clientId = adressParam.getCustomerId();
         if(ToolUtil.isEmpty(adressParam)){
             adressParam = new AdressParam();
         }

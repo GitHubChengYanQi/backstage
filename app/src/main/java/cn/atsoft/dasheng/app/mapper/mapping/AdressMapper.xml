@@ -14,12 +14,12 @@
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
-        <result column="client_id" property="clientId" />
+        <result column="customer_id" property="customerId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", client_id AS "clientId"
+        adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
     </sql>
 
 
@@ -27,8 +27,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_adress where 1 = 1
-            <if test="paramCondition.clientId != null">
-                    and client_id = #{paramCondition.clientId}
+            <if test="paramCondition.customerId != null">
+                    and customer_id = #{paramCondition.customerId}
             </if>
     </select>
 
@@ -36,18 +36,18 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_adress where 1 = 1
-                <if test="paramCondition.clientId != null">
-                            and client_id = #{paramCondition.clientId}
-                </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.AdressResult" parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_adress where 1 = 1
-                <if test="paramCondition.clientId != null">
-                            and client_id = #{paramCondition.clientId}
-                </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
 
     </select>
 
@@ -55,9 +55,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_adress where 1 = 1
-                <if test="paramCondition.clientId != null">
-                        and client_id = #{paramCondition.clientId}
-                </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
     </select>
 
 </mapper>

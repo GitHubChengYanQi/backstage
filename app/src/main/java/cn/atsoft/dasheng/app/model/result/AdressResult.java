@@ -85,7 +85,7 @@ public class AdressResult implements Serializable {
      * 客户id
      */
     @ApiModelProperty("客户id")
-    private Long clientId;
+    private Long customerId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

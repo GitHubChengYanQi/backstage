@@ -84,8 +84,8 @@ public class Adress implements Serializable {
     /**
      * 客户id
      */
-    @TableField("client_id")
-    private Long clientId;
+    @TableField("customer_id")
+    private Long customerId;
 
 
     public Long getAdressId() {
@@ -164,32 +164,32 @@ public class Adress implements Serializable {
         return deptId;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
-    }
-
-    public Long getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
     }
 
     @Override
     public String toString() {
         return "Adress{" +
-        "adressId=" + adressId +
-        ", location=" + location +
-        ", longitude=" + longitude +
-        ", latitude=" + latitude +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        ", clientId=" + clientId +
-        "}";
+                "adressId=" + adressId +
+                ", location='" + location + '\'' +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", customerId=" + customerId +
+                '}';
     }
 }
