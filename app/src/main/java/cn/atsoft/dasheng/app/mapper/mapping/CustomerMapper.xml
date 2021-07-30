@@ -88,19 +88,19 @@
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
     </select>
-        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.result.CustomerResult">
+        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.params.CustomerParam">
             <collection property="getlevel" ofType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam" javaType="ArrayList" select="getlevel"  column="customerLevelId"/>
             <collection property="getorgin" ofType="cn.atsoft.dasheng.app.model.params.OriginParam" javaType="ArrayList" select="getorgin"  column="orginId"/>
             <collection property="getUser" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList"  select="getUser" column="userId" />
         </resultMap>
     <select id="getlevel" resultType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
-        select level from daoxin_crm_customer_level where customer_level_id =#{customerLevelId}
+        select  customer_level_id,level from daoxin_crm_customer_level where customer_level_id =#{customerLevelId}
     </select>
     <select id="getorgin" resultType="cn.atsoft.dasheng.app.model.params.OriginParam">
-        select  name from daoxin_crm_origin where origin_id =#{orginId}
+        select  origin_id,name from daoxin_crm_origin where origin_id =#{orginId}
     </select>
     <select id="getUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User" >
-        select account from sys_user where user_id =#{userId}
+        select user_id,account from sys_user where user_id =#{userId}
     </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select

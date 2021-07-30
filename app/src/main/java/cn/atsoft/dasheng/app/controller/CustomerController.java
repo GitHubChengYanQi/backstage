@@ -96,7 +96,10 @@ public class CustomerController extends BaseController {
         Customer detail = this.customerService.getById(customerParam.getCustomerId());
         CustomerResult result = new CustomerResult();
         ToolUtil.copyProperties(detail, result);
-
+        for (int i = 0; i <10 ; i++) {
+            String level = ResponseData.success(result).getData().getGetlevel().get(i).getLevel();
+            System.err.println(level+"----------------------------------------------------------");
+        }
 //        result.setValue(parentValue);
         return ResponseData.success(result);
     }
@@ -127,7 +130,14 @@ public class CustomerController extends BaseController {
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-
+    @RequestMapping(value = "/listdetail", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<CustomerResult> list2(@RequestBody(required = false) CustomerParam customerParam) {
+        if (ToolUtil.isEmpty(customerParam)) {
+            customerParam = new CustomerParam();
+        }
+        return this.customerService.findPageBySpec(customerParam);
+    }
 
 }
 
