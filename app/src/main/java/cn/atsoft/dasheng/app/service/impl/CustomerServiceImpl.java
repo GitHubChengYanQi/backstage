@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,7 +51,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public CustomerResult findBySpec(CustomerParam param){
-        return null;
+        Page<CustomerResult> pageContext = getPageContext();
+        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
+        PageInfo<CustomerResult> pageInfo = PageFactory.createPageInfo(page);
+        return pageInfo.getData().get(0);
     }
 
     @Override
