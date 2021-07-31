@@ -26,6 +26,7 @@ import java.util.List;
 public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private List<CrmCustomerLevel> getlevel;
     private List<Origin> getorgin;
     private List<User> getUser;

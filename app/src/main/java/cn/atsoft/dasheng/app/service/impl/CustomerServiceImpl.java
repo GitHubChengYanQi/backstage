@@ -50,7 +50,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public CustomerResult findBySpec(CustomerParam param){
-        return null;
+        Page<CustomerResult> pageContext = getPageContext();
+        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
+        PageInfo<CustomerResult> pageInfo = PageFactory.createPageInfo(page);
+        return pageInfo.getData().get(0);
     }
 
     @Override

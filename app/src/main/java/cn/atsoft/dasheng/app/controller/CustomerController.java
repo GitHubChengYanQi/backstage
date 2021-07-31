@@ -58,7 +58,7 @@ public class CustomerController extends BaseController {
     }
 
     /**
-     * 编辑接口
+     * 编辑接口`
      *
      * @author
      * @Date 2021-07-23
@@ -93,15 +93,9 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
-        Customer detail = this.customerService.getById(customerParam.getCustomerId());
-        CustomerResult result = new CustomerResult();
-        ToolUtil.copyProperties(detail, result);
-        for (int i = 0; i <10 ; i++) {
-            String level = ResponseData.success(result).getData().getGetlevel().get(i).getLevel();
-            System.err.println(level+"----------------------------------------------------------");
-        }
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        CustomerResult bySpec = customerService.findBySpec(customerParam);
+
+        return ResponseData.success(bySpec);
     }
 
     /**
@@ -117,7 +111,6 @@ public class CustomerController extends BaseController {
             customerParam = new CustomerParam();
         }
 
-
         return this.customerService.findPageBySpec(customerParam);
     }
 
@@ -130,14 +123,7 @@ public class CustomerController extends BaseController {
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-    @RequestMapping(value = "/listdetail", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<CustomerResult> list2(@RequestBody(required = false) CustomerParam customerParam) {
-        if (ToolUtil.isEmpty(customerParam)) {
-            customerParam = new CustomerParam();
-        }
-        return this.customerService.findPageBySpec(customerParam);
-    }
+
 
 }
 
