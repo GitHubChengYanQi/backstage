@@ -60,7 +60,7 @@ public class Customer implements Serializable {
     @TableField("status")
     private Integer status;
     @TableField("origin_id")
-    private Long orginId;
+    private Long originId;
     @TableField("note")
     private String note;
     @TableField("user_id")
@@ -79,7 +79,7 @@ public class Customer implements Serializable {
                 ", customerName='" + customerName + '\'' +
                 ", customerLevelId=" + customerLevelId +
                 ", status=" + status +
-                ", orginId=" + orginId +
+                ", orginId=" + originId +
                 ", note='" + note + '\'' +
                 ", userId=" + userId +
                 ", emall='" + emall + '\'' +
@@ -127,12 +127,12 @@ public class Customer implements Serializable {
         this.customerId = customerId;
     }
 
-    public Long getOrginId() {
-        return orginId;
+    public Long getOriginId() {
+        return originId;
     }
 
-    public void setOrginId(Long orginId) {
-        this.orginId = orginId;
+    public void setOriginId(Long originId) {
+        this.originId = originId;
     }
 
     public String getNote() {

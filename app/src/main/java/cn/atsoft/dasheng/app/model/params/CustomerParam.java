@@ -33,7 +33,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private List<User> getUser;
     private Long customerLevelId;
     private Integer status;
-    private Long orginId;
+    private Long originId;
 
     private String note;
 
