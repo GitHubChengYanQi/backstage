@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.CrmBusinessSalesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusinessSales">
+        <id column="sales_id" property="salesId" />
+        <result column="name" property="name" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sales_id AS "salesId", name AS "name"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales where 1 = 1
+            <if test="paramCondition.salesId != null">
+                and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales where 1 = 1
+                <if test="paramCondition.salesId != null">
+                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales where 1 = 1
+                <if test="paramCondition.salesId != null">
+                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales where 1 = 1
+                <if test="paramCondition.salesId != null">
+                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+                </if>
+    </select>
+
+</mapper>

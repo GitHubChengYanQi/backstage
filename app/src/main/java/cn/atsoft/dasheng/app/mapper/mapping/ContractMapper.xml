@@ -4,84 +4,90 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Contract">
-        <id column="contract_id" property="contractId" />
-        <result column="name" property="name" />
-        <result column="customer_id" property="customerId" />
-        <result column="user_id" property="userId" />
-        <result column="note" property="note" />
-        <result column="time" property="time" />
-        <result column="content" property="content" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="contract_id" property="contractId"/>
+        <result column="name" property="name"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="user_id" property="userId"/>
+        <result column="note" property="note"/>
+        <result column="time" property="time"/>
+        <result column="content" property="content"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        customer_id AS customerId , contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        customer_id
+        AS customerId , contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ContractResult" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ContractResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contract where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
-            </if>
-            <if test="paramCondition.userId != null and paramCondition.userId != ''">
-                    and user_id = #{paramCondition.userId}
-            </if>
-            <if test="paramCondition.time != null and paramCondition.time != ''">
-                and time like CONCAT('%',#{paramCondition.time},'%')
-            </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.userId != null and paramCondition.userId != ''">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contract where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.userId != null and paramCondition.userId != ''">
-                            and user_id = #{paramCondition.userId}
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.userId != null and paramCondition.userId != ''">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ContractResult" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ContractResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contract where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.userId != null and paramCondition.userId != ''">
-                            and user_id = #{paramCondition.userId}
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.userId != null and paramCondition.userId != ''">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.customerId != null and paramCondition.customerId != ''">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_contract where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.userId != null and paramCondition.userId != ''">
-                        and user_id = #{paramCondition.userId}
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.userId != null and paramCondition.userId != ''">
+            and user_id = #{paramCondition.userId}
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
 </mapper>

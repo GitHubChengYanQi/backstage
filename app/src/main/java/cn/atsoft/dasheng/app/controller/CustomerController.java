@@ -48,14 +48,7 @@ public class CustomerController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/addcusid", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItemid(@RequestBody CustomerParam customerParam) {
-        Long aLong = this.customerService.addCustomer(customerParam);
-        return ResponseData.success(aLong);
 
-
-    }
 
     /**
      * 编辑接口`
@@ -104,6 +97,7 @@ public class CustomerController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
+
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
