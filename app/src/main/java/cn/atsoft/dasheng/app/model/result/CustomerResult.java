@@ -27,10 +27,8 @@ public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<CrmCustomerLevel> getlevel;
-    private List<Origin> getorgin;
-    private List<User> getUser;
-    private Long orginId;
+
+    private String originId;
 
     private String note;
 
@@ -40,8 +38,8 @@ public class CustomerResult implements Serializable {
 
     private String url;
 
-    private String industryOne;
-    private String industryTwo;
+    private Long industryOne;
+    private Long industryTwo;
     /**
      * 客户id
      */

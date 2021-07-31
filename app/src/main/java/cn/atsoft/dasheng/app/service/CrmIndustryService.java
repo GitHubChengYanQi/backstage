@@ -1,0 +1,69 @@
+package cn.atsoft.dasheng.app.service;
+
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.app.entity.CrmIndustry;
+import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
+import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 行业表 服务类
+ * </p>
+ *
+ * @author 
+ * @since 2021-07-31
+ */
+public interface CrmIndustryService extends IService<CrmIndustry> {
+
+    /**
+     * 新增
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+    void add(CrmIndustryParam param);
+
+    /**
+     * 删除
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+    void delete(CrmIndustryParam param);
+
+    /**
+     * 更新
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+    void update(CrmIndustryParam param);
+
+    /**
+     * 查询单条数据，Specification模式
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+    CrmIndustryResult findBySpec(CrmIndustryParam param);
+
+    /**
+     * 查询列表，Specification模式
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+    List<CrmIndustryResult> findListBySpec(CrmIndustryParam param);
+
+    /**
+     * 查询分页数据，Specification模式
+     *
+     * @author 
+     * @Date 2021-07-31
+     */
+     PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param);
+
+}
