@@ -81,6 +81,10 @@ public class TreeNode implements Tree {
 
     @Override
     public String getNodeParentId() {
+
+        if(null==parentId){
+            return "-1";
+        }
         return parentId;
     }
 

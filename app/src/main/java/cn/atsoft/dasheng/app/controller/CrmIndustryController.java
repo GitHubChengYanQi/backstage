@@ -45,7 +45,7 @@ public class CrmIndustryController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CrmIndustryParam crmIndustryParam) {
         List<String>  pidValue = crmIndustryParam.getPidValue();
-        crmIndustryParam.setParentId(pidValue.get(pidValue.size()-1));
+//        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         this.crmIndustryService.add(crmIndustryParam);
         return ResponseData.success();
     }
@@ -61,7 +61,7 @@ public class CrmIndustryController extends BaseController {
     public ResponseData update(@RequestBody CrmIndustryParam crmIndustryParam) {
 
         List<String>  pidValue = crmIndustryParam.getPidValue();
-        crmIndustryParam.setParentId(pidValue.get(pidValue.size()-1));
+//        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         this.crmIndustryService.update(crmIndustryParam);
         return ResponseData.success();
     }
@@ -93,8 +93,8 @@ public class CrmIndustryController extends BaseController {
         ToolUtil.copyProperties(detail, result);
 
         List<Map<String,Object>> list = this.crmIndustryService.listMaps();
-        List<String> parentValue = CrmIndustrySelectWrapper.fetchParentKey(list, Convert.toStr(detail.getParentId()));
-        result.setPidValue(parentValue);
+//        List<String> parentValue = CrmIndustrySelectWrapper.fetchParentKey(list, Convert.toStr(detail.getParent_id()));
+//        result.setParent_idValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -112,7 +112,7 @@ public class CrmIndustryController extends BaseController {
         }
         if(ToolUtil.isNotEmpty(crmIndustryParam.getPidValue())){
             List<String>  pidValue = crmIndustryParam.getPidValue();
-            crmIndustryParam.setParentId(pidValue.get(pidValue.size()-1));
+//            crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         }
         return this.crmIndustryService.findPageBySpec(crmIndustryParam);
     }
@@ -168,7 +168,6 @@ public class CrmIndustryController extends BaseController {
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
         factory.setRootParentId("-1");
-        System.err.println(treeViewNodes+"-------------------------------------------------------------------------------------------------------");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null
