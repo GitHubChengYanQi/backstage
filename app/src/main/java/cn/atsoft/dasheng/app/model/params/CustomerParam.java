@@ -43,11 +43,12 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
 
     private String url;
 
-    private Long industryOne;
-    private Long industryTwo;
+    private Long industryId;
+    private String industryName;
     private String oname;
     private String lname;
     private String userName;
+
     /**
      * 客户id
      */

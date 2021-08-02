@@ -36,11 +36,15 @@ public abstract class AbstractTreeBuildFactory<T> {
         //构建之前的节点处理工作
         List<T> readyToBuild = beforeBuild(nodes);
 
+
         //具体构建的过程
         List<T> builded = executeBuilding(readyToBuild);
 
+
         //构建之后的处理工作
+
         return afterBuild(builded);
+
     }
 
     /**

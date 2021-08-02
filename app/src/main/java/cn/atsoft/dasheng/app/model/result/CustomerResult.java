@@ -38,8 +38,9 @@ public class CustomerResult implements Serializable {
 
     private String url;
 
-    private Long industryOne;
-    private Long industryTwo;
+    private Long industryId;
+    private String industryName;
+
     /**
      * 客户id
      */
