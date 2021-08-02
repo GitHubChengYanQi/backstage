@@ -37,7 +37,7 @@ public class CrmIndustry implements Serializable {
      * 上级
      */
     @TableField("parent_id")
-    private String parentId;
+    private Long  parentId;
 
     /**
      * 创建者
@@ -86,11 +86,11 @@ public class CrmIndustry implements Serializable {
         this.industryName = industryName;
     }
 
-    public String getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(String parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 

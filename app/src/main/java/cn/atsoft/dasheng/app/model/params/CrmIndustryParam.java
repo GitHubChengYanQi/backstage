@@ -39,7 +39,7 @@ public class CrmIndustryParam implements Serializable, BaseValidatingParam {
      * 上级
      */
     @ApiModelProperty("上级")
-    private String parentId;
+    private Long parentId;
 
     /**
      * 创建者

@@ -74,6 +74,7 @@ public class DefaultTreeBuildFactory<T extends Tree> extends AbstractTreeBuildFa
         for (T nodeItem : list) {
             if (nodeItem.getNodeParentId().equals(node.getNodeId())) {
                 nodeList.add(nodeItem);
+                break;
             }
         }
         return nodeList;
