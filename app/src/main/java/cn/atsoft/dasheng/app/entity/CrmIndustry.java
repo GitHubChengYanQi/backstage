@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 
- * @since 2021-07-31
+ * @since 2021-08-02
  */
 @TableName("daoxin_crm_industry")
 public class CrmIndustry implements Serializable {

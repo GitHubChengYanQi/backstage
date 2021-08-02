@@ -24,6 +24,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where 1 = 1
+            <if test="paramCondition.industryId != null">
+                and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+            </if>
             <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
                 and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
             </if>
@@ -36,6 +39,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where 1 = 1
+                <if test="paramCondition.industryId != null">
+                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+                </if>
                 <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
                         and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
                 </if>
@@ -48,6 +54,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where 1 = 1
+                <if test="paramCondition.industryId != null">
+                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+                </if>
                 <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
                         and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
                 </if>
@@ -60,6 +69,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_industry where 1 = 1
+                <if test="paramCondition.industryId != null">
+                        and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
+                </if>
                 <if test="paramCondition.industryName != null and paramCondition.industryName != ''">
                         and industry_name like CONCAT('%',#{paramCondition.industryName},'%')
                 </if>

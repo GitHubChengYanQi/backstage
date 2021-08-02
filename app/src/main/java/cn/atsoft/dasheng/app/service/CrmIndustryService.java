@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-07-31
+ * @since 2021-08-02
  */
 public interface CrmIndustryService extends IService<CrmIndustry> {
 
@@ -22,7 +22,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 新增
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void add(CrmIndustryParam param);
 
@@ -30,7 +30,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 删除
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void delete(CrmIndustryParam param);
 
@@ -38,7 +38,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 更新
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void update(CrmIndustryParam param);
 
@@ -46,7 +46,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 查询单条数据，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     CrmIndustryResult findBySpec(CrmIndustryParam param);
 
@@ -54,7 +54,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 查询列表，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     List<CrmIndustryResult> findListBySpec(CrmIndustryParam param);
 
@@ -62,7 +62,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * 查询分页数据，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
      PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param);
 
