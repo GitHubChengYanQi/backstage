@@ -4,60 +4,68 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusinessSales">
-        <id column="sales_id" property="salesId" />
-        <result column="name" property="name" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="sales_id" property="salesId"/>
+        <result column="name" property="name"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        sales_id AS "salesId", name AS "name", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        sales_id
+        AS "salesId", name AS "name", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
-            <if test="paramCondition.salesId != null">
-                and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
-            </if>
+        <if test="paramCondition.salesId != null">
+            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
-                <if test="paramCondition.salesId != null">
-                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
-                </if>
+        <if test="paramCondition.salesId != null">
+            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam" resultMap="process">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam" resultMap="process">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
-                <if test="paramCondition.salesId != null">
-                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
-                </if>
+        <if test="paramCondition.salesId != null">
+            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+        </if>
     </select>
-<resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
-    <collection property="getprocess" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam"  javaType="ArrayList" select="getp" column="salesId"/>
-</resultMap>
+    <resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
+        <collection property="getprocess" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam"
+                    javaType="ArrayList" select="getp" column="salesId"/>
+    </resultMap>
     <select id="getp" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
-            select sales_process_id , name , percentage ,sort from daoxin_crm_business_sales_process where  sales_process_id ={#salesId}
+        select sales_process_id, name, percentage, sort
+        from daoxin_crm_business_sales_process
+        where sales_id = #{salesId}
     </select>
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
-                <if test="paramCondition.salesId != null">
-                        and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
-                </if>
+        <if test="paramCondition.salesId != null">
+            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+        </if>
     </select>
 
 </mapper>

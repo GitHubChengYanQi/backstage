@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ import java.util.List;
 public class CrmBusinessSalesResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private  List<CrmBusinessSalesProcess> getprocess;
 
     /**
      * 销售流程id
