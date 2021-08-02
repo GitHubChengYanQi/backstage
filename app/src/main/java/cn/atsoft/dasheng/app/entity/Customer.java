@@ -60,7 +60,7 @@ public class Customer implements Serializable {
     @TableField("status")
     private Integer status;
     @TableField("origin_id")
-    private Long orginId;
+    private Long originId;
     @TableField("note")
     private String note;
     @TableField("user_id")
@@ -70,7 +70,7 @@ public class Customer implements Serializable {
     @TableField("url")
     private String url;
     @TableField("industry_one")
-    private String industryOne;
+    private Long industryOne;
 
     @Override
     public String toString() {
@@ -79,7 +79,7 @@ public class Customer implements Serializable {
                 ", customerName='" + customerName + '\'' +
                 ", customerLevelId=" + customerLevelId +
                 ", status=" + status +
-                ", orginId=" + orginId +
+                ", orginId=" + originId +
                 ", note='" + note + '\'' +
                 ", userId=" + userId +
                 ", emall='" + emall + '\'' +
@@ -103,7 +103,7 @@ public class Customer implements Serializable {
     }
 
     @TableField("industry_two")
-    private String industryTwo;
+    private Long industryTwo;
 
     public String getCustomerName() {
         return customerName;
@@ -127,12 +127,12 @@ public class Customer implements Serializable {
         this.customerId = customerId;
     }
 
-    public Long getOrginId() {
-        return orginId;
+    public Long getOriginId() {
+        return originId;
     }
 
-    public void setOrginId(Long orginId) {
-        this.orginId = orginId;
+    public void setOriginId(Long originId) {
+        this.originId = originId;
     }
 
     public String getNote() {
@@ -167,19 +167,19 @@ public class Customer implements Serializable {
         this.url = url;
     }
 
-    public String getIndustryOne() {
+    public Long getIndustryOne() {
         return industryOne;
     }
 
-    public void setIndustryOne(String industryOne) {
+    public void setIndustryOne(Long industryOne) {
         this.industryOne = industryOne;
     }
 
-    public String getIndustryTwo() {
+    public Long getIndustryTwo() {
         return industryTwo;
     }
 
-    public void setIndustryTwo(String industryTwo) {
+    public void setIndustryTwo(Long industryTwo) {
         this.industryTwo = industryTwo;
     }
 

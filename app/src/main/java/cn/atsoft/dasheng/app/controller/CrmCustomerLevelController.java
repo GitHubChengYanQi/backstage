@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.CrmCustomerLevelSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
@@ -105,7 +107,14 @@ public class CrmCustomerLevelController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.crmCustomerLevelService.listMaps();
+        CrmCustomerLevelSelectWrapper crmCustomerLevelSelectWrapper = new CrmCustomerLevelSelectWrapper(list);
+        List<Map<String, Object>> result = crmCustomerLevelSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

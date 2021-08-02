@@ -42,23 +42,16 @@ public class CustomerController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Long add = this.customerService.add(customerParam);
-
+        System.err.println(customerParam+"---------------------------------------------------------------");
         return ResponseData.success(add);
 
 
     }
 
-    @RequestMapping(value = "/addcusid", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItemid(@RequestBody CustomerParam customerParam) {
-        Long aLong = this.customerService.addCustomer(customerParam);
-        return ResponseData.success(aLong);
 
-
-    }
 
     /**
-     * 编辑接口
+     * 编辑接口`
      *
      * @author
      * @Date 2021-07-23
@@ -94,6 +87,7 @@ public class CustomerController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
         CustomerResult bySpec = customerService.findBySpec(customerParam);
+
         return ResponseData.success(bySpec);
     }
 
@@ -103,13 +97,13 @@ public class CustomerController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
+
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
         }
-
 
         return this.customerService.findPageBySpec(customerParam);
     }
@@ -123,14 +117,7 @@ public class CustomerController extends BaseController {
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-    @RequestMapping(value = "/listdetail", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<CustomerResult> list2(@RequestBody(required = false) CustomerParam customerParam) {
-        if (ToolUtil.isEmpty(customerParam)) {
-            customerParam = new CustomerParam();
-        }
-        return this.customerService.findPageBySpec(customerParam);
-    }
+
 
 }
 

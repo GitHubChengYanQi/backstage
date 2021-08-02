@@ -8,56 +8,36 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 合同表
+ * 行业表
  * </p>
  *
  * @author 
- * @since 2021-07-21
+ * @since 2021-08-02
  */
 @Data
 @ApiModel
-public class ContractResult implements Serializable {
+public class CrmIndustryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 合同id
+     * 行业id
      */
-    @ApiModelProperty("合同id")
-    private Long contractId;
-
-    private Long customerId;
+    @ApiModelProperty("行业id")
+    private Long industryId;
 
     /**
-     * 合同名称
+     * 行业名称
      */
-    @ApiModelProperty("合同名称")
-    private String name;
+    @ApiModelProperty("行业名称")
+    private String industryName;
 
     /**
-     * 负责人id
+     * 上级
      */
-    @ApiModelProperty("负责人id")
-    private String userId;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String note;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date time;
-
-    /**
-     * 内容
-     */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("上级")
+    private String parentId;
 
     /**
      * 创建者

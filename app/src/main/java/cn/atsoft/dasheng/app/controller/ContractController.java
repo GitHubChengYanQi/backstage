@@ -31,7 +31,7 @@ public class ContractController extends BaseController {
 
     @Autowired
     private ContractService contractService;
-
+            Long customerId;
     /**
      * 新增接口
      *
@@ -41,6 +41,9 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
+        if(customerId!=null){
+            contractParam.setCustomerId(customerId);
+        }
         Long add = this.contractService.add(contractParam);
         return ResponseData.success(add);
     }
@@ -104,7 +107,15 @@ public class ContractController extends BaseController {
         return this.contractService.findPageBySpec(contractParam);
     }
 
-
+    @RequestMapping(value = "/listCustomer", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<ContractResult> listCustomer(@RequestBody(required = false) ContractParam contractParam) {
+        customerId=contractParam.getCustomerId();
+        if(ToolUtil.isEmpty(contractParam)){
+            contractParam = new ContractParam();
+        }
+        return this.contractService.findPageBySpec(contractParam);
+    }
 
 
 }

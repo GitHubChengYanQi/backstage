@@ -292,7 +292,7 @@ public class RestUserMgrController extends BaseController {
         return new SuccessResponseData(pictureName);
     }
 
-    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @RequestMapping(value = "/Select", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String,Object>>> listSelect() {
         List<Map<String, Object>> list = this.restUserService.listMaps();

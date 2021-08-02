@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.CrmBusinessSalesProcessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess">
+        <id column="sales_process_id" property="salesProcessId" />
+        <result column="name1" property="name1" />
+        <result column="name2" property="name2" />
+        <result column="name3" property="name3" />
+        <result column="name4" property="name4" />
+        <result column="name5" property="name5" />
+        <result column="state" property="state" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sales_process_id AS "salesProcessId", name1 AS "name1", name2 AS "name2", name3 AS "name3", name4 AS "name4", name5 AS "name5", state AS "state"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales_process where 1 = 1
+            <if test="paramCondition.salesProcessId != null">
+                    and sales_process_id = #{paramCondition.salesProcessId}
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales_process where 1 = 1
+                <if test="paramCondition.salesProcessId != null">
+                            and sales_process_id = #{paramCondition.salesProcessId}
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales_process where 1 = 1
+                <if test="paramCondition.salesProcessId != null">
+                            and sales_process_id = #{paramCondition.salesProcessId}
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_sales_process where 1 = 1
+                <if test="paramCondition.salesProcessId != null">
+                        and sales_process_id = #{paramCondition.salesProcessId}
+                </if>
+    </select>
+
+</mapper>

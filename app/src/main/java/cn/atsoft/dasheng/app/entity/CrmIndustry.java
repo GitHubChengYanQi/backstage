@@ -10,66 +10,34 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 合同表
+ * 行业表
  * </p>
  *
  * @author 
- * @since 2021-07-21
+ * @since 2021-08-02
  */
-@TableName("daoxin_crm_contract")
-public class Contract implements Serializable {
+@TableName("daoxin_crm_industry")
+public class CrmIndustry implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 合同id
+     * 行业id
      */
-      @TableId(value = "contract_id", type = IdType.ID_WORKER)
-    private Long contractId;
+      @TableId(value = "industry_id", type = IdType.ID_WORKER)
+    private Long industryId;
 
     /**
-     * 合同名称
+     * 行业名称
      */
-    @TableField("name")
-    private String name;
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
+    @TableField("industry_name")
+    private String industryName;
 
     /**
-     * 客户id
+     * 上级
      */
-    @TableField("customer_id")
-    private Long customerId;
-
-    /**
-     * 负责人id
-     */
-    @TableField("user_id")
-    private String userId;
-
-    /**
-     * 备注
-     */
-    @TableField("note")
-    private String note;
-
-    /**
-     * 创建时间
-     */
-    @TableField("time")
-    private Date time;
-
-    /**
-     * 内容
-     */
-    @TableField("content")
-    private String content;
+    @TableField("parent_id")
+    private String parentId;
 
     /**
      * 创建者
@@ -102,52 +70,28 @@ public class Contract implements Serializable {
     private Integer display;
 
 
-    public Long getContractId() {
-        return contractId;
+    public Long getIndustryId() {
+        return industryId;
     }
 
-    public void setContractId(Long contractId) {
-        this.contractId = contractId;
+    public void setIndustryId(Long industryId) {
+        this.industryId = industryId;
     }
 
-    public String getName() {
-        return name;
+    public String getIndustryName() {
+        return industryName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIndustryName(String industryName) {
+        this.industryName = industryName;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public Long getCreateUser() {
@@ -192,13 +136,10 @@ public class Contract implements Serializable {
 
     @Override
     public String toString() {
-        return "Contract{" +
-        "contractId=" + contractId +
-        ", name=" + name +
-        ", userId=" + userId +
-        ", note=" + note +
-        ", time=" + time +
-        ", content=" + content +
+        return "CrmIndustry{" +
+        "industryId=" + industryId +
+        ", industryName=" + industryName +
+        ", parentId=" + parentId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
