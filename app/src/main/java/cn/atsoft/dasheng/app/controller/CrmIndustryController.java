@@ -170,12 +170,12 @@ public class CrmIndustryController extends BaseController {
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
         factory.setRootParentId("-1");
-        System.err.println(treeViewNodes + "treeViewNodes-------------------------------------------------------------------------------------------------------------------");
+
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null
         //DeptTreeWrapper.clearNull(results);
-        System.err.println(ResponseData.success(results) + "--------------------------------------------------------------------------------------------------------------------");
+
         return ResponseData.success(results);
     }
 
