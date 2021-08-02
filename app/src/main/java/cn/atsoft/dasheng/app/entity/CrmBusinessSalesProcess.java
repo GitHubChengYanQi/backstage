@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 
@@ -12,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 
- * @since 2021-07-31
+ * @since 2021-08-02
  */
 @TableName("daoxin_crm_business_sales_process")
 public class CrmBusinessSalesProcess implements Serializable {
@@ -20,7 +22,7 @@ public class CrmBusinessSalesProcess implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 销售流程
+     * 赢率id
      */
       @TableId(value = "sales_process_id", type = IdType.ID_WORKER)
     private Long salesProcessId;
@@ -28,26 +30,56 @@ public class CrmBusinessSalesProcess implements Serializable {
     /**
      * 流程名称
      */
-    @TableField("name1")
-    private String name1;
+    @TableField("name")
+    private String name;
 
-    @TableField("name2")
-    private String name2;
+    /**
+     * 百分比
+     */
+    @TableField("percentage")
+    private Integer percentage;
 
-    @TableField("name3")
-    private String name3;
+    /**
+     * 流程id
+     */
+    @TableField("sales_id")
+    private Long salesId;
 
-    @TableField("name4")
-    private String name4;
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
 
-    @TableField("name5")
-    private String name5;
+    /**
+     * 创建者
+     */
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
 
     /**
      * 状态
      */
-    @TableField("state")
-    private Integer state;
+    @TableField("display")
+    private Integer display;
 
 
     public Long getSalesProcessId() {
@@ -58,64 +90,91 @@ public class CrmBusinessSalesProcess implements Serializable {
         this.salesProcessId = salesProcessId;
     }
 
-    public String getName1() {
-        return name1;
+    public String getName() {
+        return name;
     }
 
-    public void setName1(String name1) {
-        this.name1 = name1;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getName2() {
-        return name2;
+    public Integer getPercentage() {
+        return percentage;
     }
 
-    public void setName2(String name2) {
-        this.name2 = name2;
+    public void setPercentage(Integer percentage) {
+        this.percentage = percentage;
     }
 
-    public String getName3() {
-        return name3;
+    public Long getSalesId() {
+        return salesId;
     }
 
-    public void setName3(String name3) {
-        this.name3 = name3;
+    public void setSalesId(Long salesId) {
+        this.salesId = salesId;
     }
 
-    public String getName4() {
-        return name4;
+    public Integer getSort() {
+        return sort;
     }
 
-    public void setName4(String name4) {
-        this.name4 = name4;
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 
-    public String getName5() {
-        return name5;
+    public Long getCreateUser() {
+        return createUser;
     }
 
-    public void setName5(String name5) {
-        this.name5 = name5;
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
     }
 
-    public Integer getState() {
-        return state;
+    public Long getUpdateUser() {
+        return updateUser;
     }
 
-    public void setState(Integer state) {
-        this.state = state;
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Integer display) {
+        this.display = display;
     }
 
     @Override
     public String toString() {
         return "CrmBusinessSalesProcess{" +
         "salesProcessId=" + salesProcessId +
-        ", name1=" + name1 +
-        ", name2=" + name2 +
-        ", name3=" + name3 +
-        ", name4=" + name4 +
-        ", name5=" + name5 +
-        ", state=" + state +
+        ", name=" + name +
+        ", percentage=" + percentage +
+        ", salesId=" + salesId +
+        ", sort=" + sort +
+        ", createUser=" + createUser +
+        ", updateUser=" + updateUser +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
+        ", display=" + display +
         "}";
     }
 }

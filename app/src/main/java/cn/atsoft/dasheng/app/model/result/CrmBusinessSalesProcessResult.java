@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -12,44 +13,74 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-07-31
+ * @since 2021-08-02
  */
 @Data
 @ApiModel
 public class CrmBusinessSalesProcessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private  List<CrmBusinessSalesProcess> getprocess;
 
     /**
-     * 销售流程
+     * 赢率id
      */
-    @ApiModelProperty("销售流程")
+    @ApiModelProperty("赢率id")
     private Long salesProcessId;
 
     /**
      * 流程名称
      */
     @ApiModelProperty("流程名称")
-    private String name1;
+    private String name;
 
-    @ApiModelProperty("")
-    private String name2;
+    /**
+     * 百分比
+     */
+    @ApiModelProperty("百分比")
+    private Integer percentage;
 
-    @ApiModelProperty("")
-    private String name3;
+    /**
+     * 流程id
+     */
+    @ApiModelProperty("流程id")
+    private Long salesId;
 
-    @ApiModelProperty("")
-    private String name4;
+    /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Integer sort;
 
-    @ApiModelProperty("")
-    private String name5;
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
 
     /**
      * 状态
      */
     @ApiModelProperty("状态")
-    private Integer state;
+    private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

@@ -30,7 +30,7 @@ public class Origin implements Serializable {
     /**
      * 来源名称
      */
-    @TableField("name")
+    @TableField("origin_name")
     private String name;
 
     /**

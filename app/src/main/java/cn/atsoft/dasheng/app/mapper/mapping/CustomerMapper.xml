@@ -86,6 +86,9 @@
         <if test="paramCondition.companyType !=null and paramCondition.companyType != '' ">
             and company_type like CONCAT('%',#{paramCondition.companyType},'%')
         </if>
+        <if test="paramCondition.status != null">
+            and status = #{paramCondition.status}
+        </if>
     </select>
 <!--        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.result.CustomerResult">-->
 <!--            <collection property="getlevel" ofType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam" javaType="ArrayList" select="getlevel"  column="customerLevelId"/>-->
