@@ -69,8 +69,8 @@ public class Customer implements Serializable {
     private String emall;
     @TableField("url")
     private String url;
-    @TableField("industry_one")
-    private Long industryOne;
+    @TableField("industry_id")
+    private Long industryId;
 
     @Override
     public String toString() {
@@ -84,7 +84,7 @@ public class Customer implements Serializable {
                 ", userId=" + userId +
                 ", emall='" + emall + '\'' +
                 ", url='" + url + '\'' +
-                ", industryOne='" + industryOne + '\'' +
+
                 ", industryTwo='" + industryTwo + '\'' +
                 ", setup=" + setup +
                 ", legal='" + legal + '\'' +
@@ -151,6 +151,14 @@ public class Customer implements Serializable {
         this.userId = userId;
     }
 
+    public Long getIndustryId() {
+        return industryId;
+    }
+
+    public void setIndustryId(Long industryId) {
+        this.industryId = industryId;
+    }
+
     public String getEmall() {
         return emall;
     }
@@ -167,13 +175,7 @@ public class Customer implements Serializable {
         this.url = url;
     }
 
-    public Long getIndustryOne() {
-        return industryOne;
-    }
 
-    public void setIndustryOne(Long industryOne) {
-        this.industryOne = industryOne;
-    }
 
     public Long getIndustryTwo() {
         return industryTwo;

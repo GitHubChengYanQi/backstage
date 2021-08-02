@@ -31,8 +31,8 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> level AS "lname" , name AS "oname" , account AS "userName" ,
-        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,industry_one AS "industryOne" , industry_two AS "industrytwo" ,
+    <sql id="Base_Column_List"> level AS "lname" , origin_name AS "oname" , account AS "userName" ,
+        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,industry_name AS "industryName" ,
         customer_id
         AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
