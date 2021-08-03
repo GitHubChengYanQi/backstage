@@ -40,7 +40,7 @@ public class CustomerResult implements Serializable {
 
     private Long industryId;
     private String industryName;
-
+    private  Integer agent;
     /**
      * 客户id
      */
@@ -63,7 +63,9 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
     private Integer status;
+    private  Integer classification;
 
+    private  Long sort;
 
     /**
      * 成立时间

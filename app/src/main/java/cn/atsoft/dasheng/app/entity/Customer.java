@@ -29,6 +29,32 @@ public class Customer implements Serializable {
      */
     @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
+    @TableField("agent")
+    private  Integer agent;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    @TableField("classification")
+    private  Integer classification;
+    @TableField("sort")
+    private  Long sort;
+    public Integer getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Integer agent) {
+        this.agent = agent;
+    }
 
     /**
      * 客户名称
@@ -85,7 +111,7 @@ public class Customer implements Serializable {
                 ", emall='" + emall + '\'' +
                 ", url='" + url + '\'' +
 
-                ", industryTwo='" + industryTwo + '\'' +
+
                 ", setup=" + setup +
                 ", legal='" + legal + '\'' +
                 ", utscc='" + utscc + '\'' +
@@ -102,8 +128,7 @@ public class Customer implements Serializable {
                 '}';
     }
 
-    @TableField("industry_two")
-    private Long industryTwo;
+
 
     public String getCustomerName() {
         return customerName;
@@ -177,13 +202,6 @@ public class Customer implements Serializable {
 
 
 
-    public Long getIndustryTwo() {
-        return industryTwo;
-    }
-
-    public void setIndustryTwo(Long industryTwo) {
-        this.industryTwo = industryTwo;
-    }
 
     /**
      * 法定代表人
