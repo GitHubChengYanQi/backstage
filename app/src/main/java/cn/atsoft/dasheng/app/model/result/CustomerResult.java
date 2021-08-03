@@ -63,7 +63,9 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
     private Integer status;
+    private  Integer classification;
 
+    private  Long sort;
 
     /**
      * 成立时间

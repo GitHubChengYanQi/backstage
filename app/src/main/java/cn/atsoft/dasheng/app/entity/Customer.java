@@ -29,9 +29,25 @@ public class Customer implements Serializable {
      */
     @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
-    @TableId("agent")
+    @TableField("agent")
     private  Integer agent;
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    @TableField("classification")
+    private  Integer classification;
+    @TableField("sort")
+    private  Long sort;
     public Integer getAgent() {
         return agent;
     }
