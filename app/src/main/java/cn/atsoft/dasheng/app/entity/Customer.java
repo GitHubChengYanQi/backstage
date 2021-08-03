@@ -85,7 +85,7 @@ public class Customer implements Serializable {
                 ", emall='" + emall + '\'' +
                 ", url='" + url + '\'' +
 
-                ", industryTwo='" + industryTwo + '\'' +
+
                 ", setup=" + setup +
                 ", legal='" + legal + '\'' +
                 ", utscc='" + utscc + '\'' +
@@ -102,8 +102,7 @@ public class Customer implements Serializable {
                 '}';
     }
 
-    @TableField("industry_two")
-    private Long industryTwo;
+
 
     public String getCustomerName() {
         return customerName;
@@ -177,13 +176,6 @@ public class Customer implements Serializable {
 
 
 
-    public Long getIndustryTwo() {
-        return industryTwo;
-    }
-
-    public void setIndustryTwo(Long industryTwo) {
-        this.industryTwo = industryTwo;
-    }
 
     /**
      * 法定代表人

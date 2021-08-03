@@ -26,8 +26,8 @@
         <result column="user_id" property="userId" />
         <result column="emall" property="emall" />
         <result column="url" property="url"/>
-        <result column="industry_one" property="industryOne" />
-        <result column="industry_two" property="industryTwo" />
+        <result column="industry_id" property="industryId" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
