@@ -26,8 +26,6 @@
         <result column="user_id" property="userId" />
         <result column="emall" property="emall" />
         <result column="url" property="url"/>
-        <result column="industry_one" property="industryOne" />
-        <result column="industry_two" property="industryTwo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -77,7 +75,7 @@
         select
         <include refid="Base_Column_List"/>
         from customer_view where 1 = 1
-        <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
+        <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
         <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
