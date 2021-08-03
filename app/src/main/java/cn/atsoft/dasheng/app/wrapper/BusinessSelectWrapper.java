@@ -15,5 +15,10 @@ public class BusinessSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("business_name"));
+        String value = Convert.toStr(map.get("business_id"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }

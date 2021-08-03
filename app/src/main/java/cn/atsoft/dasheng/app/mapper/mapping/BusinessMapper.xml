@@ -34,7 +34,7 @@
     <sql id="Base_Column_List">
         business_name AS "businessName" ,
       main_cable AS "mainCable", reason AS "reason", order_discount AS "orderDiscount",total_products AS "totalProducts" ,opportunity_amount AS "opportunityAmount"  ,change_time AS "changeTime" ,sales_process_id AS "salesProcessId" ,sales_id AS "salesId" ,statement_time AS "statementTime", business_name AS "businessName",deptId AS "deptId",origin_id AS "originId", account AS "account"
-  ,origin_name AS "sname", stock_id AS "stockId" , name AS "iname", customer_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
+  ,origin_name AS "sname", stock_id AS "stockId" , iname AS "iname", customer_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -110,7 +110,7 @@
             and time like CONCAT('%',#{paramCondition.time},'%')
         </if>
         <if test="paramCondition.iname != null and paramCondition.iname != ''">
-            and name like CONCAT('%',#{paramCondition.iname},'%')
+            and iname like CONCAT('%',#{paramCondition.iname},'%')
         </if>
         <if test="paramCondition.sname != null and paramCondition.sname != ''">
             and origin_name like CONCAT('%',#{paramCondition.sname},'%')

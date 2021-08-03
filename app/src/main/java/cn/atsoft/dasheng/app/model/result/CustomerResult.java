@@ -40,7 +40,7 @@ public class CustomerResult implements Serializable {
 
     private Long industryId;
     private String industryName;
-
+    private  Integer agent;
     /**
      * 客户id
      */

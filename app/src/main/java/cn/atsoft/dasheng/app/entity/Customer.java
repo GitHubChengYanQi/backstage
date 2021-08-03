@@ -29,6 +29,16 @@ public class Customer implements Serializable {
      */
     @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
+    @TableId("agent")
+    private  Integer agent;
+
+    public Integer getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Integer agent) {
+        this.agent = agent;
+    }
 
     /**
      * 客户名称
