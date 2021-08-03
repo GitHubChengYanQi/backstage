@@ -21,12 +21,24 @@ import java.util.List;
 public class BusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-  private String originName;
-  private String name;
-  private String account;
-  private Long originId;
-  private String iname;
-  private  String sname;
+private  String account;
+ private  String iname;
+private  String sname;
+private  Long originId;
+  private Long deptId;
+  private String businessName ;
+  private Date statementTime ;
+  private Long salesId ;
+  private Long salesProcessId ;
+  private Date changeTime ;
+  private int opportunityAmount ;
+  private Double totalProducts ;
+  private String orderDiscount ;
+  private String reason ;
+  private String mainCable ;
+
+
+
     /**
      * 商机id
      */
@@ -152,6 +164,7 @@ public class BusinessParam implements Serializable, BaseValidatingParam {
    */
   @ApiModelProperty("主线索")
   private String mainCable;
+    private  String name;
     /**
      * 创建时间
      */
