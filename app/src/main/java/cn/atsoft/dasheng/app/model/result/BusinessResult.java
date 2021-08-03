@@ -28,6 +28,17 @@ public class BusinessResult implements Serializable {
     private  String sname;
     private  Long originId;
   private  String account;
+  private Long deptId;
+  private String businessName ;
+  private Date statementTime ;
+  private Long salesId ;
+  private Long salesProcessId ;
+  private Date changeTime ;
+  private int opportunityAmount ;
+  private Double totalProducts ;
+  private String orderDiscount ;
+  private String reason ;
+  private String mainCable ;
     /**
      * 商机id
      */
@@ -39,10 +50,6 @@ public class BusinessResult implements Serializable {
      */
     @ApiModelProperty("客户id")
     private Long customerId;
-
-
-
-
     /**
      * 立项日期
      */

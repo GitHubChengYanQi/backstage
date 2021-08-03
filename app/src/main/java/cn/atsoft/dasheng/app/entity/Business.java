@@ -36,24 +36,19 @@ public class Business implements Serializable {
      */
     @TableField("customer_id")
     private Long customerId;
+
+
+  /**
+   * 物品名称
+   */
     @TableField("stock_id")
     private  Long stockId;
-
-    public Long getStockId() {
-        return stockId;
-    }
-
-    @TableField("origin_id")
-    private long originId;
-
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
-    }
 
     /**
      * 机会来源
      */
-
+    @TableField("origin_id")
+    private long originId;
 
     /**
      * 立项日期
@@ -78,6 +73,74 @@ public class Business implements Serializable {
      */
     @TableField("person")
     private Long person;
+
+  /**
+   * 部门编号
+   */
+  @TableField("deptId")
+  private Long deptId;
+
+  /**
+   * 商机名称
+   */
+  @TableField("business_name")
+  private String businessName ;
+
+  /**
+   * 结单日期
+   */
+  @TableField("statement_time")
+  private Date statementTime ;
+
+  /**
+   * 销售流程id
+   */
+  @TableField("sales_id")
+  private Long salesId ;
+
+  /**
+   * 赢率id
+   */
+  @TableField("sales_process_id")
+  private Long salesProcessId ;
+
+  /**
+   * 阶段变更时间
+   */
+  @TableField("change_time")
+  private Date changeTime ;
+
+  /**
+   * 商机金额
+   */
+  @TableField("opportunity_amount")
+  private int opportunityAmount ;
+
+  /**
+   * 产品合计
+   */
+  @TableField("total_products")
+  private Double totalProducts ;
+
+  /**
+   * 整单折扣
+   */
+  @TableField("order_discount")
+  private String orderDiscount ;
+
+
+  /**
+   *输单原因
+   */
+  @TableField("reason")
+  private String reason ;
+
+  /**
+   *主线索
+   */
+  @TableField("main_cable")
+  private String mainCable ;
+
 
     /**
      * 创建时间
@@ -109,122 +172,226 @@ public class Business implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
+  public Long getBusinessId() {
+    return businessId;
+  }
 
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
+  public void setBusinessId(Long businessId) {
+    this.businessId = businessId;
+  }
 
-    public Long getCustomerId() {
-        return customerId;
-    }
+  public Long getCustomerId() {
+    return customerId;
+  }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
+  public void setCustomerId(Long customerId) {
+    this.customerId = customerId;
+  }
 
-    public long getOriginId() {
-        return originId;
-    }
+  public Long getStockId() {
+    return stockId;
+  }
 
-    public void setOriginId(long originId) {
-        this.originId = originId;
-    }
+  public void setStockId(Long stockId) {
+    this.stockId = stockId;
+  }
 
-    public String getTime() {
-        return time;
-    }
+  public long getOriginId() {
+    return originId;
+  }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
+  public void setOriginId(long originId) {
+    this.originId = originId;
+  }
 
-    public String getState() {
-        return state;
-    }
+  public String getTime() {
+    return time;
+  }
 
-    public void setState(String state) {
-        this.state = state;
-    }
+  public void setTime(String time) {
+    this.time = time;
+  }
 
-    public String getStage() {
-        return stage;
-    }
+  public String getState() {
+    return state;
+  }
 
-    public void setStage(String stage) {
-        this.stage = stage;
-    }
+  public void setState(String state) {
+    this.state = state;
+  }
 
-    public Long getPerson() {
-        return person;
-    }
+  public String getStage() {
+    return stage;
+  }
 
-    public void setPerson(Long person) {
-        this.person = person;
-    }
+  public void setStage(String stage) {
+    this.stage = stage;
+  }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+  public Long getPerson() {
+    return person;
+  }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  public void setPerson(Long person) {
+    this.person = person;
+  }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+  public Long getDeptId() {
+    return deptId;
+  }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+  public void setDeptId(Long deptId) {
+    this.deptId = deptId;
+  }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
+  public String getBusinessName() {
+    return businessName;
+  }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
+  public void setBusinessName(String businessName) {
+    this.businessName = businessName;
+  }
 
-    public Long getUpdateUser() {
-        return updateUser;
-    }
+  public Date getStatementTime() {
+    return statementTime;
+  }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
-    }
+  public void setStatementTime(Date statementTime) {
+    this.statementTime = statementTime;
+  }
 
-    public Integer getDisplay() {
-        return display;
-    }
+  public Long getSalesId() {
+    return salesId;
+  }
 
-    public void setDisplay(Integer display) {
-        this.display = display;
-    }
+  public void setSalesId(Long salesId) {
+    this.salesId = salesId;
+  }
 
-    @Override
-    public String toString() {
-        return "Business{" +
-                "businessId=" + businessId +
-                ", clitentId=" + customerId +
+  public Long getSalesProcessId() {
+    return salesProcessId;
+  }
 
-                ", time=" + time +
-                ", state=" + state +
-                ", stage=" + stage +
-                ", person=" + person +
-                ", createTime=" + createTime +
-                ", stockId=" + originId +
-                ", updateTime=" + updateTime +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
-                ", display=" + display +
-                "}";
-    }
+  public void setSalesProcessId(Long salesProcessId) {
+    this.salesProcessId = salesProcessId;
+  }
+
+  public Date getChangeTime() {
+    return changeTime;
+  }
+
+  public void setChangeTime(Date changeTime) {
+    this.changeTime = changeTime;
+  }
+
+  public int getOpportunityAmount() {
+    return opportunityAmount;
+  }
+
+  public void setOpportunityAmount(int opportunityAmount) {
+    this.opportunityAmount = opportunityAmount;
+  }
+
+  public Double getTotalProducts() {
+    return totalProducts;
+  }
+
+  public void setTotalProducts(Double totalProducts) {
+    this.totalProducts = totalProducts;
+  }
+
+  public String getOrderDiscount() {
+    return orderDiscount;
+  }
+
+  public void setOrderDiscount(String orderDiscount) {
+    this.orderDiscount = orderDiscount;
+  }
+
+  public String getReason() {
+    return reason;
+  }
+
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
+
+  public String getMainCable() {
+    return mainCable;
+  }
+
+  public void setMainCable(String mainCable) {
+    this.mainCable = mainCable;
+  }
+
+  public Date getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
+
+  public Long getCreateUser() {
+    return createUser;
+  }
+
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
+
+  public Long getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
+
+  public Integer getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
+
+  @Override
+  public String toString() {
+    return "Business{" +
+      "businessId=" + businessId +
+      ", customerId=" + customerId +
+      ", stockId=" + stockId +
+      ", originId=" + originId +
+      ", time='" + time + '\'' +
+      ", state='" + state + '\'' +
+      ", stage='" + stage + '\'' +
+      ", person=" + person +
+      ", deptId=" + deptId +
+      ", businessName='" + businessName + '\'' +
+      ", statementTime=" + statementTime +
+      ", salesId=" + salesId +
+      ", salesProcessId=" + salesProcessId +
+      ", changeTime=" + changeTime +
+      ", opportunityAmount=" + opportunityAmount +
+      ", totalProducts=" + totalProducts +
+      ", orderDiscount='" + orderDiscount + '\'' +
+      ", reason='" + reason + '\'' +
+      ", mainCable='" + mainCable + '\'' +
+      ", createTime=" + createTime +
+      ", updateTime=" + updateTime +
+      ", createUser=" + createUser +
+      ", updateUser=" + updateUser +
+      ", display=" + display +
+      '}';
+  }
 }
