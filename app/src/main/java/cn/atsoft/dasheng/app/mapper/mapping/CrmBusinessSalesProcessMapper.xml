@@ -5,17 +5,20 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess">
         <id column="sales_process_id" property="salesProcessId" />
-        <result column="name1" property="name1" />
-        <result column="name2" property="name2" />
-        <result column="name3" property="name3" />
-        <result column="name4" property="name4" />
-        <result column="name5" property="name5" />
-        <result column="state" property="state" />
+        <result column="name" property="name" />
+        <result column="percentage" property="percentage" />
+        <result column="sales_id" property="salesId" />
+        <result column="sort" property="sort" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        sales_process_id AS "salesProcessId", name1 AS "name1", name2 AS "name2", name3 AS "name3", name4 AS "name4", name5 AS "name5", state AS "state"
+        sales_process_id AS "salesProcessId", name AS "name", percentage AS "percentage", sales_id AS "salesId", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -23,8 +26,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales_process where 1 = 1
-            <if test="paramCondition.salesProcessId != null">
-                    and sales_process_id = #{paramCondition.salesProcessId}
+            <if test="paramCondition.salesId != null">
+                    and sales_id = #{paramCondition.salesId}
             </if>
     </select>
 
@@ -32,8 +35,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales_process where 1 = 1
-                <if test="paramCondition.salesProcessId != null">
-                            and sales_process_id = #{paramCondition.salesProcessId}
+                <if test="paramCondition.salesId != null">
+                            and sales_id = #{paramCondition.salesId}
                 </if>
     </select>
 
@@ -41,8 +44,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales_process where 1 = 1
-                <if test="paramCondition.salesProcessId != null">
-                            and sales_process_id = #{paramCondition.salesProcessId}
+                <if test="paramCondition.salesId != null">
+                            and sales_id = #{paramCondition.salesId}
                 </if>
     </select>
 
@@ -50,8 +53,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales_process where 1 = 1
-                <if test="paramCondition.salesProcessId != null">
-                        and sales_process_id = #{paramCondition.salesProcessId}
+                <if test="paramCondition.salesId != null">
+                        and sales_id = #{paramCondition.salesId}
                 </if>
     </select>
 

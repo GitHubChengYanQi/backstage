@@ -22,7 +22,7 @@ import java.util.Map;
  * 销售控制器
  *
  * @author 
- * @Date 2021-07-31 13:28:44
+ * @Date 2021-08-02 15:47:16
  */
 @RestController
 @RequestMapping("/crmBusinessSales")
@@ -36,7 +36,7 @@ public class CrmBusinessSalesController extends BaseController {
      * 新增接口
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -49,7 +49,7 @@ public class CrmBusinessSalesController extends BaseController {
      * 编辑接口
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
@@ -63,7 +63,7 @@ public class CrmBusinessSalesController extends BaseController {
      * 删除接口
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
@@ -76,7 +76,7 @@ public class CrmBusinessSalesController extends BaseController {
      * 查看详情接口
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
@@ -92,7 +92,7 @@ public class CrmBusinessSalesController extends BaseController {
      * 查询列表
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")

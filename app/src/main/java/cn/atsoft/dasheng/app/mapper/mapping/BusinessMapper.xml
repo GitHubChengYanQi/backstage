@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Business">
         <id column="business_id" property="businessId"/>
-        <result column="customer_id" property="customerId"/>
+        <result column="customer_d" property="customerId"/>
         <result column="origin_id" property="originId"/>
         <result column="stock_id" property="stockId"/>
         <result column="time" property="time"/>
@@ -17,23 +17,16 @@
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
-      <result column="deptId" property="deptId"/>
-      <result column="business_name" property="businessName"/>
-      <result column="statement_time" property="statementTime"/>
-      <result column="sales_id" property="salesId"/>
-      <result column="sales_process_id" property="salesProcessId"/>
-      <result column="change_time" property="changeTime"/>
-      <result column="opportunity_amount" property="opportunityAmount"/>
-      <result column="total_products" property="totalProducts"/>
-      <result column="order_discount" property="orderDiscount"/>
-      <result column="reason" property="reason"/>
-      <result column="main_cable" property="mainCable"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-      business_id AS "businessId",customer_id AS "customerId",origin_id AS "originId",stock_id AS "stockId",time AS "time",state AS "state",stage AS "stage",person AS "person",create_time AS "createTime",update_time AS "updateTime",create_user AS "createUser",update_user AS "updateUser",display AS "display",deptId AS "deptId",business_name AS "businessName",statement_time AS "statementTime",sales_id AS "salesId",sales_process_id AS "salesProcessId",change_time AS "changeTime",opportunity_amount AS "opportunityAmount",total_products AS "totalProducts",order_discount AS "orderDiscount",reason AS "reason",main_cable AS "mainCable",origin_name AS "originName",name AS "name",account AS "account"
+        origin_id
+        AS "originId", account AS "account"
+  ,   origin_name AS "sname", stock_id AS "stockId" , name AS "iname", customer_name AS "name" , business_id AS "businessId", customer_id AS "customerId", time AS "time", state AS "state", stage AS "stage", person AS "person", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display"
     </sql>
+
+
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.BusinessResult"
             parameterType="cn.atsoft.dasheng.app.model.params.BusinessParam">
         select
@@ -108,7 +101,7 @@
             and time like CONCAT('%',#{paramCondition.time},'%')
         </if>
         <if test="paramCondition.iname != null and paramCondition.iname != ''">
-            and name like CONCAT('%',#{paramCondition.iname},'%')
+            and iname like CONCAT('%',#{paramCondition.iname},'%')
         </if>
         <if test="paramCondition.sname != null and paramCondition.sname != ''">
             and sname like CONCAT('%',#{paramCondition.sname},'%')

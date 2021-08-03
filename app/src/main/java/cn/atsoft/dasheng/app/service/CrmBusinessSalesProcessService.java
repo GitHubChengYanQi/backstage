@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-07-31
+ * @since 2021-08-02
  */
 public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSalesProcess> {
 
@@ -22,7 +22,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 新增
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void add(CrmBusinessSalesProcessParam param);
 
@@ -30,7 +30,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 删除
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void delete(CrmBusinessSalesProcessParam param);
 
@@ -38,7 +38,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 更新
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     void update(CrmBusinessSalesProcessParam param);
 
@@ -46,7 +46,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 查询单条数据，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     CrmBusinessSalesProcessResult findBySpec(CrmBusinessSalesProcessParam param);
 
@@ -54,7 +54,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 查询列表，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
     List<CrmBusinessSalesProcessResult> findListBySpec(CrmBusinessSalesProcessParam param);
 
@@ -62,7 +62,7 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * 查询分页数据，Specification模式
      *
      * @author 
-     * @Date 2021-07-31
+     * @Date 2021-08-02
      */
      PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param);
 
