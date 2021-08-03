@@ -101,10 +101,10 @@
             and time like CONCAT('%',#{paramCondition.time},'%')
         </if>
         <if test="paramCondition.iname != null and paramCondition.iname != ''">
-            and iname like CONCAT('%',#{paramCondition.iname},'%')
+            and name like CONCAT('%',#{paramCondition.iname},'%')
         </if>
         <if test="paramCondition.sname != null and paramCondition.sname != ''">
-            and sname like CONCAT('%',#{paramCondition.sname},'%')
+            and origin_name like CONCAT('%',#{paramCondition.sname},'%')
         </if>
         <if test="paramCondition.account != null and paramCondition.account != ''">
             and account like CONCAT('%',#{paramCondition.account},'%')
