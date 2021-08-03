@@ -13,7 +13,7 @@ import java.util.List;
  * 来源表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-19
  */
 @Data
@@ -33,7 +33,7 @@ public class OriginParam implements Serializable, BaseValidatingParam {
      * 来源名称
      */
     @ApiModelProperty("来源名称")
-    private String name;
+    private String originName;
 
     /**
      * 创建者

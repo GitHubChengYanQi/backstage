@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 来源表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-19
  */
 @TableName("daoxin_crm_origin")
@@ -30,8 +30,8 @@ public class Origin implements Serializable {
     /**
      * 来源名称
      */
-    @TableField("name")
-    private String name;
+    @TableField("origin_name")
+    private String originName;
 
     /**
      * 创建者
@@ -44,20 +44,6 @@ public class Origin implements Serializable {
      */
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
-
-    @Override
-    public String toString() {
-        return "Origin{" +
-                "originId=" + originId +
-                ", name='" + name + '\'' +
-                ", createUser=" + createUser +
-                ", createTime=" + createTime +
-                ", updateUser=" + updateUser +
-                ", updateTime=" + updateTime +
-                ", display=" + display +
-                '}';
-    }
-
     /**
      * 修改者
      */
@@ -70,70 +56,78 @@ public class Origin implements Serializable {
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public Long getOriginId() {
-        return originId;
-    }
-
-    public void setOriginId(Long originId) {
-        this.originId = originId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateUser() {
-        return updateUser;
-    }
-
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Integer getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(Integer display) {
-        this.display = display;
-    }
-
     /**
      * 状态
      */
     @TableField("display")
     private Integer display;
 
+  public Long getOriginId() {
+    return originId;
+  }
+
+  public void setOriginId(Long originId) {
+    this.originId = originId;
+  }
+
+  public String getOriginName() {
+    return originName;
+  }
+
+  public void setOriginName(String originName) {
+    this.originName = originName;
+  }
+
+  public Long getCreateUser() {
+    return createUser;
+  }
+
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
+
+  public Date getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
+
+  public Long getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
+
+  public Integer getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
+
+  @Override
+  public String toString() {
+    return "Origin{" +
+      "originId=" + originId +
+      ", originName='" + originName + '\'' +
+      ", createUser=" + createUser +
+      ", createTime=" + createTime +
+      ", updateUser=" + updateUser +
+      ", updateTime=" + updateTime +
+      ", display=" + display +
+      '}';
+  }
 }
