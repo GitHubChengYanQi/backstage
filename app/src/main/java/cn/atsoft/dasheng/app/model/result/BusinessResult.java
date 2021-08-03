@@ -27,6 +27,8 @@ public class BusinessResult implements Serializable {
       private String name;
       private String account;
     private Long originId;
+    private String iname;
+    private  String sname;
     /**
      * 商机id
      */
