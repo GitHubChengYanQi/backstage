@@ -31,7 +31,7 @@ public class OriginResult implements Serializable {
      * 来源名称
      */
     @ApiModelProperty("来源名称")
-    private String originName;
+    private String name;
 
     /**
      * 创建者

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class CrmBusinessResult implements Serializable {
     private  List<Customer> getcustomer;
     private  List<Origin>getorigin;
     private  List<CrmBusinessSales> getsales;
+    private  List<User> getuser;
     /**
      * 商机id
      */

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.params;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
     private  List<Customer> getcustomer;
     private  List<Origin>getorigin;
     private  List<CrmBusinessSales> getsales;
+    private  List<User> getuser;
 
     /**
      * 商机id

@@ -26,7 +26,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
         <if test="paramCondition.salesId != null">
-            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+            and sales_id = #{paramCondition.salesId}
         </if>
     </select>
 
@@ -36,7 +36,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
         <if test="paramCondition.salesId != null">
-            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+            and sales_id = #{paramCondition.salesId}
         </if>
     </select>
 
@@ -46,7 +46,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
         <if test="paramCondition.salesId != null">
-            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+            and sales_id = #{paramCondition.salesId}
         </if>
     </select>
     <resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
@@ -56,7 +56,7 @@
     <select id="getp" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
         select sales_process_id, name, percentage, sort
         from daoxin_crm_business_sales_process
-        where sales_id = #{salesId} order by sort asc ;
+        where sales_id = #{salesId} order by sort asc
     </select>
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
@@ -64,7 +64,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
         <if test="paramCondition.salesId != null">
-            and sales_id like CONCAT('%',#{paramCondition.salesId},'%')
+            and sales_id = #{paramCondition.salesId}
         </if>
     </select>
 

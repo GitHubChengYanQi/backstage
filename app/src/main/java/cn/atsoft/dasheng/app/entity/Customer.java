@@ -30,31 +30,15 @@ public class Customer implements Serializable {
     @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
     @TableField("agent")
-    private  Integer agent;
+    private Integer agent;
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
-    public Long getSort() {
-        return sort;
-    }
-
-    public void setSort(Long sort) {
-        this.sort = sort;
-    }
 
     @TableField("classification")
-    private  Integer classification;
-    @TableField("sort")
-    private  Long sort;
-    public Integer getAgent() {
-        return agent;
-    }
+    private Integer classification;
 
-    public void setAgent(Integer agent) {
-        this.agent = agent;
-    }
+    @TableField("sort")
+    private Long sort;
+
 
     /**
      * 客户名称
@@ -62,21 +46,6 @@ public class Customer implements Serializable {
     @TableField("customer_name")
     private String customerName;
 
-    public Long getCustomerLevelId() {
-        return customerLevelId;
-    }
-
-    public void setCustomerLevelId(Long customerLevelId) {
-        this.customerLevelId = customerLevelId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     /**
      * 客户地址id
@@ -97,112 +66,6 @@ public class Customer implements Serializable {
     private String url;
     @TableField("industry_id")
     private Long industryId;
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "customerId=" + customerId +
-                ", customerName='" + customerName + '\'' +
-                ", customerLevelId=" + customerLevelId +
-                ", status=" + status +
-                ", orginId=" + originId +
-                ", note='" + note + '\'' +
-                ", userId=" + userId +
-                ", emall='" + emall + '\'' +
-                ", url='" + url + '\'' +
-
-
-                ", setup=" + setup +
-                ", legal='" + legal + '\'' +
-                ", utscc='" + utscc + '\'' +
-                ", companyType='" + companyType + '\'' +
-                ", businessTerm=" + businessTerm +
-                ", signIn='" + signIn + '\'' +
-                ", introduction='" + introduction + '\'' +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", display=" + display +
-                ", deptId=" + deptId +
-                '}';
-    }
-
-
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    /**
-     * 成立时间
-     */
-    @TableField("setup")
-    private Date setup;
-
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public Long getOriginId() {
-        return originId;
-    }
-
-    public void setOriginId(Long originId) {
-        this.originId = originId;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getIndustryId() {
-        return industryId;
-    }
-
-    public void setIndustryId(Long industryId) {
-        this.industryId = industryId;
-    }
-
-    public String getEmall() {
-        return emall;
-    }
-
-    public void setEmall(String emall) {
-        this.emall = emall;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-
-
-
     /**
      * 法定代表人
      */
@@ -269,11 +132,160 @@ public class Customer implements Serializable {
     @TableField("display")
     private Integer display;
 
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", agent=" + agent +
+                ", classification=" + classification +
+                ", sort=" + sort +
+                ", customerName='" + customerName + '\'' +
+                ", customerLevelId=" + customerLevelId +
+                ", status=" + status +
+                ", originId=" + originId +
+                ", note='" + note + '\'' +
+                ", userId=" + userId +
+                ", emall='" + emall + '\'' +
+                ", url='" + url + '\'' +
+                ", industryId=" + industryId +
+                ", legal='" + legal + '\'' +
+                ", utscc='" + utscc + '\'' +
+                ", companyType='" + companyType + '\'' +
+                ", businessTerm=" + businessTerm +
+                ", signIn='" + signIn + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", setup=" + setup +
+                '}';
+    }
+
     /**
      * 部门编号
      */
     @TableField("deptId")
     private Long deptId;
+
+
+    /**
+     * 成立时间
+     */
+    @TableField("setup")
+    private Date setup;
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getOriginId() {
+        return originId;
+    }
+
+    public void setOriginId(Long originId) {
+        this.originId = originId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getIndustryId() {
+        return industryId;
+    }
+
+    public void setIndustryId(Long industryId) {
+        this.industryId = industryId;
+    }
+
+    public String getEmall() {
+        return emall;
+    }
+
+    public void setEmall(String emall) {
+        this.emall = emall;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Integer getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Integer agent) {
+        this.agent = agent;
+    }
+
+    public Integer getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Integer classification) {
+        this.classification = classification;
+    }
+
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public Long getCustomerLevelId() {
+        return customerLevelId;
+    }
+
+    public void setCustomerLevelId(Long customerLevelId) {
+        this.customerLevelId = customerLevelId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+
 
 
     public Date getSetup() {

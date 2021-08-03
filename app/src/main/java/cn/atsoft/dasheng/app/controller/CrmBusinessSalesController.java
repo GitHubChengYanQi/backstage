@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesProcessSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;
@@ -100,9 +102,22 @@ public class CrmBusinessSalesController extends BaseController {
         if(ToolUtil.isEmpty(crmBusinessSalesParam)){
             crmBusinessSalesParam = new CrmBusinessSalesParam();
         }
+        int size = crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam).getData().size();
+        for (int i = 0; i < size; i++) {
+            Long salesId = crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam).getData().get(i).getSalesId();
+            System.err .println(salesId+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
         return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam);
     }
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.crmBusinessSalesService.listMaps();
+        CrmBusinessSalesProcessSelectWrapper crmBusinessSalesProcessSelectWrapper =new CrmBusinessSalesProcessSelectWrapper(list);
+        List<Map<String, Object>> result = crmBusinessSalesProcessSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 
