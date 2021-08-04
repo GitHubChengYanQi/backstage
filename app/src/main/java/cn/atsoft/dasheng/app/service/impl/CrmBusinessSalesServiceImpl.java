@@ -23,7 +23,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-08-02
+ * @since 2021-08-04
  */
 @Service
 public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMapper, CrmBusinessSales> implements CrmBusinessSalesService {
@@ -65,7 +65,8 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     }
 
     private Serializable getKey(CrmBusinessSalesParam param){
-        return param.getSalesId();
+        System.err.println(param.getSalesid()+"------------------------------------------------------------------");
+        return param.getSalesid();
     }
 
     private Page<CrmBusinessSalesResult> getPageContext() {

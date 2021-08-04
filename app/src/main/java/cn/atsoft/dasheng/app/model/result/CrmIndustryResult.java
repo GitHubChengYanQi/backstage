@@ -33,6 +33,8 @@ public class CrmIndustryResult implements Serializable {
     @ApiModelProperty("行业名称")
     private String industryName;
 
+    @ApiModelProperty("上级行业名称")
+    private String parentName;
     /**
      * 上级
      */
@@ -68,6 +70,7 @@ public class CrmIndustryResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

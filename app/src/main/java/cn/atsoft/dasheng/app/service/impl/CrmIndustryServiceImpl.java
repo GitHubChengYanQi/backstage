@@ -7,14 +7,16 @@ import cn.atsoft.dasheng.app.entity.CrmIndustry;
 import cn.atsoft.dasheng.app.mapper.CrmIndustryMapper;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
-import  cn.atsoft.dasheng.app.service.CrmIndustryService;
+import cn.atsoft.dasheng.app.service.CrmIndustryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,25 +24,25 @@ import java.util.List;
  * 行业表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-02
  */
 @Service
 public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIndustry> implements CrmIndustryService {
 
     @Override
-    public void add(CrmIndustryParam param){
+    public void add(CrmIndustryParam param) {
         CrmIndustry entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CrmIndustryParam param){
+    public void delete(CrmIndustryParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CrmIndustryParam param){
+    public void update(CrmIndustryParam param) {
         CrmIndustry oldEntity = getOldEntity(param);
         CrmIndustry newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +50,39 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
     }
 
     @Override
-    public CrmIndustryResult findBySpec(CrmIndustryParam param){
+    public CrmIndustryResult findBySpec(CrmIndustryParam param) {
         return null;
     }
 
     @Override
-    public List<CrmIndustryResult> findListBySpec(CrmIndustryParam param){
+    public List<CrmIndustryResult> findListBySpec(CrmIndustryParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param){
+    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param) {
         Page<CrmIndustryResult> pageContext = getPageContext();
         IPage<CrmIndustryResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        List<Long> pids = new ArrayList<>();
+        for (CrmIndustryResult item : page.getRecords()) {
+            pids.add(item.getParentId());
+        }
+        QueryWrapper<CrmIndustry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("industry_id", pids);
+        List<CrmIndustry> res = this.list(queryWrapper);
+
+        for (CrmIndustryResult item : page.getRecords()) {
+            for (CrmIndustry it : res) {
+                if (item.getParentId() != null && item.getParentId().equals(it.getIndustryId())) {
+                    item.setParentName(it.getIndustryName());
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CrmIndustryParam param){
+    private Serializable getKey(CrmIndustryParam param) {
         return param.getIndustryId();
     }
 

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.CrmBusinessMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusiness">
+        <id column="business_id" property="businessId"/>
+        <result column="business_name" property="businessName"/>
+        <result column="person" property="person"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="statement_time" property="statementTime"/>
+        <result column="change_time" property="changeTime"/>
+        <result column="opportunity_amount" property="opportunityAmount"/>
+        <result column="state" property="state"/>
+        <result column="sales_id" property="salesId"/>
+        <result column="total_products" property="totalProducts"/>
+        <result column="origin_id" property="originId"/>
+        <result column="time" property="time"/>
+        <result column="stage" property="stage"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="track_id" property="trackId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        track_id
+        AS "trackId",  business_id
+        AS "businessId", business_name AS "businessName", person AS "person", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam" resultMap="get">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
+    </select>
+    <resultMap id="get" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
+        <collection property="getcustomer" ofType="cn.atsoft.dasheng.app.model.params.CustomerParam"
+                    javaType="ArrayList" column="customerId" select="queryCustomer"/>
+        <collection property="getorigin" ofType="cn.atsoft.dasheng.app.model.params.OriginParam" javaType="ArrayList"
+                    column="originId" select="queryOrigin"/>
+        <collection property="getsales" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam"
+                    javaType="ArrayList" select="querySales" column="salesId"/>
+        <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User"
+                    javaType="ArrayList" select="queryuser"/>
+        <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
+    </resultMap>
+    <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
+        select customer_name
+        from daoxin_crm_customer
+        where customer_id = #{customerId}
+    </select>
+    <select id="queryOrigin" resultType="cn.atsoft.dasheng.app.model.result.OriginResult">
+        select origin_name
+        from daoxin_crm_origin
+        where origin_id = #{originId}
+    </select>
+    <select id="querySales" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
+        select name
+        from daoxin_crm_business_sales
+        where sales_id = #{salesId}
+    </select>
+    <select id="queryuser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
+        select account
+        from sys_user
+        where user_id = #{person}
+    </select>
+
+
+    <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" >
+        select  track_id ,note_id from daoxin_crm_business_track where track_id =#{trackId}
+    </select>
+
+    <resultMap id="getnote" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
+        <collection property="getnote" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam" javaType="ArrayList" column="noteId" select="queryNote" />
+    </resultMap>
+
+
+    <select id="queryNote" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
+        select account from daoxin_crm_business_track_note where note_id =#{noteId}
+    </select>
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
+    </select>
+
+</mapper>
