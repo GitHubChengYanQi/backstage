@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -113,7 +114,7 @@ public class CrmIndustryController extends BaseController {
         }
         if (ToolUtil.isNotEmpty(crmIndustryParam.getPidValue())) {
             List<String> pidValue = crmIndustryParam.getPidValue();
-//            crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
+//            crmIndustryParam.setParentId(pidValue.get(pidValue.size()-1));
         }
         return this.crmIndustryService.findPageBySpec(crmIndustryParam);
     }

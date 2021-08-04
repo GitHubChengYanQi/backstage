@@ -50,6 +50,7 @@
         </if>
     </select>
     <resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
+        <id column="sales_id" property="salesId"/>
         <collection property="getprocess" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam"
                     javaType="ArrayList" select="getp" column="salesId"/>
     </resultMap>

@@ -1,45 +1,39 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+
 /**
  * <p>
- * 行业表
+ * 商机跟踪备注
  * </p>
  *
  * @author 
- * @since 2021-08-02
+ * @since 2021-08-04
  */
 @Data
 @ApiModel
-public class CrmIndustryResult implements Serializable {
+public class CrmBusinessTrackNoteParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 行业id
+     * 商机跟踪备注id
      */
-    @ApiModelProperty("行业id")
-    private Long industryId;
+    @ApiModelProperty("商机跟踪备注id")
+    private Long noteId;
 
     /**
-     * 行业名称
+     * 备注内容
      */
-    @ApiModelProperty("行业名称")
-    private String industryName;
-
-    @ApiModelProperty("上级行业名称")
-    private String parentName;
-    /**
-     * 上级
-     */
-    @ApiModelProperty("上级")
-    private Long parentId;
+    @ApiModelProperty("备注内容")
+    private String account;
 
     /**
      * 创建者
@@ -73,4 +67,10 @@ public class CrmIndustryResult implements Serializable {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

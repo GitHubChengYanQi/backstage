@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
+import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -29,6 +30,8 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
     private  List<Origin>getorigin;
     private  List<CrmBusinessSales> getsales;
     private  List<User> getuser;
+    private  List<CrmBusinessTrack> gettrack;
+    private  Long trackId;
 
     /**
      * 商机id

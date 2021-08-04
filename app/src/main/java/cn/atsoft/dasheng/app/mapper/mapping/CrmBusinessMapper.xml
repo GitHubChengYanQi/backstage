@@ -22,11 +22,13 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
+        <result column="track_id" property="trackId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        business_id
+        track_id
+        AS "trackId",  business_id
         AS "businessId", business_name AS "businessName", person AS "person", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
@@ -66,7 +68,9 @@
                     column="originId" select="queryOrigin"/>
         <collection property="getsales" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam"
                     javaType="ArrayList" select="querySales" column="salesId"/>
-        <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList" select="queryuser"/>
+        <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User"
+                    javaType="ArrayList" select="queryuser"/>
+        <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
     </resultMap>
     <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
         select customer_name
@@ -84,7 +88,18 @@
         where sales_id = #{salesId}
     </select>
     <select id="queryuser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
-        select account from sys_user  where user_id =#{person}
+        select account
+        from sys_user
+        where user_id = #{person}
+    </select>
+    <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" >
+        select  track_id ,note_id from daoxin_crm_business_track where track_id =#{trackId}
+    </select>
+    <resultMap id="getnote" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
+        <collection property="getnote" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam" javaType="ArrayList" column="noteId" select="queryNote" />
+    </resultMap>
+    <select id="queryNote" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
+        select account from daoxin_crm_business_track_note where note_id =#{noteId}
     </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
         select

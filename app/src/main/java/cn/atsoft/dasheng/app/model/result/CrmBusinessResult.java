@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
+import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -28,6 +29,8 @@ public class CrmBusinessResult implements Serializable {
     private  List<Origin>getorigin;
     private  List<CrmBusinessSales> getsales;
     private  List<User> getuser;
+    private  List<CrmBusinessTrack> gettrack;
+    private  Long trackId;
     /**
      * 商机id
      */

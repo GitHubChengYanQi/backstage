@@ -20,7 +20,8 @@ import java.io.Serializable;
 public class CrmBusiness implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableField("track_id")
+    private  Long trackId;
     /**
      * 商机id
      */
@@ -129,6 +130,13 @@ public class CrmBusiness implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Long getTrackId() {
+        return trackId;
+    }
+
+    public void setTrackId(Long trackId) {
+        this.trackId = trackId;
+    }
 
     public Long getBusinessId() {
         return businessId;

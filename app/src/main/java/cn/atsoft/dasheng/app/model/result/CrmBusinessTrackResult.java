@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -8,38 +9,30 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 行业表
+ * 商机跟踪表
  * </p>
  *
  * @author 
- * @since 2021-08-02
+ * @since 2021-08-04
  */
 @Data
 @ApiModel
-public class CrmIndustryResult implements Serializable {
+public class CrmBusinessTrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
-    /**
-     * 行业id
-     */
-    @ApiModelProperty("行业id")
-    private Long industryId;
+    private  List<CrmBusinessTrackNote> getnote;
 
     /**
-     * 行业名称
+     * 商机跟踪id
      */
-    @ApiModelProperty("行业名称")
-    private String industryName;
+    @ApiModelProperty("商机跟踪id")
+    private Long trackId;
 
-    @ApiModelProperty("上级行业名称")
-    private String parentName;
     /**
-     * 上级
+     * 备注
      */
-    @ApiModelProperty("上级")
-    private Long parentId;
+    @ApiModelProperty("备注")
+    private Long noteId;
 
     /**
      * 创建者
@@ -70,7 +63,6 @@ public class CrmIndustryResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
