@@ -37,7 +37,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam" resultMap="getNote">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam" >
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track where 1 = 1
@@ -45,12 +45,8 @@
                             and track_id = #{paramCondition.trackId}
                 </if>
     </select>
-     <resultMap id="getNote" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult">
-         <collection property="getnote" column="noteId" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam" javaType="ArrayList" select="querynote"/>
-     </resultMap>
-    <select id="querynote" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
-        select account from daoxin_crm_business_track_note where note_id =#{noteId}
-    </select>
+
+
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam">
         select
         <include refid="Base_Column_List"/>

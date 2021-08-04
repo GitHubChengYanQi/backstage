@@ -50,16 +50,7 @@
             and sales_id = #{paramCondition.salesId}
         </if>
     </select>
-    <resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
-        <collection property="getProcess" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam"
-                    javaType="ArrayList" select="getp" column="salesId"/>
-    </resultMap>
-    <select id="getp" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult" resultOrdered="true">
-        select sales_process_id, name, percentage, sort
-        from daoxin_crm_business_sales_process
-        where sales_id = #{value}
-        order by sort asc
-    </select>
+
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select

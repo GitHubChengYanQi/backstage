@@ -20,7 +20,7 @@ import java.util.List;
 public class CrmBusinessTrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  List<CrmBusinessTrackNote> getnote;
+    private  List<CrmBusinessTrackNoteResult> getnote;
 
     /**
      * 商机跟踪id
