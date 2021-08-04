@@ -44,6 +44,7 @@ public class CrmBusinessSalesProcessController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+        crmBusinessSalesProcessParam.setSalesId(salesId);
         this.crmBusinessSalesProcessService.add(crmBusinessSalesProcessParam);
         return ResponseData.success();
     }
@@ -98,9 +99,11 @@ public class CrmBusinessSalesProcessController extends BaseController {
      * @author 
      * @Date 2021-08-04
      */
+    Long salesId;
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessSalesProcessResult> list(@RequestBody(required = false) CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
+        salesId = crmBusinessSalesProcessParam.getSalesId();
         if(ToolUtil.isEmpty(crmBusinessSalesProcessParam)){
             crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
         }
@@ -112,7 +115,6 @@ public class CrmBusinessSalesProcessController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect() {
         List<Map<String, Object>> list = this.crmBusinessSalesProcessService.listMaps();
         CrmBusinessSalesProcessSelectWrapper salesSelectWrapper = new CrmBusinessSalesProcessSelectWrapper(list);
-
         List<Map<String, Object>> result = salesSelectWrapper.wrap();
         return ResponseData.success(result);
     }

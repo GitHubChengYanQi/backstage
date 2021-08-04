@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -21,8 +22,7 @@ import java.util.List;
 public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-
+    private  List<CrmBusinessSales> getsales;
     /**
      * 赢率id
      */
