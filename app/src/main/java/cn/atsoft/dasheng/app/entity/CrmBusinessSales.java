@@ -13,14 +13,15 @@ import java.io.Serializable;
  * 销售
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @TableName("daoxin_crm_business_sales")
 public class CrmBusinessSales implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+ @TableField("process_id")
+    private Long processId;
     /**
      * 销售流程id
      */
@@ -118,6 +119,14 @@ public class CrmBusinessSales implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(Long processId) {
+        this.processId = processId;
     }
 
     @Override

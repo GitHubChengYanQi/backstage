@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.CrmIndustrySelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,7 @@ import java.util.Map;
 /**
  * 销售控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-04 11:29:22
  */
 @RestController
@@ -35,7 +38,7 @@ public class CrmBusinessSalesController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-04
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -48,7 +51,7 @@ public class CrmBusinessSalesController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-04
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +65,12 @@ public class CrmBusinessSalesController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-04
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam)  {
+    public ResponseData delete(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam) {
         this.crmBusinessSalesService.delete(crmBusinessSalesParam);
         return ResponseData.success();
     }
@@ -75,7 +78,7 @@ public class CrmBusinessSalesController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-04
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -92,20 +95,28 @@ public class CrmBusinessSalesController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-04
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessSalesResult> list(@RequestBody(required = false) CrmBusinessSalesParam crmBusinessSalesParam) {
-        if(ToolUtil.isEmpty(crmBusinessSalesParam)){
+        if (ToolUtil.isEmpty(crmBusinessSalesParam)) {
             crmBusinessSalesParam = new CrmBusinessSalesParam();
         }
         return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam);
     }
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.crmBusinessSalesService.listMaps();
+        CrmBusinessSalesSelectWrapper salesSelectWrapper = new CrmBusinessSalesSelectWrapper(list);
 
+        List<Map<String, Object>> result = salesSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

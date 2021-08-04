@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesProcessSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.CrmIndustrySelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
@@ -104,7 +107,15 @@ public class CrmBusinessSalesProcessController extends BaseController {
         return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam);
     }
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.crmBusinessSalesProcessService.listMaps();
+        CrmBusinessSalesProcessSelectWrapper salesSelectWrapper = new CrmBusinessSalesProcessSelectWrapper(list);
 
+        List<Map<String, Object>> result = salesSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }
