@@ -37,7 +37,7 @@ public class ErpPackageTableResult implements Serializable {
      * 套餐
      */
     @ApiModelProperty("套餐")
-    private String package;
+    private String packageName;
 
     /**
      * 创建者

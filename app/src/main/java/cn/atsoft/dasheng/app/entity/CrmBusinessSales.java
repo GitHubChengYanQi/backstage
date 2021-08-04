@@ -126,6 +126,7 @@ public class CrmBusinessSales implements Serializable {
     }
 
     public void setProcessId(Long processId) {
+
         this.processId = processId;
     }
 

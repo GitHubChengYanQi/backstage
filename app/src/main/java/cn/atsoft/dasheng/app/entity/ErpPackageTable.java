@@ -37,7 +37,7 @@ public class ErpPackageTable implements Serializable {
      * 套餐
      */
     @TableField("package")
-    private String package;
+    private String packageName;
 
     /**
      * 创建者
@@ -86,12 +86,13 @@ public class ErpPackageTable implements Serializable {
         this.packageId = packageId;
     }
 
-    public String getPackage() {
-        return package;
+
+    public String getPackageName() {
+        return packageName;
     }
 
-    public void setPackage(String package) {
-        this.package = package;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public Long getCreateUser() {
@@ -139,7 +140,7 @@ public class ErpPackageTable implements Serializable {
         return "ErpPackageTable{" +
         "id=" + id +
         ", packageId=" + packageId +
-        ", package=" + package +
+        ", package=" + packageName +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
