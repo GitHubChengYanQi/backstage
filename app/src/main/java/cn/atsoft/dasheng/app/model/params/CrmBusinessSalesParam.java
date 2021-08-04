@@ -15,7 +15,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-08-02
+ * @since 2021-08-04
  */
 @Data
 @ApiModel
@@ -23,7 +23,8 @@ public class CrmBusinessSalesParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
 
-     private  List<CrmBusinessSalesProcess> getprocess;
+    private  List<CrmBusinessSalesProcess>getprocess;
+    private Long processId;
     /**
      * 销售流程id
      */

@@ -15,11 +15,5 @@ public class CrmBusinessSalesSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("name"));
-        String value = Convert.toStr(map.get("sales_id"));
-        map.clear();
-        map.put("label",label);
-        map.put("value",value);
     }
-
 }
