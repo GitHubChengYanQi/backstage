@@ -28,10 +28,16 @@ import java.util.List;
 @Service
 public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBusiness> implements CrmBusinessService {
 
+
+
+
+
     @Override
-    public void add(CrmBusinessParam param){
+    public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
+        return entity.getBusinessId();
+
     }
 
     @Override
