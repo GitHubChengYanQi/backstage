@@ -65,8 +65,8 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     }
 
     private Serializable getKey(CrmBusinessSalesParam param){
-        System.err.println(param.getSalesid()+"------------------------------------------------------------------");
-        return param.getSalesid();
+        System.err.println(param.getSalesId()+"------------------------------------------------------------------");
+        return param.getSalesId();
     }
 
     private Page<CrmBusinessSalesResult> getPageContext() {
