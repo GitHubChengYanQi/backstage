@@ -46,7 +46,23 @@ public class CrmBusinessDetailed implements Serializable {
     private Long quantity;
 
 
-  /**
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Double getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    /**
    * 销售单价
    */
   @TableField("sale_price")

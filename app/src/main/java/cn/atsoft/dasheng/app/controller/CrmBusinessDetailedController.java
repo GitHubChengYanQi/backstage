@@ -54,7 +54,7 @@ public class CrmBusinessDetailedController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
-
+        crmBusinessDetailedParam.setTotalPrice(crmBusinessDetailedParam.getSalePrice() * crmBusinessDetailedParam.getQuantity());
         this.crmBusinessDetailedService.update(crmBusinessDetailedParam);
         return ResponseData.success();
     }
@@ -98,6 +98,7 @@ public class CrmBusinessDetailedController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessDetailedResult> list(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
+        System.err.println(crmBusinessDetailedParam);
         if(ToolUtil.isEmpty(crmBusinessDetailedParam)){
             crmBusinessDetailedParam = new CrmBusinessDetailedParam();
         }
