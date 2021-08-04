@@ -22,7 +22,7 @@ import java.util.List;
  * 销售 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @author
  * @since 2021-08-04
  */
@@ -66,8 +66,6 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     }
 
     private Serializable getKey(CrmBusinessSalesParam param){
-        System.err.println(param.getSalesid()+"------------------------------------------------------------------");
-        return param.getSalesid();
         System.err.println(param.getSalesId()+"------------------------------------------------------------------");
         return param.getSalesId();
     }
