@@ -13,11 +13,14 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
+        <result column="sale_price" property="salePrice"/>
+      <result column="total_price" property="totalPrice"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id AS "id", business_id AS "businessId", item_id AS "itemId", quantity AS "quantity", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+      total_price AS "totalPrice",sale_price AS "salePrice",id AS "id", business_id AS "businessId", item_id AS "itemId", quantity AS "quantity", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -46,6 +49,7 @@
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam" resultMap="sd">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_detailed where 1 = 1
@@ -55,6 +59,14 @@
                 <if test="paramCondition.itemId != null">
                         and item_id like CONCAT('%',#{paramCondition.itemId},'%')
                 </if>
+    </select>
+
+    <resultMap id="sd" type="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult">
+      <collection property="items" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam" javaType="ArrayList" select="wp" column="itemId"/>
+    </resultMap>
+
+    <select id="wp" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult">
+        select name from daoxin_erp_items where item_id=#{itemId}
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam">
