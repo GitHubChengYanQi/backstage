@@ -45,6 +45,20 @@ public class CrmBusinessDetailed implements Serializable {
     @TableField("quantity")
     private Long quantity;
 
+
+  /**
+   * 销售单价
+   */
+  @TableField("sale_price")
+  private Double salePrice;
+
+
+  /**
+   * 销售单价
+   */
+  @TableField("total_price")
+  private Double totalPrice;
+
     /**
      * 创建者
      */
@@ -162,4 +176,5 @@ public class CrmBusinessDetailed implements Serializable {
         ", display=" + display +
         "}";
     }
+
 }

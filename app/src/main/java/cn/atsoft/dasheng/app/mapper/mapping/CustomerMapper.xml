@@ -81,7 +81,7 @@
         select
         <include refid="Base_Column_List"/>
         from customer_view where 1 = 1
-        <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
+        <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
         <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
