@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class CrmBusinessDetailedResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+   private List<Items> items;
 
     /**
      * id
@@ -44,6 +46,19 @@ public class CrmBusinessDetailedResult implements Serializable {
      */
     @ApiModelProperty("物品数量")
     private Long quantity;
+
+  /**
+   * 销售单价
+   */
+  @ApiModelProperty("销售单价")
+  private Double salePrice;
+
+  /**
+   * 总计
+   */
+  @ApiModelProperty("总计")
+  private Double totalPrice;
+
 
     /**
      * 创建者

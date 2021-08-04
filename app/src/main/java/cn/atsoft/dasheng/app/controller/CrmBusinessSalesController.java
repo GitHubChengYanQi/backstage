@@ -85,6 +85,7 @@ public class CrmBusinessSalesController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<CrmBusinessSalesResult> detail(@RequestBody CrmBusinessSalesParam crmBusinessSalesParam) {
         CrmBusinessSales detail = this.crmBusinessSalesService.getById(crmBusinessSalesParam.getSalesid());
+        CrmBusinessSales detail = this.crmBusinessSalesService.getById(crmBusinessSalesParam.getSalesId());
         CrmBusinessSalesResult result = new CrmBusinessSalesResult();
         ToolUtil.copyProperties(detail, result);
 

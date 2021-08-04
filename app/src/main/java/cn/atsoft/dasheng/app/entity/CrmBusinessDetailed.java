@@ -45,6 +45,20 @@ public class CrmBusinessDetailed implements Serializable {
     @TableField("quantity")
     private Long quantity;
 
+
+  /**
+   * 销售单价
+   */
+  @TableField("sale_price")
+  private Double salePrice;
+
+
+  /**
+   * 销售单价
+   */
+  @TableField("total_price")
+  private Double totalPrice;
+
     /**
      * 创建者
      */
@@ -162,4 +176,108 @@ public class CrmBusinessDetailed implements Serializable {
         ", display=" + display +
         "}";
     }
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getBusinessId() {
+    return businessId;
+  }
+
+  public void setBusinessId(Long businessId) {
+    this.businessId = businessId;
+  }
+
+  public Long getItemId() {
+    return itemId;
+  }
+
+  public void setItemId(Long itemId) {
+    this.itemId = itemId;
+  }
+
+  public Long getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(Long quantity) {
+    this.quantity = quantity;
+  }
+
+  public Double getSalePrice() {
+    return salePrice;
+  }
+
+  public void setSalePrice(Double salePrice) {
+    this.salePrice = salePrice;
+  }
+
+  public Double getTotalPrice() {
+    return totalPrice;
+  }
+
+  public void setTotalPrice(Double totalPrice) {
+    this.totalPrice = totalPrice;
+  }
+
+  public Long getCreateUser() {
+    return createUser;
+  }
+
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
+
+  public Long getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
+
+  public Date getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
+
+  public Integer getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
+
+  @Override
+  public String toString() {
+    return "CrmBusinessDetailed{" +
+      "id=" + id +
+      ", businessId=" + businessId +
+      ", itemId=" + itemId +
+      ", quantity=" + quantity +
+      ", salePrice=" + salePrice +
+      ", totalPrice=" + totalPrice +
+      ", createUser=" + createUser +
+      ", updateUser=" + updateUser +
+      ", createTime=" + createTime +
+      ", updateTime=" + updateTime +
+      ", display=" + display +
+      '}';
+  }
 }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -22,6 +23,7 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
+    private List<Items> items;
 
     /**
      * id
@@ -46,6 +48,18 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
      */
     @ApiModelProperty("物品数量")
     private Long quantity;
+
+  /**
+   * 销售单价
+   */
+  @ApiModelProperty("销售单价")
+  private Double salePrice;
+
+  /**
+   * 总计
+   */
+  @ApiModelProperty("总计")
+  private Double totalPrice;
 
     /**
      * 创建者
