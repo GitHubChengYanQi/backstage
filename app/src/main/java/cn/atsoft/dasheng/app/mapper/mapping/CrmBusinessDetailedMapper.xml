@@ -48,7 +48,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam">
+   
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam" resultMap="sd">
         select
         <include refid="Base_Column_List"/>
