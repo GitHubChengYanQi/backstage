@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,14 +23,15 @@ import java.io.Serializable;
 public class CrmBusinessSales implements Serializable {
 
     private static final long serialVersionUID = 1L;
- @TableField("process_id")
-    private Long processId;
+
     /**
      * 销售流程id
      */
-      @TableId(value = "sales_id", type = IdType.AUTO)
+    @TableId(value = "sales_id", type = IdType.AUTO)
     private Long salesId;
 
+    @TableField("process_id")
+    private Long processId;
     /**
      * 名称
      */
@@ -37,25 +41,25 @@ public class CrmBusinessSales implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -133,13 +137,13 @@ public class CrmBusinessSales implements Serializable {
     @Override
     public String toString() {
         return "CrmBusinessSales{" +
-        "salesId=" + salesId +
-        ", name=" + name +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "salesId=" + salesId +
+                ", name=" + name +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
