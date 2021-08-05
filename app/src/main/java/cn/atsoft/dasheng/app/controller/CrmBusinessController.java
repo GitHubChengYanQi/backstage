@@ -43,7 +43,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public ResponseData addItem(@RequestBody CrmBusinessParam crmBusinessParam) {
         Long add = this.crmBusinessService.add(crmBusinessParam);
         return ResponseData.success(add);
     }
@@ -56,7 +56,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public ResponseData update(@RequestBody CrmBusinessParam crmBusinessParam) {
 
         this.crmBusinessService.update(crmBusinessParam);
         return ResponseData.success();
@@ -70,7 +70,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody(required = false) CrmBusinessParam crmBusinessParam)  {
+    public ResponseData delete(@RequestBody CrmBusinessParam crmBusinessParam)  {
         this.crmBusinessService.delete(crmBusinessParam);
         return ResponseData.success();
     }
@@ -83,7 +83,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessResult> detail(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+    public ResponseData<CrmBusinessResult> detail(@RequestBody CrmBusinessParam crmBusinessParam) {
 //        CrmBusiness detail = this.crmBusinessService.getById(crmBusinessParam.getBusinessId());
 //        CrmBusinessResult result = new CrmBusinessResult();
 //        ToolUtil.copyProperties(detail, result);
