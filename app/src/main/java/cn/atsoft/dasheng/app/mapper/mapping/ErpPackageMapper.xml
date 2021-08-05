@@ -38,7 +38,7 @@
     </select>
 
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam" resultMap="tc">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_package where 1 = 1
@@ -46,15 +46,6 @@
                         and product_name like CONCAT('%',#{paramCondition.productName},'%')
                 </if>
     </select>
-
-  <resultMap id="tc" type="cn.atsoft.dasheng.app.model.result.ErpPackageResult">
-      <collection property="list"  select="fb" ofType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam" javaType="ArrayList" column="packageId"/>
-  </resultMap>
-
-    <select id="fb" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult">
-        select * from daoxin_erp_package_table where package_id=#{packageId}
-    </select>
-
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
