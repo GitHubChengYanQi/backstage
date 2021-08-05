@@ -60,6 +60,9 @@
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
+        <if test="paramCondition.originId != null">
+            and origin_id = #{paramCondition.originId}
+        </if>
     </select>
     <resultMap id="get" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
         <collection property="getcustomer" ofType="cn.atsoft.dasheng.app.model.params.CustomerParam"
