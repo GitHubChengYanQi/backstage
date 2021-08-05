@@ -39,6 +39,26 @@ public class ErpPackageTable implements Serializable {
      */
     @TableField("item_id")
     private Long itemId;
+
+
+  /**
+   * 销售单价
+   */
+  @TableField("sale_price")
+  private int salePrice;
+
+  /**
+   * 总计
+   */
+  @TableField("total_price")
+  private int totalPrice;
+
+  /**
+   * 品牌
+   */
+  @TableField("brand_id")
+  private Long brandId;
+
     /**
      * 创建者
      */
@@ -70,6 +90,9 @@ public class ErpPackageTable implements Serializable {
     private Integer display;
 
 
+
+
+
   public Long getId() {
     return id;
   }
@@ -92,6 +115,30 @@ public class ErpPackageTable implements Serializable {
 
   public void setItemId(Long itemId) {
     this.itemId = itemId;
+  }
+
+  public int getSalePrice() {
+    return salePrice;
+  }
+
+  public void setSalePrice(int salePrice) {
+    this.salePrice = salePrice;
+  }
+
+  public int getTotalPrice() {
+    return totalPrice;
+  }
+
+  public void setTotalPrice(int totalPrice) {
+    this.totalPrice = totalPrice;
+  }
+
+  public Long getBrandId() {
+    return brandId;
+  }
+
+  public void setBrandId(Long brandId) {
+    this.brandId = brandId;
   }
 
   public Long getCreateUser() {
@@ -140,6 +187,9 @@ public class ErpPackageTable implements Serializable {
       "id=" + id +
       ", packageId=" + packageId +
       ", itemId=" + itemId +
+      ", salePrice=" + salePrice +
+      ", totalPrice=" + totalPrice +
+      ", brandId=" + brandId +
       ", createUser=" + createUser +
       ", updateUser=" + updateUser +
       ", createTime=" + createTime +

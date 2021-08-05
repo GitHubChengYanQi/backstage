@@ -12,13 +12,14 @@
     <result column="create_time" property="createTime"/>
     <result column="update_time" property="updateTime"/>
     <result column="display" property="display"/>
+    <result column="sale_price" property="salePrice"/>
+    <result column="total_price" property="totalPrice"/>
+    <result column="brand_id" property="brandId"/>
   </resultMap>
 
   <!-- 通用查询结果列 -->
   <sql id="Base_Column_List">
-
-    id
-    AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    brand_id  AS "brandId" ,total_price AS "totalPrice", sale_price AS "salePrice",id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
   </sql>
   <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
           parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
@@ -46,13 +47,15 @@
     </if>
   </select>
 
-
-
-
   <resultMap id="rsp" type="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult">
-    <collection property="items" column="itemId" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam"
-                javaType="ArrayList" select="queryItem"/>
+    <collection property="items" column="itemId" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam" javaType="ArrayList" select="queryItem"/>
+
+    <collection property="brand" column="brandId" ofType="cn.atsoft.dasheng.app.model.params.BrandParam" javaType="ArrayList" select="pp"/>
   </resultMap>
+
+  <select id="pp" resultType="cn.atsoft.dasheng.app.model.result.BrandResult">
+        select brand_name,brand_id from daoxin_erp_brand where brand_id=#{brandId}
+  </select>
 
   <select id="queryItem" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult">
     select *
