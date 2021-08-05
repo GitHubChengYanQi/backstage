@@ -73,7 +73,7 @@
         <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
     </resultMap>
     <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
-        select customer_name
+        select *
         from daoxin_crm_customer
         where customer_id = #{customerId}
     </select>
