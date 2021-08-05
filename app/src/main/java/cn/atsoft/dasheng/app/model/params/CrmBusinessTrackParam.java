@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
+import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -23,7 +24,7 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
 
-    private  List<CrmBusinessTrackNote> getnote;
+    private  List<CrmBusinessTrackNoteParam> getnote;
     /**
      * 商机跟踪id
      */

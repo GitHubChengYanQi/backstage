@@ -45,8 +45,8 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody CrmIndustryParam crmIndustryParam) {
-        List<String> pidValue = crmIndustryParam.getPidValue();
+    public ResponseData addItem(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
+//        List<String> pidValue = crmIndustryParam.getPidValue();
 //        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         this.crmIndustryService.add(crmIndustryParam);
         return ResponseData.success();
@@ -60,9 +60,9 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody CrmIndustryParam crmIndustryParam) {
+    public ResponseData update(@RequestBody(required = false)  CrmIndustryParam crmIndustryParam) {
 
-        List<String> pidValue = crmIndustryParam.getPidValue();
+//        List<String> pidValue = crmIndustryParam.getPidValue();
 //        crmIndustryParam.setParent_id(pidValue.get(pidValue.size()-1));
         this.crmIndustryService.update(crmIndustryParam);
         return ResponseData.success();
@@ -76,7 +76,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody CrmIndustryParam crmIndustryParam) {
+    public ResponseData delete(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
         this.crmIndustryService.delete(crmIndustryParam);
         return ResponseData.success();
     }
@@ -89,7 +89,7 @@ public class CrmIndustryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmIndustryResult> detail(@RequestBody CrmIndustryParam crmIndustryParam) {
+    public ResponseData<CrmIndustryResult> detail(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
         CrmIndustry detail = this.crmIndustryService.getById(crmIndustryParam.getIndustryId());
         CrmIndustryResult result = new CrmIndustryResult();
         ToolUtil.copyProperties(detail, result);
