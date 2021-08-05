@@ -43,72 +43,7 @@ public class CrmBusinessDetailed implements Serializable {
      * 物品数量
      */
     @TableField("quantity")
-    private Long quantity;
-
-
-    public Double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public Double getSalePrice() {
-        return salePrice;
-    }
-
-    public void setSalePrice(Double salePrice) {
-        this.salePrice = salePrice;
-    }
-
-    /**
-   * 销售单价
-   * 总计
-   */
-  @TableField("sale_price")
-  private Double salePrice;
-  private int salePrice;
-
-
-  /**
-   * 销售单价
-   *
-   */
-  @TableField("total_price")
-  private Double totalPrice;
-  private int totalPrice;
-
-    /**
-     * 创建者
-     */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
-
-    /**
-     * 创建时间
-     */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
-
+    private int quantity;
 
     public Long getId() {
         return id;
@@ -134,12 +69,28 @@ public class CrmBusinessDetailed implements Serializable {
         this.itemId = itemId;
     }
 
-    public Long getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Long quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(int salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Long getCreateUser() {
@@ -182,123 +133,51 @@ public class CrmBusinessDetailed implements Serializable {
         this.display = display;
     }
 
-    @Override
-    public String toString() {
-        return "CrmBusinessDetailed{" +
-        "id=" + id +
-        ", businessId=" + businessId +
-        ", itemId=" + itemId +
-        ", quantity=" + quantity +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
-    }
+    /**
+   * 销售单价
+   * 总计
+   */
+  @TableField("sale_price")
+  private int salePrice;
 
-  public Long getId() {
-    return id;
-  }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+  /**
+   * 销售单价
+   *
+   */
+  @TableField("total_price")
+  private int totalPrice;
 
-  public Long getBusinessId() {
-    return businessId;
-  }
+    /**
+     * 创建者
+     */
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
 
-  public void setBusinessId(Long businessId) {
-    this.businessId = businessId;
-  }
+    /**
+     * 修改者
+     */
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
 
-  public Long getItemId() {
-    return itemId;
-  }
+    /**
+     * 创建时间
+     */
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
 
-  public void setItemId(Long itemId) {
-    this.itemId = itemId;
-  }
+    /**
+     * 修改时间
+     */
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
 
-  public Long getQuantity() {
-    return quantity;
-  }
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
 
-  public void setQuantity(Long quantity) {
-    this.quantity = quantity;
-  }
 
-  public int getSalePrice() {
-    return salePrice;
-  }
 
-  public void setSalePrice(int salePrice) {
-    this.salePrice = salePrice;
-  }
-
-  public int getTotalPrice() {
-    return totalPrice;
-  }
-
-  public void setTotalPrice(int totalPrice) {
-    this.totalPrice = totalPrice*salePrice;
-  }
-
-  public Long getCreateUser() {
-    return createUser;
-  }
-
-  public void setCreateUser(Long createUser) {
-    this.createUser = createUser;
-  }
-
-  public Long getUpdateUser() {
-    return updateUser;
-  }
-
-  public void setUpdateUser(Long updateUser) {
-    this.updateUser = updateUser;
-  }
-
-  public Date getCreateTime() {
-    return createTime;
-  }
-
-  public void setCreateTime(Date createTime) {
-    this.createTime = createTime;
-  }
-
-  public Date getUpdateTime() {
-    return updateTime;
-  }
-
-  public void setUpdateTime(Date updateTime) {
-    this.updateTime = updateTime;
-  }
-
-  public Integer getDisplay() {
-    return display;
-  }
-
-  public void setDisplay(Integer display) {
-    this.display = display;
-  }
-
-  @Override
-  public String toString() {
-    return "CrmBusinessDetailed{" +
-      "id=" + id +
-      ", businessId=" + businessId +
-      ", itemId=" + itemId +
-      ", quantity=" + quantity +
-      ", salePrice=" + salePrice +
-      ", totalPrice=" + totalPrice +
-      ", createUser=" + createUser +
-      ", updateUser=" + updateUser +
-      ", createTime=" + createTime +
-      ", updateTime=" + updateTime +
-      ", display=" + display +
-      '}';
-  }
 }

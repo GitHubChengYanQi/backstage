@@ -40,7 +40,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
+    public ResponseData addItem(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
         this.crmBusinessDetailedService.add(crmBusinessDetailedParam);
         return ResponseData.success();
     }
@@ -53,7 +53,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
+    public ResponseData update(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
         crmBusinessDetailedParam.setTotalPrice(crmBusinessDetailedParam.getSalePrice() * crmBusinessDetailedParam.getQuantity());
         this.crmBusinessDetailedService.update(crmBusinessDetailedParam);
         return ResponseData.success();
@@ -67,7 +67,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam)  {
+    public ResponseData delete(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam)  {
         this.crmBusinessDetailedService.delete(crmBusinessDetailedParam);
         return ResponseData.success();
     }
@@ -80,7 +80,7 @@ public class CrmBusinessDetailedController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<CrmBusinessDetailedResult> detail(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
+    public ResponseData<CrmBusinessDetailedResult> detail(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
         CrmBusinessDetailed detail = this.crmBusinessDetailedService.getById(crmBusinessDetailedParam.getId());
         CrmBusinessDetailedResult result = new CrmBusinessDetailedResult();
         ToolUtil.copyProperties(detail, result);
