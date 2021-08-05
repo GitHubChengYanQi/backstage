@@ -20,7 +20,7 @@ import java.util.List;
 public class ErpPackageTableResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<Items> items;
+    private List<ItemsResult> items ;
 
     /**
      * id

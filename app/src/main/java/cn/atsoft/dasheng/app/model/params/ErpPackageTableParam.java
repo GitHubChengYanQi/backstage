@@ -40,7 +40,7 @@ public class ErpPackageTableParam implements Serializable, BaseValidatingParam {
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private Long item_id;
+    private Long itemId;
 
     /**
      * 创建者
