@@ -31,7 +31,7 @@ public class Origin implements Serializable {
      * 来源名称
      */
     @TableField("origin_name")
-    private String name;
+    private String originName;
 
     /**
      * 创建者
@@ -49,7 +49,7 @@ public class Origin implements Serializable {
     public String toString() {
         return "Origin{" +
                 "originId=" + originId +
-                ", name='" + name + '\'' +
+
                 ", createUser=" + createUser +
                 ", createTime=" + createTime +
                 ", updateUser=" + updateUser +
@@ -82,12 +82,12 @@ public class Origin implements Serializable {
         this.originId = originId;
     }
 
-    public String getName() {
-        return name;
+    public String getOriginName() {
+        return originName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOriginName(String originName) {
+        this.originName = originName;
     }
 
     public Long getCreateUser() {
