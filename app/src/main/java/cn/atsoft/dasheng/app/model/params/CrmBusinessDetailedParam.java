@@ -30,7 +30,7 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
      */
     @ApiModelProperty("id")
     private Long id;
-
+    private Long processId;
     /**
      * 商机id
      */

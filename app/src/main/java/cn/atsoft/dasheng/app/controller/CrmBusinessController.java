@@ -84,9 +84,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CrmBusinessResult> detail(@RequestBody CrmBusinessParam crmBusinessParam) {
-//        CrmBusiness detail = this.crmBusinessService.getById(crmBusinessParam.getBusinessId());
-//        CrmBusinessResult result = new CrmBusinessResult();
-//        ToolUtil.copyProperties(detail, result);
+
         CrmBusinessResult bySpec = crmBusinessService.findBySpec(crmBusinessParam);
         return ResponseData.success(bySpec);
     }

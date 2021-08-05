@@ -30,7 +30,9 @@ public class CrmBusinessResult implements Serializable {
     private  List<CrmBusinessSales> getsales;
     private  List<User> getuser;
     private  List<CrmBusinessTrack> gettrack;
+    private  List<CrmBusinessSalesProcessResult> Process;
     private  Long trackId;
+    private Long processId;
     /**
      * 商机id
      */

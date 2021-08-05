@@ -53,6 +53,9 @@ user_id
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>
+        <if test="paramCondition.businessId != null">
+            and business_id = #{paramCondition.businessId}
+        </if>
     </select>
     <resultMap id="rsp" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult">
         <collection property="User" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList"

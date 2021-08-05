@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 商机表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-03
  */
 @TableName("daoxin_crm_business")
@@ -21,13 +24,14 @@ public class CrmBusiness implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @TableField("track_id")
-    private  Long trackId;
+    private Long trackId;
     /**
      * 商机id
      */
-      @TableId(value = "business_id", type = IdType.ID_WORKER)
+    @TableId(value = "business_id", type = IdType.ID_WORKER)
     private Long businessId;
-
+    @TableField("process_id")
+    private Long processId;
     /**
      * 商机名称
      */
@@ -45,6 +49,14 @@ public class CrmBusiness implements Serializable {
      */
     @TableField("customer_id")
     private Long customerId;
+
+    public Long getProcessId() {
+        return processId;
+    }
+
+    public void setProcessId(Long processId) {
+        this.processId = processId;
+    }
 
     /**
      * 结单日期
@@ -103,25 +115,25 @@ public class CrmBusiness implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -285,24 +297,24 @@ public class CrmBusiness implements Serializable {
     @Override
     public String toString() {
         return "CrmBusiness{" +
-        "businessId=" + businessId +
-        ", businessName=" + businessName +
-        ", person=" + person +
-        ", customerId=" + customerId +
-        ", statementTime=" + statementTime +
-        ", changeTime=" + changeTime +
-        ", opportunityAmount=" + opportunityAmount +
-        ", state=" + state +
-        ", salesId=" + salesId +
-        ", totalProducts=" + totalProducts +
-        ", originId=" + originId +
-        ", time=" + time +
-        ", stage=" + stage +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "businessId=" + businessId +
+                ", businessName=" + businessName +
+                ", person=" + person +
+                ", customerId=" + customerId +
+                ", statementTime=" + statementTime +
+                ", changeTime=" + changeTime +
+                ", opportunityAmount=" + opportunityAmount +
+                ", state=" + state +
+                ", salesId=" + salesId +
+                ", totalProducts=" + totalProducts +
+                ", originId=" + originId +
+                ", time=" + time +
+                ", stage=" + stage +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
