@@ -44,6 +44,7 @@ public class CrmBusinessDetailed implements Serializable {
      */
     @TableField("quantity")
     private Long quantity;
+    private int quantity;
 
 
   /**

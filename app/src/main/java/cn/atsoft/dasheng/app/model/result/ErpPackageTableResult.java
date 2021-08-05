@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class ErpPackageTableResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Items> items;
 
     /**
      * id
@@ -38,8 +40,14 @@ public class ErpPackageTableResult implements Serializable {
      */
     @ApiModelProperty("套餐")
     private String packageName;
+  /**
+   * 产品id
+   */
+  @ApiModelProperty("产品id")
+  private Long itemId;
 
     /**
+  /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

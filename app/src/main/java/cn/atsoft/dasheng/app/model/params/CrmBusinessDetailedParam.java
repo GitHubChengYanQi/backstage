@@ -48,6 +48,7 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
      */
     @ApiModelProperty("物品数量")
     private Long quantity;
+    private int quantity;
 
   /**
    * 销售单价

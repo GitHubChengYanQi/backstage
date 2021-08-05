@@ -7,6 +7,7 @@
         <id column="id" property="id"/>
         <result column="package_id" property="packageId"/>
         <result column="package" property="packageName"/>
+        <result column="item_id" property="itemId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -21,6 +22,8 @@
     </sql>
 
 
+      id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
         select
@@ -48,6 +51,7 @@
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam" resultMap="mz">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_package_table where 1 = 1
@@ -57,7 +61,15 @@
         <if test="paramCondition.packageName != null and paramCondition.packageName != ''">
             and package like CONCAT('%',#{paramCondition.packageName},'%')
         </if>
+
     </select>
+    <resultMap id="mz" type="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult">
+        <collection property="items" column="itemId" javaType="ArrayList" select="wp" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam"/>
+    </resultMap>
+  <select id="wp" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult">
+    select name,item_id from daoxin_erp_items where item_id=#{itemId}
+  </select>
+
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">

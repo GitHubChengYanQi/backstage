@@ -46,6 +46,7 @@ public class CrmBusinessDetailedResult implements Serializable {
      */
     @ApiModelProperty("物品数量")
     private Long quantity;
+    private int quantity;
 
   /**
    * 销售单价

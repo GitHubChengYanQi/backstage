@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * <p>
  * 套餐表	
+ * 套餐表
  * </p>
  *
  * @author qr
@@ -29,6 +30,7 @@ public class ErpPackageResult implements Serializable {
 
     /**
      * 产品名称
+     * 套餐名曾
      */
     @ApiModelProperty("产品名称")
     private String productName;

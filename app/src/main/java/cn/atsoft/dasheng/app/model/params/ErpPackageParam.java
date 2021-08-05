@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * <p>
  * 套餐表	
+ * 套餐表
  * </p>
  *
  * @author qr
@@ -31,8 +32,10 @@ public class ErpPackageParam implements Serializable, BaseValidatingParam {
 
     /**
      * 产品名称
+     * 套餐名称
      */
     @ApiModelProperty("产品名称")
+    @ApiModelProperty("套餐名称")
     private String productName;
 
     /**

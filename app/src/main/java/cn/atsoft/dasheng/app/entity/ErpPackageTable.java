@@ -32,13 +32,22 @@ public class ErpPackageTable implements Serializable {
      */
     @TableField("package_id")
     private Long packageId;
+  /**
+   * 套餐id
+   */
+  @TableField("package_id")
+  private Long packageId;
+
 
     /**
      * 套餐
+     * 产品id
      */
     @TableField("package")
     private String packageName;
 
+    @TableField("item_id")
+    private Long itemId;
     /**
      * 创建者
      */
@@ -148,4 +157,81 @@ public class ErpPackageTable implements Serializable {
         ", display=" + display +
         "}";
     }
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Long getPackageId() {
+    return packageId;
+  }
+
+  public void setPackageId(Long packageId) {
+    this.packageId = packageId;
+  }
+
+  public Long getItemId() {
+    return itemId;
+  }
+
+  public void setItemId(Long itemId) {
+    this.itemId = itemId;
+  }
+
+  public Long getCreateUser() {
+    return createUser;
+  }
+
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
+
+  public Long getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
+
+  public Date getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
+
+  public Date getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
+
+  public Integer getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
+
+  @Override
+  public String toString() {
+    return "ErpPackageTable{" +
+      "id=" + id +
+      ", packageId=" + packageId +
+      ", itemId=" + itemId +
+      ", createUser=" + createUser +
+      ", updateUser=" + updateUser +
+      ", createTime=" + createTime +
+      ", updateTime=" + updateTime +
+      ", display=" + display +
+      '}';
+  }
 }

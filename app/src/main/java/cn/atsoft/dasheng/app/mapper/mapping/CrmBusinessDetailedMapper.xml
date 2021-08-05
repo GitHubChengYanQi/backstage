@@ -66,6 +66,7 @@
 
     <select id="wp" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult">
         select name from daoxin_erp_items where item_id=#{itemId}
+        select name,item_id from daoxin_erp_items where item_id=#{itemId}
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam">
