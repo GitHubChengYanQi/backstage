@@ -20,7 +20,7 @@ public class ErpPackageResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private  List<ErpPackageTableResult> list;
     /**
      * 套餐id
      */
