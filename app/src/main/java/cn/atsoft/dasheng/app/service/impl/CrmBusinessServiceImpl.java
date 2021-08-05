@@ -1,13 +1,14 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
-import  cn.atsoft.dasheng.app.service.CrmBusinessService;
+import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,12 +23,11 @@ import java.util.List;
  * 商机表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-03
  */
 @Service
 public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBusiness> implements CrmBusinessService {
-
 
 
 
@@ -41,12 +41,12 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    public void delete(CrmBusinessParam param){
+    public void delete(CrmBusinessParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CrmBusinessParam param){
+    public void update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -54,23 +54,27 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    public CrmBusinessResult findBySpec(CrmBusinessParam param){
+    public CrmBusinessResult findBySpec(CrmBusinessParam param) {
+
+        Page<CrmBusinessResult> pageContext = getPageContext();
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
+        PageInfo<CrmBusinessResult> pageInfo = PageFactory.createPageInfo(page);
+        return pageInfo.getData().get(0);
+    }
+
+    @Override
+    public List<CrmBusinessResult> findListBySpec(CrmBusinessParam param) {
         return null;
     }
 
     @Override
-    public List<CrmBusinessResult> findListBySpec(CrmBusinessParam param){
-        return null;
-    }
-
-    @Override
-    public PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param){
+    public PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CrmBusinessParam param){
+    private Serializable getKey(CrmBusinessParam param) {
         return param.getBusinessId();
     }
 

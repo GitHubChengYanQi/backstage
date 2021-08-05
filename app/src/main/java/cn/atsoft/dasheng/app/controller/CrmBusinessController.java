@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -83,12 +84,11 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CrmBusinessResult> detail(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
-        CrmBusiness detail = this.crmBusinessService.getById(crmBusinessParam.getBusinessId());
-        CrmBusinessResult result = new CrmBusinessResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+//        CrmBusiness detail = this.crmBusinessService.getById(crmBusinessParam.getBusinessId());
+//        CrmBusinessResult result = new CrmBusinessResult();
+//        ToolUtil.copyProperties(detail, result);
+        CrmBusinessResult bySpec = crmBusinessService.findBySpec(crmBusinessParam);
+        return ResponseData.success(bySpec);
     }
 
     /**

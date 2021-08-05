@@ -82,7 +82,9 @@ public class CrmBusinessDetailedController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<CrmBusinessDetailedResult> detail(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
         CrmBusinessDetailed detail = this.crmBusinessDetailedService.getById(crmBusinessDetailedParam.getId());
+
         CrmBusinessDetailedResult result = new CrmBusinessDetailedResult();
+
         ToolUtil.copyProperties(detail, result);
 
 //        result.setValue(parentValue);
