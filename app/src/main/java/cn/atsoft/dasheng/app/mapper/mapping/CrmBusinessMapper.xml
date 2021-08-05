@@ -76,7 +76,8 @@
                     javaType="ArrayList" select="querySales" column="salesId"/>
         <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User"
                     javaType="ArrayList" select="queryuser"/>
-        <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
+        <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack"
+                    javaType="ArrayList" select="queryTrack"/>
     </resultMap>
     <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
         select *
@@ -100,17 +101,22 @@
     </select>
 
 
-    <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" >
-        select  track_id ,note_id from daoxin_crm_business_track where track_id =#{trackId}
+    <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult">
+        select track_id, note_id
+        from daoxin_crm_business_track
+        where track_id = #{trackId}
     </select>
 
     <resultMap id="getnote" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
-        <collection property="getnote" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam" javaType="ArrayList" column="noteId" select="queryNote" />
+        <collection property="getnote" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam"
+                    javaType="ArrayList" column="noteId" select="queryNote"/>
     </resultMap>
 
 
     <select id="queryNote" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
-        select account from daoxin_crm_business_track_note where note_id =#{noteId}
+        select account
+        from daoxin_crm_business_track_note
+        where note_id = #{noteId}
     </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
         select
