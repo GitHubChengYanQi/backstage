@@ -33,6 +33,8 @@ public class CrmBusinessTrackResult implements Serializable {
     private  String type;
     private  String note;
     private  Long userId;
+
+    private Long businessId;
     /**
      * 备注
      */
