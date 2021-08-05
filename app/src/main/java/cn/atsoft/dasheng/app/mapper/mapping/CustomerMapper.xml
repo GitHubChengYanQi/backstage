@@ -94,7 +94,7 @@
             and status = #{paramCondition.status}
         </if>
         <if test="paramCondition.classification !=null and paramCondition.classification != '' ">
-            and classification like CONCAT('%',#{paramCondition.classification},'%')
+            and classification =  #{paramCondition.classification}
         </if>
     </select>
     <!--        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.result.CustomerResult">-->
