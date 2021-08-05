@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -28,6 +29,10 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
     /**
      * 商机跟踪id
      */
+    private  String note;
+    private  String type;
+
+    private  Long userId;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
 

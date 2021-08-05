@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -21,13 +22,17 @@ public class CrmBusinessTrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private  List<CrmBusinessTrackNoteResult> getnote;
+    private  List<User>User;
+    private  List<CrmBusinessResult> Business;
 
     /**
      * 商机跟踪id
      */
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
-
+    private  String type;
+    private  String note;
+    private  Long userId;
     /**
      * 备注
      */
