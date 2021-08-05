@@ -23,11 +23,12 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="track_id" property="trackId"/>
+        <result column="process_id" property="processId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        track_id
+        process_id AS "processId",track_id
         AS "trackId",  business_id
         AS "businessId", business_name AS "businessName", person AS "person", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
@@ -74,6 +75,7 @@
         <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User"
                     javaType="ArrayList" select="queryuser"/>
         <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
+        <collection property="Process" column="processId" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam" javaType="ArrayList" select="queryProcess"/>
     </resultMap>
     <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
         select *
@@ -95,7 +97,9 @@
         from sys_user
         where user_id = #{person}
     </select>
-
+    <select id="queryProcess" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
+        select * from daoxin_crm_business_sales_process where sales_process_id =#{processId}
+    </select>
 
     <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult" >
         select  track_id ,note_id from daoxin_crm_business_track where track_id =#{trackId}
