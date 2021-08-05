@@ -22,7 +22,6 @@ import java.util.List;
 public class ErpPackageTableParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
   private List<Items> items;
 
     /**
@@ -38,11 +37,8 @@ public class ErpPackageTableParam implements Serializable, BaseValidatingParam {
     private Long packageId;
 
     /**
-     * 套餐
      * 产品id
      */
-    @ApiModelProperty("套餐")
-    private String packageName;
     @ApiModelProperty("产品id")
     private Long item_id;
 

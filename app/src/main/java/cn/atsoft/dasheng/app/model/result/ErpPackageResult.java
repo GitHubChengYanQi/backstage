@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 套餐表	
  * 套餐表
  * </p>
  *
@@ -29,7 +28,6 @@ public class ErpPackageResult implements Serializable {
     private Long packageId;
 
     /**
-     * 产品名称
      * 套餐名曾
      */
     @ApiModelProperty("产品名称")

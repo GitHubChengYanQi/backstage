@@ -45,21 +45,18 @@ public class CrmBusinessDetailedResult implements Serializable {
      * 物品数量
      */
     @ApiModelProperty("物品数量")
-    private Long quantity;
     private int quantity;
 
   /**
    * 销售单价
    */
   @ApiModelProperty("销售单价")
-  private Double salePrice;
   private int salePrice;
 
   /**
    * 总计
    */
   @ApiModelProperty("总计")
-  private Double totalPrice;
   private int totalPrice;
 
 

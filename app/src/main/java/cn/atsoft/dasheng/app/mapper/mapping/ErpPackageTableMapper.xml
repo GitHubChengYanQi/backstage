@@ -6,7 +6,6 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ErpPackageTable">
         <id column="id" property="id"/>
         <result column="package_id" property="packageId"/>
-        <result column="package" property="packageName"/>
         <result column="item_id" property="itemId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
@@ -17,10 +16,6 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id
-        AS "id", package_id AS "packageId", package AS "packageName", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
-    </sql>
-
 
       id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
@@ -50,16 +45,12 @@
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
             parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam" resultMap="mz">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_package_table where 1 = 1
         <if test="paramCondition.packageId != null">
             and package_id like CONCAT('%',#{paramCondition.packageId},'%')
-        </if>
-        <if test="paramCondition.packageName != null and paramCondition.packageName != ''">
-            and package like CONCAT('%',#{paramCondition.packageName},'%')
         </if>
 
     </select>
