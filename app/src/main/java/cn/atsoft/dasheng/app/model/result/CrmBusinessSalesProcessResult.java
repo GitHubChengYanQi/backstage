@@ -20,7 +20,7 @@ import java.util.List;
 public class CrmBusinessSalesProcessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  List<CrmBusinessSales> getsales;
+    private  List<CrmBusinessSalesResult> getsales;
 
     /**
      * 赢率id

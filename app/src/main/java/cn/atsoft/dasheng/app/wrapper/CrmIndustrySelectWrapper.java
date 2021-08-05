@@ -32,7 +32,7 @@ public class CrmIndustrySelectWrapper extends BaseControllerWrapper {
         List<String> parentResult = new ArrayList<>();
 
         for (Map<String, Object> item : list) {
-            String value = Convert.toStr(item.get("industry_id"));
+            String value = Convert.toStr(item.get("industry_name"));
             String parentValue = Convert.toStr(item.get("parent_id"));
             if (key.equals(value)) {
                 result.add(value);
