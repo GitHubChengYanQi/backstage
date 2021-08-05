@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 套餐表	
+ * 套餐表
  * </p>
  *
  * @author qr
@@ -28,7 +28,7 @@ public class ErpPackage implements Serializable {
     private Long packageId;
 
     /**
-     * 产品名称
+     * 套餐名称
      */
     @TableField("product_name")
     private String productName;

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- * 套餐表	
+ * 套餐表
  * </p>
  *
  * @author qr
@@ -21,8 +22,7 @@ import java.util.List;
 public class ErpPackageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-
+       private  List<ErpPackageTableResult> list;
     /**
      * 套餐id
      */
@@ -30,9 +30,9 @@ public class ErpPackageParam implements Serializable, BaseValidatingParam {
     private Long packageId;
 
     /**
-     * 产品名称
+     * 套餐名称
      */
-    @ApiModelProperty("产品名称")
+    @ApiModelProperty("套餐名称")
     private String productName;
 
     /**

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.ErpPackageSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackage;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
@@ -105,6 +107,20 @@ public class ErpPackageController extends BaseController {
     }
 
 
+  /**
+   * 选择列表
+   *
+   * @author 1
+   * @Date 2021-07-14
+   */
+  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+  @ApiOperation("Select数据接口")
+  public ResponseData<List<Map<String,Object>>> listSelect() {
+    List<Map<String,Object>> list = this.erpPackageService.listMaps();
+    ErpPackageSelectWrapper factory = new ErpPackageSelectWrapper(list);
+    List<Map<String,Object>> result = factory.wrap();
+    return ResponseData.success(result);
+  }
 
 
 }

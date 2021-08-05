@@ -27,18 +27,18 @@ public class ErpPackageTable implements Serializable {
       @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
-    /**
-     * 套餐id
-     */
-    @TableField("package_id")
-    private Long packageId;
+  /**
+   * 套餐id
+   */
+  @TableField("package_id")
+  private Long packageId;
+
 
     /**
-     * 套餐
+     * 产品id
      */
-    @TableField("package")
-    private String packageName;
-
+    @TableField("item_id")
+    private Long itemId;
     /**
      * 创建者
      */
@@ -70,82 +70,81 @@ public class ErpPackageTable implements Serializable {
     private Integer display;
 
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public Long getPackageId() {
-        return packageId;
-    }
+  public Long getPackageId() {
+    return packageId;
+  }
 
-    public void setPackageId(Long packageId) {
-        this.packageId = packageId;
-    }
+  public void setPackageId(Long packageId) {
+    this.packageId = packageId;
+  }
 
+  public Long getItemId() {
+    return itemId;
+  }
 
-    public String getPackageName() {
-        return packageName;
-    }
+  public void setItemId(Long itemId) {
+    this.itemId = itemId;
+  }
 
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
+  public Long getCreateUser() {
+    return createUser;
+  }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
+  public Long getUpdateUser() {
+    return updateUser;
+  }
 
-    public Long getUpdateUser() {
-        return updateUser;
-    }
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
-    }
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  public Date getUpdateTime() {
+    return updateTime;
+  }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+  public Integer getDisplay() {
+    return display;
+  }
 
-    public Integer getDisplay() {
-        return display;
-    }
+  public void setDisplay(Integer display) {
+    this.display = display;
+  }
 
-    public void setDisplay(Integer display) {
-        this.display = display;
-    }
-
-    @Override
-    public String toString() {
-        return "ErpPackageTable{" +
-        "id=" + id +
-        ", packageId=" + packageId +
-        ", package=" + packageName +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
-    }
+  @Override
+  public String toString() {
+    return "ErpPackageTable{" +
+      "id=" + id +
+      ", packageId=" + packageId +
+      ", itemId=" + itemId +
+      ", createUser=" + createUser +
+      ", updateUser=" + updateUser +
+      ", createTime=" + createTime +
+      ", updateTime=" + updateTime +
+      ", display=" + display +
+      '}';
+  }
 }

@@ -38,6 +38,18 @@ public class CrmBusinessTrack implements Serializable {
       private  String type;
     @TableField("user_id")
     private  Long userId;
+
+    @TableField("business_id")
+    private  Long businessId;
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
+    }
+
     @TableField("note")
     private  String note;
     @TableField("business_id")
