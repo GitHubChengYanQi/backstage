@@ -26,6 +26,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map"
@@ -33,30 +36,29 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam"
-            resultMap="process">
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
     </select>
-    <resultMap id="process" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
-        <collection property="getprocess" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam"
-                    javaType="ArrayList" select="getp" column="processId"/>
-    </resultMap>
-    <select id="getp" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
-        select sales_process_id, name, percentage, sort
-        from daoxin_crm_business_sales_process
-        where sales_id = #{processId}
-        order by sort asc
-    </select>
+
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales where 1 = 1
+        <if test="paramCondition.salesId != null">
+            and sales_id = #{paramCondition.salesId}
+        </if>
     </select>
 
 </mapper>

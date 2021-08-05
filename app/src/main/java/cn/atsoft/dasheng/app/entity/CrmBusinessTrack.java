@@ -21,11 +21,41 @@ public class CrmBusinessTrack implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     /**
      * 商机跟踪id
      */
       @TableId(value = "track_id", type = IdType.ID_WORKER)
     private Long trackId;
+      @TableField("type")
+      private  String type;
+    @TableField("user_id")
+    private  Long userId;
+    @TableField("note")
+    private  String note;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
 
     /**
      * 备注

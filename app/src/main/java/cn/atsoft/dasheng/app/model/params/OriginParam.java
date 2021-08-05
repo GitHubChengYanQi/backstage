@@ -33,7 +33,7 @@ public class OriginParam implements Serializable, BaseValidatingParam {
      * 来源名称
      */
     @ApiModelProperty("来源名称")
-    private String name;
+    private String originName;
 
     /**
      * 创建者

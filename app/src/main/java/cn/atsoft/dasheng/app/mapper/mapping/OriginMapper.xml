@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Origin">
         <id column="origin_id" property="originId" />
-        <result column="origin_name" property="name" />
+        <result column="origin_name" property="originName" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
         <result column="update_user" property="updateUser" />
@@ -15,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        origin_id AS "originId", origin_name AS "name", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        origin_id AS "originId", origin_name AS "originName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -23,8 +23,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
+            <if test="paramCondition.originName != null and paramCondition.originName != ''">
+                and origin_name like CONCAT('%',#{paramCondition.originName},'%')
             </if>
     </select>
 
@@ -32,8 +32,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.originName != null and paramCondition.originName != ''">
+                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
                 </if>
     </select>
 
@@ -41,8 +41,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and origin_name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.originName != null and paramCondition.originName != ''">
+                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
                 </if>
     </select>
 
@@ -50,8 +50,8 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
+                <if test="paramCondition.originName != null and paramCondition.originName != ''">
+                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
                 </if>
     </select>
 

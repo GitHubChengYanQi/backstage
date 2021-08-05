@@ -28,17 +28,17 @@ import java.util.List;
 public class CustomerParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  List<CrmCustomerLevel> getlevel;
-    private  List<Origin> getorgin;
+    private List<CrmCustomerLevel> getlevel;
+    private List<Origin> getorgin;
     private List<User> getUser;
     private Long customerLevelId;
     private Integer status;
     private Long originId;
-    private  Integer agent;
+    private Integer agent;
     private String note;
-    private  Integer classification;
+    private Integer classification;
 
-    private  Long sort;
+    private Long sort;
     private Long userId;
 
     private String emall;
