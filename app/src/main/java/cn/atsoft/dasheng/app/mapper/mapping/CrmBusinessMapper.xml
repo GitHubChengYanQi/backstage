@@ -54,7 +54,7 @@
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam" resultMap="get">
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam"  resultMap="User">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where 1 = 1
@@ -68,58 +68,11 @@
             and business_id = #{paramCondition.businessId}
         </if>
     </select>
-    <resultMap id="get" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
-        <collection property="getcustomer" ofType="cn.atsoft.dasheng.app.model.params.CustomerParam"
-                    javaType="ArrayList" column="customerId" select="queryCustomer"/>
-        <collection property="getorigin" ofType="cn.atsoft.dasheng.app.model.params.OriginParam" javaType="ArrayList"
-                    column="originId" select="queryOrigin"/>
-        <collection property="getsales" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam"
-                    javaType="ArrayList" select="querySales" column="salesId"/>
-        <collection property="getuser" column="person" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User"
-                    javaType="ArrayList" select="queryuser"/>
-        <collection property="gettrack" column="trackId" ofType="cn.atsoft.dasheng.app.entity.CrmBusinessTrack" javaType="ArrayList" select="queryTrack" />
-        <collection property="Process" column="processId" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam" javaType="ArrayList" select="queryProcess"/>
-    </resultMap>
-    <select id="queryCustomer" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult">
-        select *
-        from daoxin_crm_customer
-        where customer_id = #{customerId}
-    </select>
-    <select id="queryOrigin" resultType="cn.atsoft.dasheng.app.model.result.OriginResult">
-        select *
-        from daoxin_crm_origin
-        where origin_id = #{originId}
-    </select>
-    <select id="querySales" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
-        select name
-        from daoxin_crm_business_sales
-        where sales_id = #{salesId}
-    </select>
-    <select id="queryuser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
-        select account
-        from sys_user
-        where user_id = #{person}
-    </select>
-    <select id="queryProcess" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
-        select * from daoxin_crm_business_sales_process where sales_process_id =#{processId}
-    </select>
-
-    <select id="queryTrack" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult">
-        select track_id, note_id
-        from daoxin_crm_business_track
-        where track_id = #{trackId}
-    </select>
-
-    <resultMap id="getnote" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
-        <collection property="getnote" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackNoteParam"
-                    javaType="ArrayList" column="noteId" select="queryNote"/>
-    </resultMap>
-
-
-    <select id="queryNote" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult">
-        select account
-        from daoxin_crm_business_track_note
-        where note_id = #{noteId}
+<resultMap id="User" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
+    <association property="user"  javaType="cn.atsoft.dasheng.sys.modular.system.entity.User" column="person" select="queryUser"/>
+</resultMap>
+    <select id="queryUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
+        select  * from sys_user where user_id =#{person}
     </select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
         select

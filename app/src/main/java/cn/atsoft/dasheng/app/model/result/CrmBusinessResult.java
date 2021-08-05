@@ -6,17 +6,21 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 商机表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-03
  */
 @Data
@@ -25,13 +29,13 @@ public class CrmBusinessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private  List<Customer> getcustomer;
-    private  List<Origin>getorigin;
-    private  List<CrmBusinessSales> getsales;
-    private  List<User> getuser;
-    private  List<CrmBusinessTrack> gettrack;
-    private  List<CrmBusinessSalesProcessResult> Process;
-    private  Long trackId;
+    private CustomerResult customer;
+    private OriginResult origin;
+    private  CrmBusinessSalesResult sales;
+    private User user;
+    private CrmBusinessTrackResult track;
+    private CrmBusinessSalesProcessResult process;
+    private Long trackId;
     private Long processId;
     /**
      * 商机id

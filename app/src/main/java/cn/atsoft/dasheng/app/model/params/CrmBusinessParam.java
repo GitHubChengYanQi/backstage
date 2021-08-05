@@ -7,10 +7,13 @@ import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -18,7 +21,7 @@ import java.util.List;
  * 商机表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-03
  */
 @Data
@@ -26,12 +29,12 @@ import java.util.List;
 public class CrmBusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  List<Customer> getcustomer;
-    private  List<Origin>getorigin;
-    private  List<CrmBusinessSales> getsales;
-    private  List<User> getuser;
-    private  List<CrmBusinessTrack> gettrack;
-    private  Long trackId;
+    private List<Customer> getcustomer;
+    private List<Origin> getorigin;
+    private List<CrmBusinessSales> getsales;
+    private List<User> getuser;
+    private List<CrmBusinessTrack> gettrack;
+    private Long trackId;
     private Long processId;
 
     /**
