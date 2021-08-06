@@ -126,6 +126,16 @@ public class Customer implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+//    private String classificationName;
+//
+//    public String getClassificationName() {
+//        return classificationName;
+//    }
+//
+//    public void setClassificationName(String classificationName) {
+//        this.classificationName = classificationName;
+//    }
+
     /**
      * 状态
      */
@@ -136,6 +146,7 @@ public class Customer implements Serializable {
     public String toString() {
         return "Customer{" +
                 "customerId=" + customerId +
+
                 ", agent=" + agent +
                 ", classification=" + classification +
                 ", sort=" + sort +

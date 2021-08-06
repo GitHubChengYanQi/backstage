@@ -48,7 +48,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
 
-    private CrmBusinessResult crmBusinessResult;
+
 
     @Override
     public Long add(CrmBusinessParam param) {

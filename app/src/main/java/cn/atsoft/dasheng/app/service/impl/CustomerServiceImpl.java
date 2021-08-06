@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
-
+ private CustomerResult customerResult;
     @Override
     public Long add(CustomerParam param){
         Customer entity = getEntity(param);
@@ -66,6 +66,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public PageInfo<CustomerResult> findPageBySpec(CustomerParam param){
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
+        for (CustomerResult record : page.getRecords()) {
+            Integer classification = record.getClassification();
+            if(classification==1){
+                record.setClassificationName("代理商");
+            }else {
+                record.setClassificationName("终端客户");
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
