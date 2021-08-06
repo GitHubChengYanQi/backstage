@@ -56,7 +56,6 @@ public class ErpPackageController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ErpPackageParam erpPackageParam) {
-
         this.erpPackageService.update(erpPackageParam);
         return ResponseData.success();
     }

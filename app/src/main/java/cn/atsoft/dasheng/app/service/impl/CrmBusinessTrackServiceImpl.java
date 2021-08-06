@@ -70,25 +70,6 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
     public PageInfo<CrmBusinessTrackResult> findPageBySpec(CrmBusinessTrackParam param) {
         Page<CrmBusinessTrackResult> pageContext = getPageContext();
         IPage<CrmBusinessTrackResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long> noteid = new ArrayList<>();
-        for (CrmBusinessTrackResult item : page.getRecords()) {
-            noteid.add(item.getNoteId());
-        }
-        QueryWrapper<CrmBusinessTrackNote> queryWrapper = new QueryWrapper<>();
-      queryWrapper.in("note_id",noteid);
-
-        List<CrmBusinessTrackNote> res = crmBusinessTrackNoteService.list(queryWrapper);
-        for (CrmBusinessTrackResult item : page.getRecords()) {
-            List<CrmBusinessTrackNoteResult> results = new ArrayList<>();
-            for (CrmBusinessTrackNote it : res) {
-                if (item.getTrackId().equals(it.getNoteId())) {
-                    CrmBusinessTrackNoteResult tmp = new CrmBusinessTrackNoteResult();
-                    ToolUtil.copyProperties(it, tmp);
-                    results.add(tmp);
-                }
-            }
-            item.setGetnote(results);
-        }
         return PageFactory.createPageInfo(page);
     }
 
