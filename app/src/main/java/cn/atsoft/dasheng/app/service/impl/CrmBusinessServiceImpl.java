@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -10,14 +11,15 @@ import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,6 +48,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
 
+    private CrmBusinessResult crmBusinessResult;
+
     @Override
     public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
@@ -63,106 +67,31 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public void update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
+
+        if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
+
+
+            CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+            crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
+            crmBusinessTrackParam.setNote("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            crmBusinessTrackService.add(crmBusinessTrackParam);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+
+
+        }
+
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
 
     @Override
     public CrmBusinessResult findBySpec(CrmBusinessParam param) {
-
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long> list = new ArrayList<>();
-        List<Long> list1 = new ArrayList<>();
-        List<Long> saleslist = new ArrayList<>();
-        List<Long> list3 = new ArrayList<>();
-        List<Long> tracklist = new ArrayList<>();
-        List<Long> processlist = new ArrayList<>();
+        this.format(page.getRecords());
 
-        for (CrmBusinessResult item : page.getRecords()) {
-            list.add(item.getCustomerId());
-            list1.add(item.getOriginId());
-            saleslist.add(item.getSalesId());
-
-            tracklist.add(item.getTrackId());
-            processlist.add(item.getProcessId());
-        }
-        QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
-        processQueryWrapper.in("sales_process_id", processlist);
-        List<CrmBusinessSalesProcess> process = crmBusinessSalesProcessService.list(processQueryWrapper);
-
-
-        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
-        trackQueryWrapper.in("track_id", tracklist);
-        List<CrmBusinessTrack> tracks = crmBusinessTrackService.list(trackQueryWrapper);
-
-        //   QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        //    userQueryWrapper.in("user_id", list3);
-
-        QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
-        crmBusinessSalesQueryWrapper.in("sales_id", saleslist);
-
-        //  List<User> userList = userService.list(userQueryWrapper);
-        List<CrmBusinessSales> salesList = crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
-        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("customer_id", list);
-        List<Customer> customerList = customerService.list(queryWrapper);
-        QueryWrapper queryWrapper1 = new QueryWrapper();
-        queryWrapper.in("origin_id", list1);
-        List<Origin> originList = originService.list(queryWrapper1);
-        for (CrmBusinessResult item : page.getRecords()) {
-            for (Customer customer : customerList) {
-                if (item.getCustomerId().equals(customer.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    item.setCustomer(customerResult);
-                    break;
-                }
-            }
-            for (Origin origin : originList) {
-                if (origin.getOriginId().equals(item.getOriginId())) {
-                    OriginResult originResult = new OriginResult();
-                    ToolUtil.copyProperties(origin, originResult);
-                    item.setOrigin(originResult);
-                    break;
-                }
-            }
-            for (CrmBusinessSales crmBusinessSales : salesList) {
-                if (crmBusinessSales.getSalesId().equals(item.getSalesId())) {
-                    CrmBusinessSalesResult crmBusinessSalesResult = new CrmBusinessSalesResult();
-                    ToolUtil.copyProperties(crmBusinessSales, crmBusinessSalesResult);
-                    item.setSales(crmBusinessSalesResult);
-                    break;
-                }
-
-            }
-            //          for (User user : userList) {
-            //                 User user1 = new User();
-            //                  ToolUtil.copyProperties(user1, SysUserResults);
-            //                 item.setUser(user1);
-            //                break;
-            for (CrmBusinessTrack track : tracks) {
-                if (track.getTrackId().equals(item.getTrackId())) {
-                    CrmBusinessTrackResult crmBusinessTrackResult = new CrmBusinessTrackResult();
-                    ToolUtil.copyProperties(track, crmBusinessTrackResult);
-                    item.setTrack(crmBusinessTrackResult);
-                    break;
-                }
-
-            }
-            for (CrmBusinessSalesProcess crmBusinessSalesProcess : process) {
-                if (item.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
-                    CrmBusinessSalesProcessResult crmBusinessSalesProcessResult = new CrmBusinessSalesProcessResult();
-                    ToolUtil.copyProperties(crmBusinessSalesProcess, crmBusinessSalesProcessResult);
-                    item.setProcess(crmBusinessSalesProcessResult);
-                    break;
-                }
-            }
-            //        }
-        }
-
-
-        return page.getRecords().get(0);
+        return this.format(page.getRecords());
     }
 
     @Override
@@ -174,106 +103,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long> list = new ArrayList<>();
-        List<Long> list1 = new ArrayList<>();
-        List<Long> saleslist = new ArrayList<>();
-        List<Long> userlist = new ArrayList<>();
-        List<Long> tracklist = new ArrayList<>();
-        List<Long> processlist = new ArrayList<>();
-
-        for (CrmBusinessResult item : page.getRecords()) {
-            list.add(item.getCustomerId());
-            list1.add(item.getOriginId());
-            saleslist.add(item.getSalesId());
-            userlist.add(item.getPerson());
-            tracklist.add(item.getTrackId());
-            processlist.add(item.getProcessId());
-        }
-                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id",userlist);
-        List<User> users = userService.list(userQueryWrapper);
-
-        QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
-        processQueryWrapper.in("sales_process_id", processlist);
-        List<CrmBusinessSalesProcess> process = crmBusinessSalesProcessService.list(processQueryWrapper);
-
-
-        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
-        trackQueryWrapper.in("track_id", tracklist);
-        List<CrmBusinessTrack> tracks = crmBusinessTrackService.list(trackQueryWrapper);
-
-
-
-        QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
-        crmBusinessSalesQueryWrapper.in("sales_id", saleslist);
-
-        //  List<User> userList = userService.list(userQueryWrapper);
-        List<CrmBusinessSales> salesList = crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
-        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("customer_id", list);
-        List<Customer> customerList = customerService.list(queryWrapper);
-        QueryWrapper queryWrapper1 = new QueryWrapper();
-        queryWrapper.in("origin_id", list1);
-        List<Origin> originList = originService.list(queryWrapper1);
-        for (CrmBusinessResult item : page.getRecords()) {
-            for (Customer customer : customerList) {
-                if (item.getCustomerId().equals(customer.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    item.setCustomer(customerResult);
-                    break;
-                }
-            }
-            for (Origin origin : originList) {
-                if (origin.getOriginId().equals(item.getOriginId())) {
-                    OriginResult originResult = new OriginResult();
-                    ToolUtil.copyProperties(origin, originResult);
-                    item.setOrigin(originResult);
-                    break;
-                }
-            }
-            for (CrmBusinessSales crmBusinessSales : salesList) {
-                if (crmBusinessSales.getSalesId().equals(item.getSalesId())) {
-                    CrmBusinessSalesResult crmBusinessSalesResult = new CrmBusinessSalesResult();
-                    ToolUtil.copyProperties(crmBusinessSales, crmBusinessSalesResult);
-                    item.setSales(crmBusinessSalesResult);
-                    break;
-                }
-
-            }
-            //          for (User user : userList) {
-            //                 User user1 = new User();
-            //                  ToolUtil.copyProperties(user1, SysUserResults);
-            //                 item.setUser(user1);
-            //                break;
-            for (CrmBusinessTrack track : tracks) {
-                if (track.getTrackId().equals(item.getTrackId())) {
-                    CrmBusinessTrackResult crmBusinessTrackResult = new CrmBusinessTrackResult();
-                    ToolUtil.copyProperties(track, crmBusinessTrackResult);
-                    item.setTrack(crmBusinessTrackResult);
-                    break;
-                }
-
-            }
-            for (CrmBusinessSalesProcess crmBusinessSalesProcess : process) {
-                if (item.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
-                    CrmBusinessSalesProcessResult crmBusinessSalesProcessResult = new CrmBusinessSalesProcessResult();
-                    ToolUtil.copyProperties(crmBusinessSalesProcess, crmBusinessSalesProcessResult);
-                    item.setProcess(crmBusinessSalesProcessResult);
-                    break;
-                }
-            }
-            for (User user : users) {
-                if(item.getPerson().equals(user.getUserId())){
-                  UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    item.setUser(userResult);
-                    break;
-                }
-            }
-            //        }
-        }
-
+        this.format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
@@ -294,6 +124,118 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness entity = new CrmBusiness();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    private CrmBusinessResult format(List<CrmBusinessResult> data) {
+
+        List<Long> cids = new ArrayList<>();
+        List<Long> OriginIds = new ArrayList<>();
+        List<Long> salesIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> trackList = new ArrayList<>();
+        List<Long> processIds = new ArrayList<>();
+
+        for (CrmBusinessResult item : data) {
+            cids.add(item.getCustomerId());
+            OriginIds.add(item.getOriginId());
+            salesIds.add(item.getSalesId());
+            userIds.add(item.getPerson());
+            trackList.add(item.getTrackId());
+            processIds.add(item.getProcessId());
+        }
+        /**
+         * 获取负责人
+         */
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", userIds);
+        List<User> userList = userService.list(userQueryWrapper);
+
+
+        /**
+         *货期商机详情id
+         */
+        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
+        trackQueryWrapper.in("track_id", trackList);
+        List<CrmBusinessTrack> tracks = crmBusinessTrackService.list(trackQueryWrapper);
+
+        /**
+         *获取流程id
+         */
+        QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
+        crmBusinessSalesQueryWrapper.in("sales_id", salesIds);
+        List<CrmBusinessSales> salesList = crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
+        /**
+         *获取客户id
+         */
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("customer_id", cids);
+        List<Customer> customerList = customerService.list(queryWrapper);
+        /**
+         * 获取来源id
+         * */
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper.in("origin_id", OriginIds);
+        List<Origin> originList = originService.list(queryWrapper1);
+
+        QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
+        processQueryWrapper.in("sales_process_id", processIds);
+        List<CrmBusinessSalesProcess> processList = crmBusinessSalesProcessService.list(processQueryWrapper);
+        for (CrmBusinessResult item : data) {
+            for (Customer customer : customerList) {
+                if (item.getCustomerId().equals(customer.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    item.setCustomer(customerResult);
+                    break;
+                }
+            }
+            for (Origin origin : originList) {
+                if (origin.getOriginId().equals(item.getOriginId())) {
+                    OriginResult originResult = new OriginResult();
+                    ToolUtil.copyProperties(origin, originResult);
+                    item.setOrigin(originResult);
+                    break;
+                }
+            }
+            for (CrmBusinessSales crmBusinessSales : salesList) {
+                if (crmBusinessSales.getSalesId().equals(item.getSalesId())) {
+                    CrmBusinessSalesResult crmBusinessSalesResult = new CrmBusinessSalesResult();
+                    ToolUtil.copyProperties(crmBusinessSales, crmBusinessSalesResult);
+                    item.setSales(crmBusinessSalesResult);
+                    break;
+                }
+
+            }
+
+            for (CrmBusinessTrack track : tracks) {
+                if (track.getTrackId().equals(item.getTrackId())) {
+                    CrmBusinessTrackResult crmBusinessTrackResult = new CrmBusinessTrackResult();
+                    ToolUtil.copyProperties(track, crmBusinessTrackResult);
+                    item.setTrack(crmBusinessTrackResult);
+                    break;
+                }
+
+            }
+
+            for (User user1 : userList) {
+                if (user1.getUserId().equals(item.getPerson())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user1, userResult);
+                    item.setUser(userResult);
+                    break;
+                }
+            }
+            for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
+                if (crmBusinessSalesProcess.getSalesProcessId().equals(item.getProcessId())) {
+                    CrmBusinessSalesProcessResult crmBusinessSalesProcessResult = new CrmBusinessSalesProcessResult();
+                    ToolUtil.copyProperties(crmBusinessSalesProcess, crmBusinessSalesProcessResult);
+                    item.setProcess(crmBusinessSalesProcessResult);
+                    break;
+                }
+            }
+
+        }
+        return data.get(0);
     }
 
 }
