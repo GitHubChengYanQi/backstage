@@ -1,13 +1,11 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.sys.modular.system.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-
 /**
  * <p>
  * 管理员表
@@ -18,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SysUserParam implements Serializable, BaseValidatingParam {
+public class UserResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -130,13 +128,6 @@ public class SysUserParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Integer version;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

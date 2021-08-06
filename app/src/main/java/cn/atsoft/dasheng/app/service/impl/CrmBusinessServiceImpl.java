@@ -9,10 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.sys.core.constant.dictmap.UserDict;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserPosResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,7 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import cn.atsoft.dasheng.app.model.result.SysUserResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,7 +40,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private CrmBusinessSalesService crmBusinessSalesService;
     @Autowired
-    private SysUserService sysUserService;
+    private UserService userService;
     @Autowired
     private CrmBusinessTrackService crmBusinessTrackService;
     @Autowired
@@ -192,9 +189,9 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             tracklist.add(item.getTrackId());
             processlist.add(item.getProcessId());
         }
-                QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id",userlist);
-        List<SysUser> users = sysUserService.list(userQueryWrapper);
+        List<User> users = userService.list(userQueryWrapper);
 
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processlist);
@@ -266,11 +263,11 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                     break;
                 }
             }
-            for (SysUser user : users) {
+            for (User user : users) {
                 if(item.getPerson().equals(user.getUserId())){
-                  SysUserResult sysUserResult = new SysUserResult();
-                    ToolUtil.copyProperties(user,sysUserResult);
-                    item.setUser(sysUserResult);
+                  UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    item.setUser(userResult);
                     break;
                 }
             }
