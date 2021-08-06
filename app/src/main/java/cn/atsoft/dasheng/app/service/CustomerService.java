@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  * 客户管理表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 public interface CustomerService extends IService<Customer> {
@@ -21,7 +22,7 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     Long add(CustomerParam param);
@@ -31,7 +32,7 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     void delete(CustomerParam param);
@@ -39,7 +40,7 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     void update(CustomerParam param);
@@ -47,7 +48,7 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     CustomerResult findBySpec(CustomerParam param);
@@ -55,7 +56,7 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     List<CustomerResult> findListBySpec(CustomerParam param);
@@ -63,9 +64,12 @@ public interface CustomerService extends IService<Customer> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
-     PageInfo<CustomerResult> findPageBySpec(CustomerParam param);
+    PageInfo<CustomerResult> findPageBySpec(CustomerParam param);
+
+    PageInfo<CustomerResult> findPageBySpec(List<CustomerParam> paramList);
+
 
 }

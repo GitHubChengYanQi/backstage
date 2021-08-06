@@ -20,7 +20,7 @@ public class CrmCustomerLevelResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private  Long rank;
     /**
      * 主键
      */
