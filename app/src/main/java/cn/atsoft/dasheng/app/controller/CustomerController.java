@@ -42,12 +42,11 @@ public class CustomerController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Long add = this.customerService.add(customerParam);
-        System.err.println(customerParam+"---------------------------------------------------------------");
+        System.err.println(customerParam + "---------------------------------------------------------------");
         return ResponseData.success(add);
 
 
     }
-
 
 
     /**
@@ -121,9 +120,8 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/Batchdelete", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CustomerResult>Batchdelete(@RequestBody(required = false)   List<Long> id) {
-
-
+    public void Batchdelete(List<CustomerParam> paramList) {
+        customerService.findPageBySpec(paramList);
     }
 }
 

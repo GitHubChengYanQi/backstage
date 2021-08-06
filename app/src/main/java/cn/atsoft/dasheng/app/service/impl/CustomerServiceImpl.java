@@ -114,8 +114,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public PageInfo<CustomerResult> findPageBySpec(List<CustomerParam> paramList) {
-        return null;
+    public void findPageBySpec(List<CustomerParam> paramList) {
+        Customer customer = new Customer();
+        for (CustomerParam customerParam : paramList) {
+           if(customerParam.getCustomerId().equals(customer.getCustomerId())){
+               customerParam.setDisplay(1);
+                ToolUtil.copyProperties(customerParam,customer);
+
+            }
+        }
+
     }
 
 }

@@ -69,7 +69,7 @@ public interface CustomerService extends IService<Customer> {
      */
     PageInfo<CustomerResult> findPageBySpec(CustomerParam param);
 
-    PageInfo<CustomerResult> findPageBySpec(List<CustomerParam> paramList);
+    void findPageBySpec(List<CustomerParam> paramList);
 
 
 }
