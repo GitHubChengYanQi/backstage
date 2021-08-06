@@ -6,7 +6,8 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Contract">
         <id column="contract_id" property="contractId"/>
         <result column="name" property="name"/>
-        <result column="customer_id" property="customerId"/>
+        <result column="party_a" property="partyB"/>
+        <result column="party_b" property="partyB"/>
         <result column="user_id" property="userId"/>
         <result column="note" property="note"/>
         <result column="time" property="time"/>
@@ -20,8 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        customer_id
-        AS customerId , contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+   party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -70,8 +70,11 @@
         <if test="paramCondition.time != null and paramCondition.time != ''">
             and time like CONCAT('%',#{paramCondition.time},'%')
         </if>
-        <if test="paramCondition.customerId != null and paramCondition.customerId != ''">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        <if test="paramCondition.partyA != null">
+            and party_a = #{paramCondition.partyA}
+        </if>
+        <if test="paramCondition.partyB != null">
+            and party_b = #{paramCondition.partyB}
         </if>
     </select>
 

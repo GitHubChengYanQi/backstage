@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,26 +24,35 @@ import java.util.Map;
  * 客户管理表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
+    private CustomerResult customerResult;
 
     @Override
-    public Long add(CustomerParam param){
+    public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
         return entity.getCustomerId();
     }
 
     @Override
-    public void delete(CustomerParam param){
-        this.removeById(getKey(param));
+    public void delete(CustomerParam param) {
+        Customer oldEntity = getOldEntity(param);
+        Customer newEntity = getEntity(param);
+        boolean equals = oldEntity.getCustomerId().equals(newEntity.getCustomerId());
+        if (equals) {
+            newEntity.setDisplay(1);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }
+//        this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CustomerParam param){
+    public void update(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -50,7 +60,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public CustomerResult findBySpec(CustomerParam param){
+    public CustomerResult findBySpec(CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
         PageInfo<CustomerResult> pageInfo = PageFactory.createPageInfo(page);
@@ -58,18 +68,27 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public List<CustomerResult> findListBySpec(CustomerParam param){
+    public List<CustomerResult> findListBySpec(CustomerParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CustomerResult> findPageBySpec(CustomerParam param){
+    public PageInfo<CustomerResult> findPageBySpec(CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
+        for (CustomerResult record : page.getRecords()) {
+            Integer classification = record.getClassification();
+            if (classification == 1) {
+                record.setClassificationName("代理商");
+            } else {
+                record.setClassificationName("终端客户");
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CustomerParam param){
+
+    private Serializable getKey(CustomerParam param) {
         return param.getCustomerId();
     }
 
@@ -86,11 +105,25 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public Long addCustomer(CustomerParam param){
+    public Long addCustomer(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
-        return  entity.getCustomerId();
+        return entity.getCustomerId();
+    }
+
+    @Override
+    public void findPageBySpec(List<CustomerParam> paramList) {
+        Customer customer = new Customer();
+        for (CustomerParam customerParam : paramList) {
+           if(customerParam.getCustomerId().equals(customer.getCustomerId())){
+               customerParam.setDisplay(1);
+                ToolUtil.copyProperties(customerParam,customer);
+
+            }
+        }
+
     }
 
 }

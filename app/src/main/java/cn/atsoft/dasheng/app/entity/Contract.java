@@ -33,19 +33,30 @@ public class Contract implements Serializable {
     @TableField("name")
     private String name;
 
-    public Long getCustomerId() {
-        return customerId;
+
+
+
+    @TableField("party_a")
+    private Long partyA;
+
+    public Long getPartyA() {
+        return partyA;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setPartyA(Long partyA) {
+        this.partyA = partyA;
     }
 
-    /**
-     * 客户id
-     */
-    @TableField("customer_id")
-    private Long customerId;
+    public Long getPartyB() {
+        return partyB;
+    }
+
+    public void setPartyB(Long partyB) {
+        this.partyB = partyB;
+    }
+
+    @TableField("party_b")
+    private Long partyB;
 
     /**
      * 负责人id

@@ -26,7 +26,7 @@ public class CrmCustomerLevelParam implements Serializable, BaseValidatingParam 
     /**
      * 主键
      */
-
+    private  Long rank;
 
     /**
      * 客户级别id

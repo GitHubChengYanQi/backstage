@@ -42,7 +42,7 @@ public class ContractController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
         if(customerId!=null){
-            contractParam.setCustomerId(customerId);
+            contractParam.setPartyA(customerId);
         }
         Long add = this.contractService.add(contractParam);
         return ResponseData.success(add);
@@ -110,7 +110,7 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/listCustomer", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContractResult> listCustomer(@RequestBody(required = false) ContractParam contractParam) {
-        customerId=contractParam.getCustomerId();
+        customerId=contractParam.getPartyA();
         if(ToolUtil.isEmpty(contractParam)){
             contractParam = new ContractParam();
         }

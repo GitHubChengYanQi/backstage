@@ -48,7 +48,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
 
-    private CrmBusinessResult crmBusinessResult;
+
 
     @Override
     public Long add(CrmBusinessParam param) {
@@ -61,6 +61,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     public void delete(CrmBusinessParam param) {
         this.removeById(getKey(param));
+
     }
 
     @Override

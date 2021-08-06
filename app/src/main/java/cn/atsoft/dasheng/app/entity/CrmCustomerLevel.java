@@ -26,7 +26,8 @@ public class CrmCustomerLevel implements Serializable {
      */
       @TableId(value = "customer_level_id", type = IdType.ID_WORKER)
       private Long customerLevelId;
-
+      @TableField("rank")
+     private  Long rank;
     /**
      * 客户级别id
      */
@@ -68,7 +69,13 @@ public class CrmCustomerLevel implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Long getRank() {
+        return rank;
+    }
 
+    public void setRank(Long rank) {
+        this.rank = rank;
+    }
 
     public Long getCustomerLevelId() {
         return customerLevelId;
