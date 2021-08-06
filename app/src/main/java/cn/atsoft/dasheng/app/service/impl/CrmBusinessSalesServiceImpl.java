@@ -113,4 +113,28 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
         return entity;
     }
 
+    public void format(List<CrmBusinessSalesResult> data) {
+        List<Long> salesIds = new ArrayList<>();
+        for (CrmBusinessSalesResult item : data) {
+            salesIds.add(item.getSalesId());
+        }
+        QueryWrapper<CrmBusinessSalesProcess> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("sales_id", salesIds);
+        queryWrapper.orderByAsc("sort");
+        List<CrmBusinessSalesProcess> res = crmBusinessSalesProcessService.list(queryWrapper);
+
+        for (CrmBusinessSalesResult item : data) {
+            List<CrmBusinessSalesProcessResult> results = new ArrayList<>();
+            for (CrmBusinessSalesProcess it : res) {
+                if (item.getSalesId().equals(it.getSalesId())) {
+                    CrmBusinessSalesProcessResult tmp = new CrmBusinessSalesProcessResult();
+                    //拷贝对象
+                    ToolUtil.copyProperties(it, tmp);
+                    results.add(tmp);
+                }
+            }
+            item.setProcess(results);
+        }
+
+    }
 }

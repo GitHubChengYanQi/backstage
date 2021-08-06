@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 销售流程
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @TableName("daoxin_crm_business_sales_process")
@@ -24,8 +27,10 @@ public class CrmBusinessSalesProcess implements Serializable {
     /**
      * 赢率id
      */
-      @TableId(value = "sales_process_id", type = IdType.ID_WORKER)
+    @TableId(value = "sales_process_id", type = IdType.ID_WORKER)
     private Long salesProcessId;
+    @TableField("note")
+    private String note;
 
     /**
      * 流程名称
@@ -54,25 +59,25 @@ public class CrmBusinessSalesProcess implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -81,6 +86,13 @@ public class CrmBusinessSalesProcess implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public Long getSalesProcessId() {
         return salesProcessId;
@@ -165,16 +177,16 @@ public class CrmBusinessSalesProcess implements Serializable {
     @Override
     public String toString() {
         return "CrmBusinessSalesProcess{" +
-        "salesProcessId=" + salesProcessId +
-        ", name=" + name +
-        ", percentage=" + percentage +
-        ", salesId=" + salesId +
-        ", sort=" + sort +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "salesProcessId=" + salesProcessId +
+                ", name=" + name +
+                ", percentage=" + percentage +
+                ", salesId=" + salesId +
+                ", sort=" + sort +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.sys.modular.system.model.result;
 
 import lombok.Data;
 import java.util.Date;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SysUserResult implements Serializable {
+public class UserResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

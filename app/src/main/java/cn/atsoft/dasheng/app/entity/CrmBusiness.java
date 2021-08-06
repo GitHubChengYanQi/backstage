@@ -135,6 +135,16 @@ public class CrmBusiness implements Serializable {
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
+    @TableField("note")
+    private String note;
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     /**
      * 状态
