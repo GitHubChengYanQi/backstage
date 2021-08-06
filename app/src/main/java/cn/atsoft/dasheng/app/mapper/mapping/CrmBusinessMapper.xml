@@ -54,7 +54,7 @@
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam"  resultMap="User">
+            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where 1 = 1
