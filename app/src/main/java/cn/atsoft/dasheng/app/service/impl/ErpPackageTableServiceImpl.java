@@ -75,34 +75,34 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
         IPage<ErpPackageTableResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> wp=new ArrayList<>();
         List<Long> wp1=new ArrayList<>();
-      for (ErpPackageTableResult record : page.getRecords()) {
-            wp.add(record.getItemId());
-            wp1.add(record.getBrandId());
-      }
-      QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-      QueryWrapper<Brand> queryWrapper1=new QueryWrapper<>();
-      queryWrapper.in("item_id",wp);
-      queryWrapper1.in("brand_id",wp1);
-      List<Items> list=itemsService.list(queryWrapper);
-      List<Brand> list1=brandService.list(queryWrapper1);
-      for (ErpPackageTableResult record : page.getRecords()) {
-        for (Items items : list) {
-            if(items.getItemId().equals(record.getItemId())){
-              ItemsResult itemsResult =new ItemsResult();
-              ToolUtil.copyProperties(items,itemsResult);
-              record.setItemsResult(itemsResult);
-              break;
+        if (ToolUtil.isNotEmpty(page.getRecords())){
+            for (ErpPackageTableResult record : page.getRecords()) {
+                wp.add(record.getItemId());
+                wp1.add(record.getBrandId());
+            }
+            QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<Brand> queryWrapper1=new QueryWrapper<>();
+            queryWrapper.in("item_id",wp);
+            queryWrapper1.in("brand_id",wp1);
+            List<Items> list=itemsService.list(queryWrapper);
+            List<Brand> list1=brandService.list(queryWrapper1);
+            for (ErpPackageTableResult record : page.getRecords()) {
+                for (Items items : list) {
+                    if(items.getItemId().equals(record.getItemId())){
+                        ItemsResult itemsResult =new ItemsResult();
+                        ToolUtil.copyProperties(items,itemsResult);
+                        record.setItemsResult(itemsResult);
+                        break;
+                    }
+                }
+                for (Brand brand : list1) {
+                    BrandResult brandResult=new BrandResult();
+                    ToolUtil.copyProperties(brand,brandResult);
+                    record.setBrandResult(brandResult);
+                    break;
+                }
             }
         }
-        for (Brand brand : list1) {
-            BrandResult brandResult=new BrandResult();
-            ToolUtil.copyProperties(brand,brandResult);
-            record.setBrandResult(brandResult);
-            break;
-        }
-
-
-      }
 
         return PageFactory.createPageInfo(page);
     }
