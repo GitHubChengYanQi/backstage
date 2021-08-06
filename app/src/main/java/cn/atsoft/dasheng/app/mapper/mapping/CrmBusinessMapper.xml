@@ -61,10 +61,10 @@
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
-        <if test="paramCondition.originId != null">
+        <if test="paramCondition.originId != null and paramCondition.originId != ''" >
             and origin_id = #{paramCondition.originId}
         </if>
-        <if test="paramCondition.businessId != null">
+        <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
             and business_id = #{paramCondition.businessId}
         </if>
     </select>
