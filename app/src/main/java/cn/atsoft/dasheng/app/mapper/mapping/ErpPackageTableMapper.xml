@@ -58,7 +58,7 @@
       and item_id like CONCAT('%',#{paramCondition.itemId},'%')
     </if>
     <if test="paramCondition.packageId!= null">
-      and package_id like CONCAT('%',#{packageId},'%')
+      and package_id like CONCAT('%',#{paramCondition.packageId},'%')
     </if>
   </select>
 
