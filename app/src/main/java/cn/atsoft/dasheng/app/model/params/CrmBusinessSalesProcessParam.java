@@ -22,7 +22,6 @@ import java.util.List;
 public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  List<CrmBusinessSales> getsales;
     /**
      * 赢率id
      */
