@@ -30,7 +30,7 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.SysUserResult" parameterType="cn.atsoft.dasheng.app.model.params.SysUserParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult" parameterType="cn.atsoft.dasheng.app.model.params.SysUserParam">
         select
         <include refid="Base_Column_List"/>
         from sys_user where 1 = 1
@@ -42,7 +42,7 @@
         from sys_user where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.SysUserResult" parameterType="cn.atsoft.dasheng.app.model.params.SysUserParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.sys.modular.system.model.result.UserResult" parameterType="cn.atsoft.dasheng.app.model.params.SysUserParam">
         select
         <include refid="Base_Column_List"/>
         from sys_user where 1 = 1
