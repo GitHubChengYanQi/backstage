@@ -26,6 +26,7 @@ public class CrmBusinessDetailedResult implements Serializable {
       private ItemsResult itemsResult;
       private CrmBusinessSalesProcessResult crmBusinessSalesProcessResult;
 
+
     /**
      * id
      */

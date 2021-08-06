@@ -24,7 +24,7 @@ public interface ErpPackageService extends IService<ErpPackage> {
      * @author qr
      * @Date 2021-08-04
      */
-    void add(ErpPackageParam param);
+    Long add(ErpPackageParam param);
 
     /**
      * 删除
