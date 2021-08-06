@@ -23,9 +23,8 @@ import java.util.List;
 public class ErpPackageTableResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<Items> items ;
-    private List<Brand> brand;
-
+      private ItemsResult itemsResult;
+      private BrandResult brandResult;
     /**
      * id
      */
@@ -91,6 +90,12 @@ public class ErpPackageTableResult implements Serializable {
    */
   @ApiModelProperty("品牌")
   private Long brandId;
+
+  /**
+   * 数量
+   */
+  @ApiModelProperty("数量")
+  private Long quantity;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

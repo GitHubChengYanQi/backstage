@@ -48,7 +48,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam" resultMap="sd">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam" >
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_detailed where 1 = 1
@@ -61,13 +61,16 @@
     </select>
 
     <resultMap id="sd" type="cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult">
-        <collection property="items" ofType="cn.atsoft.dasheng.app.model.params.ItemsParam" javaType="ArrayList" select="wp" column="itemId"/>
+      <association property="itemsResult" select="wp" column="itemId" javaType="cn.atsoft.dasheng.app.entity.Items"/>
+      <association property="CrmBusinessSalesProcessResult" select="queryProcess" column="salesProcessId" javaType="cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess"/>
     </resultMap>
 
     <select id="wp" resultType="cn.atsoft.dasheng.app.model.result.ItemsResult">
-        select * from daoxin_erp_items where item_id=#{itemId}
+        select name from daoxin_erp_items where item_id=#{itemId}
     </select>
-
+<select id="queryProcess" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
+    select * from daoxin_crm_business_sales_process where sales_process_id =#{salesProcessId}
+</select>
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam">
         select
         <include refid="Base_Column_List"/>

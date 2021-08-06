@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
+import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -22,9 +24,6 @@ import java.util.List;
 public class CrmBusinessDetailedParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-//    private List<Items> items;
-
     /**
      * id
      */

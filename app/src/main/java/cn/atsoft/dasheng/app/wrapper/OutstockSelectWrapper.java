@@ -16,7 +16,7 @@ public class OutstockSelectWrapper extends BaseControllerWrapper {
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
       String label = Convert.toStr(map.get("price"));
-      String value = Convert.toStr(map.get("outstock_id"));
+      String value = Convert.toStr(map.get("price"));
       map.clear();
       map.put("label",label);
       map.put("value",value);

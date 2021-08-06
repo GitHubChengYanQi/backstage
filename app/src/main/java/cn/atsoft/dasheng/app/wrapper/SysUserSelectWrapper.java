@@ -7,18 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AdressSelectWrapper extends BaseControllerWrapper {
+public class SysUserSelectWrapper extends BaseControllerWrapper {
 
-    public AdressSelectWrapper(List<Map<String, Object>> multi) {
+    public SysUserSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-      String label = Convert.toStr(map.get("location"));
-      String value = Convert.toStr(map.get("location"));
-      map.clear();
-      map.put("label",label);
-      map.put("value",value);
     }
 }

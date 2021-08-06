@@ -29,10 +29,12 @@ import java.util.List;
 public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPackage> implements ErpPackageService {
 
     @Override
-    public void add(ErpPackageParam param){
+    public Long add(ErpPackageParam param){
         ErpPackage entity = getEntity(param);
         this.save(entity);
+        return entity.getPackageId();
     }
+
 
     @Override
     public void delete(ErpPackageParam param){

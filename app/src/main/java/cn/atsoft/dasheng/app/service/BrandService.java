@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
