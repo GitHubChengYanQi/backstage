@@ -73,7 +73,7 @@
         <if test="paramCondition.partyA != null">
             and party_a = #{paramCondition.partyA}
         </if>
-        <if test="paramCondition.partyA != null">
+        <if test="paramCondition.partyB != null">
             and party_b = #{paramCondition.partyB}
         </if>
     </select>
