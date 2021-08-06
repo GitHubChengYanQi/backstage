@@ -28,7 +28,7 @@ public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatin
      */
     @ApiModelProperty("赢率id")
     private Long salesProcessId;
-
+    private String note;
     /**
      * 流程名称
      */

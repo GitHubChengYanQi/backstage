@@ -136,6 +136,8 @@ public class CrmBusiness implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+
+
     /**
      * 状态
      */

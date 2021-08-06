@@ -59,6 +59,9 @@ public class CrmBusinessController extends BaseController {
     public ResponseData update(@RequestBody CrmBusinessParam crmBusinessParam) {
 
         this.crmBusinessService.update(crmBusinessParam);
+        if(crmBusinessParam.getBusinessId()==null){
+            return ResponseData.error("请选择你要的商机");
+        }
         return ResponseData.success();
     }
 
