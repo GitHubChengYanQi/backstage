@@ -15,11 +15,11 @@
     <result column="sale_price" property="salePrice"/>
     <result column="total_price" property="totalPrice"/>
     <result column="brand_id" property="brandId"/>
+    <result column="quantity" property="quantity"/>
   </resultMap>
-
   <!-- 通用查询结果列 -->
   <sql id="Base_Column_List">
-    brand_id  AS "brandId" ,total_price AS "totalPrice", sale_price AS "salePrice",id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    quantity AS "quantity" ,brand_id  AS "brandId" ,total_price AS "totalPrice", sale_price AS "salePrice",id AS "id", package_id AS "packageId", item_id AS "itemId",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
   </sql>
   <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
           parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
@@ -64,7 +64,7 @@
   </select>
 
   <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageTableResult"
-          parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam" resultMap="rsp" >
+          parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
     select
     <include refid="Base_Column_List"/>
     from daoxin_erp_package_table where 1 = 1

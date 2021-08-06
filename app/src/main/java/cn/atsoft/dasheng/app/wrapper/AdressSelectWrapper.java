@@ -16,7 +16,7 @@ public class AdressSelectWrapper extends BaseControllerWrapper {
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
       String label = Convert.toStr(map.get("location"));
-      String value = Convert.toStr(map.get("adress_id"));
+      String value = Convert.toStr(map.get("location"));
       map.clear();
       map.put("label",label);
       map.put("value",value);

@@ -90,6 +90,11 @@ public class ErpPackageTableParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("品牌")
     private Long brandId;
+      /**
+       * 数量
+       */
+      @ApiModelProperty("数量")
+      private Long quantity;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

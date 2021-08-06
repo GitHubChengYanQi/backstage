@@ -15,7 +15,7 @@ public class ContactsSelectWrapper1 extends BaseControllerWrapper {
   @Override
   protected void wrapTheMap(Map<String, Object> map) {
     String label = Convert.toStr(map.get("phone"));
-    String value = Convert.toStr(map.get("contacts_id"));
+    String value = Convert.toStr(map.get("phone"));
     map.clear();
     map.put("label",label);
     map.put("value",value);
