@@ -31,7 +31,7 @@ public class CrmBusinessResult implements Serializable {
 
     private CustomerResult customer;
     private OriginResult origin;
-    private  CrmBusinessSalesResult sales;
+    private CrmBusinessSalesResult sales;
     private User user;
     private CrmBusinessTrackResult track;
     private CrmBusinessSalesProcessResult process;

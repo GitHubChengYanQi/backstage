@@ -40,20 +40,16 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam" resultMap="getSales">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam" >
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_sales_process where 1 = 1
                 <if test="paramCondition.salesId != null">
-                            and sales_id = #{paramCondition.salesId}
+                    and sales_id = #{paramCondition.salesId}
                 </if>
     </select>
-<resultMap id="getSales" type="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult">
-    <collection property="getsales" ofType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam" column="salesId" javaType="ArrayList" select="querySales"/>
-</resultMap>
-    <select id="querySales" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult">
-        select sales_id,name from daoxin_crm_business_sales  where sales_id =#{salesId}
-    </select>
+
+
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam">
         select
         <include refid="Base_Column_List"/>
