@@ -13,11 +13,12 @@
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
+        <result column="note" property="note" />
         <result column="display" property="display" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">note AS "note",
         sales_process_id AS "salesProcessId", name AS "name", percentage AS "percentage", sales_id AS "salesId", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
