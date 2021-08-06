@@ -44,6 +44,8 @@ public interface CustomerMapper extends BaseMapper<Customer> {
      */
     Page<CustomerResult> customPageList(@Param("page") Page page, @Param("paramCondition") CustomerParam paramCondition);
 
+
+
     /**
      * 获取分页map列表
      *

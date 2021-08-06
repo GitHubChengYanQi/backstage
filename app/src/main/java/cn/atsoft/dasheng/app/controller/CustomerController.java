@@ -42,12 +42,11 @@ public class CustomerController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Long add = this.customerService.add(customerParam);
-        System.err.println(customerParam+"---------------------------------------------------------------");
+        System.err.println(customerParam + "---------------------------------------------------------------");
         return ResponseData.success(add);
 
 
     }
-
 
 
     /**
@@ -105,11 +104,6 @@ public class CustomerController extends BaseController {
             customerParam = new CustomerParam();
         }
 
-        int size = customerService.findPageBySpec(customerParam).getData().size();
-        for (int i = 0; i < size; i++) {
-            String classificationName = customerService.findPageBySpec(customerParam).getData().get(i).getClassificationName();
-            System.out.println(classificationName);
-        }
         return this.customerService.findPageBySpec(customerParam);
     }
 
@@ -124,6 +118,11 @@ public class CustomerController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/Batchdelete", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public void Batchdelete(List<CustomerParam> paramList) {
+        customerService.findPageBySpec(paramList);
+    }
 }
 
 

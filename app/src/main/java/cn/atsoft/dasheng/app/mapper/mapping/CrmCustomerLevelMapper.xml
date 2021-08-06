@@ -12,10 +12,11 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
-    </resultMap>
+        <result column="rank" property="rank"/>
+     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">rank AS "rank",
         customer_level_id AS "customerLevelId", level AS "level", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
