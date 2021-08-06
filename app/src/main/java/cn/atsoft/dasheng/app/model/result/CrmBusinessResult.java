@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.UserDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -32,7 +33,7 @@ public class CrmBusinessResult implements Serializable {
     private CustomerResult customer;
     private OriginResult origin;
     private CrmBusinessSalesResult sales;
-    private User user;
+    private SysUserResult user;
     private CrmBusinessTrackResult track;
     private CrmBusinessSalesProcessResult process;
     private Long trackId;
