@@ -27,7 +27,8 @@ public class ContractResult implements Serializable {
     @ApiModelProperty("合同id")
     private Long contractId;
 
-    private Long customerId;
+    private Long partyA;
+    private Long partyB;
 
     /**
      * 合同名称
