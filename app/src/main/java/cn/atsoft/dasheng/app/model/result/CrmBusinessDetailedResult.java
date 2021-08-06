@@ -23,6 +23,7 @@ public class CrmBusinessDetailedResult implements Serializable {
 
    private List<Items> items;
 
+
     /**
      * id
      */
