@@ -38,7 +38,7 @@ public class CrmBusinessResult implements Serializable {
     private CrmBusinessSalesProcessResult process;
     private Long trackId;
     private Long processId;
-    private String note;
+
     /**
      * 商机id
      */

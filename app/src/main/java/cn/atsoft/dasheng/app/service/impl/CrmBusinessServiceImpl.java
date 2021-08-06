@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -68,7 +69,12 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness newEntity = getEntity(param);
 
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
-            newEntity.setNote("状态发生改变");
+
+
+            CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+            crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
+            crmBusinessTrackParam.setNote("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+             crmBusinessTrackService.add(crmBusinessTrackParam);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
 
