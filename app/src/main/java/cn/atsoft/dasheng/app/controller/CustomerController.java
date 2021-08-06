@@ -105,6 +105,11 @@ public class CustomerController extends BaseController {
             customerParam = new CustomerParam();
         }
 
+        int size = customerService.findPageBySpec(customerParam).getData().size();
+        for (int i = 0; i < size; i++) {
+            String classificationName = customerService.findPageBySpec(customerParam).getData().get(i).getClassificationName();
+            System.out.println(classificationName);
+        }
         return this.customerService.findPageBySpec(customerParam);
     }
 
