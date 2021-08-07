@@ -27,6 +27,7 @@ public class Origin implements Serializable {
       @TableId(value = "origin_id", type = IdType.ID_WORKER)
     private Long originId;
 
+
     public String getOriginName() {
         return originName;
     }

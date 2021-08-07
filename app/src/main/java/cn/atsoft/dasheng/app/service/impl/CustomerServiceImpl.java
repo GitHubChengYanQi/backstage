@@ -84,8 +84,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public CustomerResult findBySpec(CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
-        PageInfo<CustomerResult> pageInfo = PageFactory.createPageInfo(page);
-        return pageInfo.getData().get(0);
+        this.format(page.getRecords());
+
+        return this.format(page.getRecords());
+
     }
 
     @Override
@@ -97,7 +99,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public PageInfo<CustomerResult> findPageBySpec(CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
-        for (CustomerResult record : page.getRecords()) {
+
+
+        return PageFactory.createPageInfo(page);
+    }
+
+    public CustomerResult format(List<CustomerResult> data){
+        for (CustomerResult record : data) {
             Integer classification = record.getClassification();
             if (classification == 1) {
                 record.setClassificationName("代理商");
@@ -111,17 +119,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> userIds = new ArrayList<>();
         List<Long> industryIds = new ArrayList<>();
 
-        for (CustomerResult record : page.getRecords()) {
+        for (CustomerResult record : data) {
             originIds.add(record.getOriginId());
             levelIds.add(record.getCustomerLevelId());
             userIds.add(record.getUserId());
             industryIds.add(record.getIndustryId());
-        }  /**
+        }
+
+        /**
          * 获取originId
          * */
         QueryWrapper<Origin> originQueryWrapper = new QueryWrapper<>();
         QueryWrapper<Origin> origin_id = originQueryWrapper.in("origin_id", originIds);
         List<Origin> originList = originService.list(origin_id);
+
+
         /**
          * 获取LevelId
          * */
@@ -139,11 +151,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         industryQueryWrapper.in("industry_id",industryIds);
         List<CrmIndustry> industryList = crmIndustryService.list(industryQueryWrapper);
 
-        for (CustomerResult record : page.getRecords()) {
+        for (CustomerResult record : data) {
             for (Origin origin : originList) {
                 if (origin.getOriginId().equals(record.getOriginId())) {
                     OriginResult originResult = new OriginResult();
-                    ToolUtil.copyProperties(record, originResult);
+                    ToolUtil.copyProperties(origin, originResult);
                     record.setOriginResult(originResult);
                     break;
                 }
@@ -173,7 +185,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
-        return PageFactory.createPageInfo(page);
+        return data.get(0);
     }
 
 

@@ -110,7 +110,6 @@ public class CrmBusinessDetailedController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessDetailedResult> list(@RequestBody(required = false) CrmBusinessDetailedParam crmBusinessDetailedParam) {
-        System.err.println(crmBusinessDetailedParam);
         if(ToolUtil.isEmpty(crmBusinessDetailedParam)){
             crmBusinessDetailedParam = new CrmBusinessDetailedParam();
         }

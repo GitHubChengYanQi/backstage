@@ -10,7 +10,7 @@ import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessDetailedMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
-import  cn.atsoft.dasheng.app.service.CrmBusinessDetailedService;
+import cn.atsoft.dasheng.app.service.CrmBusinessDetailedService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,21 +33,22 @@ import java.util.List;
  */
 @Service
 public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetailedMapper, CrmBusinessDetailed> implements CrmBusinessDetailedService {
-  @Autowired
-  private ItemsService itemsService;
+    @Autowired
+    private ItemsService itemsService;
+
     @Override
-    public void add(CrmBusinessDetailedParam param){
+    public void add(CrmBusinessDetailedParam param) {
         CrmBusinessDetailed entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CrmBusinessDetailedParam param){
+    public void delete(CrmBusinessDetailedParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CrmBusinessDetailedParam param){
+    public void update(CrmBusinessDetailedParam param) {
         CrmBusinessDetailed oldEntity = getOldEntity(param);
         CrmBusinessDetailed newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -55,40 +56,40 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     }
 
     @Override
-    public CrmBusinessDetailedResult findBySpec(CrmBusinessDetailedParam param){
+    public CrmBusinessDetailedResult findBySpec(CrmBusinessDetailedParam param) {
         return null;
     }
 
     @Override
-    public List<CrmBusinessDetailedResult> findListBySpec(CrmBusinessDetailedParam param){
+    public List<CrmBusinessDetailedResult> findListBySpec(CrmBusinessDetailedParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param){
+    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param) {
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long>detailIds = new ArrayList<>();
-      for (CrmBusinessDetailedResult record : page.getRecords()) {
+        List<Long> detailIds = new ArrayList<>();
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
             detailIds.add(record.getItemId());
-      }
-      QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-      queryWrapper.in("item_id",detailIds);
-      List<Items> list = itemsService.list(queryWrapper);
-      for (CrmBusinessDetailedResult record : page.getRecords()) {
-        for (Items items : list) {
-          if(items.getItemId().equals(record.getItemId())){
-            ItemsResult itemsResult = new ItemsResult();
-            ToolUtil.copyProperties(items,itemsResult);
-            record.setItemsResult(itemsResult);
-            break;
-          }
         }
-      }
+        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("item_id", detailIds);
+        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
+            for (Items items : list) {
+                if (items.getItemId().equals(record.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(items, itemsResult);
+                    record.setItemsResult(itemsResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CrmBusinessDetailedParam param){
+    private Serializable getKey(CrmBusinessDetailedParam param) {
         return param.getId();
     }
 
