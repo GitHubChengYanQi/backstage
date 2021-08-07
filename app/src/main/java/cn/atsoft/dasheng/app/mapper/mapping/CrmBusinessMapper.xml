@@ -68,20 +68,6 @@
             and business_id = #{paramCondition.businessId}
         </if>
     </select>
-<resultMap id="User" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
-    <association property="user"  javaType="cn.atsoft.dasheng.sys.modular.system.entity.User" column="person" select="queryUser"/>
-</resultMap>
 
-    <select id="queryUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
-        select  * from sys_user where user_id =#{person}
-    </select>
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.salesId != null">
-            and sales_id = #{paramCondition.salesId}
-        </if>
-    </select>
 
 </mapper>

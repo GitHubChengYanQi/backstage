@@ -49,7 +49,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
 
 
-
     @Override
     public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
@@ -148,8 +147,9 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
          * 获取负责人
          */
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+
         userQueryWrapper.in("user_id", userIds);
-        List<User> userList = userService.list(userQueryWrapper);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
 
 
         /**
@@ -157,30 +157,32 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
          */
         QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
         trackQueryWrapper.in("track_id", trackList);
-        List<CrmBusinessTrack> tracks = crmBusinessTrackService.list(trackQueryWrapper);
+        List<CrmBusinessTrack> tracks = trackList.size() == 0 ? new ArrayList<>() : crmBusinessTrackService.list(trackQueryWrapper);
 
         /**
          *获取流程id
          */
         QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
         crmBusinessSalesQueryWrapper.in("sales_id", salesIds);
-        List<CrmBusinessSales> salesList = crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
+        List<CrmBusinessSales> salesList = salesIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
         /**
          *获取客户id
          */
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("customer_id", cids);
-        List<Customer> customerList = customerService.list(queryWrapper);
+        List<Customer> customerList = cids.size() == 0 ? new ArrayList<>() : customerService.list(queryWrapper);
         /**
          * 获取来源id
          * */
         QueryWrapper queryWrapper1 = new QueryWrapper();
         queryWrapper.in("origin_id", OriginIds);
-        List<Origin> originList = originService.list(queryWrapper1);
+        List<Origin> originList = OriginIds.size() == 0 ? new ArrayList<>() : originService.list(queryWrapper1);
 
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
-        List<CrmBusinessSalesProcess> processList = crmBusinessSalesProcessService.list(processQueryWrapper);
+        List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
+
+
         for (CrmBusinessResult item : data) {
             for (Customer customer : customerList) {
                 if (item.getCustomerId().equals(customer.getCustomerId())) {
@@ -236,7 +238,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             }
 
         }
-        return data.get(0);
+        return data.size()==0 ? null : data.get(0);
     }
 
 }
