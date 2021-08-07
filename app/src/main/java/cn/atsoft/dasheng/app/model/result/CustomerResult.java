@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,28 +27,26 @@ import java.util.List;
 public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-     private String classificationName;
 
+    private CrmCustomerLevelResult crmCustomerLevelResult;
+    private OriginResult originResult;
+    private UserResult userResult;
+    private CrmIndustryResult crmIndustryResult;
 
-    private String originId;
-
+    private String classificationName;
+    private Long originId;
     private String note;
-
     private Long userId;
-
     private String emall;
-
     private String url;
-
     private Long industryId;
     private String industryName;
-    private  Integer agent;
+    private Integer agent;
     /**
      * 客户id
      */
-    private String oname;
-    private String lname;
-    private String userName;
+
+
     @ApiModelProperty("客户id")
     private Long customerId;
 
@@ -64,9 +63,9 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
     private Integer status;
-    private  Integer classification;
+    private Integer classification;
 
-    private  Long sort;
+    private Long sort;
 
     /**
      * 成立时间

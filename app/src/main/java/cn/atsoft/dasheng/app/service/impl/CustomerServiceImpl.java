@@ -1,19 +1,30 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
+import cn.atsoft.dasheng.app.entity.CrmIndustry;
+import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
+import cn.atsoft.dasheng.app.service.CrmIndustryService;
+import cn.atsoft.dasheng.app.service.OriginService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -32,6 +43,14 @@ import java.util.Map;
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
     private CustomerResult customerResult;
+    @Autowired
+    private OriginService originService;
+    @Autowired
+    private CrmCustomerLevelService crmCustomerLevelService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CrmIndustryService crmIndustryService;
 
     @Override
     public Long add(CustomerParam param) {
@@ -86,6 +105,74 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 record.setClassificationName("终端客户");
             }
         }
+
+        List<Long> originIds = new ArrayList<>();
+        List<Long> levelIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> industryIds = new ArrayList<>();
+
+        for (CustomerResult record : page.getRecords()) {
+            originIds.add(record.getOriginId());
+            levelIds.add(record.getCustomerLevelId());
+            userIds.add(record.getUserId());
+            industryIds.add(record.getIndustryId());
+        }  /**
+         * 获取originId
+         * */
+        QueryWrapper<Origin> originQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<Origin> origin_id = originQueryWrapper.in("origin_id", originIds);
+        List<Origin> originList = originService.list(origin_id);
+        /**
+         * 获取LevelId
+         * */
+        QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<CrmCustomerLevel> customerLevelId = levelQueryWrapper.in("customer_level_id", levelIds);
+        List<CrmCustomerLevel> levelList = crmCustomerLevelService.list(customerLevelId);
+        /**
+         * 获取userId
+         * */
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", userIds);
+        List<User> userList = userService.list(userQueryWrapper);
+
+        QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
+        industryQueryWrapper.in("industry_id",industryIds);
+        List<CrmIndustry> industryList = crmIndustryService.list(industryQueryWrapper);
+
+        for (CustomerResult record : page.getRecords()) {
+            for (Origin origin : originList) {
+                if (origin.getOriginId().equals(record.getOriginId())) {
+                    OriginResult originResult = new OriginResult();
+                    ToolUtil.copyProperties(record, originResult);
+                    record.setOriginResult(originResult);
+                    break;
+                }
+            }
+            for (CrmCustomerLevel crmCustomerLevel : levelList) {
+                if (crmCustomerLevel.getCustomerLevelId().equals(record.getCustomerLevelId())) {
+                    CrmCustomerLevelResult crmCustomerLevelResult = new CrmCustomerLevelResult();
+                    ToolUtil.copyProperties(crmCustomerLevel, crmCustomerLevelResult);
+                    record.setCrmCustomerLevelResult(crmCustomerLevelResult);
+                    break;
+                }
+            }
+            for (User user : userList) {
+                if (user.getUserId().equals(record.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    record.setUserResult(userResult);
+                    break;
+                }
+            }
+            for (CrmIndustry crmIndustry : industryList) {
+                if(crmIndustry.getIndustryId().equals(record.getIndustryId())){
+                    CrmIndustryResult crmIndustryResult = new CrmIndustryResult();
+                    ToolUtil.copyProperties(crmIndustry,crmIndustryResult);
+                    record.setCrmIndustryResult(crmIndustryResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
@@ -116,12 +203,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public void batchDelete( List<Long> customerId) {
+    public void batchDelete(List<Long> customerId) {
         Customer customer = new Customer();
         customer.setDisplay(0);
         UpdateWrapper<Customer> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("customer_id", customerId);
-        this.update(customer,updateWrapper);
+        this.update(customer, updateWrapper);
     }
 
 }
