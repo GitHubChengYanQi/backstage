@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
+import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
+import cn.atsoft.dasheng.app.service.ErpPackageTableService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackage;
@@ -12,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -25,8 +29,12 @@ import java.util.List;
  * @author qr
  * @since 2021-08-04
  */
+
 @Service
 public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPackage> implements ErpPackageService {
+
+    @Autowired
+    private ErpPackageTableService ErpPackageTable;
 
     @Override
     public Long add(ErpPackageParam param){
@@ -35,9 +43,16 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
         return entity.getPackageId();
     }
 
-
     @Override
     public void delete(ErpPackageParam param){
+
+        ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
+        erpPackageTableParam.setPackageId(param.getPackageId());
+        PageInfo<ErpPackageTableResult> pageBySpec = ErpPackageTable.findPageBySpec(erpPackageTableParam);
+        for (int i =0 ; i < pageBySpec.getData().size(); i++){
+            erpPackageTableParam.setId(pageBySpec.getData().get(i).getId());
+            ErpPackageTable.delete(erpPackageTableParam);
+        }
         this.removeById(getKey(param));
     }
 
