@@ -29,7 +29,9 @@ import java.util.List;
 public class CrmBusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+ 
+    private Long trackId;
+    private Long processId;
 
     /**
      * 商机id
