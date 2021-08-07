@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
@@ -42,7 +43,7 @@ public class CustomerController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Long add = this.customerService.add(customerParam);
-        System.err.println(customerParam + "---------------------------------------------------------------");
+
         return ResponseData.success(add);
 
 
@@ -119,9 +120,9 @@ public class CustomerController extends BaseController {
 
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public ResponseData batchDelete( @RequestParam(value ="CustomerParam" ,required = false) List<Long> paramList) {
-        customerService.batchDelete(paramList);
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody CustomerIdRequest customerIdRequest) {
+        customerService.batchDelete(customerIdRequest.getCustomerId());
         return ResponseData.success();
     }
 }

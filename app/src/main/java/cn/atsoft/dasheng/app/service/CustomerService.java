@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
@@ -71,9 +72,9 @@ public interface CustomerService extends IService<Customer> {
 
     /**
      * 批量删除
-     * @param paramList
+     * @param
      */
-    void batchDelete(List<Long> paramList);
+    void batchDelete( List<Long> customerId);
 
 
 }

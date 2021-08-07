@@ -34,9 +34,8 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> level
-    AS "lname" , origin_name AS "oname" , account AS "userName" , agent AS "agent",sort AS "sort" , classification AS "classification",
-        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,industry_name AS "industryName" ,
+    <sql id="Base_Column_List"> agent AS "agent",sort AS "sort" , classification AS "classification",
+        customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id
         AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -46,7 +45,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 0
+        from daoxin_crm_customer where display = 1
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -61,7 +60,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 0
+        from daoxin_crm_customer where display = 1
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -80,7 +79,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from customer_view where  display = 0
+        from daoxin_crm_customer where  display = 1
         <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -100,24 +99,11 @@
             and customer_level_id =  #{paramCondition.customerLevelId}
         </if>
     </select>
-    <!--        <resultMap id="detail" type="cn.atsoft.dasheng.app.model.result.CustomerResult">-->
-    <!--            <collection property="getlevel" ofType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam" javaType="ArrayList" select="getlevel"  column="customerLevelId"/>-->
-    <!--            <collection property="getorgin" ofType="cn.atsoft.dasheng.app.model.params.OriginParam" javaType="ArrayList" select="getorgin"  column="orginId"/>-->
-    <!--            <collection property="getUser" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList"  select="getUser" column="userId" />-->
-    <!--        </resultMap>-->
-    <!--    <select id="getlevel" resultType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">-->
-    <!--        select  customer_level_id,level from daoxin_crm_customer_level where customer_level_id =#{customerLevelId}-->
-    <!--    </select>-->
-    <!--    <select id="getorgin" resultType="cn.atsoft.dasheng.app.model.params.OriginParam">-->
-    <!--        select  origin_id,name from daoxin_crm_origin where origin_id =#{orginId}-->
-    <!--    </select>-->
-    <!--    <select id="getUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User" >-->
-    <!--        select user_id,account from sys_user where user_id =#{userId}-->
-    <!--    </select>-->
+
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 0
+        from daoxin_crm_customer where display = 1
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
