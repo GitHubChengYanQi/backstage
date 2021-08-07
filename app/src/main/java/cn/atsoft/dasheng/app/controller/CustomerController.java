@@ -120,8 +120,9 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public void batchDelete( @RequestParam(value ="CustomerParam" ,required = false) List<CustomerParam> paramList) {
+    public ResponseData batchDelete( @RequestParam(value ="CustomerParam" ,required = false) List<Long> paramList) {
         customerService.batchDelete(paramList);
+        return ResponseData.success();
     }
 }
 

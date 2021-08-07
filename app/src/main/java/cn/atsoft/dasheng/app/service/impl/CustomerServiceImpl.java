@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,7 +35,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
-        this.save(entity) ;
+        this.save(entity);
         return entity.getCustomerId();
     }
 
@@ -114,16 +115,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public void batchDelete(List<CustomerParam> paramList) {
+    public void batchDelete(List<Long> paramList) {
         Customer customer = new Customer();
-        for (CustomerParam customerParam : paramList) {
-           if(customerParam.getCustomerId().equals(customer.getCustomerId())){
-               customerParam.setDisplay(1);
-                ToolUtil.copyProperties(customerParam,customer);
-
-            }
-        }
-
+        customer.setDisplay(0);
+        UpdateWrapper<Customer> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("customerResult", paramList);
+        this.update(customer,updateWrapper);
     }
 
 }
