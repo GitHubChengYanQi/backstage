@@ -29,13 +29,7 @@ import java.util.List;
 public class CrmBusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<Customer> getcustomer;
-    private List<Origin> getorigin;
-    private List<CrmBusinessSales> getsales;
-    private List<User> getuser;
-    private List<CrmBusinessTrack> gettrack;
-    private Long trackId;
-    private Long processId;
+
 
     /**
      * 商机id

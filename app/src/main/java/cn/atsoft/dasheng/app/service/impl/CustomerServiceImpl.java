@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
@@ -115,11 +116,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public void batchDelete(List<Long> paramList) {
+    public void batchDelete(CustomerIdRequest customerIdRequest) {
         Customer customer = new Customer();
         customer.setDisplay(0);
         UpdateWrapper<Customer> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("customerResult", paramList);
+        updateWrapper.in("display", customerIdRequest.getCustomerId());
         this.update(customer,updateWrapper);
     }
 
