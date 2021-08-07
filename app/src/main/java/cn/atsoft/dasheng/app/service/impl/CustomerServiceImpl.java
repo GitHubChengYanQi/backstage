@@ -100,7 +100,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
 
-
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
