@@ -2,72 +2,104 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.atsoft.dasheng.app.mapper.CrmBusinessMapper">
 
-    <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusiness">
-        <id column="business_id" property="businessId"/>
-        <result column="business_name" property="businessName"/>
-        <result column="person" property="person"/>
-        <result column="customer_id" property="customerId"/>
-        <result column="statement_time" property="statementTime"/>
-        <result column="change_time" property="changeTime"/>
-        <result column="opportunity_amount" property="opportunityAmount"/>
-        <result column="state" property="state"/>
-        <result column="sales_id" property="salesId"/>
-        <result column="total_products" property="totalProducts"/>
-        <result column="origin_id" property="originId"/>
-        <result column="time" property="time"/>
-        <result column="stage" property="stage"/>
-        <result column="create_user" property="createUser"/>
-        <result column="update_user" property="updateUser"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="display" property="display"/>
-        <result column="track_id" property="trackId"/>
-        <result column="process_id" property="processId"/>
-    </resultMap>
+  <!-- 通用查询映射结果 -->
+  <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusiness">
+    <id column="business_id" property="businessId"/>
+    <result column="business_name" property="businessName"/>
+    <result column="person" property="person"/>
+    <result column="customer_id" property="customerId"/>
+    <result column="statement_time" property="statementTime"/>
+    <result column="change_time" property="changeTime"/>
+    <result column="opportunity_amount" property="opportunityAmount"/>
+    <result column="state" property="state"/>
+    <result column="sales_id" property="salesId"/>
+    <result column="total_products" property="totalProducts"/>
+    <result column="origin_id" property="originId"/>
+    <result column="time" property="time"/>
+    <result column="stage" property="stage"/>
+    <result column="create_user" property="createUser"/>
+    <result column="update_user" property="updateUser"/>
+    <result column="create_time" property="createTime"/>
+    <result column="update_time" property="updateTime"/>
+    <result column="display" property="display"/>
+    <result column="track_id" property="trackId"/>
+    <result column="process_id" property="processId"/>
+  </resultMap>
 
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        process_id AS "processId",track_id
+  <!-- 通用查询结果列 -->
+  <sql id="Base_Column_List">
+    process_id
+    AS "processId",track_id
         AS "trackId",  business_id
         AS "businessId", business_name AS "businessName", person AS "person", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
-    </sql>
+  </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.salesId != null">
-            and sales_id = #{paramCondition.salesId}
-        </if>
-    </select>
+  <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
+          parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+    select
+    <include refid="Base_Column_List"/>
+    from daoxin_crm_business where 1 = 1
+    <if test="paramCondition.salesId != null">
+      and sales_id = #{paramCondition.salesId}
+    </if>
+  </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.salesId != null">
-            and sales_id = #{paramCondition.salesId}
-        </if>
-    </select>
+  <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+    select
+    <include refid="Base_Column_List"/>
+    from daoxin_crm_business where 1 = 1
+    <if test="paramCondition.salesId != null">
+      and sales_id = #{paramCondition.salesId}
+    </if>
+  </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
-        select
-        <include refid="Base_Column_List"/>
-        from daoxin_crm_business where 1 = 1
-        <if test="paramCondition.salesId != null">
-            and sales_id = #{paramCondition.salesId}
-        </if>
-        <if test="paramCondition.originId != null">
-            and origin_id = #{paramCondition.originId}
-        </if>
-        <if test="paramCondition.businessId != null">
-            and business_id = #{paramCondition.businessId}
-        </if>
-    </select>
+  <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmBusinessResult"
+          parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+    select
+    <include refid="Base_Column_List"/>
+    from daoxin_crm_business where 1 = 1
+    <if test="paramCondition.salesId != null">
+      and sales_id = #{paramCondition.salesId}
+    </if>
+    <if test="paramCondition.originId != null">
+      and origin_id = #{paramCondition.originId}
+    </if>
+    <if test="paramCondition.businessId != null">
+      and business_id = #{paramCondition.businessId}
+    </if>
 
+    <choose>
+      <when test="paramCondition.sorter.order != null and paramCondition.sorter.order.equals('descend')">
+        order by opportunity_amount desc
+      </when>
+      <when test="paramCondition.sorter.order!=null">
+        order by opportunity_amount asc
+      </when>
+      <otherwise>
+
+      </otherwise>
+    </choose>
+
+
+  </select>
+  <resultMap id="User" type="cn.atsoft.dasheng.app.model.result.CrmBusinessResult">
+    <association property="user" javaType="cn.atsoft.dasheng.sys.modular.system.entity.User" column="person"
+                 select="queryUser"/>
+  </resultMap>
+
+  <select id="queryUser" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
+    select *
+    from sys_user
+    where user_id = #{person}
+  </select>
+  <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">
+    select
+    <include refid="Base_Column_List"/>
+    from daoxin_crm_business where 1 = 1
+    <if test="paramCondition.salesId != null">
+      and sales_id = #{paramCondition.salesId}
+    </if>
+  </select>
 
 </mapper>
