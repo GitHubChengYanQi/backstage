@@ -185,7 +185,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
-        return data.get(0);
+        return   data.size()==0? null :data.get(0);
     }
 
 
