@@ -72,9 +72,9 @@ public interface CustomerService extends IService<Customer> {
 
     /**
      * 批量删除
-     * @param paramList
+     * @param
      */
-    void batchDelete(CustomerIdRequest customerIdRequest);
+    void batchDelete( List<Long> customerId);
 
 
 }

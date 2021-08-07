@@ -43,7 +43,7 @@ public class CustomerController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Long add = this.customerService.add(customerParam);
-        System.err.println(customerParam + "---------------------------------------------------------------");
+
         return ResponseData.success(add);
 
 

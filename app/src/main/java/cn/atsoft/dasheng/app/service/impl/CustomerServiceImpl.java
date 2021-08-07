@@ -116,11 +116,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public void batchDelete(CustomerIdRequest customerIdRequest) {
+    public void batchDelete( List<Long> customerId) {
         Customer customer = new Customer();
         customer.setDisplay(0);
         UpdateWrapper<Customer> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("display", customerIdRequest.getCustomerId());
+        updateWrapper.in("customer_id", customerId);
         this.update(customer,updateWrapper);
     }
 
