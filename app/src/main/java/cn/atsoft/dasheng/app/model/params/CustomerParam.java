@@ -28,9 +28,7 @@ import java.util.List;
 public class CustomerParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<CrmCustomerLevel> getlevel;
-    private List<Origin> getorgin;
-    private List<User> getUser;
+
     private Long customerLevelId;
     private Integer status;
     private Long originId;
@@ -45,11 +43,12 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private String emall;
 
     private String url;
-
+    private  Long rank;
+    private String originName;
+    private String levelName;
     private Long industryId;
     private String industryName;
-    private String oname;
-    private String lname;
+
     private String userName;
 
     /**
