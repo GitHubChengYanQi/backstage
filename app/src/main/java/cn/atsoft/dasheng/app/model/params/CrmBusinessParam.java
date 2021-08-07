@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.sys.modular.consts.entity.Sorter;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,12 +31,9 @@ import java.util.List;
 public class CrmBusinessParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<Customer> getcustomer;
-    private List<Origin> getorigin;
-    private List<CrmBusinessSales> getsales;
-    private List<User> getuser;
-    private List<CrmBusinessTrack> gettrack;
+
     private Long trackId;
+
     private Long processId;
 
     /**
@@ -152,5 +151,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+
+    private Sorter sorter;
 
 }

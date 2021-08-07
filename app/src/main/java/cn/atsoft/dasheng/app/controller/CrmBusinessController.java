@@ -100,6 +100,9 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+      String field = crmBusinessParam.getSorter().getField();
+
+      System.err.println(field+"---------------------------------------------------------------------------------------------");
         if(ToolUtil.isEmpty(crmBusinessParam)){
             crmBusinessParam = new CrmBusinessParam();
         }
