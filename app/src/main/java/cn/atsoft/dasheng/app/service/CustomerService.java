@@ -69,7 +69,11 @@ public interface CustomerService extends IService<Customer> {
      */
     PageInfo<CustomerResult> findPageBySpec(CustomerParam param);
 
-    void findPageBySpec(List<CustomerParam> paramList);
+    /**
+     * 批量删除
+     * @param paramList
+     */
+    void batchDelete(List<CustomerParam> paramList);
 
 
 }

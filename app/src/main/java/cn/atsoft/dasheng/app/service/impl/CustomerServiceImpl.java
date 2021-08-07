@@ -34,7 +34,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
-        this.save(entity);
+        this.save(entity) ;
         return entity.getCustomerId();
     }
 
@@ -114,7 +114,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public void findPageBySpec(List<CustomerParam> paramList) {
+    public void batchDelete(List<CustomerParam> paramList) {
         Customer customer = new Customer();
         for (CustomerParam customerParam : paramList) {
            if(customerParam.getCustomerId().equals(customer.getCustomerId())){

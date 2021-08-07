@@ -118,10 +118,10 @@ public class CustomerController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/Batchdelete", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public void Batchdelete(List<CustomerParam> paramList) {
-        customerService.findPageBySpec(paramList);
+    public void batchDelete( @RequestParam(value ="CustomerParam" ,required = false) List<CustomerParam> paramList) {
+        customerService.batchDelete(paramList);
     }
 }
 
