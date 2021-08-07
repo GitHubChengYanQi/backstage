@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.consts.entity.Sorter;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -100,9 +101,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
-      String field = crmBusinessParam.getSorter().getField();
-
-      System.err.println(field+"---------------------------------------------------------------------------------------------");
+        crmBusinessParam.setSorter(crmBusinessParam.getSorter()==null ? new Sorter() : crmBusinessParam.getSorter());
         if(ToolUtil.isEmpty(crmBusinessParam)){
             crmBusinessParam = new CrmBusinessParam();
         }
