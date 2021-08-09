@@ -69,7 +69,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness newEntity = getEntity(param);
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
-        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
+//        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
         List<Long> processIds = new ArrayList<>();
         for (CrmBusinessResult record : page.getRecords()) {
             processIds.add(record.getProcessId());
@@ -83,7 +83,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
                     if (record.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
-                        crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName() + "发生了改变");
+                        crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
                         ToolUtil.copyProperties(newEntity, oldEntity);
                         this.updateById(newEntity);
