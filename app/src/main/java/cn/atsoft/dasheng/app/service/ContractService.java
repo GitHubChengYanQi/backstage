@@ -66,4 +66,7 @@ public interface ContractService extends IService<Contract> {
      */
      PageInfo<ContractResult> findPageBySpec(ContractParam param);
 
+    void batchDelete( List<Long> customerId);
+
+
 }

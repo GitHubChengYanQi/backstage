@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
+import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
+import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -48,14 +50,10 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
-        if (customerId != null) {
-            contractParam.setPartyA(customerId);
-        }
         if (contractParam.getTemplateId()!=null){
             TemplateParam templateParam = new TemplateParam();
             templateParam.setTemplateId(contractParam.getTemplateId());
             PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
-            System.err.println(pageBySpec);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
         Long add = this.contractService.add(contractParam);
@@ -128,6 +126,13 @@ public class ContractController extends BaseController {
             contractParam = new ContractParam();
         }
         return this.contractService.findPageBySpec(contractParam);
+    }
+
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody ContractIdRequest contractIdRequest) {
+        contractService.batchDelete(contractIdRequest.getContractId());
+        return ResponseData.success();
     }
 
 

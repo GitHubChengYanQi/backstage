@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -116,6 +117,15 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Contract entity = new Contract();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public void batchDelete(List<Long> contractId) {
+        Contract contract = new Contract();
+        contract.setDisplay(0);
+        UpdateWrapper<Contract> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("contract_id", contractId);
+        this.update(contract, updateWrapper);
     }
 
 }
