@@ -79,59 +79,57 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> processIds = new ArrayList<>();
-        List<Long> personIds = new ArrayList<>();
+        List<Long> createUser = new ArrayList<>();
         for (CrmBusinessResult record : page.getRecords()) {
             processIds.add(record.getProcessId());
-            personIds.add(record.getPerson());
+            createUser.add(record.getCreateUser());
         }
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", personIds);
+        userQueryWrapper.in("user_id", createUser);
         List<User> userList = userService.list(userQueryWrapper);
 
-
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+        if (param.getState().equals("赢率")) {
+            param.setProcessId(100L);
+            oldEntity = getOldEntity(param);
+            newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
 
+        } else if (param.getState().equals("输率")) {
+            param.setProcessId(0L);
+           oldEntity = getOldEntity(param);
+          newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }
 
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
             for (CrmBusinessResult record : page.getRecords()) {
                 for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
-                    for (User user : userList) {
-                        if (user.getUserId().equals(record.getPerson())) {
-                            record.setPersonName(user.getName());
-                        }
-
-                    }
                     if (record.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                         crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
 
-                        if (param.getState().equals("赢率")) {
-                            param.setProcessId(100L);
-                            CrmBusiness oldEntity1 = getOldEntity(param);
-                            CrmBusiness newEntity1 = getEntity(param);
-                            ToolUtil.copyProperties(newEntity1, oldEntity1);
-                            this.updateById(newEntity1);
 
-                        } else if (param.getState().equals("输率")) {
-                            param.setProcessId(0L);
-                            CrmBusiness oldEntity1 = getOldEntity(param);
-                            CrmBusiness newEntity1 = getEntity(param);
-                            ToolUtil.copyProperties(newEntity1, oldEntity1);
-                            this.updateById(newEntity1);
-
-                        }
-
-                        ToolUtil.copyProperties(newEntity, oldEntity);
-                        this.updateById(newEntity);
+                    }
+                }
+                for (User user : userList) {
+                    if(user.getUserId().equals(record.getCreateUser())){
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user,userResult);
+                        record.setUser(userResult);
                     }
                 }
             }
         }
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
         return "状态已更新";
     }
 
