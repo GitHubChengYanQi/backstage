@@ -74,7 +74,7 @@
     <if test="paramCondition.trackId != null">
       and track_id = #{paramCondition.trackId}
     </if>
-    <if test="paramCondition.person ! =null">
+    <if test="paramCondition.person != null">
       and person =#{paramCondition.person}
     </if>
 
