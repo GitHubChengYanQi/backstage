@@ -69,12 +69,12 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ContractParam contractParam) {
-        if (contractParam.getTemplateId()!=null){
-            TemplateParam templateParam = new TemplateParam();
-            templateParam.setTemplateId(contractParam.getTemplateId());
-            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
-            contractParam.setContent(pageBySpec.getData().get(0).getContent());
-        }
+//        if (contractParam.getTemplateId()!=null){
+//            TemplateParam templateParam = new TemplateParam();
+//            templateParam.setTemplateId(contractParam.getTemplateId());
+//            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
+//            contractParam.setContent(pageBySpec.getData().get(0).getContent());
+//        }
         this.contractService.update(contractParam);
         return ResponseData.success();
     }
