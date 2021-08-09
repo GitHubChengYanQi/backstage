@@ -31,6 +31,8 @@ public class ContractResult implements Serializable {
     private Long partyA;
     private Long partyB;
 
+    private Long templateId;
+
     /**
      * 合同名称
      */

@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.TemplateParam;
+import cn.atsoft.dasheng.app.model.result.TemplateResult;
+import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +25,7 @@ import java.util.Map;
 /**
  * 合同表控制器
  *
- * @author 
+ * @author
  * @Date 2021-07-21 13:36:21
  */
 @RestController
@@ -31,18 +35,28 @@ public class ContractController extends BaseController {
 
     @Autowired
     private ContractService contractService;
-            Long customerId;
+    private Long customerId;
+    @Autowired
+    private TemplateService templateService;
+
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
-        if(customerId!=null){
+        if (customerId != null) {
             contractParam.setPartyA(customerId);
+        }
+        if (contractParam.getTemplateId()!=null){
+            TemplateParam templateParam = new TemplateParam();
+            templateParam.setTemplateId(contractParam.getTemplateId());
+            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
+            System.err.println(pageBySpec);
+            contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
         Long add = this.contractService.add(contractParam);
         return ResponseData.success(add);
@@ -51,7 +65,7 @@ public class ContractController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -65,12 +79,12 @@ public class ContractController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ContractParam contractParam)  {
+    public ResponseData delete(@RequestBody ContractParam contractParam) {
         this.contractService.delete(contractParam);
         return ResponseData.success();
     }
@@ -78,7 +92,7 @@ public class ContractController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -88,20 +102,19 @@ public class ContractController extends BaseController {
 //        ContractResult result = new ContractResult();
 //        ToolUtil.copyProperties(detail, result);
         ContractResult contractResult = this.contractService.findPageBySpec(contractParam).getData().get(0);
-
         return ResponseData.success(contractResult);
     }
 
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContractResult> list(@RequestBody(required = false) ContractParam contractParam) {
-        if(ToolUtil.isEmpty(contractParam)){
+        if (ToolUtil.isEmpty(contractParam)) {
             contractParam = new ContractParam();
         }
         return this.contractService.findPageBySpec(contractParam);
@@ -110,8 +123,8 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/listCustomer", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContractResult> listCustomer(@RequestBody(required = false) ContractParam contractParam) {
-        customerId=contractParam.getPartyA();
-        if(ToolUtil.isEmpty(contractParam)){
+        customerId = contractParam.getPartyA();
+        if (ToolUtil.isEmpty(contractParam)) {
             contractParam = new ContractParam();
         }
         return this.contractService.findPageBySpec(contractParam);
