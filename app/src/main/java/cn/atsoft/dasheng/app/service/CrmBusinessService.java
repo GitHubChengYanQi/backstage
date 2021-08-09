@@ -18,6 +18,7 @@ import java.util.List;
  */
 public interface CrmBusinessService extends IService<CrmBusiness> {
 
+    CrmBusinessResult detail(Long id);
     /**
      * 新增
      *

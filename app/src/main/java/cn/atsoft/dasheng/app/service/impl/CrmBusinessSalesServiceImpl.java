@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
+import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -63,6 +65,7 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
 
     @Override
     public List<CrmBusinessSalesResult> findListBySpec(CrmBusinessSalesParam param) {
+
         return null;
     }
 
@@ -70,29 +73,37 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     public PageInfo<CrmBusinessSalesResult> findPageBySpec(CrmBusinessSalesParam param) {
         Page<CrmBusinessSalesResult> pageContext = getPageContext();
         IPage<CrmBusinessSalesResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long> salesIds = new ArrayList<>();
-        for (CrmBusinessSalesResult item : page.getRecords()) {
-            salesIds.add(item.getSalesId());
-        }
-        QueryWrapper<CrmBusinessSalesProcess> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("sales_id", salesIds);
-        queryWrapper.orderByAsc("sort");
-        List<CrmBusinessSalesProcess> res = crmBusinessSalesProcessService.list(queryWrapper);
 
-        for (CrmBusinessSalesResult item : page.getRecords()) {
-            List<CrmBusinessSalesProcessResult> results = new ArrayList<>();
-            for (CrmBusinessSalesProcess it : res) {
-                if (item.getSalesId().equals(it.getSalesId())) {
-                    CrmBusinessSalesProcessResult tmp = new CrmBusinessSalesProcessResult();
-                    //拷贝对象
-                    ToolUtil.copyProperties(it, tmp);
-                    results.add(tmp);
-                }
-            }
-            item.setProcess(results);
-        }
+        this.format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public CrmBusinessSalesResult detail(Long id) {
+        CrmBusinessSales crmBusinessSales =this.getById(id);
+        CrmBusinessSalesResult  detail = new CrmBusinessSalesResult();
+        ToolUtil.copyProperties(detail,crmBusinessSales);
+        List<CrmBusinessSalesResult> crmBusinessSalesResultList = new ArrayList<CrmBusinessSalesResult>(){{
+            add(detail);
+        }};
+        this.format(crmBusinessSalesResultList);
+        return crmBusinessSalesResultList.get(0);
+    }
+
+    @Override
+    public List<CrmBusinessSalesResult> getByIds(List<Long> ids){
+        QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
+        crmBusinessSalesQueryWrapper.in("sales_id", ids);
+        List<CrmBusinessSales> result = this.list(crmBusinessSalesQueryWrapper);
+        List<CrmBusinessSalesResult> results  = new ArrayList<>();
+        for(CrmBusinessSales item:result){
+            CrmBusinessSalesResult tmp = new CrmBusinessSalesResult();
+            ToolUtil.copyProperties(item, tmp);
+            results.add(tmp);
+        }
+        this.format(results);
+        return results;
     }
 
     private Serializable getKey(CrmBusinessSalesParam param) {
