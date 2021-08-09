@@ -79,17 +79,17 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> processIds = new ArrayList<>();
-        List<Long>personIds = new ArrayList<>();
+        List<Long> personIds = new ArrayList<>();
         for (CrmBusinessResult record : page.getRecords()) {
             processIds.add(record.getProcessId());
             personIds.add(record.getPerson());
         }
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
-        List<CrmBusinessSalesProcess> processList =  processIds.size()==0? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
+        List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id",personIds);
+        userQueryWrapper.in("user_id", personIds);
         List<User> userList = userService.list(userQueryWrapper);
 
 
@@ -100,7 +100,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             for (CrmBusinessResult record : page.getRecords()) {
                 for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
                     for (User user : userList) {
-                        if(user.getUserId().equals(record.getPerson())){
+                        if (user.getUserId().equals(record.getPerson())) {
                             record.setPersonName(user.getName());
                         }
 
@@ -109,23 +109,21 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                         crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
-//                        CrmBusinessSalesProcessParam crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
-                        if(record.getStage().equals("赢率")){
-                            param.setProcessId(5L);
+
+                        if (param.getState().equals("赢率")) {
+                            param.setProcessId(100L);
                             CrmBusiness oldEntity1 = getOldEntity(param);
                             CrmBusiness newEntity1 = getEntity(param);
                             ToolUtil.copyProperties(newEntity1, oldEntity1);
                             this.updateById(newEntity1);
-//                            crmBusinessSalesProcessParam.setWinRate(1L);
-//                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
-                        }else {
+
+                        } else if (param.getState().equals("输率")) {
                             param.setProcessId(0L);
                             CrmBusiness oldEntity1 = getOldEntity(param);
                             CrmBusiness newEntity1 = getEntity(param);
                             ToolUtil.copyProperties(newEntity1, oldEntity1);
                             this.updateById(newEntity1);
-//                            crmBusinessSalesProcessParam.setSalesId(0L);
-//                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
+
                         }
 
                         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -134,7 +132,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 }
             }
         }
-        return  "状态已更新";
+        return "状态已更新";
     }
 
     @Override
