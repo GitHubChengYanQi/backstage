@@ -100,6 +100,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
 
+        format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
@@ -131,7 +132,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
          * */
         QueryWrapper<Origin> originQueryWrapper = new QueryWrapper<>();
         QueryWrapper<Origin> origin_id = originQueryWrapper.in("origin_id", originIds);
-        List<Origin> originList = originService.list(origin_id);
+        List<Origin> originList = originIds.size() == 0 ? new ArrayList<>() : originService.list(origin_id);
 
 
         /**
@@ -139,17 +140,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
          * */
         QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
         QueryWrapper<CrmCustomerLevel> customerLevelId = levelQueryWrapper.in("customer_level_id", levelIds);
-        List<CrmCustomerLevel> levelList = crmCustomerLevelService.list(customerLevelId);
+        List<CrmCustomerLevel> levelList = levelIds.size() == 0 ? new ArrayList<>() :  crmCustomerLevelService.list(customerLevelId);
         /**
          * 获取userId
          * */
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", userIds);
-        List<User> userList = userService.list(userQueryWrapper);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
 
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("industry_id",industryIds);
-        List<CrmIndustry> industryList = crmIndustryService.list(industryQueryWrapper);
+        List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
 
         for (CustomerResult record : data) {
             for (Origin origin : originList) {

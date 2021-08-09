@@ -152,6 +152,6 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
-    private Sorter sorter;
+    private Sorter sorter = new Sorter();
 
 }

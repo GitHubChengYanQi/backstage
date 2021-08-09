@@ -101,7 +101,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
-        crmBusinessParam.setSorter(crmBusinessParam.getSorter()==null ? new Sorter() : crmBusinessParam.getSorter());
+//        crmBusinessParam.setSorter(crmBusinessParam.getSorter()==null ? new Sorter() : crmBusinessParam.getSorter());
         if(ToolUtil.isEmpty(crmBusinessParam)){
             crmBusinessParam = new CrmBusinessParam();
         }
