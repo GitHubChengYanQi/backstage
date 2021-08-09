@@ -84,12 +84,12 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ContractResult> detail(@RequestBody ContractParam contractParam) {
-        Contract detail = this.contractService.getById(contractParam.getContractId());
-        ContractResult result = new ContractResult();
-        ToolUtil.copyProperties(detail, result);
+//        Contract detail = this.contractService.getById(contractParam.getContractId());
+//        ContractResult result = new ContractResult();
+//        ToolUtil.copyProperties(detail, result);
+        ContractResult contractResult = this.contractService.findPageBySpec(contractParam).getData().get(0);
 
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        return ResponseData.success(contractResult);
     }
 
     /**
