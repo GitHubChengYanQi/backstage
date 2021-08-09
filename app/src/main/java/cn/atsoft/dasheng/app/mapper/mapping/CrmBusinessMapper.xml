@@ -69,7 +69,7 @@
       and business_id = #{paramCondition.businessId}
     </if>
     <if test="paramCondition.customerId != null">
-      and customer_id = #{paramCondition.customerId}
+      and mcustoer_id = #{paramCondition.customerId}
     </if>
     <if test="paramCondition.trackId != null">
       and track_id = #{paramCondition.trackId}
