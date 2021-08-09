@@ -76,7 +76,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         }
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
-        List<CrmBusinessSalesProcess> processList = crmBusinessSalesProcessService.list(processQueryWrapper);
+        List<CrmBusinessSalesProcess> processList =  processIds.size()==0? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
             for (CrmBusinessResult record : page.getRecords()) {

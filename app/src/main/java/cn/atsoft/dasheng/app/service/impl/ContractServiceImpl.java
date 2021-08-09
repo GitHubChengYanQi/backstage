@@ -76,19 +76,23 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             partB.add(record.getPartyB());
         }
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
-        QueryWrapper<Customer> partBWapper = customerQueryWrapper.in("customer_id", partB);
+        QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
         List<Customer> partAList = customerService.list(partAWapper);
         List<Customer> partBList = customerService.list(partBWapper);
         ContractResult contractResult = new ContractResult();
         for (ContractResult record : page.getRecords()) {
             for (Customer customer : partAList) {
+
                 if (record.getPartyA().equals(customer.getCustomerId())) {
-                    contractResult.setPartAName(customer.getCustomerName());
+                    record.setPartAName(customer.getCustomerName());
+
                 }
                 for (Customer customer1 : partBList) {
                     if (record.getPartyB().equals(customer1.getCustomerId())) {
-                        contractResult.setPartBName(customer1.getCustomerName());
+                        record.setPartBName(customer1.getCustomerName());
+
                     }
                 }
             }
