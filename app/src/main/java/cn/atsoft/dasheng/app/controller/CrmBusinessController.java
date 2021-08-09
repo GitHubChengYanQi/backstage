@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSelectWrapper;
@@ -123,6 +124,13 @@ public class CrmBusinessController extends BaseController {
     List<Map<String,Object>> result = factory.wrap();
     return ResponseData.success(result);
   }
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("更新状态")
+    public ResponseData batchDelete(@RequestBody CrmBusinessParam crmBusinessParam) {
+        String s = crmBusinessService.UpdateStatus(crmBusinessParam);
+
+        return ResponseData.success(s);
+    }
 
 }
 
