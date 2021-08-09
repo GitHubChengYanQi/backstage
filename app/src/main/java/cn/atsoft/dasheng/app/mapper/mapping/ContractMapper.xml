@@ -9,6 +9,7 @@
         <result column="party_a" property="partyB"/>
         <result column="party_b" property="partyB"/>
         <result column="user_id" property="userId"/>
+        <result column="template_id" property="templateId"/>
         <result column="note" property="note"/>
         <result column="time" property="time"/>
         <result column="content" property="content"/>
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-   party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
