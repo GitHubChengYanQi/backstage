@@ -69,7 +69,12 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ContractParam contractParam) {
-
+        if (contractParam.getTemplateId()!=null){
+            TemplateParam templateParam = new TemplateParam();
+            templateParam.setTemplateId(contractParam.getTemplateId());
+            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
+            contractParam.setContent(pageBySpec.getData().get(0).getContent());
+        }
         this.contractService.update(contractParam);
         return ResponseData.success();
     }
@@ -96,11 +101,11 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ContractResult> detail(@RequestBody ContractParam contractParam) {
-//        Contract detail = this.contractService.getById(contractParam.getContractId());
-//        ContractResult result = new ContractResult();
-//        ToolUtil.copyProperties(detail, result);
-        ContractResult contractResult = this.contractService.findPageBySpec(contractParam).getData().get(0);
-        return ResponseData.success(contractResult);
+        Contract detail = this.contractService.getById(contractParam.getContractId());
+        ContractResult result = new ContractResult();
+        ToolUtil.copyProperties(detail, result);
+//        ContractResult contractResult = this.contractService.findPageBySpec(contractParam).getData().get(0);
+        return ResponseData.success(result);
     }
 
     /**
