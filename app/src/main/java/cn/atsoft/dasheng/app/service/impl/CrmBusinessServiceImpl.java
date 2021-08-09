@@ -109,10 +109,17 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                         crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
+                        CrmBusinessSalesProcessParam crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
+                        if(record.getStage().equals("赢率")){
+                            crmBusinessSalesProcessParam.setWinRate(1L);
+                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
+                        }else {
+                            crmBusinessSalesProcessParam.setSalesId(0L);
+                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
+                        }
+
                         ToolUtil.copyProperties(newEntity, oldEntity);
                         this.updateById(newEntity);
-                    }else if (record.getProcessId().equals(5)&&record.getProcessId().equals(6)){
-                        return  "状态已结束";
                     }
                 }
             }

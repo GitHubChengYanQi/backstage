@@ -41,10 +41,25 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
 
     @Override
     public void update(CrmBusinessSalesProcessParam param){
-        CrmBusinessSalesProcess oldEntity = getOldEntity(param);
-        CrmBusinessSalesProcess newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        if (param.getWinRate().equals(1)){
+            param.setPercentage(100);
+            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
+            CrmBusinessSalesProcess newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }else  if (param.getWinRate().equals(2)){
+            param.setPercentage(0);
+            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
+            CrmBusinessSalesProcess newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }else {
+            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
+            CrmBusinessSalesProcess newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }
+
     }
 
     @Override

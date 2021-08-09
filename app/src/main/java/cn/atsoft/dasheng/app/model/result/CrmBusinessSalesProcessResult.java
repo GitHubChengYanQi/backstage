@@ -21,7 +21,7 @@ public class CrmBusinessSalesProcessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private  List<CrmBusinessSales> getsales;
-
+    private  Long winRate ;
     private String note;
 
     /**
