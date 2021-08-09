@@ -109,13 +109,23 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                         crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
-                        CrmBusinessSalesProcessParam crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
+//                        CrmBusinessSalesProcessParam crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
                         if(record.getStage().equals("赢率")){
-                            crmBusinessSalesProcessParam.setWinRate(1L);
-                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
+                            param.setProcessId(5L);
+                            CrmBusiness oldEntity1 = getOldEntity(param);
+                            CrmBusiness newEntity1 = getEntity(param);
+                            ToolUtil.copyProperties(newEntity1, oldEntity1);
+                            this.updateById(newEntity1);
+//                            crmBusinessSalesProcessParam.setWinRate(1L);
+//                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
                         }else {
-                            crmBusinessSalesProcessParam.setSalesId(0L);
-                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
+                            param.setProcessId(0L);
+                            CrmBusiness oldEntity1 = getOldEntity(param);
+                            CrmBusiness newEntity1 = getEntity(param);
+                            ToolUtil.copyProperties(newEntity1, oldEntity1);
+                            this.updateById(newEntity1);
+//                            crmBusinessSalesProcessParam.setSalesId(0L);
+//                            crmBusinessSalesProcessService.update(crmBusinessSalesProcessParam);
                         }
 
                         ToolUtil.copyProperties(newEntity, oldEntity);
