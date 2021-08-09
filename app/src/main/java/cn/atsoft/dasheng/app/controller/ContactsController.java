@@ -103,7 +103,10 @@ public class ContactsController extends BaseController {
   @RequestMapping(value = "/list", method = RequestMethod.POST)
   @ApiOperation("列表")
   public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
-    CustomerId = contactsParam.getCustomerId();
+    if(contactsParam!=null){
+      CustomerId = contactsParam.getCustomerId();
+    }
+
     if (ToolUtil.isEmpty(contactsParam)) {
       contactsParam = new ContactsParam();
     }
