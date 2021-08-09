@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -67,35 +68,56 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public void update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+
+    @Override
+    public String UpdateStatus(CrmBusinessParam param) {
+        CrmBusiness oldEntity = getOldEntity(param);
+        CrmBusiness newEntity = getEntity(param);
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
-//        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
         List<Long> processIds = new ArrayList<>();
+        List<Long>personIds = new ArrayList<>();
         for (CrmBusinessResult record : page.getRecords()) {
             processIds.add(record.getProcessId());
+            personIds.add(record.getPerson());
         }
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList =  processIds.size()==0? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id",personIds);
+        List<User> userList = userService.list(userQueryWrapper);
+
+
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+
+
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
             for (CrmBusinessResult record : page.getRecords()) {
                 for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
+                    for (User user : userList) {
+                        if(user.getUserId().equals(record.getPerson())){
+                            record.setPersonName(user.getName());
+                        }
+
+                    }
                     if (record.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                         crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                         crmBusinessTrackParam.setNote(crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
                         ToolUtil.copyProperties(newEntity, oldEntity);
                         this.updateById(newEntity);
+                    }else if (record.getProcessId().equals(5)&&record.getProcessId().equals(6)){
+                        return  "状态已结束";
                     }
                 }
             }
-
-
         }
-
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        return  "状态已更新";
     }
 
     @Override
