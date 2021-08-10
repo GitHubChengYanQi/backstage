@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,7 +87,10 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
     }
 
     private Page<ErpPackageResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("productName");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private ErpPackage getOldEntity(ErpPackageParam param) {
