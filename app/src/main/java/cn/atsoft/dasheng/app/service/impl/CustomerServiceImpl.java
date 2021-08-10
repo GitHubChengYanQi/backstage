@@ -48,14 +48,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private CrmIndustryService crmIndustryService;
 
     @Autowired
-    private CustomerDynamicService customerDynamicService ;
+    private CustomerDynamicService customerDynamicService;
 
     @Override
     public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
-        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
+        CustomerDynamicParam customerDynamicParam = new CustomerDynamicParam();
         customerDynamicParam.setCustomerId(param.getCustomerId());
-        customerDynamicParam.setContent("添加客户"+ param.getCustomerName());
+        customerDynamicParam.setContent("添加客户" + param.getCustomerName());
         customerDynamicService.add(customerDynamicParam);
         this.save(entity);
         return entity.getCustomerId();
@@ -80,20 +80,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
+        CustomerDynamicParam customerDynamicParam = new CustomerDynamicParam();
         customerDynamicParam.setCustomerId(param.getCustomerId());
-        customerDynamicParam.setContent(param.getCustomerName()+"客户被修改");
+        customerDynamicParam.setContent(param.getCustomerName() + "客户被修改");
         customerDynamicService.add(customerDynamicParam);
         this.updateById(newEntity);
     }
 
     @Override
     public CustomerResult findBySpec(CustomerParam param) {
-        Page<CustomerResult> pageContext = getPageContext();
-        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
-        this.format(page.getRecords());
 
-        return this.format(page.getRecords());
+
+        return null;
 
     }
 
@@ -112,7 +110,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return PageFactory.createPageInfo(page);
     }
 
-    public CustomerResult format(List<CustomerResult> data){
+    public CustomerResult format(List<CustomerResult> data) {
         for (CustomerResult record : data) {
             Integer classification = record.getClassification();
             if (classification == 1) {
@@ -148,7 +146,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
          * */
         QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
         QueryWrapper<CrmCustomerLevel> customerLevelId = levelQueryWrapper.in("customer_level_id", levelIds);
-        List<CrmCustomerLevel> levelList = levelIds.size() == 0 ? new ArrayList<>() :  crmCustomerLevelService.list(customerLevelId);
+        List<CrmCustomerLevel> levelList = levelIds.size() == 0 ? new ArrayList<>() : crmCustomerLevelService.list(customerLevelId);
         /**
          * 获取userId
          * */
@@ -157,9 +155,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
 
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
-        industryQueryWrapper.in("industry_id",industryIds);
+        industryQueryWrapper.in("industry_id", industryIds);
         List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
-
 
 
         for (CustomerResult record : data) {
@@ -188,15 +185,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
             for (CrmIndustry crmIndustry : industryList) {
-                if(crmIndustry.getIndustryId().equals(record.getIndustryId())){
+                if (crmIndustry.getIndustryId().equals(record.getIndustryId())) {
                     CrmIndustryResult crmIndustryResult = new CrmIndustryResult();
-                    ToolUtil.copyProperties(crmIndustry,crmIndustryResult);
+                    ToolUtil.copyProperties(crmIndustry, crmIndustryResult);
                     record.setCrmIndustryResult(crmIndustryResult);
                     break;
                 }
             }
         }
-        return   data.size()==0? null :data.get(0);
+        return data.size() == 0 ? null : data.get(0);
     }
 
 
@@ -205,7 +202,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     private Page<CustomerResult> getPageContext() {
-        List<String> fields = new ArrayList<String>(){{
+        List<String> fields = new ArrayList<String>() {{
             add("createTime");
         }};
         return PageFactory.defaultPage(fields);
@@ -239,6 +236,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public void updateStatus(CustomerParam customerParam) {
+    }
+
+    @Override
+    public CustomerResult detail(Long id) {
+        Customer customer = this.getById(id);
+        CustomerResult customerResult = new CustomerResult();
+        ToolUtil.copyProperties(customer, customerResult);
+        List<CustomerResult> results = new ArrayList<CustomerResult>() {{
+            add(customerResult);
+        }};
+        this.format(results);
+        return results.get(0);
     }
 
 }

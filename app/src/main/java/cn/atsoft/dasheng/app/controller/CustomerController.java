@@ -87,9 +87,9 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
-        CustomerResult bySpec = customerService.findBySpec(customerParam);
-
-        return ResponseData.success(bySpec);
+        Long customerId = customerParam.getCustomerId();
+        CustomerResult detail = customerService.detail(customerId);
+        return ResponseData.success(detail);
     }
 
     /**

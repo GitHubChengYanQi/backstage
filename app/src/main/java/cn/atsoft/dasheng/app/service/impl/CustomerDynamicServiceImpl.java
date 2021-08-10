@@ -98,7 +98,7 @@ public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMappe
            }
            QueryWrapper<User>dynamicQueryWrapper =new QueryWrapper<>();
            dynamicQueryWrapper.in("create_user",createUserIds);
-           List<User> userList = userService.list(dynamicQueryWrapper);
+           List<User> userList=createUserIds.size()==0 ? new ArrayList<>(): userService.list(dynamicQueryWrapper);
            for (CustomerDynamicResult datum : data) {
                for (User user : userList) {
                    if (datum.getCreateUser().equals(user.getCreateUser())){

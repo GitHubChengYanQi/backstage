@@ -77,4 +77,6 @@ public interface CustomerService extends IService<Customer> {
     void batchDelete( List<Long> customerId);
 
     void updateStatus (CustomerParam customerParam);
+
+    CustomerResult  detail (Long id);
 }
