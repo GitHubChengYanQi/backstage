@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Contract">
         <id column="contract_id" property="contractId"/>
+        <result column="audit" property="audit"/>
         <result column="name" property="name"/>
         <result column="party_a" property="partyB"/>
         <result column="party_b" property="partyB"/>
@@ -22,7 +23,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        audit
+        AS "audit" ,template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -76,6 +78,9 @@
         </if>
         <if test="paramCondition.partyB != null">
             and party_b = #{paramCondition.partyB}
+        </if>
+        <if test="paramCondition.audit != null">
+            and audit = #{paramCondition.audit}
         </if>
     </select>
 
