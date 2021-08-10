@@ -80,7 +80,10 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     private Page<BrandResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("brandName");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Brand getOldEntity(BrandParam param) {

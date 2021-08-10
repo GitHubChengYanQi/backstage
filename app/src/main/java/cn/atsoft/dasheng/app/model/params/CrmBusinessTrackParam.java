@@ -36,7 +36,7 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
     private String note;
     private String type;
 
-    private Long userId;
+    private Integer money;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
 

@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,7 +71,15 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
     }
 
     private Page<StorehouseResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("capacity");
+            add("measure");
+            add("name");
+            add("palce");
+            add("latitude");
+            add("longitude");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Storehouse getOldEntity(StorehouseParam param) {

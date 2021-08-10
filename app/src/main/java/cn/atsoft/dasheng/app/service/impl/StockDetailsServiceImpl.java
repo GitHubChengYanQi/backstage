@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,7 +72,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     private Page<StockDetailsResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("iname");
+            add("price");
+            add("storageTime");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private StockDetails getOldEntity(StockDetailsParam param) {

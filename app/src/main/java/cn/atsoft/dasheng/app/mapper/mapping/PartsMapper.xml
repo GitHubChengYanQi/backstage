@@ -48,11 +48,11 @@
         <include refid="Base_Column_List"/>
         from daoxin_erp_parts
         where 1 = 1
-        <if test="paramCondition.name != null">
-            and name = #{paramCondition.name}
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
         </if>
-        <if test="paramCondition.brandName != null">
-            and brand_name = #{paramCondition.brandName}
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
         </if>
 
 

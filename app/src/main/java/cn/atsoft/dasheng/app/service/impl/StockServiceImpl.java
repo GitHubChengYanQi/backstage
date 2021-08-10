@@ -89,7 +89,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     private Page<StockResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("bname");
+            add("pname");
+            add("iname");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Stock getOldEntity(StockParam param) {
