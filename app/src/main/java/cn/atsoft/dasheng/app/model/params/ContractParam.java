@@ -29,6 +29,8 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("合同id")
     private Long contractId;
 
+    private Integer audit;
+
 
 
     private Long templateId;
