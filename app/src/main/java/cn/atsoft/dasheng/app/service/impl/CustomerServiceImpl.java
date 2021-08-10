@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Service
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
-    private CustomerResult customerResult;
+
     @Autowired
     private OriginService originService;
     @Autowired
@@ -249,5 +249,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.format(results);
         return results.get(0);
     }
+
+
 
 }

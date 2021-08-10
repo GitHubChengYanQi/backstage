@@ -23,6 +23,18 @@ public class CrmPaymentParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+
+    /**
+     * 物品
+     */
+    @ApiModelProperty("物品")
+    private  Long itemId;
+
+    /**
+     * 出库
+     */
+    @ApiModelProperty("出库")
+    private Long outstockId;
     /**
      * 付款信息id
      */

@@ -24,7 +24,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         item_id
-        AS "itemId", name AS "name",shelf_life AS "shelfLife", inventory AS "inventory",material_id AS "materialId",materialName AS "materialName", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
+        AS "itemId", name AS "name",shelf_life AS "shelfLife", inventory AS "inventory",material_id AS "materialId", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
     </sql>
 
 
@@ -57,33 +57,13 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from view_items where 1 = 1
-<!--        <if test="paramCondition.name != null and paramCondition.name != ''">-->
-<!--            and name = #{paramCondition.name}-->
-<!--        </if>-->
+        from daoxin_erp_items where 1 = 1
+
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name = #{paramCondition.name}
+        </if>
         <if test="paramCondition.materialId != null">
             and material_id = #{paramCondition.materialId}
-        </if>
-        <if test="paramCondition.name!=null">
-            and name like CONCAT('%',#{paramCondition.name},'%')
-        </if>
-        <if test="paramCondition.important!=null">
-            and important like CONCAT('%',#{paramCondition.important},'%')
-        </if>
-        <if test="paramCondition.weight!=null">
-            and weight like CONCAT('%',#{paramCondition.weight},'%')
-        </if>
-        <if test="paramCondition.materialName!=null">
-            and materialName like CONCAT('%',#{paramCondition.materialName},'%')
-        </if>
-        <if test="paramCondition.cost!=null">
-            and cost like CONCAT('%',#{paramCondition.cost},'%')
-        </if>
-        <if test="paramCondition.vulnerability!=null">
-            and vulnerability like CONCAT('%',#{paramCondition.vulnerability},'%')
-        </if>
-        <if test="paramCondition.productionTime!=null">
-            and production_time like CONCAT('%',#{paramCondition.productionTime},'%')
         </if>
 
     </select>

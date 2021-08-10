@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 付款信息表
@@ -19,14 +23,25 @@ import java.util.List;
 public class CrmPaymentResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private ItemsResult itemsResult;
+    private ErpOrderResult orderResult;
+    private OutstockResult outstockResult;
 
-
+    /**
+     * 出库
+     */
+    @ApiModelProperty("出库")
+    private Long outstockId;
     /**
      * 付款信息id
      */
     @ApiModelProperty("付款信息id")
     private Long paymentId;
 
+    /**
+     * 物品
+     */
+    private Long itemId;
     /**
      * 订单编号
      */

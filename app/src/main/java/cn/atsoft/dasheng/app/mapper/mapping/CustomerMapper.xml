@@ -56,6 +56,9 @@
         <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
@@ -73,6 +76,9 @@
         </if>
         <if test="paramCondition.customerId !=null  and paramCondition.customerId != '' ">
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
     </select>
 
@@ -104,6 +110,9 @@
         </if>
         <if test="paramCondition.originId !=null and paramCondition.originId != '' ">
             and origin_id =  #{paramCondition.originId}
+        </if>
+        <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
+            and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
     </select>
 

@@ -33,6 +33,18 @@ public class CrmPayment implements Serializable {
     @TableField("order_id")
     private Long orderId;
 
+
+    /**
+     * 物品
+     */
+    @TableField("item_id")
+    private Long itemId;
+    /**
+     * 出库
+     */
+    @TableField("outstock_id")
+    private Long outstockId;
+
     /**
      * 付款时间
      */
@@ -94,6 +106,10 @@ public class CrmPayment implements Serializable {
     private Long deliveryId;
 
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
     public Long getPaymentId() {
         return paymentId;
     }
@@ -108,6 +124,22 @@ public class CrmPayment implements Serializable {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    public Long getOutstockId() {
+        return outstockId;
+    }
+
+    public void setOutstockId(Long outstockId) {
+        this.outstockId = outstockId;
     }
 
     public Date getPayTime() {
@@ -158,14 +190,6 @@ public class CrmPayment implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -190,21 +214,24 @@ public class CrmPayment implements Serializable {
         this.deliveryId = deliveryId;
     }
 
+
     @Override
     public String toString() {
         return "CrmPayment{" +
-        "paymentId=" + paymentId +
-        ", orderId=" + orderId +
-        ", payTime=" + payTime +
-        ", payType=" + payType +
-        ", freight=" + freight +
-        ", deptId=" + deptId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deliveryId=" + deliveryId +
-        "}";
+                "paymentId=" + paymentId +
+                ", orderId=" + orderId +
+                ", itemId=" + itemId +
+                ", outstockId=" + outstockId +
+                ", payTime=" + payTime +
+                ", payType='" + payType + '\'' +
+                ", freight=" + freight +
+                ", deptId=" + deptId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deliveryId=" + deliveryId +
+                '}';
     }
 }

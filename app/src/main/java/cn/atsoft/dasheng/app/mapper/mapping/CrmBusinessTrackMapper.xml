@@ -12,7 +12,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="type" property="type"/>
-        <result column="user_id" property="userId"/>
+
         <result column="business_id" property="businessId" />
         <result column="note" property="note"/>
         <result column="time" property="time"/>
@@ -22,8 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-user_id
-    AS "userId" ,type AS "type",note AS "note",name AS "name",
+type AS "type",note AS "note",name AS "name",
         track_id AS "trackId", note_id AS "noteId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",business_id AS "businessId"
     </sql>
 

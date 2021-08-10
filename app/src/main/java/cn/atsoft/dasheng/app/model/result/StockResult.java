@@ -19,8 +19,9 @@ import java.util.List;
 public class StockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    private ItemsResult itemsResult;
+    private StorehouseResult storehouseResult;
+    private  BrandResult brandResult;
     /**
      * 仓库id
      */
