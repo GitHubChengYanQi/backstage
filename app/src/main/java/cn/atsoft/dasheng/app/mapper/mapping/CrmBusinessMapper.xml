@@ -79,17 +79,17 @@
     </if>
 
 
-    <choose>
-      <when test="paramCondition.sorter.order != null and paramCondition.sorter.order.equals('descend')">
-        order by opportunity_amount desc
-      </when>
-      <when test="paramCondition.sorter.order!=null">
-        order by opportunity_amount asc
-      </when>
-      <otherwise>
+<!--    <choose>-->
+<!--      <when test="paramCondition.sorter.order != null and paramCondition.sorter.order.equals('descend')">-->
+<!--        order by opportunity_amount desc-->
+<!--      </when>-->
+<!--      <when test="paramCondition.sorter.order!=null">-->
+<!--        order by opportunity_amount asc-->
+<!--      </when>-->
+<!--      <otherwise>-->
 
-      </otherwise>
-    </choose>
+<!--      </otherwise>-->
+<!--    </choose>-->
 
 
   </select>
