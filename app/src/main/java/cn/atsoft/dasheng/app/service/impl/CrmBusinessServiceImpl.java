@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
@@ -48,7 +49,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private CrmBusinessTrackService crmBusinessTrackService;
     @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
-
+    @Autowired
+    private  BusinessDynamicService businessDynamicService;
 
     public CrmBusinessResult detail(Long id) {
 
@@ -66,6 +68,10 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
+        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
+        String businessName = param.getBusinessName();
+        businessDynamicParam.setContent("新增商机"+businessName);
+        businessDynamicService.add(businessDynamicParam);
         return entity.getBusinessId();
 
     }
@@ -81,6 +87,9 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
+        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
+        businessDynamicService.add(businessDynamicParam);
         this.updateById(newEntity);
     }
 
@@ -101,6 +110,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
 
         List<CrmBusinessSalesProcess> list = crmBusinessSalesProcessService.list();
+        List<BusinessDynamic> businessDynamics = businessDynamicService.list();
 
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
         if ( param .getState()!= null && param.getState().equals("赢单")) {
@@ -123,10 +133,15 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 if (param.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                     crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                     crmBusinessTrackParam.setTrackId(newEntity.getTrackId());
-                    crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
-                    crmBusinessTrackService.add(crmBusinessTrackParam);
+//                    crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
+//                    crmBusinessTrackService.add(crmBusinessTrackParam);
+                    BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
+                    businessDynamicParam.setBusinessId(newEntity.getBusinessId());
+                    businessDynamicParam.setContent("状态已更新"+crmBusinessSalesProcess.getName());
+                    businessDynamicService.add(businessDynamicParam);
                 }
             }
+
 
 
         }

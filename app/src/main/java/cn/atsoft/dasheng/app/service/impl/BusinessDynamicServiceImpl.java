@@ -9,12 +9,18 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
 import  cn.atsoft.dasheng.app.service.BusinessDynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +33,8 @@ import java.util.List;
  */
 @Service
 public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMapper, BusinessDynamic> implements BusinessDynamicService {
-
+@Autowired
+private UserService userService;
     @Override
     public void add(BusinessDynamicParam param){
         BusinessDynamic entity = getEntity(param);
@@ -61,6 +68,7 @@ public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMappe
     public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param){
         Page<BusinessDynamicResult> pageContext = getPageContext();
         IPage<BusinessDynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -81,5 +89,24 @@ public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMappe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+  public void format (List<BusinessDynamicResult> data){
+        List<Long> Ids = new ArrayList<>();
+      for (BusinessDynamicResult datum : data) {
+          Ids.add(datum.getCreateUser());
+      }
+      QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+      userQueryWrapper.in("user_id",Ids);
+      List<User> userList = userService.list(userQueryWrapper);
 
+      for (BusinessDynamicResult datum : data) {
+          for (User user : userList) {
+              if (datum.getCreateUser().equals(user.getUserId())) {
+                  UserResult userResult = new UserResult();
+                  ToolUtil.copyProperties(user,userResult);
+                  datum.setUserResult(userResult);
+                  break;
+              }
+          }
+      }
+  }
 }

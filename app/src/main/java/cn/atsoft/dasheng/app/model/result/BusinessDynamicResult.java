@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.security.core.parameters.P;
+
 import java.util.List;
 /**
  * <p>
@@ -20,7 +23,7 @@ public class BusinessDynamicResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+  private UserResult userResult;
     /**
      * 商机动态id
      */
