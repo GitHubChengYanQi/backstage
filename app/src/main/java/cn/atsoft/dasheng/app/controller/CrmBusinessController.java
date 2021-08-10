@@ -121,10 +121,12 @@ public class CrmBusinessController extends BaseController {
     List<Map<String,Object>> result = factory.wrap();
     return ResponseData.success(result);
   }
-    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+
+
+    @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
     @ApiOperation("更新状态")
-    public ResponseData batchDelete(@RequestBody CrmBusinessParam crmBusinessParam) {
-        String s = crmBusinessService.UpdateStatus(crmBusinessParam);
+    public ResponseData UpdateStatus(@RequestBody CrmBusinessParam crmBusinessParam) {
+        int s = crmBusinessService.UpdateStatus(crmBusinessParam);
 
         return ResponseData.success(s);
     }

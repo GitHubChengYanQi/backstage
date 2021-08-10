@@ -1,19 +1,14 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
-import cn.atsoft.dasheng.app.entity.CrmIndustry;
-import cn.atsoft.dasheng.app.entity.Origin;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.*;
-import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
-import cn.atsoft.dasheng.app.service.CrmIndustryService;
-import cn.atsoft.dasheng.app.service.OriginService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
-import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -51,6 +46,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private UserService userService;
     @Autowired
     private CrmIndustryService crmIndustryService;
+
+    @Autowired
+    private CustomerDynamicService customerDynamicService ;
 
     @Override
     public Long add(CustomerParam param) {
@@ -114,7 +112,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 record.setClassificationName("代理商");
             }
         }
-
+        List<Long> dycustomerIds = new ArrayList<>();
         List<Long> originIds = new ArrayList<>();
         List<Long> levelIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
@@ -125,6 +123,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             levelIds.add(record.getCustomerLevelId());
             userIds.add(record.getUserId());
             industryIds.add(record.getIndustryId());
+            dycustomerIds.add(record.getCustomerId());
         }
 
         /**
@@ -151,6 +150,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("industry_id",industryIds);
         List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
+
+
 
         for (CustomerResult record : data) {
             for (Origin origin : originList) {
@@ -225,6 +226,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         UpdateWrapper<Customer> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("customer_id", customerId);
         this.update(customer, updateWrapper);
+    }
+
+    @Override
+    public void updateStatus(CustomerParam customerParam) {
+        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
+        customerDynamicParam.setCustomerId(customerParam.getCustomerId());
+        customerDynamicParam.setContent("状态被更新");
+        customerDynamicService.add(customerDynamicParam);
+
     }
 
 }

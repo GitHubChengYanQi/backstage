@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -124,6 +125,13 @@ public class CustomerController extends BaseController {
     public ResponseData batchDelete(@RequestBody CustomerIdRequest customerIdRequest) {
         customerService.batchDelete(customerIdRequest.getCustomerId());
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
+    @ApiOperation("更新状态")
+    public ResponseData UpdateStatus(@RequestBody CustomerParam CustomerParam) {
+      customerService.updateStatus(CustomerParam);
+      return ResponseData.success();
     }
 }
 

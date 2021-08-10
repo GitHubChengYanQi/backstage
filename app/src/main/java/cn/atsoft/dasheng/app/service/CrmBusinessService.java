@@ -45,7 +45,7 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
     void update(CrmBusinessParam param);
 
 
-    String UpdateStatus (CrmBusinessParam param);
+    int UpdateStatus (CrmBusinessParam param);
 
     /**
      * 查询单条数据，Specification模式
