@@ -56,7 +56,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusinessResult detail = new CrmBusinessResult();
         ToolUtil.copyProperties(crmBusiness, detail);
         List<CrmBusinessResult> crmBusinessResults = new ArrayList<CrmBusinessResult>(){{
-            add(detail);
+                add(detail);
         }};
         this.format(crmBusinessResults);
         return  crmBusinessResults.get(0);
@@ -91,18 +91,16 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         Page<CrmBusinessResult> pageContext = getPageContext();
         IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> processIds = new ArrayList<>();
-        List<Long> createUser = new ArrayList<>();
+
         for (CrmBusinessResult record : page.getRecords()) {
             processIds.add(record.getProcessId());
-            createUser.add(record.getCreateUser());
+
         }
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", createUser);
-        List<User> userList = userService.list(userQueryWrapper);
+
 
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
         if ( param .getState()!= null && param.getState().equals("赢单")) {
@@ -121,16 +119,18 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         }
 
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
-            for (CrmBusinessResult record : page.getRecords()) {
+
                 for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
-                    if ( record.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
-                        crmBusinessTrackParam.setBusinessId(oldEntity.getBusinessId());
+                    if ( param.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
+                        crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
+                        crmBusinessTrackParam.setTrackId(newEntity.getTrackId());
+
                         crmBusinessTrackParam.setNote("状态已更新："+crmBusinessSalesProcess.getName());
                         crmBusinessTrackService.add(crmBusinessTrackParam);
                     }
                 }
 
-            }
+
         }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);

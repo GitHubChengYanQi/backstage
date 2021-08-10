@@ -36,6 +36,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
 
     private Long processId;
 
+
     /**
      * 商机id
      */
