@@ -36,6 +36,7 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer_dynamic where 1 = 1
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerDynamicParam">

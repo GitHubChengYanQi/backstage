@@ -131,7 +131,6 @@ public class StorehouseController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
         List<Map<String, Object>> list = this.storehouseService.listMaps();
-
         StorehouseSelectWrapper factory = new StorehouseSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
