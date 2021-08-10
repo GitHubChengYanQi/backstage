@@ -8,30 +8,48 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 品牌表
+ * 商机动态表
  * </p>
  *
- * @author 1
- * @since 2021-07-14
+ * @author cheng
+ * @since 2021-08-10
  */
 @Data
 @ApiModel
-public class BrandResult implements Serializable {
+public class BusinessDynamicResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-     private PartsResult partsResult;
-    /**
-     * 品牌id
-     */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
 
     /**
-     * 品牌名称
+     * 商机动态id
      */
-    @ApiModelProperty("品牌名称")
-    private String brandName;
+    @ApiModelProperty("商机动态id")
+    private Long dynamicId;
+
+    /**
+     * 商机id
+     */
+    @ApiModelProperty("商机id")
+    private Long businessId;
+
+    /**
+     * 内容
+     */
+    @ApiModelProperty("内容")
+    private String content;
+
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
 
     /**
      * 创建时间
@@ -44,18 +62,6 @@ public class BrandResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
-
-    /**
-     * 创建用户
-     */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
-
-    /**
-     * 修改用户
-     */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
 
     /**
      * 状态

@@ -23,19 +23,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
-    public String getProductionTime() {
-        if (productionTime!=null&&!productionTime.equals("")){
-            StringBuffer stringBuffer = new StringBuffer(productionTime);
-            String date = stringBuffer.substring(0,10);
-            return date;
-        }else {
-            return productionTime;
-        }
-    }
 
-    public void setProductionTime(String productionTime) {
-        this.productionTime = productionTime;
-    }
 
     private  String materialName;
     /**
@@ -66,7 +54,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
      * 生产日期
      */
     @ApiModelProperty("生产日期")
-    private String productionTime;
+    private Date productionTime;
 
     /**
      * 重要程度

@@ -10,66 +10,36 @@ import java.util.List;
 
 /**
  * <p>
- * 付款信息表
+ * 商机动态表
  * </p>
  *
- * @author ta
- * @since 2021-07-26
+ * @author cheng
+ * @since 2021-08-10
  */
 @Data
 @ApiModel
-public class CrmPaymentParam implements Serializable, BaseValidatingParam {
+public class BusinessDynamicParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * 商机动态id
+     */
+    @ApiModelProperty("商机动态id")
+    private Long dynamicId;
 
     /**
-     * 物品
+     * 商机id
      */
-    @ApiModelProperty("物品")
-    private  Long itemId;
+    @ApiModelProperty("商机id")
+    private Long businessId;
 
     /**
-     * 出库
+     * 内容
      */
-    @ApiModelProperty("出库")
-    private Long outstockId;
-    /**
-     * 付款信息id
-     */
-    @ApiModelProperty("付款信息id")
-    private Long paymentId;
-
-    /**
-     * 订单编号
-     */
-    @ApiModelProperty("订单编号")
-    private Long orderId;
-
-    /**
-     * 付款时间
-     */
-    @ApiModelProperty("付款时间")
-    private Date payTime;
-
-    /**
-     * 支付方式
-     */
-    @ApiModelProperty("支付方式")
-    private String payType;
-
-    /**
-     * 运费
-     */
-    @ApiModelProperty("运费")
-    private Long freight;
-
-    /**
-     * 部门编号
-     */
-    @ApiModelProperty("部门编号")
-    private Long deptId;
+    @ApiModelProperty("内容")
+    private String content;
 
     /**
      * 创建者
@@ -100,12 +70,6 @@ public class CrmPaymentParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
-    /**
-     * 出库id
-     */
-    @ApiModelProperty("出库id")
-    private Long deliveryId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

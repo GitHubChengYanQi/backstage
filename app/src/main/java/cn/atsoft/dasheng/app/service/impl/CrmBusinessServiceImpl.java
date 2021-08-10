@@ -158,6 +158,16 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public void batchDelete(List<Long> businessIds) {
+        CrmBusiness business = new CrmBusiness();
+        business.setDisplay(0);
+        QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
+        businessQueryWrapper.in("business_id",businessIds);
+        this.update(business,businessQueryWrapper);
+
+    }
+
     private Serializable getKey(CrmBusinessParam param) {
         return param.getBusinessId();
     }

@@ -10,16 +10,18 @@
         <result column="pay_type" property="payType" />
         <result column="freight" property="freight" />
         <result column="deptId" property="deptId" />
+        <result column="item_id" property="itemId" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
         <result column="delivery_id" property="deliveryId" />
+        <result column="outstock_id" property="outstockId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">  item_id AS "itemId",outstock_id AS "outstockId",
         payment_id AS "paymentId", order_id AS "orderId", pay_time AS "payTime", pay_type AS "payType", freight AS "freight", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
