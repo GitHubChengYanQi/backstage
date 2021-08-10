@@ -22,7 +22,6 @@ public class ErpOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
   private int price;
-  private Long  phone;
   private String contactsName;
   private String location;
   private String name;
@@ -45,12 +44,18 @@ public class ErpOrderParam implements Serializable, BaseValidatingParam {
     private Long outstockId;
 
     /**
+     * 联系人电话
+     */
+    @ApiModelProperty("联系人电话")
+    private String phone;
+
+    /**
      * 联系id
      */
     @ApiModelProperty("联系id")
     private Long contactsId;
 
-    /**
+  /**
      * 物品id
      */
     @ApiModelProperty("物品id")
