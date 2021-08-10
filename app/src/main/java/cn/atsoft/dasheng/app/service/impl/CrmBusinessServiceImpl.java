@@ -119,12 +119,10 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         }
 
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
-
             for (CrmBusinessSalesProcess crmBusinessSalesProcess : list) {
                 if (param.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                     crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                     crmBusinessTrackParam.setTrackId(newEntity.getTrackId());
-
                     crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
                     crmBusinessTrackService.add(crmBusinessTrackParam);
                 }

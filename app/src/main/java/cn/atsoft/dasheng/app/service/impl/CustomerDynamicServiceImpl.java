@@ -9,12 +9,19 @@ import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
 import  cn.atsoft.dasheng.app.service.CustomerDynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +34,8 @@ import java.util.List;
  */
 @Service
 public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMapper, CustomerDynamic> implements CustomerDynamicService {
+ @Autowired
+ private UserService userService;
 
     @Override
     public void add(CustomerDynamicParam param){
@@ -61,6 +70,7 @@ public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMappe
     public PageInfo<CustomerDynamicResult> findPageBySpec(CustomerDynamicParam param){
         Page<CustomerDynamicResult> pageContext = getPageContext();
         IPage<CustomerDynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -81,5 +91,23 @@ public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMappe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+       public void format(List<CustomerDynamicResult> data){
+        List<Long> createUserIds = new ArrayList<>();
+           for (CustomerDynamicResult datum : data) {
+               createUserIds.add(datum.getCreateUser());
+           }
+           QueryWrapper<User>dynamicQueryWrapper =new QueryWrapper<>();
+           dynamicQueryWrapper.in("create_user",createUserIds);
+           List<User> userList=createUserIds.size()==0 ? new ArrayList<>(): userService.list(dynamicQueryWrapper);
+           for (CustomerDynamicResult datum : data) {
+               for (User user : userList) {
+                   if (datum.getCreateUser().equals(user.getCreateUser())){
+                       UserResult userResult = new UserResult();
+                       ToolUtil.copyProperties(user,userResult);
+                       datum.setUserResult(userResult);
+                       break;
+                   }
+               }
+           }
+       }
 }

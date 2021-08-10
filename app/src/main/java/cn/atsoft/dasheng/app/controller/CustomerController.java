@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -86,9 +87,9 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
-        CustomerResult bySpec = customerService.findBySpec(customerParam);
-
-        return ResponseData.success(bySpec);
+        Long customerId = customerParam.getCustomerId();
+        CustomerResult detail = customerService.detail(customerId);
+        return ResponseData.success(detail);
     }
 
     /**
@@ -124,6 +125,13 @@ public class CustomerController extends BaseController {
     public ResponseData batchDelete(@RequestBody CustomerIdRequest customerIdRequest) {
         customerService.batchDelete(customerIdRequest.getCustomerId());
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
+    @ApiOperation("更新状态")
+    public ResponseData UpdateStatus(@RequestBody CustomerParam CustomerParam) {
+      customerService.updateStatus(CustomerParam);
+      return ResponseData.success();
     }
 }
 

@@ -34,7 +34,7 @@ public class CrmBusinessResult implements Serializable {
     private Long trackId;
     private Long processId;
     private String personName;
-
+   private  int sort;
 
 
     /**
