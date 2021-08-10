@@ -18,6 +18,7 @@ import java.util.List;
  */
 public interface CrmBusinessService extends IService<CrmBusiness> {
 
+    CrmBusinessResult detail(Long id);
     /**
      * 新增
      *
@@ -43,6 +44,9 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
      */
     void update(CrmBusinessParam param);
 
+
+    String UpdateStatus (CrmBusinessParam param);
+
     /**
      * 查询单条数据，Specification模式
      *
@@ -66,5 +70,7 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
      * @Date 2021-08-03
      */
      PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param);
+
+
 
 }

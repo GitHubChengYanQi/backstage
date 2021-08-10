@@ -33,6 +33,28 @@ public class Contract implements Serializable {
     @TableField("name")
     private String name;
 
+    public Long getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
+    }
+
+    @TableField("template_id")
+    private Long templateId;
+
+    public Integer getAudit() {
+        return audit;
+    }
+
+    public void setAudit(Integer audit) {
+        this.audit = audit;
+    }
+
+    @TableField("audit")
+    private Integer audit;
+
 
 
 

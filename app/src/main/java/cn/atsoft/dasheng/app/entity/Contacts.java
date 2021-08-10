@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.entity;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
@@ -23,7 +24,7 @@ import java.io.Serializable;
 public class Contacts implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+   private CustomerResult customerResult;
     /**
      * 联系人id
      */

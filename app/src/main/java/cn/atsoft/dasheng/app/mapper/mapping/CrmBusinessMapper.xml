@@ -68,6 +68,16 @@
     <if test="paramCondition.businessId != null">
       and business_id = #{paramCondition.businessId}
     </if>
+    <if test="paramCondition.customerId != null">
+      and mcustoer_id = #{paramCondition.customerId}
+    </if>
+    <if test="paramCondition.trackId != null">
+      and track_id = #{paramCondition.trackId}
+    </if>
+    <if test="paramCondition.person != null">
+      and person =#{paramCondition.person}
+    </if>
+
 
     <choose>
       <when test="paramCondition.sorter.order != null and paramCondition.sorter.order.equals('descend')">

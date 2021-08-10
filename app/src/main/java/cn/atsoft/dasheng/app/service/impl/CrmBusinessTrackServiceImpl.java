@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
-import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult;
-import cn.atsoft.dasheng.app.service.CrmBusinessTrackNoteService;
+import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
@@ -13,6 +10,9 @@ import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,8 +34,10 @@ import java.util.List;
  */
 @Service
 public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMapper, CrmBusinessTrack> implements CrmBusinessTrackService {
+
+
     @Autowired
-    private CrmBusinessTrackNoteService crmBusinessTrackNoteService;
+    private UserService userService;
 
     @Override
     public void add(CrmBusinessTrackParam param) {
@@ -70,6 +72,23 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
     public PageInfo<CrmBusinessTrackResult> findPageBySpec(CrmBusinessTrackParam param) {
         Page<CrmBusinessTrackResult> pageContext = getPageContext();
         IPage<CrmBusinessTrackResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long> createUsers = new ArrayList<>();
+        for (CrmBusinessTrackResult record : page.getRecords()) {
+            createUsers.add(record.getCreateUser());
+        }
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id",createUsers);
+        List<User> userList = userService.list(userQueryWrapper);
+        for (CrmBusinessTrackResult record : page.getRecords()) {
+            for (User user : userList) {
+                if (record.getCreateUser().equals(user.getUserId())){
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user,userResult);
+                    record.setUser(userResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 

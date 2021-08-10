@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;
@@ -66,4 +67,7 @@ public interface CrmBusinessSalesService extends IService<CrmBusinessSales> {
      */
      PageInfo<CrmBusinessSalesResult> findPageBySpec(CrmBusinessSalesParam param);
 
+    CrmBusinessSalesResult detail(Long id);
+
+    List<CrmBusinessSalesResult> getByIds(List<Long> ids);
 }

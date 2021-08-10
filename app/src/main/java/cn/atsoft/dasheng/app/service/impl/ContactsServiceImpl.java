@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -9,12 +12,15 @@ import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import  cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +33,8 @@ import java.util.List;
  */
 @Service
 public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> implements ContactsService {
+@Autowired
+private CustomerService customerService;
 
     @Override
     public Long add(ContactsParam param){
@@ -62,6 +70,23 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     public PageInfo<ContactsResult> findPageBySpec(ContactsParam param){
         Page<ContactsResult> pageContext = getPageContext();
         IPage<ContactsResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long> cIds =  new ArrayList<>();
+        for (ContactsResult record : page.getRecords()) {
+            cIds.add(record.getCustomerId());
+        }
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("customer_id",cIds);
+        List<Customer> customerList = customerService.list(customerQueryWrapper);
+        for (ContactsResult record : page.getRecords()) {
+            for (Customer customer : customerList) {
+                if(record.getCustomerId()!=null&&record.getCustomerId().equals(customer.getCustomerId())){
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer,customerResult);
+                    record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 

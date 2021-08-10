@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -49,6 +50,18 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
 
 
+    public CrmBusinessResult detail(Long id){
+
+        CrmBusiness crmBusiness = this.getById(id);
+        CrmBusinessResult detail = new CrmBusinessResult();
+        ToolUtil.copyProperties(crmBusiness, detail);
+        List<CrmBusinessResult> crmBusinessResults = new ArrayList<CrmBusinessResult>(){{
+            add(detail);
+        }};
+        this.format(crmBusinessResults);
+        return  crmBusinessResults.get(0);
+    }
+
     @Override
     public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
@@ -67,22 +80,61 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public void update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
 
-        if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
+    @Override
+    public String UpdateStatus(CrmBusinessParam param) {
+        CrmBusiness oldEntity = getOldEntity(param);
+        CrmBusiness newEntity = getEntity(param);
+        Page<CrmBusinessResult> pageContext = getPageContext();
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long> processIds = new ArrayList<>();
+        List<Long> createUser = new ArrayList<>();
+        for (CrmBusinessResult record : page.getRecords()) {
+            processIds.add(record.getProcessId());
+            createUser.add(record.getCreateUser());
+        }
+        QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
+        processQueryWrapper.in("sales_process_id", processIds);
+        List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", createUser);
+        List<User> userList = userService.list(userQueryWrapper);
 
-            CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
-            crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
-            crmBusinessTrackParam.setNote("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-            crmBusinessTrackService.add(crmBusinessTrackParam);
+        CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+        if ( param .getState()!= null && param.getState().equals("赢单")) {
+            param.setProcessId(100L);
+            oldEntity = getOldEntity(param);
+            newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
 
-
+        } else if (param .getState()!= null && param.getState().equals("输单")) {
+            param.setProcessId(0L);
+           oldEntity = getOldEntity(param);
+          newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
         }
 
+        if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
+            for (CrmBusinessResult record : page.getRecords()) {
+                for (CrmBusinessSalesProcess crmBusinessSalesProcess : processList) {
+                    if ( record.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
+                        crmBusinessTrackParam.setBusinessId(oldEntity.getBusinessId());
+                        crmBusinessTrackParam.setNote("状态已更新："+crmBusinessSalesProcess.getName());
+                        crmBusinessTrackService.add(crmBusinessTrackParam);
+                    }
+                }
+
+            }
+        }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return "状态已更新";
     }
 
     @Override
@@ -162,9 +214,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         /**
          *获取流程id
          */
-        QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
-        crmBusinessSalesQueryWrapper.in("sales_id", salesIds);
-        List<CrmBusinessSales> salesList = salesIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesService.list(crmBusinessSalesQueryWrapper);
+
+        List<CrmBusinessSalesResult> salesList = salesIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesService.getByIds(salesIds);
         /**
          *获取客户id
          */
@@ -185,7 +236,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
         for (CrmBusinessResult item : data) {
             for (Customer customer : customerList) {
-                if (item.getCustomerId().equals(customer.getCustomerId())) {
+                if ( item.getCustomerId() != null && item.getCustomerId().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     item.setCustomer(customerResult);
@@ -200,11 +251,9 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                     break;
                 }
             }
-            for (CrmBusinessSales crmBusinessSales : salesList) {
+            for (CrmBusinessSalesResult crmBusinessSales : salesList) {
                 if (crmBusinessSales.getSalesId().equals(item.getSalesId())) {
-                    CrmBusinessSalesResult crmBusinessSalesResult = new CrmBusinessSalesResult();
-                    ToolUtil.copyProperties(crmBusinessSales, crmBusinessSalesResult);
-                    item.setSales(crmBusinessSalesResult);
+                    item.setSales(crmBusinessSales);
                     break;
                 }
 
@@ -238,7 +287,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             }
 
         }
-        return data.size()==0 ? null : data.get(0);
+        return data.size() == 0 ? null : data.get(0);
     }
 
 }

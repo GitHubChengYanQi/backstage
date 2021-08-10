@@ -23,7 +23,8 @@ import java.io.Serializable;
 public class CrmBusinessSalesProcess implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableField("win_rate")
+     private  Long winRate ;
     /**
      * 赢率id
      */
@@ -85,6 +86,14 @@ public class CrmBusinessSalesProcess implements Serializable {
      */
     @TableField("display")
     private Integer display;
+
+    public Long getWinRate() {
+        return winRate;
+    }
+
+    public void setWinRate(Long winRate) {
+        this.winRate = winRate;
+    }
 
     public String getNote() {
         return note;

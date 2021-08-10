@@ -1,14 +1,14 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import cn.atsoft.dasheng.app.entity.CrmBusinessTrackNote;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackNoteResult;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ import java.util.List;
  * 商机跟踪表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @Data
@@ -25,14 +25,18 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
 
-    private  List<CrmBusinessTrackNoteParam> getnote;
+
     /**
      * 商机跟踪id
      */
-    private  String note;
-    private  String type;
+    private String name;
+    private String time;
 
-    private  Long userId;
+    private Integer offer;
+    private String note;
+    private String type;
+
+    private Long userId;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
 

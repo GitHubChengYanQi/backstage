@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,46 +16,93 @@ import java.io.Serializable;
  * 商机跟踪表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @TableName("daoxin_crm_business_track")
 public class CrmBusinessTrack implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
+@TableField("name")
+  private  String name;
     /**
      * 商机跟踪id
      */
-      @TableId(value = "track_id", type = IdType.ID_WORKER)
+    @TableId(value = "track_id", type = IdType.ID_WORKER)
     private Long trackId;
-      @TableField("type")
-      private  String type;
+    @TableField("type")
+    private String type;
     @TableField("user_id")
-    private  Long userId;
-
+    private Long userId;
+    @TableField("time")
+    private String time;
+    @TableField("offer")
+    private Integer offer;
     @TableField("business_id")
-    private  Long businessId;
+    private Long businessId;
 
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
 
     @TableField("note")
-    private  String note;
+    private String note;
+    /**
+     * 备注
+     */
+    @TableField("note_id")
+    private Long noteId;
 
+    /**
+     * 创建者
+     */
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public Integer getOffer() {
+        return offer;
+    }
+
+    public void setOffer(Integer offer) {
+        this.offer = offer;
+    }
 
     public String getType() {
         return type;
@@ -70,43 +120,13 @@ public class CrmBusinessTrack implements Serializable {
         this.userId = userId;
     }
 
+    public String getNote() {
+        return note;
+    }
 
-    /**
-     * 备注
-     */
-    @TableField("note_id")
-    private Long noteId;
-
-    /**
-     * 创建者
-     */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
-
-    /**
-     * 创建时间
-     */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
-
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public Long getTrackId() {
         return trackId;
@@ -164,16 +184,24 @@ public class CrmBusinessTrack implements Serializable {
         this.display = display;
     }
 
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
+    }
+
     @Override
     public String toString() {
         return "CrmBusinessTrack{" +
-        "trackId=" + trackId +
-        ", noteId=" + noteId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "trackId=" + trackId +
+                ", noteId=" + noteId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
