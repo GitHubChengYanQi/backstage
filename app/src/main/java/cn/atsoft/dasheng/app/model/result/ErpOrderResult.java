@@ -20,7 +20,6 @@ public class ErpOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
   private int price;
-  private Long  phone;
   private String contactsName;
 private String location;
 private String name;
@@ -50,6 +49,12 @@ private String name;
      */
     @ApiModelProperty("联系id")
     private Long contactsId;
+
+    /**
+     * 联系人电话
+     */
+    @ApiModelProperty("联系人电话")
+    private String phone;
 
     /**
      * 物品id

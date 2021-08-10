@@ -46,6 +46,12 @@ public class ErpOrder implements Serializable {
     private Long contactsId;
 
     /**
+     * 联系人电话
+     */
+    @TableField("phone")
+    private String phone;
+
+    /**
      * 物品id
      */
     @TableField("item_id")
@@ -135,6 +141,14 @@ public class ErpOrder implements Serializable {
 
   public void setContactsId(Long contactsId) {
     this.contactsId = contactsId;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
   }
 
   public Long getItemId() {

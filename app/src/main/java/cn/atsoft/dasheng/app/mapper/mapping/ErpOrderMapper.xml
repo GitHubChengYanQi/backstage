@@ -11,6 +11,7 @@
         <result column="item_id" property="itemId" />
         <result column="state" property="state" />
         <result column="number" property="number" />
+        <result column="phone" property="phone" />
         <result column="order_time" property="orderTime" />
         <result column="deptId" property="deptId" />
         <result column="create_user" property="createUser" />
