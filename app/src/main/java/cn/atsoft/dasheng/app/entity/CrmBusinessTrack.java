@@ -32,8 +32,17 @@ public class CrmBusinessTrack implements Serializable {
     private Long trackId;
     @TableField("type")
     private String type;
-    @TableField("user_id")
-    private Long userId;
+
+    public Integer getMoney() {
+        return money;
+    }
+
+    public void setMoney(Integer money) {
+        this.money = money;
+    }
+
+    @TableField("money")
+    private Integer money;
     @TableField("time")
     private String time;
     @TableField("offer")
@@ -110,14 +119,6 @@ public class CrmBusinessTrack implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getNote() {
