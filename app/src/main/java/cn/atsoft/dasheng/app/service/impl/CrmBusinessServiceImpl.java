@@ -136,6 +136,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 //                    crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
 //                    crmBusinessTrackService.add(crmBusinessTrackParam);
                     BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
+                    businessDynamicParam.setBusinessId(newEntity.getBusinessId());
                     businessDynamicParam.setContent("状态已更新"+crmBusinessSalesProcess.getName());
                     businessDynamicService.add(businessDynamicParam);
                 }
