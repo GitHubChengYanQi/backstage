@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.sys.modular.consts.entity;
+package cn.atsoft.dasheng.base.model;
 
 import lombok.Data;
 

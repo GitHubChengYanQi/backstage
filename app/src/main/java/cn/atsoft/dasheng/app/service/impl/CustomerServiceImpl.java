@@ -195,7 +195,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     private Page<CustomerResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("createTime");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Customer getOldEntity(CustomerParam param) {
