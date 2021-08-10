@@ -66,4 +66,6 @@ public interface PartsService extends IService<Parts> {
      */
      PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
+     List<PartsResult> getByIds (List<Long> ids);
+
 }

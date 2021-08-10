@@ -1,17 +1,23 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Parts;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.mapper.BrandMapper;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
-import  cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -28,21 +34,23 @@ import java.util.List;
  */
 @Service
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements BrandService {
+    @Autowired
+    private PartsService partsService;
 
     @Override
-    public Long add(BrandParam param){
+    public Long add(BrandParam param) {
         Brand entity = getEntity(param);
         this.save(entity);
         return entity.getBrandId();
     }
 
     @Override
-    public void delete(BrandParam param){
+    public void delete(BrandParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(BrandParam param){
+    public void update(BrandParam param) {
         Brand oldEntity = getOldEntity(param);
         Brand newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -50,23 +58,24 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     @Override
-    public BrandResult findBySpec(BrandParam param){
+    public BrandResult findBySpec(BrandParam param) {
         return null;
     }
 
     @Override
-    public List<BrandResult> findListBySpec(BrandParam param){
+    public List<BrandResult> findListBySpec(BrandParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<BrandResult> findPageBySpec(BrandParam param){
+    public PageInfo<BrandResult> findPageBySpec(BrandParam param) {
         Page<BrandResult> pageContext = getPageContext();
         IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(BrandParam param){
+    private Serializable getKey(BrandParam param) {
         return param.getBrandId();
     }
 
@@ -87,4 +96,22 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         return entity;
     }
 
+    public void format(List<BrandResult> data) {
+        List<Long> brandIs = new ArrayList<>();
+        for (BrandResult datum : data) {
+            brandIs.add(datum.getBrandId());
+        }
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.in("brand_id", brandIs);
+        List<PartsResult> brandList = partsService.getByIds(brandIs);
+
+        for (BrandResult datum : data) {
+            for (PartsResult parts : brandList) {
+                if (datum.getBrandId().equals(parts.getBrandId())) {
+                     datum.setPartsResult(parts);
+                     break;
+                }
+            }
+        }
+    }
 }

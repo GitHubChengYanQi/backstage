@@ -20,7 +20,7 @@ public class ItemsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+     private  MaterialResult materialResult;
     /**
      * 物品Id
      */

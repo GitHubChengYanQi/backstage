@@ -79,4 +79,5 @@ public interface CustomerService extends IService<Customer> {
     void updateStatus (CustomerParam customerParam);
 
     CustomerResult  detail (Long id);
+
 }

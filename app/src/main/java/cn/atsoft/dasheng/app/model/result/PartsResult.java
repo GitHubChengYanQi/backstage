@@ -25,7 +25,7 @@ public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Long items;
-    private   List<Items> getitem;
+    private  ItemsResult itemsResult;
 
     private String name;
     /**
