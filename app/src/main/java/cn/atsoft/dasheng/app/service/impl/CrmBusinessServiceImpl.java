@@ -85,7 +85,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    public int UpdateStatus(CrmBusinessParam param) {
+    public String UpdateStatus(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         Page<CrmBusinessResult> pageContext = getPageContext();
@@ -119,35 +119,20 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         }
 
         if (newEntity.getBusinessId().equals(oldEntity.getBusinessId())) {
-
-            for (int i = 0; i < list.size(); i++) {
-                if (param.getProcessId().equals(list.get(i).getSalesProcessId())) {
+            for (CrmBusinessSalesProcess crmBusinessSalesProcess : list) {
+                if (param.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
                     crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
                     crmBusinessTrackParam.setTrackId(newEntity.getTrackId());
-                    crmBusinessTrackParam.setNote("状态已更新：" + list.get(i).getName());
+                    crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
                     crmBusinessTrackService.add(crmBusinessTrackParam);
-                    System.err.println(i+"------------------------------------------------------------------------------------------------------------------------");
-                    CrmBusinessResult crmBusinessResult = new CrmBusinessResult();
-                    crmBusinessResult.setSort(i-1);
-                    return crmBusinessResult.getSort();
                 }
             }
-
-//            for (CrmBusinessSalesProcess crmBusinessSalesProcess : list) {
-//                if (param.getProcessId().equals(crmBusinessSalesProcess.getSalesProcessId())) {
-//                    crmBusinessTrackParam.setBusinessId(newEntity.getBusinessId());
-//                    crmBusinessTrackParam.setTrackId(newEntity.getTrackId());
-//
-//                    crmBusinessTrackParam.setNote("状态已更新：" + crmBusinessSalesProcess.getName());
-//                    crmBusinessTrackService.add(crmBusinessTrackParam);
-//                }
-//            }
 
 
         }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-        return 0;
+        return "状态已更新";
     }
 
     @Override

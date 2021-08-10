@@ -53,8 +53,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
+        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
+        customerDynamicParam.setCustomerId(param.getCustomerId());
+        customerDynamicParam.setContent("添加客户"+ param.getCustomerName());
+        customerDynamicService.add(customerDynamicParam);
         this.save(entity);
         return entity.getCustomerId();
+
     }
 
     @Override
@@ -75,6 +80,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
+        customerDynamicParam.setCustomerId(param.getCustomerId());
+        customerDynamicParam.setContent(param.getCustomerName()+"客户被修改");
+        customerDynamicService.add(customerDynamicParam);
         this.updateById(newEntity);
     }
 
@@ -230,11 +239,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public void updateStatus(CustomerParam customerParam) {
-        CustomerDynamicParam customerDynamicParam =new CustomerDynamicParam();
-        customerDynamicParam.setCustomerId(customerParam.getCustomerId());
-        customerDynamicParam.setContent("状态被更新");
-        customerDynamicService.add(customerDynamicParam);
-
     }
 
 }

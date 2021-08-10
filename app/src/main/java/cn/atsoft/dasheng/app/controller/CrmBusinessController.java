@@ -126,7 +126,7 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
     @ApiOperation("更新状态")
     public ResponseData UpdateStatus(@RequestBody CrmBusinessParam crmBusinessParam) {
-        int s = crmBusinessService.UpdateStatus(crmBusinessParam);
+        String s = crmBusinessService.UpdateStatus(crmBusinessParam);
 
         return ResponseData.success(s);
     }
