@@ -31,6 +31,9 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
         <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
             and latitude like CONCAT('%',#{paramCondition.latitude},'%')
         </if>
@@ -45,6 +48,9 @@
         from daoxin_erp_storehouse where 1 = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
         </if>
         <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
             and latitude like CONCAT('%',#{paramCondition.latitude},'%')
@@ -62,6 +68,9 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
         <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
             and latitude like CONCAT('%',#{paramCondition.latitude},'%')
         </if>
@@ -78,7 +87,9 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
-
+        <if test="paramCondition.palce != null and paramCondition.palce != ''">
+            and palce like CONCAT('%',#{paramCondition.palce},'%')
+        </if>
         <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
             and latitude like CONCAT('%',#{paramCondition.latitude},'%')
         </if>
