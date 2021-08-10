@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,7 +71,14 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     }
 
     private Page<OutstockResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>(){{
+            add("brandName");
+            add("name");
+            add("number");
+            add("deliveryTime");
+            add("price");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Outstock getOldEntity(OutstockParam param) {
