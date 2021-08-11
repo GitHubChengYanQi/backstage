@@ -23,8 +23,9 @@ public interface ContractService extends IService<Contract> {
      *
      * @author 
      * @Date 2021-07-21
+     * @return
      */
-    Long add(ContractParam param);
+    Contract add(ContractParam param);
 
     /**
      * 删除

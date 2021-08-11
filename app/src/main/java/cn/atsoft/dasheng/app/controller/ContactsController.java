@@ -124,15 +124,4 @@ public class ContactsController extends BaseController {
 
   }
 
-
-  @RequestMapping(value = "/listSelect1", method = RequestMethod.POST)
-
-  @ApiOperation("Select数据接口")
-  public ResponseData<List<Map<String, Object>>> listSelect1() {
-    List<Map<String, Object>> list = this.contactsService.listMaps();
-    ContactsSelectWrapper1 contactsSelectWrapper1 = new ContactsSelectWrapper1(list);
-    List<Map<String, Object>> result = contactsSelectWrapper1.wrap();
-    return ResponseData.success(result);
-
-  }
 }

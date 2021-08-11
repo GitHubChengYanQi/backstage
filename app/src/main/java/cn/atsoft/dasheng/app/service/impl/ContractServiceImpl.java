@@ -37,10 +37,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private CustomerService customerService;
 
     @Override
-    public Long add(ContractParam param) {
+    public Contract add(ContractParam param) {
         Contract entity = getEntity(param);
         this.save(entity);
-        return entity.getContractId();
+        return entity;
     }
 
     @Override

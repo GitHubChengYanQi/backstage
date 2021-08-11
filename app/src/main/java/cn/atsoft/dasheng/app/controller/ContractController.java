@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
-import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,15 +12,10 @@ import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -56,7 +50,7 @@ public class ContractController extends BaseController {
             PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
-        Long add = this.contractService.add(contractParam);
+        Contract add = this.contractService.add(contractParam);
         return ResponseData.success(add);
     }
 
