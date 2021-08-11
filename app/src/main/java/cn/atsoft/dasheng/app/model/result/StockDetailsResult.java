@@ -27,7 +27,8 @@ public class StockDetailsResult implements Serializable {
     private Long itemsId;
     private String iname;
     private String pname;
-
+    private StorehouseResult storehouseResult;
+    private ItemsResult itemsResult;
     /**
      * 明细id
      */

@@ -110,8 +110,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     public PartsResult format(List<PartsResult> data) {
         List<Long> itemIds = new ArrayList<>();
+        List<Long> iIds =new ArrayList<>();
         for (PartsResult datum : data) {
-            itemIds.add(datum.getItemId());
+            itemIds.add(datum.getItems());
         }
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", itemIds);

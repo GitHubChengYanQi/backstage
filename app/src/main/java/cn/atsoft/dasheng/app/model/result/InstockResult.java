@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 入库表
@@ -19,18 +23,20 @@ import java.util.List;
 public class InstockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-   private  String name;
-   private  String brandName;
-   private String placeName;
+    private BrandResult brandResult;
+    private ItemsResult itemsResult;
+    private StorehouseResult storehouseResult;
+    private String name;
+    private String brandName;
+    private String placeName;
     /**
      * 物品编号
      */
     @ApiModelProperty("物品编号")
     private Long instockId;
 
- @ApiModelProperty("地点id")
- private Long StorehouseId;
+    @ApiModelProperty("地点id")
+    private Long StorehouseId;
 
     /**
      * 物品名称
