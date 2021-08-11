@@ -57,3 +57,7 @@ spring:
 # 邮件发送（改为自己的账号）
 mail:
   from: sn93@qq.com
+
+freed-template:
+  customer:
+    add: "添加客户"

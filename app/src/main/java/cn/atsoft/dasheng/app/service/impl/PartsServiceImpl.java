@@ -120,7 +120,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         for (PartsResult datum : data) {
             for (Items items : list) {
-                if (items.getItemId().equals(datum.getItemId())) {
+                if (items.getItemId().equals(datum.getItems())) {
                     ItemsResult itemsResult = new ItemsResult();
                     ToolUtil.copyProperties(items, itemsResult);
                     datum.setItemsResult(itemsResult);
