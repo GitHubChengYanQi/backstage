@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
@@ -51,6 +52,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private CustomerDynamicService customerDynamicService;
 
     @Override
+    @BussinessLog
     public Long add(CustomerParam param) {
         Customer entity = getEntity(param);
         CustomerDynamicParam customerDynamicParam = new CustomerDynamicParam();
@@ -63,6 +65,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
+    @BussinessLog
     public void delete(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);
@@ -76,6 +79,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
+    @BussinessLog
     public void update(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);

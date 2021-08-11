@@ -31,6 +31,11 @@ public class ContractResult implements Serializable {
     private Long partyA;
     private Long partyB;
 
+    private Long partyAAdressId;
+    private Long partyBAdressId;
+    private Long partyAContactsId;
+    private Long partyBContactsId;
+
     private Long templateId;
     private Integer audit;
 

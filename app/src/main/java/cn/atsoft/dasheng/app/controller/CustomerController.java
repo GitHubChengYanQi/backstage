@@ -60,7 +60,6 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    @BussinessLog
     public ResponseData update(@RequestBody CustomerParam customerParam) {
 
         this.customerService.update(customerParam);

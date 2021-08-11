@@ -110,6 +110,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     public void format(List<PartsResult> data) {
         List<Long> itemIds = new ArrayList<>();
+        List<Long> iIds =new ArrayList<>();
         for (PartsResult datum : data) {
             itemIds.add(datum.getItems());
         }
