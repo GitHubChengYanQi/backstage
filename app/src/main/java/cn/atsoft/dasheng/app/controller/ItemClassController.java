@@ -85,7 +85,7 @@ public class ItemClassController extends BaseController {
         ItemClassResult result = new ItemClassResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

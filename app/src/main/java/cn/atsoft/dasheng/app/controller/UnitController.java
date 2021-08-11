@@ -85,7 +85,7 @@ public class UnitController extends BaseController {
         UnitResult result = new UnitResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
