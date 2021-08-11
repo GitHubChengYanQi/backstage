@@ -19,11 +19,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="display" property="display" />
+        <result column="customer_id" property="customerId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
- name AS "name",price AS "price",phone AS "phone",contacts_name AS contactsName,location AS "location", order_id AS "orderId", adress_id AS "adressId", outstock_id AS "outstockId", contacts_id AS "contactsId", item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderTime", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    <sql id="Base_Column_List"> customer_id AS "customerId",
+phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS "outstockId", contacts_id AS "contactsId", item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderTime", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -54,26 +55,13 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpOrderResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from order_view where 1 = 1
-                <if test="paramCondition.contactsName != null">
-                        and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
-                </if>
-                <if test="paramCondition.state != null">
-                        and state like CONCAT('%',#{paramCondition.state},'%')
-                </if>
-              <if test="paramCondition.orderId != null">
-                and order_id like CONCAT('%',#{paramCondition.orderId},'%')
-              </if>
-
-              <if test="paramCondition.phone != null">
-                and phone like CONCAT('%',#{paramCondition.phone},'%')
-              </if>
-              <if test="paramCondition.name != null">
-                and name like CONCAT('%',#{paramCondition.name},'%')
-              </if>
-              <if test="paramCondition.location!= null">
-                and location like CONCAT('%',#{paramCondition.location},'%')
-              </if>
+        from daoxin_erp_order where 1 = 1
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
 
     </select>
 

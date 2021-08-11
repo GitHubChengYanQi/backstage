@@ -108,26 +108,26 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         return entity;
     }
 
-    public void format(List<PartsResult> data) {
+    public PartsResult format(List<PartsResult> data) {
         List<Long> itemIds = new ArrayList<>();
         for (PartsResult datum : data) {
             itemIds.add(datum.getItemId());
         }
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", itemIds);
-        List<Items> list = itemsService.list(itemsQueryWrapper);
+        List<Items> list =itemIds.size()==0? new ArrayList<>(): itemsService.list(itemsQueryWrapper);
 
         for (PartsResult datum : data) {
-
             for (Items items : list) {
                 if (items.getItemId().equals(datum.getItemId())) {
                     ItemsResult itemsResult = new ItemsResult();
                     ToolUtil.copyProperties(items, itemsResult);
                     datum.setItemsResult(itemsResult);
-
+                    return datum;
                 }
             }
         }
-
+        return null;
     }
+
 }

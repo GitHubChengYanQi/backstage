@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,9 +27,11 @@ public class ErpOrder implements Serializable {
     /**
      * 订单编号
      */
-      @TableId(value = "order_id", type = IdType.ID_WORKER)
+    @TableId(value = "order_id", type = IdType.ID_WORKER)
     private Long orderId;
 
+    @TableField("customer_id")
+    private Long customerId;
     /**
      * 地址id
      */
@@ -84,25 +89,25 @@ public class ErpOrder implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -111,143 +116,151 @@ public class ErpOrder implements Serializable {
     @TableField("display")
     private Integer display;
 
-  public Long getOrderId() {
-    return orderId;
-  }
+    public Long getCustomerId() {
+        return customerId;
+    }
 
-  public void setOrderId(Long orderId) {
-    this.orderId = orderId;
-  }
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
-  public String getAdressId() {
-    return adressId;
-  }
+    public Long getOrderId() {
+        return orderId;
+    }
 
-  public void setAdressId(String adressId) {
-    this.adressId = adressId;
-  }
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 
-  public Long getOutstockId() {
-    return outstockId;
-  }
+    public String getAdressId() {
+        return adressId;
+    }
 
-  public void setOutstockId(Long outstockId) {
-    this.outstockId = outstockId;
-  }
+    public void setAdressId(String adressId) {
+        this.adressId = adressId;
+    }
 
-  public Long getContactsId() {
-    return contactsId;
-  }
+    public Long getOutstockId() {
+        return outstockId;
+    }
 
-  public void setContactsId(Long contactsId) {
-    this.contactsId = contactsId;
-  }
+    public void setOutstockId(Long outstockId) {
+        this.outstockId = outstockId;
+    }
 
-  public String getPhone() {
-    return phone;
-  }
+    public Long getContactsId() {
+        return contactsId;
+    }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
-  }
+    public void setContactsId(Long contactsId) {
+        this.contactsId = contactsId;
+    }
 
-  public Long getItemId() {
-    return itemId;
-  }
+    public String getPhone() {
+        return phone;
+    }
 
-  public void setItemId(Long itemId) {
-    this.itemId = itemId;
-  }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-  public String getState() {
-    return state;
-  }
+    public Long getItemId() {
+        return itemId;
+    }
 
-  public void setState(String state) {
-    this.state = state;
-  }
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
 
-  public Long getNumber() {
-    return number;
-  }
+    public String getState() {
+        return state;
+    }
 
-  public void setNumber(Long number) {
-    this.number = number;
-  }
+    public void setState(String state) {
+        this.state = state;
+    }
 
-  public Date getOrderTime() {
-    return orderTime;
-  }
+    public Long getNumber() {
+        return number;
+    }
 
-  public void setOrderTime(Date orderTime) {
-    this.orderTime = orderTime;
-  }
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
-  public Long getDeptId() {
-    return deptId;
-  }
+    public Date getOrderTime() {
+        return orderTime;
+    }
 
-  public void setDeptId(Long deptId) {
-    this.deptId = deptId;
-  }
+    public void setOrderTime(Date orderTime) {
+        this.orderTime = orderTime;
+    }
 
-  public Long getCreateUser() {
-    return createUser;
-  }
+    public Long getDeptId() {
+        return deptId;
+    }
 
-  public void setCreateUser(Long createUser) {
-    this.createUser = createUser;
-  }
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
-  public Long getUpdateUser() {
-    return updateUser;
-  }
+    public Long getCreateUser() {
+        return createUser;
+    }
 
-  public void setUpdateUser(Long updateUser) {
-    this.updateUser = updateUser;
-  }
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
 
-  public Date getCreateTime() {
-    return createTime;
-  }
+    public Long getUpdateUser() {
+        return updateUser;
+    }
 
-  public void setCreateTime(Date createTime) {
-    this.createTime = createTime;
-  }
+    public void setUpdateUser(Long updateUser) {
+        this.updateUser = updateUser;
+    }
 
-  public Date getUpdateTime() {
-    return updateTime;
-  }
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-  public void setUpdateTime(Date updateTime) {
-    this.updateTime = updateTime;
-  }
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
-  public Integer getDisplay() {
-    return display;
-  }
+    public Date getUpdateTime() {
+        return updateTime;
+    }
 
-  public void setDisplay(Integer display) {
-    this.display = display;
-  }
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
-  @Override
-  public String toString() {
-    return "ErpOrder{" +
-      "orderId=" + orderId +
-      ", adressId='" + adressId + '\'' +
-      ", outstockId=" + outstockId +
-      ", contactsId=" + contactsId +
-      ", itemId=" + itemId +
-      ", state='" + state + '\'' +
-      ", number=" + number +
-      ", orderTime=" + orderTime +
-      ", deptId=" + deptId +
-      ", createUser=" + createUser +
-      ", updateUser=" + updateUser +
-      ", createTime=" + createTime +
-      ", updateTime=" + updateTime +
-      ", display=" + display +
-      '}';
-  }
+    public Integer getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Integer display) {
+        this.display = display;
+    }
+
+    @Override
+    public String toString() {
+        return "ErpOrder{" +
+                "orderId=" + orderId +
+                ", adressId='" + adressId + '\'' +
+                ", outstockId=" + outstockId +
+                ", contactsId=" + contactsId +
+                ", itemId=" + itemId +
+                ", state='" + state + '\'' +
+                ", number=" + number +
+                ", orderTime=" + orderTime +
+                ", deptId=" + deptId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                '}';
+    }
 }
