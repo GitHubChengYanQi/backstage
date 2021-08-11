@@ -23,24 +23,27 @@ public interface AdressService extends IService<Adress> {
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    Long add(AdressParam param);
+    Adress add(AdressParam param);
 
     /**
      * 删除
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    void delete(AdressParam param);
+    Adress delete(AdressParam param);
 
     /**
      * 更新
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    void update(AdressParam param);
+    Adress update(AdressParam param);
 
     /**
      * 查询单条数据，Specification模式

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.Map;
 /**
  * 客户地址表控制器
  *
- * @author 
+ * @author
  * @Date 2021-07-23 10:06:11
  */
 @RestController
@@ -37,21 +38,21 @@ public class AdressController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
-        adressParam.setCustomerId(clientId);
-        Long add = this.adressService.add(adressParam);
-        return ResponseData.success(add);
+//        adressParam.setCustomerId(clientId);
+        this.adressService.add(adressParam);
+        return ResponseData.success();
     }
 
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -65,12 +66,12 @@ public class AdressController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AdressParam adressParam)  {
+    public ResponseData delete(@RequestBody AdressParam adressParam) {
         this.adressService.delete(adressParam);
         return ResponseData.success();
     }
@@ -78,7 +79,7 @@ public class AdressController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -95,15 +96,16 @@ public class AdressController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-07-23
      */
     Long clientId;
+
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
         clientId = adressParam.getCustomerId();
-        if(ToolUtil.isEmpty(adressParam)){
+        if (ToolUtil.isEmpty(adressParam)) {
             adressParam = new AdressParam();
         }
         return this.adressService.findPageBySpec(adressParam);
@@ -112,10 +114,10 @@ public class AdressController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.adressService.listMaps();
-     AdressSelectWrapper adressSelectWrapper = new AdressSelectWrapper(list);
-        List<Map<String,Object>> result = adressSelectWrapper.wrap();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.adressService.listMaps();
+        AdressSelectWrapper adressSelectWrapper = new AdressSelectWrapper(list);
+        List<Map<String, Object>> result = adressSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 

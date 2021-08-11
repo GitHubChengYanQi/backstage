@@ -26,23 +26,25 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
      * @Date 2021-08-03
      * @return
      */
-    Long add(CrmBusinessParam param);
+    CrmBusiness add(CrmBusinessParam param);
 
     /**
      * 删除
      *
      * @author 
      * @Date 2021-08-03
+     * @return
      */
-    void delete(CrmBusinessParam param);
+    CrmBusiness delete(CrmBusinessParam param);
 
     /**
      * 更新
      *
      * @author 
      * @Date 2021-08-03
+     * @return
      */
-    void update(CrmBusinessParam param);
+    CrmBusiness update(CrmBusinessParam param);
 
 
     String UpdateStatus (CrmBusinessParam param);

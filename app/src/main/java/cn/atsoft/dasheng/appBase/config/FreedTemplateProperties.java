@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.appBase.config;
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.entity.*;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -14,6 +12,8 @@ public class FreedTemplateProperties {
     private CrmBusiness crmbusiness;
     private Contacts contacts;
     private Adress adress;
+    private Contract contract;
+    private ErpOrder erpOrder;
 
     @Data
     public static class Customer {
@@ -52,4 +52,24 @@ public class FreedTemplateProperties {
 
         private String delete;
     }
+
+    @Data
+    public static class Contract {
+        private String add;
+
+        private String edit;
+
+        private String delete;
+    }
+
+    @Data
+    public static class ErpOrder {
+
+        private String add;
+
+        private String edit;
+
+        private String delete;
+    }
+
 }

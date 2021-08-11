@@ -56,8 +56,8 @@ public class ContractController extends BaseController {
             PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
-        Long add = this.contractService.add(contractParam);
-        return ResponseData.success(add);
+        contractService.add(contractParam);
+        return ResponseData.success();
     }
 
     /**

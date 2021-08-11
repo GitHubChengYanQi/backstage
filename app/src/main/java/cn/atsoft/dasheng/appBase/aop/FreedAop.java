@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.appBase.aop;
 
 import cn.atsoft.dasheng.app.controller.CustomerController;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
@@ -34,8 +35,6 @@ public class FreedAop {
     private FreedTemplateService freedTemplateService;
 
 
-
-
     @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.BussinessLog)")
     public void cutService() {
     }
@@ -63,92 +62,168 @@ public class FreedAop {
          */
         LoginUser user = LoginContextHolder.getContext().getUser();
         CustomerDynamicParam customerDynamicParam = new CustomerDynamicParam();
+        BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
+        /**
+         * 联系人状态
+         */
         if (target instanceof ContactsService) {
             FreedTemplateProperties.Contacts contacts = freedTemplateService.getConfig().getContacts();
             String content = "";
-            switch (methodName){
+            Contacts contactsparam = (Contacts) result;
+            customerDynamicParam.setCustomerId(contactsparam.getCustomerId());
+            switch (methodName) {
                 case "add":
-                    content = contacts.getAdd().replace("[操作人]",user.getName());
+                    content = contacts.getAdd().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+
                     break;
                 case "update":
-                    content = contacts.getEdit().replace("[操作人]",user.getName());
+                    content = contacts.getEdit().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+
                     break;
                 case "delete":
-                    content = contacts.getDelete().replace("[操作人]",user.getName());
+                    content = contacts.getDelete().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+
                     break;
             }
             customerDynamicService.add(customerDynamicParam);
         }
+        /**
+         * 客户状态
+         */
         if (target instanceof CustomerService) {
-            FreedTemplateProperties.Customer customer = freedTemplateService.getConfig().getCustomer();
+            FreedTemplateProperties.Customer customerpro = freedTemplateService.getConfig().getCustomer();
+            CustomerParam customer = (CustomerParam) args[0];
             String content = "";
-            switch (methodName){
+            switch (methodName) {
                 case "add":
-                    content = String.format(customer. getAdd(),user.getName());
+                    content = customerpro.getAdd().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+                    customerDynamicParam.setCustomerId(customer.getCustomerId());
                     break;
                 case "update":
-                    content = customer.getEdit().replace("[操作人]",user.getName());
+                    content = customerpro.getEdit().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+                    customerDynamicParam.setCustomerId(customer.getCustomerId());
                     break;
                 case "delete":
-                    content = customer.getDelete().replace("[操作人]",user.getName());
+                    content = customerpro.getDelete().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
+                    customerDynamicParam.setCustomerId(customer.getCustomerId());
                     break;
             }
-             customerDynamicService.add(customerDynamicParam);
+            customerDynamicService.add(customerDynamicParam);
         }
-
+        /**
+         * 地址状态
+         */
         if (target instanceof AdressService) {
             FreedTemplateProperties.Adress adress = freedTemplateService.getConfig().getAdress();
 
             String content = "";
-            CustomerParam customerParam = (CustomerParam) args[0];
-
-            switch (methodName){
+            Adress adressResult = (Adress) result;
+            customerDynamicParam.setCustomerId(adressResult.getCustomerId());
+            switch (methodName) {
                 case "add":
-                    content = adress.getAdd().replace("[操作人]",user.getName());
-//                    content = String.format(customer. getAdd(),user.getName());
+                    content = adress.getAdd().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
                     break;
                 case "update":
-                    content = adress.getEdit().replace("[操作人]",user.getName());
+                    content = adress.getEdit().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
                     break;
                 case "delete":
-                    content = adress.getDelete().replace("[操作人]",user.getName());
+                    content = adress.getDelete().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
                     break;
             }
             customerDynamicService.add(customerDynamicParam);
         }
+        /**
+         * 商机状态
+         */
         if (target instanceof CrmBusinessService) {
 
-            FreedTemplateProperties.CrmBusiness crmbusiness=freedTemplateService.getConfig().getCrmbusiness();
-            CrmBusinessParam crmBusinessParam = (CrmBusinessParam) args[0];
-            BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
+            FreedTemplateProperties.CrmBusiness crmbusiness = freedTemplateService.getConfig().getCrmbusiness();
+            CrmBusiness crmBusiness = (CrmBusiness) result;
+
+            businessDynamicParam.setBusinessId(crmBusiness.getBusinessId());
             String content = "";
-            switch (methodName){
+            switch (methodName) {
                 case "add":
-                    content = crmbusiness.getAdd().replace("[操作人]",user.getName());
+                    content = crmbusiness.getAdd().replace("[操作人]", user.getName());
                     businessDynamicParam.setContent(content);
-                    businessDynamicParam.setBusinessId(crmBusinessParam.getBusinessId());
+
                     break;
                 case "update":
-                    content = crmbusiness.getEdit().replace("[操作人]",user.getName());
+                    content = crmbusiness.getEdit().replace("[操作人]", user.getName());
                     businessDynamicParam.setContent(content);
-                    businessDynamicParam.setBusinessId(crmBusinessParam.getBusinessId());
+
                     break;
                 case "delete":
-                    content = crmbusiness.getDelete().replace("[操作人]",user.getName());
+                    content = crmbusiness.getDelete().replace("[操作人]", user.getName());
                     businessDynamicParam.setContent(content);
-                    businessDynamicParam.setBusinessId(crmBusinessParam.getBusinessId());
+
                     break;
             }
             businessDynamicService.add(businessDynamicParam);
+        }
+/**
+ * 合同状态
+ */
+        if (target instanceof ContractService) {
+            FreedTemplateProperties.Contract contract = freedTemplateService.getConfig().getContract();
+            Contract contractparam = (Contract) result;
+            customerDynamicParam.setCustomerId(contractparam.getPartyA());
+            String content = "";
+            Adress adressResult = (Adress) result;
+            customerDynamicParam.setCustomerId(adressResult.getCustomerId());
+            switch (methodName) {
+                case "add":
+                    content = contract.getAdd().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+                    break;
+                case "update":
+                    content = contract.getEdit().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+                    break;
+                case "delete":
+                    content = contract.getDelete().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+                    break;
+            }
+            customerDynamicService.add(customerDynamicParam);
+        }
+
+        /**
+         * 订单状态
+         */
+        if (target instanceof CrmBusinessService) {
+
+            FreedTemplateProperties.ErpOrder erpOrder = freedTemplateService.getConfig().getErpOrder();
+            ErpOrder erpOrderparam = (ErpOrder) result;
+            customerDynamicParam.setCustomerId(erpOrderparam.getCustomerId());
+            String content = "";
+            switch (methodName) {
+                case "add":
+                    content = erpOrder.getAdd().replace("[操作人]", user.getName());
+                    businessDynamicParam.setContent(content);
+
+                    break;
+                case "update":
+                    content = erpOrder.getEdit().replace("[操作人]", user.getName());
+                    businessDynamicParam.setContent(content);
+
+                    break;
+                case "delete":
+                    content = erpOrder.getDelete().replace("[操作人]", user.getName());
+                    businessDynamicParam.setContent(content);
+
+                    break;
+            }
+            customerDynamicService.add(customerDynamicParam);
         }
         return result;
     }

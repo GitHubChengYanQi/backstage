@@ -4,11 +4,13 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ErpOrderMapper;
 import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -39,24 +41,49 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     @Autowired
     private CustomerService customerService;
 
-
+    @BussinessLog
     @Override
-    public void add(ErpOrderParam param) {
-        ErpOrder entity = getEntity(param);
-        this.save(entity);
+    public ErpOrder add(ErpOrderParam param) {
+        QueryWrapper<Customer>customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("customer_id",param.getCustomerId());
+        List<Customer> customerList = customerService.list(customerQueryWrapper);
+        for (Customer customer : customerList) {
+            if (customer.getCustomerId().equals(param.getCustomerId())) {
+                ErpOrder entity = getEntity(param);
+                this.save(entity);
+                return  entity;
+            }
+        }
+       throw  new ServiceException(500, "数据不存在");
     }
 
+    @BussinessLog
     @Override
-    public void delete(ErpOrderParam param) {
-        this.removeById(getKey(param));
+    public ErpOrder delete(ErpOrderParam param) {
+        QueryWrapper<Customer>customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("customer_id",param.getCustomerId());
+        List<Customer> customerList = customerService.list(customerQueryWrapper);
+        for (Customer customer : customerList) {
+            if (customer.getCustomerId().equals(param.getCustomerId())) {
+                this.removeById(getKey(param));
+                ErpOrder entity = getEntity(param);
+                return entity;
+            }
+        }
+        throw  new ServiceException(500, "数据不存在");
     }
 
+    @BussinessLog
     @Override
-    public void update(ErpOrderParam param) {
+    public ErpOrder update(ErpOrderParam param) {
         ErpOrder oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)){
+            throw  new ServiceException(500, "数据不存在");
+        }
         ErpOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        this.updateById(oldEntity);
+        return oldEntity;
     }
 
     @Override
