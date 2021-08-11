@@ -60,4 +60,18 @@ mail:
 
 freed-template:
   customer:
-    add: "添加客户"
+    add: "[操作人]添加客户"
+    edit: "[操作人]修改客户"
+    delete: "[操作人]删除了客户"
+  Crmbusiness:
+    add: "[操作人]添加商机"
+    edit: "[操作人]修改商机"
+    delete: "[操作人]删除了商机"
+  Contacts:
+    add: "[操作人]添加联系人"
+    edit: "[操作人]修改联系人"
+    delete: "[操作人]删除了联系人"
+  Adress:
+    add: "[操作人]添加了地址"
+    edit: "[操作人]修改了地址"
+    delete: "[操作人]删除了地址"

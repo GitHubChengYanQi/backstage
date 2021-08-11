@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -37,6 +38,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 private CustomerService customerService;
 
     @Override
+    @BussinessLog
     public Long add(ContactsParam param){
         Contacts entity = getEntity(param);
         this.save(entity);
@@ -44,11 +46,13 @@ private CustomerService customerService;
     }
 
     @Override
+    @BussinessLog
     public void delete(ContactsParam param){
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(ContactsParam param){
         Contacts oldEntity = getOldEntity(param);
         Contacts newEntity = getEntity(param);

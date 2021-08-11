@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
@@ -27,19 +28,19 @@ import java.util.List;
  */
 @Service
 public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
-
+    @BussinessLog
     @Override
     public Long add(AdressParam param){
         Adress entity = getEntity(param);
         this.save(entity);
         return entity.getAdressId();
     }
-
+    @BussinessLog
     @Override
     public void delete(AdressParam param){
         this.removeById(getKey(param));
     }
-
+    @BussinessLog
     @Override
     public void update(AdressParam param){
         Adress oldEntity = getOldEntity(param);

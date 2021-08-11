@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
@@ -65,31 +66,34 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
+    @BussinessLog
     public Long add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
-        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-        String businessName = param.getBusinessName();
-        businessDynamicParam.setContent("新增商机"+businessName);
-        businessDynamicService.add(businessDynamicParam);
+//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
+//        String businessName = param.getBusinessName();
+//        businessDynamicParam.setContent("新增商机"+businessName);
+//        businessDynamicService.add(businessDynamicParam);
         return entity.getBusinessId();
 
     }
 
     @Override
+    @BussinessLog
     public void delete(CrmBusinessParam param) {
         this.removeById(getKey(param));
 
     }
 
     @Override
+    @BussinessLog
     public void update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
-        businessDynamicService.add(businessDynamicParam);
+//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
+//        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
+//        businessDynamicService.add(businessDynamicParam);
         this.updateById(newEntity);
     }
 
