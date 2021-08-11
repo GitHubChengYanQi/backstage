@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -21,10 +24,11 @@ import java.util.List;
 public class ErpOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-  private int price;
-  private String contactsName;
-  private String location;
-  private String name;
+    private int price;
+    private String contactsName;
+    private String location;
+    private String name;
+    private Long customerId;
     /**
      * 订单编号
      */
@@ -55,7 +59,7 @@ public class ErpOrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("联系id")
     private Long contactsId;
 
-  /**
+    /**
      * 物品id
      */
     @ApiModelProperty("物品id")
