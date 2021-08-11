@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,7 @@ import java.util.List;
  * 合同表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @Data
@@ -32,10 +35,14 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private Integer audit;
 
 
-
     private Long templateId;
 
     private Long partyA;
+
+    private Long partyAAdressId;
+    private Long partyBAdressId;
+    private Long partyAContactsId;
+    private Long partyBContactsId;
 
     private Long partyB;
 

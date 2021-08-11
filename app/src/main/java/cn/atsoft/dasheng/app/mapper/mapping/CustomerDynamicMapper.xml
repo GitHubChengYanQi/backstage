@@ -36,6 +36,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer_dynamic where 1 = 1
+        <if test="paramCondition.customerId != null and paramCondition.customerId != ''">
+            and customer_id = #{paramCondition.customerId}
+        </if>
         order by create_time desc
     </select>
 

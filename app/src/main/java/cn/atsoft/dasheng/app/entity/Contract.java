@@ -60,6 +60,47 @@ public class Contract implements Serializable {
 
     @TableField("party_a")
     private Long partyA;
+   @TableField("party_a_adress_id")
+    private Long partyAAdressId;
+   @TableField("party_b_adress_id")
+    private Long partyBAdressId;
+   @TableField("party_a_contacts_id")
+    private Long partyAContactsId;
+
+    public Long getPartyAAdressId() {
+        return partyAAdressId;
+    }
+
+    public void setPartyAAdressId(Long partyAAdressId) {
+        this.partyAAdressId = partyAAdressId;
+    }
+
+    public Long getPartyBAdressId() {
+        return partyBAdressId;
+    }
+
+    public void setPartyBAdressId(Long partyBAdressId) {
+        this.partyBAdressId = partyBAdressId;
+    }
+
+    public Long getPartyAContactsId() {
+        return partyAContactsId;
+    }
+
+    public void setPartyAContactsId(Long partyAContactsId) {
+        this.partyAContactsId = partyAContactsId;
+    }
+
+    public Long getPartyBContactsId() {
+        return partyBContactsId;
+    }
+
+    public void setPartyBContactsId(Long partyBContactsId) {
+        this.partyBContactsId = partyBContactsId;
+    }
+
+    @TableField("party_b_contacts_id")
+    private Long partyBContactsId;
 
     public Long getPartyA() {
         return partyA;
