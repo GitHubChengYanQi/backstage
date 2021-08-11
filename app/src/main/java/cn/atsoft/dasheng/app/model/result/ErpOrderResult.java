@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 订单表
@@ -19,13 +23,15 @@ import java.util.List;
 public class ErpOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-  private int price;
-  private String contactsName;
-private String location;
-private String name;
-
-
-
+    private int price;
+    private String contactsName;
+    private String location;
+    private String name;
+    private OutstockResult outstockResult;
+    private ContactsResult contactsResult;
+    private ItemsResult itemsResult;
+    private CustomerResult customerResult;
+    private Long customerId;
     /**
      * 订单编号
      */

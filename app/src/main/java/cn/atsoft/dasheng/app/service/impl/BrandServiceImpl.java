@@ -103,12 +103,15 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         }
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.in("brand_id", brandIs);
-        List<PartsResult> brandList = partsService.getByIds(brandIs);
+        List<Parts> list = partsService.list(partsQueryWrapper);
+        partsService.getByIds(brandIs);
 
         for (BrandResult datum : data) {
-            for (PartsResult parts : brandList) {
+            for (Parts parts : list) {
                 if (datum.getBrandId().equals(parts.getBrandId())) {
-                     datum.setPartsResult(parts);
+                    PartsResult partsResult =new PartsResult();
+                    ToolUtil.copyProperties(parts,partsResult);
+                     datum.setPartsResult(partsResult);
                      break;
                 }
             }

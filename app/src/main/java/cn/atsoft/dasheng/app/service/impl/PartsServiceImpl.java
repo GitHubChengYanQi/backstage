@@ -110,24 +110,25 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     public void format(List<PartsResult> data) {
         List<Long> itemIds = new ArrayList<>();
+        List<Long> iIds =new ArrayList<>();
         for (PartsResult datum : data) {
-            itemIds.add(datum.getItemId());
+            itemIds.add(datum.getItems());
         }
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("item_id", itemIds);
-        List<Items> list = itemsService.list(itemsQueryWrapper);
 
-        for (PartsResult datum : data) {
-
-            for (Items items : list) {
-                if (items.getItemId().equals(datum.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    datum.setItemsResult(itemsResult);
-
+        if(!itemIds.isEmpty()){
+            itemsQueryWrapper.in("item_id", itemIds);
+            List<Items> list = itemsService.list(itemsQueryWrapper);
+            for (PartsResult datum : data) {
+                for (Items items : list) {
+                    if (items.getItemId().equals(datum.getItems())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        datum.setItemsResult(itemsResult);
+                    }
                 }
             }
         }
-
     }
+
 }

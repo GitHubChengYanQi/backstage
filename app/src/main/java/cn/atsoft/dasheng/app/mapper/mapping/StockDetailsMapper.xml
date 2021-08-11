@@ -27,7 +27,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from details_view where 1 = 1
+        from daoxin_erp_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>
@@ -47,7 +47,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from details_view where 1 = 1
+        from daoxin_erp_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>
