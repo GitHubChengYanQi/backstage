@@ -106,55 +106,73 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
             itemIds.add(datum.getItemId());
             customerIds.add(datum.getCustomerId());
         }
+
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        outstockQueryWrapper.in("outstock_id", outstockIds);
+        if(!outstockIds.isEmpty()){
+            outstockQueryWrapper.in("outstock_id", outstockIds);
+        }
         List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
 
+
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id", contactsIds);
+        if(!contactsIds.isEmpty()){
+            contactsQueryWrapper.in("contacts_id", contactsIds);
+        }
         List<Contacts> conList = contactsService.list(contactsQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("item_id", itemIds);
+        if(!itemIds.isEmpty()){
+            itemsQueryWrapper.in("item_id", itemIds);
+        }
+
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", customerIds);
+        if(!customerIds.isEmpty()){
+            customerQueryWrapper.in("customer_id", customerIds);
+        }
         List<Customer> cuList = customerService.list(customerQueryWrapper);
         for (ErpOrderResult datum : data) {
-            for (Outstock outstock : outstockList) {
-                if (datum.getOutstockId().equals(outstock.getOutstockId())) {
-                    OutstockResult outstockResult = new OutstockResult();
-                    ToolUtil.copyProperties(outstock, outstockResult);
-                    datum.setOutstockResult(outstockResult);
-                    break;
+            if(!outstockList.isEmpty()){
+                for (Outstock outstock : outstockList) {
+                    if (datum.getOutstockId().equals(outstock.getOutstockId())) {
+                        OutstockResult outstockResult = new OutstockResult();
+                        ToolUtil.copyProperties(outstock, outstockResult);
+                        datum.setOutstockResult(outstockResult);
+                        break;
+                    }
                 }
             }
-            for (Contacts contacts : conList) {
-                if (contacts.getContactsId().equals(datum.getContactsId())) {
-                    ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts, contactsResult);
-                    datum.setContactsResult(contactsResult);
-                    break;
+            if(!conList.isEmpty()) {
+                for (Contacts contacts : conList) {
+                    if (contacts.getContactsId().equals(datum.getContactsId())) {
+                        ContactsResult contactsResult = new ContactsResult();
+                        ToolUtil.copyProperties(contacts, contactsResult);
+                        datum.setContactsResult(contactsResult);
+                        break;
+                    }
                 }
             }
-            for (Items items : itemsList) {
-                if (items.getItemId().equals(datum.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    datum.setItemsResult(itemsResult);
-                    break;
+            if(!itemsList.isEmpty()) {
+                for (Items items : itemsList) {
+                    if (items.getItemId().equals(datum.getItemId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        datum.setItemsResult(itemsResult);
+                        break;
+                    }
                 }
             }
-            for (Customer customer : cuList) {
-                if (customer.getCustomerId().equals(datum.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    datum.setCustomerResult(customerResult);
-                    break;
+            if(!cuList.isEmpty()) {
+                for (Customer customer : cuList) {
+                    if (customer.getCustomerId().equals(datum.getCustomerId())) {
+                        CustomerResult customerResult = new CustomerResult();
+                        ToolUtil.copyProperties(customer, customerResult);
+                        datum.setCustomerResult(customerResult);
+                        break;
+                    }
                 }
             }
         }
-
     }
 }

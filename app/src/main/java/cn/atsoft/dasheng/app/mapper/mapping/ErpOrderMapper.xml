@@ -38,6 +38,9 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
             <if test="paramCondition.itemId != null">
                 and item_id like CONCAT('%',#{paramCondition.itemId},'%')
             </if>
+            <if test="paramCondition.state != null">
+                and state like CONCAT('%',#{paramCondition.state},'%')
+            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
@@ -49,6 +52,9 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
                 </if>
                 <if test="paramCondition.itemId != null">
                         and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+                </if>
+                <if test="paramCondition.state != null">
+                    and state like CONCAT('%',#{paramCondition.state},'%')
                 </if>
     </select>
 
@@ -62,6 +68,9 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
+        <if test="paramCondition.state != null">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
 
     </select>
 
@@ -69,10 +78,12 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_order where 1 = 1
-
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
+            <if test="paramCondition.itemId != null">
+                    and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+            </if>
+            <if test="paramCondition.state != null">
+                and state like CONCAT('%',#{paramCondition.state},'%')
+            </if>
     </select>
 
 </mapper>
