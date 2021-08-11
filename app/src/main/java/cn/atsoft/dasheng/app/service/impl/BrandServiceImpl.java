@@ -104,6 +104,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.in("brand_id", brandIs);
         List<PartsResult> brandList = partsService.getByIds(brandIs);
+        partsService.getByIds(brandIs);
 
         for (BrandResult datum : data) {
             for (PartsResult parts : brandList) {
