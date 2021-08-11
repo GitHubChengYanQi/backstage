@@ -23,24 +23,27 @@ public interface ContactsService extends IService<Contacts> {
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    Long add(ContactsParam param);
+    Contacts add(ContactsParam param);
 
     /**
      * 删除
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    void delete(ContactsParam param);
+    Contacts delete(ContactsParam param);
 
     /**
      * 更新
      *
      * @author 
      * @Date 2021-07-23
+     * @return
      */
-    void update(ContactsParam param);
+    Contacts update(ContactsParam param);
 
     /**
      * 查询单条数据，Specification模式

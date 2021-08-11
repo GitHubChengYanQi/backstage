@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contract;
@@ -11,6 +12,7 @@ import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -37,23 +39,50 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private CustomerService customerService;
 
     @Override
-    public Long add(ContractParam param) {
-        Contract entity = getEntity(param);
-        this.save(entity);
-        return entity.getContractId();
+    @BussinessLog
+    public Contract add(ContractParam param) {
+        QueryWrapper<Customer> queryWrapperA = new QueryWrapper<>();
+        queryWrapperA.in("customer_id", param.getPartyA());
+        List<Customer> aList = customerService.list(queryWrapperA);
+        for (Customer customer1 : aList) {
+            if (customer1.getCustomerId().equals(param.getPartyA())) {
+                Contract entity = getEntity(param);
+                this.save(entity);
+                return entity;
+            }
+        }
+        throw new ServiceException(500, "数据不存在");
     }
 
     @Override
-    public void delete(ContractParam param) {
-        this.removeById(getKey(param));
+    @BussinessLog
+    public Contract delete(ContractParam param) {
+        QueryWrapper<Customer> queryWrapperA = new QueryWrapper<>();
+        queryWrapperA.in("customer_id", param.getPartyA());
+        List<Customer> aList = customerService.list(queryWrapperA);
+        for (Customer customer1 : aList) {
+            if (customer1.getCustomerId().equals(param.getPartyA())) {
+                this.removeById(getKey(param));
+                Contract entity = getEntity(param);
+                return entity;
+            }
+        }
+        throw new ServiceException(500, "数据不存在");
+
+
     }
 
     @Override
-    public void update(ContractParam param) {
+    @BussinessLog
+    public Contract update(ContractParam param) {
         Contract oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)){
+            throw new ServiceException(500, "数据不存在");
+        }
         Contract newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        this.updateById(oldEntity);
+        return oldEntity;
     }
 
     @Override
@@ -77,7 +106,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             partB.add(record.getPartyB());
         }
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
+        QueryWrapper<Customer> customerQueryWrapper1 = new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
         QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);

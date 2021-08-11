@@ -23,24 +23,27 @@ public interface ErpOrderService extends IService<ErpOrder> {
      *
      * @author ta
      * @Date 2021-07-26
+     * @return
      */
-    void add(ErpOrderParam param);
+    ErpOrder add(ErpOrderParam param);
 
     /**
      * 删除
      *
      * @author ta
      * @Date 2021-07-26
+     * @return
      */
-    void delete(ErpOrderParam param);
+    ErpOrder delete(ErpOrderParam param);
 
     /**
      * 更新
      *
      * @author ta
      * @Date 2021-07-26
+     * @return
      */
-    void update(ErpOrderParam param);
+    ErpOrder update(ErpOrderParam param);
 
     /**
      * 查询单条数据，Specification模式

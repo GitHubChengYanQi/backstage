@@ -75,3 +75,11 @@ freed-template:
     add: "[操作人]添加了地址"
     edit: "[操作人]修改了地址"
     delete: "[操作人]删除了地址"
+  Contract:
+    add: "[操作人]添加了合同"
+    edit: "[操作人]修改了合同"
+    delete: "[操作人]删除了合同"
+  ErpOrder:
+    add: "[操作人]添加了订单"
+    edit: "[操作人]修改了订单"
+    delete: "[操作人]删除了订单"
