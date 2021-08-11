@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
-import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -13,6 +12,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -20,7 +20,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +50,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
     @Autowired
-    private  BusinessDynamicService businessDynamicService;
+    private BusinessDynamicService businessDynamicService;
 
     public CrmBusinessResult detail(Long id) {
 
@@ -67,34 +66,49 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
     @Override
     @BussinessLog
-    public Long add(CrmBusinessParam param) {
+    public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
+
 //        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
 //        String businessName = param.getBusinessName();
 //        businessDynamicParam.setContent("新增商机"+businessName);
 //        businessDynamicService.add(businessDynamicParam);
-        return entity.getBusinessId();
+        return entity;
 
     }
 
     @Override
     @BussinessLog
-    public void delete(CrmBusinessParam param) {
-        this.removeById(getKey(param));
-
+    public CrmBusiness delete(CrmBusinessParam param) {
+        QueryWrapper<CrmBusiness> crmBusinessQueryWrapper = new QueryWrapper<>();
+        crmBusinessQueryWrapper.in("business_id",param.getBusinessId());
+        List<CrmBusiness> list = this.list(crmBusinessQueryWrapper);
+        for (CrmBusiness crmBusiness : list) {
+            if (crmBusiness.getBusinessId().equals(param.getBusinessId())) {
+                this.removeById(getKey(param));
+                CrmBusiness entity = getEntity(param);
+                return entity;
+            }
+        }
+       throw new ServiceException(500, "数据不存在");
     }
 
     @Override
     @BussinessLog
-    public void update(CrmBusinessParam param) {
+    public CrmBusiness update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
+        if (ToolUtil.isEmpty(oldEntity)) {
+            throw new ServiceException(500, "数据不存在");
+        }
         CrmBusiness newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(oldEntity);
+        return oldEntity;
 //        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
 //        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
 //        businessDynamicService.add(businessDynamicParam);
-        this.updateById(newEntity);
+
     }
 
     @Override
@@ -117,17 +131,17 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         List<BusinessDynamic> businessDynamics = businessDynamicService.list();
 
         CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
-        if ( param .getState()!= null && param.getState().equals("赢单")) {
+        if (param.getState() != null && param.getState().equals("赢单")) {
             param.setProcessId(100L);
             oldEntity = getOldEntity(param);
             newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
 
-        } else if (param .getState()!= null && param.getState().equals("输单")) {
+        } else if (param.getState() != null && param.getState().equals("输单")) {
             param.setProcessId(0L);
-           oldEntity = getOldEntity(param);
-          newEntity = getEntity(param);
+            oldEntity = getOldEntity(param);
+            newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
         }
@@ -141,11 +155,10 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 //                    crmBusinessTrackService.add(crmBusinessTrackParam);
                     BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
                     businessDynamicParam.setBusinessId(newEntity.getBusinessId());
-                    businessDynamicParam.setContent("状态已更新"+crmBusinessSalesProcess.getName());
+                    businessDynamicParam.setContent("状态已更新" + crmBusinessSalesProcess.getName());
                     businessDynamicService.add(businessDynamicParam);
                 }
             }
-
 
 
         }
@@ -182,8 +195,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness business = new CrmBusiness();
         business.setDisplay(0);
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
-        businessQueryWrapper.in("business_id",businessIds);
-        this.update(business,businessQueryWrapper);
+        businessQueryWrapper.in("business_id", businessIds);
+        this.update(business, businessQueryWrapper);
 
     }
 

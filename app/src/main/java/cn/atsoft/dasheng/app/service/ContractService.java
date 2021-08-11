@@ -32,16 +32,18 @@ public interface ContractService extends IService<Contract> {
      *
      * @author 
      * @Date 2021-07-21
+     * @return
      */
-    void delete(ContractParam param);
+    Contract delete(ContractParam param);
 
     /**
      * 更新
      *
      * @author 
      * @Date 2021-07-21
+     * @return
      */
-    void update(ContractParam param);
+    Contract update(ContractParam param);
 
     /**
      * 查询单条数据，Specification模式

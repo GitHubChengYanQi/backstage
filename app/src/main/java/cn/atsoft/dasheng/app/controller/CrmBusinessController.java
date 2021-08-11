@@ -43,8 +43,8 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CrmBusinessParam crmBusinessParam) {
-        Long add = this.crmBusinessService.add(crmBusinessParam);
-        return ResponseData.success(add);
+
+        return ResponseData.success();
     }
 
     /**
