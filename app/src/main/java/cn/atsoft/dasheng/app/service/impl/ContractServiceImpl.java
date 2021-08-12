@@ -154,17 +154,13 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1 = new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
-        QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
-
-
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
 
 
         QueryWrapper<Customer> customerQueryWrapperB = new QueryWrapper<>();
         customerQueryWrapperB.in("customer_id", partB);
-        List<Customer> partBList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
+        List<Customer> partBList = partA.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapperB);
 
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
         contactsA.in("contacts_id", contactsIdsA);
@@ -191,6 +187,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Phone> phoneBlist = phoneService.list(phoneBwapper);
 
         for (ContractResult record : data) {
+
+
             for (Customer customer : partAList) {
                 if (record.getPartyA().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();
