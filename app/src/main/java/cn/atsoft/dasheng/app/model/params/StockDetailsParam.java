@@ -70,6 +70,18 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private String storageTime;
 
     /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
+     * 条形码
+     */
+    @ApiModelProperty("条形码")
+    private Long barcode;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

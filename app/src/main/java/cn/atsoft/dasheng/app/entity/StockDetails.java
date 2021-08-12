@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author
  * @since 2021-07-15
  */
-@TableName("daoxin_erp_details")
+@TableName("daoxin_erp_stock_details")
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -50,6 +50,18 @@ public class StockDetails implements Serializable {
      */
     @TableField("storage_time")
     private Date storageTime;
+
+    /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    /**
+     * 条形码
+     */
+    @TableField("barcode")
+    private Long barcode;
 
     /**
      * 创建者
@@ -165,6 +177,22 @@ public class StockDetails implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(Long barcode) {
+        this.barcode = barcode;
     }
 
     /**
