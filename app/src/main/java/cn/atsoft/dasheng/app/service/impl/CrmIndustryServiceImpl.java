@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmIndustry;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
 import cn.atsoft.dasheng.app.service.CrmIndustryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,7 +40,12 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
 
     @Override
     public void delete(CrmIndustryParam param) {
-        this.removeById(getKey(param));
+      CrmIndustry byId = this.getById(param.getIndustryId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override

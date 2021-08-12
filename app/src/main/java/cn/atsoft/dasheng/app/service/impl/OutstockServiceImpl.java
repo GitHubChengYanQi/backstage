@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,7 +39,12 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
 
     @Override
     public void delete(OutstockParam param){
-        this.removeById(getKey(param));
+      Outstock byId = this.getById(param.getOutstockId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override

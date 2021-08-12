@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessDetailedService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,7 +45,12 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     @Override
     public void delete(CrmBusinessDetailedParam param) {
-        this.removeById(getKey(param));
+      CrmBusinessDetailed byId = this.getById(param.getId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override
