@@ -79,11 +79,13 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+            CrmBusiness entity = getEntity(param);
+            return entity;
         }
-        param.setDisplay(0);
-        this.update(param);
-        CrmBusiness entity = getEntity(param);
-        return entity;
+
     }
 
     @Override
@@ -92,14 +94,13 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            CrmBusiness newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        CrmBusiness newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
-//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-//        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
-//        businessDynamicService.add(businessDynamicParam);
+
 
     }
 

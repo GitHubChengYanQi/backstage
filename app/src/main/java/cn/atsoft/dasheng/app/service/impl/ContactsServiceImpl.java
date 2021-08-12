@@ -44,24 +44,25 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Contacts entity = getEntity(param);
+            this.save(entity);
+            return entity;
         }
-        Contacts entity = getEntity(param);
-        this.save(entity);
-        return entity;
-
     }
 
     @Override
     @BussinessLog
     public Contacts delete(ContactsParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
+        Contacts contacts = this.getById(param.getContactsId());
+        if (ToolUtil.isEmpty(contacts)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Contacts entity = getEntity(param);
+            param.setDisplay(0);
+            this.update(param);
+            return entity;
         }
-        Contacts entity = getEntity(param);
-        param.setDisplay(0);
-        this.update(param);
-        return entity;
     }
 
     @Override
@@ -70,12 +71,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Contacts oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Contacts newEntity = getEntity(param);
+            newEntity.setCustomerId(null);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        Contacts newEntity = getEntity(param);
-        newEntity.setCustomerId(null);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
     }
 
     @Override

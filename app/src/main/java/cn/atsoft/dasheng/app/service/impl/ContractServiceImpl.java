@@ -60,18 +60,18 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
 
+        }else {
+            Contract entity = getEntity(param);
+            this.save(entity);
+            Contract contract = this.getById(entity.getContractId());
+            ContractResult contractResult = new ContractResult();
+            ToolUtil.copyProperties(contract, contractResult);
+            List<ContractResult> results = new ArrayList<ContractResult>() {{
+                add(contractResult);
+            }};
+            format(results);
+            return results.get(0);
         }
-        Contract entity = getEntity(param);
-        this.save(entity);
-        Contract contract = this.getById(entity.getContractId());
-        ContractResult contractResult = new ContractResult();
-        ToolUtil.copyProperties(contract, contractResult);
-        List<ContractResult> results = new ArrayList<ContractResult>() {{
-            add(contractResult);
-        }};
-        format(results);
-                return results.get(0);
-
     }
 
 
@@ -81,26 +81,27 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
 
+        }else {
+            Contract entity = getEntity(param);
+            this.save(entity);
+            return entity;
         }
-        Contract entity = getEntity(param);
-        this.save(entity);
-        return entity;
-
-
     }
 
     @Override
     @BussinessLog
     public Contract delete(ContractParam param) {
-        Customer customer = customerService.getById(param.getPartyA());
-        if (ToolUtil.isEmpty(customer)) {
+        Contract contract = this.getById(param.getContractId());
+        if (ToolUtil.isEmpty(contract)) {
             throw new ServiceException(500, "数据不存在");
+        } else {
+            Contract entity = getEntity(param);
+            param.setDisplay(0);
+            this.update(param);
+            return entity;
         }
-        Contract entity = getEntity(param);
-        param.setDisplay(0);
-        this.update(param);
-        return entity;
     }
+
 
     @Override
     @BussinessLog
@@ -108,11 +109,13 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Contract oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Contract newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        Contract newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
+
     }
 
     @Override

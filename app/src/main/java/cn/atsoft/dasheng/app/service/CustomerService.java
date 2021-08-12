@@ -1,13 +1,11 @@
 package cn.atsoft.dasheng.app.service;
 
-import cn.atsoft.dasheng.app.model.result.CustomerIdRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +23,9 @@ public interface CustomerService extends IService<Customer> {
      *
      * @author
      * @Date 2021-07-23
+     * @return
      */
-    Long add(CustomerParam param);
+    Customer add(CustomerParam param);
 
     Long addCustomer(CustomerParam param);
 
@@ -35,16 +34,18 @@ public interface CustomerService extends IService<Customer> {
      *
      * @author
      * @Date 2021-07-23
+     * @return
      */
-    void delete(CustomerParam param);
+    Customer delete(CustomerParam param);
 
     /**
      * 更新
      *
      * @author
      * @Date 2021-07-23
+     * @return
      */
-    void update(CustomerParam param);
+    Customer update(CustomerParam param);
 
     /**
      * 查询单条数据，Specification模式

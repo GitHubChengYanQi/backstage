@@ -42,28 +42,26 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Adress entity = getEntity(param);
+            this.save(entity);
+            return entity;
         }
-        Adress entity = getEntity(param);
-        this.save(entity);
-        return entity;
     }
 
 
     @BussinessLog
     @Override
     public Adress delete(AdressParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
+        Customer adress = customerService.getById(param.getAdressId());
+        if (ToolUtil.isEmpty(adress)) {
             throw new ServiceException(500, "删除前请确定客户");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+            Adress entity = getEntity(param);
+            return entity;
         }
-        param.setDisplay(0);
-        this.update(param);
-
-//        this.removeById(getKey(param));
-        Adress entity = getEntity(param);
-        return entity;
-
-
     }
 
     @BussinessLog
@@ -72,12 +70,13 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         Adress oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            Adress newEntity = getEntity(param);
+            newEntity.setCustomerId(null);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        Adress newEntity = getEntity(param);
-        newEntity.setCustomerId(null);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
     }
 
     @Override
