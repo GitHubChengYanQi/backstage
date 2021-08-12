@@ -114,6 +114,15 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public void batchDelete(List<Long> id) {
+        Contacts contacts = new Contacts();
+        contacts.setDisplay(0);
+        QueryWrapper<Contacts> contactsQueryWrapper =new QueryWrapper<>();
+        contactsQueryWrapper.in("contacts_id",id);
+        this.update(contacts,contactsQueryWrapper);
+    }
+
     private Serializable getKey(ContactsParam param) {
         return param.getContactsId();
     }

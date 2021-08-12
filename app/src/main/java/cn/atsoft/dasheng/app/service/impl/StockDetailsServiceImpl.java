@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -40,6 +43,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StorehouseService storehouseService;
     @Autowired
     private ItemsService itemsService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -106,9 +111,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public void format(List<StockDetailsResult> data) {
         List<Long> stoIds = new ArrayList<>();
         List<Long> itemIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
             itemIds.add(datum.getItemsId());
+            brandIds.add(datum.getBrandId());
         }
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if(!stoIds.isEmpty()){
@@ -121,6 +128,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             itemsQueryWrapper.in("item_id",itemIds);
         }
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
+
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        if(!brandIds.isEmpty()){
+            brandQueryWrapper.in("brand_id",brandIds);
+        }
+        List<Brand> brandList = brandService.list(brandQueryWrapper);
 
         for (StockDetailsResult datum : data) {
             if(!storehouseList.isEmpty()) {
@@ -139,6 +152,16 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                         ItemsResult itemsResult = new ItemsResult();
                         ToolUtil.copyProperties(items, itemsResult);
                         datum.setItemsResult(itemsResult);
+                        break;
+                    }
+                }
+            }
+            if(!brandList.isEmpty()) {
+                for (Brand brand : brandList) {
+                    if (datum.getBrandId().equals(brand.getBrandId())) {
+                        BrandResult brandResult = new BrandResult();
+                        ToolUtil.copyProperties(brand, brandResult);
+                        datum.setBrandResult(brandResult);
                         break;
                     }
                 }

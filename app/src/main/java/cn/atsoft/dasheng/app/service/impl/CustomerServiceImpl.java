@@ -47,7 +47,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private CrmIndustryService crmIndustryService;
 
     @Autowired
-    private CustomerDynamicService customerDynamicService;
+    private ContactsService contactsService;
 
     @Override
     @BussinessLog
@@ -64,11 +64,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer customer = this.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             param.setDisplay(0);
             this.update(param);
             Customer entity = getEntity(param);
-            return  entity;
+            return entity;
         }
     }
 
@@ -76,9 +76,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @BussinessLog
     public Customer update(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
-        if (ToolUtil.isEmpty(oldEntity)){
+        if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Customer newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
@@ -111,19 +111,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     public CustomerResult format(List<CustomerResult> data) {
-        for (CustomerResult record : data) {
-            Integer classification = record.getClassification();
-            if (classification == 1) {
-                record.setClassificationName("终端用户");
-            } else {
-                record.setClassificationName("代理商");
-            }
-        }
+
         List<Long> dycustomerIds = new ArrayList<>();
         List<Long> originIds = new ArrayList<>();
         List<Long> levelIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> industryIds = new ArrayList<>();
+        List<Long> contactsIds = new ArrayList<>();
 
         for (CustomerResult record : data) {
             originIds.add(record.getOriginId());
@@ -131,7 +125,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             industryIds.add(record.getIndustryId());
             dycustomerIds.add(record.getCustomerId());
+            contactsIds.add(record.getCustomerId());
+
         }
+        /**
+         * 获取联系人
+         */
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("customer_id", contactsIds);
+        List<Contacts> contactsList = contactsService.list(contactsQueryWrapper);
 
         /**
          * 获取originId
@@ -160,6 +162,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
         for (CustomerResult record : data) {
+            Integer classification = record.getClassification();
+            if (classification == 1) {
+                record.setClassificationName("终端用户");
+            } else {
+                record.setClassificationName("代理商");
+            }
             for (Origin origin : originList) {
                 if (origin.getOriginId().equals(record.getOriginId())) {
                     OriginResult originResult = new OriginResult();
@@ -189,6 +197,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     CrmIndustryResult crmIndustryResult = new CrmIndustryResult();
                     ToolUtil.copyProperties(crmIndustry, crmIndustryResult);
                     record.setCrmIndustryResult(crmIndustryResult);
+                    break;
+                }
+            }
+            for (Contacts contacts : contactsList) {
+                if (record.getCustomerId().equals(contacts.getCustomerId())) {
+                    ContactsResult contactsResult = new ContactsResult();
+                    ToolUtil.copyProperties(contacts, contactsResult);
+                    record.setContactsResult(contactsResult);
                     break;
                 }
             }
@@ -249,7 +265,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.format(results);
         return results.get(0);
     }
-
 
 
 }

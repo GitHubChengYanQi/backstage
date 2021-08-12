@@ -148,7 +148,6 @@ public class FreedAop {
 
             FreedTemplateProperties.CrmBusiness crmbusiness = freedTemplateService.getConfig().getCrmbusiness();
             CrmBusiness crmBusiness = (CrmBusiness) result;
-
             businessDynamicParam.setBusinessId(crmBusiness.getBusinessId());
             String content = "";
             switch (methodName) {
@@ -178,8 +177,6 @@ public class FreedAop {
             Contract contractparam = (Contract) result;
             customerDynamicParam.setCustomerId(contractparam.getPartyA());
             String content = "";
-
-
             switch (methodName) {
                 case "add":
                     content = contract.getAdd().replace("[操作人]", user.getName());

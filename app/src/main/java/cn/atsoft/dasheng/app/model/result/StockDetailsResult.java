@@ -29,6 +29,8 @@ public class StockDetailsResult implements Serializable {
     private String pname;
     private StorehouseResult storehouseResult;
     private ItemsResult itemsResult;
+    private  BrandResult brandResult;
+
     /**
      * 明细id
      */
@@ -52,6 +54,18 @@ public class StockDetailsResult implements Serializable {
      */
     @ApiModelProperty("入库时间")
     private Date storageTime;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
+     * 条形码
+     */
+    @ApiModelProperty("条形码")
+    private Long barcode;
 
     /**
      * 创建者

@@ -1,22 +1,17 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.ItemsService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
-import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -27,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.rmi.ServerError;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +42,35 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     private ItemsService itemsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private StockService stockService;
+
 
     @Override
     public Long add(InstockParam param) {
-        Instock entity = getEntity(param);
-        this.save(entity);
-        return entity.getInstockId();
+        Items items = itemsService.getById(param.getItemId());
+        Long itemId = items.getItemId();
+        QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
+        stockQueryWrapper.in("item_id", itemId);
+        List<Stock> stockList = stockService.list(stockQueryWrapper);
+        for (Stock stock : stockList) {
+            if (stock.getItemId().equals(itemId)) {
+                Long inventory = stock.getInventory();
+                Long stockId = stock.getStockId();
+                Long brandId = stock.getBrandId();
+                Long storehouseId = stock.getStorehouseId();
+                StockParam stockParam = new StockParam();
+                stockParam.setStockId(stockId);
+                stockParam.setStorehouseId(storehouseId);
+                stockParam.setStockId(brandId);
+                stockParam.setInventory(inventory);
+                stockService.update(stockParam);
+                Instock entity = getEntity(param);
+                this.save(entity);
+                return entity.getInstockId();
+            }
+        }
+        throw new ServiceException(500, "添加失败");
     }
 
     @Override
