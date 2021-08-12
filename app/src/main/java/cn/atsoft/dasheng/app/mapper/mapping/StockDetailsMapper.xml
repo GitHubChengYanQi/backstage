@@ -10,6 +10,8 @@
         <result column="items_id" property="itemsId"/>
         <result column="storehouse_id" property="storehouseId"/>
         <result column="storage_time" property="storageTime"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="barcode" property="barcode"/>
         <result column="create_user" property="createUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_user" property="updateUser"/>
@@ -19,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-       items_id AS "itemsId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        barcode AS "barcode", brand_id AS "brandId", items_id AS "itemsId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -37,6 +39,9 @@
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
 
     </select>
 
@@ -52,6 +57,9 @@
         </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
         </if>
     </select>
 
@@ -72,6 +80,9 @@
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -87,6 +98,9 @@
         </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
         </if>
     </select>
 
