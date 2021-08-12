@@ -31,7 +31,7 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpOrderResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_order where 1 = 1
+        from daoxin_erp_order where display = 1
             <if test="paramCondition.contactsId != null">
                 and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
             </if>
@@ -46,7 +46,7 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_order where 1 = 1
+        from daoxin_erp_order where display = 1
                 <if test="paramCondition.contactsId != null">
                         and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
                 </if>
@@ -61,7 +61,7 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpOrderResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_order where 1 = 1
+        from daoxin_erp_order where display = 1
         <if test="paramCondition.contactsId != null">
             and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
         </if>
@@ -77,7 +77,7 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpOrderParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_order where 1 = 1
+        from daoxin_erp_order where display = 1
             <if test="paramCondition.itemId != null">
                     and item_id like CONCAT('%',#{paramCondition.itemId},'%')
             </if>

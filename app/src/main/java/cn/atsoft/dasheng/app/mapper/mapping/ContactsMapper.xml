@@ -28,7 +28,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contacts where 1 = 1
+        from daoxin_crm_contacts where display = 1
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
@@ -46,7 +46,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contacts where 1 = 1
+        from daoxin_crm_contacts where display = 1
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
@@ -65,7 +65,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contacts where 1 = 1
+        from daoxin_crm_contacts where display = 1
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
@@ -86,7 +86,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contacts where 1 = 1
+        from daoxin_crm_contacts where display = 1
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>

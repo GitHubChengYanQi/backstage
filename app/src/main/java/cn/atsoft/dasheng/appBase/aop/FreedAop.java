@@ -178,8 +178,8 @@ public class FreedAop {
             Contract contractparam = (Contract) result;
             customerDynamicParam.setCustomerId(contractparam.getPartyA());
             String content = "";
-            Adress adressResult = (Adress) result;
-            customerDynamicParam.setCustomerId(adressResult.getCustomerId());
+
+
             switch (methodName) {
                 case "add":
                     content = contract.getAdd().replace("[操作人]", user.getName());

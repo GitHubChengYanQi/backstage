@@ -66,6 +66,10 @@ public class Contract implements Serializable {
     private Long partyBAdressId;
    @TableField("party_a_contacts_id")
     private Long partyAContactsId;
+   @TableField("party_a_phone")
+    private Long partyAPhone;
+   @TableField("party_b_phone")
+    private Long partyBPhone;
 
     public Long getPartyAAdressId() {
         return partyAAdressId;
@@ -175,6 +179,21 @@ public class Contract implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Long getPartyAPhone() {
+        return partyAPhone;
+    }
+
+    public void setPartyAPhone(Long partyAPhone) {
+        this.partyAPhone = partyAPhone;
+    }
+
+    public Long getPartyBPhone() {
+        return partyBPhone;
+    }
+
+    public void setPartyBPhone(Long partyBPhone) {
+        this.partyBPhone = partyBPhone;
+    }
 
     public Long getContractId() {
         return contractId;

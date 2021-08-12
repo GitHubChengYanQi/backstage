@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -44,14 +45,15 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
-        if (contractParam.getTemplateId()!=null){
+        if (contractParam.getTemplateId() != null) {
             TemplateParam templateParam = new TemplateParam();
             templateParam.setTemplateId(contractParam.getTemplateId());
             PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
-        Contract add = this.contractService.add(contractParam);
-        return ResponseData.success(add);
+        this.contractService.add(contractParam);
+        ContractResult contractResult = this.contractService.addResult(contractParam);
+        return ResponseData.success(contractResult);
     }
 
     /**
@@ -95,11 +97,9 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ContractResult> detail(@RequestBody ContractParam contractParam) {
-        Contract detail = this.contractService.getById(contractParam.getContractId());
-        ContractResult result = new ContractResult();
-        ToolUtil.copyProperties(detail, result);
-//        ContractResult contractResult = this.contractService.findPageBySpec(contractParam).getData().get(0);
-        return ResponseData.success(result);
+        Long customerId = contractParam.getContractId();
+        ContractResult detail = contractService.detail(customerId);
+        return ResponseData.success(detail);
     }
 
     /**

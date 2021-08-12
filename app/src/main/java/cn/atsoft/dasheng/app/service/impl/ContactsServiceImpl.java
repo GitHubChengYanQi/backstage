@@ -41,33 +41,27 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", param.getCustomerId());
-        List<Customer> list = customerService.list(customerQueryWrapper);
-        for (Customer customer : list) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
-                Contacts entity = getEntity(param);
-                this.save(entity);
-                return entity;
-            }
+        Customer customer = customerService.getById(param.getCustomerId());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-        throw new ServiceException(500, "数据不存在");
+        Contacts entity = getEntity(param);
+        this.save(entity);
+        return entity;
+
     }
 
     @Override
     @BussinessLog
     public Contacts delete(ContactsParam param) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", param.getCustomerId());
-        List<Customer> list = customerService.list(customerQueryWrapper);
-        for (Customer customer : list) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
-                this.removeById(getKey(param));
-                Contacts entity = getEntity(param);
-                return entity;
-            }
+        Customer customer = customerService.getById(param.getCustomerId());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-      throw  new ServiceException(500, "数据不存在");
+        Contacts entity = getEntity(param);
+        param.setDisplay(0);
+        this.update(param);
+        return entity;
     }
 
     @Override
