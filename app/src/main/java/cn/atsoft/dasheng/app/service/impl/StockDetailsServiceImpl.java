@@ -111,28 +111,36 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             itemIds.add(datum.getItemsId());
         }
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        storehouseQueryWrapper.in("storehouse_id",stoIds);
+        if(!stoIds.isEmpty()){
+            storehouseQueryWrapper.in("storehouse_id",stoIds);
+        }
         List<Storehouse> storehouseList = storehouseService.list(storehouseQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("item_id",itemIds);
+        if(!itemIds.isEmpty()){
+            itemsQueryWrapper.in("item_id",itemIds);
+        }
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         for (StockDetailsResult datum : data) {
-            for (Storehouse storehouse : storehouseList) {
-                if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
-                    StorehouseResult storehouseResult = new StorehouseResult();
-                    ToolUtil.copyProperties(storehouse,storehouseResult);
-                    datum.setStorehouseResult(storehouseResult);
-                    break;
+            if(!storehouseList.isEmpty()) {
+                for (Storehouse storehouse : storehouseList) {
+                    if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                        StorehouseResult storehouseResult = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouse, storehouseResult);
+                        datum.setStorehouseResult(storehouseResult);
+                        break;
+                    }
                 }
             }
-            for (Items items : itemsList) {
-                if (items.getItemId().equals(datum.getItemsId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items,itemsResult);
-                    datum.setItemsResult(itemsResult);
-                    break;
+            if(!itemsList.isEmpty()) {
+                for (Items items : itemsList) {
+                    if (items.getItemId().equals(datum.getItemsId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        datum.setItemsResult(itemsResult);
+                        break;
+                    }
                 }
             }
         }
