@@ -56,44 +56,44 @@ public class OutstockController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OutstockParam outstockParam) {
 
-
-
-        StockParam stockParam = new StockParam();
-
-        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
-
-            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
-                if (pageBySpec.getData().get(i).getStockId().equals(outstockParam.getStockId())) {
-                    if (pageBySpec.getData().get(i).getInventory()>= outstockParam.getNumber()){
-                        stockParam.setStockId(pageBySpec.getData().get(i).getStockId());
-                        stockParam.setItemId(pageBySpec.getData().get(i).getItemId());
-                        stockParam.setBrandId(pageBySpec.getData().get(i).getBrandId());
-                        stockParam.setStorehouseId(pageBySpec.getData().get(i).getStorehouseId());
-                        stockParam.setInventory(pageBySpec.getData().get(i).getInventory()- outstockParam.getNumber());
-                        this.stockService.update(stockParam);
-                        Long add = this.outstockService.add(outstockParam);
-
-
-                        StockDetailsParam stockDetailsParam = new StockDetailsParam();
-                        stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
-
-                        List<StockDetailsResult> listBySpec = this.stockDetailsService.findListBySpec(stockDetailsParam);
-
-
-                        for (int j = 0; j < outstockParam.getNumber() ; j++ ){
-                            stockDetailsParam.setStockItemId(listBySpec.get(j).getStockItemId());
-                            this.stockDetailsService.delete(stockDetailsParam);
-                        }
-
-
-
-
-                        return ResponseData.success(add);
-                    }
-
-                }
-            }
-
+         outstockService.add(outstockParam);
+//
+//        StockParam stockParam = new StockParam();
+//
+//        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
+//
+//            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
+//                if (pageBySpec.getData().get(i).getStockId().equals(outstockParam.getStockId())) {
+//                    if (pageBySpec.getData().get(i).getInventory()>= outstockParam.getNumber()){
+//                        stockParam.setStockId(pageBySpec.getData().get(i).getStockId());
+//                        stockParam.setItemId(pageBySpec.getData().get(i).getItemId());
+//                        stockParam.setBrandId(pageBySpec.getData().get(i).getBrandId());
+//                        stockParam.setStorehouseId(pageBySpec.getData().get(i).getStorehouseId());
+//                        stockParam.setInventory(pageBySpec.getData().get(i).getInventory()- outstockParam.getNumber());
+//                        this.stockService.update(stockParam);
+//                        Long add = this.outstockService.add(outstockParam);
+//
+//
+//                        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+//                        stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
+//
+//                        List<StockDetailsResult> listBySpec = this.stockDetailsService.findListBySpec(stockDetailsParam);
+//
+//
+//                        for (int j = 0; j < outstockParam.getNumber() ; j++ ){
+//                            stockDetailsParam.setStockItemId(listBySpec.get(j).getStockItemId());
+//                            this.stockDetailsService.delete(stockDetailsParam);
+//                        }
+//
+//
+//
+//
+//                        return ResponseData.success(add);
+//                    }
+//
+//                }
+//            }
+//
 
 
         return ResponseData.error("出库失败!");
