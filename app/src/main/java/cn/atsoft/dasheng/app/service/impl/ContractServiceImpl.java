@@ -106,7 +106,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             partB.add(record.getPartyB());
         }
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1 = new QueryWrapper<>();
         QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
         QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
