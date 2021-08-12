@@ -107,7 +107,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         }
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         QueryWrapper<Customer> customerQueryWrapper1 = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
+//        QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
         QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
