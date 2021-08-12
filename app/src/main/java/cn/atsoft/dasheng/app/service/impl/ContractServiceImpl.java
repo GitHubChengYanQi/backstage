@@ -2,16 +2,13 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.result.AdressResult;
-import cn.atsoft.dasheng.app.model.result.ContactsResult;
-import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
-import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -50,35 +47,28 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     @BussinessLog
     public Contract add(ContractParam param) {
-        QueryWrapper<Customer> queryWrapperA = new QueryWrapper<>();
-        queryWrapperA.in("customer_id", param.getPartyA());
-        List<Customer> aList = customerService.list(queryWrapperA);
-        for (Customer customer1 : aList) {
-            if (customer1.getCustomerId().equals(param.getPartyA())) {
-                Contract entity = getEntity(param);
-                this.save(entity);
-                return entity;
-            }
+        Customer customer = customerService.getById(param.getPartyA());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-        throw new ServiceException(500, "数据不存在");
+        Contract entity = getEntity(param);
+        this.save(entity);
+        return entity;
+
+
     }
 
     @Override
     @BussinessLog
     public Contract delete(ContractParam param) {
-        QueryWrapper<Contract> queryWrapperA = new QueryWrapper<>();
-        queryWrapperA.in("track_id", param.getPartyA());
-        List<Contract> aList = this.list(queryWrapperA);
-        for (Contract contract : aList) {
-            if (contract.getContractId().equals(param.getContractId())) {
-                this.removeById(getKey(param));
-                Contract entity = getEntity(param);
-                return entity;
-            }
+        Customer customer = customerService.getById(param.getPartyA());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-        throw new ServiceException(500, "数据不存在");
-
-
+        Contract entity = getEntity(param);
+        param.setDisplay(0);
+        this.update(param);
+        return entity;
     }
 
     @Override
@@ -130,8 +120,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         QueryWrapper<Customer> partAWapper = customerQueryWrapperA.in("customer_id", partA);
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
 
+
         QueryWrapper<Customer> customerQueryWrapperB = new QueryWrapper<>();
-        customerQueryWrapperB.in("customer_id",partB);
+        customerQueryWrapperB.in("customer_id", partB);
         List<Customer> partBList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
 
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
@@ -151,24 +142,27 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Adress> adressBList = adressService.list(adressB);
 
         QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
-        phoneAwapper.in("phone_id",phoneAIds);
+        phoneAwapper.in("phone_id", phoneAIds);
         List<Phone> phoneAlist = phoneService.list(phoneAwapper);
 
         QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
-        phoneBwapper.in("phone_id",phoneBIds);
+        phoneBwapper.in("phone_id", phoneBIds);
         List<Phone> phoneBlist = phoneService.list(phoneBwapper);
 
         for (ContractResult record : page.getRecords()) {
             for (Customer customer : partAList) {
                 if (record.getPartyA().equals(customer.getCustomerId())) {
-                    record.setPartAName(customer.getCustomerName());
-
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    record.setPartA(customerResult);
                 }
 
             }
             for (Customer customer : partBList) {
                 if (customer.getCustomerId().equals(record.getPartyB())) {
-                    record.setPartBName(customer.getCustomerName());
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    record.setPartB(customerResult);
                 }
             }
             for (Contacts contacts : contactsAList) {
@@ -204,9 +198,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
             for (Phone phone : phoneAlist) {
-                if (phone.getPhoneId().equals(record.getPartyAPhone())){
+                if (phone.getPhoneId().equals(record.getPartyAPhone())) {
                     PhoneResult phoneResult = new PhoneResult();
-                    ToolUtil.copyProperties(phone,phoneResult);
+                    ToolUtil.copyProperties(phone, phoneResult);
                     record.setPhoneA(phoneResult);
                     break;
                 }
@@ -214,7 +208,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (Phone phone : phoneBlist) {
                 if (phone.getPhoneId().equals(record.getPartyBPhone())) {
                     PhoneResult phoneResult = new PhoneResult();
-                    ToolUtil.copyProperties(phone,phoneResult);
+                    ToolUtil.copyProperties(phone, phoneResult);
                     record.setPhoneB(phoneResult);
                     break;
                 }

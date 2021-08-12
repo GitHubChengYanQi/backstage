@@ -26,7 +26,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.AdressResult" parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_adress where 1 = 1
+        from daoxin_crm_adress where display = 1
             <if test="paramCondition.customerId != null">
                     and customer_id = #{paramCondition.customerId}
             </if>
@@ -35,7 +35,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_adress where 1 = 1
+        from daoxin_crm_adress where display = 1
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
@@ -44,7 +44,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.AdressResult" parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_adress where 1 = 1
+        from daoxin_crm_adress where display = 1
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
@@ -54,7 +54,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_adress where 1 = 1
+        from daoxin_crm_adress where display = 1
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>

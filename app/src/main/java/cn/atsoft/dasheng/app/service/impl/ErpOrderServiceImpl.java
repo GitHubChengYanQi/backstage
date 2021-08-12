@@ -44,41 +44,36 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     @BussinessLog
     @Override
     public ErpOrder add(ErpOrderParam param) {
-        QueryWrapper<Customer>customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id",param.getCustomerId());
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
-        for (Customer customer : customerList) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
-                ErpOrder entity = getEntity(param);
-                this.save(entity);
-                return  entity;
-            }
+        Customer customer = customerService.getById(param.getCustomerId());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-       throw  new ServiceException(500, "数据不存在");
+
+        ErpOrder entity = getEntity(param);
+        this.save(entity);
+        return entity;
+
     }
 
     @BussinessLog
     @Override
     public ErpOrder delete(ErpOrderParam param) {
-        QueryWrapper<ErpOrder>customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("order_id",param.getCustomerId());
-        List<ErpOrder> customerList = this.list(customerQueryWrapper);
-        for (ErpOrder erpOrder : customerList) {
-            if (erpOrder.getOrderId().equals(param.getOrderId())) {
-                this.removeById(getKey(param));
-                ErpOrder entity = getEntity(param);
-                return entity;
-            }
+        Customer customer = customerService.getById(param.getCustomerId());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
         }
-        throw  new ServiceException(500, "数据不存在");
+        ErpOrder entity = getEntity(param);
+        param.setDisplay(0);
+        this.update(param);
+        return  entity;
     }
 
     @BussinessLog
     @Override
     public ErpOrder update(ErpOrderParam param) {
         ErpOrder oldEntity = getOldEntity(param);
-        if (ToolUtil.isEmpty(oldEntity)){
-            throw  new ServiceException(500, "数据不存在");
+        if (ToolUtil.isEmpty(oldEntity)) {
+            throw new ServiceException(500, "数据不存在");
         }
         ErpOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -135,32 +130,32 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         }
 
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        if(!outstockIds.isEmpty()){
+        if (!outstockIds.isEmpty()) {
             outstockQueryWrapper.in("outstock_id", outstockIds);
         }
         List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
 
 
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        if(!contactsIds.isEmpty()){
+        if (!contactsIds.isEmpty()) {
             contactsQueryWrapper.in("contacts_id", contactsIds);
         }
         List<Contacts> conList = contactsService.list(contactsQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if(!itemIds.isEmpty()){
+        if (!itemIds.isEmpty()) {
             itemsQueryWrapper.in("item_id", itemIds);
         }
 
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        if(!customerIds.isEmpty()){
+        if (!customerIds.isEmpty()) {
             customerQueryWrapper.in("customer_id", customerIds);
         }
         List<Customer> cuList = customerService.list(customerQueryWrapper);
         for (ErpOrderResult datum : data) {
-            if(!outstockList.isEmpty()){
+            if (!outstockList.isEmpty()) {
                 for (Outstock outstock : outstockList) {
                     if (datum.getOutstockId().equals(outstock.getOutstockId())) {
                         OutstockResult outstockResult = new OutstockResult();
@@ -170,7 +165,7 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(!conList.isEmpty()) {
+            if (!conList.isEmpty()) {
                 for (Contacts contacts : conList) {
                     if (contacts.getContactsId().equals(datum.getContactsId())) {
                         ContactsResult contactsResult = new ContactsResult();
@@ -180,7 +175,7 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(!itemsList.isEmpty()) {
+            if (!itemsList.isEmpty()) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
@@ -190,7 +185,7 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(!cuList.isEmpty()) {
+            if (!cuList.isEmpty()) {
                 for (Customer customer : cuList) {
                     if (customer.getCustomerId().equals(datum.getCustomerId())) {
                         CustomerResult customerResult = new CustomerResult();
