@@ -19,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        iname AS "iname", pname AS "pname" ,items_id AS "itemsId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+       items_id AS "itemsId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -27,9 +27,15 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
+        </if>
+        <if test="paramCondition.itemsId != null">
+            and items_id = #{paramCondition.itemsId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
 
     </select>
@@ -37,9 +43,15 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
+        </if>
+        <if test="paramCondition.itemsId != null">
+            and items_id = #{paramCondition.itemsId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
     </select>
 
@@ -47,21 +59,18 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>
-        <if test="paramCondition.iname !=null">
-            and iname like CONCAT('%',#{paramCondition.iname},'%')
-        </if>
-        <if test="paramCondition.pname !=null">
-            and pname like CONCAT('%',#{paramCondition.pname},'%')
-        </if>
-        <if test="paramCondition.stockId !=null">
-            and stock_id like CONCAT('%',#{paramCondition.stockId},'%')
+        <if test="paramCondition.itemsId != null">
+            and items_id = #{paramCondition.itemsId}
         </if>
         <if test="paramCondition.storageTime !=null">
             and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
     </select>
 
@@ -69,9 +78,15 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_details where 1 = 1
+        from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
+        </if>
+        <if test="paramCondition.itemsId != null">
+            and items_id = #{paramCondition.itemsId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
     </select>
 
