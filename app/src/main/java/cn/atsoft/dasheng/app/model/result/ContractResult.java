@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 合同表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @Data
@@ -26,8 +31,11 @@ public class ContractResult implements Serializable {
      */
     @ApiModelProperty("合同id")
     private Long contractId;
-    private  String partAName;
-    private  String partBName;
+    private  CustomerResult partA;
+    private  CustomerResult partB;
+
+    private String partAName;
+    private String partBName;
     private Long partyA;
     private Long partyB;
 
@@ -36,8 +44,22 @@ public class ContractResult implements Serializable {
     private Long partyAContactsId;
     private Long partyBContactsId;
 
+    private ContactsResult partyAContacts;
+    private ContactsResult partyBContacts;
+
+    private AdressResult partyAAdress;
+    private AdressResult partyBAdress;
+
+
+    private Long partyAPhone;
+
+    private Long partyBPhone;
+
     private Long templateId;
     private Integer audit;
+
+    private PhoneResult phoneA;
+    private PhoneResult phoneB;
 
 
     /**

@@ -17,7 +17,8 @@
         <result column="party_b_adress_id" property="partyBAdressId"/>
         <result column="party_a_contacts_id" property="partyAContactsId"/>
         <result column="party_b_contacts_id" property="partyBContactsId"/>
-
+        <result column="party_a_phone" property="partyAPhone" />
+        <result column="party_b_phone" property="partyBPhone" />
         <result column="time" property="time"/>
         <result column="content" property="content"/>
         <result column="create_user" property="createUser"/>
@@ -28,7 +29,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">   party_a_phone AS "partyAPhone",  party_b_phone AS "partyBPhone" ,
         party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit
         AS "audit" ,template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
@@ -38,7 +39,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contract where 1 = 1
+        from daoxin_crm_contract where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -53,7 +54,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contract where 1 = 1
+        from daoxin_crm_contract where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -69,7 +70,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contract where 1 = 1
+        from daoxin_crm_contract where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -93,7 +94,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_contract where 1 = 1
+        from daoxin_crm_contract where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>

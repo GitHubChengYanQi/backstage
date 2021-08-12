@@ -69,11 +69,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
-
-//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-//        String businessName = param.getBusinessName();
-//        businessDynamicParam.setContent("新增商机"+businessName);
-//        businessDynamicService.add(businessDynamicParam);
         return entity;
 
     }
@@ -81,17 +76,16 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @BussinessLog
     public CrmBusiness delete(CrmBusinessParam param) {
-        QueryWrapper<CrmBusiness> crmBusinessQueryWrapper = new QueryWrapper<>();
-        crmBusinessQueryWrapper.in("business_id",param.getBusinessId());
-        List<CrmBusiness> list = this.list(crmBusinessQueryWrapper);
-        for (CrmBusiness crmBusiness : list) {
-            if (crmBusiness.getBusinessId().equals(param.getBusinessId())) {
-                this.removeById(getKey(param));
-                CrmBusiness entity = getEntity(param);
-                return entity;
-            }
+        CrmBusiness business = this.getById(param.getBusinessId());
+        if (ToolUtil.isEmpty(business)) {
+            throw new ServiceException(500, "数据不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+            CrmBusiness entity = getEntity(param);
+            return entity;
         }
-       throw new ServiceException(500, "数据不存在");
+
     }
 
     @Override
@@ -100,14 +94,13 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            CrmBusiness newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        CrmBusiness newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
-//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-//        businessDynamicParam.setContent(newEntity.getBusinessName()+"商机被修改");
-//        businessDynamicService.add(businessDynamicParam);
+
 
     }
 

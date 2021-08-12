@@ -95,23 +95,24 @@ public class FreedAop {
          */
         if (target instanceof CustomerService) {
             FreedTemplateProperties.Customer customerpro = freedTemplateService.getConfig().getCustomer();
-            CustomerParam customer = (CustomerParam) args[0];
+            Customer customer = (Customer) result;
+            customerDynamicParam.setCustomerId(customer.getCustomerId());
             String content = "";
             switch (methodName) {
                 case "add":
                     content = customerpro.getAdd().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
-                    customerDynamicParam.setCustomerId(customer.getCustomerId());
+
                     break;
                 case "update":
                     content = customerpro.getEdit().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
-                    customerDynamicParam.setCustomerId(customer.getCustomerId());
+
                     break;
                 case "delete":
                     content = customerpro.getDelete().replace("[操作人]", user.getName());
                     customerDynamicParam.setContent(content);
-                    customerDynamicParam.setCustomerId(customer.getCustomerId());
+
                     break;
             }
             customerDynamicService.add(customerDynamicParam);
@@ -121,7 +122,6 @@ public class FreedAop {
          */
         if (target instanceof AdressService) {
             FreedTemplateProperties.Adress adress = freedTemplateService.getConfig().getAdress();
-
             String content = "";
             Adress adressResult = (Adress) result;
             customerDynamicParam.setCustomerId(adressResult.getCustomerId());
@@ -178,8 +178,8 @@ public class FreedAop {
             Contract contractparam = (Contract) result;
             customerDynamicParam.setCustomerId(contractparam.getPartyA());
             String content = "";
-            Adress adressResult = (Adress) result;
-            customerDynamicParam.setCustomerId(adressResult.getCustomerId());
+
+
             switch (methodName) {
                 case "add":
                     content = contract.getAdd().replace("[操作人]", user.getName());
@@ -203,8 +203,8 @@ public class FreedAop {
         if (target instanceof CrmBusinessService) {
 
             FreedTemplateProperties.ErpOrder erpOrder = freedTemplateService.getConfig().getErpOrder();
-            ErpOrder erpOrderparam = (ErpOrder) result;
-            customerDynamicParam.setCustomerId(erpOrderparam.getCustomerId());
+            CrmBusiness crmBusinessparam = (CrmBusiness) result;
+            customerDynamicParam.setCustomerId(crmBusinessparam.getCustomerId());
             String content = "";
             switch (methodName) {
                 case "add":

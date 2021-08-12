@@ -71,5 +71,8 @@ public interface ContractService extends IService<Contract> {
 
     void batchDelete( List<Long> customerId);
 
+    ContractResult detail (Long id);
 
+
+    ContractResult addResult (ContractParam param);
 }

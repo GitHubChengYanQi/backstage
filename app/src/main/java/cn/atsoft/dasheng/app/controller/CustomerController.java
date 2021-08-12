@@ -44,8 +44,7 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
-        Long add = this.customerService.add(customerParam);
-
+        Customer add = this.customerService.add(customerParam);
         return ResponseData.success(add);
 
 

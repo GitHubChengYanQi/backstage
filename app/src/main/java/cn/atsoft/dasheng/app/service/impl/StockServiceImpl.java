@@ -117,41 +117,52 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
          }
 
          QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-         storehouseQueryWrapper.in("storehouse_id" , storeIDS);
+         if(!storeIDS.isEmpty()){
+             storehouseQueryWrapper.in("storehouse_id" , storeIDS);
+         }
          List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
 
          QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-         itemsQueryWrapper.in("item_id",itemIds);
+         if(!itemIds.isEmpty()){
+             itemsQueryWrapper.in("item_id",itemIds);
+         }
          List<Items> itemList = itemsService.list(itemsQueryWrapper);
 
          QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-         brandQueryWrapper.in("brand_id",brandIds);
+         if(!brandIds.isEmpty()){
+             brandQueryWrapper.in("brand_id",brandIds);
+         }
          List<Brand> brandList = brandService.list(brandQueryWrapper);
 
          for (StockResult datum : data) {
-
-             for (Storehouse storehouse : storeList) {
-                 if(datum.getStorehouseId().equals(storehouse.getStorehouseId())){
-                     StorehouseResult storehouseResult = new StorehouseResult();
-                     ToolUtil.copyProperties(storehouse,storehouseResult);
-                     datum.setStorehouseResult(storehouseResult);
-                     break;
+            if(!storeList.isEmpty()){
+                for (Storehouse storehouse : storeList) {
+                    if(datum.getStorehouseId().equals(storehouse.getStorehouseId())){
+                        StorehouseResult storehouseResult = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouse,storehouseResult);
+                        datum.setStorehouseResult(storehouseResult);
+                        break;
+                    }
+                }
+            }
+            if(!itemList.isEmpty()) {
+                 for (Items items : itemList) {
+                     if (datum.getItemId().equals(items.getItemId())) {
+                         ItemsResult itemsResult = new ItemsResult();
+                         ToolUtil.copyProperties(items, itemsResult);
+                         datum.setItemsResult(itemsResult);
+                         break;
+                     }
                  }
              }
-             for (Items items : itemList) {
-                 if(datum.getItemId().equals(items.getItemId())){
-                     ItemsResult itemsResult = new ItemsResult();
-                     ToolUtil.copyProperties(items,itemsResult);
-                     datum.setItemsResult(itemsResult);
-                     break;
-                 }
-             }
-             for (Brand brand : brandList) {
-                 if(datum.getBrandId().equals(brand.getBrandId())){
-                     BrandResult brandResult =new BrandResult();
-                     ToolUtil.copyProperties(brand,brandResult);
-                     datum.setBrandResult(brandResult);
-                     break;
+             if(!brandList.isEmpty()) {
+                 for (Brand brand : brandList) {
+                     if (datum.getBrandId().equals(brand.getBrandId())) {
+                         BrandResult brandResult = new BrandResult();
+                         ToolUtil.copyProperties(brand, brandResult);
+                         datum.setBrandResult(brandResult);
+                         break;
+                     }
                  }
              }
          }

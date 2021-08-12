@@ -1,84 +1,45 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * <p>
- * 合同表
+ * 
  * </p>
  *
- * @author
- * @since 2021-07-21
+ * @author cheng
+ * @since 2021-08-12
  */
 @Data
 @ApiModel
-public class ContractParam implements Serializable, BaseValidatingParam {
+public class PhoneParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 合同id
+     * 电话id
      */
-    @ApiModelProperty("合同id")
-    private Long contractId;
-
-    private Integer audit;
-
-
-    private Long partyAPhone;
-
-    private Long partyBPhone;
-    private Long templateId;
-
-    private Long partyA;
-
-    private Long partyAAdressId;
-    private Long partyBAdressId;
-    private Long partyAContactsId;
-    private Long partyBContactsId;
-
-    private Long partyB;
+    @ApiModelProperty("电话id")
+    private Long phoneId;
 
     /**
-     * 合同名称
+     * 联系人id
      */
-    @ApiModelProperty("合同名称")
-    private String name;
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
 
     /**
-     * 负责人id
+     * 电话号码
      */
-    @ApiModelProperty("负责人id")
-    private String userId;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String note;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date time;
-
-    /**
-     * 内容
-     */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("电话号码")
+    private Long phoneNumber;
 
     /**
      * 创建者
