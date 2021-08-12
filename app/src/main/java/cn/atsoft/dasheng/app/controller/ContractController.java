@@ -45,14 +45,15 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
-        if (contractParam.getTemplateId()!=null){
+        if (contractParam.getTemplateId() != null) {
             TemplateParam templateParam = new TemplateParam();
             templateParam.setTemplateId(contractParam.getTemplateId());
             PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
-        ContractResult add = this.contractService.add(contractParam);
-        return ResponseData.success(add);
+        this.contractService.add(contractParam);
+        ContractResult contractResult = this.contractService.addResult(contractParam);
+        return ResponseData.success(contractResult);
     }
 
     /**

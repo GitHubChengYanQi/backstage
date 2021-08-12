@@ -25,7 +25,7 @@ public interface ContractService extends IService<Contract> {
      * @Date 2021-07-21
      * @return
      */
-    ContractResult add(ContractParam param);
+    Contract add(ContractParam param);
 
     /**
      * 删除
@@ -74,4 +74,5 @@ public interface ContractService extends IService<Contract> {
     ContractResult detail (Long id);
 
 
+    ContractResult addResult (ContractParam param);
 }

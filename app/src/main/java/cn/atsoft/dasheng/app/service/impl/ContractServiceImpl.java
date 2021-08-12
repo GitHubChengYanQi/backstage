@@ -54,8 +54,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return results.get(0);
     }
 
-    @BussinessLog
-    public Contract add(ContractParam param) {
+    @Override
+    public ContractResult addResult(ContractParam param) {
         Customer customer = customerService.getById(param.getPartyA());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
@@ -70,7 +70,20 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             add(contractResult);
         }};
         format(results);
-//                return results.get(0);
+                return results.get(0);
+
+    }
+
+
+    @BussinessLog
+    public Contract add(ContractParam param) {
+        Customer customer = customerService.getById(param.getPartyA());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "数据不存在");
+
+        }
+        Contract entity = getEntity(param);
+        this.save(entity);
         return entity;
 
 
