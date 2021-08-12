@@ -130,6 +130,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         QueryWrapper<Customer> partAWapper = customerQueryWrapperA.in("customer_id", partA);
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
 
+        QueryWrapper<Customer> customerQueryWrapperB = new QueryWrapper<>();
+        customerQueryWrapperB.in("customer_id",partB);
+        List<Customer> partBList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
+
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
         contactsA.in("contacts_id", contactsIdsA);
         List<Contacts> contactsAList = contactsService.list(contactsA);
@@ -139,7 +143,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Contacts> contactsBList = contactsService.list(contactsB);
 
         QueryWrapper<Adress> adressA = new QueryWrapper<>();
-        adressA.in("adress_id", adressA);
+        adressA.in("adress_id", adressIdsA);
         List<Adress> adressAList = adressService.list(adressA);
 
         QueryWrapper<Adress> adressB = new QueryWrapper<>();
@@ -162,6 +166,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
 
             }
+            for (Customer customer : partBList) {
+                if (customer.getCustomerId().equals(record.getPartyB())) {
+                    record.setPartBName(customer.getCustomerName());
+                }
+            }
             for (Contacts contacts : contactsAList) {
                 if (contacts.getContactsId().equals(record.getPartyAContactsId())) {
                     ContactsResult contactsResult = new ContactsResult();
@@ -171,7 +180,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
             for (Contacts contacts : contactsBList) {
-                if (contacts.getContactsId().equals(record.getContractId())) {
+                if (contacts.getContactsId().equals(record.getPartyBContactsId())) {
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
                     record.setPartyBContacts(contactsResult);
