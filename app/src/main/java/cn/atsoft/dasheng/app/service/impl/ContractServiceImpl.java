@@ -57,11 +57,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     @BussinessLog
     public Contract delete(ContractParam param) {
-        QueryWrapper<Customer> queryWrapperA = new QueryWrapper<>();
-        queryWrapperA.in("customer_id", param.getPartyA());
-        List<Customer> aList = customerService.list(queryWrapperA);
-        for (Customer customer1 : aList) {
-            if (customer1.getCustomerId().equals(param.getPartyA())) {
+        QueryWrapper<Contract> queryWrapperA = new QueryWrapper<>();
+        queryWrapperA.in("track_id", param.getPartyA());
+        List<Contract> aList = this.list(queryWrapperA);
+        for (Contract contract : aList) {
+            if (contract.getContractId().equals(param.getContractId())) {
                 this.removeById(getKey(param));
                 Contract entity = getEntity(param);
                 return entity;
@@ -105,14 +105,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             partA.add(record.getPartyA());
             partB.add(record.getPartyB());
         }
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1 = new QueryWrapper<>();
-        QueryWrapper<Customer> customerQueryWrapper1= new QueryWrapper<>();
-        QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
-        QueryWrapper<Customer> partBWapper = customerQueryWrapper1.in("customer_id", partB);
+        QueryWrapper<Customer> customerQueryWrapperA = new QueryWrapper<>();
+
+
+        QueryWrapper<Customer> partAWapper = customerQueryWrapperA.in("customer_id", partA);
+
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
-        List<Customer> partBList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partBWapper);
-        ContractResult contractResult = new ContractResult();
+
+
         for (ContractResult record : page.getRecords()) {
             for (Customer customer : partAList) {
 
@@ -120,12 +120,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     record.setPartAName(customer.getCustomerName());
 
                 }
-                for (Customer customer1 : partBList) {
-                    if (record.getPartyB().equals(customer1.getCustomerId())) {
-                        record.setPartBName(customer1.getCustomerName());
 
-                    }
-                }
             }
         }
         return PageFactory.createPageInfo(page);
