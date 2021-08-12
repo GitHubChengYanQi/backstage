@@ -60,11 +60,11 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     @BussinessLog
     @Override
     public ErpOrder delete(ErpOrderParam param) {
-        QueryWrapper<Customer>customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id",param.getCustomerId());
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
-        for (Customer customer : customerList) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
+        QueryWrapper<ErpOrder>customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("order_id",param.getCustomerId());
+        List<ErpOrder> customerList = this.list(customerQueryWrapper);
+        for (ErpOrder erpOrder : customerList) {
+            if (erpOrder.getOrderId().equals(param.getOrderId())) {
                 this.removeById(getKey(param));
                 ErpOrder entity = getEntity(param);
                 return entity;

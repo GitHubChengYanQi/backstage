@@ -58,11 +58,11 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @BussinessLog
     @Override
     public Adress delete(AdressParam param) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", param.getCustomerId());
-        List<Customer> list = customerService.list(customerQueryWrapper);
-        for (Customer customer : list) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
+        QueryWrapper<Adress> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("adress_id", param.getCustomerId());
+        List<Adress> list = this.list(customerQueryWrapper);
+        for (Adress adress : list) {
+            if (adress.getAdressId().equals(param.getAdressId())) {
                 this.removeById(getKey(param));
                 Adress entity = getEntity(param);
                 return entity;
