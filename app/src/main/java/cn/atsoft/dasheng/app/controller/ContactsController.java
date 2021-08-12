@@ -105,7 +105,6 @@ public class ContactsController extends BaseController {
     if(contactsParam!=null){
       CustomerId = contactsParam.getCustomerId();
     }
-
     if (ToolUtil.isEmpty(contactsParam)) {
       contactsParam = new ContactsParam();
     }

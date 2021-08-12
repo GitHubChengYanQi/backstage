@@ -47,12 +47,11 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
+        } else {
+            ErpOrder entity = getEntity(param);
+            this.save(entity);
+            return entity;
         }
-
-        ErpOrder entity = getEntity(param);
-        this.save(entity);
-        return entity;
-
     }
 
     @BussinessLog
@@ -61,11 +60,12 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
+        } else {
+            ErpOrder entity = getEntity(param);
+            param.setDisplay(0);
+            this.update(param);
+            return entity;
         }
-        ErpOrder entity = getEntity(param);
-        param.setDisplay(0);
-        this.update(param);
-        return  entity;
     }
 
     @BussinessLog
@@ -74,11 +74,13 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         ErpOrder oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
+        }else {
+            ErpOrder newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(oldEntity);
+            return oldEntity;
         }
-        ErpOrder newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(oldEntity);
-        return oldEntity;
+
     }
 
     @Override
