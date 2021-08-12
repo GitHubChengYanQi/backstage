@@ -61,8 +61,8 @@ public class CustomerController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CustomerParam customerParam) {
 
-        this.customerService.update(customerParam);
-        return ResponseData.success();
+        Customer result = this.customerService.update(customerParam);
+        return ResponseData.success(result.getCustomerId());
     }
 
     /**

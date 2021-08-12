@@ -139,6 +139,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
     private Integer display;
 
     @ApiModelProperty("父ID顺序数组")
+
     private List<String> pidValue;
 
     @Override

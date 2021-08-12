@@ -74,5 +74,5 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
      PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param);
 
 
-    void batchDelete( List<Long> businessIds);
+      void batchDelete(List<Long> businessIds);
 }

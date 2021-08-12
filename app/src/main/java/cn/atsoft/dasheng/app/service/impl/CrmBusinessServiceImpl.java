@@ -67,7 +67,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @BussinessLog
     public CrmBusiness add(CrmBusinessParam param) {
-        CrmBusiness entity = getEntity(param);
+        CrmBusiness  entity = getEntity(param);
         this.save(entity);
         return entity;
 
@@ -184,11 +184,11 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    public void batchDelete(List<Long> businessIds) {
+    public void batchDelete(List<Long> businessId) {
         CrmBusiness business = new CrmBusiness();
         business.setDisplay(0);
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
-        businessQueryWrapper.in("business_id", businessIds);
+        businessQueryWrapper.in("business_id", businessId);
         this.update(business, businessQueryWrapper);
 
     }

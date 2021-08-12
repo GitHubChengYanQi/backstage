@@ -69,4 +69,6 @@ public interface ContactsService extends IService<Contacts> {
      */
      PageInfo<ContactsResult> findPageBySpec(ContactsParam param);
 
+     void batchDelete(List<Long> id);
+
 }
