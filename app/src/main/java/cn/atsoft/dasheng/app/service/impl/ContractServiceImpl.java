@@ -1,22 +1,17 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
-import cn.atsoft.dasheng.app.service.AdressService;
-import cn.atsoft.dasheng.app.service.ContactsService;
-import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
-import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -26,6 +21,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -48,6 +44,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContactsService contactsService;
     @Autowired
     private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     @BussinessLog
@@ -116,6 +114,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Long> contactsIdsB = new ArrayList<>();
         List<Long> adressIdsA = new ArrayList<>();
         List<Long> adressIdsB = new ArrayList<>();
+        List<Long> phoneAIds = new ArrayList<>();
+        List<Long> phoneBIds = new ArrayList<>();
         for (ContractResult record : page.getRecords()) {
             partA.add(record.getPartyA());
             partB.add(record.getPartyB());
@@ -123,26 +123,36 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             contactsIdsB.add(record.getPartyBContactsId());
             adressIdsA.add(record.getPartyAAdressId());
             adressIdsB.add(record.getPartyBAdressId());
+            phoneAIds.add(record.getPartyAPhone());
+            phoneBIds.add(record.getPartyBPhone());
         }
         QueryWrapper<Customer> customerQueryWrapperA = new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapperA.in("customer_id", partA);
         List<Customer> partAList = partA.size() == 0 ? new ArrayList<>() : customerService.list(partAWapper);
 
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
-        contactsA.in("contacts_id",contactsIdsA);
+        contactsA.in("contacts_id", contactsIdsA);
         List<Contacts> contactsAList = contactsService.list(contactsA);
 
         QueryWrapper<Contacts> contactsB = new QueryWrapper<>();
-        contactsB.in("contacts_id",contactsIdsB);
+        contactsB.in("contacts_id", contactsIdsB);
         List<Contacts> contactsBList = contactsService.list(contactsB);
 
         QueryWrapper<Adress> adressA = new QueryWrapper<>();
-        adressA.in("adress_id",adressA);
+        adressA.in("adress_id", adressA);
         List<Adress> adressAList = adressService.list(adressA);
 
         QueryWrapper<Adress> adressB = new QueryWrapper<>();
-        adressB.in("adress_id",adressIdsB);
+        adressB.in("adress_id", adressIdsB);
         List<Adress> adressBList = adressService.list(adressB);
+
+        QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
+        phoneAwapper.in("phone_id",phoneAIds);
+        List<Phone> phoneAlist = phoneService.list(phoneAwapper);
+
+        QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
+        phoneBwapper.in("phone_id",phoneBIds);
+        List<Phone> phoneBlist = phoneService.list(phoneBwapper);
 
         for (ContractResult record : page.getRecords()) {
             for (Customer customer : partAList) {
@@ -155,7 +165,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (Contacts contacts : contactsAList) {
                 if (contacts.getContactsId().equals(record.getPartyAContactsId())) {
                     ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts,contactsResult);
+                    ToolUtil.copyProperties(contacts, contactsResult);
                     record.setPartyAContacts(contactsResult);
                     break;
                 }
@@ -163,7 +173,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (Contacts contacts : contactsBList) {
                 if (contacts.getContactsId().equals(record.getContractId())) {
                     ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts,contactsResult);
+                    ToolUtil.copyProperties(contacts, contactsResult);
                     record.setPartyBContacts(contactsResult);
                     break;
                 }
@@ -171,16 +181,32 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             for (Adress adress : adressAList) {
                 if (adress.getAdressId().equals(record.getPartyAAdressId())) {
                     AdressResult adressResult = new AdressResult();
-                        ToolUtil.copyProperties(adress,adressResult);
-                        record.setPartyAAdress(adressResult);
-                        break;
+                    ToolUtil.copyProperties(adress, adressResult);
+                    record.setPartyAAdress(adressResult);
+                    break;
                 }
             }
             for (Adress adress : adressBList) {
                 if (adress.getAdressId().equals(record.getPartyBAdressId())) {
                     AdressResult adressResult = new AdressResult();
-                    ToolUtil.copyProperties(adress,adressResult);
+                    ToolUtil.copyProperties(adress, adressResult);
                     record.setPartyBAdress(adressResult);
+                    break;
+                }
+            }
+            for (Phone phone : phoneAlist) {
+                if (phone.getPhoneId().equals(record.getPartyAPhone())){
+                    PhoneResult phoneResult = new PhoneResult();
+                    ToolUtil.copyProperties(phone,phoneResult);
+                    record.setPhoneA(phoneResult);
+                    break;
+                }
+            }
+            for (Phone phone : phoneBlist) {
+                if (phone.getPhoneId().equals(record.getPartyBPhone())) {
+                    PhoneResult phoneResult = new PhoneResult();
+                    ToolUtil.copyProperties(phone,phoneResult);
+                    record.setPhoneB(phoneResult);
                     break;
                 }
             }
