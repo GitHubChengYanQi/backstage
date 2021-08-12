@@ -25,7 +25,7 @@ public interface ContractService extends IService<Contract> {
      * @Date 2021-07-21
      * @return
      */
-    Contract add(ContractParam param);
+    ContractResult add(ContractParam param);
 
     /**
      * 删除
@@ -70,6 +70,8 @@ public interface ContractService extends IService<Contract> {
      PageInfo<ContractResult> findPageBySpec(ContractParam param);
 
     void batchDelete( List<Long> customerId);
+
+    ContractResult detail (Long id);
 
 
 }

@@ -2,16 +2,13 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.result.AdressResult;
-import cn.atsoft.dasheng.app.model.result.ContactsResult;
-import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
-import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -19,9 +16,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -48,8 +43,20 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private PhoneService phoneService;
 
     @Override
-    @BussinessLog
-    public Contract add(ContractParam param) {
+    public ContractResult detail(Long id) {
+        Contract contract = this.getById(id);
+        ContractResult contractResult = new ContractResult();
+        ToolUtil.copyProperties(contract, contractResult);
+        List<ContractResult> results = new ArrayList<ContractResult>() {{
+            add(contractResult);
+        }};
+        format(results);
+        return results.get(0);
+    }
+
+    @Override
+//    @BussinessLog
+    public ContractResult add(ContractParam param) {
         QueryWrapper<Customer> queryWrapperA = new QueryWrapper<>();
         queryWrapperA.in("customer_id", param.getPartyA());
         List<Customer> aList = customerService.list(queryWrapperA);
@@ -57,7 +64,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             if (customer1.getCustomerId().equals(param.getPartyA())) {
                 Contract entity = getEntity(param);
                 this.save(entity);
-                return entity;
+                Contract contract = this.getById(entity.getContractId());
+                ContractResult contractResult = new ContractResult();
+                ToolUtil.copyProperties(contract, contractResult);
+                List<ContractResult> results = new ArrayList<ContractResult>() {{
+                    add(contractResult);
+                }};
+                format(results);
+                return results.get(0);
             }
         }
         throw new ServiceException(500, "数据不存在");
@@ -108,6 +122,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     public PageInfo<ContractResult> findPageBySpec(ContractParam param) {
         Page<ContractResult> pageContext = getPageContext();
         IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    private void format(List<ContractResult> data){
         List<Long> partA = new ArrayList<>();
         List<Long> partB = new ArrayList<>();
         List<Long> contactsIdsA = new ArrayList<>();
@@ -116,7 +135,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Long> adressIdsB = new ArrayList<>();
         List<Long> phoneAIds = new ArrayList<>();
         List<Long> phoneBIds = new ArrayList<>();
-        for (ContractResult record : page.getRecords()) {
+        for (ContractResult record : data) {
             partA.add(record.getPartyA());
             partB.add(record.getPartyB());
             contactsIdsA.add(record.getPartyAContactsId());
@@ -163,11 +182,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         phoneBwapper.in("phone_id",phoneBIds);
         List<Phone> phoneBlist = phoneService.list(phoneBwapper);
 
-        for (ContractResult record : page.getRecords()) {
+        for (ContractResult record : data) {
             for (Customer customer : partAList) {
                 if (record.getPartyA().equals(customer.getCustomerId())) {
                     record.setPartAName(customer.getCustomerName());
-
                 }
 
             }
@@ -225,7 +243,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 }
             }
         }
-        return PageFactory.createPageInfo(page);
     }
 
     private Serializable getKey(ContractParam param) {
