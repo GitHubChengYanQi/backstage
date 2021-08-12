@@ -57,11 +57,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts delete(ContactsParam param) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", param.getCustomerId());
-        List<Customer> list = customerService.list(customerQueryWrapper);
-        for (Customer customer : list) {
-            if (customer.getCustomerId().equals(param.getCustomerId())) {
+        QueryWrapper<Contacts> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("contacts_id", param.getCustomerId());
+        List<Contacts> list = this.list(customerQueryWrapper);
+        for (Contacts contacts : list) {
+            if (contacts.getContactsId().equals(param.getContactsId())) {
                 this.removeById(getKey(param));
                 Contacts entity = getEntity(param);
                 return entity;

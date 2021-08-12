@@ -84,6 +84,8 @@ public class PhoneController extends BaseController {
         Phone detail = this.phoneService.getById(phoneParam.getPhoneId());
         PhoneResult result = new PhoneResult();
         ToolUtil.copyProperties(detail, result);
+
+
         return ResponseData.success(result);
     }
 
