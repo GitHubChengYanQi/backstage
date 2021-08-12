@@ -100,7 +100,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         }
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
+        List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() :  customerService.list(customerQueryWrapper);
         for (ContactsResult record : page.getRecords()) {
             for (Customer customer : customerList) {
                 if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
