@@ -69,11 +69,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
-
-//        BusinessDynamicParam  businessDynamicParam = new BusinessDynamicParam();
-//        String businessName = param.getBusinessName();
-//        businessDynamicParam.setContent("新增商机"+businessName);
-//        businessDynamicService.add(businessDynamicParam);
         return entity;
 
     }
@@ -81,17 +76,14 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @BussinessLog
     public CrmBusiness delete(CrmBusinessParam param) {
-        QueryWrapper<CrmBusiness> crmBusinessQueryWrapper = new QueryWrapper<>();
-        crmBusinessQueryWrapper.in("business_id",param.getBusinessId());
-        List<CrmBusiness> list = this.list(crmBusinessQueryWrapper);
-        for (CrmBusiness crmBusiness : list) {
-            if (crmBusiness.getBusinessId().equals(param.getBusinessId())) {
-                this.removeById(getKey(param));
-                CrmBusiness entity = getEntity(param);
-                return entity;
-            }
+        CrmBusiness business = this.getById(param.getBusinessId());
+        if (ToolUtil.isEmpty(business)) {
+            throw new ServiceException(500, "数据不存在");
         }
-       throw new ServiceException(500, "数据不存在");
+        param.setDisplay(0);
+        this.update(param);
+        CrmBusiness entity = getEntity(param);
+        return entity;
     }
 
     @Override

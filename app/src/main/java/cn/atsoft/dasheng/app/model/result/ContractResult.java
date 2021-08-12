@@ -31,6 +31,9 @@ public class ContractResult implements Serializable {
      */
     @ApiModelProperty("合同id")
     private Long contractId;
+    private  CustomerResult partA;
+    private  CustomerResult partB;
+
     private String partAName;
     private String partBName;
     private Long partyA;
