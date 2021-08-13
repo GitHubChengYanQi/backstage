@@ -112,6 +112,12 @@ public class TrackParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+      /**
+       * 状态
+       */
+      @ApiModelProperty("状态")
+      private Boolean display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
