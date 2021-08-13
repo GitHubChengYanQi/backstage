@@ -11,10 +11,12 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +70,7 @@ public class ErpPackageController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ErpPackageParam erpPackageParam)  {
+    public ResponseData delete(@RequestBody ErpPackageParam erpPackageParam) {
         this.erpPackageService.delete(erpPackageParam);
         return ResponseData.success();
     }
@@ -99,27 +101,29 @@ public class ErpPackageController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ErpPackageResult> list(@RequestBody(required = false) ErpPackageParam erpPackageParam) {
-        if(ToolUtil.isEmpty(erpPackageParam)){
+        if (ToolUtil.isEmpty(erpPackageParam)) {
             erpPackageParam = new ErpPackageParam();
         }
         return this.erpPackageService.findPageBySpec(erpPackageParam);
     }
 
 
-  /**
-   * 选择列表
-   *
-   * @author 1
-   * @Date 2021-07-14
-   */
-  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-  @ApiOperation("Select数据接口")
-  public ResponseData<List<Map<String,Object>>> listSelect() {
-    List<Map<String,Object>> list = this.erpPackageService.listMaps();
-    ErpPackageSelectWrapper factory = new ErpPackageSelectWrapper(list);
-    List<Map<String,Object>> result = factory.wrap();
-    return ResponseData.success(result);
-  }
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<ErpPackage> packageQueryWrapper = new QueryWrapper<>();
+        packageQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.erpPackageService.listMaps(packageQueryWrapper);
+        ErpPackageSelectWrapper factory = new ErpPackageSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }

@@ -1,9 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
-import cn.atsoft.dasheng.app.model.result.ContractResult;
+import cn.atsoft.dasheng.app.model.result.ContactsRequest;
+import cn.atsoft.dasheng.app.model.result.ContactsRequest;
 import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper1;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
@@ -114,7 +113,9 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.contactsService.listMaps();
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.contactsService.listMaps(contactsQueryWrapper);
         ContactsSelectWrapper contactsSelectWrapper = new ContactsSelectWrapper(list);
         List<Map<String, Object>> result = contactsSelectWrapper.wrap();
         return ResponseData.success(result);
@@ -123,8 +124,8 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody ContractIdRequest contractIdRequest) {
-        contactsService.batchDelete(contractIdRequest.getContractId());
+    public ResponseData batchDelete(@RequestBody ContactsRequest contactsRequest) {
+        contactsService.batchDelete(contactsRequest.getContactsId());
         return ResponseData.success();
     }
 

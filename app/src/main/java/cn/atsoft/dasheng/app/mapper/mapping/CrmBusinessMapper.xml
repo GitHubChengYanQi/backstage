@@ -59,10 +59,10 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where display = 1
-        <if test="paramCondition.salesId != null">
+        <if test="paramCondition.salesId != null and paramCondition.salesId != ''  and paramCondition.salesId != 0 ">
             and sales_id = #{paramCondition.salesId}
         </if>
-        <if test="paramCondition.originId != null">
+        <if test="paramCondition.originId != null and paramCondition.originId !='' and paramCondition.originId != 0 ">
             and origin_id = #{paramCondition.originId}
         </if>
         <if test="paramCondition.businessId != null">

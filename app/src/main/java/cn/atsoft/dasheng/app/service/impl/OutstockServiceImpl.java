@@ -49,7 +49,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         Long brandId = stock.getBrandId();
         StockParam stockParam = new StockParam();
         if (inventory >= param.getNumber()) {
-            if(param.getBrand()!=null&&stock.getBrandId().equals(param.getBrand())){
+            if (param.getBrand() != null && stock.getBrandId().equals(param.getBrand())) {
                 stockParam.setStockId(stockId);
                 stockParam.setInventory(inventory - param.getNumber());
                 stockParam.setStorehouseId(storehouseId);
@@ -57,8 +57,8 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                 stockService.update(stockParam);
                 Outstock entity = getEntity(param);
                 this.save(entity);
-            }else {
-                throw  new ServiceException(500,"请选择正确品牌");
+            } else {
+                throw new ServiceException(500, "请选择正确品牌");
             }
 
         } else {
@@ -70,7 +70,9 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
 
     @Override
     public void delete(OutstockParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
+//        this.removeById(getKey(param));
     }
 
     @Override
