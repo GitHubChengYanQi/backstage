@@ -50,7 +50,22 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     public Long add(InstockParam param) {
         Instock entity = getEntity(param);
         this.save(entity);
+        return entity.getInstockId();
+    }
 
+    @Override
+    public void delete(InstockParam param) {
+        this.removeById(getKey(param));
+    }
+
+    @Override
+    public void update(InstockParam param) {
+        Instock oldEntity = getOldEntity(param);
+        Instock newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+
+        Instock entity = getEntity(param);
         StockParam stockParam = new StockParam();
         // 取得入库表的仓库id,品牌id,产品id
         stockParam.setBrandId(entity.getBrandId());
@@ -127,20 +142,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 }
             }
         }
-        return entity.getInstockId();
-    }
-
-    @Override
-    public void delete(InstockParam param) {
-        this.removeById(getKey(param));
-    }
-
-    @Override
-    public void update(InstockParam param) {
-        Instock oldEntity = getOldEntity(param);
-        Instock newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
     }
 
     @Override

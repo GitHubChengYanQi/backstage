@@ -68,6 +68,12 @@ public class InstockResult implements Serializable {
     @ApiModelProperty("品牌")
     private long brandId;
 
+    /**
+     * 入库状态
+     */
+    @ApiModelProperty("入库状态")
+    private Integer state;
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 

@@ -12,6 +12,7 @@
         <result column="price" property="price" />
         <result column="brand_id" property="brandId" />
         <result column="barcode" property="barcode" />
+        <result column="state" property="state" />
         <result column="create_time" property="createTime" />
         <result column="create_user" property="createUser" />
         <result column="update_time" property="updateTime" />
@@ -21,7 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        Storehouse_id AS "StorehouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", barcode AS "barcode", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        Storehouse_id AS "StorehouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -41,6 +42,9 @@
             <if test="paramCondition.barcode != null">
                 and barcode = #{paramCondition.barcode}
             </if>
+            <if test="paramCondition.state != null">
+                and state = #{paramCondition.state}
+            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
@@ -58,6 +62,9 @@
                 </if>
                 <if test="paramCondition.barcode != null">
                     and barcode = #{paramCondition.barcode}
+                </if>
+                <if test="paramCondition.state != null">
+                    and state = #{paramCondition.state}
                 </if>
     </select>
 
@@ -80,6 +87,9 @@
             <if test="paramCondition.barcode != null">
                 and barcode = #{paramCondition.barcode}
             </if>
+            <if test="paramCondition.state != null">
+                and state = #{paramCondition.state}
+            </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
@@ -97,6 +107,9 @@
                 </if>
                 <if test="paramCondition.barcode != null">
                     and barcode = #{paramCondition.barcode}
+                </if>
+                <if test="paramCondition.state != null">
+                    and state = #{paramCondition.state}
                 </if>
     </select>
 
