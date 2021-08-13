@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.ItemClassParam;
 import cn.atsoft.dasheng.app.model.result.ItemClassResult;
 import  cn.atsoft.dasheng.app.service.ItemClassService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,7 +37,12 @@ public class ItemClassServiceImpl extends ServiceImpl<ItemClassMapper, ItemClass
 
     @Override
     public void delete(ItemClassParam param){
-        this.removeById(getKey(param));
+      ItemClass byId = this.getById(param.getClassId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override

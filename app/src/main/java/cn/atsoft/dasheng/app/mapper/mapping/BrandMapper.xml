@@ -40,7 +40,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.BrandResult" parameterType="cn.atsoft.dasheng.app.model.params.BrandParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_brand where 1 = 1
+        from daoxin_erp_brand where 1 = 1 and display = 1
                 <if test="paramCondition.brandName != null and paramCondition.brandName != ''">
                         and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
                 </if>

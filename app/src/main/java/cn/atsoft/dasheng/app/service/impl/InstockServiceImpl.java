@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -55,7 +56,13 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public void delete(InstockParam param) {
-        this.removeById(getKey(param));
+      Instock byId = this.getById(param.getInstockId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
+
     }
 
     @Override

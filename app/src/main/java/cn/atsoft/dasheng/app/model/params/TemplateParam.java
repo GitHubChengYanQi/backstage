@@ -13,7 +13,7 @@ import java.util.List;
  * 合同模板
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @Data
@@ -69,7 +69,7 @@ public class TemplateParam implements Serializable, BaseValidatingParam {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Boolean display;
+    private Integer display;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

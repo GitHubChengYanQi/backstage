@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
 import  cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,7 +23,7 @@ import java.util.List;
  * 客户级别表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-30
  */
 @Service
@@ -36,7 +37,12 @@ public class CrmCustomerLevelServiceImpl extends ServiceImpl<CrmCustomerLevelMap
 
     @Override
     public void delete(CrmCustomerLevelParam param){
-        this.removeById(getKey(param));
+      CrmCustomerLevel byId = this.getById(param.getCustomerLevelId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override

@@ -32,7 +32,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_items where 1 = 1
+        from daoxin_erp_items where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
         </if>
@@ -44,7 +44,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_items where 1 = 1
+        from daoxin_erp_items where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
         </if>
@@ -57,7 +57,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_items where 1 = 1
+        from daoxin_erp_items where display = 1
 
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
@@ -71,7 +71,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_items where 1 = 1
+        from daoxin_erp_items where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
         </if>

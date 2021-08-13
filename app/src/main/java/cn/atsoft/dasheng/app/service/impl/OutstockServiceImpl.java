@@ -15,7 +15,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -75,14 +74,17 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     }
 
     @Override
-    public void delete(OutstockParam param) {
-        param.setDisplay(0);
-        this.update(param);
-//        this.removeById(getKey(param));
+    public void delete(OutstockParam param){
+      Outstock byId = this.getById(param.getOutstockId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"删除目标不存在");
+      }
+      param.setDisplay(0);
+      this.update(param);
     }
 
     @Override
-    public void update(OutstockParam param) {
+    public void update(OutstockParam param){
         Outstock oldEntity = getOldEntity(param);
         Outstock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -90,29 +92,29 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     }
 
     @Override
-    public OutstockResult findBySpec(OutstockParam param) {
+    public OutstockResult findBySpec(OutstockParam param){
         return null;
     }
 
     @Override
-    public List<OutstockResult> findListBySpec(OutstockParam param) {
+    public List<OutstockResult> findListBySpec(OutstockParam param){
         return null;
     }
 
     @Override
-    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param) {
+    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param){
         Page<OutstockResult> pageContext = getPageContext();
         IPage<OutstockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(OutstockParam param) {
+    private Serializable getKey(OutstockParam param){
         return param.getOutstockId();
     }
 
     private Page<OutstockResult> getPageContext() {
-        List<String> fields = new ArrayList<String>() {{
+        List<String> fields = new ArrayList<String>(){{
             add("brandName");
             add("name");
             add("number");

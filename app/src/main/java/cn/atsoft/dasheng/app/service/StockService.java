@@ -66,4 +66,6 @@ public interface StockService extends IService<Stock> {
      */
      PageInfo<StockResult> findPageBySpec(StockParam param);
 
+     void batchDelete(List<Long> Ids);
+
 }

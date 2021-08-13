@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -47,8 +48,13 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public void delete(BrandParam param) {
-         partsService.getById(param.getBrandId());
-        this.removeById(getKey(param));
+      Brand byId = this.getById(param.getBrandId());
+      if (ToolUtil.isEmpty(byId)){
+        throw new ServiceException(500,"所删除目标不存在");
+      }else {
+        param.setDisplay(0);
+        this.update(param);
+      }
     }
 
     @Override

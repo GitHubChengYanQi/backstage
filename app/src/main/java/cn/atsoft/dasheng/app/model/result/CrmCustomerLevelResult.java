@@ -11,7 +11,7 @@ import java.util.List;
  * 客户级别表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-30
  */
 @Data
@@ -37,11 +37,6 @@ public class CrmCustomerLevelResult implements Serializable {
     @ApiModelProperty("级别")
     private String level;
 
-    /**
-     * 创建者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
 
     /**
      * 修改者
@@ -66,6 +61,7 @@ public class CrmCustomerLevelResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
