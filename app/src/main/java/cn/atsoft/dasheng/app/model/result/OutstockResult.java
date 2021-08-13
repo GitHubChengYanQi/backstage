@@ -62,7 +62,7 @@ OutstockResult implements Serializable {
 
 
     @ApiModelProperty("出库品牌")
-    private String brand;
+    private Long brand;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

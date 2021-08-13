@@ -58,7 +58,7 @@ public class Outstock implements Serializable {
      * 出库品牌
      */
     @TableField("brand")
-    private String brand;
+    private Long brand;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -115,11 +115,11 @@ public class Outstock implements Serializable {
         this.price = price;
     }
 
-    public String getBrand() {
+    public Long getBrand() {
         return brand;
     }
 
-    public void setBrand(String brand) {
+    public void setBrand(Long brand) {
         this.brand = brand;
     }
 

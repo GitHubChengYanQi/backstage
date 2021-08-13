@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -32,27 +33,48 @@ import java.util.List;
  */
 @Service
 public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> implements OutstockService {
-@Autowired
-private StockService stockService;
+    @Autowired
+    private StockService stockService;
+
     @Override
-    public void add(OutstockParam param){
+    public void add(OutstockParam param) {
         Stock stock = stockService.getById(param.getStockId());
         if (ToolUtil.isEmpty(stock)) {
-            throw new ServiceException(500, "数据不存在");
+            throw new ServiceException(500, "没有此物品");
         }
+
         Long inventory = stock.getInventory();
-//        Outstock entity = getEntity(param);
-//        this.save(entity);
-//        return entity.getOutstockId();
+        Long stockId = stock.getStockId();
+        Long storehouseId = stock.getStorehouseId();
+        Long brandId = stock.getBrandId();
+        StockParam stockParam = new StockParam();
+        if (inventory >= param.getNumber()) {
+            if(param.getBrand()!=null&&stock.getBrandId().equals(param.getBrand())){
+                stockParam.setStockId(stockId);
+                stockParam.setInventory(inventory - param.getNumber());
+                stockParam.setStorehouseId(storehouseId);
+                stockParam.setBrandId(brandId);
+                stockService.update(stockParam);
+                Outstock entity = getEntity(param);
+                this.save(entity);
+            }else {
+                throw  new ServiceException(500,"请选择正确品牌");
+            }
+
+        } else {
+            throw new ServiceException(500, "数量不足");
+        }
+
+
     }
 
     @Override
-    public void delete(OutstockParam param){
+    public void delete(OutstockParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(OutstockParam param){
+    public void update(OutstockParam param) {
         Outstock oldEntity = getOldEntity(param);
         Outstock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -60,28 +82,28 @@ private StockService stockService;
     }
 
     @Override
-    public OutstockResult findBySpec(OutstockParam param){
+    public OutstockResult findBySpec(OutstockParam param) {
         return null;
     }
 
     @Override
-    public List<OutstockResult> findListBySpec(OutstockParam param){
+    public List<OutstockResult> findListBySpec(OutstockParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param){
+    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param) {
         Page<OutstockResult> pageContext = getPageContext();
         IPage<OutstockResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(OutstockParam param){
+    private Serializable getKey(OutstockParam param) {
         return param.getOutstockId();
     }
 
     private Page<OutstockResult> getPageContext() {
-        List<String> fields = new ArrayList<String>(){{
+        List<String> fields = new ArrayList<String>() {{
             add("brandName");
             add("name");
             add("number");
