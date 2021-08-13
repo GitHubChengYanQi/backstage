@@ -92,7 +92,14 @@ public class StockDetails implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-    public static long getSerialVersionUID() {
+  /**
+   * 状态
+   */
+  @TableField("display")
+  private Integer display;
+
+
+  public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
@@ -200,11 +207,6 @@ public class StockDetails implements Serializable {
         this.barcode = barcode;
     }
 
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
 
 
 

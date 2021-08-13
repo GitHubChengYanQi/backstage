@@ -86,6 +86,12 @@ public class TrackResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+    /**
+     * 状态
+     */
+  @ApiModelProperty("状态")
+  private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

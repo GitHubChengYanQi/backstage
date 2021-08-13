@@ -73,7 +73,7 @@ public class TemplateResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Boolean display;
+    private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

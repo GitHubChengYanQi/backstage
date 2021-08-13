@@ -95,110 +95,124 @@ public class Track implements Serializable {
     @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+      /**
+       * 状态
+       */
+      @TableField("display")
+      private Boolean display;
 
-    public Long getTrackId() {
-        return trackId;
-    }
+  public String getTime() {
+    return time;
+  }
 
-    public void setTrackId(Long trackId) {
-        this.trackId = trackId;
-    }
+  public void setTime(String time) {
+    this.time = time;
+  }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
+  public Long getTrackId() {
+    return trackId;
+  }
 
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
+  public void setTrackId(Long trackId) {
+    this.trackId = trackId;
+  }
 
-    public Long getStockId() {
-        return stockId;
-    }
+  public Long getBusinessId() {
+    return businessId;
+  }
 
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
-    }
+  public void setBusinessId(Long businessId) {
+    this.businessId = businessId;
+  }
 
-    public Integer getMoney() {
-        return money;
-    }
+  public Long getStockId() {
+    return stockId;
+  }
 
-    public String getTime() {
-        return time;
-    }
+  public void setStockId(Long stockId) {
+    this.stockId = stockId;
+  }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
+  public Integer getMoney() {
+    return money;
+  }
 
-    public void setMoney(Integer money) {
-        this.money = money;
-    }
+  public void setMoney(Integer money) {
+    this.money = money;
+  }
 
-    public Long getNumber() {
-        return number;
-    }
+  public Long getNumber() {
+    return number;
+  }
 
-    public void setNumber(Long number) {
-        this.number = number;
-    }
+  public void setNumber(Long number) {
+    this.number = number;
+  }
 
-    public Integer getStage() {
-        return stage;
-    }
+  public Integer getStage() {
+    return stage;
+  }
 
-    public void setStage(Integer stage) {
-        this.stage = stage;
-    }
+  public void setStage(Integer stage) {
+    this.stage = stage;
+  }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
-    public Long getCreateUser() {
-        return createUser;
-    }
+  public Long getCreateUser() {
+    return createUser;
+  }
 
-    public void setCreateUser(Long createUser) {
-        this.createUser = createUser;
-    }
+  public void setCreateUser(Long createUser) {
+    this.createUser = createUser;
+  }
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+  public Date getUpdateTime() {
+    return updateTime;
+  }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+  public void setUpdateTime(Date updateTime) {
+    this.updateTime = updateTime;
+  }
 
-    public Long getUpdateUser() {
-        return updateUser;
-    }
+  public Long getUpdateUser() {
+    return updateUser;
+  }
 
-    public void setUpdateUser(Long updateUser) {
-        this.updateUser = updateUser;
-    }
+  public void setUpdateUser(Long updateUser) {
+    this.updateUser = updateUser;
+  }
 
-    @Override
-    public String toString() {
-        return "Quotation{" +
-                "quotationId=" + trackId +
-                ", businessId=" + businessId +
-                ", stockId=" + stockId +
-                ", money=" + money +
-                ", number=" + number +
-                ", stage=" + stage +
-                ", note=" + note +
-                ", createTime=" + createTime +
-                ", time=" + time +
-                ", createUser=" + createUser +
-                ", updateTime=" + updateTime +
-                ", updateUser=" + updateUser +
-                "}";
-    }
+  public Boolean getDisplay() {
+    return display;
+  }
+
+  public void setDisplay(Boolean display) {
+    this.display = display;
+  }
+
+  @Override
+  public String toString() {
+    return "Track{" +
+      "time='" + time + '\'' +
+      ", trackId=" + trackId +
+      ", businessId=" + businessId +
+      ", stockId=" + stockId +
+      ", note='" + note + '\'' +
+      ", money=" + money +
+      ", number=" + number +
+      ", stage=" + stage +
+      ", createTime=" + createTime +
+      ", createUser=" + createUser +
+      ", updateTime=" + updateTime +
+      ", updateUser=" + updateUser +
+      ", display=" + display +
+      '}';
+  }
 }
