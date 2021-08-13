@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.ItemsRequest;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Items;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -32,7 +34,8 @@ public class ItemsController extends BaseController {
 
     @Autowired
     private ItemsService itemsService;
-     public  static Map map= new HashMap();
+    public static Map map = new HashMap();
+
     /**
      * 新增接口
      *
@@ -107,16 +110,19 @@ public class ItemsController extends BaseController {
     }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.itemsService.listMaps();
-        ItemsSelectWrapper itemsSelectWrapper =new ItemsSelectWrapper(list);
+        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+        itemsQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.itemsService.listMaps(itemsQueryWrapper);
+        ItemsSelectWrapper itemsSelectWrapper = new ItemsSelectWrapper(list);
         List<Map<String, Object>> result = itemsSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
-    public static void addPartName(){
-
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    public ResponseData batchDelete(@RequestBody ItemsRequest itemsRequest) {
+        itemsService.batchDelete(itemsRequest.getItemId());
+        return ResponseData.success();
     }
 }
 

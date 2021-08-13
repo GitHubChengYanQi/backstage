@@ -1,9 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
-import cn.atsoft.dasheng.app.model.result.ContractResult;
+import cn.atsoft.dasheng.app.model.result.ContactsRequest;
+import cn.atsoft.dasheng.app.model.result.ContactsRequest;
 import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper1;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
@@ -12,6 +11,7 @@ import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -99,14 +99,10 @@ public class ContactsController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
-    Long CustomerId;
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
-        if (contactsParam != null) {
-            CustomerId = contactsParam.getCustomerId();
-        }
         if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
         }
@@ -117,7 +113,9 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.contactsService.listMaps();
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.contactsService.listMaps(contactsQueryWrapper);
         ContactsSelectWrapper contactsSelectWrapper = new ContactsSelectWrapper(list);
         List<Map<String, Object>> result = contactsSelectWrapper.wrap();
         return ResponseData.success(result);
@@ -126,8 +124,8 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody ContractIdRequest contractIdRequest) {
-        contactsService.batchDelete(contractIdRequest.getContractId());
+    public ResponseData batchDelete(@RequestBody ContactsRequest contactsRequest) {
+        contactsService.batchDelete(contactsRequest.getContactsId());
         return ResponseData.success();
     }
 

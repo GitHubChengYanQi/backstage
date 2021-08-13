@@ -24,7 +24,6 @@ public class StockDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Long storehouseId;
-    private Long itemsId;
     private String iname;
     private String pname;
     private StorehouseResult storehouseResult;
@@ -42,6 +41,12 @@ public class StockDetailsResult implements Serializable {
      */
     @ApiModelProperty("仓库id")
     private Long stockId;
+
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("产品id")
+    private Long itemId;
 
     /**
      * 价格

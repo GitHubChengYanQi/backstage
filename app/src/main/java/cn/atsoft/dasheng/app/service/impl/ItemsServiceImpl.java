@@ -81,6 +81,15 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public void batchDelete(List<Long> ids) {
+        Items items = new Items();
+        items.setDisplay(0);
+         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+         itemsQueryWrapper.in("item_id",ids);
+        this.update(items,itemsQueryWrapper);
+    }
+
     private Serializable getKey(ItemsParam param) {
         return param.getItemId();
     }

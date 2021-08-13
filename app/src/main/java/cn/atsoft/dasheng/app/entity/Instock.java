@@ -54,11 +54,24 @@ public class Instock implements Serializable {
     @TableField("price")
     private Integer price;
 
+
+    /**
+     * 条形码
+     */
+    @TableField("barcode")
+    private Long barcode;
+
     /**
      * 品牌
      */
     @TableField("brand_id")
     private long brandId;
+
+    /**
+     * 入库状态
+     */
+    @TableField("state")
+    private Integer state;
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -175,6 +188,23 @@ public class Instock implements Serializable {
         this.display = display;
     }
 
+    public Long getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(Long barcode) {
+        this.barcode = barcode;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+
     @Override
     public String toString() {
         return "Instock{" +
@@ -189,6 +219,8 @@ public class Instock implements Serializable {
         ", updateTime=" + updateTime +
         ", updateUser=" + updateUser +
         ", display=" + display +
+        ", barcode=" + barcode +
+        ", state=" + state +
         "}";
     }
 }

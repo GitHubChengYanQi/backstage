@@ -128,8 +128,9 @@ public class CrmIndustryController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.crmIndustryService.listMaps();
-
+        QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
+        industryQueryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.crmIndustryService.listMaps(industryQueryWrapper);
         CrmIndustrySelectWrapper factory = new CrmIndustrySelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);

@@ -64,6 +64,7 @@ public interface ItemClassService extends IService<ItemClass> {
      * @author cheng
      * @Date 2021-08-11
      */
-     PageInfo<ItemClassResult> findPageBySpec(ItemClassParam param);
+    PageInfo<ItemClassResult> findPageBySpec(ItemClassParam param);
+
 
 }

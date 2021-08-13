@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -55,88 +56,6 @@ public class InstockController extends BaseController {
     public ResponseData addItem(@RequestBody InstockParam instockParam) {
 
         Long add = this.instockService.add(instockParam);
-
-        StockParam stockParam = new StockParam();
-
-        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
-
-        StockDetailsParam stockDetailsParam = new StockDetailsParam();
-
-        if (pageBySpec.getData().size() == 0){
-            Long id = 100L;
-            stockParam.setStockId(id);
-            stockParam.setItemId(instockParam.getItemId());
-            stockParam.setBrandId(instockParam.getBrandId());
-            stockParam.setStorehouseId(instockParam.getStorehouseId());
-            stockParam.setInventory(instockParam.getNumber());
-            this.stockService.add(stockParam);
-
-            stockDetailsParam.setStockId(id);
-            stockDetailsParam.setPrice(instockParam.getPrice());
-            stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
-            stockDetailsParam.setItemsId(instockParam.getItemId());
-            stockDetailsParam.setStorehouseId(instockParam.getStorehouseId());
-            for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
-
-                this.stockDetailsService.add(stockDetailsParam);
-            }
-
-
-        }else {
-            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
-                if (pageBySpec.getData().get(i).getItemId().equals(instockParam.getItemId())) {
-                    stockParam.setStockId(pageBySpec.getData().get(i).getStockId());
-                    stockParam.setItemId(instockParam.getItemId());
-                    stockParam.setBrandId(instockParam.getBrandId());
-                    stockParam.setStorehouseId(instockParam.getStorehouseId());
-                    stockParam.setInventory(instockParam.getNumber()+pageBySpec.getData().get(i).getInventory());
-                    this.stockService.update(stockParam);
-
-
-                    stockDetailsParam.setStockId(pageBySpec.getData().get(i).getStockId());
-                    stockDetailsParam.setPrice(instockParam.getPrice());
-                    stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
-                    stockDetailsParam.setItemsId(instockParam.getItemId());
-                    stockDetailsParam.setStorehouseId(instockParam.getStorehouseId());
-                    for (int j = 0 ; j < instockParam.getNumber() ; j++ ){
-
-                        this.stockDetailsService.add(stockDetailsParam);
-                    }
-
-
-                    break;
-                }else  {
-                    if ( i == pageBySpec.getData().size() - 1 ){
-                        stockParam.setStockId(pageBySpec.getData().get(pageBySpec.getData().size()-1).getStockId()+1);
-                        stockParam.setItemId(instockParam.getItemId());
-                        stockParam.setBrandId(instockParam.getBrandId());
-                        stockParam.setStorehouseId(instockParam.getStorehouseId());
-                        stockParam.setInventory(instockParam.getNumber());
-
-
-                        this.stockService.add(stockParam);
-
-
-
-                        stockDetailsParam.setStockId(pageBySpec.getData().get(pageBySpec.getData().size()-1).getStockId()+1);
-                        stockDetailsParam.setPrice(instockParam.getPrice());
-                        stockDetailsParam.setStorageTime(instockParam.getRegisterTime());
-                        stockDetailsParam.setItemsId(instockParam.getItemId());
-                        stockDetailsParam.setStorehouseId(instockParam.getStorehouseId());
-                        for (int j = 0; j < instockParam.getNumber(); j++) {
-
-                            this.stockDetailsService.add(stockDetailsParam);
-
-                        }
-
-                    }
-                }
-            }
-        }
-
-
-
-
         return ResponseData.success(add);
     }
 
@@ -206,8 +125,9 @@ public class InstockController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.instockService.listMaps();
-
+        QueryWrapper<Instock>instockQueryWrapper = new QueryWrapper<>();
+        instockQueryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.instockService.listMaps(instockQueryWrapper);
         InstockSelectWrapper instockSelectWrapper = new InstockSelectWrapper(list);
         List<Map<String, Object>> result = instockSelectWrapper.wrap();
         return ResponseData.success(result);

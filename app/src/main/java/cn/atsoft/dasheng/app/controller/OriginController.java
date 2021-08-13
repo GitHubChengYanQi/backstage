@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.OriginService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -106,7 +107,9 @@ public class OriginController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.originService.listMaps();
+        QueryWrapper<Origin> originQueryWrapper = new QueryWrapper<>();
+        originQueryWrapper.in("display",1);
+        List<Map<String,Object>> list = this.originService.listMaps(originQueryWrapper);
         OriginSelectWrapper factory = new OriginSelectWrapper(list);
         List<Map<String,Object>> result = factory.wrap();
         return ResponseData.success(result);

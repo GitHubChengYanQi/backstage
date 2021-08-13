@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -61,7 +62,7 @@ public class CrmBusinessController extends BaseController {
     public ResponseData update(@RequestBody CrmBusinessParam crmBusinessParam) {
 
         this.crmBusinessService.update(crmBusinessParam);
-        if(crmBusinessParam.getBusinessId()==null){
+        if (crmBusinessParam.getBusinessId() == null) {
             return ResponseData.error("请选择你要的商机");
         }
         return ResponseData.success();
@@ -75,7 +76,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody CrmBusinessParam crmBusinessParam)  {
+    public ResponseData delete(@RequestBody CrmBusinessParam crmBusinessParam) {
         this.crmBusinessService.delete(crmBusinessParam);
         return ResponseData.success();
     }
@@ -103,27 +104,29 @@ public class CrmBusinessController extends BaseController {
     @ApiOperation("列表")
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
 //        crmBusinessParam.setSorter(crmBusinessParam.getSorter()==null ? new Sorter() : crmBusinessParam.getSorter());
-        if(ToolUtil.isEmpty(crmBusinessParam)){
+        if (ToolUtil.isEmpty(crmBusinessParam)) {
             crmBusinessParam = new CrmBusinessParam();
         }
         return this.crmBusinessService.findPageBySpec(crmBusinessParam);
     }
 
 
-  /**
-   * 选择列表
-   *
-   * @author 1
-   * @Date 2021-07-14
-   */
-  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-  @ApiOperation("Select数据接口")
-  public ResponseData<List<Map<String,Object>>> listSelect() {
-    List<Map<String,Object>> list = this.crmBusinessService.listMaps();
-    CrmBusinessSelectWrapper factory = new CrmBusinessSelectWrapper(list);
-    List<Map<String,Object>> result = factory.wrap();
-    return ResponseData.success(result);
-  }
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
+        businessQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.crmBusinessService.listMaps(businessQueryWrapper);
+        CrmBusinessSelectWrapper factory = new CrmBusinessSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
 
 
     @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
@@ -132,6 +135,7 @@ public class CrmBusinessController extends BaseController {
         String s = crmBusinessService.UpdateStatus(crmBusinessParam);
         return ResponseData.success(s);
     }
+
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
     public ResponseData batchDelete(@RequestBody BusinessRequest businessRequest) {
