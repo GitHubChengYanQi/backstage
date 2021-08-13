@@ -54,6 +54,13 @@ public class Instock implements Serializable {
     @TableField("price")
     private Integer price;
 
+
+    /**
+     * 条形码
+     */
+    @TableField("barcode")
+    private Long barcode;
+
     /**
      * 品牌
      */
@@ -173,6 +180,14 @@ public class Instock implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(Long barcode) {
+        this.barcode = barcode;
     }
 
     @Override

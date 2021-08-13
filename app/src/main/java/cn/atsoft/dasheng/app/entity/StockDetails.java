@@ -25,7 +25,6 @@ public class StockDetails implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long storehouseId;
-    private Long itemsId;
 
     /**
      * 明细id
@@ -44,6 +43,12 @@ public class StockDetails implements Serializable {
      */
     @TableField("price")
     private Integer price;
+
+    /**
+     * 品牌id
+     */
+    @TableField("itemsId")
+    private Long itemsId;
 
     /**
      * 入库时间

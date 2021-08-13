@@ -29,7 +29,6 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private String pname;
 
     private Long storehouseId;
-    private Long itemsId;
     /**
      * 明细id
      */
@@ -40,22 +39,13 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
      * 仓库id
      */
     @ApiModelProperty("仓库id")
-    private Long stockId;
+    private  Long stockId;
 
-    public String getStorageTime() {
-        if (storageTime != null && !storageTime.equals("")) {
-            StringBuffer stringBuffer = new StringBuffer(storageTime);
-            String date = stringBuffer.substring(0, 10);
-            return date;
-        } else {
-            return storageTime;
-        }
-
-    }
-
-    public void setStorageTime(String storageTime) {
-        this.storageTime = storageTime;
-    }
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("产品id")
+    private  Long itemsId;
 
     /**
      * 价格
@@ -67,7 +57,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
      * 入库时间
      */
     @ApiModelProperty("入库时间")
-    private String storageTime;
+    private Date storageTime;
 
     /**
      * 品牌id
