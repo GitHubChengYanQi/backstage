@@ -114,7 +114,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         List<Long> brandIds = new ArrayList<>();
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
-            itemIds.add(datum.getItemsId());
+            itemIds.add(datum.getItemId());
             brandIds.add(datum.getBrandId());
         }
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
@@ -148,7 +148,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             }
             if(!itemsList.isEmpty()) {
                 for (Items items : itemsList) {
-                    if (items.getItemId().equals(datum.getItemsId())) {
+                    if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
                         ToolUtil.copyProperties(items, itemsResult);
                         datum.setItemsResult(itemsResult);
