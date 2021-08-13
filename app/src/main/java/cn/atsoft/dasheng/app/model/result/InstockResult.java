@@ -26,9 +26,7 @@ public class InstockResult implements Serializable {
     private BrandResult brandResult;
     private ItemsResult itemsResult;
     private StorehouseResult storehouseResult;
-    private String name;
-    private String brandName;
-    private String placeName;
+
     /**
      * 物品编号
      */
@@ -36,7 +34,7 @@ public class InstockResult implements Serializable {
     private Long instockId;
 
     @ApiModelProperty("地点id")
-    private Long StorehouseId;
+    private Long storehouseId;
 
     /**
      * 物品名称
@@ -73,6 +71,12 @@ public class InstockResult implements Serializable {
      */
     @ApiModelProperty("入库状态")
     private Integer state;
+
+    /**
+     * 条形码
+     */
+    @ApiModelProperty("条形码")
+    private Integer barcode;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

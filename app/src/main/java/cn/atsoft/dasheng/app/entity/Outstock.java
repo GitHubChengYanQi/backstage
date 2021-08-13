@@ -30,10 +30,10 @@ public class Outstock implements Serializable {
     private Long outstockId;
 
     /**
-     * 库存id
+     * 仓库id
      */
-    @TableField("stock_id")
-    private Long stockId;
+    @TableField("storehouse_id")
+    private Long storehouseId;
 
     /**
      * 出库时间
@@ -53,12 +53,24 @@ public class Outstock implements Serializable {
      */
     @TableField("price")
     private Integer price;
+    /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private Long brandId;
 
     /**
-     * 出库品牌
+     * 产品id
      */
-    @TableField("brand")
-    private Long brand;
+    @TableField("item_id")
+    private Long itemId;
+
+    /**
+     * 出库状态
+     */
+    @TableField("state")
+    private Long state;
+
 
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
@@ -83,12 +95,12 @@ public class Outstock implements Serializable {
         this.outstockId = outstockId;
     }
 
-    public Long getStockId() {
-        return stockId;
+    public Long getStorehouseId() {
+        return storehouseId;
     }
 
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
     }
 
     public Date getDeliveryTime() {
@@ -113,14 +125,6 @@ public class Outstock implements Serializable {
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public Long getBrand() {
-        return brand;
-    }
-
-    public void setBrand(Long brand) {
-        this.brand = brand;
     }
 
     public Date getCreateTime() {
@@ -163,20 +167,46 @@ public class Outstock implements Serializable {
         this.display = display;
     }
 
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    public Long getState() {
+        return state;
+    }
+
+    public void setState(Long state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "Delivery{" +
         "deliveryId=" + outstockId +
-        ", stockId=" + stockId +
+        ", storehouseId=" + storehouseId +
         ", delivery time=" + deliveryTime +
         ", number=" + number +
         ", price=" + price +
-        ", brand=" + brand +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +
         ", updateUser=" + updateUser +
         ", display=" + display +
+        ", brandId=" + brandId +
+        ", state=" + state +
+        ", itemId=" + itemId +
         "}";
     }
 }

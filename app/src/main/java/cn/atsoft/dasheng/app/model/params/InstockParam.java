@@ -23,10 +23,7 @@ import java.util.List;
 @ApiModel
 public class InstockParam implements Serializable, BaseValidatingParam {
 
-    private static final long serialVersionUID = 1L;
-    private String name;
-    private String brandName;
-    private String placeName;
+    private static final long serialVersionUID = 1L;;
 
     /**
      * 物品编号
@@ -34,8 +31,11 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("物品编号")
     private Long instockId;
 
-    @ApiModelProperty("地点id")
-    private Long StorehouseId;
+    /**
+     * 仓库id
+     */
+    @ApiModelProperty("仓库id")
+    private Long storehouseId;
 
     /**
      * 物品名称

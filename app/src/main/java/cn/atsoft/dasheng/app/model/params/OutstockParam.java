@@ -23,11 +23,6 @@ public class OutstockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
-
-    private  String name;
-    private  String brandName;
-
     public String getDeliveryTime() {
         if (deliveryTime!=null&&!deliveryTime.equals("")){
             StringBuffer stringBuffer = new StringBuffer(deliveryTime);
@@ -51,10 +46,10 @@ public class OutstockParam implements Serializable, BaseValidatingParam {
     private Long outstockId;
 
     /**
-     * 库存id
+     * 仓库id
      */
-    @ApiModelProperty("库存id")
-    private Long stockId;
+    @ApiModelProperty("仓库id")
+    private Long storehouseId;
 
     /**
      * 出库时间
@@ -75,13 +70,21 @@ public class OutstockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("出库价格")
     private Integer price;
 
-
-
     /**
-     * 出库品牌
+     * 品牌id
      */
-    @ApiModelProperty("出库品牌")
-    private Long brand;
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("出库价格")
+    private Long itemId;
+    /**
+     * 出库状态
+     */
+    @ApiModelProperty("出库状态")
+    private Integer state;
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

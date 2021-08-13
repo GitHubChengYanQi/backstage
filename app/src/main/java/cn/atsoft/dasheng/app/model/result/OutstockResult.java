@@ -22,6 +22,9 @@ OutstockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private BrandResult brandResult;
+    private ItemsResult itemsResult;
+    private StorehouseResult storehouseResult;
 
     /**
      * 出库id
@@ -30,10 +33,10 @@ OutstockResult implements Serializable {
     private Long outstockId;
 
     /**
-     * 库存id
+     * 仓库id
      */
-    @ApiModelProperty("库存id")
-    private Long stockId;
+    @ApiModelProperty("仓库id")
+    private Long storehouseId;
 
     /**
      * 出库时间
@@ -55,14 +58,23 @@ OutstockResult implements Serializable {
     private Integer price;
 
     /**
-     * 出库品牌
+     * 出库状态
      */
-    private  String name;
-    private String  brandName;
+    @ApiModelProperty("出库状态")
+    private  Integer state;
 
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private  Long brandId;
 
-    @ApiModelProperty("出库品牌")
-    private Long brand;
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("产品id")
+    private  Long itemId;
+
 
     @ApiModelProperty(hidden = true)
     private Date createTime;

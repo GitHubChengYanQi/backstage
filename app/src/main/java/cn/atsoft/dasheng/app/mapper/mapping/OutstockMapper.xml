@@ -5,11 +5,13 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Outstock">
         <id column="outstock_id" property="outstockId"/>
-        <result column="stock_id" property="stockId"/>
+        <result column="storehouse_id" property="storehouseId"/>
         <result column="delivery_time" property="deliveryTime"/>
         <result column="number" property="number"/>
         <result column="price" property="price"/>
-        <result column="brand" property="brand"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="state" property="state"/>
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
@@ -19,8 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        brand_name
-        AS "brandName",name AS "name", outstock_id AS "outstockId", stock_id AS "stockId", delivery_time AS "deliveryTime", number AS "number", price AS "price", brand AS "brand", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        outstock_id AS "outstockId", storehouse_id AS "storehouseId", delivery_time AS "deliveryTime", number AS "number", price AS "price", brand_id AS "brandId",item_id AS "itemId",state AS "state", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -29,11 +30,17 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock where 1 = 1
-        <if test="paramCondition.stockId != null">
-            and stock_id = #{paramCondition.stockId}
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
         <if test="paramCondition.outstockId!= null">
             and outstock_id = #{paramCondition.outstockId}
+        </if>
+        <if test="paramCondition.brandId!=null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId!=null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
     </select>
 
@@ -41,11 +48,17 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock where 1 = 1
-        <if test="paramCondition.stockId != null">
-            and stock_id = #{paramCondition.stockId}
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
         <if test="paramCondition.outstockId!= null">
             and outstock_id = #{paramCondition.outstockId}
+        </if>
+        <if test="paramCondition.brandId!=null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId!=null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
     </select>
 
@@ -53,18 +66,18 @@
             parameterType="cn.atsoft.dasheng.app.model.params.OutstockParam">
         select
         <include refid="Base_Column_List"/>
-        from delivery_view where 1 = 1
-        <if test="paramCondition.stockId != null">
-            and stock_id = #{paramCondition.stockId}
+        from daoxin_erp_outstock where 1 = 1
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
         <if test="paramCondition.outstockId!= null">
             and outstock_id = #{paramCondition.outstockId}
         </if>
-        <if test="paramCondition.name!=null">
-             and name like CONCAT('%',#{paramCondition.name},'%')
+        <if test="paramCondition.brandId!=null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
         </if>
-        <if test="paramCondition.brandName!=null">
-            and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
+        <if test="paramCondition.itemId!=null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
         <if test="paramCondition.deliveryTime!=null">
             and delivery_time like '%${paramCondition.deliveryTime}%'
@@ -75,11 +88,17 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock where 1 = 1
-        <if test="paramCondition.stockId != null">
-            and stock_id = #{paramCondition.stockId}
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
         <if test="paramCondition.outstockId!= null">
             and outstock_id = #{paramCondition.outstockId}
+        </if>
+        <if test="paramCondition.brandId!=null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.itemId!=null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
     </select>
 

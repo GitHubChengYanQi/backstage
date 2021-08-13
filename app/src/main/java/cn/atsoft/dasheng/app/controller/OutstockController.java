@@ -136,7 +136,6 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<OutstockResult> detail(@RequestBody OutstockParam outstockParam) {
-        System.err.println(outstockParam);
         Outstock detail = this.outstockService.getById(outstockParam.getOutstockId());
         OutstockResult result = new OutstockResult();
         ToolUtil.copyProperties(detail, result);
