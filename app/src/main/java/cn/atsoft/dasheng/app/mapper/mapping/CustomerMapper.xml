@@ -99,7 +99,7 @@
         <if test="paramCondition.status != null">
             and status = #{paramCondition.status}
         </if>
-        <if test="paramCondition.classification !=null and paramCondition.classification != '' ">
+        <if test="paramCondition.classification !=null  ">
             and classification =  #{paramCondition.classification}
         </if>
         <if test="paramCondition.customerLevelId !=null and paramCondition.customerLevelId != '' ">

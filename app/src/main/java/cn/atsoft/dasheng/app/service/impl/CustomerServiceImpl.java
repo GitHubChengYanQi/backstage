@@ -162,10 +162,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
         for (CustomerResult record : data) {
-            Integer classification = record.getClassification();
-            if (classification == 1) {
+
+            if (record.getClassification() == 1) {
                 record.setClassificationName("终端用户");
-            } else {
+            } else if (record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
             for (Origin origin : originList) {
