@@ -83,6 +83,12 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     private Long barcode;
 
     /**
+     * 入库状态
+     */
+    @ApiModelProperty("入库状态")
+    private Integer state;
+
+    /**
      * 品牌
      */
     @ApiModelProperty("品牌")
