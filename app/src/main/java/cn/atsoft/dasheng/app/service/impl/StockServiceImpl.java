@@ -84,6 +84,15 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public void batchDelete(List<Long> Ids) {
+        Stock stock = new Stock();
+        stock.setDisplay(0);
+        QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
+        stockQueryWrapper.in("stock_id",Ids);
+        this.update(stock,stockQueryWrapper);
+    }
+
     private Serializable getKey(StockParam param){
         return param.getStockId();
     }
