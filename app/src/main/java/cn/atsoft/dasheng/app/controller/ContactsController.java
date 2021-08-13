@@ -44,6 +44,7 @@ public class ContactsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContactsParam contactsParam) {
+
         contactsService.add(contactsParam);
         return ResponseData.success();
     }
