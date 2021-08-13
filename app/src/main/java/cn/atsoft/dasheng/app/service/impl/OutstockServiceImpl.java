@@ -78,15 +78,14 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         stockDetailsParam.setItemId(entity.getItemId());
         stockDetailsParam.setStorehouseId(entity.getStorehouseId());
 
-        PageInfo<StockResult> stock = this.stockService.findPageBySpec(stockParam);
-        PageInfo<StockDetailsResult> stockDetail = this.stockDetailsService.findPageBySpec(stockDetailsParam);
-
-        if (ToolUtil.isEmpty(stock.getData())) {
+        List<Stock> Stock = this.stockService.list();
+        List<StockDetails> stockDetail = this.stockDetailsService.list();
+        if (ToolUtil.isEmpty(Stock)) {
             throw new ServiceException(500, "仓库没有此产品或仓库库存不足！");
         } else {
-            for (int i = 0; i < stock.getData().size(); i++) {
+            for (int i = 0; i < Stock.size(); i++) {
 
-                StockResult StockList = stock.getData().get(i);
+                Stock StockList = Stock.get(i);
                 if (StockList.getItemId().equals(entity.getItemId())
                         && StockList.getBrandId().equals(entity.getBrandId())
                         && StockList.getStorehouseId().equals(entity.getStorehouseId())
@@ -103,11 +102,11 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                         stockParam.setInventory(StockList.getInventory() - entity.getNumber());
                         this.stockService.update(stockParam);
 
-                        if (ToolUtil.isEmpty(stockDetail.getData())) {
+                        if (ToolUtil.isEmpty(stockDetail)) {
                             throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
                         } else {
                             for (int j = 0; j < entity.getNumber(); j++) {
-                                StockDetailsResult StockDetailsList = stockDetail.getData().get(j);
+                                StockDetails StockDetailsList = stockDetail.get(j);
                                 this.stockDetailsService.removeById(StockDetailsList.getStockItemId());
                             }
                         }
