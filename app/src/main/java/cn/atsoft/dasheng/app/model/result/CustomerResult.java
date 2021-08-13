@@ -32,7 +32,7 @@ public class CustomerResult implements Serializable {
     private OriginResult originResult;
     private UserResult userResult;
     private CrmIndustryResult crmIndustryResult;
-
+    private  ContactsResult contactsResult;
     private String classificationName;
     private Long originId;
     private String note;

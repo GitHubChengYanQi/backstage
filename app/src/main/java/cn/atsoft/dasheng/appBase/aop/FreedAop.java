@@ -9,16 +9,19 @@ import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.util.HttpContext;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.hibernate.validator.internal.util.Contracts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -33,6 +36,14 @@ public class FreedAop {
 
     @Autowired
     private FreedTemplateService freedTemplateService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private ContractService contractService;
+    @Autowired
+    private ErpOrderService erpOrderService;
 
 
     @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.BussinessLog)")
@@ -63,6 +74,42 @@ public class FreedAop {
         LoginUser user = LoginContextHolder.getContext().getUser();
         CustomerDynamicParam customerDynamicParam = new CustomerDynamicParam();
         BusinessDynamicParam businessDynamicParam = new BusinessDynamicParam();
+
+
+/**
+ * 订单状态
+ */
+        if (target instanceof ErpOrderService) {
+            FreedTemplateProperties.Contacts contacts = freedTemplateService.getConfig().getContacts();
+            String content = "";
+            ErpOrder erpOrder = (ErpOrder) result;
+            QueryWrapper<ErpOrder> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("order_id", erpOrder.getOrderId());
+            List<ErpOrder> erpOrderList = erpOrderService.list(queryWrapper);
+            for (ErpOrder order : erpOrderList) {
+                customerDynamicParam.setCustomerId(order.getCustomerId());
+            }
+
+            switch (methodName) {
+                case "add":
+                    content = contacts.getAdd().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+
+                    break;
+                case "update":
+                    content = contacts.getEdit().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+
+                    break;
+                case "delete":
+                    content = contacts.getDelete().replace("[操作人]", user.getName());
+                    customerDynamicParam.setContent(content);
+
+                    break;
+            }
+            customerDynamicService.add(customerDynamicParam);
+        }
+
         /**
          * 联系人状态
          */
@@ -70,7 +117,14 @@ public class FreedAop {
             FreedTemplateProperties.Contacts contacts = freedTemplateService.getConfig().getContacts();
             String content = "";
             Contacts contactsparam = (Contacts) result;
-            customerDynamicParam.setCustomerId(contactsparam.getCustomerId());
+            QueryWrapper<Contacts> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("contacts_id", contactsparam.getContactsId());
+            List<Contacts> contactsList = contactsService.list(queryWrapper);
+            for (Contacts contacts1 : contactsList) {
+                contacts1.getCustomerId();
+                customerDynamicParam.setCustomerId(contacts1.getCustomerId());
+            }
+
             switch (methodName) {
                 case "add":
                     content = contacts.getAdd().replace("[操作人]", user.getName());
@@ -124,7 +178,13 @@ public class FreedAop {
             FreedTemplateProperties.Adress adress = freedTemplateService.getConfig().getAdress();
             String content = "";
             Adress adressResult = (Adress) result;
-            customerDynamicParam.setCustomerId(adressResult.getCustomerId());
+            QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
+            adressQueryWrapper.in("adress_id", adressResult.getAdressId());
+            List<Adress> adressList = adressService.list(adressQueryWrapper);
+            for (Adress adress1 : adressList) {
+                customerDynamicParam.setCustomerId(adress1.getCustomerId());
+            }
+
             switch (methodName) {
                 case "add":
                     content = adress.getAdd().replace("[操作人]", user.getName());
@@ -148,7 +208,6 @@ public class FreedAop {
 
             FreedTemplateProperties.CrmBusiness crmbusiness = freedTemplateService.getConfig().getCrmbusiness();
             CrmBusiness crmBusiness = (CrmBusiness) result;
-
             businessDynamicParam.setBusinessId(crmBusiness.getBusinessId());
             String content = "";
             switch (methodName) {
@@ -176,10 +235,14 @@ public class FreedAop {
         if (target instanceof ContractService) {
             FreedTemplateProperties.Contract contract = freedTemplateService.getConfig().getContract();
             Contract contractparam = (Contract) result;
-            customerDynamicParam.setCustomerId(contractparam.getPartyA());
+            QueryWrapper<Contract> contractsQueryWrapper = new QueryWrapper<>();
+            contractsQueryWrapper.in("contract_id", contractparam.getContractId());
+            List<Contract> contractList = contractService.list(contractsQueryWrapper);
+            for (Contract contract1 : contractList) {
+                customerDynamicParam.setCustomerId(contract1.getPartyA());
+            }
+
             String content = "";
-
-
             switch (methodName) {
                 case "add":
                     content = contract.getAdd().replace("[操作人]", user.getName());
