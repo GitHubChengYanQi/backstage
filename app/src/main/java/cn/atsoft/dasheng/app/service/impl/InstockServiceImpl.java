@@ -4,19 +4,15 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.*;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.ItemsService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
-import cn.atsoft.dasheng.app.service.InstockService;
-import cn.atsoft.dasheng.app.service.StockService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -46,8 +42,92 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
-    private StockService stockService;
+    private StockDetailsService stockDetailsService;
     @Autowired
+    private StockService stockService;
+
+    @Override
+    public Long add(InstockParam param) {
+        Instock entity = getEntity(param);
+        this.save(entity);
+
+        StockParam stockParam = new StockParam();
+        // 取得入库表的仓库id,品牌id,产品id
+        stockParam.setBrandId(entity.getBrandId());
+        stockParam.setItemId(entity.getItemId());
+        stockParam.setStorehouseId(entity.getStorehouseId());
+
+        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
+
+        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+
+        if (ToolUtil.isEmpty(pageBySpec.getData())){
+            stockParam.setItemId(entity.getItemId());
+            stockParam.setBrandId(entity.getBrandId());
+            stockParam.setStorehouseId(entity.getStorehouseId());
+            stockParam.setInventory(entity.getNumber());
+            Long StockId = this.stockService.add(stockParam);
+
+            stockDetailsParam.setStockId(StockId);
+            stockDetailsParam.setPrice(entity.getPrice());
+            stockDetailsParam.setStorageTime(entity.getRegisterTime());
+            stockDetailsParam.setItemId(entity.getItemId());
+            stockDetailsParam.setStorehouseId(entity.getStorehouseId());
+            stockDetailsParam.setBrandId(entity.getBrandId());
+            stockDetailsParam.setBarcode(entity.getBarcode());
+            for (int j = 0 ; j < entity.getNumber() ; j++ ){
+                this.stockDetailsService.add(stockDetailsParam);
+            }
+        }else {
+            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
+                StockResult StockList = pageBySpec.getData().get(i);
+                if (StockList.getItemId().equals(entity.getItemId())
+                        && StockList.getBrandId().equals(entity.getBrandId())
+                        && StockList.getStorehouseId().equals(entity.getStorehouseId())
+                ) {
+
+                    stockParam.setStockId(StockList.getStockId());
+                    stockParam.setItemId(StockList.getItemId());
+                    stockParam.setBrandId(StockList.getBrandId());
+                    stockParam.setStorehouseId(StockList.getStorehouseId());
+                    stockParam.setInventory(entity.getNumber()+StockList.getInventory());
+                    this.stockService.update(stockParam);
+
+
+                    stockDetailsParam.setStockId(StockList.getStockId());
+                    stockDetailsParam.setItemId(StockList.getItemId());
+                    stockDetailsParam.setStorehouseId(StockList.getStorehouseId());
+                    stockDetailsParam.setBrandId(StockList.getBrandId());
+                    stockDetailsParam.setPrice(entity.getPrice());
+                    stockDetailsParam.setStorageTime(entity.getRegisterTime());
+                    stockDetailsParam.setBarcode(entity.getBarcode());
+                    for (int j = 0 ; j < entity.getNumber() ; j++ ){
+                        this.stockDetailsService.add(stockDetailsParam);
+                    }
+                    break;
+                }else  {
+                    if ( i == pageBySpec.getData().size() - 1 ){
+                        stockParam.setItemId(entity.getItemId());
+                        stockParam.setBrandId(entity.getBrandId());
+                        stockParam.setStorehouseId(entity.getStorehouseId());
+                        stockParam.setInventory(entity.getNumber());
+                        Long StockId = this.stockService.add(stockParam);
+
+                        stockDetailsParam.setStockId(StockId);
+                        stockDetailsParam.setPrice(entity.getPrice());
+                        stockDetailsParam.setStorageTime(entity.getRegisterTime());
+                        stockDetailsParam.setItemId(entity.getItemId());
+                        stockDetailsParam.setStorehouseId(entity.getStorehouseId());
+                        stockDetailsParam.setBrandId(entity.getBrandId());
+                        stockDetailsParam.setBarcode(entity.getBarcode());
+                        for (int j = 0 ; j < entity.getNumber() ; j++ ){
+                            this.stockDetailsService.add(stockDetailsParam);
+                        }
+                    }
+                }
+            }
+        }
+        return entity.getInstockId();
     }
 
     @Override

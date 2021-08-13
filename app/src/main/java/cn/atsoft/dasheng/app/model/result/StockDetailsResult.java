@@ -46,7 +46,7 @@ public class StockDetailsResult implements Serializable {
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private Long itemsId;
+    private Long itemId;
 
     /**
      * 价格

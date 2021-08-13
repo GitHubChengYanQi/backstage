@@ -204,6 +204,7 @@ public class Instock implements Serializable {
         ", updateTime=" + updateTime +
         ", updateUser=" + updateUser +
         ", display=" + display +
+        ", barcode=" + barcode +
         "}";
     }
 }

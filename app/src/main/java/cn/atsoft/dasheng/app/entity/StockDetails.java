@@ -47,8 +47,8 @@ public class StockDetails implements Serializable {
     /**
      * 品牌id
      */
-    @TableField("itemsId")
-    private Long itemsId;
+    @TableField("item_id")
+    private Long itemId;
 
     /**
      * 入库时间
@@ -104,12 +104,12 @@ public class StockDetails implements Serializable {
         this.storehouseId = storehouseId;
     }
 
-    public Long getItemsId() {
-        return itemsId;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setItemsId(Long itemsId) {
-        this.itemsId = itemsId;
+    public void setItemId(Long itemsId) {
+        this.itemId = itemsId;
     }
 
     public Long getStockItemId() {
@@ -220,8 +220,10 @@ public class StockDetails implements Serializable {
                 ", updateUser=" + updateUser +
                 ", updateTime=" + updateTime +
                 ", display=" + display +
-                ", itemsId=" + itemsId +
+                ", itemId=" + itemId +
                 ", placeId=" + storehouseId +
+                ", brandId=" + brandId +
+                ", barcode=" + barcode +
                 "}";
     }
 }
