@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ContractIdRequest {
-    private List<Long> contractId;
+public class ContactsRequest {
+
+    private List<Long> contactsId;
 }

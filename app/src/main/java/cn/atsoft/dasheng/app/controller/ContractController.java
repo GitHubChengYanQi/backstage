@@ -1,7 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
-import cn.atsoft.dasheng.app.model.result.ContractIdRequest;
+import cn.atsoft.dasheng.app.model.result.ContractRequest;
+import cn.atsoft.dasheng.app.model.result.ContractRequest;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
@@ -128,7 +129,7 @@ public class ContractController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody ContractIdRequest contractIdRequest) {
+    public ResponseData batchDelete(@RequestBody ContractRequest contractIdRequest) {
         contractService.batchDelete(contractIdRequest.getContractId());
         return ResponseData.success();
     }
