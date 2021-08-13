@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.entity.Instock;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.*;
@@ -79,11 +76,11 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         stockParam.setItemId(entity.getItemId());
         stockParam.setStorehouseId(entity.getStorehouseId());
 
-        PageInfo<StockResult> pageBySpec = this.stockService.findPageBySpec(stockParam);
+        List<Stock> Stock = this.stockService.list();
 
         StockDetailsParam stockDetailsParam = new StockDetailsParam();
 
-        if (ToolUtil.isEmpty(pageBySpec.getData())){
+        if (ToolUtil.isEmpty(Stock)){
             stockParam.setItemId(entity.getItemId());
             stockParam.setBrandId(entity.getBrandId());
             stockParam.setStorehouseId(entity.getStorehouseId());
@@ -101,8 +98,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 this.stockDetailsService.add(stockDetailsParam);
             }
         }else {
-            for (int i = 0 ; i < pageBySpec.getData().size() ; i++) {
-                StockResult StockList = pageBySpec.getData().get(i);
+            for (int i = 0 ; i < Stock.size() ; i++) {
+                Stock StockList = Stock.get(i);
                 if (StockList.getItemId().equals(entity.getItemId())
                         && StockList.getBrandId().equals(entity.getBrandId())
                         && StockList.getStorehouseId().equals(entity.getStorehouseId())
@@ -128,7 +125,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     }
                     break;
                 }else  {
-                    if ( i == pageBySpec.getData().size() - 1 ){
+                    if ( i == Stock.size() - 1 ){
                         stockParam.setItemId(entity.getItemId());
                         stockParam.setBrandId(entity.getBrandId());
                         stockParam.setStorehouseId(entity.getStorehouseId());
