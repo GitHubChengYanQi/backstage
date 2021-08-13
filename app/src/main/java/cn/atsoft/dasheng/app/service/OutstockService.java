@@ -24,7 +24,7 @@ public interface OutstockService extends IService<Outstock> {
      * @author song
      * @Date 2021-07-17
      */
-    Long add(OutstockParam param);
+    void add(OutstockParam param);
 
     /**
      * 删除

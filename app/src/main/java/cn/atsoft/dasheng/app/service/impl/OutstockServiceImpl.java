@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
@@ -9,9 +11,11 @@ import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -28,12 +32,18 @@ import java.util.List;
  */
 @Service
 public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> implements OutstockService {
-
+@Autowired
+private StockService stockService;
     @Override
-    public Long add(OutstockParam param){
-        Outstock entity = getEntity(param);
-        this.save(entity);
-        return entity.getOutstockId();
+    public void add(OutstockParam param){
+        Stock stock = stockService.getById(param.getStockId());
+        if (ToolUtil.isEmpty(stock)) {
+            throw new ServiceException(500, "数据不存在");
+        }
+        Long inventory = stock.getInventory();
+//        Outstock entity = getEntity(param);
+//        this.save(entity);
+//        return entity.getOutstockId();
     }
 
     @Override

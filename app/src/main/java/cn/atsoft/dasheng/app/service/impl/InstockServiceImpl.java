@@ -1,22 +1,16 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.ItemsService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
-import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,12 +39,18 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     private ItemsService itemsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private StockService stockService;
+
 
     @Override
-    public Long add(InstockParam param) {
-        Instock entity = getEntity(param);
-        this.save(entity);
-        return entity.getInstockId();
+    public void add(InstockParam param) {
+        Items item = itemsService.getById(param.getItemId());
+
+//        Instock entity = getEntity(param);
+//        this.save(entity);
+//        return entity.getInstockId();
+
     }
 
     @Override
