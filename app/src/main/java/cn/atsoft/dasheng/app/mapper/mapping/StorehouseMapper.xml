@@ -19,7 +19,8 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">longitude AS "longitude",storehouse_id AS "storehouseId", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    <sql id="Base_Column_List">longitude
+    AS "longitude",storehouse_id AS "storehouseId", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -76,6 +77,9 @@
         </if>
         <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
             and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null and paramCondition.storehouseId != ''">
+            and storehouse_id = #{paramCondition.storehouseId}
         </if>
 
     </select>
