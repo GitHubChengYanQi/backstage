@@ -4,55 +4,61 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Origin">
-        <id column="origin_id" property="originId" />
-        <result column="origin_name" property="originName" />
-        <result column="create_user" property="createUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="origin_id" property="originId"/>
+        <result column="origin_name" property="originName"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        origin_id AS "originId", origin_name AS "originName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        origin_id
+        AS "originId", origin_name AS "originName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OriginResult" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OriginResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-            <if test="paramCondition.originName != null and paramCondition.originName != ''">
-                and origin_name like CONCAT('%',#{paramCondition.originName},'%')
-            </if>
+        <if test="paramCondition.originName != null and paramCondition.originName != ''">
+            and origin_name like CONCAT('%',#{paramCondition.originName},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.originName != null and paramCondition.originName != ''">
-                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
-                </if>
+        <if test="paramCondition.originName != null and paramCondition.originName != ''">
+            and origin_name like CONCAT('%',#{paramCondition.originName},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.OriginResult" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.OriginResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.originName != null and paramCondition.originName != ''">
-                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
-                </if>
+        <if test="paramCondition.originId != null and paramCondition.originId != ''">
+            and origin_id like CONCAT('%',#{paramCondition.originId},'%')
+        </if>
+        <if test="paramCondition.originName != null and paramCondition.originName != ''">
+            and origin_name like CONCAT('%',#{paramCondition.originName},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_origin where 1 = 1
-                <if test="paramCondition.originName != null and paramCondition.originName != ''">
-                        and origin_name like CONCAT('%',#{paramCondition.originName},'%')
-                </if>
+        <if test="paramCondition.originName != null and paramCondition.originName != ''">
+            and origin_name like CONCAT('%',#{paramCondition.originName},'%')
+        </if>
     </select>
 
 </mapper>

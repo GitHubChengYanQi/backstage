@@ -96,7 +96,7 @@ public class OutstockController extends BaseController {
 //
 
 
-        return ResponseData.error("出库失败!");
+        return ResponseData.success();
     }
 
     /**
