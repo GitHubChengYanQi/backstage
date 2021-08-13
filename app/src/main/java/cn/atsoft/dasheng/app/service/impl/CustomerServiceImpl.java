@@ -133,7 +133,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
          */
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("customer_id", contactsIds);
-        List<Contacts> contactsList = contactsService.list(contactsQueryWrapper);
+        List<Contacts> contactsList = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.list(contactsQueryWrapper);
 
         /**
          * 获取originId
