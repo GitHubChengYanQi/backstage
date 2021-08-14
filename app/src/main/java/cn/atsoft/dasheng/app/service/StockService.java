@@ -40,7 +40,7 @@ public interface StockService extends IService<Stock> {
      * @author 
      * @Date 2021-07-15
      */
-    void update(StockParam param);
+    Long update(StockParam param);
 
     /**
      * 查询单条数据，Specification模式

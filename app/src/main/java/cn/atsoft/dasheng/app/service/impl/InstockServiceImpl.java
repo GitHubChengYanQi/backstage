@@ -108,10 +108,10 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         stockParam.setItemId(entity.getItemId());
                         stockParam.setBrandId(entity.getBrandId());
                         stockParam.setStorehouseId(entity.getStorehouseId());
-                        stockParam.setInventory(entity.getNumber());
-                        Long StockId = this.stockService.add(stockParam);
+                        stockParam.setInventory(entity.getNumber()+StockList.getInventory());
+                        this.stockService.update(stockParam);
 
-                        stockDetails.setStockId(StockId);
+                        stockDetails.setStockId(StockList.getStockId());
                         stockDetails.setPrice(entity.getPrice());
                         stockDetails.setStorageTime(entity.getRegisterTime());
                         stockDetails.setItemId(entity.getItemId());
