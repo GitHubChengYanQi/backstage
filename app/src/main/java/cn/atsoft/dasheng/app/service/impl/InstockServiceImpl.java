@@ -105,6 +105,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                             && StockList.getBrandId().equals(entity.getBrandId())
                             && StockList.getStorehouseId().equals(entity.getStorehouseId())
                     ) {
+                        stockParam.setStockId(StockList.getStockId());
                         stockParam.setItemId(entity.getItemId());
                         stockParam.setBrandId(entity.getBrandId());
                         stockParam.setStorehouseId(entity.getStorehouseId());
