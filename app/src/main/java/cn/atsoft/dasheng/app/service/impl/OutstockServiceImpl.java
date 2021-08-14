@@ -74,12 +74,9 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         stockParam.setItemId(entity.getItemId());
         stockParam.setStorehouseId(entity.getStorehouseId());
 
-        stockDetailsParam.setBrandId(entity.getBrandId());
-        stockDetailsParam.setItemId(entity.getItemId());
-        stockDetailsParam.setStorehouseId(entity.getStorehouseId());
-
         List<Stock> Stock = this.stockService.list();
         List<StockDetails> stockDetail = this.stockDetailsService.list();
+
         if (ToolUtil.isEmpty(Stock)) {
             throw new ServiceException(500, "仓库没有此产品或仓库库存不足！");
         } else {
@@ -105,10 +102,12 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                         if (ToolUtil.isEmpty(stockDetail)) {
                             throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
                         } else {
+                            List stockItemIds = new ArrayList<>();
                             for (int j = 0; j < entity.getNumber(); j++) {
                                 StockDetails StockDetailsList = stockDetail.get(j);
-                                this.stockDetailsService.removeById(StockDetailsList.getStockItemId());
+                                stockItemIds.add(StockDetailsList.getStockItemId());
                             }
+                            this.stockDetailsService.removeByIds(stockItemIds);
                         }
                     }
                 }

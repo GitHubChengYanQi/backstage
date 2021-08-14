@@ -29,7 +29,7 @@ public class StockDetails implements Serializable {
     /**
      * 明细id
      */
-    @TableId(value = "stock_item_id", type = IdType.ID_WORKER)
+    @TableId(value = "stock_item_id", type = IdType.AUTO)
     private Long stockItemId;
 
     /**
