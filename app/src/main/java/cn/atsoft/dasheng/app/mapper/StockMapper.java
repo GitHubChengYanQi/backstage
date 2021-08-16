@@ -29,6 +29,10 @@ public interface StockMapper extends BaseMapper<Stock> {
      */
     List<StockResult> customList(@Param("paramCondition") StockParam paramCondition);
 
+    List<StockResult> item(@Param("paramCondition") StockParam paramCondition);
+
+    List<StockResult> brand(@Param("paramCondition") StockParam paramCondition);
+
     /**
      * 获取map列表
      *

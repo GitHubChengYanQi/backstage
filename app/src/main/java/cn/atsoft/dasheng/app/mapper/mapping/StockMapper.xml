@@ -4,52 +4,88 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Stock">
-        <id column="stock_id" property="stockId" />
-        <result column="storehouse_id" property="storehouseId" />
-        <result column="item_id" property="itemId" />
-        <result column="brand_id" property="brandId" />
-        <result column="inventory" property="inventory" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
+        <id column="stock_id" property="stockId"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="inventory" property="inventory"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-    stock_id AS "stockId", storehouse_id AS "storehouseId", item_id AS "itemId", brand_id AS "brandId", inventory AS "inventory", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        stock_id
+        AS "stockId", storehouse_id AS "storehouseId", item_id AS "itemId", brand_id AS "brandId", inventory AS "inventory", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
-
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.StockResult" parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.StockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_stock where 1 = 1
-            <if test="paramCondition.itemId != null">
-                and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id = #{paramCondition.storehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+    </select>
+
+
+    <select id="brand" resultType="cn.atsoft.dasheng.app.model.result.StockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        group by brand_id
+    </select>
+
+    <select id="item" resultType="cn.atsoft.dasheng.app.model.result.StockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_stock where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        group by item_id
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_stock where 1 = 1
-            <if test="paramCondition.itemId != null">
-                        and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id = #{paramCondition.storehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
     </select>
 
 
@@ -57,29 +93,30 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_stock where 1 = 1
-            <if test="paramCondition.itemId != null">
-                    and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id = #{paramCondition.storehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.StockResult" parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.StockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_stock where 1 = 1
-            <if test="paramCondition.itemId != null">
-                and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.storehouseId != null">
-                and storehouse_id = #{paramCondition.storehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_id = #{paramCondition.storehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
     </select>
 </mapper>
