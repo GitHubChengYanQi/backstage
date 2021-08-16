@@ -55,7 +55,7 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
     public void update(ErpPackageTableParam param){
         ErpPackageTable oldEntity = getOldEntity(param);
         ErpPackageTable newEntity = getEntity(param);
-        newEntity.setTotalPrice(newEntity.getSalePrice() * newEntity.getSalePrice());
+        newEntity.setTotalPrice(newEntity.getQuantity() * newEntity.getSalePrice());
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
