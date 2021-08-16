@@ -167,27 +167,27 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
         contactsA.in("contacts_id", contactsIdsA);
-        List<Contacts> contactsAList = contactsService.list(contactsA);
+        List<Contacts> contactsAList = contactsIdsA.size() == 0 ? new ArrayList<>() : contactsService.list(contactsA);
 
         QueryWrapper<Contacts> contactsB = new QueryWrapper<>();
         contactsB.in("contacts_id", contactsIdsB);
-        List<Contacts> contactsBList = contactsService.list(contactsB);
+        List<Contacts> contactsBList = contactsIdsB.size() == 0 ? new ArrayList<>() :  contactsService.list(contactsB);
 
         QueryWrapper<Adress> adressA = new QueryWrapper<>();
         adressA.in("adress_id", adressIdsA);
-        List<Adress> adressAList = adressService.list(adressA);
+        List<Adress> adressAList = adressIdsA.size() == 0 ? new ArrayList<>() :  adressService.list(adressA);
 
         QueryWrapper<Adress> adressB = new QueryWrapper<>();
         adressB.in("adress_id", adressIdsB);
-        List<Adress> adressBList = adressService.list(adressB);
+        List<Adress> adressBList = adressIdsB.size() == 0 ? new ArrayList<>() :  adressService.list(adressB);
 
         QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
         phoneAwapper.in("phone_id", phoneAIds);
-        List<Phone> phoneAlist = phoneService.list(phoneAwapper);
+        List<Phone> phoneAlist = phoneAIds.size() == 0 ? new ArrayList<>() :  phoneService.list(phoneAwapper);
 
         QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
         phoneBwapper.in("phone_id", phoneBIds);
-        List<Phone> phoneBlist = phoneService.list(phoneBwapper);
+        List<Phone> phoneBlist = phoneBIds.size() == 0 ? new ArrayList<>() :  phoneService.list(phoneBwapper);
 
         for (ContractResult record : data) {
 

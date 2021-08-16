@@ -109,6 +109,14 @@ public class StockController extends BaseController {
         }
         return this.stockService.findPageBySpec(stockParam);
     }
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("所有列表")
+    public List<StockResult> listAll(@RequestBody(required = false) StockParam stockParam) {
+        if (ToolUtil.isEmpty(stockParam)) {
+            stockParam = new StockParam();
+        }
+        return this.stockService.findListBySpec(stockParam);
+    }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
