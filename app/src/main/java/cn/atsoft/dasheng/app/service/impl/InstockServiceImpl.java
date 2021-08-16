@@ -55,12 +55,15 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public void delete(InstockParam param) {
-      Instock byId = this.getById(param.getInstockId());
-      if (ToolUtil.isEmpty(byId)){
-        throw new ServiceException(500,"删除目标不存在");
-      }
-      param.setDisplay(0);
-      this.update(param);
+        Instock byId = this.getById(param.getInstockId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "删除目标不存在");
+        }
+        param.setDisplay(0);
+        Instock oldEntity = getOldEntity(param);
+        Instock newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
 
     }
 
@@ -75,7 +78,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         StockDetails stockDetails = new StockDetails();
         boolean useFlag = false;
         try {
-            if(ToolUtil.isEmpty(Stock)){
+            if (ToolUtil.isEmpty(Stock)) {
                 stockParam.setItemId(entity.getItemId());
                 stockParam.setBrandId(entity.getBrandId());
                 stockParam.setStorehouseId(entity.getStorehouseId());
@@ -91,13 +94,13 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 stockDetails.setBarcode(entity.getBarcode());
 
                 if (ToolUtil.isNotEmpty(stockDetails)) {
-                    List<StockDetails> list  = new ArrayList<>();
+                    List<StockDetails> list = new ArrayList<>();
                     for (int j = 0; j < entity.getNumber(); j++) {
                         list.add(stockDetails);
                     }
                     this.stockDetailsService.saveBatch(list);
                 }
-            }else {
+            } else {
                 // 判断仓库是否有相同数据
                 // 有相同数据则增加数量和明细数据
                 for (Stock StockList : Stock) {
@@ -109,7 +112,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         stockParam.setItemId(entity.getItemId());
                         stockParam.setBrandId(entity.getBrandId());
                         stockParam.setStorehouseId(entity.getStorehouseId());
-                        stockParam.setInventory(entity.getNumber()+StockList.getInventory());
+                        stockParam.setInventory(entity.getNumber() + StockList.getInventory());
                         this.stockService.update(stockParam);
 
                         stockDetails.setStockId(StockList.getStockId());
@@ -129,7 +132,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         }
                     }
                 }
-                if(!useFlag){
+                if (!useFlag) {
                     stockParam.setItemId(entity.getItemId());
                     stockParam.setBrandId(entity.getBrandId());
                     stockParam.setStorehouseId(entity.getStorehouseId());
@@ -152,8 +155,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 ToolUtil.copyProperties(newEntity, oldEntity);
                 this.updateById(newEntity);
             }
-        }catch (ReflectionException e){
-           //
+        } catch (ReflectionException e) {
+            //
         }
 
     }
@@ -212,24 +215,24 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             storeIds.add(datum.getStorehouseId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(brandIds)){
+        if (ToolUtil.isNotEmpty(brandIds)) {
             brandQueryWrapper.in("brand_id", brandIds);
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(itemIds)){
-            itemsQueryWrapper.in("item_id",itemIds);
+        if (ToolUtil.isNotEmpty(itemIds)) {
+            itemsQueryWrapper.in("item_id", itemIds);
         }
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(storeIds)){
-            storehouseQueryWrapper.in("storehouse_id",storeIds);
+        if (ToolUtil.isNotEmpty(storeIds)) {
+            storehouseQueryWrapper.in("storehouse_id", storeIds);
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (InstockResult datum : data) {
-            if(ToolUtil.isNotEmpty(brandList)) {
+            if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {
                     if (brand.getBrandId().equals(datum.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
@@ -239,7 +242,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(itemsList)) {
+            if (ToolUtil.isNotEmpty(itemsList)) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
@@ -249,11 +252,11 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(storeList)) {
+            if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
-                        StorehouseResult storehouseResult =new StorehouseResult();
-                        ToolUtil.copyProperties(storehouse,storehouseResult);
+                        StorehouseResult storehouseResult = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);
                         break;
                     }

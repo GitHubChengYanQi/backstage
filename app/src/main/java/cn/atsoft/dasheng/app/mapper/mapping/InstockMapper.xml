@@ -71,7 +71,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.InstockResult" parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_instock where 1 = 1
+        from daoxin_erp_instock where display = 1
             <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
             </if>
