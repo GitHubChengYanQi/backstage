@@ -65,6 +65,9 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         <if test="paramCondition.contactsId != null">
             and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
         </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
+        </if>
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
