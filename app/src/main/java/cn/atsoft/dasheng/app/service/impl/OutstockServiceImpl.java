@@ -2,8 +2,6 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
-import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -34,10 +32,6 @@ import java.util.List;
 @Service
 public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> implements OutstockService {
     @Autowired
-    private StockService stockService;
-    @Autowired
-    private StockDetailsService stockDetailsService;
-    @Autowired
     private BrandService brandService;
     @Autowired
     private ItemsService itemsService;
@@ -65,54 +59,6 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
 
     @Override
     public void update(OutstockParam param) {
-
-        Outstock entity = getEntity(param);
-        StockParam stockParam = new StockParam();
-        StockDetailsParam stockDetailsParam = new StockDetailsParam();
-        // 取得入库表的仓库id,品牌id,产品id
-        stockParam.setBrandId(entity.getBrandId());
-        stockParam.setItemId(entity.getItemId());
-        stockParam.setStorehouseId(entity.getStorehouseId());
-
-        List<Stock> Stock = this.stockService.list();
-        List<StockDetails> stockDetail = this.stockDetailsService.list();
-
-        if (ToolUtil.isEmpty(Stock)) {
-            throw new ServiceException(500, "仓库没有此产品或仓库库存不足！");
-        } else {
-            for (int i = 0; i < Stock.size(); i++) {
-
-                Stock StockList = Stock.get(i);
-                if (StockList.getItemId().equals(entity.getItemId())
-                        && StockList.getBrandId().equals(entity.getBrandId())
-                        && StockList.getStorehouseId().equals(entity.getStorehouseId())
-                ) {
-                    if (StockList.getInventory() == 0) {
-                        throw new ServiceException(500, "此产品仓库库存不足！");
-                    } else if (entity.getNumber() > StockList.getInventory()) {
-                        throw new ServiceException(500, "此产品仓库库存不足,请重新输入数量，最大数量为：" + StockList.getInventory());
-                    } else {
-                        stockParam.setStockId(StockList.getStockId());
-                        stockParam.setItemId(StockList.getItemId());
-                        stockParam.setBrandId(StockList.getBrandId());
-                        stockParam.setStorehouseId(StockList.getStorehouseId());
-                        stockParam.setInventory(StockList.getInventory() - entity.getNumber());
-                        this.stockService.update(stockParam);
-
-                        if (ToolUtil.isEmpty(stockDetail)) {
-                            throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
-                        } else {
-                            List stockItemIds = new ArrayList<>();
-                            for (int j = 0; j < entity.getNumber(); j++) {
-                                StockDetails StockDetailsList = stockDetail.get(j);
-                                stockItemIds.add(StockDetailsList.getStockItemId());
-                            }
-                            this.stockDetailsService.removeByIds(stockItemIds);
-                        }
-                    }
-                }
-            }
-        }
         Outstock oldEntity = getOldEntity(param);
         Outstock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
