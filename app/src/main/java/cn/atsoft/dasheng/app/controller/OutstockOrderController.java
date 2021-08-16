@@ -104,7 +104,19 @@ public class OutstockOrderController extends BaseController {
         return this.outstockOrderService.findPageBySpec(outstockOrderParam);
     }
 
+    /**
+     * 编辑接口
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    @RequestMapping(value = "/outStock", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData outStock(@RequestBody OutstockOrderParam outstockOrderParam) {
 
+        this.outstockOrderService.outStock(outstockOrderParam);
+        return ResponseData.success();
+    }
 
 
 }
