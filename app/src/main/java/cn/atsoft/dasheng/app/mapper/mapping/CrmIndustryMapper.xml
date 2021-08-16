@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_industry where 1 = 1
+        from daoxin_crm_industry where display = 1
             <if test="paramCondition.industryId != null">
                 and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
             </if>
@@ -38,7 +38,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_industry where 1 = 1
+        from daoxin_crm_industry where display = 1
                 <if test="paramCondition.industryId != null">
                         and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
                 </if>
@@ -53,7 +53,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmIndustryResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_industry where 1 = 1
+        from daoxin_crm_industry where display = 1
                 <if test="paramCondition.industryId != null">
                         and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
                 </if>
@@ -68,7 +68,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_industry where 1 = 1
+        from daoxin_crm_industry where display = 1
                 <if test="paramCondition.industryId != null">
                         and industry_id like CONCAT('%',#{paramCondition.industryId},'%')
                 </if>

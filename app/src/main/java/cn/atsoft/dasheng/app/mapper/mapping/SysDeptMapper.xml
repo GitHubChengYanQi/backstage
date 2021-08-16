@@ -57,7 +57,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.SysDeptResult" parameterType="cn.atsoft.dasheng.app.model.params.SysDeptParam">
         select
         <include refid="Base_Column_List"/>
-        from sys_dept where 1 = 1
+        from sys_dept where display = 1
                 <if test="paramCondition.pid != null">
                         and pid = #{paramCondition.pid}
                 </if>

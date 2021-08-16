@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.BusinessDynamicResult" parameterType="cn.atsoft.dasheng.app.model.params.BusinessDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_dynamic where 1 = 1
+        from daoxin_crm_business_dynamic where display = 1
         <if test="paramCondition.businessId != null">
             and business_id = #{paramCondition.businessId}
         </if>
@@ -32,7 +32,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_dynamic where 1 = 1
+        from daoxin_crm_business_dynamic where display = 1
         <if test="paramCondition.businessId != null">
             and business_id = #{paramCondition.businessId}
         </if>
@@ -41,7 +41,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.BusinessDynamicResult" parameterType="cn.atsoft.dasheng.app.model.params.BusinessDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_dynamic where 1 = 1
+        from daoxin_crm_business_dynamic where display = 1
         <if test="paramCondition.businessId != null">
             and business_id = #{paramCondition.businessId}
         </if>
@@ -51,7 +51,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_dynamic where 1 = 1
+        from daoxin_crm_business_dynamic where display = 1
         <if test="paramCondition.businessId != null">
             and business_id = #{paramCondition.businessId}
         </if>

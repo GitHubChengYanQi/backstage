@@ -22,7 +22,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_package where 1 = 1
+        from daoxin_erp_package where display = 1
             <if test="paramCondition.productName != null and paramCondition.productName != ''">
                 and product_name like CONCAT('%',#{paramCondition.productName},'%')
             </if>
@@ -31,7 +31,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_package where 1 = 1
+        from daoxin_erp_package where display = 1
                 <if test="paramCondition.productName != null and paramCondition.productName != ''">
                         and product_name like CONCAT('%',#{paramCondition.productName},'%')
                 </if>
@@ -41,7 +41,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPackageResult" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_package where 1 = 1
+        from daoxin_erp_package where display = 1
                 <if test="paramCondition.productName != null and paramCondition.productName != ''">
                         and product_name like CONCAT('%',#{paramCondition.productName},'%')
                 </if>
@@ -50,7 +50,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_package where 1 = 1
+        from daoxin_erp_package where display = 1
                 <if test="paramCondition.productName != null and paramCondition.productName != ''">
                         and product_name like CONCAT('%',#{paramCondition.productName},'%')
                 </if>

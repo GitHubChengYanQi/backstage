@@ -47,7 +47,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PhoneResult" parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_phone where 1 = 1
+        from daoxin_crm_phone where display = 1
                 <if test="paramCondition.contactsId != null">
                         and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
                 </if>

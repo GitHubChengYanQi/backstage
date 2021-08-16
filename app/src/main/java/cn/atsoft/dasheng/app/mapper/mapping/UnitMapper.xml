@@ -41,7 +41,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.UnitResult" parameterType="cn.atsoft.dasheng.app.model.params.UnitParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_unit where 1 = 1
+        from daoxin_erp_unit where display = 1
                 <if test="paramCondition.unitName != null and paramCondition.unitName != ''">
                         and unit_name like CONCAT('%',#{paramCondition.unitName},'%')
                 </if>

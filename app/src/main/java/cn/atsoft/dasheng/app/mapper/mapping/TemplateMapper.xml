@@ -44,7 +44,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.TemplateParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_template where 1 = 1
+        from daoxin_crm_template where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>

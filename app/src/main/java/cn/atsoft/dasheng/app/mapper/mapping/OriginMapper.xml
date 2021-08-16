@@ -24,7 +24,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_origin where 1 = 1
+        from daoxin_crm_origin where display = 1
         <if test="paramCondition.originName != null and paramCondition.originName != ''">
             and origin_name like CONCAT('%',#{paramCondition.originName},'%')
         </if>
@@ -33,7 +33,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_origin where 1 = 1
+        from daoxin_crm_origin where display = 1
         <if test="paramCondition.originName != null and paramCondition.originName != ''">
             and origin_name like CONCAT('%',#{paramCondition.originName},'%')
         </if>
@@ -43,7 +43,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_origin where 1 = 1
+        from daoxin_crm_origin where display = 1
         <if test="paramCondition.originId != null and paramCondition.originId != ''">
             and origin_id like CONCAT('%',#{paramCondition.originId},'%')
         </if>
@@ -55,7 +55,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_origin where 1 = 1
+        from daoxin_crm_origin where display = 1
         <if test="paramCondition.originName != null and paramCondition.originName != ''">
             and origin_name like CONCAT('%',#{paramCondition.originName},'%')
         </if>
