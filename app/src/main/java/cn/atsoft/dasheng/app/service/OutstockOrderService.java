@@ -66,4 +66,11 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      */
      PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param);
 
+    /**
+     * 出库
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    void outStock(OutstockOrderParam param);
 }

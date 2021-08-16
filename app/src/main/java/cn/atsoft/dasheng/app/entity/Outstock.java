@@ -46,13 +46,6 @@ public class Outstock implements Serializable {
     @TableField("stock_id")
     private Long stockId;
 
-    public Long getOutstockOrderId() {
-        return outstockOrderId;
-    }
-
-    public void setOutstockOrderId(Long outstockOrderId) {
-        this.outstockOrderId = outstockOrderId;
-    }
 
     @TableField("outstock_order_id")
     private Long outstockOrderId;
@@ -211,6 +204,14 @@ public class Outstock implements Serializable {
 
     public void setState(Long state) {
         this.state = state;
+    }
+
+    public Long getOutstockOrderId() {
+        return outstockOrderId;
+    }
+
+    public void setOutstockOrderId(Long outstockOrderId) {
+        this.outstockOrderId = outstockOrderId;
     }
 
     @Override
