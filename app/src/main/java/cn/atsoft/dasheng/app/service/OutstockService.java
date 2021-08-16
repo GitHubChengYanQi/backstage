@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
@@ -66,5 +67,7 @@ public interface OutstockService extends IService<Outstock> {
      * @Date 2021-07-17
      */
      PageInfo<OutstockResult> findPageBySpec(OutstockParam param);
+
+    OutstockResult detail (Long id);
 
 }

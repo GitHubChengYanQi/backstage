@@ -9,7 +9,9 @@
         <result column="delivery_time" property="deliveryTime"/>
         <result column="number" property="number"/>
         <result column="price" property="price"/>
+        <result column="outstock_order_id" property="outstockOrderId"/>
         <result column="brand_id" property="brandId"/>
+        <result column="stock_id" property="stockId"/>
         <result column="item_id" property="itemId"/>
         <result column="state" property="state"/>
         <result column="create_time" property="createTime"/>
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        outstock_id AS "outstockId", storehouse_id AS "storehouseId", delivery_time AS "deliveryTime", number AS "number", price AS "price", brand_id AS "brandId",item_id AS "itemId",state AS "state", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        stock_id As "stockId" ,outstock_order_id AS "outstockOrderId" , outstock_id AS "outstockId", storehouse_id AS "storehouseId", delivery_time AS "deliveryTime", number AS "number", price AS "price", brand_id AS "brandId",item_id AS "itemId",state AS "state", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
@@ -81,6 +83,9 @@
         </if>
         <if test="paramCondition.deliveryTime!=null">
             and delivery_time like '%${paramCondition.deliveryTime}%'
+        </if>
+        <if test="paramCondition.outstockOrderId!=null">
+            and outstock_order_id = #{paramCondition.outstockOrderId}
         </if>
     </select>
 

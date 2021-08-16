@@ -1,0 +1,69 @@
+package cn.atsoft.dasheng.app.service;
+
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.app.entity.OutstockOrder;
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+
+/**
+ * <p>
+ * 出库单 服务类
+ * </p>
+ *
+ * @author cheng
+ * @since 2021-08-16
+ */
+public interface OutstockOrderService extends IService<OutstockOrder> {
+
+    /**
+     * 新增
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    Long add(OutstockOrderParam param);
+
+    /**
+     * 删除
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    void delete(OutstockOrderParam param);
+
+    /**
+     * 更新
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    void update(OutstockOrderParam param);
+
+    /**
+     * 查询单条数据，Specification模式
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    OutstockOrderResult findBySpec(OutstockOrderParam param);
+
+    /**
+     * 查询列表，Specification模式
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    List<OutstockOrderResult> findListBySpec(OutstockOrderParam param);
+
+    /**
+     * 查询分页数据，Specification模式
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+     PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param);
+
+}

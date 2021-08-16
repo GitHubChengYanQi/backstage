@@ -8,29 +8,36 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 来源表
+ * 出库单
  * </p>
  *
- * @author
- * @since 2021-07-19
+ * @author cheng
+ * @since 2021-08-16
  */
 @Data
 @ApiModel
-public class OriginResult implements Serializable {
+public class OutstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 来源id
+     * 出库详细id
      */
-    @ApiModelProperty("来源id")
-    private Long originId;
+    @ApiModelProperty("出库详细id")
+    private Long outstockOrderId;
+
     /**
-     * 来源名称
+     * 出库状态
      */
-    @ApiModelProperty("来源名称")
-    private String originName;
+    @ApiModelProperty("出库状态")
+    private Integer state;
+
+    /**
+     * 计划出库时间
+     */
+    @ApiModelProperty("计划出库时间")
+    private Date time;
 
     /**
      * 创建者
@@ -39,16 +46,16 @@ public class OriginResult implements Serializable {
     private Long createUser;
 
     /**
-     * 创建时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
-
-    /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
 
     /**
      * 修改时间

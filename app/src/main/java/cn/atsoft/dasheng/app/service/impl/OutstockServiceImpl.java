@@ -137,6 +137,18 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public OutstockResult detail(Long id) {
+        Outstock outstock = this.getById(id);
+        OutstockResult outstockResult = new OutstockResult();
+        ToolUtil.copyProperties(outstock, outstockResult);
+        List<OutstockResult> results = new ArrayList<OutstockResult>() {{
+            add(outstockResult);
+        }};
+        format(results);
+        return results.get(0);
+    }
+
     private Serializable getKey(OutstockParam param){
         return param.getOutstockId();
     }

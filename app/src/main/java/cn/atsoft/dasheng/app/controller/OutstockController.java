@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -136,12 +137,9 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<OutstockResult> detail(@RequestBody OutstockParam outstockParam) {
-        Outstock detail = this.outstockService.getById(outstockParam.getOutstockId());
-        OutstockResult result = new OutstockResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        Long outstockId = outstockParam.getOutstockId();
+        OutstockResult detail = outstockService.detail(outstockId);
+        return ResponseData.success(detail);
     }
 
     /**

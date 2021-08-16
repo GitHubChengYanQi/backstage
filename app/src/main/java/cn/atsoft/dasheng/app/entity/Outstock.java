@@ -35,6 +35,28 @@ public class Outstock implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
+    }
+
+    @TableField("stock_id")
+    private Long stockId;
+
+    public Long getOutstockOrderId() {
+        return outstockOrderId;
+    }
+
+    public void setOutstockOrderId(Long outstockOrderId) {
+        this.outstockOrderId = outstockOrderId;
+    }
+
+    @TableField("outstock_order_id")
+    private Long outstockOrderId;
+
     /**
      * 出库时间
      */

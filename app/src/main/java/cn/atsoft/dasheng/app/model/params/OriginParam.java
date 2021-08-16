@@ -41,6 +41,8 @@ public class OriginParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
+
+
     /**
      * 创建时间
      */
