@@ -45,13 +45,13 @@ public class ErpPackageTable implements Serializable {
    * 销售单价
    */
   @TableField("sale_price")
-  private int salePrice;
+  private Long salePrice;
 
   /**
    * 总计
    */
   @TableField("total_price")
-  private int totalPrice;
+  private Long totalPrice;
 
   /**
    * 品牌
@@ -121,19 +121,19 @@ public class ErpPackageTable implements Serializable {
     this.itemId = itemId;
   }
 
-  public int getSalePrice() {
+  public Long getSalePrice() {
     return salePrice;
   }
 
-  public void setSalePrice(int salePrice) {
+  public void setSalePrice(Long salePrice) {
     this.salePrice = salePrice;
   }
 
-  public int getTotalPrice() {
+  public Long getTotalPrice() {
     return totalPrice;
   }
 
-  public void setTotalPrice(int totalPrice) {
+  public void setTotalPrice(Long totalPrice) {
     this.totalPrice = totalPrice;
   }
 
