@@ -23,19 +23,19 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CustomerDynamicResult" parameterType="cn.atsoft.dasheng.app.model.params.CustomerDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_dynamic where 1 = 1
+        from daoxin_crm_customer_dynamic where display = 1
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_dynamic where 1 = 1
+        from daoxin_crm_customer_dynamic where display = 1
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CustomerDynamicResult" parameterType="cn.atsoft.dasheng.app.model.params.CustomerDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_dynamic where 1 = 1
+        from daoxin_crm_customer_dynamic where display = 1
         <if test="paramCondition.customerId != null and paramCondition.customerId != ''">
             and customer_id = #{paramCondition.customerId}
         </if>
@@ -45,7 +45,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerDynamicParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_dynamic where 1 = 1
+        from daoxin_crm_customer_dynamic where display = 1
     </select>
 
 </mapper>
