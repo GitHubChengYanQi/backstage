@@ -19,8 +19,8 @@ import cn.atsoft.dasheng.core.context.RequestDataHolder;
 import cn.atsoft.dasheng.core.request.RequestData;
 import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.page.PageQuery;
-import cn.atsoft.dasheng.model.util.ValidateUtil;
+import cn.atsoft.dasheng.portal.model.page.PageQuery;
+import cn.atsoft.dasheng.portal.model.util.ValidateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import javax.servlet.http.HttpServletRequest;

@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;

@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.base.pojo.node;
 
-import cn.atsoft.dasheng.model.enums.YesOrNotEnum;
+import cn.atsoft.dasheng.portal.model.enums.YesOrNotEnum;
 import lombok.Data;
 
 import java.io.Serializable;

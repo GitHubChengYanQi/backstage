@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.sys.modular.rest.model;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.tree.Tree;
+import cn.atsoft.dasheng.portal.model.tree.Tree;
 import lombok.Data;
 
 import java.util.List;

@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesProcessSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesSelectWrapper;
-import cn.atsoft.dasheng.app.wrapper.CrmIndustrySelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
@@ -10,15 +8,13 @@ import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import cn.atsoft.dasheng.portal.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

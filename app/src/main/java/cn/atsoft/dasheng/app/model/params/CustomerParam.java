@@ -1,11 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
-import cn.atsoft.dasheng.app.entity.Origin;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
 
 import java.util.Date;
 import java.io.Serializable;

@@ -1,13 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
-import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
-import cn.atsoft.dasheng.app.model.params.StockParam;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
-import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
-import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.OutstockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
@@ -16,7 +10,7 @@ import cn.atsoft.dasheng.app.model.result.OutstockResult;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

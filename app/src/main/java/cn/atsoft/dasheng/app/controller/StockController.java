@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.StockRequest;
-import cn.atsoft.dasheng.app.wrapper.StockDetailsSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Stock;
@@ -10,15 +9,13 @@ import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import cn.atsoft.dasheng.portal.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

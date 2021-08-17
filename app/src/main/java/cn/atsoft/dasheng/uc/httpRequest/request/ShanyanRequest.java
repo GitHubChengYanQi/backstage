@@ -4,7 +4,7 @@ import cn.atsoft.dasheng.uc.httpRequest.source.ShanyanSource;
 import cn.atsoft.dasheng.uc.utils.AESUtils;
 import cn.atsoft.dasheng.uc.utils.ByteFormat;
 import cn.atsoft.dasheng.uc.utils.MD5;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import com.alibaba.fastjson.JSONObject;
 import com.xkcoding.http.config.HttpConfig;
 import lombok.SneakyThrows;

@@ -5,7 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
 import cn.atsoft.dasheng.modular.form.entity.EgForm;
 import cn.atsoft.dasheng.modular.form.model.EgFormParam;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

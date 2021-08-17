@@ -1,8 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
 
 import java.math.BigDecimal;
 import java.util.Date;
