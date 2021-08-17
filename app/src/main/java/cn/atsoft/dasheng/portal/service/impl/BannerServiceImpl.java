@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.portal.entity.Banner;
 import cn.atsoft.dasheng.portal.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.model.result.BannerResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * <p>
@@ -61,6 +63,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     public PageInfo<BannerResult> findPageBySpec(BannerParam param){
         Page<BannerResult> pageContext = getPageContext();
         IPage<BannerResult> page = this.baseMapper.customPageList(pageContext, param);
+
         return PageFactory.createPageInfo(page);
     }
 
