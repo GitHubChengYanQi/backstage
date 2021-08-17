@@ -114,15 +114,15 @@ public class CrmPaymentServiceImpl extends ServiceImpl<CrmPaymentMapper, CrmPaym
         }
         QueryWrapper<ErpOrder> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("order_id", oriderIds);
-        List<ErpOrder> orderList = orderService.list(queryWrapper);
+        List<ErpOrder> orderList =oriderIds.size()==0? new ArrayList<>(): orderService.list(queryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", itemIds);
-        List<Items> itemList = itemsService.list(itemsQueryWrapper);
+        List<Items> itemList =itemIds.size()==0?new ArrayList<>(): itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
         outstockQueryWrapper.in("outstock_id",outstockIds);
-        List<Outstock> outList = outstockService.list(outstockQueryWrapper);
+        List<Outstock> outList =outstockIds.size()==0?new ArrayList<>(): outstockService.list(outstockQueryWrapper);
 
         for (CrmPaymentResult datum : data) {
             for (ErpOrder erpOrder : orderList) {

@@ -65,7 +65,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    @BussinessLog
+
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness  entity = getEntity(param);
         this.save(entity);
@@ -74,7 +74,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    @BussinessLog
+
     public CrmBusiness delete(CrmBusinessParam param) {
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {
@@ -89,7 +89,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    @BussinessLog
+ 
     public CrmBusiness update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
