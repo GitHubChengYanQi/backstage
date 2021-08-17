@@ -27,25 +27,25 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.MessageResult" parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_message where 1 = 1
+        from daoxin_message where display = 1
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_message where 1 = 1
+        from daoxin_message where display = 1
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.MessageResult" parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_message where 1 = 1
+        from daoxin_message where display = 1
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.MessageParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_message where 1 = 1
+        from daoxin_message where display = 1
     </select>
 
 </mapper>

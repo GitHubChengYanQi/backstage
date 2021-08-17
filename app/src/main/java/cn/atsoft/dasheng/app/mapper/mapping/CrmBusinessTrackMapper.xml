@@ -32,7 +32,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_track where 1 = 1
+        from daoxin_crm_business_track where display = 1
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>
@@ -45,7 +45,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_track where 1 = 1
+        from daoxin_crm_business_track where display = 1
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>
@@ -58,7 +58,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam" resultMap="rsp">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_track where 1 = 1
+        from daoxin_crm_business_track where display = 1
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>
@@ -87,7 +87,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_track where 1 = 1
+        from daoxin_crm_business_track where display = 1
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>

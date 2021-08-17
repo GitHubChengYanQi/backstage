@@ -111,13 +111,13 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
             if(ToolUtil.isNotEmpty(itemIds)){
                 ItemsQueryWrapper.in("item_id",itemIds);
             }
-            List<Items> ItemsList=itemsService.list(ItemsQueryWrapper);
+            List<Items> ItemsList=itemIds.size()==0?new ArrayList<>():itemsService.list(ItemsQueryWrapper);
 
             QueryWrapper<Brand> BrandQueryWrapper=new QueryWrapper<>();
             if(ToolUtil.isNotEmpty(brandeIds)){
                 BrandQueryWrapper.in("brand_id",brandeIds);
             }
-            List<Brand> BrandList=brandService.list(BrandQueryWrapper);
+            List<Brand> BrandList= brandeIds.size()==0?new ArrayList<>():brandService.list(BrandQueryWrapper);
             for (ErpPackageTableResult record : data) {
                 for (Items items : ItemsList) {
                     if(items.getItemId().equals(record.getItemId())){

@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,7 +33,7 @@ import java.util.List;
  * @since 2021-07-23
  */
 @Service
-public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
+public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService{
     @Autowired
     private CustomerService customerService;
 
@@ -113,5 +114,6 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }

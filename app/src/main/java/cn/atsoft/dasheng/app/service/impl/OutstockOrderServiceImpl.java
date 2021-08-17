@@ -56,15 +56,16 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         this.removeById(getKey(param));
     }
 
+
     @Override
-    public void update(OutstockOrderParam param){
+    public void outStock(OutstockOrderParam param){
 
         OutstockOrder entity = getEntity(param);
         Long outStockOrderId = entity.getOutstockOrderId();
         // 判断出库单对应出库明细数据有无
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
         if(ToolUtil.isNotEmpty(outStockOrderId)){
-            outstockQueryWrapper.in("outstockOrderId" , outStockOrderId);
+            outstockQueryWrapper.in("outstock_order_id" , outStockOrderId);
         }
         List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
 
@@ -127,6 +128,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }else{
             throw new ServiceException(500, "仓库没有此产品！");
         }
+    }
+
+    @Override
+    public void update(OutstockOrderParam param){
+
+        OutstockOrder oldEntity = getOldEntity(param);
+        OutstockOrder newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
     }
 
     @Override

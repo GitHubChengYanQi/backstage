@@ -24,7 +24,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_level where 1 = 1
+        from daoxin_crm_customer_level where display = 1
             <if test="paramCondition.customerLevelId != null">
                     and customer_level_id = #{paramCondition.customerLevelId}
             </if>
@@ -33,7 +33,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_level where 1 = 1
+        from daoxin_crm_customer_level where display = 1
                 <if test="paramCondition.customerLevelId != null">
                             and customer_level_id = #{paramCondition.customerLevelId}
                 </if>
@@ -42,7 +42,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult" parameterType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_level where 1 = 1
+        from daoxin_crm_customer_level where display = 1
                 <if test="paramCondition.customerLevelId != null">
                             and customer_level_id = #{paramCondition.customerLevelId}
                 </if>
@@ -51,7 +51,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer_level where 1 = 1
+        from daoxin_crm_customer_level where display = 1
                 <if test="paramCondition.customerLevelId != null">
                         and customer_level_id = #{paramCondition.customerLevelId}
                 </if>

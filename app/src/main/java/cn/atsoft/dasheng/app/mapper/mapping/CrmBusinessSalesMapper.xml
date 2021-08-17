@@ -25,7 +25,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_sales where 1 = 1
+        from daoxin_crm_business_sales where display = 1
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
@@ -35,7 +35,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_sales where 1 = 1
+        from daoxin_crm_business_sales where display = 1
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
@@ -45,7 +45,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_sales where 1 = 1
+        from daoxin_crm_business_sales where display = 1
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
@@ -55,7 +55,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_business_sales where 1 = 1
+        from daoxin_crm_business_sales where display = 1
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>

@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemClassResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_class where 1 = 1
+        from daoxin_erp_item_class where display = 1
             <if test="paramCondition.className != null and paramCondition.className != ''">
                 and class_name like CONCAT('%',#{paramCondition.className},'%')
             </if>
@@ -32,7 +32,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_class where 1 = 1
+        from daoxin_erp_item_class where display = 1
                 <if test="paramCondition.className != null and paramCondition.className != ''">
                         and class_name like CONCAT('%',#{paramCondition.className},'%')
                 </if>
@@ -41,7 +41,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemClassResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_class where 1 = 1
+        from daoxin_erp_item_class where display = 1
                 <if test="paramCondition.className != null and paramCondition.className != ''">
                         and class_name like CONCAT('%',#{paramCondition.className},'%')
                 </if>
@@ -50,7 +50,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_class where 1 = 1
+        from daoxin_erp_item_class where display = 1
                 <if test="paramCondition.className != null and paramCondition.className != ''">
                         and class_name like CONCAT('%',#{paramCondition.className},'%')
                 </if>
