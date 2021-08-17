@@ -1,13 +1,11 @@
-package cn.atsoft.dasheng.app.cloude.portal.model.params;
+package cn.atsoft.dasheng.app.cloude.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-
 /**
  * <p>
  * 轮播图
@@ -18,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class PortalBannerParam implements Serializable, BaseValidatingParam {
+public class BannerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,6 +26,12 @@ public class PortalBannerParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("轮播图id")
     private Long bannerId;
+
+    /**
+     * 轮播图标题
+     */
+    @ApiModelProperty("轮播图标题")
+    private String title;
 
     /**
      * 图片路径
@@ -64,15 +68,6 @@ public class PortalBannerParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
-    private String title;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

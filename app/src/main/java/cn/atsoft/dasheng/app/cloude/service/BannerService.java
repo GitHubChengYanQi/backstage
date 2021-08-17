@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.app.cloude.portal.service;
+package cn.atsoft.dasheng.app.cloude.service;
 
-import cn.atsoft.dasheng.app.cloude.portal.entity.PortalBanner;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.cloude.portal.model.params.PortalBannerParam;
-import cn.atsoft.dasheng.app.cloude.portal.model.result.PortalBannerResult;
+import cn.atsoft.dasheng.app.cloude.entity.Banner;
+import cn.atsoft.dasheng.app.cloude.model.params.BannerParam;
+import cn.atsoft.dasheng.app.cloude.model.result.BannerResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author 
  * @since 2021-08-17
  */
-public interface PortalBannerService extends IService<PortalBanner> {
+public interface BannerService extends IService<Banner> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-    void add(PortalBannerParam param);
+    void add(BannerParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-    void delete(PortalBannerParam param);
+    void delete(BannerParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-    void update(PortalBannerParam param);
+    void update(BannerParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-    PortalBannerResult findBySpec(PortalBannerParam param);
+    BannerResult findBySpec(BannerParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-    List<PortalBannerResult> findListBySpec(PortalBannerParam param);
+    List<BannerResult> findListBySpec(BannerParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface PortalBannerService extends IService<PortalBanner> {
      * @author 
      * @Date 2021-08-17
      */
-     PageInfo<PortalBannerResult> findPageBySpec(PortalBannerParam param);
+     PageInfo<BannerResult> findPageBySpec(BannerParam param);
 
 }

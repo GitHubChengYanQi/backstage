@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.app.cloude.portal.entity;
+package cn.atsoft.dasheng.app.cloude.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2021-08-17
  */
 @TableName("daoxin_portal_banner")
-public class PortalBanner implements Serializable {
+public class Banner implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,6 +26,12 @@ public class PortalBanner implements Serializable {
      */
       @TableId(value = "banner_id", type = IdType.ID_WORKER)
     private Long bannerId;
+
+    /**
+     * 轮播图标题
+     */
+    @TableField("title")
+    private String title;
 
     /**
      * 图片路径
@@ -56,8 +62,6 @@ public class PortalBanner implements Serializable {
      */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
-      @TableField("title")
-      private  String title;
 
     /**
      * 状态
@@ -72,6 +76,14 @@ public class PortalBanner implements Serializable {
 
     public void setBannerId(Long bannerId) {
         this.bannerId = bannerId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImgUrl() {
@@ -122,18 +134,11 @@ public class PortalBanner implements Serializable {
         this.display = display;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     @Override
     public String toString() {
-        return "PortalBanner{" +
+        return "Banner{" +
         "bannerId=" + bannerId +
+        ", title=" + title +
         ", imgUrl=" + imgUrl +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
