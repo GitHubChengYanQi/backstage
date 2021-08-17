@@ -50,7 +50,7 @@ public class NoneAuthedResources {
             "/sysTokenLogin",
 
             // 登录接口放开过滤
-            "/login",
+            "/login/**",
 
             // session登录失效之后的跳转
             "/global/sessionError",

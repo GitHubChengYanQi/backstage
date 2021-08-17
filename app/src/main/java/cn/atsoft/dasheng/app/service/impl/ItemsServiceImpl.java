@@ -123,7 +123,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         }
         QueryWrapper<Material> materialQueryWrapper =  new QueryWrapper<>();
         materialQueryWrapper.in("material_id" , materialIds);
-        List<Material> materialList = materialService.list(materialQueryWrapper);
+        List<Material> materialList = materialIds.size() == 0 ? new ArrayList<>() :  materialService.list(materialQueryWrapper);
 
         for (ItemsResult datum : data) {
             for (Material material : materialList) {
