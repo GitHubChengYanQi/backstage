@@ -25,7 +25,7 @@
           parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
     select
     <include refid="Base_Column_List"/>
-    from daoxin_erp_package_table where display = 1
+    from daoxin_erp_package_table where 1 = 1
     <if test="paramCondition.packageId != null">
       and package_id like CONCAT('%',#{paramCondition.packageId},'%')
     </if>
@@ -38,7 +38,7 @@
          >
     select
     <include refid="Base_Column_List"/>
-    from daoxin_erp_package_table where display = 1
+    from daoxin_erp_package_table where 1 = 1
     <if test="paramCondition.packageId != null">
       and package_id like CONCAT('%',#{paramCondition.packageId},'%')
     </if>
@@ -68,7 +68,7 @@
           parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageTableParam">
     select
     <include refid="Base_Column_List"/>
-    from daoxin_erp_package_table where display = 1
+    from daoxin_erp_package_table where 1 = 1
     <if test="paramCondition.packageId != null">
       and package_id like CONCAT('%',#{paramCondition.packageId},'%')
     </if>

@@ -16,7 +16,7 @@ import java.util.List;
  * @author
  * @since 2021-07-23
  */
-public interface CustomerService extends IService<Customer> {
+public interface CustomerService extends IService<Customer>{
 
     /**
      * 新增
