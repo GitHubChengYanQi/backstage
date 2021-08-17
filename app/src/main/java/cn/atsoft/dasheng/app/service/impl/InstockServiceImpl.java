@@ -152,9 +152,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     }
                     this.stockDetailsService.saveBatch(list);
                 }
-                ToolUtil.copyProperties(newEntity, oldEntity);
-                this.updateById(newEntity);
             }
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
         } catch (ReflectionException e) {
             //
         }
