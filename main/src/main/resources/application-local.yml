@@ -47,6 +47,10 @@ spring:
     max-active: 20
     max-pool-prepared-statement-per-connection-size: 20
 
+  redis:
+    host: 192.168.1.249
+    password:
+
   # 邮件发送配置（改为自己的账号和密码）
   mail:
     host: smtp.qq.com
@@ -83,3 +87,26 @@ freed-template:
     add: "[操作人]添加了订单"
     edit: "[操作人]修改了订单"
     delete: "[操作人]删除了订单"
+
+# 微信相关配置
+wx:
+  # 小程序相关配置
+  miniapp:
+    appid: wx8f5e5bc74c513993
+    secret: 761055370ec074c2604a1497ec77c86d
+    aesKey: 3333
+    token: 11111
+    msg-data-format: JSON
+
+# 支付相关配置
+pay:
+  notifyUrl: https://dasheng-soft.picp.vip
+
+  # 微信支付 小程序用
+  weiXinMiNiPay:
+    appId: 111
+    mchId: 222
+    mchKey: 3333
+    
+# 推送支付信息,生产环境如开启支付功能 应设置为 true
+pushPayInfo: false
