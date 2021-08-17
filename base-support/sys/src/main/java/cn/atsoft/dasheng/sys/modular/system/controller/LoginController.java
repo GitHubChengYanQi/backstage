@@ -56,7 +56,7 @@ import java.util.Map;
  * @author fengshuonan
  * @Date 2017年1月10日 下午8:25:24
  */
-@Controller
+//@Controller
 public class LoginController extends BaseController {
 
     @Autowired
