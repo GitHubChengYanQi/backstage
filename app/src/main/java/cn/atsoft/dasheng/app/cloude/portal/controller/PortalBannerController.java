@@ -34,7 +34,7 @@ public class PortalBannerController extends BaseController {
      * @author 
      * @Date 2021-08-17
      */
-    @RequestMapping(value = "/add", method = RequestMethod.GET )
+    @RequestMapping(value = "/add", method = RequestMethod.POST )
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PortalBannerParam portalBannerParam) {
         this.portalBannerService.add(portalBannerParam);
@@ -47,7 +47,7 @@ public class PortalBannerController extends BaseController {
      * @author 
      * @Date 2021-08-17
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody PortalBannerParam portalBannerParam) {
 
@@ -61,7 +61,7 @@ public class PortalBannerController extends BaseController {
      * @author 
      * @Date 2021-08-17
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody PortalBannerParam portalBannerParam)  {
         this.portalBannerService.delete(portalBannerParam);
@@ -74,7 +74,7 @@ public class PortalBannerController extends BaseController {
      * @author 
      * @Date 2021-08-17
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<PortalBannerResult> detail(@RequestBody PortalBannerParam portalBannerParam) {
         PortalBanner detail = this.portalBannerService.getById(portalBannerParam.getBannerId());
@@ -91,7 +91,7 @@ public class PortalBannerController extends BaseController {
      * @author 
      * @Date 2021-08-17
      */
-    @RequestMapping(value = "/BannerList", method = RequestMethod.GET)
+    @RequestMapping(value = "/BannerList", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PortalBannerResult> list(@RequestBody(required = false) PortalBannerParam portalBannerParam) {
         if(ToolUtil.isEmpty(portalBannerParam)){
