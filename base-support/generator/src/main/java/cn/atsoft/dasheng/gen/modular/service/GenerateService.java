@@ -15,7 +15,7 @@ import cn.atsoft.dasheng.gen.modular.model.params.SaveFieldConfigParam;
 import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import cn.atsoft.dasheng.validator.stereotype.ParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

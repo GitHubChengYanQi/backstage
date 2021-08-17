@@ -17,9 +17,9 @@ package cn.atsoft.dasheng.core.base.controller;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.atsoft.dasheng.core.util.HttpContext;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.exception.enums.CoreExceptionEnum;
-import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.enums.CoreExceptionEnum;
+import cn.atsoft.dasheng.portal.model.response.SuccessResponseData;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

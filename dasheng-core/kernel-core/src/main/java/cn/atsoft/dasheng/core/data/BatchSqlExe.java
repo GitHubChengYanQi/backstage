@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.core.data;
 
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;

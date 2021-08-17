@@ -1,10 +1,10 @@
 package ${package.EntitySpecParams};
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-import java.util.Date;
+import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

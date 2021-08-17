@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.ItemClass;
 import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
@@ -13,7 +12,7 @@ import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -123,7 +122,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         }
         QueryWrapper<Material> materialQueryWrapper =  new QueryWrapper<>();
         materialQueryWrapper.in("material_id" , materialIds);
-        List<Material> materialList = materialService.list(materialQueryWrapper);
+        List<Material> materialList = materialIds.size() == 0 ? new ArrayList<>() :  materialService.list(materialQueryWrapper);
 
         for (ItemsResult datum : data) {
             for (Material material : materialList) {

@@ -29,7 +29,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.sys.modular.rest.service.RestDeptService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

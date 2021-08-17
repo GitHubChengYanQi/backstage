@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.oauth2.factory;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.exception.AuthException;
 import me.zhyd.oauth.request.*;

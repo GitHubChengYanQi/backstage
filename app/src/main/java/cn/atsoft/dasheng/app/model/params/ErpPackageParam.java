@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import cn.atsoft.dasheng.app.entity.ErpPackage;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;

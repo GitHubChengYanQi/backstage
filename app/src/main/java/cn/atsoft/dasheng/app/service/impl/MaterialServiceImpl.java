@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.ItemClass;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Material;
@@ -10,7 +9,7 @@ import cn.atsoft.dasheng.app.model.params.MaterialParam;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import  cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
