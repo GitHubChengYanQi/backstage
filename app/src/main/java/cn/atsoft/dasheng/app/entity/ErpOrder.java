@@ -30,31 +30,65 @@ public class ErpOrder implements Serializable {
     @TableId(value = "order_id", type = IdType.ID_WORKER)
     private Long orderId;
 
-    @TableField("customer_id")
-    private Long customerId;
     /**
-     * 地址id
+     * 合同id
      */
-    @TableField("adress_id")
-    private String adressId;
+    @TableField("contract_id")
+    private Long contractId;
+    /**
+     * 合同名称
+     */
+    @TableField("contract_name")
+    private String contractName;
 
     /**
-     * 出库id
+     * 甲方id
      */
-    @TableField("outstock_id")
-    private Long outstockId;
+    @TableField("party_a")
+    private Long partyA;
 
     /**
-     * 联系id
+     * 乙方id
      */
-    @TableField("contacts_id")
-    private Long contactsId;
+    @TableField("party_b")
+    private Long partyB;
 
     /**
-     * 联系人电话
+     * 甲方联系人id
      */
-    @TableField("phone")
-    private String phone;
+    @TableField("party_a_contacts_id")
+    private Long partyAContactsId;
+
+    /**
+     * 乙方联系人id
+     */
+    @TableField("party_b_contacts_id")
+    private Long partyBContactsId;
+
+    /**
+     * 甲方联系地址
+     */
+    @TableField("party_a_adress_id")
+    private Long partyAAdressId;
+
+    /**
+     * 乙方联系地址
+     */
+    @TableField("party_b_adress_id")
+    private Long partyBAdressId;
+
+
+    /**
+     * 甲方联系人电话
+     */
+    @TableField("party_a_phone")
+    private Long partyAPhone;
+
+    /**
+     * 乙方联系人电话
+     */
+    @TableField("party_b_phone")
+    private Long partyBPhone;
 
     /**
      * 物品id
@@ -73,6 +107,12 @@ public class ErpOrder implements Serializable {
      */
     @TableField("number")
     private Long number;
+
+    /**
+     * 订单金额
+     */
+    @TableField("price")
+    private Long price;
 
     /**
      * 下单时间
@@ -116,13 +156,6 @@ public class ErpOrder implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
 
     public Long getOrderId() {
         return orderId;
@@ -132,36 +165,92 @@ public class ErpOrder implements Serializable {
         this.orderId = orderId;
     }
 
-    public String getAdressId() {
-        return adressId;
+    public Long getContractId() {
+        return contractId;
     }
 
-    public void setAdressId(String adressId) {
-        this.adressId = adressId;
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
     }
 
-    public Long getOutstockId() {
-        return outstockId;
+    public String getContractName() {
+        return contractName;
     }
 
-    public void setOutstockId(Long outstockId) {
-        this.outstockId = outstockId;
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
     }
 
-    public Long getContactsId() {
-        return contactsId;
+    public Long getPartyA() {
+        return partyA;
     }
 
-    public void setContactsId(Long contactsId) {
-        this.contactsId = contactsId;
+    public void setPartyA(Long partyA) {
+        this.partyA = partyA;
     }
 
-    public String getPhone() {
-        return phone;
+    public Long getPartyB() {
+        return partyB;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPartyB(Long partyB) {
+        this.partyB = partyB;
+    }
+
+    public Long getPartyAContactsId() {
+        return partyAContactsId;
+    }
+
+    public void setPartyAContactsId(Long partyAContactsId) {
+        this.partyAContactsId = partyAContactsId;
+    }
+
+    public Long getPartyBContactsId() {
+        return partyBContactsId;
+    }
+
+    public void setPartyBContactsId(Long partyBContactsId) {
+        this.partyBContactsId = partyBContactsId;
+    }
+
+    public Long getPartyAAdressId() {
+        return partyAAdressId;
+    }
+
+    public void setPartyAAdressId(Long partyAAdressId) {
+        this.partyAAdressId = partyAAdressId;
+    }
+
+    public Long getPartyBAdressId() {
+        return partyBAdressId;
+    }
+
+    public void setPartyBAdressId(Long partyBAdressId) {
+        this.partyBAdressId = partyBAdressId;
+    }
+
+    public Long getPartyAPhone() {
+        return partyAPhone;
+    }
+
+    public void setPartyAPhone(Long partyAPhone) {
+        this.partyAPhone = partyAPhone;
+    }
+
+    public Long getPartyBPhone() {
+        return partyBPhone;
+    }
+
+    public void setPartyBPhone(Long partyBPhone) {
+        this.partyBPhone = partyBPhone;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
     }
 
     public Long getItemId() {
@@ -248,9 +337,17 @@ public class ErpOrder implements Serializable {
     public String toString() {
         return "ErpOrder{" +
                 "orderId=" + orderId +
-                ", adressId='" + adressId + '\'' +
-                ", outstockId=" + outstockId +
-                ", contactsId=" + contactsId +
+                ", contractId='" + contractId + '\'' +
+                ", contractName=" + contractName +
+                ", partyA=" + partyA +
+                ", partyB=" + partyB +
+                ", partyAContactsId=" + partyAContactsId +
+                ", partyBContactsId=" + partyBContactsId +
+                ", partyAAdressId=" + partyAAdressId +
+                ", partyBAdressId=" + partyBAdressId +
+                ", partyAPhone=" + partyAPhone +
+                ", partyBPhone=" + partyBPhone +
+                ", price=" + price +
                 ", itemId=" + itemId +
                 ", state='" + state + '\'' +
                 ", number=" + number +

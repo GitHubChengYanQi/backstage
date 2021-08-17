@@ -34,7 +34,7 @@ public interface ErpOrderService extends IService<ErpOrder> {
      * @Date 2021-07-26
      * @return
      */
-    ErpOrder delete(ErpOrderParam param);
+    void delete(ErpOrderParam param);
 
     /**
      * 更新
@@ -43,7 +43,7 @@ public interface ErpOrderService extends IService<ErpOrder> {
      * @Date 2021-07-26
      * @return
      */
-    ErpOrder update(ErpOrderParam param);
+    void update(ErpOrderParam param);
 
     /**
      * 查询单条数据，Specification模式

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -41,6 +42,11 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+
+    @Autowired
+    private ErpOrderService orderService;
+    @Autowired
+    private ContractService contractService;
 
     @Override
     public ContractResult detail(Long id) {
@@ -111,6 +117,37 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             throw new ServiceException(500, "数据不存在");
         }else {
             Contract newEntity = getEntity(param);
+            if (newEntity.getAudit() == 1) {
+                Long contractId = newEntity.getContractId();
+
+                Contract contract = this.contractService.getById(contractId);
+                if (ToolUtil.isNotEmpty(contract)) {
+                    ErpOrderParam orderParam = new ErpOrderParam();
+                    orderParam.setContractId(contract.getContractId());
+                    //合同名称
+                    orderParam.setContractName(contract.getName());
+                    //甲方名称
+                    orderParam.setPartyA(contract.getPartyA());
+                    //甲方联系人
+                    orderParam.setPartyAContactsId(contract.getPartyAContactsId());
+                    //甲方地址
+                    orderParam.setPartyAAdressId(contract.getPartyAAdressId());
+                    //甲方电话
+                    orderParam.setPartyAPhone(contract.getPartyAPhone());
+                    //乙方名称
+                    orderParam.setPartyB(contract.getPartyB());
+                    //乙方联系人
+                    orderParam.setPartyBContactsId(contract.getPartyBContactsId());
+                    //乙方地址
+                    orderParam.setPartyBAdressId(contract.getPartyBAdressId());
+                    //乙方电话
+                    orderParam.setPartyBPhone(contract.getPartyBPhone());
+                    //                orderParam.setItemId();
+                    //                orderParam.setNumber();
+                    //                orderParam.setPrice();
+                    this.orderService.add(orderParam);
+                }
+            }
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
             return oldEntity;

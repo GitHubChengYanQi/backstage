@@ -84,7 +84,7 @@ public class FreedAop {
             queryWrapper.in("order_id", erpOrder.getOrderId());
             List<ErpOrder> erpOrderList = erpOrderService.list(queryWrapper);
             for (ErpOrder order : erpOrderList) {
-                customerDynamicParam.setCustomerId(order.getCustomerId());
+                customerDynamicParam.setCustomerId(order.getPartyAContactsId());
             }
 
             switch (methodName) {

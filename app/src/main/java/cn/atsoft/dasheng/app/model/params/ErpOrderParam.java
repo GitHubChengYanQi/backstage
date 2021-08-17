@@ -24,11 +24,6 @@ import java.util.List;
 public class ErpOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private int price;
-    private String contactsName;
-    private String location;
-    private String name;
-    private Long customerId;
     /**
      * 订单编号
      */
@@ -36,28 +31,64 @@ public class ErpOrderParam implements Serializable, BaseValidatingParam {
     private Long orderId;
 
     /**
-     * 地址id
+     * 合同id
      */
-    @ApiModelProperty("地址id")
-    private String adressId;
+    @ApiModelProperty("合同id")
+    private Long contractId;
 
     /**
-     * 出库id
+     * 合同名称
      */
-    @ApiModelProperty("出库id")
-    private Long outstockId;
+    @ApiModelProperty("合同名称")
+    private String contractName;
 
     /**
-     * 联系人电话
+     * 甲方id
      */
-    @ApiModelProperty("联系人电话")
-    private String phone;
+    @ApiModelProperty("甲方id")
+    private Long partyA;
 
     /**
-     * 联系id
+     * 乙方id
      */
-    @ApiModelProperty("联系id")
-    private Long contactsId;
+    @ApiModelProperty("乙方id")
+    private Long partyB;
+
+    /**
+     * 甲方联系人id
+     */
+    @ApiModelProperty("甲方联系人id")
+    private Long partyAContactsId;
+
+    /**
+     * 乙方联系人id
+     */
+    @ApiModelProperty("乙方联系人id")
+    private Long partyBContactsId;
+
+    /**
+     * 甲方联系地址
+     */
+    @ApiModelProperty("甲方联系地址")
+    private Long partyAAdressId;
+
+    /**
+     * 乙方联系地址
+     */
+    @ApiModelProperty("乙方联系地址")
+    private Long partyBAdressId;
+
+    /**
+     * 甲方联系人电话
+     */
+    @ApiModelProperty("甲方联系人电话")
+    private Long partyAPhone;
+
+    /**
+     * 乙方联系人电话
+     */
+    @ApiModelProperty("乙方联系人电话")
+    private Long partyBPhone;
 
     /**
      * 物品id
@@ -76,6 +107,12 @@ public class ErpOrderParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("订单数量")
     private Long number;
+
+    /**
+     * 订单金额
+     */
+    @ApiModelProperty("订单金额")
+    private Long price;
 
     /**
      * 下单时间

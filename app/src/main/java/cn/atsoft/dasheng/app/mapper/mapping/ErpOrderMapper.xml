@@ -5,13 +5,20 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ErpOrder">
         <id column="order_id" property="orderId" />
-        <result column="adress_id" property="adressId" />
-        <result column="outstock_id" property="outstockId" />
-        <result column="contacts_id" property="contactsId" />
+        <result column="contract_id" property="contractId" />
+        <result column="contract_name" property="contractName" />
+        <result column="party_a" property="partyA" />
+        <result column="party_b" property="partyB" />
+        <result column="party_a_contacts_id" property="partyAContactsId" />
+        <result column="party_b_contacts_id" property="partyBContactsId" />
+        <result column="party_a_adress_id" property="partyAAdressId" />
+        <result column="party_b_adress_id" property="partyBAdressId" />
+        <result column="party_a_phone" property="partyAPhone" />
+        <result column="party_b_phone" property="partyBPhone" />
         <result column="item_id" property="itemId" />
         <result column="state" property="state" />
         <result column="number" property="number" />
-        <result column="phone" property="phone" />
+        <result column="price" property="price" />
         <result column="order_time" property="orderTime" />
         <result column="deptId" property="deptId" />
         <result column="create_user" property="createUser" />
@@ -23,8 +30,10 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> customer_id AS "customerId",
-phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS "outstockId", contacts_id AS "contactsId", item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderTime", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    <sql id="Base_Column_List"> order_id AS "orderId",
+contract_id AS "contractId", contract_name AS "contractName", party_a AS "partyA", party_b AS "partyB", party_a_contacts_id AS "partyAContactsId",
+party_b_contacts_id AS "partyBContactsId", party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_phone AS "partyAPhone", party_b_phone AS "partyBPhone", price AS "price",
+item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderTime", deptId AS "deptId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -32,8 +41,8 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_order where display = 1
-            <if test="paramCondition.contactsId != null">
-                and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+            <if test="paramCondition.contractId != null">
+                and contract_id like CONCAT('%',#{contractId},'%')
             </if>
             <if test="paramCondition.itemId != null">
                 and item_id like CONCAT('%',#{paramCondition.itemId},'%')
@@ -47,8 +56,8 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_order where display = 1
-                <if test="paramCondition.contactsId != null">
-                        and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+                <if test="paramCondition.contractId != null">
+                    and contract_id like CONCAT('%',#{contractId},'%')
                 </if>
                 <if test="paramCondition.itemId != null">
                         and item_id like CONCAT('%',#{paramCondition.itemId},'%')
@@ -62,11 +71,8 @@ phone AS "phone", order_id AS "orderId", adress_id AS "adressId", outstock_id AS
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_order where display = 1
-        <if test="paramCondition.contactsId != null">
-            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-        </if>
-        <if test="paramCondition.customerId != null">
-            and customer_id = #{paramCondition.customerId}
+        <if test="paramCondition.contractId != null">
+            and contract_id like CONCAT('%',#{contractId},'%')
         </if>
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')

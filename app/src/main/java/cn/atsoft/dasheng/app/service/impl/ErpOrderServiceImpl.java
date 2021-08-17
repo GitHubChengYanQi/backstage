@@ -44,44 +44,37 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     @BussinessLog
     @Override
     public ErpOrder add(ErpOrderParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        } else {
-            ErpOrder entity = getEntity(param);
-            this.save(entity);
-            return entity;
-        }
+        ErpOrder entity = getEntity(param);
+        this.save(entity);
+        return entity;
     }
 
     @BussinessLog
     @Override
-    public ErpOrder delete(ErpOrderParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        } else {
-            ErpOrder entity = getEntity(param);
-            param.setDisplay(0);
-            this.update(param);
-            return entity;
-        }
-    }
+    public void delete(ErpOrderParam param) {
 
-    @BussinessLog
-    @Override
-    public ErpOrder update(ErpOrderParam param) {
+        ErpOrder byId = this.getById(param.getOrderId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "删除目标不存在");
+        }
+        param.setDisplay(0);
         ErpOrder oldEntity = getOldEntity(param);
-        if (ToolUtil.isEmpty(oldEntity)) {
-            throw new ServiceException(500, "数据不存在");
-        }else {
-            ErpOrder newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(oldEntity);
-            return oldEntity;
-        }
+        ErpOrder newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+
+    @BussinessLog
+    @Override
+    public void update(ErpOrderParam param) {
+        ErpOrder oldEntity = getOldEntity(param);
+        ErpOrder newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(oldEntity);
 
     }
+
+
 
     @Override
     public ErpOrderResult findBySpec(ErpOrderParam param) {
@@ -125,8 +118,8 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         List<Long> itemIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
         for (ErpOrderResult datum : data) {
-            outstockIds.add(datum.getOutstockId());
-            contactsIds.add(datum.getContactsId());
+//            outstockIds.add(datum.getOutstockId());
+//            contactsIds.add(datum.getContactsId());
             itemIds.add(datum.getItemId());
             customerIds.add(datum.getCustomerId());
         }
@@ -157,26 +150,26 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         }
         List<Customer> cuList = customerService.list(customerQueryWrapper);
         for (ErpOrderResult datum : data) {
-            if (!outstockList.isEmpty()) {
-                for (Outstock outstock : outstockList) {
-                    if (datum.getOutstockId().equals(outstock.getOutstockId())) {
-                        OutstockResult outstockResult = new OutstockResult();
-                        ToolUtil.copyProperties(outstock, outstockResult);
-                        datum.setOutstockResult(outstockResult);
-                        break;
-                    }
-                }
-            }
-            if (!conList.isEmpty()) {
-                for (Contacts contacts : conList) {
-                    if (contacts.getContactsId().equals(datum.getContactsId())) {
-                        ContactsResult contactsResult = new ContactsResult();
-                        ToolUtil.copyProperties(contacts, contactsResult);
-                        datum.setContactsResult(contactsResult);
-                        break;
-                    }
-                }
-            }
+//            if (!outstockList.isEmpty()) {
+//                for (Outstock outstock : outstockList) {
+//                    if (datum.getOutstockId().equals(outstock.getOutstockId())) {
+//                        OutstockResult outstockResult = new OutstockResult();
+//                        ToolUtil.copyProperties(outstock, outstockResult);
+//                        datum.setOutstockResult(outstockResult);
+//                        break;
+//                    }
+//                }
+//            }
+//            if (!conList.isEmpty()) {
+//                for (Contacts contacts : conList) {
+//                    if (contacts.getContactsId().equals(datum.getContactsId())) {
+//                        ContactsResult contactsResult = new ContactsResult();
+//                        ToolUtil.copyProperties(contacts, contactsResult);
+//                        datum.setContactsResult(contactsResult);
+//                        break;
+//                    }
+//                }
+//            }
             if (!itemsList.isEmpty()) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
