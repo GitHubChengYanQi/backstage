@@ -107,6 +107,15 @@ pay:
     appId: 111
     mchId: 222
     mchKey: 3333
-    
+
 # 推送支付信息,生产环境如开启支付功能 应设置为 true
 pushPayInfo: false
+
+aliyun:
+  accessId: LTAIypr5IqQ1tvpM
+  accessKey: TKG3sSvijsG4sq0q1b7Y9aQVYtMk7b
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket: gpkx
+    callbackUrl: https://dasheng-soft.picp.vip/v1
+    path: upload/
