@@ -80,7 +80,7 @@ public class NavigationServiceImpl extends ServiceImpl<NavigationMapper, Navigat
         List<NavigationDifference> list = Ids.size() == 0 ? new ArrayList<>() : navigationDifferenceService.list(differenceQueryWrapper);
         for (NavigationResult record : page.getRecords()) {
             for (NavigationDifference navigationDifference : list) {
-                if (record.getDifference().equals(navigationDifference.getClassificationId())) {
+                if (record.getDifference()!=null&&record.getDifference().equals(navigationDifference.getClassificationId())) {
                     NavigationDifferenceResult differenceResult = new NavigationDifferenceResult();
                     ToolUtil.copyProperties(navigationDifference, differenceResult);
                     record.setDifferenceResult(differenceResult);
