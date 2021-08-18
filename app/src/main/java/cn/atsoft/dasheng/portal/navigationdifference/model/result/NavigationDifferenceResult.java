@@ -31,7 +31,7 @@ public class NavigationDifferenceResult implements Serializable {
      * 分类id
      */
     @ApiModelProperty("分类id")
-    private Long difference;
+    private String difference;
 
     /**
      * 创建时间

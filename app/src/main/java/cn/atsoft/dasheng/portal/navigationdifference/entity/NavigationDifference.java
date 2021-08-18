@@ -31,7 +31,7 @@ public class NavigationDifference implements Serializable {
      * 分类id
      */
     @TableField("difference")
-    private Long difference;
+    private String difference;
 
     /**
      * 创建时间
@@ -72,11 +72,11 @@ public class NavigationDifference implements Serializable {
         this.classificationId = classificationId;
     }
 
-    public Long getDifference() {
+    public String getDifference() {
         return difference;
     }
 
-    public void setDifference(Long difference) {
+    public void setDifference(String difference) {
         this.difference = difference;
     }
 
