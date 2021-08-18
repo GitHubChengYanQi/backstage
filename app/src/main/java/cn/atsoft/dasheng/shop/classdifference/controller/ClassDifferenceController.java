@@ -1,13 +1,14 @@
 package cn.atsoft.dasheng.shop.classdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.model.params.ClassDifferenceParam;
 import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;
 import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -81,7 +82,7 @@ public class ClassDifferenceController extends BaseController {
         ClassDifferenceResult result = new ClassDifferenceResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 

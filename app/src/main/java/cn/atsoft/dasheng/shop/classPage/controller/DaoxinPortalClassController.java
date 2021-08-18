@@ -1,13 +1,14 @@
 package cn.atsoft.dasheng.protal.classPage.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.protal.classPage.entity.DaoxinPortalClass;
 import cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam;
 import cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult;
 import cn.atsoft.dasheng.protal.classPage.service.DaoxinPortalClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
+
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +86,7 @@ public class DaoxinPortalClassController extends BaseController {
         DaoxinPortalClassResult result = new DaoxinPortalClassResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
