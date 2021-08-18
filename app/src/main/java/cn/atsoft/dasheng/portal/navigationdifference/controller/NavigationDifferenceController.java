@@ -2,6 +2,9 @@ package cn.atsoft.dasheng.portal.navigationdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.wrapper.BannerSelectWrapper;
+import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
+import cn.atsoft.dasheng.portal.navigation.wrapper.NavigationSelectWrapper;
 import cn.atsoft.dasheng.portal.navigationdifference.entity.NavigationDifference;
 import cn.atsoft.dasheng.portal.navigationdifference.model.params.NavigationDifferenceParam;
 import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDifferenceResult;
@@ -9,6 +12,7 @@ import cn.atsoft.dasheng.portal.navigationdifference.service.NavigationDifferenc
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -101,6 +105,18 @@ public class NavigationDifferenceController extends BaseController {
             navigationDifferenceParam = new NavigationDifferenceParam();
         }
         return this.navigationDifferenceService.findPageBySpec(navigationDifferenceParam);
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<NavigationDifference>  navigationDifferenceQueryWrapper= new QueryWrapper<>();
+        navigationDifferenceQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.navigationDifferenceService.listMaps(navigationDifferenceQueryWrapper);
+        NavigationSelectWrapper navigationSelectWrapper = new NavigationSelectWrapper(list);
+        List<Map<String, Object>> result = navigationSelectWrapper.wrap();
+        return ResponseData.success(result);
+
     }
 
 

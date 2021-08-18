@@ -1,13 +1,17 @@
 package cn.atsoft.dasheng.portal.bannerdifference.controller;
 
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.wrapper.BannerSelectWrapper;
 import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
 import cn.atsoft.dasheng.portal.bannerdifference.model.params.BannerDifferenceParam;
 import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
 import cn.atsoft.dasheng.portal.bannerdifference.service.BannerDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -100,6 +104,18 @@ public class BannerDifferenceController extends BaseController {
             bannerDifferenceParam = new BannerDifferenceParam();
         }
         return this.bannerDifferenceService.findPageBySpec(bannerDifferenceParam);
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<BannerDifference> bannerDifferenceQueryWrapper = new QueryWrapper<>();
+        bannerDifferenceQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.bannerDifferenceService.listMaps(bannerDifferenceQueryWrapper);
+        BannerSelectWrapper bannerSelectWrapper = new BannerSelectWrapper(list);
+        List<Map<String, Object>> result = bannerSelectWrapper.wrap();
+        return ResponseData.success(result);
+
     }
 
 
