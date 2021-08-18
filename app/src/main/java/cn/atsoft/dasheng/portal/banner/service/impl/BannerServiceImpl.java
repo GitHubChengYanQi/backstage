@@ -79,7 +79,7 @@ private BannerDifferenceService bannerDifferenceService;
         List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() :  bannerDifferenceService.list(differenceQueryWrapper);
         for (BannerResult record : page.getRecords()) {
             for (BannerDifference bannerDifference : list) {
-                if (record.getDifference().equals(bannerDifference.getCreateUser())){
+                if (record.getDifference()!=null&&record.getDifference().equals(bannerDifference.getCreateUser())){
                     BannerDifferenceResult differenceResult = new BannerDifferenceResult();
                     ToolUtil.copyProperties(bannerDifference,differenceResult);
                     record.setBannerDifferenceResult(differenceResult);
