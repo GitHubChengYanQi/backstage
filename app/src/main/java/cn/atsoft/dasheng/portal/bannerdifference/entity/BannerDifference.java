@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.portal.bannerdifference.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 轮播图分类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-18
  */
 @TableName("daoxin_portal_banner_difference")
@@ -24,37 +27,37 @@ public class BannerDifference implements Serializable {
     /**
      * 轮播图分类id
      */
-      @TableId(value = "classification_id", type = IdType.ID_WORKER)
+    @TableId(value = "classification_id", type = IdType.ID_WORKER)
     private Long classificationId;
 
     /**
      * 轮播图区别
      */
     @TableField("difference")
-    private Long difference;
+    private String difference;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -72,11 +75,11 @@ public class BannerDifference implements Serializable {
         this.classificationId = classificationId;
     }
 
-    public Long getDifference() {
+    public String getDifference() {
         return difference;
     }
 
-    public void setDifference(Long difference) {
+    public void setDifference(String difference) {
         this.difference = difference;
     }
 
@@ -123,13 +126,13 @@ public class BannerDifference implements Serializable {
     @Override
     public String toString() {
         return "BannerDifference{" +
-        "classificationId=" + classificationId +
-        ", difference=" + difference +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "classificationId=" + classificationId +
+                ", difference=" + difference +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

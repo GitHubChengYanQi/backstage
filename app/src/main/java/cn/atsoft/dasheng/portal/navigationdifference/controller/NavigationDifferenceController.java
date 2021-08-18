@@ -1,13 +1,13 @@
 package cn.atsoft.dasheng.portal.navigationdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigationdifference.entity.NavigationDifference;
 import cn.atsoft.dasheng.portal.navigationdifference.model.params.NavigationDifferenceParam;
 import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDifferenceResult;
 import cn.atsoft.dasheng.portal.navigationdifference.service.NavigationDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,7 +85,6 @@ public class NavigationDifferenceController extends BaseController {
         NavigationDifferenceResult result = new NavigationDifferenceResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

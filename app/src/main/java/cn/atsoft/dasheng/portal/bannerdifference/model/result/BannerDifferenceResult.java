@@ -31,7 +31,7 @@ public class BannerDifferenceResult implements Serializable {
      * 轮播图区别
      */
     @ApiModelProperty("轮播图区别")
-    private Long difference;
+    private String difference;
 
     /**
      * 创建时间

@@ -1,14 +1,13 @@
 package cn.atsoft.dasheng.portal.bannerdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
 import cn.atsoft.dasheng.portal.bannerdifference.model.params.BannerDifferenceParam;
 import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
 import cn.atsoft.dasheng.portal.bannerdifference.service.BannerDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -85,7 +84,6 @@ public class BannerDifferenceController extends BaseController {
         BannerDifferenceResult result = new BannerDifferenceResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
