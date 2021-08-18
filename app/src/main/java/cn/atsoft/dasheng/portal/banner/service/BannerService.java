@@ -4,7 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
-import cn.atsoft.dasheng.portal.banner.model.result.Bannerquest;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
