@@ -49,6 +49,9 @@
         <if test="paramCondition.difference != null">
             and difference like CONCAT('%',#{paramCondition.difference},'%')
         </if>
+        <if test="paramCondition.classificationId != null">
+            and classification_id = #{paramCondition.classificationId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
