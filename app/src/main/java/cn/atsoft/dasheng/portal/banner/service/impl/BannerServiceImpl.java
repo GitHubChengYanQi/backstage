@@ -3,18 +3,25 @@ package cn.atsoft.dasheng.portal.banner.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.result.Bannerquest;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.portal.banner.mapper.BannerMapper;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
+import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
+import cn.atsoft.dasheng.portal.bannerdifference.service.BannerDifferenceService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +34,8 @@ import java.util.List;
  */
 @Service
 public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> implements BannerService {
-
+@Autowired
+private BannerDifferenceService bannerDifferenceService;
     @Override
     public void add(BannerParam param){
         Banner entity = getEntity(param);
@@ -36,7 +44,9 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
     public void delete(BannerParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
+//        this.removeById(getKey(param));
     }
 
     @Override
@@ -61,9 +71,31 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     public PageInfo<BannerResult> findPageBySpec(BannerParam param){
         Page<BannerResult> pageContext = getPageContext();
         IPage<BannerResult> page = this.baseMapper.customPageList(pageContext, param);
-
+        List<Long> diIds = new ArrayList<>();
+        for (BannerResult record : page.getRecords()) {
+            diIds.add(record.getDifference());
+        }
+        QueryWrapper<BannerDifference> differenceQueryWrapper = new QueryWrapper<>();
+        differenceQueryWrapper.in("classification_id",diIds);
+        List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() :  bannerDifferenceService.list(differenceQueryWrapper);
+        for (BannerResult record : page.getRecords()) {
+            for (BannerDifference bannerDifference : list) {
+                if (record.getDifference()!=null&&record.getDifference().equals(bannerDifference.getCreateUser())){
+                    BannerDifferenceResult differenceResult = new BannerDifferenceResult();
+                    ToolUtil.copyProperties(bannerDifference,differenceResult);
+                    record.setBannerDifferenceResult(differenceResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public void BatchDelete(List<Long> Ids) {
+        
+    }
+
 
     private Serializable getKey(BannerParam param){
         return param.getBannerId();

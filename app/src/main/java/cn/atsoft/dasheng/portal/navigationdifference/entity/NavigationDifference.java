@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.banner.entity;
+package cn.atsoft.dasheng.portal.navigationdifference.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -10,41 +10,28 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 轮播图
+ * 导航分类
  * </p>
  *
  * @author 
- * @since 2021-08-17
+ * @since 2021-08-18
  */
-@TableName("daoxin_portal_banner")
-public class Banner implements Serializable {
+@TableName("daoxin_portal_navigation_difference")
+public class NavigationDifference implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 导航分类
+     */
+      @TableId(value = "classification_id", type = IdType.ID_WORKER)
+    private Long classificationId;
+
+    /**
+     * 分类id
+     */
     @TableField("difference")
-    private Long difference;
-    @TableField("sort")
-    private Long sort;
-    @TableField("link")
-    private String link;
-
-    /**
-     * 轮播图id
-     */
-      @TableId(value = "banner_id", type = IdType.ID_WORKER)
-    private Long bannerId;
-
-    /**
-     * 轮播图标题
-     */
-    @TableField("title")
-    private String title;
-
-    /**
-     * 图片路径
-     */
-    @TableField("img_url")
-    private String imgUrl;
+    private String difference;
 
     /**
      * 创建时间
@@ -77,28 +64,20 @@ public class Banner implements Serializable {
     private Integer display;
 
 
-    public Long getBannerId() {
-        return bannerId;
+    public Long getClassificationId() {
+        return classificationId;
     }
 
-    public void setBannerId(Long bannerId) {
-        this.bannerId = bannerId;
+    public void setClassificationId(Long classificationId) {
+        this.classificationId = classificationId;
     }
 
-    public String getTitle() {
-        return title;
+    public String getDifference() {
+        return difference;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setDifference(String difference) {
+        this.difference = difference;
     }
 
     public Date getCreateTime() {
@@ -141,36 +120,11 @@ public class Banner implements Serializable {
         this.display = display;
     }
 
-    public Long getSort() {
-        return sort;
-    }
-
-    public void setSort(Long sort) {
-        this.sort = sort;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public Long getDifference() {
-        return difference;
-    }
-
-    public void setDifference(Long difference) {
-        this.difference = difference;
-    }
-
     @Override
     public String toString() {
-        return "Banner{" +
-        "bannerId=" + bannerId +
-        ", title=" + title +
-        ", imgUrl=" + imgUrl +
+        return "NavigationDifference{" +
+        "classificationId=" + classificationId +
+        ", difference=" + difference +
         ", createTime=" + createTime +
         ", createUser=" + createUser +
         ", updateTime=" + updateTime +

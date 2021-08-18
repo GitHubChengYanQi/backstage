@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.portal.navigation.model.params;
 
 import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -24,6 +25,10 @@ public class NavigationParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private Long difference;
+    private Long sort;
+
+    private String link;
     /**
      * 导航id
      */

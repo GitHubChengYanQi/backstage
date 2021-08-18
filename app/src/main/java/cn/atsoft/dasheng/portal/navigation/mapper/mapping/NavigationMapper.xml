@@ -4,56 +4,68 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.navigation.entity.Navigation">
-        <id column="navigation_Id" property="navigationId" />
-        <result column="title" property="title" />
-        <result column="icon" property="icon" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
+        <id column="navigation_Id" property="navigationId"/>
+        <result column="title" property="title"/>
+        <result column="icon" property="icon"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="sort" property="sort"/>
+        <result column="link" property="link"/>
+        <result column="difference" property="difference"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List"> link
+    AS "link", sort AS "sort",difference AS "difference",
         navigation_Id AS "navigationId", title AS "title", icon AS "icon", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult" parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult"
+            parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_navigation where 1 = 1
-            <if test="paramCondition.title != null and paramCondition.title != ''">
-                and title like CONCAT('%',#{paramCondition.title},'%')
-            </if>
+        <if test="paramCondition.title != null and paramCondition.title != ''">
+            and title like CONCAT('%',#{paramCondition.title},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_navigation where 1 = 1
-                <if test="paramCondition.title != null and paramCondition.title != ''">
-                        and title like CONCAT('%',#{paramCondition.title},'%')
-                </if>
+        <if test="paramCondition.title != null and paramCondition.title != ''">
+            and title like CONCAT('%',#{paramCondition.title},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult" parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult"
+            parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_navigation where 1 = 1
-                <if test="paramCondition.title != null and paramCondition.title != ''">
-                        and title like CONCAT('%',#{paramCondition.title},'%')
-                </if>
+        from daoxin_portal_navigation where display = 1
+        <if test="paramCondition.title != null and paramCondition.title != ''">
+            and title like CONCAT('%',#{paramCondition.title},'%')
+        </if>
+        <if test="paramCondition.difference != null and paramCondition.difference != ' '">
+            and difference = #{paramCondition.difference}
+        </if>
+        order by sort
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_navigation where 1 = 1
-                <if test="paramCondition.title != null and paramCondition.title != ''">
-                        and title like CONCAT('%',#{paramCondition.title},'%')
-                </if>
+        <if test="paramCondition.title != null and paramCondition.title != ''">
+            and title like CONCAT('%',#{paramCondition.title},'%')
+        </if>
     </select>
 
 </mapper>

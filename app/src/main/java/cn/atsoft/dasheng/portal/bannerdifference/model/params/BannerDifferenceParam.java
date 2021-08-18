@@ -1,50 +1,41 @@
-package cn.atsoft.dasheng.portal.banner.model.result;
+package cn.atsoft.dasheng.portal.bannerdifference.model.params;
 
-import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
- * 轮播图
+ * 轮播图分类
  * </p>
  *
  * @author 
- * @since 2021-08-17
+ * @since 2021-08-18
  */
 @Data
 @ApiModel
-public class BannerResult implements Serializable {
+public class BannerDifferenceParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-        private BannerDifferenceResult bannerDifferenceResult;
 
-    private Long sort;
-
-    private String link;
-
-    private Long difference;
-    /**
-     * 轮播图id
-     */
-    @ApiModelProperty("轮播图id")
-    private Long bannerId;
 
     /**
-     * 轮播图标题
+     * 轮播图分类id
      */
-    @ApiModelProperty("轮播图标题")
-    private String title;
+    @ApiModelProperty("轮播图分类id")
+    private Long classificationId;
 
     /**
-     * 图片路径
+     * 轮播图区别
      */
-    @ApiModelProperty("图片路径")
-    private String imgUrl;
+    @ApiModelProperty("轮播图区别")
+    private String difference;
 
     /**
      * 创建时间
@@ -75,6 +66,13 @@ public class BannerResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }
