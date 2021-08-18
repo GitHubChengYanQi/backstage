@@ -76,7 +76,7 @@ private NavigationDifferenceService navigationDifferenceService;
         }
         QueryWrapper<NavigationDifference> differenceQueryWrapper = new QueryWrapper<>();
         differenceQueryWrapper.in("classification_id",Ids);
-        List<NavigationDifference> list = navigationDifferenceService.list(differenceQueryWrapper);
+        List<NavigationDifference> list = Ids.size() == 0 ? new ArrayList<>() : navigationDifferenceService.list(differenceQueryWrapper);
 
         for (NavigationResult record : page.getRecords()) {
             for (NavigationDifference navigationDifference : list) {

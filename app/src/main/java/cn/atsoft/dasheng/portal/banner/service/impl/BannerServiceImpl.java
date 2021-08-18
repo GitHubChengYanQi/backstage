@@ -76,7 +76,7 @@ private BannerDifferenceService bannerDifferenceService;
         }
         QueryWrapper<BannerDifference> differenceQueryWrapper = new QueryWrapper<>();
         differenceQueryWrapper.in("classification_id",diIds);
-        List<BannerDifference> list = bannerDifferenceService.list(differenceQueryWrapper);
+        List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() :  bannerDifferenceService.list(differenceQueryWrapper);
         for (BannerResult record : page.getRecords()) {
             for (BannerDifference bannerDifference : list) {
                 if (record.getDifference().equals(bannerDifference.getCreateUser())){

@@ -52,6 +52,9 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
+        <if test="paramCondition.difference != null and paramCondition.difference != ' '">
+            and difference = #{paramCondition.difference}
+        </if>
         order by sort
     </select>
 
