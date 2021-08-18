@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.class.entity;
+package cn.atsoft.dasheng.protal.classPage.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2021-08-18
  */
 @TableName("daoxin_portal_class")
-public class Class implements Serializable {
+public class DaoxinPortalClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -150,7 +150,7 @@ public class Class implements Serializable {
 
     @Override
     public String toString() {
-        return "Class{" +
+        return "DaoxinPortalClass{" +
         "classId=" + classId +
         ", className=" + className +
         ", sort=" + sort +

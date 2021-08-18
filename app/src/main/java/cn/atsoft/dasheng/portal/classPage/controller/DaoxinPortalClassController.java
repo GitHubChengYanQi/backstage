@@ -1,10 +1,10 @@
-package cn.atsoft.dasheng.portal.class.controller;
+package cn.atsoft.dasheng.protal.classPage.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.class.entity.Class;
-import cn.atsoft.dasheng.portal.class.model.params.ClassParam;
-import cn.atsoft.dasheng.portal.class.model.result.ClassResult;
-import cn.atsoft.dasheng.portal.class.service.ClassService;
+import cn.atsoft.dasheng.protal.classPage.entity.DaoxinPortalClass;
+import cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam;
+import cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult;
+import cn.atsoft.dasheng.protal.classPage.service.DaoxinPortalClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -22,15 +22,15 @@ import java.util.Map;
  * 分类导航控制器
  *
  * @author siqiang
- * @Date 2021-08-18 15:53:56
+ * @Date 2021-08-18 16:13:41
  */
 @RestController
-@RequestMapping("/class")
+@RequestMapping("/daoxinPortalClass")
 @Api(tags = "分类导航")
-public class ClassController extends BaseController {
+public class DaoxinPortalClassController extends BaseController {
 
     @Autowired
-    private ClassService classService;
+    private DaoxinPortalClassService daoxinPortalClassService;
 
     /**
      * 新增接口
@@ -40,8 +40,8 @@ public class ClassController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody ClassParam classParam) {
-        this.classService.add(classParam);
+    public ResponseData addItem(@RequestBody DaoxinPortalClassParam daoxinPortalClassParam) {
+        this.daoxinPortalClassService.add(daoxinPortalClassParam);
         return ResponseData.success();
     }
 
@@ -53,9 +53,9 @@ public class ClassController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody ClassParam classParam) {
+    public ResponseData update(@RequestBody DaoxinPortalClassParam daoxinPortalClassParam) {
 
-        this.classService.update(classParam);
+        this.daoxinPortalClassService.update(daoxinPortalClassParam);
         return ResponseData.success();
     }
 
@@ -67,8 +67,8 @@ public class ClassController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ClassParam classParam)  {
-        this.classService.delete(classParam);
+    public ResponseData delete(@RequestBody DaoxinPortalClassParam daoxinPortalClassParam)  {
+        this.daoxinPortalClassService.delete(daoxinPortalClassParam);
         return ResponseData.success();
     }
 
@@ -80,9 +80,9 @@ public class ClassController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<ClassResult> detail(@RequestBody ClassParam classParam) {
-        Class detail = this.classService.getById(classParam.getClassId());
-        ClassResult result = new ClassResult();
+    public ResponseData<DaoxinPortalClassResult> detail(@RequestBody DaoxinPortalClassParam daoxinPortalClassParam) {
+        DaoxinPortalClass detail = this.daoxinPortalClassService.getById(daoxinPortalClassParam.getClassId());
+        DaoxinPortalClassResult result = new DaoxinPortalClassResult();
         ToolUtil.copyProperties(detail, result);
 
         result.setValue(parentValue);
@@ -97,11 +97,11 @@ public class ClassController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ClassResult> list(@RequestBody(required = false) ClassParam classParam) {
-        if(ToolUtil.isEmpty(classParam)){
-            classParam = new ClassParam();
+    public PageInfo<DaoxinPortalClassResult> list(@RequestBody(required = false) DaoxinPortalClassParam daoxinPortalClassParam) {
+        if(ToolUtil.isEmpty(daoxinPortalClassParam)){
+            daoxinPortalClassParam = new DaoxinPortalClassParam();
         }
-        return this.classService.findPageBySpec(classParam);
+        return this.daoxinPortalClassService.findPageBySpec(daoxinPortalClassParam);
     }
 
 

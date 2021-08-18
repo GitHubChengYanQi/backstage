@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.portal.class.service;
+package cn.atsoft.dasheng.protal.classPage.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.class.entity.Class;
-import cn.atsoft.dasheng.portal.class.model.params.ClassParam;
-import cn.atsoft.dasheng.portal.class.model.result.ClassResult;
+import cn.atsoft.dasheng.protal.classPage.entity.DaoxinPortalClass;
+import cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam;
+import cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author siqiang
  * @since 2021-08-18
  */
-public interface ClassService extends IService<Class> {
+public interface DaoxinPortalClassService extends IService<DaoxinPortalClass> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    void add(ClassParam param);
+    void add(DaoxinPortalClassParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    void delete(ClassParam param);
+    void delete(DaoxinPortalClassParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    void update(ClassParam param);
+    void update(DaoxinPortalClassParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    ClassResult findBySpec(ClassParam param);
+    DaoxinPortalClassResult findBySpec(DaoxinPortalClassParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    List<ClassResult> findListBySpec(ClassParam param);
+    List<DaoxinPortalClassResult> findListBySpec(DaoxinPortalClassParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface ClassService extends IService<Class> {
      * @author siqiang
      * @Date 2021-08-18
      */
-     PageInfo<ClassResult> findPageBySpec(ClassParam param);
+     PageInfo<DaoxinPortalClassResult> findPageBySpec(DaoxinPortalClassParam param);
 
 }

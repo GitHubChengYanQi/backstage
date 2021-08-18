@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.portal.class.mapper.ClassMapper">
+<mapper namespace="cn.atsoft.dasheng.protal.classPage.mapper.DaoxinPortalClassMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.class.entity.Class">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.protal.classPage.entity.DaoxinPortalClass">
         <id column="class_id" property="classId" />
         <result column="class_name" property="className" />
         <result column="sort" property="sort" />
@@ -21,7 +21,7 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.class.model.result.ClassResult" parameterType="cn.atsoft.dasheng.portal.class.model.params.ClassParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
@@ -36,7 +36,7 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.class.model.params.ClassParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
@@ -51,7 +51,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.class.model.result.ClassResult" parameterType="cn.atsoft.dasheng.portal.class.model.params.ClassParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
@@ -66,7 +66,7 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.class.model.params.ClassParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1

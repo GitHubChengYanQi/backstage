@@ -1,13 +1,11 @@
-package cn.atsoft.dasheng.portal.class.model.params;
+package cn.atsoft.dasheng.protal.classPage.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-
 /**
  * <p>
  * 分类导航
@@ -18,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ClassParam implements Serializable, BaseValidatingParam {
+public class DaoxinPortalClassResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,13 +74,6 @@ public class ClassParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

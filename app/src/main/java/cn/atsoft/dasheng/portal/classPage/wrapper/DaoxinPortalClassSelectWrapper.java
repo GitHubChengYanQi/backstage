@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.class.wrapper;
+package cn.atsoft.dasheng.protal.classPage.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;
@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ClassSelectWrapper extends BaseControllerWrapper {
+public class DaoxinPortalClassSelectWrapper extends BaseControllerWrapper {
 
-    public ClassSelectWrapper(List<Map<String, Object>> multi) {
+    public DaoxinPortalClassSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
