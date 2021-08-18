@@ -22,7 +22,7 @@ public class ApiBannerController {
     @RequestMapping(value = "/getBanner", method = RequestMethod.GET)
     public ResponseData getBanner(@RequestParam("classId") Long classId) {
         QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        bannerQueryWrapper.in("difference", classId);
+        bannerQueryWrapper.in("difference", classId).orderByAsc("sort");
         List<Banner> list = bannerService.list(bannerQueryWrapper);
         return ResponseData.success(list);
     }

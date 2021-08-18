@@ -75,7 +75,7 @@ private BannerDifferenceService bannerDifferenceService;
             diIds.add(record.getDifference());
         }
         QueryWrapper<BannerDifference> differenceQueryWrapper = new QueryWrapper<>();
-        differenceQueryWrapper.in("classification_id",diIds);
+        differenceQueryWrapper.in("classification_id",diIds).orderByAsc("sort");
         List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() :  bannerDifferenceService.list(differenceQueryWrapper);
         for (BannerResult record : page.getRecords()) {
             for (BannerDifference bannerDifference : list) {

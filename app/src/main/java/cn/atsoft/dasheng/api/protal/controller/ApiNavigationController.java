@@ -21,7 +21,7 @@ public class ApiNavigationController {
     @RequestMapping(value = "/getNavigation",method = RequestMethod.GET)
     public ResponseData getNavigation (@RequestParam("classId")Long classId){
         QueryWrapper<Navigation> navigationQueryWrapper = new QueryWrapper<>();
-        navigationQueryWrapper.in("difference",classId);
+        navigationQueryWrapper.in("difference",classId).orderByAsc("sort");
         List<Navigation> list =navigationService.list(navigationQueryWrapper);
         return  ResponseData.success(list);
     }
