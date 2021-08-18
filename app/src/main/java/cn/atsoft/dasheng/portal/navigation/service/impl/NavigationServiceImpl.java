@@ -9,12 +9,18 @@ import cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam;
 import cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult;
 import cn.atsoft.dasheng.portal.navigation.service.NavigationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.navigationdifference.entity.NavigationDifference;
+import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDifferenceResult;
+import cn.atsoft.dasheng.portal.navigationdifference.service.NavigationDifferenceService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +33,8 @@ import java.util.List;
  */
 @Service
 public class NavigationServiceImpl extends ServiceImpl<NavigationMapper, Navigation> implements NavigationService {
-
+@Autowired
+private NavigationDifferenceService navigationDifferenceService;
     @Override
     public void add(NavigationParam param) {
         Navigation entity = getEntity(param);
@@ -63,6 +70,24 @@ public class NavigationServiceImpl extends ServiceImpl<NavigationMapper, Navigat
     public PageInfo<NavigationResult> findPageBySpec(NavigationParam param) {
         Page<NavigationResult> pageContext = getPageContext();
         IPage<NavigationResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long>Ids = new ArrayList<>();
+        for (NavigationResult record : page.getRecords()) {
+            Ids.add(record.getDifference());
+        }
+        QueryWrapper<NavigationDifference> differenceQueryWrapper = new QueryWrapper<>();
+        differenceQueryWrapper.in("classification_id",Ids);
+        List<NavigationDifference> list = navigationDifferenceService.list(differenceQueryWrapper);
+
+        for (NavigationResult record : page.getRecords()) {
+            for (NavigationDifference navigationDifference : list) {
+                if (record.getDifference().equals(navigationDifference.getClassificationId())){
+                    NavigationDifferenceResult differenceResult = new NavigationDifferenceResult();
+                    ToolUtil.copyProperties(navigationDifference,differenceResult);
+                    record.setDifferenceResult(differenceResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 

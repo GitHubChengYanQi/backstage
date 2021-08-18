@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.navigation.model.result;
 
+import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDifferenceResult;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.List;
 public class NavigationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private NavigationDifferenceResult differenceResult;
     private Long difference;
     private Long sort;
 
