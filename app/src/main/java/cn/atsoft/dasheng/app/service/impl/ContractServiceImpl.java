@@ -145,6 +145,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     //                orderParam.setItemId();
                     //                orderParam.setNumber();
                     //                orderParam.setPrice();
+                    orderParam.setOrderTime(contract.getCreateTime());
+                    orderParam.setState("已审核");
                     this.orderService.add(orderParam);
                 }
             }
