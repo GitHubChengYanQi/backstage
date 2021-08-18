@@ -25,7 +25,7 @@ import cn.atsoft.dasheng.base.pojo.page.LayuiPageFactory;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
 import cn.atsoft.dasheng.sys.modular.rest.service.RestOperationLogService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;

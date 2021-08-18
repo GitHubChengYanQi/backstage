@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.base.db.entity.DatabaseInfo;
 import cn.atsoft.dasheng.base.db.exception.DataSourceInitException;
 import cn.atsoft.dasheng.base.db.model.TableFieldInfo;
 import cn.atsoft.dasheng.core.config.properties.DruidProperties;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;

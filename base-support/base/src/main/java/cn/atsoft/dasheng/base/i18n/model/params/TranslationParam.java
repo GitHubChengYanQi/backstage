@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.base.i18n.model.params;
 
-import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 import lombok.Data;
 
 import java.io.Serializable;

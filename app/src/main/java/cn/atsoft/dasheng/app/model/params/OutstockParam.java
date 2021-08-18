@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;

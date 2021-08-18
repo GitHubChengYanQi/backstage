@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
-import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 
 import java.math.BigDecimal;
 import java.util.Date;

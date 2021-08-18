@@ -1,13 +1,10 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.aspectj.weaver.IUnwovenClassFile;
 
 import java.util.List;
 /**

@@ -18,7 +18,7 @@ package cn.atsoft.dasheng.sys.core.constant.dictmap.factory;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
 
 import java.lang.reflect.Method;
 

@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

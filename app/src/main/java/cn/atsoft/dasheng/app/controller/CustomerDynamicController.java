@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
 import cn.atsoft.dasheng.app.service.CustomerDynamicService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;

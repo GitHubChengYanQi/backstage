@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.SysDept;
 import cn.atsoft.dasheng.app.model.params.SysDeptParam;
 import cn.atsoft.dasheng.app.model.result.SysDeptResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.node.TreeviewNode;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageFactory;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

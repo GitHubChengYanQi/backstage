@@ -8,8 +8,8 @@ import cn.atsoft.dasheng.base.pojo.node.ZTreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.sys.modular.rest.service.RestDictService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

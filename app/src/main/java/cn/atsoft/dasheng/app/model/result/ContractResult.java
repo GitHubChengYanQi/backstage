@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;

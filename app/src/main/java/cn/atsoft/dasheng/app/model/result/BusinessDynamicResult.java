@@ -6,7 +6,6 @@ import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 /**

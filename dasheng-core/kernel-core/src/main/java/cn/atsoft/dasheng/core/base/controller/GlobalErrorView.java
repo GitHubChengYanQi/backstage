@@ -15,8 +15,8 @@
  */
 package cn.atsoft.dasheng.core.base.controller;
 
-import cn.atsoft.dasheng.portal.model.exception.enums.CoreExceptionEnum;
-import cn.atsoft.dasheng.portal.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.portal.banner.model.exception.enums.CoreExceptionEnum;
+import cn.atsoft.dasheng.portal.banner.model.response.ErrorResponseData;
 import com.alibaba.fastjson.JSON;
 import org.springframework.web.servlet.View;
 

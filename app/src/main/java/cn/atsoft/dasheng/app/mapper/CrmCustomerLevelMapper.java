@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

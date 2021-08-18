@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.service;
 
-import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;

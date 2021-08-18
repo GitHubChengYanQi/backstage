@@ -18,7 +18,7 @@ package cn.atsoft.dasheng.sys.modular.system.warpper;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.util.DecimalUtil;
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
-import cn.atsoft.dasheng.portal.model.page.PageResult;
+import cn.atsoft.dasheng.portal.banner.model.page.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;

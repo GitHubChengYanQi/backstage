@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
 import  cn.atsoft.dasheng.app.service.BusinessDynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;

@@ -19,8 +19,8 @@ import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.atsoft.dasheng.core.data.SqlExe;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.model.exception.enums.CoreExceptionEnum;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.enums.CoreExceptionEnum;
 import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static cn.atsoft.dasheng.portal.model.exception.enums.CoreExceptionEnum.INIT_TABLE_EMPTY_PARAMS;
+import static cn.atsoft.dasheng.portal.banner.model.exception.enums.CoreExceptionEnum.INIT_TABLE_EMPTY_PARAMS;
 
 /**
  * 数据库初始化，可初始化表，校验字段，校验表名是否存在等

@@ -15,9 +15,9 @@
  */
 package cn.atsoft.dasheng.validator.util;
 
-import cn.atsoft.dasheng.portal.model.exception.RequestEmptyException;
-import cn.atsoft.dasheng.portal.model.util.ValidateUtil;
-import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.banner.model.exception.RequestEmptyException;
+import cn.atsoft.dasheng.portal.banner.model.util.ValidateUtil;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 
 /**
  * 校验参数中的参数是否符合规则

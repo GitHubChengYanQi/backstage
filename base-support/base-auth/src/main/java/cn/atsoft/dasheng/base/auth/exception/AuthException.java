@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.base.auth.exception;
 
-import cn.atsoft.dasheng.portal.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.portal.banner.model.exception.AbstractBaseExceptionEnum;
 import lombok.Data;
 
 /**

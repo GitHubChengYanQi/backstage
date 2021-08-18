@@ -33,7 +33,7 @@ import cn.atsoft.dasheng.sys.modular.system.warpper.DeptTreeWrapper;
 import cn.atsoft.dasheng.sys.modular.system.warpper.DeptWrapper;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

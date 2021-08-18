@@ -22,7 +22,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 
-import static cn.atsoft.dasheng.portal.model.constants.AopSortConstants.REQUEST_DATA_AOP_SORT;
+import static cn.atsoft.dasheng.portal.banner.model.constants.AopSortConstants.REQUEST_DATA_AOP_SORT;
 
 /**
  * 对控制器调用过程中,提供一种RequestData便捷调用的aop
