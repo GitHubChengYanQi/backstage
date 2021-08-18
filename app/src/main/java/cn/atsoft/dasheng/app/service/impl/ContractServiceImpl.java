@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
+import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -42,11 +43,12 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
-
     @Autowired
     private ErpOrderService orderService;
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private OrderDetailsService orderDetailsService;
 
     @Override
     public ContractResult detail(Long id) {
@@ -147,7 +149,17 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     //                orderParam.setPrice();
                     orderParam.setOrderTime(contract.getCreateTime());
                     orderParam.setState("已审核");
-                    this.orderService.add(orderParam);
+
+                    ErpOrder erpOrder= this.orderService.add(orderParam);
+
+
+                    OrderDetailsParam orderDetailsParam = new OrderDetailsParam();
+                    orderDetailsParam.setOrderId(erpOrder.getOrderId());
+                    // 合同处理未添加
+//                    orderDetailsParam.setItemId();
+//                    orderDetailsParam.setNumber();
+//                    orderDetailsParam.setPrice();
+                    this.orderDetailsService.add(orderDetailsParam);
                 }
             }
             ToolUtil.copyProperties(newEntity, oldEntity);

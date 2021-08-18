@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.Instock;
+import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.PhoneSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
@@ -8,10 +11,14 @@ import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -101,6 +108,16 @@ public class PhoneController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Phone> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.phoneService.listMaps(QueryWrapper);
+        PhoneSelectWrapper phoneWrapper = new PhoneSelectWrapper(list);
+        List<Map<String, Object>> result = phoneWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }
