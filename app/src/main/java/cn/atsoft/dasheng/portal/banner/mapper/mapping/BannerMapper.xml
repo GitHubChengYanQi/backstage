@@ -14,11 +14,12 @@
         <result column="sort" property="sort"/>
         <result column="link" property="link"/>
         <result column="display" property="display"/>
+        <result column="difference" property="difference"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sort
-    AS "sort" ,link AS "link",
+    AS "sort" ,link AS "link",difference AS "difference",
         banner_id AS "bannerId", title AS "title", img_url AS "imgUrl", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 

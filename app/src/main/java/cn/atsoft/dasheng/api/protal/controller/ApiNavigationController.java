@@ -17,6 +17,7 @@ import java.util.List;
 public class ApiNavigationController {
     @Autowired
     private NavigationService navigationService;
+
     @RequestMapping(value = "/getNavigation",method = RequestMethod.GET)
     public ResponseData getNavigation (@RequestParam("classId")Long classId){
         QueryWrapper<Navigation> navigationQueryWrapper = new QueryWrapper<>();

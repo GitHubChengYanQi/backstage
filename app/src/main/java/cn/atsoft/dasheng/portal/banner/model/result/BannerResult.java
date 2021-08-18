@@ -25,6 +25,8 @@ public class BannerResult implements Serializable {
     private Long sort;
 
     private String link;
+
+    private Long difference;
     /**
      * 轮播图id
      */

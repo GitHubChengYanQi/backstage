@@ -28,6 +28,8 @@ public class BannerParam implements Serializable, BaseValidatingParam {
 
     private String link;
 
+    private Long difference;
+
     /**
      * 轮播图id
      */

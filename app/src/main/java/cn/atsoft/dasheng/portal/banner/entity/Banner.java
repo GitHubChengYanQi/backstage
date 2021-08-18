@@ -21,7 +21,8 @@ public class Banner implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    @TableField("difference")
+    private Long difference;
     @TableField("sort")
     private Long sort;
     @TableField("link")
@@ -154,6 +155,14 @@ public class Banner implements Serializable {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public Long getDifference() {
+        return difference;
+    }
+
+    public void setDifference(Long difference) {
+        this.difference = difference;
     }
 
     @Override

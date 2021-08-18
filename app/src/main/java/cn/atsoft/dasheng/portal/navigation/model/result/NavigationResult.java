@@ -21,6 +21,7 @@ public class NavigationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long difference;
     private Long sort;
 
     private String link;
