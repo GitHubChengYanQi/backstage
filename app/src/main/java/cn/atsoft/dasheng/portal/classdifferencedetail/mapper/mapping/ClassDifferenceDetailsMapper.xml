@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.portal.classdifferencedetail.mapper.ClassDifferenceDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.classdifferencedetail.entity.ClassDifferenceDetails">
+        <id column="detail_id" property="detailId" />
+        <result column="class_difference_id" property="classDifferenceId" />
+        <result column="title" property="title" />
+        <result column="sort" property="sort" />
+        <result column="img_url" property="imgUrl" />
+        <result column="link" property="link" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="display" property="display" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_id AS "detailId", class_difference_id AS "classDifferenceId", title AS "title", sort AS "sort", img_url AS "imgUrl", link AS "link", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.portal.classdifferencedetail.model.result.ClassDifferenceDetailsResult" parameterType="cn.atsoft.dasheng.portal.classdifferencedetail.model.params.ClassDifferenceDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_portal_class_difference_details where 1 = 1
+            <if test="paramCondition.title != null and paramCondition.title != ''">
+                and title like CONCAT('%',#{paramCondition.title},'%')
+            </if>
+            <if test="paramCondition.imgUrl != null and paramCondition.imgUrl != ''">
+                and img_url like CONCAT('%',#{paramCondition.imgUrl},'%')
+            </if>
+            <if test="paramCondition.link != null and paramCondition.link != ''">
+                and link like CONCAT('%',#{paramCondition.link},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.classdifferencedetail.model.params.ClassDifferenceDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_portal_class_difference_details where 1 = 1
+                <if test="paramCondition.title != null and paramCondition.title != ''">
+                        and title like CONCAT('%',#{paramCondition.title},'%')
+                </if>
+                <if test="paramCondition.imgUrl != null and paramCondition.imgUrl != ''">
+                        and img_url like CONCAT('%',#{paramCondition.imgUrl},'%')
+                </if>
+                <if test="paramCondition.link != null and paramCondition.link != ''">
+                        and link like CONCAT('%',#{paramCondition.link},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.classdifferencedetail.model.result.ClassDifferenceDetailsResult" parameterType="cn.atsoft.dasheng.portal.classdifferencedetail.model.params.ClassDifferenceDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_portal_class_difference_details where 1 = 1
+                <if test="paramCondition.title != null and paramCondition.title != ''">
+                        and title like CONCAT('%',#{paramCondition.title},'%')
+                </if>
+                <if test="paramCondition.imgUrl != null and paramCondition.imgUrl != ''">
+                        and img_url like CONCAT('%',#{paramCondition.imgUrl},'%')
+                </if>
+                <if test="paramCondition.link != null and paramCondition.link != ''">
+                        and link like CONCAT('%',#{paramCondition.link},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.classdifferencedetail.model.params.ClassDifferenceDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_portal_class_difference_details where 1 = 1
+                <if test="paramCondition.title != null and paramCondition.title != ''">
+                        and title like CONCAT('%',#{paramCondition.title},'%')
+                </if>
+                <if test="paramCondition.imgUrl != null and paramCondition.imgUrl != ''">
+                        and img_url like CONCAT('%',#{paramCondition.imgUrl},'%')
+                </if>
+                <if test="paramCondition.link != null and paramCondition.link != ''">
+                        and link like CONCAT('%',#{paramCondition.link},'%')
+                </if>
+    </select>
+
+</mapper>
