@@ -23,8 +23,15 @@ import java.util.List;
 public class ErpOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private OutstockResult outstockResult;
-    private ContactsResult contactsResult;
+    private  CustomerResult partA;
+    private  CustomerResult partB;
+    private ContactsResult partyAContacts;
+    private ContactsResult partyBContacts;
+    private AdressResult partyAAdress;
+    private AdressResult partyBAdress;
+    private PhoneResult phoneA;
+    private PhoneResult phoneB;
+
     private ItemsResult itemsResult;
     private CustomerResult customerResult;
     private Long customerId;

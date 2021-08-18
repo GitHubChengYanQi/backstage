@@ -33,13 +33,15 @@ import java.util.List;
 @Service
 public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> implements ErpOrderService {
     @Autowired
-    private OutstockService outstockService;
-    @Autowired
     private ContactsService contactsService;
     @Autowired
     private ItemsService itemsService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
 
     @BussinessLog
     @Override
@@ -113,29 +115,80 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     }
 
     public void format(List<ErpOrderResult> data) {
-        List<Long> outstockIds = new ArrayList<>();
-        List<Long> contactsIds = new ArrayList<>();
         List<Long> itemIds = new ArrayList<>();
-        List<Long> customerIds = new ArrayList<>();
+        List<Long> partA = new ArrayList<>();
+        List<Long> partB = new ArrayList<>();
+        List<Long> contactsIdsA = new ArrayList<>();
+        List<Long> contactsIdsB = new ArrayList<>();
+        List<Long> adressIdsA = new ArrayList<>();
+        List<Long> adressIdsB = new ArrayList<>();
+        List<Long> phoneAIds = new ArrayList<>();
+        List<Long> phoneBIds = new ArrayList<>();
+
         for (ErpOrderResult datum : data) {
-//            outstockIds.add(datum.getOutstockId());
-//            contactsIds.add(datum.getContactsId());
+
             itemIds.add(datum.getItemId());
-            customerIds.add(datum.getCustomerId());
+            partA.add(datum.getPartyA());
+            partB.add(datum.getPartyB());
+            contactsIdsA.add(datum.getPartyAContactsId());
+            contactsIdsB.add(datum.getPartyBContactsId());
+            adressIdsA.add(datum.getPartyAAdressId());
+            adressIdsB.add(datum.getPartyBAdressId());
+            phoneAIds.add(datum.getPartyAPhone());
+            phoneBIds.add(datum.getPartyBPhone());
         }
 
-        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        if (!outstockIds.isEmpty()) {
-            outstockQueryWrapper.in("outstock_id", outstockIds);
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(partA)){
+            customerQueryWrapper.in("customer_id", partA);
         }
-        List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
+        List<Customer> partAList = customerService.list(customerQueryWrapper);
 
 
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        if (!contactsIds.isEmpty()) {
-            contactsQueryWrapper.in("contacts_id", contactsIds);
+
+
+        QueryWrapper<Customer> customerQueryWrapperB = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(partB)){
+            customerQueryWrapperB.in("customer_id", partB);
         }
-        List<Contacts> conList = contactsService.list(contactsQueryWrapper);
+        List<Customer> partBList = customerService.list(customerQueryWrapperB);
+
+        QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(contactsIdsA)){
+            contactsA.in("contacts_id", contactsIdsA);
+        }
+        List<Contacts> contactsAList = contactsService.list(contactsA);
+
+        QueryWrapper<Contacts> contactsB = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(contactsIdsB)){
+            contactsB.in("contacts_id", contactsIdsB);
+        }
+        List<Contacts> contactsBList = contactsService.list(contactsB);
+
+        QueryWrapper<Adress> adressA = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(adressIdsA)){
+            adressA.in("adress_id", adressIdsA);
+        }
+        List<Adress> adressAList = adressService.list(adressA);
+
+        QueryWrapper<Adress> adressB = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(adressIdsB)){
+            adressB.in("adress_id", adressIdsB);
+        }
+        List<Adress> adressBList = adressService.list(adressB);
+
+        QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(phoneAIds)){
+            phoneAwapper.in("phone_id", phoneAIds);
+        }
+
+        List<Phone> phoneAlist = phoneService.list(phoneAwapper);
+
+        QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
+        if(ToolUtil.isNotEmpty(phoneBIds)){
+            contactsA.in("contacts_id", phoneBIds);
+        }
+        List<Phone> phoneBlist = phoneService.list(phoneBwapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         if (!itemIds.isEmpty()) {
@@ -144,33 +197,90 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
 
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        if (!customerIds.isEmpty()) {
-            customerQueryWrapper.in("customer_id", customerIds);
-        }
-        List<Customer> cuList = customerService.list(customerQueryWrapper);
+
         for (ErpOrderResult datum : data) {
-//            if (!outstockList.isEmpty()) {
-//                for (Outstock outstock : outstockList) {
-//                    if (datum.getOutstockId().equals(outstock.getOutstockId())) {
-//                        OutstockResult outstockResult = new OutstockResult();
-//                        ToolUtil.copyProperties(outstock, outstockResult);
-//                        datum.setOutstockResult(outstockResult);
-//                        break;
-//                    }
-//                }
-//            }
-//            if (!conList.isEmpty()) {
-//                for (Contacts contacts : conList) {
-//                    if (contacts.getContactsId().equals(datum.getContactsId())) {
-//                        ContactsResult contactsResult = new ContactsResult();
-//                        ToolUtil.copyProperties(contacts, contactsResult);
-//                        datum.setContactsResult(contactsResult);
-//                        break;
-//                    }
-//                }
-//            }
-            if (!itemsList.isEmpty()) {
+            if(ToolUtil.isNotEmpty(partAList)){
+                for (Customer customer : partAList) {
+                    if (datum.getPartyA().equals(customer.getCustomerId())) {
+                        CustomerResult customerResult = new CustomerResult();
+                        ToolUtil.copyProperties(customer, customerResult);
+                        datum.setPartA(customerResult);
+                    }
+
+                }
+            }
+            if(ToolUtil.isNotEmpty(partBList)) {
+                for (Customer customer : partBList) {
+                    if (customer.getCustomerId().equals(datum.getPartyB())) {
+                        CustomerResult customerResult = new CustomerResult();
+                        ToolUtil.copyProperties(customer, customerResult);
+                        datum.setPartB(customerResult);
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(contactsAList)) {
+                for (Contacts contacts : contactsAList) {
+                    if (contacts.getContactsId().equals(datum.getPartyAContactsId())) {
+                        ContactsResult contactsResult = new ContactsResult();
+                        ToolUtil.copyProperties(contacts, contactsResult);
+                        datum.setPartyAContacts(contactsResult);
+                        break;
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(contactsBList)) {
+                for (Contacts contacts : contactsBList) {
+                    if (contacts.getContactsId().equals(datum.getPartyBContactsId())) {
+                        ContactsResult contactsResult = new ContactsResult();
+                        ToolUtil.copyProperties(contacts, contactsResult);
+                        datum.setPartyBContacts(contactsResult);
+                        break;
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(adressAList)) {
+                for (Adress adress : adressAList) {
+                    if (adress.getAdressId().equals(datum.getPartyAAdressId())) {
+                        AdressResult adressResult = new AdressResult();
+                        ToolUtil.copyProperties(adress, adressResult);
+                        datum.setPartyAAdress(adressResult);
+                        break;
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(adressBList)) {
+                for (Adress adress : adressBList) {
+
+                    if (adress.getAdressId().equals(datum.getPartyBAdressId())) {
+                        adress.getCustomerId();
+                        AdressResult adressResult = new AdressResult();
+                        ToolUtil.copyProperties(adress, adressResult);
+                        datum.setPartyBAdress(adressResult);
+                        break;
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(phoneAlist)) {
+                for (Phone phone : phoneAlist) {
+                    if (phone.getPhoneId().equals(datum.getPartyAPhone())) {
+                        PhoneResult phoneResult = new PhoneResult();
+                        ToolUtil.copyProperties(phone, phoneResult);
+                        datum.setPhoneA(phoneResult);
+                        break;
+                    }
+                }
+            }
+            if(ToolUtil.isNotEmpty(phoneBlist)) {
+                for (Phone phone : phoneBlist) {
+                    if (phone.getPhoneId().equals(datum.getPartyBPhone())) {
+                        PhoneResult phoneResult = new PhoneResult();
+                        ToolUtil.copyProperties(phone, phoneResult);
+                        datum.setPhoneB(phoneResult);
+                        break;
+                    }
+                }
+            }
+            if (ToolUtil.isNotEmpty(itemsList)) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
@@ -180,16 +290,7 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if (!cuList.isEmpty()) {
-                for (Customer customer : cuList) {
-                    if (customer.getCustomerId().equals(datum.getCustomerId())) {
-                        CustomerResult customerResult = new CustomerResult();
-                        ToolUtil.copyProperties(customer, customerResult);
-                        datum.setCustomerResult(customerResult);
-                        break;
-                    }
-                }
-            }
+
         }
     }
 }
