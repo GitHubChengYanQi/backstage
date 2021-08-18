@@ -76,9 +76,8 @@ public class NavigationServiceImpl extends ServiceImpl<NavigationMapper, Navigat
             Ids.add(record.getDifference());
         }
         QueryWrapper<NavigationDifference> differenceQueryWrapper = new QueryWrapper<>();
-        differenceQueryWrapper.in("classification_id", Ids).orderByAsc("sort");
+        differenceQueryWrapper.in("classification_id", Ids);
         List<NavigationDifference> list = Ids.size() == 0 ? new ArrayList<>() : navigationDifferenceService.list(differenceQueryWrapper);
-
         for (NavigationResult record : page.getRecords()) {
             for (NavigationDifference navigationDifference : list) {
                 if (record.getDifference().equals(navigationDifference.getClassificationId())) {
