@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;

@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.base.pojo.node;
 
-import cn.atsoft.dasheng.portal.model.tree.Tree;
+import cn.atsoft.dasheng.portal.banner.model.tree.Tree;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

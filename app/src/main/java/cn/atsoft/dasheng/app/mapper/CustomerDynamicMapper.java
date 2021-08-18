@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.CustomerDynamic;
 import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

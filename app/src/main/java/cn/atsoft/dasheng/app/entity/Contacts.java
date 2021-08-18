@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.entity;
 
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 

@@ -17,7 +17,7 @@ package cn.atsoft.dasheng.modular.demos.controller;
 
 import cn.atsoft.dasheng.modular.demos.service.TranTestService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.portal.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

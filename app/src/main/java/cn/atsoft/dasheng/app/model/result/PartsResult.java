@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 
 import java.util.Date;

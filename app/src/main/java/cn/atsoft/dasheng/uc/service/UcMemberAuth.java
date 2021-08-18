@@ -11,7 +11,7 @@ import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
 import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.core.log.LogManager;
 import cn.atsoft.dasheng.sys.core.log.factory.LogTaskFactory;
 import cn.atsoft.dasheng.sys.modular.system.entity.LoginLog;

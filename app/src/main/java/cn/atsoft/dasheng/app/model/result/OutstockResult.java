@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.model.result;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;

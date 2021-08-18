@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.base.db.model.params.DatabaseInfoParam;
 import cn.atsoft.dasheng.base.db.service.DatabaseInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.db.wrapper.DataBaseInfoSelectWrapper;

@@ -5,7 +5,6 @@ import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
-import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;

@@ -15,8 +15,8 @@
  */
 package cn.atsoft.dasheng.core.util;
 
-import cn.atsoft.dasheng.portal.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.model.exception.enums.CoreExceptionEnum;
+import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.banner.model.exception.enums.CoreExceptionEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

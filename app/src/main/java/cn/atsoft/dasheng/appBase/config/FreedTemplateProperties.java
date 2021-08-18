@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.appBase.config;
 
-import cn.atsoft.dasheng.app.entity.*;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

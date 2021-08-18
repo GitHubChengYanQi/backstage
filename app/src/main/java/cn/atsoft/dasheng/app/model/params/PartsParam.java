@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
-import cn.atsoft.dasheng.portal.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 
 import java.util.Date;
 import java.io.Serializable;

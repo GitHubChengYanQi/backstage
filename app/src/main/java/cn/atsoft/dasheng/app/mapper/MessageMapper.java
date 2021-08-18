@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.model.result.MessageResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

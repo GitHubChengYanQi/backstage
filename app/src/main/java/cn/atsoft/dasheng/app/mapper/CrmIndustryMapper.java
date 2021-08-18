@@ -4,7 +4,6 @@ import cn.atsoft.dasheng.app.entity.CrmIndustry;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.sys.core.exception.enums;
 
-import cn.atsoft.dasheng.portal.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.portal.banner.model.exception.AbstractBaseExceptionEnum;
 
 /**
  * @author fengshuonan

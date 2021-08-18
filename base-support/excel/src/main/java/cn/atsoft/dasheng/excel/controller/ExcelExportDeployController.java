@@ -10,7 +10,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.FileInfo;
 import cn.atsoft.dasheng.sys.modular.system.model.UploadResult;
 import cn.atsoft.dasheng.sys.modular.system.service.FileInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
-import cn.atsoft.dasheng.portal.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;

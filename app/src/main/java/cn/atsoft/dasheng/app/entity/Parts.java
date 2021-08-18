@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.entity;
 
-import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
@@ -11,7 +10,6 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * <p>

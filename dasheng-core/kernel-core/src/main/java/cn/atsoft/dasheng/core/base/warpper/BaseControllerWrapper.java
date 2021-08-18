@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.core.base.warpper;
 
-import cn.atsoft.dasheng.portal.model.page.PageResult;
+import cn.atsoft.dasheng.portal.banner.model.page.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
