@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.banner.model.result.Bannerquest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * 轮播图 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-17
  */
 public interface BannerService extends IService<Banner> {
@@ -21,7 +22,7 @@ public interface BannerService extends IService<Banner> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     void add(BannerParam param);
@@ -29,7 +30,7 @@ public interface BannerService extends IService<Banner> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     void delete(BannerParam param);
@@ -37,7 +38,7 @@ public interface BannerService extends IService<Banner> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     void update(BannerParam param);
@@ -45,7 +46,7 @@ public interface BannerService extends IService<Banner> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     BannerResult findBySpec(BannerParam param);
@@ -53,7 +54,7 @@ public interface BannerService extends IService<Banner> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     List<BannerResult> findListBySpec(BannerParam param);
@@ -61,9 +62,11 @@ public interface BannerService extends IService<Banner> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
-     PageInfo<BannerResult> findPageBySpec(BannerParam param);
+    PageInfo<BannerResult> findPageBySpec(BannerParam param);
+
+    void BatchDelete(List<Long> Ids);
 
 }

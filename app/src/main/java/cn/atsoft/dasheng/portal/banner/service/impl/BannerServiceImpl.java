@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.portal.banner.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.result.Bannerquest;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.portal.banner.mapper.BannerMapper;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
@@ -89,6 +90,12 @@ private BannerDifferenceService bannerDifferenceService;
         }
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public void BatchDelete(List<Long> Ids) {
+        
+    }
+
 
     private Serializable getKey(BannerParam param){
         return param.getBannerId();
