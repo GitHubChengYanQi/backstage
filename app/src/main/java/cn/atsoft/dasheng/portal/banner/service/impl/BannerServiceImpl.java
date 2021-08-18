@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.portal.banner.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.result.Bannerquest;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerRequest;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.portal.banner.mapper.BannerMapper;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
@@ -29,28 +29,29 @@ import java.util.List;
  * 轮播图 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-17
  */
 @Service
 public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> implements BannerService {
-@Autowired
-private BannerDifferenceService bannerDifferenceService;
+    @Autowired
+    private BannerDifferenceService bannerDifferenceService;
+
     @Override
-    public void add(BannerParam param){
+    public void add(BannerParam param) {
         Banner entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(BannerParam param){
+    public void delete(BannerParam param) {
         param.setDisplay(0);
         this.update(param);
 //        this.removeById(getKey(param));
     }
 
     @Override
-    public void update(BannerParam param){
+    public void update(BannerParam param) {
         Banner oldEntity = getOldEntity(param);
         Banner newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -58,17 +59,17 @@ private BannerDifferenceService bannerDifferenceService;
     }
 
     @Override
-    public BannerResult findBySpec(BannerParam param){
+    public BannerResult findBySpec(BannerParam param) {
         return null;
     }
 
     @Override
-    public List<BannerResult> findListBySpec(BannerParam param){
+    public List<BannerResult> findListBySpec(BannerParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<BannerResult> findPageBySpec(BannerParam param){
+    public PageInfo<BannerResult> findPageBySpec(BannerParam param) {
         Page<BannerResult> pageContext = getPageContext();
         IPage<BannerResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> diIds = new ArrayList<>();
@@ -76,13 +77,13 @@ private BannerDifferenceService bannerDifferenceService;
             diIds.add(record.getDifference());
         }
         QueryWrapper<BannerDifference> differenceQueryWrapper = new QueryWrapper<>();
-        differenceQueryWrapper.in("classification_id",diIds);
-        List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() :  bannerDifferenceService.list(differenceQueryWrapper);
+        differenceQueryWrapper.in("classification_id", diIds);
+        List<BannerDifference> list = diIds.size() == 0 ? new ArrayList<>() : bannerDifferenceService.list(differenceQueryWrapper);
         for (BannerResult record : page.getRecords()) {
             for (BannerDifference bannerDifference : list) {
-                if (record.getDifference()!=null&&record.getDifference().equals(bannerDifference.getCreateUser())){
+                if (record.getDifference() != null && record.getDifference().equals(bannerDifference.getCreateUser())) {
                     BannerDifferenceResult differenceResult = new BannerDifferenceResult();
-                    ToolUtil.copyProperties(bannerDifference,differenceResult);
+                    ToolUtil.copyProperties(bannerDifference, differenceResult);
                     record.setBannerDifferenceResult(differenceResult);
                     break;
                 }
@@ -93,11 +94,15 @@ private BannerDifferenceService bannerDifferenceService;
 
     @Override
     public void BatchDelete(List<Long> Ids) {
-        
+        Banner banner = new Banner();
+        banner.setDisplay(0);
+        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("banner_id", Ids);
+        this.update(banner, bannerQueryWrapper);
     }
 
 
-    private Serializable getKey(BannerParam param){
+    private Serializable getKey(BannerParam param) {
         return param.getBannerId();
     }
 

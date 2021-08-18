@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.portal.banner.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerRequest;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
@@ -17,7 +18,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 轮播图控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-17 14:05:06
  */
 @RestController
@@ -31,7 +32,7 @@ public class BannerController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -44,7 +45,7 @@ public class BannerController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -58,12 +59,12 @@ public class BannerController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BannerParam bannerParam)  {
+    public ResponseData delete(@RequestBody BannerParam bannerParam) {
         this.bannerService.delete(bannerParam);
         return ResponseData.success();
     }
@@ -71,7 +72,7 @@ public class BannerController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -87,20 +88,23 @@ public class BannerController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-17
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BannerResult> list(@RequestBody(required = false) BannerParam bannerParam) {
-        if(ToolUtil.isEmpty(bannerParam)){
+        if (ToolUtil.isEmpty(bannerParam)) {
             bannerParam = new BannerParam();
         }
         return this.bannerService.findPageBySpec(bannerParam);
     }
 
-
-
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    public ResponseData batchDelete(@RequestBody BannerRequest bannerquest) {
+        bannerService.BatchDelete(bannerquest.getBannerId());
+        return ResponseData.success();
+    }
 
 }
 

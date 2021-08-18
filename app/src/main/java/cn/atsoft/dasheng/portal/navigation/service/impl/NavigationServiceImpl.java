@@ -91,6 +91,15 @@ public class NavigationServiceImpl extends ServiceImpl<NavigationMapper, Navigat
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public void batchDelete(List<Long> ids) {
+        Navigation navigation = new Navigation();
+        navigation.setDisplay(0);
+        QueryWrapper<Navigation> navigationQueryWrapper = new QueryWrapper<>();
+        navigationQueryWrapper.in("navigation_id",ids);
+        this.update(navigation,navigationQueryWrapper);
+    }
+
     private Serializable getKey(NavigationParam param) {
         return param.getNavigationId();
     }

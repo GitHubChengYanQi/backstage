@@ -66,4 +66,6 @@ public interface NavigationService extends IService<Navigation> {
      */
      PageInfo<NavigationResult> findPageBySpec(NavigationParam param);
 
+     void batchDelete(List<Long> ids);
+
 }

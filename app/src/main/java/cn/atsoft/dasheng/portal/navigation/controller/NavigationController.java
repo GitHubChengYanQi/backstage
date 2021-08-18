@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigation.entity.Navigation;
 import cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam;
+import cn.atsoft.dasheng.portal.navigation.model.result.NavigationRequest;
 import cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult;
 import cn.atsoft.dasheng.portal.navigation.service.NavigationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -17,7 +18,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 导航表控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-18 08:40:30
  */
 @RestController
@@ -31,7 +32,7 @@ public class NavigationController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-18
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -44,7 +45,7 @@ public class NavigationController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -58,12 +59,12 @@ public class NavigationController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody NavigationParam navigationParam)  {
+    public ResponseData delete(@RequestBody NavigationParam navigationParam) {
         this.navigationService.delete(navigationParam);
         return ResponseData.success();
     }
@@ -71,7 +72,7 @@ public class NavigationController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-18
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -87,20 +88,23 @@ public class NavigationController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-18
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<NavigationResult> list(@RequestBody(required = false) NavigationParam navigationParam) {
-        if(ToolUtil.isEmpty(navigationParam)){
+        if (ToolUtil.isEmpty(navigationParam)) {
             navigationParam = new NavigationParam();
         }
         return this.navigationService.findPageBySpec(navigationParam);
     }
 
-
-
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    public ResponseData batchDelete(@RequestBody NavigationRequest navigationRequest) {
+        navigationService.batchDelete(navigationRequest.getNavigationId());
+        return ResponseData.success();
+    }
 
 }
 
