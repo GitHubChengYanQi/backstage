@@ -51,6 +51,7 @@ public class NoneAuthedResources {
 
             // 登录接口放开过滤
             "/login/**",
+            "/api/**",
 
             // session登录失效之后的跳转
             "/global/sessionError",
