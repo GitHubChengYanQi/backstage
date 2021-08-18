@@ -36,7 +36,9 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
     public void delete(BannerParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
+//        this.removeById(getKey(param));
     }
 
     @Override
