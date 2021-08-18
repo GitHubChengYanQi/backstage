@@ -21,6 +21,12 @@ public class Banner implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    @TableField("sort")
+    private Long sort;
+    @TableField("link")
+    private String link;
+
     /**
      * 轮播图id
      */
@@ -132,6 +138,22 @@ public class Banner implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     @Override

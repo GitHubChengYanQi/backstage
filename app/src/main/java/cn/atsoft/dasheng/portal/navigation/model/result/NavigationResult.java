@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.navigation.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,7 +21,9 @@ public class NavigationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long sort;
 
+    private String link;
     /**
      * 导航id
      */

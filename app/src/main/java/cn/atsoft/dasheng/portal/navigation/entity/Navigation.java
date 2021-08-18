@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.portal.navigation.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 导航表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-18
  */
 @TableName("daoxin_portal_navigation")
@@ -24,7 +27,7 @@ public class Navigation implements Serializable {
     /**
      * 导航id
      */
-      @TableId(value = "navigation_Id", type = IdType.ID_WORKER)
+    @TableId(value = "navigation_Id", type = IdType.ID_WORKER)
     private Long navigationId;
 
     /**
@@ -38,29 +41,32 @@ public class Navigation implements Serializable {
      */
     @TableField("icon")
     private String icon;
-
+    @TableField("sort")
+    private Long sort;
+    @TableField("link")
+    private String link;
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -134,17 +140,33 @@ public class Navigation implements Serializable {
         this.display = display;
     }
 
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     @Override
     public String toString() {
         return "Navigation{" +
-        "navigationId=" + navigationId +
-        ", title=" + title +
-        ", icon=" + icon +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "navigationId=" + navigationId +
+                ", title=" + title +
+                ", icon=" + icon +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

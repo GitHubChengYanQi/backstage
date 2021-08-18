@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.banner.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -21,6 +22,9 @@ public class BannerResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private Long sort;
+
+    private String link;
     /**
      * 轮播图id
      */
