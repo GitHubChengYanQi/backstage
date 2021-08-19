@@ -33,6 +33,7 @@
         <if test="paramCondition.classId != null and paramCondition.classId != ''">
             and class_id = #{paramCondition.classId}
         </if>
+        order by sort
     </select>
 
     <select id="customMapList" resultType="map"
