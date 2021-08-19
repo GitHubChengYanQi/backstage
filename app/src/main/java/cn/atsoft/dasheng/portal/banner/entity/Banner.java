@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.entity;
+package  cn.atsoft.dasheng.portal.banner.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;

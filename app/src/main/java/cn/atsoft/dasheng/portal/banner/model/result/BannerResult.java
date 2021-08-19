@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.model.result;
+package  cn.atsoft.dasheng.portal.banner.model.result;
 
 import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
 import lombok.Data;

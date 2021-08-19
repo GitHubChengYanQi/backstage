@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.model.params;
+package  cn.atsoft.dasheng.portal.banner.model.params;
 
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
