@@ -5,10 +5,7 @@ import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
@@ -20,9 +17,9 @@ public class ClassdifController {
     private ClassDifferenceService service;
 
     @RequestMapping(value = "/getclassdifference", method = RequestMethod.POST)
-    public ResponseData getclassdifference(@RequestParam("classId") Long classId) {
+    public ResponseData getclassdifference(@RequestBody cn.atsoft.dasheng.shop.classpage.model.params.ClassParam classParam) {
         QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("class_id", classId).orderByAsc("sort").in("display",1);
+        queryWrapper.in("class_id", classParam.getClassId()).orderByAsc("sort").in("display",1);
         List<ClassDifference> list = service.list(queryWrapper);
         return ResponseData.success(list);
     }
