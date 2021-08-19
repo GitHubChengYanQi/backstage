@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigation.entity.Navigation;
 import cn.atsoft.dasheng.portal.navigation.service.NavigationService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,7 +21,7 @@ public class ApiNavigationController {
     @RequestMapping(value = "/getNavigation",method = RequestMethod.GET)
     public ResponseData getNavigation (@RequestParam("classId")Long classId){
         QueryWrapper<Navigation> navigationQueryWrapper = new QueryWrapper<>();
-        navigationQueryWrapper.in("difference",classId).orderByAsc("sort");
+        navigationQueryWrapper.in("difference",classId).orderByAsc("sort").in("display" ,1);
         List<Navigation> list =navigationService.list(navigationQueryWrapper);
         return  ResponseData.success(list);
     }

@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.base.pojo.node;
 
-import cn.atsoft.dasheng.portal.banner.model.tree.Cascader;
+import cn.atsoft.dasheng.model.tree.Cascader;
 import lombok.Data;
 
 import java.util.List;

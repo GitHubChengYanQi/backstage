@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.sys.core.exception.oauth;
 
-import cn.atsoft.dasheng.portal.banner.model.exception.AbstractBaseExceptionEnum;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 
 /**
  * 第三方登录异常

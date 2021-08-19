@@ -4,7 +4,7 @@ import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.core.util.UeditorUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.atsoft.dasheng.sys.modular.system.model.UeditorFileResult;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
