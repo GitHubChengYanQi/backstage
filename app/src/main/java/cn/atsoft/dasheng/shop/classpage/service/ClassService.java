@@ -66,4 +66,5 @@ public interface ClassService extends IService<Classpojo> {
      */
      PageInfo<ClassResult> findPageBySpec(ClassParam param);
      void batchDelete (List<Long> ids);
+     List format ();
 }

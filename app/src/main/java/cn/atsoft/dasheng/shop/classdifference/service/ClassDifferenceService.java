@@ -66,4 +66,6 @@ public interface ClassDifferenceService extends IService<ClassDifference> {
      */
      PageInfo<ClassDifferenceResult> findPageBySpec(ClassDifferenceParam param);
 
+
+     List<ClassDifferenceResult> getByIds (List<Long> ids);
 }
