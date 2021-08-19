@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.shop.classdifference.controller;
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
@@ -9,10 +11,15 @@ import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
+import cn.atsoft.dasheng.shop.classdifference.wrapper.ClassDifferenceSelectWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -101,7 +108,16 @@ public class ClassDifferenceController extends BaseController {
         return this.classDifferenceService.findPageBySpec(classDifferenceParam);
     }
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper();
+        queryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.classDifferenceService.listMaps(queryWrapper);
+        ClassDifferenceSelectWrapper classDifferenceSelectWrapper = new ClassDifferenceSelectWrapper(list);
+        List<Map<String, Object>> result = classDifferenceSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }
