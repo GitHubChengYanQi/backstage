@@ -1,9 +1,7 @@
 package cn.atsoft.dasheng.portal.navigationdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.banner.wrapper.BannerSelectWrapper;
-import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigation.wrapper.NavigationSelectWrapper;
 import cn.atsoft.dasheng.portal.navigationdifference.entity.NavigationDifference;
 import cn.atsoft.dasheng.portal.navigationdifference.model.params.NavigationDifferenceParam;
@@ -11,13 +9,12 @@ import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDiff
 import cn.atsoft.dasheng.portal.navigationdifference.service.NavigationDifferenceService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 

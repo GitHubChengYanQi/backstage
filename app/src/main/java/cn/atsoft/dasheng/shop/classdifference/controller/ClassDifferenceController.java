@@ -1,9 +1,7 @@
 package cn.atsoft.dasheng.shop.classdifference.controller;
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.model.params.ClassDifferenceParam;
 import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;

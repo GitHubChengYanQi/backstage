@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.portal.navigation.model.params;
 
-import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;

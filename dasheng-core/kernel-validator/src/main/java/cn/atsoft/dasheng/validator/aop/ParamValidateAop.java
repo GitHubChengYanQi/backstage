@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.validator.aop;
 
-import cn.atsoft.dasheng.portal.banner.model.constants.AopSortConstants;
+import cn.atsoft.dasheng.model.constants.AopSortConstants;
 import cn.atsoft.dasheng.validator.util.CheckUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

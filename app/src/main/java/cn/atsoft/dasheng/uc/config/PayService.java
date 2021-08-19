@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.uc.config;
 import cn.atsoft.dasheng.uc.entity.UcPayOrder;
 import cn.atsoft.dasheng.uc.model.params.UcPayOrderParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;

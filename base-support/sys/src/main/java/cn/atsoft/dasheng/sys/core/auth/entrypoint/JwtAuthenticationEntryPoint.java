@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.sys.core.auth.entrypoint;
 
 import cn.atsoft.dasheng.base.auth.exception.enums.AuthExceptionEnum;
-import cn.atsoft.dasheng.portal.banner.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import com.alibaba.fastjson.JSON;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

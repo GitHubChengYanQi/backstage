@@ -53,6 +53,7 @@
         <if test="paramCondition.classId != null">
             and class_id = #{paramCondition.classId}
         </if>
+          order  by sort
     </select>
 
     <select id="customPageMapList" resultType="map"

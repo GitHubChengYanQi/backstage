@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.base.db.exception;
 
-import cn.atsoft.dasheng.portal.banner.model.exception.AbstractBaseExceptionEnum;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.AbstractBaseExceptionEnum;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 
 /**
  * 数据源容器初始化失败异常

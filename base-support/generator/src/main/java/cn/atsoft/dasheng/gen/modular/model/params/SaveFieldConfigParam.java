@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.gen.modular.model.params;
 
 import cn.atsoft.dasheng.gen.modular.model.FieldConfig;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;

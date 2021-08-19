@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.sys.modular.rest.controller;
 
-import cn.atsoft.dasheng.portal.banner.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
 import cn.atsoft.dasheng.sys.core.constant.Const;
 import cn.atsoft.dasheng.sys.core.constant.dictmap.UserDict;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
@@ -38,10 +38,10 @@ import cn.atsoft.dasheng.sys.modular.rest.service.RestUserService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.exception.RequestEmptyException;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.banner.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.model.exception.RequestEmptyException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.db.model.params;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
 

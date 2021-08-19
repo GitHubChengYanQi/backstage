@@ -15,12 +15,12 @@
  */
 package cn.atsoft.dasheng.core.exception;
 
-import cn.atsoft.dasheng.portal.banner.model.exception.ApiServiceException;
-import cn.atsoft.dasheng.portal.banner.model.exception.RequestEmptyException;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.banner.model.exception.enums.CoreExceptionEnum;
-import cn.atsoft.dasheng.portal.banner.model.response.ErrorResponseData;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.exception.ApiServiceException;
+import cn.atsoft.dasheng.model.exception.RequestEmptyException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.enums.CoreExceptionEnum;
+import cn.atsoft.dasheng.model.response.ErrorResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.core.annotation.Order;
@@ -41,7 +41,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Set;
 
-import static cn.atsoft.dasheng.portal.banner.model.constants.AopSortConstants.DEFAULT_EXCEPTION_HANDLER_SORT;
+import static cn.atsoft.dasheng.model.constants.AopSortConstants.DEFAULT_EXCEPTION_HANDLER_SORT;
 
 /**
  * 全局的的异常拦截器（拦截所有的控制器）（带有@RequestMapping注解的方法上都会拦截）

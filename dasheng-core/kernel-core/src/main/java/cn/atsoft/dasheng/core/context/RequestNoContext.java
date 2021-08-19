@@ -17,8 +17,8 @@ package cn.atsoft.dasheng.core.context;
 
 import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.constants.RosesConstants;
-import cn.atsoft.dasheng.portal.banner.model.request.AbstractBaseRequest;
+import cn.atsoft.dasheng.model.constants.RosesConstants;
+import cn.atsoft.dasheng.model.request.AbstractBaseRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;

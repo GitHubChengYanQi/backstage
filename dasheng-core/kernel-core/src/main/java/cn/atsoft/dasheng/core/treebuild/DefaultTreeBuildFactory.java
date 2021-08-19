@@ -16,7 +16,7 @@
 package cn.atsoft.dasheng.core.treebuild;
 
 import cn.atsoft.dasheng.core.treebuild.abst.AbstractTreeBuildFactory;
-import cn.atsoft.dasheng.portal.banner.model.tree.Tree;
+import cn.atsoft.dasheng.model.tree.Tree;
 import lombok.Data;
 
 import java.util.ArrayList;

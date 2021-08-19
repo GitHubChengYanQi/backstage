@@ -75,6 +75,7 @@
         <if test="paramCondition.classDifferenceId != null">
             and class_difference_id = #{paramCondition.classDifferenceId}
         </if>
+        order by sort
     </select>
 
     <select id="customPageMapList" resultType="map"
