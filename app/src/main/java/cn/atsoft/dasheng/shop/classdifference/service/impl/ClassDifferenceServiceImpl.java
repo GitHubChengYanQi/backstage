@@ -83,17 +83,48 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
             ToolUtil.copyProperties(classDifference,classDifferenceResult);
             results.add(classDifferenceResult);
         }
-        this.getdetails(results);
+        this.getdeta(results);
         return results;
     }
 
+    @Override
+    public List<ClassDifferenceResult> getdetalis(Long ids) {
+
+        List<Long> dIds = new ArrayList<>();
+
+
+        ClassDifferenceParam classDifferenceParam = new ClassDifferenceParam();
+        classDifferenceParam.setClassId(ids);
+        List<ClassDifferenceResult> list = this.baseMapper.customList(classDifferenceParam);
+        for (ClassDifferenceResult classDifference : list) {
+
+            Long classDifferenceId = classDifference.getClassDifferenceId();
+            dIds.add(classDifferenceId);
+        }
+        QueryWrapper<ClassDifferenceDetails> detailsQueryWrapper = new QueryWrapper<>();
+        detailsQueryWrapper.in("class_difference_id",dIds);
+        List<ClassDifferenceDetails> details = service.list(detailsQueryWrapper);
+        for (ClassDifferenceResult classDifference : list) {
+            List list1 = new ArrayList();
+            for (ClassDifferenceDetails detail : details) {
+                if (detail.getClassDifferenceId().equals(classDifference.getClassDifferenceId())) {
+                    ClassDifferenceDetailsResult classDifferenceDetailsResult = new ClassDifferenceDetailsResult();
+                    ToolUtil.copyProperties(detail, classDifferenceDetailsResult);
+                    list1.add(classDifferenceDetailsResult);
+                }
+
+            }
+
+            classDifference.setList(list1);
+        }
 
 
 
+        return list;
+    }
 
 
-
-    public void getdetails(List<ClassDifferenceResult> data ) {
+    public void getdeta(List<ClassDifferenceResult> data ) {
         List<Long> ids = new ArrayList<>();
         for (ClassDifferenceResult datum : data) {
             ids.add(datum.getClassDifferenceId());
