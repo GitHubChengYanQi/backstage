@@ -7,14 +7,20 @@ import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.mapper.ClassDifferenceMapper;
 import cn.atsoft.dasheng.shop.classdifference.model.params.ClassDifferenceParam;
 import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;
-import  cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
+import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.shop.classdifferencedetail.entity.ClassDifferenceDetails;
+import cn.atsoft.dasheng.shop.classdifferencedetail.model.result.ClassDifferenceDetailsResult;
+import cn.atsoft.dasheng.shop.classdifferencedetail.service.ClassDifferenceDetailsService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,20 +33,22 @@ import java.util.List;
  */
 @Service
 public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMapper, ClassDifference> implements ClassDifferenceService {
+    @Autowired
+    private ClassDifferenceDetailsService service;
 
     @Override
-    public void add(ClassDifferenceParam param){
+    public void add(ClassDifferenceParam param) {
         ClassDifference entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(ClassDifferenceParam param){
+    public void delete(ClassDifferenceParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ClassDifferenceParam param){
+    public void update(ClassDifferenceParam param) {
         ClassDifference oldEntity = getOldEntity(param);
         ClassDifference newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +56,67 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
     }
 
     @Override
-    public ClassDifferenceResult findBySpec(ClassDifferenceParam param){
+    public ClassDifferenceResult findBySpec(ClassDifferenceParam param) {
         return null;
     }
 
     @Override
-    public List<ClassDifferenceResult> findListBySpec(ClassDifferenceParam param){
+    public List<ClassDifferenceResult> findListBySpec(ClassDifferenceParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ClassDifferenceResult> findPageBySpec(ClassDifferenceParam param){
+    public PageInfo<ClassDifferenceResult> findPageBySpec(ClassDifferenceParam param) {
         Page<ClassDifferenceResult> pageContext = getPageContext();
         IPage<ClassDifferenceResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ClassDifferenceParam param){
+    @Override
+    public List<ClassDifferenceResult> getByIds(List<Long> ids) {
+        QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("class_id",ids);
+        List<ClassDifference> list = this.list(queryWrapper);
+        List<ClassDifferenceResult> results = new ArrayList<>();
+        for (ClassDifference classDifference : list) {
+            ClassDifferenceResult classDifferenceResult = new ClassDifferenceResult();
+            ToolUtil.copyProperties(classDifference,classDifferenceResult);
+            results.add(classDifferenceResult);
+        }
+        this.getdetails(results);
+        return results;
+    }
+
+
+
+
+
+
+
+    public void getdetails(List<ClassDifferenceResult> data ) {
+        List<Long> ids = new ArrayList<>();
+        for (ClassDifferenceResult datum : data) {
+            ids.add(datum.getClassDifferenceId());
+        }
+        QueryWrapper<ClassDifferenceDetails> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("class_difference_id", ids);
+        List<ClassDifferenceDetails> detailsList = service.list(queryWrapper);
+        for (ClassDifferenceResult datum : data) {
+
+            List<ClassDifferenceDetailsResult> list = new ArrayList<>();
+
+            for (ClassDifferenceDetails classDifferenceDetails : detailsList) {
+                if (datum.getClassDifferenceId().equals(classDifferenceDetails.getClassDifferenceId())) {
+                    ClassDifferenceDetailsResult classDifferenceResult = new ClassDifferenceDetailsResult();
+                    ToolUtil.copyProperties(classDifferenceDetails,classDifferenceResult);
+                    list.add(classDifferenceResult);
+                }
+            }   datum.setList(list);
+        }
+
+    }
+
+    private Serializable getKey(ClassDifferenceParam param) {
         return param.getClassDifferenceId();
     }
 

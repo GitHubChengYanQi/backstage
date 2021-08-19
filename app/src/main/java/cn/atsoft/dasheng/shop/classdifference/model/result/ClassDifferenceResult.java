@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.shop.classdifference.model.result;
 
+import cn.atsoft.dasheng.shop.classdifferencedetail.model.result.ClassDifferenceDetailsResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,7 +21,7 @@ public class ClassDifferenceResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+  private  List<ClassDifferenceDetailsResult> list;
     /**
      * 分类明细id
      */
