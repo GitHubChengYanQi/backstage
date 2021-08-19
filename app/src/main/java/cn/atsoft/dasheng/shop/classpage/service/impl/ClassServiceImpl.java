@@ -36,7 +36,9 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implem
 
     @Override
     public void delete(ClassParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
+//        this.removeById(getKey(param));
     }
 
     @Override
