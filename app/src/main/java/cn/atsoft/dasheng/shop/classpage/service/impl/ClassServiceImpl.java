@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.shop.classpage.model.params.ClassParam;
 import cn.atsoft.dasheng.shop.classpage.model.result.ClassResult;
 import  cn.atsoft.dasheng.shop.classpage.service.ClassService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,7 +37,9 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implem
 
     @Override
     public void delete(ClassParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
+//        this.removeById(getKey(param));
     }
 
     @Override
@@ -62,6 +65,15 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implem
         Page<ClassResult> pageContext = getPageContext();
         IPage<ClassResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        Classpojo classpojo = new Classpojo();
+        classpojo.setDisplay(0);
+        QueryWrapper<Classpojo> classpojoQueryWrapper = new QueryWrapper<>();
+        classpojoQueryWrapper.in("class_id",ids);
+        this.update(classpojo,classpojoQueryWrapper);
     }
 
     private Serializable getKey(ClassParam param){
