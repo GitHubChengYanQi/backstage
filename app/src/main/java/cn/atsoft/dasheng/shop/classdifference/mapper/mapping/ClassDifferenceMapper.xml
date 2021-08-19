@@ -30,6 +30,10 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
+        <if test="paramCondition.classId != null and paramCondition.classId != ''">
+            and class_id = #{paramCondition.classId}
+        </if>
+        order by sort
     </select>
 
     <select id="customMapList" resultType="map"
@@ -53,7 +57,7 @@
         <if test="paramCondition.classId != null">
             and class_id = #{paramCondition.classId}
         </if>
-          order  by sort
+        order by sort
     </select>
 
     <select id="customPageMapList" resultType="map"

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.api.shop.controller;
 import cn.atsoft.dasheng.model.response.ResponseData;
 
 import cn.atsoft.dasheng.shop.classpage.entity.Classpojo;
+import cn.atsoft.dasheng.shop.classpage.model.result.ClassResult;
 import cn.atsoft.dasheng.shop.classpage.service.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class ClassController {
 
     @RequestMapping(value = "/getclass", method = RequestMethod.GET)
     public ResponseData getclass() {
-        List<Classpojo> list = service.list();
-        return ResponseData.success(list);
+        List getdif = service.format();
+        return ResponseData.success(getdif);
     }
 }

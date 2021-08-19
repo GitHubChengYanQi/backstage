@@ -1,7 +1,6 @@
 package  cn.atsoft.dasheng.portal.banner.model.result;
 
 import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
