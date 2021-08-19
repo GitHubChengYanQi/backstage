@@ -65,5 +65,5 @@ public interface ClassService extends IService<Classpojo> {
      * @Date 2021-08-19
      */
      PageInfo<ClassResult> findPageBySpec(ClassParam param);
-
+     void batchDelete (List<Long> ids);
 }

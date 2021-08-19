@@ -19,7 +19,7 @@ public class ClassdifController {
     @Autowired
     private ClassDifferenceService service;
 
-    @RequestMapping(value = "/getclassdifference", method = RequestMethod.GET)
+    @RequestMapping(value = "/getclassdifference", method = RequestMethod.POST)
     public ResponseData getclassdifference(@RequestParam("classId") Long classId) {
         QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("class_id", classId).orderByAsc("sort").in("display",1);
