@@ -4,81 +4,87 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.protal.classPage.entity.DaoxinPortalClass">
-        <id column="class_id" property="classId" />
-        <result column="class_name" property="className" />
-        <result column="sort" property="sort" />
-        <result column="classification_id" property="classificationId" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
+        <id column="class_id" property="classId"/>
+        <result column="class_name" property="className"/>
+        <result column="sort" property="sort"/>
+        <result column="classification_id" property="classificationId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        class_id AS "classId", class_name AS "className", sort AS "sort", classification_id AS "classificationId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        class_id
+        AS "classId", class_name AS "className", sort AS "sort", classification_id AS "classificationId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult"
+            parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
-            <if test="paramCondition.className != null and paramCondition.className != ''">
-                and class_name like CONCAT('%',#{paramCondition.className},'%')
-            </if>
-            <if test="paramCondition.sort != null">
-                and sort like CONCAT('%',#{paramCondition.sort},'%')
-            </if>
-            <if test="paramCondition.classificationId != null">
-                    and classification_id = #{paramCondition.classificationId}
-            </if>
+        <if test="paramCondition.className != null and paramCondition.className != ''">
+            and class_name like CONCAT('%',#{paramCondition.className},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.classificationId != null">
+            and classification_id = #{paramCondition.classificationId}
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
-                <if test="paramCondition.className != null and paramCondition.className != ''">
-                        and class_name like CONCAT('%',#{paramCondition.className},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.classificationId != null">
-                            and classification_id = #{paramCondition.classificationId}
-                </if>
+        <if test="paramCondition.className != null and paramCondition.className != ''">
+            and class_name like CONCAT('%',#{paramCondition.className},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.classificationId != null">
+            and classification_id = #{paramCondition.classificationId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.protal.classPage.model.result.DaoxinPortalClassResult"
+            parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
-                <if test="paramCondition.className != null and paramCondition.className != ''">
-                        and class_name like CONCAT('%',#{paramCondition.className},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.classificationId != null">
-                            and classification_id = #{paramCondition.classificationId}
-                </if>
+        <if test="paramCondition.className != null and paramCondition.className != ''">
+            and class_name like CONCAT('%',#{paramCondition.className},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.classificationId != null">
+            and classification_id = #{paramCondition.classificationId}
+        </if>
+        order by sort
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.protal.classPage.model.params.DaoxinPortalClassParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_class where 1 = 1
-                <if test="paramCondition.className != null and paramCondition.className != ''">
-                        and class_name like CONCAT('%',#{paramCondition.className},'%')
-                </if>
-                <if test="paramCondition.sort != null">
-                        and sort like CONCAT('%',#{paramCondition.sort},'%')
-                </if>
-                <if test="paramCondition.classificationId != null">
-                        and classification_id = #{paramCondition.classificationId}
-                </if>
+        <if test="paramCondition.className != null and paramCondition.className != ''">
+            and class_name like CONCAT('%',#{paramCondition.className},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        <if test="paramCondition.classificationId != null">
+            and classification_id = #{paramCondition.classificationId}
+        </if>
     </select>
 
 </mapper>

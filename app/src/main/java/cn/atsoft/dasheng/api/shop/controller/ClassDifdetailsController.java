@@ -21,7 +21,7 @@ public class ClassDifdetailsController {
     @RequestMapping(value = "/getdetails", method = RequestMethod.GET)
     public ResponseData getdetails(@RequestParam("classId") Long classId) {
         QueryWrapper<ClassDifferenceDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("class_difference_id", classId);
+        queryWrapper.in("class_difference_id", classId).orderByAsc("sort");
         List<ClassDifferenceDetails> list = service.list(queryWrapper);
         return ResponseData.success(list);
     }

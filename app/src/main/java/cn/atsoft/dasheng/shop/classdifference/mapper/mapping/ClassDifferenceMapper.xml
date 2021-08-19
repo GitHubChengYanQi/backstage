@@ -46,6 +46,7 @@
                 <if test="paramCondition.title != null and paramCondition.title != ''">
                         and title like CONCAT('%',#{paramCondition.title},'%')
                 </if>
+          order  by sort
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.shop.classdifference.model.params.ClassDifferenceParam">
