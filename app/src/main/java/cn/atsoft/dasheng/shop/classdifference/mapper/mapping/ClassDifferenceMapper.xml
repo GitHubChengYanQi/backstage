@@ -50,7 +50,7 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
-        <if test="paramCondition.classId != null and paramCondition.classId != ''">
+        <if test="paramCondition.classId != null">
             and class_id = #{paramCondition.classId}
         </if>
     </select>
