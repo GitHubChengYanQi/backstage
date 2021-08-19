@@ -1,8 +1,6 @@
-package cn.atsoft.dasheng.portal.goodsdetails.model.result;
+package cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result;
 
 import lombok.Data;
-
-import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -10,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 首页商品详情
+ * 商品轮播图
  * </p>
  *
  * @author siqiang
@@ -18,10 +16,16 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class GoodsDetailsResult implements Serializable {
+public class GoodsDetailsBannerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 轮播图id
+     */
+    @ApiModelProperty("轮播图id")
+    private Long detailBannerId;
 
     /**
      * 商品明细id
@@ -30,58 +34,16 @@ public class GoodsDetailsResult implements Serializable {
     private Long goodDetailsId;
 
     /**
-     * 商品id
-     */
-    @ApiModelProperty("商品id")
-    private Long goodId;
-
-    /**
-     * 商品轮播图id
-     */
-    @ApiModelProperty("商品轮播图id")
-    private Long detailBannerId;
-
-    /**
-     * 商品标题
-     */
-    @ApiModelProperty("商品标题")
-    private String title;
-
-    /**
-     * 商品售价
-     */
-    @ApiModelProperty("商品售价")
-    private BigDecimal price;
-
-    /**
-     * 商品原价
-     */
-    @ApiModelProperty("商品原价")
-    private BigDecimal lastPrice;
-
-    /**
-     * 服务
-     */
-    @ApiModelProperty("服务")
-    private String server;
-
-    /**
-     * 规格id
-     */
-    @ApiModelProperty("规格id")
-    private Long specificationId;
-
-    /**
-     * 商品详情
-     */
-    @ApiModelProperty("商品详情")
-    private String details;
-
-    /**
      * 排序
      */
     @ApiModelProperty("排序")
     private Long sort;
+
+    /**
+     * 图片路径
+     */
+    @ApiModelProperty("图片路径")
+    private String imgUrl;
 
     /**
      * 创建时间

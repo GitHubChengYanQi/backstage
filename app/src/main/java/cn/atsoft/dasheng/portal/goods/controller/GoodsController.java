@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.portal.goods.controller;
 
+import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.goods.entity.Goods;
@@ -8,10 +10,15 @@ import cn.atsoft.dasheng.portal.goods.model.result.GoodsResult;
 import cn.atsoft.dasheng.portal.goods.service.GoodsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.goods.wrapper.GoodsSelectWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -100,7 +107,15 @@ public class GoodsController extends BaseController {
         return this.goodsService.findPageBySpec(goodsParam);
     }
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Goods> goodsQueryWrapper = new QueryWrapper<>();
+        goodsQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.goodsService.listMaps(goodsQueryWrapper);
+        GoodsSelectWrapper goodsSelectWrapper = new GoodsSelectWrapper(list);
+        List<Map<String, Object>> result = goodsSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }

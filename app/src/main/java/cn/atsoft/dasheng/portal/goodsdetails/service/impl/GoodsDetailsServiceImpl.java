@@ -29,9 +29,10 @@ import java.util.List;
 public class GoodsDetailsServiceImpl extends ServiceImpl<GoodsDetailsMapper, GoodsDetails> implements GoodsDetailsService {
 
     @Override
-    public void add(GoodsDetailsParam param){
+    public Long add(GoodsDetailsParam param){
         GoodsDetails entity = getEntity(param);
         this.save(entity);
+        return entity.getGoodDetailsId();
     }
 
     @Override
@@ -40,11 +41,12 @@ public class GoodsDetailsServiceImpl extends ServiceImpl<GoodsDetailsMapper, Goo
     }
 
     @Override
-    public void update(GoodsDetailsParam param){
+    public Long update(GoodsDetailsParam param){
         GoodsDetails oldEntity = getOldEntity(param);
         GoodsDetails newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity.getGoodDetailsId();
     }
 
     @Override
