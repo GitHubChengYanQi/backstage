@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.goods.entity.Goods;
 import cn.atsoft.dasheng.portal.goods.service.GoodsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

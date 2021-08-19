@@ -1,8 +1,9 @@
-package cn.atsoft.dasheng.mapper;
+package  cn.atsoft.dasheng.portal.banner.mapper;
 
-import cn.atsoft.dasheng.entity.Banner;
-import cn.atsoft.dasheng.model.params.BannerParam;
-import cn.atsoft.dasheng.model.result.BannerResult;
+
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;

@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.service;
+package cn.atsoft.dasheng.portal.banner.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.entity.Banner;
-import cn.atsoft.dasheng.model.params.BannerParam;
-import cn.atsoft.dasheng.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

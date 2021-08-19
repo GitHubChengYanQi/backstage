@@ -61,8 +61,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         List<GoodsDetails> goodsDetails = this.goodsDetailsService.list();
         for(GoodsDetails data : goodsDetails){
             if(data.getGoodId() == param.getGoodId()) {
-                data.getGoodDetailsId();
-                this.goodsDetailsService.();
+                this.goodsDetailsService.removeById(data.getGoodDetailsId());
             }
         }
 

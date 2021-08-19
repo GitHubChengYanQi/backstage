@@ -1,11 +1,12 @@
-package cn.atsoft.dasheng.controller;
+package  cn.atsoft.dasheng.portal.banner.controller;
+
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.model.result.BannerRequest;
-import cn.atsoft.dasheng.service.BannerService;
-import cn.atsoft.dasheng.entity.Banner;
-import cn.atsoft.dasheng.model.params.BannerParam;
-import cn.atsoft.dasheng.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerRequest;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;

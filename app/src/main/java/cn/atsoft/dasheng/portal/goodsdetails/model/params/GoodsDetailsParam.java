@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.portal.goodsdetails.model.params;
 
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import lombok.Data;
-import cn.atsoft.dasheng.portal.banner.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;

@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.portal.bannerdifference.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.wrapper.BannerSelectWrapper;
+import cn.atsoft.dasheng.portal.banner.wrapper.BannerSelectWrapper;
 import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
 import cn.atsoft.dasheng.portal.bannerdifference.model.params.BannerDifferenceParam;
 import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;

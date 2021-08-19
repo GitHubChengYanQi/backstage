@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.wrapper;
+package  cn.atsoft.dasheng.portal.banner.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;
