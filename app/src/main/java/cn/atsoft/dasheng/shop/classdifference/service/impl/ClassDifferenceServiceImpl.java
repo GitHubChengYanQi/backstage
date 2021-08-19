@@ -103,7 +103,7 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
         }
         QueryWrapper<ClassDifferenceDetails> detailsQueryWrapper = new QueryWrapper<>();
         detailsQueryWrapper.in("class_difference_id",dIds);
-        List<ClassDifferenceDetails> details = service.list(detailsQueryWrapper);
+        List<ClassDifferenceDetails> details = dIds.size() == 0 ? new ArrayList<>() : service.list(detailsQueryWrapper);
         for (ClassDifferenceResult classDifference : list) {
             List list1 = new ArrayList();
             for (ClassDifferenceDetails detail : details) {
