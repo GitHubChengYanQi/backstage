@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.shop.classpage.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.shop.classpage.entity.Classpojo;
 import cn.atsoft.dasheng.shop.classpage.model.params.ClassParam;
+import cn.atsoft.dasheng.shop.classpage.model.result.ClassRequest;
 import cn.atsoft.dasheng.shop.classpage.model.result.ClassResult;
 import cn.atsoft.dasheng.shop.classpage.service.ClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -17,7 +18,7 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 一级分类导航控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-19 11:17:44
  */
 @RestController
@@ -31,7 +32,7 @@ public class ClasspojoController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-19
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -44,7 +45,7 @@ public class ClasspojoController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-19
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -58,12 +59,12 @@ public class ClasspojoController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-19
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ClassParam classParam)  {
+    public ResponseData delete(@RequestBody ClassParam classParam) {
         this.classService.delete(classParam);
         return ResponseData.success();
     }
@@ -71,7 +72,7 @@ public class ClasspojoController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-19
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -88,19 +89,23 @@ public class ClasspojoController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-19
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ClassResult> list(@RequestBody(required = false) ClassParam classParam) {
-        if(ToolUtil.isEmpty(classParam)){
+        if (ToolUtil.isEmpty(classParam)) {
             classParam = new ClassParam();
         }
         return this.classService.findPageBySpec(classParam);
     }
 
-
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.GET)
+    public ResponseData batchDelete(@RequestBody ClassRequest classRequest) {
+        classService.batchDelete(classRequest.getClassIds());
+        return ResponseData.success();
+    }
 
 
 }
