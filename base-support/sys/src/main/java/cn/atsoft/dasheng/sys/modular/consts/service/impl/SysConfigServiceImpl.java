@@ -10,7 +10,7 @@ import cn.atsoft.dasheng.sys.modular.consts.model.params.SysConfigParam;
 import cn.atsoft.dasheng.sys.modular.consts.model.result.SysConfigResult;
 import cn.atsoft.dasheng.sys.modular.consts.service.SysConfigService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.params.ItemClassParam;
 import cn.atsoft.dasheng.app.model.result.ItemClassResult;
 import  cn.atsoft.dasheng.app.service.ItemClassService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

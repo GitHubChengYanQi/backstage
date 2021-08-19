@@ -15,7 +15,7 @@
  */
 package cn.atsoft.dasheng.base.pojo.node;
 
-import cn.atsoft.dasheng.portal.banner.model.tree.Tree;
+import cn.atsoft.dasheng.model.tree.Tree;
 import lombok.Data;
 
 import java.util.List;

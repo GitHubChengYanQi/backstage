@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
 import  cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.banner.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

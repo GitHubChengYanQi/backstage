@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.portal.navigation.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigation.entity.Navigation;
 import cn.atsoft.dasheng.portal.navigation.model.params.NavigationParam;
 import cn.atsoft.dasheng.portal.navigation.model.result.NavigationRequest;

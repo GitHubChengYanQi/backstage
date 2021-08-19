@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.shop.classdifferencedetail.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.shop.classdifferencedetail.entity.ClassDifferenceDetails;
 import cn.atsoft.dasheng.shop.classdifferencedetail.model.params.ClassDifferenceDetailsParam;
 import cn.atsoft.dasheng.shop.classdifferencedetail.model.result.ClassDifferenceDetailsResult;

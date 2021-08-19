@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.api.shop.controller;
 
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -22,7 +22,7 @@ public class ClassdifController {
     @RequestMapping(value = "/getclassdifference", method = RequestMethod.GET)
     public ResponseData getclassdifference(@RequestParam("classId") Long classId) {
         QueryWrapper<ClassDifference> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("class_id", classId).orderByAsc("sort");
+        queryWrapper.in("class_id", classId).orderByAsc("sort").in("display",1);
         List<ClassDifference> list = service.list(queryWrapper);
         return ResponseData.success(list);
     }

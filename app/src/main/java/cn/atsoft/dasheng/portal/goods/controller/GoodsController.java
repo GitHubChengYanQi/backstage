@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.portal.goods.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.banner.model.response.ResponseData;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.goods.entity.Goods;
 import cn.atsoft.dasheng.portal.goods.model.params.GoodsParam;
 import cn.atsoft.dasheng.portal.goods.model.result.GoodsResult;

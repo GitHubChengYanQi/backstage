@@ -72,7 +72,7 @@
         <if test="paramCondition.link != null and paramCondition.link != ''">
             and link like CONCAT('%',#{paramCondition.link},'%')
         </if>
-        <if test="paramCondition.classDifferenceId != null and paramCondition.classDifferenceId != ''">
+        <if test="paramCondition.classDifferenceId != null ">
             and class_difference_id = #{paramCondition.classDifferenceId}
         </if>
         order by sort
