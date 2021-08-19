@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.goodsdetails.model.result;
 
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ public class GoodsDetailsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private List<GoodsDetailsBanner> goodsDetailsBannerList;
     /**
      * 商品明细id
      */

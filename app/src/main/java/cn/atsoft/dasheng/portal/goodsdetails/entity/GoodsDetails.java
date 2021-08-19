@@ -26,8 +26,6 @@ public class GoodsDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
-    private List<GoodsDetailsBanner> goodsDetailsBannerList;
     /**
      * 商品明细id
      */
@@ -237,14 +235,6 @@ public class GoodsDetails implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
-    }
-
-    public List<GoodsDetailsBanner> getGoodsDetailsBannerList() {
-        return goodsDetailsBannerList;
-    }
-
-    public void setGoodsDetailsBannerList(List<GoodsDetailsBanner> goodsDetailsBannerList) {
-        this.goodsDetailsBannerList = goodsDetailsBannerList;
     }
 
     @Override
