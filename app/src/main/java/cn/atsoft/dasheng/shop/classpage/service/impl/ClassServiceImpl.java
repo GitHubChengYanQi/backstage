@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.shop.classpage.service.impl;
+package cn.atsoft.dasheng.shop.classPage.service.impl;
 
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
