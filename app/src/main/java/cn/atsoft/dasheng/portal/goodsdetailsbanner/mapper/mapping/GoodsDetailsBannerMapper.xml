@@ -25,24 +25,36 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_goods_details_banner where 1 = 1
+        <if test="paramCondition.goodDetailsId != null">
+            and good_details_id = #{paramCondition.goodDetailsId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_goods_details_banner where 1 = 1
+        <if test="paramCondition.goodDetailsId != null">
+            and good_details_id = #{paramCondition.goodDetailsId}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result.GoodsDetailsBannerResult" parameterType="cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_goods_details_banner where 1 = 1
+        <if test="paramCondition.goodDetailsId != null">
+            and good_details_id = #{paramCondition.goodDetailsId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_goods_details_banner where 1 = 1
+        <if test="paramCondition.goodDetailsId != null">
+            and good_details_id = #{paramCondition.goodDetailsId}
+        </if>
     </select>
 
 </mapper>
