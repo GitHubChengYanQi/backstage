@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
+import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
@@ -15,11 +16,9 @@ import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result.GoodsDetailsBann
 import cn.atsoft.dasheng.portal.goodsdetailsbanner.service.GoodsDetailsBannerService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -32,22 +31,43 @@ public class ApiGoodsDetailsController {
     @Autowired
     private GoodsDetailsBannerService goodsDetailsBannerService;
 
-    @RequestMapping(value = "/getGoodsDetails", method = RequestMethod.GET)
-    public ResponseData getGoods(@RequestParam("goodId") Long goodId) {
+    @RequestMapping(value = "/getGoodsDetails", method = RequestMethod.POST)
+    public ResponseData getGoodsDetails(@RequestBody GoodsDetailsParam goodsDetailsParam) {
 
-        GoodsDetailsParam goodsDetailParam = new GoodsDetailsParam();
-        goodsDetailParam.setGoodId(goodId);
-        List<GoodsDetailsResult> detailDetailsList = goodsDetailsService.findListBySpec(goodsDetailParam);
-        GoodsDetailsBannerParam  goodsDetailsBannerParam = new GoodsDetailsBannerParam();
-
+        List<GoodsDetails> detailDetailsList = goodsDetailsService.list();
+        GoodsDetailsResult goodsDetailsResult = new GoodsDetailsResult();
         if(ToolUtil.isNotEmpty(detailDetailsList)){
-            for(GoodsDetailsResult data : detailDetailsList){
-                goodsDetailsBannerParam.setGoodDetailsId(data.getGoodDetailsId());
-                List<GoodsDetailsBannerResult> detailDetailsBannerList = goodsDetailsBannerService.findListBySpec(goodsDetailsBannerParam);
-                data.setGoodsDetailsBannerList(detailDetailsBannerList);
-            }
+            for(GoodsDetails data : detailDetailsList){
+                if(data.getGoodId().equals(goodsDetailsParam.getGoodId())){
+                    goodsDetailsResult.setGoodDetailsId(data.getGoodDetailsId());
+                    goodsDetailsResult.setGoodId(data.getGoodId());
+                    goodsDetailsResult.setDetailBannerId(data.getDetailBannerId());
+                    goodsDetailsResult.setTitle(data.getTitle());
+                    goodsDetailsResult.setPrice(data.getPrice());
+                    goodsDetailsResult.setLastPrice(data.getLastPrice());
+                    goodsDetailsResult.setServer(data.getServer());
+                    goodsDetailsResult.setSpecificationId(data.getSpecificationId());
+                    goodsDetailsResult.setDetails(data.getDetails());
+                    goodsDetailsResult.setSort(data.getSort());
 
+                    List<GoodsDetailsBanner> detailDetailsBannerList = goodsDetailsBannerService.list();
+
+                    List<GoodsDetailsBannerResult> goodsDetailsBannerResultList = new ArrayList<>();
+                    for(GoodsDetailsBanner bannerList : detailDetailsBannerList){
+                        if(bannerList.getGoodDetailsId().equals(data.getGoodDetailsId())){
+                            GoodsDetailsBannerResult goodsDetailsBannerResult = new GoodsDetailsBannerResult();
+                            goodsDetailsBannerResult.setGoodDetailsId(bannerList.getGoodDetailsId());
+                            goodsDetailsBannerResult.setDetailBannerId(bannerList.getDetailBannerId());
+                            goodsDetailsBannerResult.setSort(bannerList.getSort());
+                            goodsDetailsBannerResult.setImgUrl(bannerList.getImgUrl());
+                            goodsDetailsBannerResultList.add(goodsDetailsBannerResult);
+                        }
+                    }
+                    goodsDetailsResult.setGoodsDetailsBannerList(goodsDetailsBannerResultList);
+                    break;
+                }
+            }
         }
-        return ResponseData.success(detailDetailsList);
+        return ResponseData.success(goodsDetailsResult);
     }
 }
