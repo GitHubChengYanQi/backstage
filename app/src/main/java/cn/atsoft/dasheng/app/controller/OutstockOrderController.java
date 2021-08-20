@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.OutstockOrderSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
@@ -8,10 +11,14 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -112,6 +119,16 @@ public class OutstockOrderController extends BaseController {
 
         this.outstockOrderService.outStock(outstockOrderParam);
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<OutstockOrder> itemsQueryWrapper = new QueryWrapper<>();
+        itemsQueryWrapper.in("display", 1).in("state",1);
+        List<Map<String, Object>> list = this.outstockOrderService.listMaps(itemsQueryWrapper);
+        OutstockOrderSelectWrapper itemsSelectWrapper = new OutstockOrderSelectWrapper(list);
+        List<Map<String, Object>> result = itemsSelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 
