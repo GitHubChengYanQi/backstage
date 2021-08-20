@@ -79,9 +79,14 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
         List<ClassDifference> list = this.list(queryWrapper);
         List<ClassDifferenceResult> results = new ArrayList<>();
         for (ClassDifference classDifference : list) {
-            ClassDifferenceResult classDifferenceResult = new ClassDifferenceResult();
-            ToolUtil.copyProperties(classDifference,classDifferenceResult);
-            results.add(classDifferenceResult);
+            for (Long id : ids) {
+                if (classDifference.getClassId().equals(id)){
+                    ClassDifferenceResult classDifferenceResult = new ClassDifferenceResult();
+                    ToolUtil.copyProperties(classDifference,classDifferenceResult);
+                    results.add(classDifferenceResult);
+                }
+            }
+
         }
         this.getdeta(results);
         return results;
@@ -89,15 +94,11 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
 
     @Override
     public List<ClassDifferenceResult> getdetalis(Long ids) {
-
         List<Long> dIds = new ArrayList<>();
-
-
         ClassDifferenceParam classDifferenceParam = new ClassDifferenceParam();
         classDifferenceParam.setClassId(ids);
         List<ClassDifferenceResult> list = this.baseMapper.customList(classDifferenceParam);
         for (ClassDifferenceResult classDifference : list) {
-
             Long classDifferenceId = classDifference.getClassDifferenceId();
             dIds.add(classDifferenceId);
         }
@@ -105,17 +106,17 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
         detailsQueryWrapper.in("class_difference_id",dIds);
         List<ClassDifferenceDetails> details = dIds.size() == 0 ? new ArrayList<>() : service.list(detailsQueryWrapper);
         for (ClassDifferenceResult classDifference : list) {
-            List list1 = new ArrayList();
+            List<ClassDifferenceDetailsResult> results = new ArrayList();
             for (ClassDifferenceDetails detail : details) {
                 if (detail.getClassDifferenceId().equals(classDifference.getClassDifferenceId())) {
                     ClassDifferenceDetailsResult classDifferenceDetailsResult = new ClassDifferenceDetailsResult();
                     ToolUtil.copyProperties(detail, classDifferenceDetailsResult);
-                    list1.add(classDifferenceDetailsResult);
+                    results.add(classDifferenceDetailsResult);
                 }
 
             }
 
-            classDifference.setList(list1);
+            classDifference.setList(results);
         }
 
 
