@@ -76,7 +76,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
         deliveryQueryWrapper.in("delivery_id", ids);
-        List<Delivery> deliveryList = deliveryService.list(deliveryQueryWrapper);
+        List<Delivery> deliveryList = ids.size() == 0 ? new ArrayList<>() : deliveryService.list(deliveryQueryWrapper);
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
                 if (record.getDeliveryId().equals(delivery.getDeliveryId())) {
