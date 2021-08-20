@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import lombok.Data;
 
 import java.util.Date;
@@ -7,6 +10,7 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -25,8 +29,14 @@ public class DeliveryDetailsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private DeliveryResult deliveryResult;
     private Integer stage;
-    private  ItemsResult itemsResult;
-    private  CustomerResult customerResult;
+    private ItemsResult itemsResult;
+    private CustomerResult customerResult;
+
+    private AdressResult adressResult;
+
+    private ContactsRequest contactsRequest;
+
+    private PhoneResult phoneResult;
 
     /**
      * 发货详情id
