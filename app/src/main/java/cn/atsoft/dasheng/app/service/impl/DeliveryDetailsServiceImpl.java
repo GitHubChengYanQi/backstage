@@ -86,8 +86,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
             sids.add(record.getStockItemId());
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
-        List<Delivery> deliveryList = ids.size() == 0 ? new ArrayList<>() : deliveryService.list(deliveryQueryWrapper);
         deliveryQueryWrapper.in("delivery_id", dids);
+        List<Delivery> deliveryList = dids.size() == 0 ? new ArrayList<>() : deliveryService.list(deliveryQueryWrapper);
+
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", Iids);
