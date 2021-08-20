@@ -85,7 +85,7 @@ public class DeliveryDetailsController extends BaseController {
         DeliveryDetailsResult result = new DeliveryDetailsResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 

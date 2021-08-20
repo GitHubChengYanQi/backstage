@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author  
+ * @author
  * @since 2021-08-20
  */
 @Data
@@ -19,7 +23,7 @@ import java.util.List;
 public class DeliveryDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private DeliveryResult deliveryResult;
 
     /**
      * 发货详情id
