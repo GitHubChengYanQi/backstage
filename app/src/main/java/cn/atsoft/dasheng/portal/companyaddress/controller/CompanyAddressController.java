@@ -85,7 +85,6 @@ public class CompanyAddressController extends BaseController {
         CompanyAddressResult result = new CompanyAddressResult();
         ToolUtil.copyProperties(detail, result);
 
-
         return ResponseData.success(result);
     }
 

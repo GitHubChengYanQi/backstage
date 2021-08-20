@@ -85,7 +85,6 @@ public class RepairController extends BaseController {
         RepairResult result = new RepairResult();
         ToolUtil.copyProperties(detail, result);
 
-
         return ResponseData.success(result);
     }
 
