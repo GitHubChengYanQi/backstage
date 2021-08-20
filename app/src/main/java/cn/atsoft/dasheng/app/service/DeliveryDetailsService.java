@@ -24,7 +24,7 @@ public interface DeliveryDetailsService extends IService<DeliveryDetails> {
      * @author  
      * @Date 2021-08-20
      */
-    void add(DeliveryDetailsParam param);
+    DeliveryDetails add(DeliveryDetailsParam param);
 
     /**
      * 删除

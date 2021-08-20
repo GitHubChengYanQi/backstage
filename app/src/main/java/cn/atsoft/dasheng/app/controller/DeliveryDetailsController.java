@@ -41,8 +41,8 @@ public class DeliveryDetailsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody DeliveryDetailsParam deliveryDetailsParam) {
-        this.deliveryDetailsService.add(deliveryDetailsParam);
-        return ResponseData.success();
+        DeliveryDetails add = this.deliveryDetailsService.add(deliveryDetailsParam);
+        return ResponseData.success(add);
     }
 
     /**
@@ -85,7 +85,6 @@ public class DeliveryDetailsController extends BaseController {
         DeliveryDetailsResult result = new DeliveryDetailsResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

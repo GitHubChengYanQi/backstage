@@ -102,7 +102,7 @@
                         and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
                 </if>
                 <if test="paramCondition.deliveryId != null">
-                        and delivery_id like CONCAT('%',#{paramCondition.deliveryId},'%')
+                        and delivery_id = #{paramCondition.deliveryId}
                 </if>
     </select>
 

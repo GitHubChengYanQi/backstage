@@ -29,9 +29,10 @@ import java.util.List;
 public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMapper, DeliveryDetails> implements DeliveryDetailsService {
 
     @Override
-    public void add(DeliveryDetailsParam param){
+    public DeliveryDetails add(DeliveryDetailsParam param){
         DeliveryDetails entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override

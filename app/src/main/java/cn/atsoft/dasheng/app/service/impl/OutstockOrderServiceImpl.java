@@ -2,17 +2,15 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
+import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
+import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
-import cn.atsoft.dasheng.app.service.OutstockService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
-import  cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -44,6 +42,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Autowired
     private OutstockService outstockService;
 
+    @Autowired
+    private DeliveryService deliveryService;
+    @Autowired
+    private DeliveryDetailsService deliveryDetailsService;
+
 
     @Override
     public Long add(OutstockOrderParam param){
@@ -72,7 +75,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         if(ToolUtil.isNotEmpty(outstockList)){
             List<Stock> Stock = this.stockService.list();
-            List<StockDetails> stockDetail = this.stockDetailsService.list();
+            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+
             // 出库明细里进行出库
             for(int i = 0; i < outstockList.size(); i++){
                 Outstock outstock = outstockList.get(i);
@@ -87,6 +91,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 && StockList.getBrandId().equals(outstock.getBrandId())
                                 && StockList.getStorehouseId().equals(outstock.getStorehouseId())
                         ) {
+                            queryWrapper.in("stock_id",StockList.getStockId());
+                            List<StockDetails> stockDetail = this.stockDetailsService.list(queryWrapper);
                             // 库存数据数量的判断
                             if (StockList.getInventory() == 0) {
                                 throw new ServiceException(500, "此产品仓库库存不足！");
@@ -102,6 +108,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 // 减去出库数量
                                 this.stockService.update(stockParam);
 
+                                DeliveryParam deliveryParam = new DeliveryParam();
+                                deliveryParam.setOutstockOrderId(param.getOutstockOrderId());
+                                Long deliverId = deliveryService.add(deliveryParam);
+
+
                                 if (ToolUtil.isEmpty(stockDetail)) {
                                     throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
                                 } else {
@@ -110,11 +121,13 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                         StockDetails stockDetailList = stockDetail.get(j);
                                         // 匹配库存明细里对应的数据
                                         if (stockDetailList.getStockId().equals(StockList.getStockId())) {
+                                            DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
+                                            deliveryDetailsParam.setDeliveryId(deliverId);
+                                            deliveryDetailsParam.setStockItemId(stockDetailList.getStockItemId());
+                                            deliveryDetailsService.add(deliveryDetailsParam);
                                             // 减去出库明细产品
                                             StockDetails StockDetailsList = stockDetail.get(j);
                                             stockItemIds.add(StockDetailsList.getStockItemId());
-                                            StockDetailsParam stockDetailsParam = new StockDetailsParam();
-                                            stockDetailsParam.setStage(2);
                                         }
                                     }
                                     this.stockDetailsService.removeByIds(stockItemIds);
