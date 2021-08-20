@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.DeliveryDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.DeliveryDetails">
+        <id column="delivery_details_id" property="deliveryDetailsId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="adress_id" property="adressId"/>
+        <result column="contacts_id" property="contactsId"/>
+        <result column="phone_id" property="phoneId"/>
+        <result column="stock_item_id" property="stockItemId"/>
+        <result column="delivery_id" property="deliveryId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="stage" property="stage"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">stage
+    AS "stage",
+        delivery_details_id AS "deliveryDetailsId", item_id AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId", stock_item_id AS "stockItemId", delivery_id AS "deliveryId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_delivery_details where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.adressId != null">
+            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
+        </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneId != null">
+            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
+        </if>
+        <if test="paramCondition.stockItemId != null">
+            and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
+        </if>
+        <if test="paramCondition.deliveryId != null">
+            and delivery_id like CONCAT('%',#{paramCondition.deliveryId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_delivery_details where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.adressId != null">
+            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
+        </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneId != null">
+            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
+        </if>
+        <if test="paramCondition.stockItemId != null">
+            and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
+        </if>
+        <if test="paramCondition.deliveryId != null">
+            and delivery_id like CONCAT('%',#{paramCondition.deliveryId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_delivery_details where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.adressId != null">
+            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
+        </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneId != null">
+            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
+        </if>
+        <if test="paramCondition.stockItemId != null">
+            and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
+        </if>
+        <if test="paramCondition.deliveryId != null">
+            and delivery_id = #{paramCondition.deliveryId}
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_delivery_details where 1 = 1
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.adressId != null">
+            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
+        </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
+        </if>
+        <if test="paramCondition.phoneId != null">
+            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
+        </if>
+        <if test="paramCondition.stockItemId != null">
+            and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
+        </if>
+        <if test="paramCondition.deliveryId != null">
+            and delivery_id like CONCAT('%',#{paramCondition.deliveryId},'%')
+        </if>
+    </select>
+
+</mapper>

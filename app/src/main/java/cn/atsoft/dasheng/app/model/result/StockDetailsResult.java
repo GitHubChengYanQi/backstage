@@ -29,6 +29,7 @@ public class StockDetailsResult implements Serializable {
     private StorehouseResult storehouseResult;
     private ItemsResult itemsResult;
     private  BrandResult brandResult;
+    private  Integer stage;
 
     /**
      * 明细id
