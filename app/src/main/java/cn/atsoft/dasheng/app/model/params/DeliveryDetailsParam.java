@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Integer stage;
 
     /**
      * 发货详情id
