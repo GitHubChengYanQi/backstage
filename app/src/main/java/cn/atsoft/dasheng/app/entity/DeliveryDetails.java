@@ -6,6 +6,8 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
+
 import java.io.Serializable;
 
 /**
@@ -21,6 +23,8 @@ public class DeliveryDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("stage")
+    private Integer stage;
     /**
      * 发货详情id
      */
@@ -202,6 +206,14 @@ public class DeliveryDetails implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Integer getStage() {
+        return stage;
+    }
+
+    public void setStage(Integer stage) {
+        this.stage = stage;
     }
 
     @Override
