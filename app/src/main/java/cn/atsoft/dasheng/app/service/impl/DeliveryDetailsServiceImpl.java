@@ -2,15 +2,18 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Delivery;
+import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.DeliveryResult;
-import cn.atsoft.dasheng.app.service.DeliveryService;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.mapper.DeliveryDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
-import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -35,9 +38,13 @@ import java.util.List;
 public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMapper, DeliveryDetails> implements DeliveryDetailsService {
     @Autowired
     private DeliveryService deliveryService;
+    @Autowired
+    private ItemsService itemsService;
+    @Autowired
+    private StockDetailsService stockService;
 
     @Override
-    public DeliveryDetails add(DeliveryDetailsParam param){
+    public DeliveryDetails add(DeliveryDetailsParam param) {
         DeliveryDetails entity = getEntity(param);
         this.save(entity);
         return entity;
@@ -70,19 +77,47 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     public PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param) {
         Page<DeliveryDetailsResult> pageContext = getPageContext();
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
-        List<Long> ids = new ArrayList<>();
+        List<Long> dids = new ArrayList<>();
+        List<Long> Iids = new ArrayList<>();
+        List<Long> sids = new ArrayList<>();
         for (DeliveryDetailsResult record : page.getRecords()) {
-            ids.add(record.getDeliveryId());
+            dids.add(record.getDeliveryId());
+            Iids.add(record.getItemId());
+            sids.add(record.getStockItemId());
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
-        deliveryQueryWrapper.in("delivery_id", ids);
+        deliveryQueryWrapper.in("delivery_id", dids);
         List<Delivery> deliveryList = deliveryService.list(deliveryQueryWrapper);
+
+        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+        itemsQueryWrapper.in("item_id", Iids);
+        List<Items> itemsList =Iids.size()==0?new ArrayList<>(): itemsService.list(itemsQueryWrapper);
+
+        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
+        stockDetailsQueryWrapper.in("stock_item_id", sids);
+        List<StockDetails> stockDetailsList =sids.size()==0?new ArrayList<>():stockService.list(stockDetailsQueryWrapper);
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
                 if (record.getDeliveryId().equals(delivery.getDeliveryId())) {
                     DeliveryResult deliveryResult = new DeliveryResult();
                     ToolUtil.copyProperties(delivery, deliveryResult);
                     record.setDeliveryResult(deliveryResult);
+                    break;
+                }
+            }
+            for (Items items : itemsList) {
+                if (items.getItemId().equals(record.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(items, itemsResult);
+                    record.setItemsResult(itemsResult);
+                    break;
+                }
+            }
+            for (StockDetails stockDetails : stockDetailsList) {
+                if (stockDetails.getStockItemId().equals(record.getStockItemId())) {
+                    StockDetailsResult stockDetailsResult = new StockDetailsResult();
+                    ToolUtil.copyProperties(stockDetails, stockDetailsResult);
+                    record.setStockDetailsResult(stockDetailsResult);
                     break;
                 }
             }

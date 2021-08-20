@@ -25,6 +25,8 @@ public class DeliveryDetailsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private DeliveryResult deliveryResult;
     private Integer stage;
+    private  ItemsResult itemsResult;
+    private  StockDetailsResult stockDetailsResult;
     /**
      * 发货详情id
      */
