@@ -106,17 +106,17 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
         detailsQueryWrapper.in("class_difference_id",dIds);
         List<ClassDifferenceDetails> details = dIds.size() == 0 ? new ArrayList<>() : service.list(detailsQueryWrapper);
         for (ClassDifferenceResult classDifference : list) {
-            List list1 = new ArrayList();
+            List<ClassDifferenceDetailsResult> results = new ArrayList();
             for (ClassDifferenceDetails detail : details) {
                 if (detail.getClassDifferenceId().equals(classDifference.getClassDifferenceId())) {
                     ClassDifferenceDetailsResult classDifferenceDetailsResult = new ClassDifferenceDetailsResult();
                     ToolUtil.copyProperties(detail, classDifferenceDetailsResult);
-                    list1.add(classDifferenceDetailsResult);
+                    results.add(classDifferenceDetailsResult);
                 }
 
             }
 
-            classDifference.setList(list1);
+            classDifference.setList(results);
         }
 
 

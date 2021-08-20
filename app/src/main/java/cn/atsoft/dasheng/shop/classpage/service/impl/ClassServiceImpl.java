@@ -129,21 +129,5 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implem
        }return  classResults ;
 
    }
-//        ClassParam classParam = new ClassParam();
-//       List<ClassResult> classResults = this.baseMapper.customList(classParam);
-//       List<Long> ids = new ArrayList<>();
-//       for (ClassResult classResult : classResults) {
-//           ids.add(classResult.getClassId());
-//       }
-//       List<ClassDifferenceResult> byIds = service.getByIds(ids);
-//
-//       for (ClassResult classResult : classResults) {
-//           for (ClassDifferenceResult byId : byIds) {
-//               if (byId.getClassId().equals(classResult.getClassId())) {
-//                   classResult.setList(byIds);
-//               }
-//           }
-//       }
-//       return classResults;
-//   }
+
 }
