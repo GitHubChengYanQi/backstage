@@ -1,19 +1,13 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Delivery;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.model.result.DeliveryResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.mapper.DeliveryDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
-import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,6 +34,8 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     private DeliveryService deliveryService;
     @Autowired
     private ItemsService itemsService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     public DeliveryDetails add(DeliveryDetailsParam param) {
@@ -77,10 +73,11 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
-
+        List<Long> cIds = new ArrayList<>();
         for (DeliveryDetailsResult record : page.getRecords()) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
+            cIds.add(record.getCustomerId());
 
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
@@ -92,6 +89,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         itemsQueryWrapper.in("item_id", Iids);
         List<Items> itemsList =Iids.size()==0?new ArrayList<>(): itemsService.list(itemsQueryWrapper);
 
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("customer_id",cIds);
+        List<Customer> customerList = customerService.list(customerQueryWrapper);
 
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
@@ -107,6 +107,14 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     ItemsResult itemsResult = new ItemsResult();
                     ToolUtil.copyProperties(items, itemsResult);
                     record.setItemsResult(itemsResult);
+                    break;
+                }
+            }
+            for (Customer customer : customerList) {
+                if (customer.getCustomerId().equals(record.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer,customerResult);
+                    record.setCustomerResult(customerResult);
                     break;
                 }
             }
