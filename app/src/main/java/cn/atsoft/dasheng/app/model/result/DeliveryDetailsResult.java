@@ -34,7 +34,7 @@ public class DeliveryDetailsResult implements Serializable {
 
     private AdressResult adressResult;
 
-    private ContactsRequest contactsRequest;
+    private ContactsResult contactsResult;
 
     private PhoneResult phoneResult;
 

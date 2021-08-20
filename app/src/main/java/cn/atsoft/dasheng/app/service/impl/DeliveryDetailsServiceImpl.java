@@ -153,9 +153,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
             }
             for (Contacts contacts : contactsList) {
                 if (contacts.getContactsId().equals(record.getContactsId())) {
-                    ContactsRequest contactsRequest = new ContactsRequest();
-                    ToolUtil.copyProperties(contacts, contactsRequest);
-                    record.setContactsRequest(contactsRequest);
+                    ContactsResult contactsResult = new ContactsResult();
+                    ToolUtil.copyProperties(contacts, contactsResult);
+                    record.setContactsRequest(contactsResult);
                     break;
                 }
             }
