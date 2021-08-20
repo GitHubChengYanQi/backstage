@@ -3,18 +3,26 @@ package cn.atsoft.dasheng.portal.goodsdetails.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.goods.entity.Goods;
+import cn.atsoft.dasheng.portal.goods.model.params.GoodsParam;
+import cn.atsoft.dasheng.portal.goods.service.GoodsService;
 import cn.atsoft.dasheng.portal.goodsdetails.entity.GoodsDetails;
 import cn.atsoft.dasheng.portal.goodsdetails.mapper.GoodsDetailsMapper;
 import cn.atsoft.dasheng.portal.goodsdetails.model.params.GoodsDetailsParam;
 import cn.atsoft.dasheng.portal.goodsdetails.model.result.GoodsDetailsResult;
 import  cn.atsoft.dasheng.portal.goodsdetails.service.GoodsDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.service.GoodsDetailsBannerService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,23 +36,40 @@ import java.util.List;
 @Service
 public class GoodsDetailsServiceImpl extends ServiceImpl<GoodsDetailsMapper, GoodsDetails> implements GoodsDetailsService {
 
+    @Autowired
+    private GoodsDetailsBannerService goodsDetailsBannerService;
     @Override
-    public void add(GoodsDetailsParam param){
+    public Long add(GoodsDetailsParam param){
         GoodsDetails entity = getEntity(param);
         this.save(entity);
+        return entity.getGoodDetailsId();
     }
 
     @Override
     public void delete(GoodsDetailsParam param){
-        this.removeById(getKey(param));
+        try {
+            // 删除商品轮播图
+            List detailBannerIds = new ArrayList<>();
+            List<GoodsDetailsBanner> goodsDetailsBanner = this.goodsDetailsBannerService.list();
+            for(GoodsDetailsBanner bannerData : goodsDetailsBanner) {
+                if(bannerData.getGoodDetailsId() == param.getGoodDetailsId()){
+                    detailBannerIds.add(bannerData.getDetailBannerId());
+                }
+            }
+            this.goodsDetailsBannerService.removeByIds(detailBannerIds);
+            this.removeById(getKey(param));
+        }catch (Exception e){
+            //
+        }
     }
 
     @Override
-    public void update(GoodsDetailsParam param){
+    public Long update(GoodsDetailsParam param){
         GoodsDetails oldEntity = getOldEntity(param);
         GoodsDetails newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity.getGoodDetailsId();
     }
 
     @Override

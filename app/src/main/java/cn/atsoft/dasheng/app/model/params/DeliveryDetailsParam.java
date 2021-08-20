@@ -3,73 +3,73 @@ package cn.atsoft.dasheng.app.model.params;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
 /**
  * <p>
- * 仓库物品明细表
+ * 
  * </p>
  *
- * @author
- * @since 2021-07-15
+ * @author  
+ * @since 2021-08-20
  */
 @Data
 @ApiModel
-public class StockDetailsParam implements Serializable, BaseValidatingParam {
+public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  Integer stage;
-    private String iname;
-    private String pname;
 
-    private Long storehouseId;
-    /**
-     * 明细id
-     */
-    @ApiModelProperty("明细id")
-    private Long stockItemId;
 
     /**
-     * 仓库id
+     * 发货详情id
      */
-    @ApiModelProperty("仓库id")
-    private  Long stockId;
+    @ApiModelProperty("发货详情id")
+    private Long deliveryDetailsId;
 
     /**
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private  Long itemId;
+    private Long itemId;
 
     /**
-     * 价格
+     * 客户id
      */
-    @ApiModelProperty("价格")
-    private Integer price;
+    @ApiModelProperty("客户id")
+    private Long customerId;
 
     /**
-     * 入库时间
+     * 地址id
      */
-    @ApiModelProperty("入库时间")
-    private Date storageTime;
+    @ApiModelProperty("地址id")
+    private Long adressId;
 
     /**
-     * 品牌id
+     * 联系人id
      */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
 
     /**
-     * 条形码
+     * 电话id
      */
-    @ApiModelProperty("条形码")
-    private Long barcode;
+    @ApiModelProperty("电话id")
+    private Long phoneId;
+
+    /**
+     * 出库明细id
+     */
+    @ApiModelProperty("出库明细id")
+    private Long stockItemId;
+
+    /**
+     * 出库单
+     */
+    @ApiModelProperty("出库单")
+    private Long deliveryId;
 
     /**
      * 创建者
@@ -78,16 +78,16 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Long createUser;
 
     /**
-     * 创建时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
-
-    /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
 
     /**
      * 修改时间

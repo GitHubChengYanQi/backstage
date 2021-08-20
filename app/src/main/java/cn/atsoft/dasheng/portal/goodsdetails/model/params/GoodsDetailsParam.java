@@ -30,7 +30,7 @@ public class GoodsDetailsParam implements Serializable, BaseValidatingParam {
      * 商品明细id
      */
     @ApiModelProperty("商品明细id")
-    private String goodDetailsId;
+    private Long goodDetailsId;
 
     /**
      * 商品id

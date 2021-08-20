@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.portal.goodsdetails.entity;
 
 import java.math.BigDecimal;
+
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result.GoodsDetailsBannerResult;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -8,6 +11,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -26,7 +30,7 @@ public class GoodsDetails implements Serializable {
      * 商品明细id
      */
       @TableId(value = "good_details_id", type = IdType.ID_WORKER)
-    private String goodDetailsId;
+    private Long goodDetailsId;
 
     /**
      * 商品id
@@ -113,11 +117,11 @@ public class GoodsDetails implements Serializable {
     private Integer display;
 
 
-    public String getGoodDetailsId() {
+    public Long getGoodDetailsId() {
         return goodDetailsId;
     }
 
-    public void setGoodDetailsId(String goodDetailsId) {
+    public void setGoodDetailsId(Long goodDetailsId) {
         this.goodDetailsId = goodDetailsId;
     }
 

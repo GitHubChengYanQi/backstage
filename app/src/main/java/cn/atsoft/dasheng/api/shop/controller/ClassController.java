@@ -20,7 +20,7 @@ public class ClassController {
 
     @RequestMapping(value = "/getclass", method = RequestMethod.GET)
     public ResponseData getclass() {
-        List getdif = service.format();
-        return ResponseData.success(getdif);
+        List format = service.format();
+        return ResponseData.success(format);
     }
 }

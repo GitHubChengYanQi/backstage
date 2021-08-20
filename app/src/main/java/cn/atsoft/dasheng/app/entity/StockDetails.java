@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 
@@ -23,7 +24,10 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("stage")
+    private Integer stage;
 
+    @TableField("storehouse_id")
     private Long storehouseId;
 
     /**
@@ -92,14 +96,14 @@ public class StockDetails implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-  /**
-   * 状态
-   */
-  @TableField("display")
-  private Integer display;
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
 
 
-  public static long getSerialVersionUID() {
+    public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
@@ -207,8 +211,13 @@ public class StockDetails implements Serializable {
         this.barcode = barcode;
     }
 
+    public Integer getStage() {
+        return stage;
+    }
 
-
+    public void setStage(Integer stage) {
+        this.stage = stage;
+    }
 
     @Override
     public String toString() {

@@ -1,8 +1,5 @@
-package cn.atsoft.dasheng.shop.classpage.model.result;
+package cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result;
 
-import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
-import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
-import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -11,32 +8,30 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 一级分类导航
+ * 商品轮播图
  * </p>
  *
- * @author 
+ * @author siqiang
  * @since 2021-08-19
  */
 @Data
 @ApiModel
-public class ClassResult implements Serializable {
+public class GoodsDetailsBannerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-  private BannerDifferenceResult bannerDifferenceResult;
-
-    private  List<ClassDifferenceResult> list;
-    /**
-     * 分类id
-     */
-    @ApiModelProperty("分类id")
-    private Long classId;
 
     /**
-     * 分类名称
+     * 轮播图id
      */
-    @ApiModelProperty("分类名称")
-    private String className;
+    @ApiModelProperty("轮播图id")
+    private Long detailBannerId;
+
+    /**
+     * 商品明细id
+     */
+    @ApiModelProperty("商品明细id")
+    private Long goodDetailsId;
 
     /**
      * 排序
@@ -45,10 +40,10 @@ public class ClassResult implements Serializable {
     private Long sort;
 
     /**
-     * 轮播图分类id
+     * 图片路径
      */
-    @ApiModelProperty("轮播图分类id")
-    private Long classificationId;
+    @ApiModelProperty("图片路径")
+    private String imgUrl;
 
     /**
      * 创建时间

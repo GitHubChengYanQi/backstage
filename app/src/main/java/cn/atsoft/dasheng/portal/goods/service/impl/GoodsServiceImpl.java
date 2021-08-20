@@ -15,6 +15,9 @@ import cn.atsoft.dasheng.portal.goodsdetails.entity.GoodsDetails;
 import cn.atsoft.dasheng.portal.goodsdetails.model.params.GoodsDetailsParam;
 import cn.atsoft.dasheng.portal.goodsdetails.model.result.GoodsDetailsResult;
 import cn.atsoft.dasheng.portal.goodsdetails.service.GoodsDetailsService;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.service.GoodsDetailsBannerService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +41,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Autowired
     private GoodsDetailsService goodsDetailsService;
+    @Autowired
+    private GoodsDetailsBannerService goodsDetailsBannerService;
 
     @Override
     public void add(GoodsParam param){
@@ -48,8 +54,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         goodsDetail.setTitle(entity.getTitle());
         goodsDetail.setPrice(entity.getPrice());
         goodsDetail.setLastPrice(entity.getLastPrice());
-        this.goodsDetailsService.add(goodsDetail);
-
+        Long goodsDetailsId = this.goodsDetailsService.add(goodsDetail);
+        // 把图片加到商品轮播图
+        GoodsDetailsBannerParam goodsDetailsBanner = new GoodsDetailsBannerParam();
+        goodsDetailsBanner.setGoodDetailsId(goodsDetailsId);
+        goodsDetailsBanner.setImgUrl(param.getImgUrl());
+        goodsDetailsBanner.setSort(1L);
+        this.goodsDetailsBannerService.add(goodsDetailsBanner);
     }
 
     @Override
@@ -59,14 +70,23 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             throw new ServiceException(500,"删除目标不存在");
         }
         List<GoodsDetails> goodsDetails = this.goodsDetailsService.list();
+        List detailBannerIds = new ArrayList<>();
+        // 删除商品详细
         for(GoodsDetails data : goodsDetails){
             if(data.getGoodId() == param.getGoodId()) {
                 this.goodsDetailsService.removeById(data.getGoodDetailsId());
+                // 删除商品轮播图
+                List<GoodsDetailsBanner> goodsDetailsBanner = this.goodsDetailsBannerService.list();
+                for(GoodsDetailsBanner bannerData : goodsDetailsBanner) {
+                    if(bannerData.getGoodDetailsId() == data.getGoodDetailsId()){
+                        detailBannerIds.add(bannerData.getDetailBannerId());
+                    }
+                }
+                this.goodsDetailsBannerService.removeByIds(detailBannerIds);
             }
         }
 
-        param.setDisplay(0);
-        this.update(param);
+        this.removeById(getKey(param));
     }
 
     @Override
@@ -84,7 +104,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 goodsDetail.setTitle(data.getTitle());
                 goodsDetail.setPrice(data.getPrice());
                 goodsDetail.setLastPrice(data.getLastPrice());
-                this.goodsDetailsService.update(goodsDetail);
+                Long goodsDetailsId = this.goodsDetailsService.update(goodsDetail);
+
+                GoodsDetailsBannerParam goodsDetailsBanner = new GoodsDetailsBannerParam();
+                goodsDetailsBanner.setGoodDetailsId(goodsDetailsId);
+                goodsDetailsBanner.setImgUrl(param.getImgUrl());
+                this.goodsDetailsBannerService.update(goodsDetailsBanner);
                 break;
             }
         }

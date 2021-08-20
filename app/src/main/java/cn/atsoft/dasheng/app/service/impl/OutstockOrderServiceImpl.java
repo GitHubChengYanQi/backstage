@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
@@ -112,6 +113,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                             // 减去出库明细产品
                                             StockDetails StockDetailsList = stockDetail.get(j);
                                             stockItemIds.add(StockDetailsList.getStockItemId());
+                                            StockDetailsParam stockDetailsParam = new StockDetailsParam();
+                                            stockDetailsParam.setStage(2);
                                         }
                                     }
                                     this.stockDetailsService.removeByIds(stockItemIds);

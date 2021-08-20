@@ -1,22 +1,22 @@
-package cn.atsoft.dasheng.portal.goodsdetails.service;
+package cn.atsoft.dasheng.portal.goodsdetailsbanner.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.goodsdetails.entity.GoodsDetails;
-import cn.atsoft.dasheng.portal.goodsdetails.model.params.GoodsDetailsParam;
-import cn.atsoft.dasheng.portal.goodsdetails.model.result.GoodsDetailsResult;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam;
+import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result.GoodsDetailsBannerResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * <p>
- * 首页商品详情 服务类
+ * 商品轮播图 服务类
  * </p>
  *
  * @author siqiang
  * @since 2021-08-19
  */
-public interface GoodsDetailsService extends IService<GoodsDetails> {
+public interface GoodsDetailsBannerService extends IService<GoodsDetailsBanner> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-    Long add(GoodsDetailsParam param);
+    void add(GoodsDetailsBannerParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-    void delete(GoodsDetailsParam param);
+    void delete(GoodsDetailsBannerParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-    Long update(GoodsDetailsParam param);
+    void update(GoodsDetailsBannerParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-    GoodsDetailsResult findBySpec(GoodsDetailsParam param);
+    GoodsDetailsBannerResult findBySpec(GoodsDetailsBannerParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-    List<GoodsDetailsResult> findListBySpec(GoodsDetailsParam param);
+    List<GoodsDetailsBannerResult> findListBySpec(GoodsDetailsBannerParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface GoodsDetailsService extends IService<GoodsDetails> {
      * @author siqiang
      * @Date 2021-08-19
      */
-     PageInfo<GoodsDetailsResult> findPageBySpec(GoodsDetailsParam param);
+     PageInfo<GoodsDetailsBannerResult> findPageBySpec(GoodsDetailsBannerParam param);
 
 }
