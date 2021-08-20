@@ -40,8 +40,6 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     private DeliveryService deliveryService;
     @Autowired
     private ItemsService itemsService;
-    @Autowired
-    private StockDetailsService stockService;
 
     @Override
     public DeliveryDetails add(DeliveryDetailsParam param) {
@@ -79,11 +77,11 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
-        List<Long> sids = new ArrayList<>();
+
         for (DeliveryDetailsResult record : page.getRecords()) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
-            sids.add(record.getStockItemId());
+
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
         deliveryQueryWrapper.in("delivery_id", dids);
@@ -93,9 +91,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         itemsQueryWrapper.in("item_id", Iids);
         List<Items> itemsList =Iids.size()==0?new ArrayList<>(): itemsService.list(itemsQueryWrapper);
 
-        QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
-        stockDetailsQueryWrapper.in("stock_item_id", sids);
-        List<StockDetails> stockDetailsList =sids.size()==0?new ArrayList<>():stockService.list(stockDetailsQueryWrapper);
+
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
                 if (record.getDeliveryId().equals(delivery.getDeliveryId())) {
@@ -113,14 +109,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     break;
                 }
             }
-            for (StockDetails stockDetails : stockDetailsList) {
-                if (stockDetails.getStockItemId().equals(record.getStockItemId())) {
-                    StockDetailsResult stockDetailsResult = new StockDetailsResult();
-                    ToolUtil.copyProperties(stockDetails, stockDetailsResult);
-                    record.setStockDetailsResult(stockDetailsResult);
-                    break;
-                }
-            }
+
         }
         return PageFactory.createPageInfo(page);
     }
