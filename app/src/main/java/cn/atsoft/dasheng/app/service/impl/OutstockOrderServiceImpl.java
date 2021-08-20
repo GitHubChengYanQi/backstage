@@ -123,6 +123,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                         if (stockDetailList.getStockId().equals(StockList.getStockId())) {
                                             DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
                                             deliveryDetailsParam.setDeliveryId(deliverId);
+                                            deliveryDetailsParam.setItemId(stockDetailList.getItemId());
                                             deliveryDetailsParam.setStockItemId(stockDetailList.getStockItemId());
                                             deliveryDetailsService.add(deliveryDetailsParam);
                                             // 减去出库明细产品
