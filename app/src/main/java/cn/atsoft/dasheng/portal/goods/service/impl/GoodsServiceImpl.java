@@ -59,6 +59,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         GoodsDetailsBannerParam goodsDetailsBanner = new GoodsDetailsBannerParam();
         goodsDetailsBanner.setGoodDetailsId(goodsDetailsId);
         goodsDetailsBanner.setImgUrl(param.getImgUrl());
+        goodsDetailsBanner.setSort(1L);
         this.goodsDetailsBannerService.add(goodsDetailsBanner);
     }
 
@@ -85,8 +86,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             }
         }
 
-        param.setDisplay(0);
-        this.update(param);
+        this.removeById(getKey(param));
     }
 
     @Override
