@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.shop.classpage.model.result;
 
+import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class ClassResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+  private BannerDifferenceResult bannerDifferenceResult;
 
     private  List<ClassDifferenceResult> list;
     /**

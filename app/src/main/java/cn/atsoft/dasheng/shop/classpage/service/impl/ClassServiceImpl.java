@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.shop.classpage.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
+import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
+import cn.atsoft.dasheng.portal.bannerdifference.service.BannerDifferenceService;
 import cn.atsoft.dasheng.shop.classdifference.entity.ClassDifference;
 import cn.atsoft.dasheng.shop.classdifference.model.result.ClassDifferenceResult;
 import cn.atsoft.dasheng.shop.classdifference.service.ClassDifferenceService;
@@ -35,8 +38,8 @@ import java.util.List;
 @Service
 public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implements ClassService {
     @Autowired
-    private ClassDifferenceService service;
-
+//    private ClassDifferenceService service;
+    private BannerDifferenceService bannerDifferenceService;
 
     @Override
     public void add(ClassParam param) {
@@ -107,19 +110,40 @@ public class ClassServiceImpl extends ServiceImpl<ClassMapper, Classpojo> implem
    public List format (){
         ClassParam classParam = new ClassParam();
        List<ClassResult> classResults = this.baseMapper.customList(classParam);
-       List<Long> ids = new ArrayList<>();
+       List<Long>ids = new ArrayList<>();
        for (ClassResult classResult : classResults) {
-           ids.add(classResult.getClassId());
+           ids.add(classResult.getClassificationId());
        }
-       List<ClassDifferenceResult> byIds = service.getByIds(ids);
-
+       QueryWrapper<BannerDifference> queryWrapper = new QueryWrapper<>();
+       queryWrapper.in("classification_id",ids);
+       List<BannerDifference> differenceList = bannerDifferenceService.list(queryWrapper);
        for (ClassResult classResult : classResults) {
-           for (ClassDifferenceResult byId : byIds) {
-               if (byId.getClassId().equals(classResult.getClassId())) {
-                   classResult.setList(byIds);
+           for (BannerDifference bannerDifference : differenceList) {
+               if ( classResult.getClassificationId()!=null && classResult.getClassificationId().equals(bannerDifference.getClassificationId())) {
+                   BannerDifferenceResult bannerDifferenceResult = new BannerDifferenceResult();
+                   ToolUtil.copyProperties(bannerDifference,bannerDifferenceResult);
+                   classResult.setBannerDifferenceResult(bannerDifferenceResult);
+                   break;
                }
            }
-       }
-       return classResults;
+       }return  classResults ;
+
    }
+//        ClassParam classParam = new ClassParam();
+//       List<ClassResult> classResults = this.baseMapper.customList(classParam);
+//       List<Long> ids = new ArrayList<>();
+//       for (ClassResult classResult : classResults) {
+//           ids.add(classResult.getClassId());
+//       }
+//       List<ClassDifferenceResult> byIds = service.getByIds(ids);
+//
+//       for (ClassResult classResult : classResults) {
+//           for (ClassDifferenceResult byId : byIds) {
+//               if (byId.getClassId().equals(classResult.getClassId())) {
+//                   classResult.setList(byIds);
+//               }
+//           }
+//       }
+//       return classResults;
+//   }
 }

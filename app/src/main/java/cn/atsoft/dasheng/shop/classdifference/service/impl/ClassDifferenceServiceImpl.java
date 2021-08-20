@@ -79,9 +79,14 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
         List<ClassDifference> list = this.list(queryWrapper);
         List<ClassDifferenceResult> results = new ArrayList<>();
         for (ClassDifference classDifference : list) {
-            ClassDifferenceResult classDifferenceResult = new ClassDifferenceResult();
-            ToolUtil.copyProperties(classDifference,classDifferenceResult);
-            results.add(classDifferenceResult);
+            for (Long id : ids) {
+                if (classDifference.getClassId().equals(id)){
+                    ClassDifferenceResult classDifferenceResult = new ClassDifferenceResult();
+                    ToolUtil.copyProperties(classDifference,classDifferenceResult);
+                    results.add(classDifferenceResult);
+                }
+            }
+
         }
         this.getdeta(results);
         return results;
@@ -89,15 +94,11 @@ public class ClassDifferenceServiceImpl extends ServiceImpl<ClassDifferenceMappe
 
     @Override
     public List<ClassDifferenceResult> getdetalis(Long ids) {
-
         List<Long> dIds = new ArrayList<>();
-
-
         ClassDifferenceParam classDifferenceParam = new ClassDifferenceParam();
         classDifferenceParam.setClassId(ids);
         List<ClassDifferenceResult> list = this.baseMapper.customList(classDifferenceParam);
         for (ClassDifferenceResult classDifference : list) {
-
             Long classDifferenceId = classDifference.getClassDifferenceId();
             dIds.add(classDifferenceId);
         }
