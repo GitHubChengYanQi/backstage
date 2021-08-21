@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.date.DateUnit;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +86,10 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param) {
         Page<DeliveryResult> pageContext = getPageContext();
         IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param);
+        for (DeliveryResult record : page.getRecords()) {
+            Date createTime = record.getCreateTime();
+        }
+
         List<Long> Iids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
         List<Long> aIds = new ArrayList<>();
@@ -181,8 +187,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         deliveryParam.setContactsId(outstockRequest.getContactsId());
         deliveryParam.setCustomerId(outstockRequest.getCustomerId());
         deliveryParam.setPhoneId(outstockRequest.getPhoneId());
-        Delivery entity = getEntity(deliveryParam);
-        deliveryList.add(entity);
+        Long add = this.add(deliveryParam);
 
         for (Long id : ids) {
             QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
@@ -199,13 +204,11 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         for (Delivery delivery : deliveries) {
             for (Long id : ids) {
                 for (Long itemId : itemIds) {
-                    Long deliveryId = delivery.getDeliveryId();
                     DeliveryDetails details = new DeliveryDetails();
-                    details.setDeliveryId(deliveryId);
+                    details.setDeliveryId(add);
                     details.setStockItemId(id);
                     details.setItemId(itemId);
                     deliveryDetails.add(details);
-
                 }
 
             }
@@ -232,5 +235,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }
