@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -37,6 +38,8 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     private ItemsService itemsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private DeliveryDetailsService deliveryDetailsService;
 
 
     @Override
@@ -48,13 +51,13 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     }
 
     @Override
-    public void delete(OutstockParam param){
-      Outstock byId = this.getById(param.getOutstockId());
-      if (ToolUtil.isEmpty(byId)){
-        throw new ServiceException(500,"删除目标不存在");
-      }
-      param.setDisplay(0);
-      this.update(param);
+    public void delete(OutstockParam param) {
+        Outstock byId = this.getById(param.getOutstockId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "删除目标不存在");
+        }
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override
@@ -66,17 +69,17 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     }
 
     @Override
-    public OutstockResult findBySpec(OutstockParam param){
+    public OutstockResult findBySpec(OutstockParam param) {
         return null;
     }
 
     @Override
-    public List<OutstockResult> findListBySpec(OutstockParam param){
+    public List<OutstockResult> findListBySpec(OutstockParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param){
+    public PageInfo<OutstockResult> findPageBySpec(OutstockParam param) {
         Page<OutstockResult> pageContext = getPageContext();
         IPage<OutstockResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
@@ -95,12 +98,13 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         return results.get(0);
     }
 
-    private Serializable getKey(OutstockParam param){
+
+    private Serializable getKey(OutstockParam param) {
         return param.getOutstockId();
     }
 
     private Page<OutstockResult> getPageContext() {
-        List<String> fields = new ArrayList<String>(){{
+        List<String> fields = new ArrayList<String>() {{
             add("brandName");
             add("name");
             add("number");
@@ -130,24 +134,24 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
             storehouseIds.add(datum.getStorehouseId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(brandIds)){
+        if (ToolUtil.isNotEmpty(brandIds)) {
             brandQueryWrapper.in("brand_id", brandIds);
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(itemIds)){
-            itemsQueryWrapper.in("item_id",itemIds);
+        if (ToolUtil.isNotEmpty(itemIds)) {
+            itemsQueryWrapper.in("item_id", itemIds);
         }
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(storehouseIds)){
-            storehouseQueryWrapper.in("storehouse_id",storehouseIds);
+        if (ToolUtil.isNotEmpty(storehouseIds)) {
+            storehouseQueryWrapper.in("storehouse_id", storehouseIds);
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (OutstockResult datum : data) {
-            if(ToolUtil.isNotEmpty(brandList)) {
+            if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {
                     if (brand.getBrandId().equals(datum.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
@@ -157,7 +161,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(itemsList)) {
+            if (ToolUtil.isNotEmpty(itemsList)) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
@@ -167,16 +171,32 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(storeList)) {
+            if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
-                        StorehouseResult storehouseResult =new StorehouseResult();
-                        ToolUtil.copyProperties(storehouse,storehouseResult);
+                        StorehouseResult storehouseResult = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);
                         break;
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void bulkShipment(List<Long> ids, Long id) {
+        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
+        outstockQueryWrapper.in("outsotkc_id", ids);
+        List<Outstock> outstockList = this.list(outstockQueryWrapper);
+        List<DeliveryDetails> deliveryDetails = new ArrayList<>();
+        DeliveryDetails details = new DeliveryDetails();
+        for (Outstock outstock : outstockList) {
+            details.setCustomerId(id);
+            details.setItemId(outstock.getItemId());
+            deliveryDetails.add(details);
+
+        }
+        deliveryDetailsService.saveBatch(deliveryDetails);
     }
 }

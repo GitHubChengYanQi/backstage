@@ -132,11 +132,9 @@ public class OutstockController extends BaseController {
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<OutstockResult> bulkShipment(List<Long> ids, Long id) {
-        System.out.println(ids);
-        System.out.println(id);
-
-        return null;
+    public ResponseData bulkShipment(List<Long> ids, Long id) {
+        outstockService.bulkShipment(ids, id);
+        return ResponseData.success();
     }
 
 }

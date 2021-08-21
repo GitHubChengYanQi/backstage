@@ -144,16 +144,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }
     }
 
-    @Override
-    public void bulkShipment(List<OutstockParam> params,Long id) {
-       List<DeliveryDetailsParam> deliveryDetailsParams = new ArrayList<>();
-        for (OutstockParam param : params) {
-           DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
-           deliveryDetailsParam.setItemId(param.getItemId());
-           deliveryDetailsParam.setCustomerId(id);
-        }
-
-    }
 
 
     @Override
