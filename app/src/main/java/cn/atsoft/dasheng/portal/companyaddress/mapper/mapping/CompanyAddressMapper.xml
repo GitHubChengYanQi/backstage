@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.companyaddress.entity.CompanyAddress">
         <id column="company_id" property="companyId" />
         <result column="repair_id" property="repairId" />
-        <result column="address_id" property="addressId" />
+        <result column="customer_id" property="customerId" />
         <result column="province" property="province" />
         <result column="city" property="city" />
         <result column="area" property="area" />
@@ -24,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        company_id AS "companyId", repair_id AS "repairId", address_id AS "addressId", province AS "province", city AS "city", area AS "area", address AS "address", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", people AS "people", position AS "position", telephone AS "telephone", identify AS "identify"
+        company_id AS "companyId", repair_id AS "repairId", customer_id AS "customerId", province AS "province", city AS "city", area AS "area", address AS "address", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", people AS "people", position AS "position", telephone AS "telephone", identify AS "identify"
     </sql>
 
 
