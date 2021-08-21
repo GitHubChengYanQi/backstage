@@ -2,14 +2,11 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
-import cn.atsoft.dasheng.app.model.params.DeliveryParam;
-import cn.atsoft.dasheng.app.model.params.StockParam;
+import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
-import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -146,6 +143,18 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             throw new ServiceException(500, "仓库没有此产品！");
         }
     }
+
+    @Override
+    public void bulkShipment(List<OutstockParam> params,Long id) {
+       List<DeliveryDetailsParam> deliveryDetailsParams = new ArrayList<>();
+        for (OutstockParam param : params) {
+           DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
+           deliveryDetailsParam.setItemId(param.getItemId());
+           deliveryDetailsParam.setCustomerId(id);
+        }
+
+    }
+
 
     @Override
     public void update(OutstockOrderParam param){

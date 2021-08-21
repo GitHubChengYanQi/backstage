@@ -78,7 +78,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OutstockParam outstockParam)  {
+    public ResponseData delete(@RequestBody OutstockParam outstockParam) {
         this.outstockService.delete(outstockParam);
         return ResponseData.success();
     }
@@ -106,31 +106,37 @@ public class OutstockController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OutstockResult> list(@RequestBody(required = false) OutstockParam outstockParam) {
-        if(ToolUtil.isEmpty(outstockParam)){
+        if (ToolUtil.isEmpty(outstockParam)) {
             outstockParam = new OutstockParam();
         }
         return this.outstockService.findPageBySpec(outstockParam);
     }
 
 
-  /**
-   * 选择列表
-   *
-   * @author 1
-   * @Date 2021-07-14
-   */
-  @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-  @ApiOperation("Select数据接口")
-  public ResponseData<List<Map<String,Object>>> listSelect() {
-      QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-      outstockQueryWrapper.in("display",1);
-    List<Map<String,Object>> list = this.outstockService.listMaps(outstockQueryWrapper);
-    OutstockSelectWrapper factory = new OutstockSelectWrapper(list);
-    List<Map<String,Object>> result = factory.wrap();
-    return ResponseData.success(result);
-  }
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
+        outstockQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.outstockService.listMaps(outstockQueryWrapper);
+        OutstockSelectWrapper factory = new OutstockSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
 
+    @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<OutstockResult> bulkShipment(List<Long> ids, Long id) {
+        System.out.println(ids);
+        System.out.println(id);
+
+        return null;
+    }
 
 }
-
-
