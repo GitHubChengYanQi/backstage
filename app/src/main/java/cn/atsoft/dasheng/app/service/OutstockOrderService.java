@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
@@ -24,7 +25,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @author cheng
      * @Date 2021-08-16
      */
-    Long add(OutstockOrderParam param);
+    OutstockOrder add(OutstockOrderParam param);
 
     /**
      * 删除
@@ -64,7 +65,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @author cheng
      * @Date 2021-08-16
      */
-     PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param);
+    PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param);
 
     /**
      * 出库
@@ -73,4 +74,5 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @Date 2021-08-16
      */
     void outStock(OutstockOrderParam param);
+
 }

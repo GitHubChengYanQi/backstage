@@ -18,10 +18,13 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="stage" property="stage"/>
+        <result column="outstock_order_id" property="outStockOrderId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">stage
+    <sql id="Base_Column_List">outstock_order_id
+    AS "outStockOrderId",
+stage
     AS "stage",
         barcode AS "barcode", brand_id AS "brandId", item_id AS "itemId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
@@ -84,6 +87,12 @@
         </if>
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.outStockOrderId != null">
+            and outstock_order_id = #{paramCondition.outStockOrderId}
+        </if>
+        <if test="paramCondition.stage != null">
+            and stage = #{paramCondition.stage}
         </if>
     </select>
 

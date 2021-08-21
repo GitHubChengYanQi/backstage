@@ -37,7 +37,7 @@ public class CompanyAddressResult implements Serializable {
      * 报修地址
      */
     @ApiModelProperty("报修地址")
-    private Long addressId;
+    private Long customerId;
 
     /**
      * 省
@@ -74,6 +74,8 @@ public class CompanyAddressResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long createUser;
+
+    private Long imgUrl;
 
     /**
      * 修改时间
@@ -116,6 +118,7 @@ public class CompanyAddressResult implements Serializable {
      */
     @ApiModelProperty("区分：报修单位1，使用单位2")
     private Long identify;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

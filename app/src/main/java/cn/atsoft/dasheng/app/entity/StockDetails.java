@@ -24,6 +24,8 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("outstock_order_id")
+    private Long outStockOrderId;
     @TableField("stage")
     private Integer stage;
 
@@ -217,6 +219,14 @@ public class StockDetails implements Serializable {
 
     public void setStage(Integer stage) {
         this.stage = stage;
+    }
+
+    public Long getOutStockOrderId() {
+        return outStockOrderId;
+    }
+
+    public void setOutStockOrderId(Long outStockOrderId) {
+        this.outStockOrderId = outStockOrderId;
     }
 
     @Override

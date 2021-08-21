@@ -30,7 +30,7 @@ public class StockDetailsResult implements Serializable {
     private ItemsResult itemsResult;
     private  BrandResult brandResult;
     private  Integer stage;
-
+    private Long outStockOrderId;
     /**
      * 明细id
      */

@@ -24,11 +24,12 @@ import java.util.List;
 public class StockDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  Integer stage;
+    private Integer stage;
     private String iname;
     private String pname;
 
     private Long storehouseId;
+    private Long outStockOrderId;
     /**
      * 明细id
      */
@@ -39,13 +40,13 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
      * 仓库id
      */
     @ApiModelProperty("仓库id")
-    private  Long stockId;
+    private Long stockId;
 
     /**
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private  Long itemId;
+    private Long itemId;
 
     /**
      * 价格

@@ -69,4 +69,6 @@ public interface OutstockService extends IService<Outstock> {
 
     OutstockResult detail (Long id);
 
+
+
 }

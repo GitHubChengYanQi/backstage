@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import lombok.Data;
 
 import java.util.Date;
@@ -7,6 +10,7 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -26,7 +30,7 @@ public class DeliveryDetailsResult implements Serializable {
     private DeliveryResult deliveryResult;
     private Integer stage;
     private  ItemsResult itemsResult;
-    private  CustomerResult customerResult;
+
 
     /**
      * 发货详情id
@@ -40,29 +44,6 @@ public class DeliveryDetailsResult implements Serializable {
     @ApiModelProperty("产品id")
     private Long itemId;
 
-    /**
-     * 客户id
-     */
-    @ApiModelProperty("客户id")
-    private Long customerId;
-
-    /**
-     * 地址id
-     */
-    @ApiModelProperty("地址id")
-    private Long adressId;
-
-    /**
-     * 联系人id
-     */
-    @ApiModelProperty("联系人id")
-    private Long contactsId;
-
-    /**
-     * 电话id
-     */
-    @ApiModelProperty("电话id")
-    private Long phoneId;
 
     /**
      * 出库明细id

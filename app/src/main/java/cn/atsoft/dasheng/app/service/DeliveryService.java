@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.OutstockRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
@@ -65,5 +66,11 @@ public interface DeliveryService extends IService<Delivery> {
      * @Date 2021-08-20
      */
      PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param);
+
+    /**
+     * 增加发货详情
+     * @param outstockRequest
+     */
+     void bulkShipment (OutstockRequest outstockRequest);
 
 }

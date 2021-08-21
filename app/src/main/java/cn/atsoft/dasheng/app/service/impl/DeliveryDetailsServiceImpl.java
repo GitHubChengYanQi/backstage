@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,12 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     private ItemsService itemsService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     public DeliveryDetails add(DeliveryDetailsParam param) {
@@ -73,11 +80,11 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
-        List<Long> cIds = new ArrayList<>();
+
+
         for (DeliveryDetailsResult record : page.getRecords()) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
-            cIds.add(record.getCustomerId());
 
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
@@ -87,11 +94,10 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", Iids);
-        List<Items> itemsList =Iids.size()==0?new ArrayList<>(): itemsService.list(itemsQueryWrapper);
+        List<Items> itemsList = Iids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
 
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id",cIds);
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
+
+
 
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
@@ -110,14 +116,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     break;
                 }
             }
-            for (Customer customer : customerList) {
-                if (customer.getCustomerId().equals(record.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer,customerResult);
-                    record.setCustomerResult(customerResult);
-                    break;
-                }
-            }
+
 
         }
         return PageFactory.createPageInfo(page);

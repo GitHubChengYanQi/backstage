@@ -39,7 +39,6 @@ public class Storehouse implements Serializable {
     @TableField("longitude")
     private BigDecimal longitude;
 
-
     public BigDecimal getLatitude() {
         return latitude;
     }

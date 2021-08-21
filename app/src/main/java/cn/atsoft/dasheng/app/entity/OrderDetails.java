@@ -19,6 +19,8 @@ import java.io.Serializable;
 @TableName("daoxin_erp_order_details")
 public class OrderDetails implements Serializable {
 
+
+
     private static final long serialVersionUID = 1L;
 
     /**
