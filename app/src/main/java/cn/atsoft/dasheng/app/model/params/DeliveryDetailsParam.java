@@ -32,35 +32,6 @@ public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("发货详情id")
     private Long deliveryDetailsId;
 
-    /**
-     * 产品id
-     */
-    @ApiModelProperty("产品id")
-    private Long itemId;
-
-    /**
-     * 客户id
-     */
-    @ApiModelProperty("客户id")
-    private Long customerId;
-
-    /**
-     * 地址id
-     */
-    @ApiModelProperty("地址id")
-    private Long adressId;
-
-    /**
-     * 联系人id
-     */
-    @ApiModelProperty("联系人id")
-    private Long contactsId;
-
-    /**
-     * 电话id
-     */
-    @ApiModelProperty("电话id")
-    private Long phoneId;
 
     /**
      * 出库明细id

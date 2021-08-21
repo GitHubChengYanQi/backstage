@@ -80,17 +80,12 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
-        List<Long> cIds = new ArrayList<>();
-        List<Long> aIds = new ArrayList<>();
-        List<Long> contactsIds = new ArrayList<>();
+
+
         List<Long> pIds = new ArrayList<>();
         for (DeliveryDetailsResult record : page.getRecords()) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
-            cIds.add(record.getCustomerId());
-            aIds.add(record.getAdressId());
-            contactsIds.add(record.getContactsId());
-            pIds.add(record.getPhoneId());
 
         }
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
@@ -102,21 +97,8 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         itemsQueryWrapper.in("item_id", Iids);
         List<Items> itemsList = Iids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
 
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", cIds);
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
 
-        QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
-        adressQueryWrapper.in("adress_id", aIds);
-        List<Adress> adressList = adressService.list(adressQueryWrapper);
 
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id", contactsIds);
-        List<Contacts> contactsList = contactsService.list(contactsQueryWrapper);
-
-        QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
-        phoneQueryWrapper.in("phone_id", pIds);
-        List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
 
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
@@ -135,38 +117,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     break;
                 }
             }
-            for (Customer customer : customerList) {
-                if (customer.getCustomerId().equals(record.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    record.setCustomerResult(customerResult);
-                    break;
-                }
-            }
-            for (Adress adress : adressList) {
-                if (adress.getAdressId().equals(record.getAdressId())) {
-                    AdressResult adressResult = new AdressResult();
-                    ToolUtil.copyProperties(adress, adressResult);
-                    record.setAdressResult(adressResult);
-                    break;
-                }
-            }
-            for (Contacts contacts : contactsList) {
-                if (contacts.getContactsId().equals(record.getContactsId())) {
-                    ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts, contactsResult);
-                    record.setContactsResult(contactsResult);
-                    break;
-                }
-            }
-            for (Phone phone : phoneList) {
-                if (phone.getPhoneId().equals(record.getPhoneId())) {
-                    PhoneResult phoneResult = new PhoneResult();
-                    ToolUtil.copyProperties(phone, phoneResult);
-                    record.setPhoneResult(phoneResult);
-                    break;
-                }
-            }
+
 
         }
         return PageFactory.createPageInfo(page);
