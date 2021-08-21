@@ -36,6 +36,7 @@ public class CompanyAddressParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("报修id")
     private Long repairId;
+    private Long imgUrl;
 
     /**
      * 报修地址
