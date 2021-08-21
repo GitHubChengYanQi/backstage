@@ -20,6 +20,44 @@ public class DeliveryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ItemsResult itemsResult;
+    private CustomerResult customerResult;
+
+    private AdressResult adressResult;
+
+    private ContactsResult contactsResult;
+
+    private PhoneResult phoneResult;
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("产品id")
+    private Long itemId;
+
+    /**
+     * 客户id
+     */
+    @ApiModelProperty("客户id")
+    private Long customerId;
+
+    /**
+     * 地址id
+     */
+    @ApiModelProperty("地址id")
+    private Long adressId;
+
+    /**
+     * 联系人id
+     */
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
+
+    /**
+     * 电话id
+     */
+    @ApiModelProperty("电话id")
+    private Long phoneId;
+
 
     /**
      * 发货id

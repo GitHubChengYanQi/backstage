@@ -69,10 +69,6 @@ public interface OutstockService extends IService<Outstock> {
 
     OutstockResult detail (Long id);
 
-    /**
-     * 批量发货
-     *
-     * @param ids
-     */
-    void bulkShipment(List<Long> ids,Long id);
+
+
 }

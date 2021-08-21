@@ -184,19 +184,5 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         }
     }
 
-    @Override
-    public void bulkShipment(List<Long> ids, Long id) {
-        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        outstockQueryWrapper.in("outsotkc_id", ids);
-        List<Outstock> outstockList = this.list(outstockQueryWrapper);
-        List<DeliveryDetails> deliveryDetails = new ArrayList<>();
-        DeliveryDetails details = new DeliveryDetails();
-        for (Outstock outstock : outstockList) {
-            details.setCustomerId(id);
-            details.setItemId(outstock.getItemId());
-            deliveryDetails.add(details);
 
-        }
-        deliveryDetailsService.saveBatch(deliveryDetails);
-    }
 }

@@ -4,56 +4,64 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Delivery">
-        <id column="delivery_id" property="deliveryId" />
-        <result column="outstock_order_id" property="outstockOrderId" />
-        <result column="out_time" property="outTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="delivery_id" property="deliveryId"/>
+        <result column="outstock_order_id" property="outstockOrderId"/>
+        <result column="out_time" property="outTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="item_id" property="itemId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="adress_id" property="adressId"/>
+        <result column="contacts_id" property="contactsId"/>
+        <result column="phone_id" property="phoneId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">item_id
+    AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",
         delivery_id AS "deliveryId", outstock_order_id AS "outstockOrderId", out_time AS "outTime", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryResult" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_delivery where 1 = 1
-            <if test="paramCondition.outstockOrderId != null">
-                    and outstock_order_id = #{paramCondition.outstockOrderId}
-            </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id = #{paramCondition.outstockOrderId}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_delivery where 1 = 1
-                <if test="paramCondition.outstockOrderId != null">
-                            and outstock_order_id = #{paramCondition.outstockOrderId}
-                </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id = #{paramCondition.outstockOrderId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryResult" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.DeliveryResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_delivery where 1 = 1
-                <if test="paramCondition.outstockOrderId != null">
-                            and outstock_order_id = #{paramCondition.outstockOrderId}
-                </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id = #{paramCondition.outstockOrderId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_delivery where 1 = 1
-                <if test="paramCondition.outstockOrderId != null">
-                        and outstock_order_id = #{paramCondition.outstockOrderId}
-                </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id = #{paramCondition.outstockOrderId}
+        </if>
     </select>
 
 </mapper>

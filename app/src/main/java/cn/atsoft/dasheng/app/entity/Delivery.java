@@ -20,6 +20,35 @@ import java.io.Serializable;
 public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 产品id
+     */
+    @TableField("item_id")
+    private Long itemId;
+
+    /**
+     * 客户id
+     */
+    @TableField("customer_id")
+    private Long customerId;
+
+    /**
+     * 地址id
+     */
+    @TableField("adress_id")
+    private Long adressId;
+
+    /**
+     * 联系人id
+     */
+    @TableField("contacts_id")
+    private Long contactsId;
+
+    /**
+     * 电话id
+     */
+    @TableField("phone_id")
+    private Long phoneId;
 
     /**
      * 发货id
@@ -132,6 +161,46 @@ public class Delivery implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public Long getAdressId() {
+        return adressId;
+    }
+
+    public void setAdressId(Long adressId) {
+        this.adressId = adressId;
+    }
+
+    public Long getContactsId() {
+        return contactsId;
+    }
+
+    public void setContactsId(Long contactsId) {
+        this.contactsId = contactsId;
+    }
+
+    public Long getPhoneId() {
+        return phoneId;
+    }
+
+    public void setPhoneId(Long phoneId) {
+        this.phoneId = phoneId;
     }
 
     @Override

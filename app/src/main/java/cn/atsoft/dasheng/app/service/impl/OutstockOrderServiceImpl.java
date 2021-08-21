@@ -121,11 +121,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                             stockItemIds.add(StockDetailsList.getStockItemId());
                                         }
                                     }
-                                    queryWrapper1.in("stock_item_id",stockItemIds);
+                                    queryWrapper1.in("stock_item_id", stockItemIds);
                                     StockDetails stockDetails = new StockDetails();
                                     stockDetails.setStage(2);
                                     stockDetails.setOutStockOrderId(outStockOrderId);
-                                    this.stockDetailsService.update(stockDetails,queryWrapper1);
+                                    this.stockDetailsService.update(stockDetails, queryWrapper1);
                                 }
                             }
                         }
