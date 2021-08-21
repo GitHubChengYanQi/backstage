@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -12,10 +14,10 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author  
+ * @author
  * @since 2021-08-20
  */
 @TableName("daoxin_erp_delivery_details")
@@ -28,10 +30,10 @@ public class DeliveryDetails implements Serializable {
     /**
      * 发货详情id
      */
-      @TableId(value = "delivery_details_id", type = IdType.ID_WORKER)
+    @TableId(value = "delivery_details_id", type = IdType.ID_WORKER)
     private Long deliveryDetailsId;
-
-
+    @TableField("item_id")
+    private Long itemId;
     /**
      * 出库明细id
      */
@@ -47,25 +49,25 @@ public class DeliveryDetails implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -82,7 +84,6 @@ public class DeliveryDetails implements Serializable {
     public void setDeliveryDetailsId(Long deliveryDetailsId) {
         this.deliveryDetailsId = deliveryDetailsId;
     }
-
 
 
     public Long getStockItemId() {
@@ -149,18 +150,26 @@ public class DeliveryDetails implements Serializable {
         this.stage = stage;
     }
 
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
     @Override
     public String toString() {
         return "DeliveryDetails{" +
-        "deliveryDetailsId=" + deliveryDetailsId +
+                "deliveryDetailsId=" + deliveryDetailsId +
 
-        ", stockItemId=" + stockItemId +
-        ", deliveryId=" + deliveryId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                ", stockItemId=" + stockItemId +
+                ", deliveryId=" + deliveryId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

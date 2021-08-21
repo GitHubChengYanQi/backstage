@@ -13,6 +13,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="stage" property="stage"/>
+        <result column="item_id" property="itemId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

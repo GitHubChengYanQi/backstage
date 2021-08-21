@@ -31,6 +31,7 @@ public class DeliveryDetailsResult implements Serializable {
     private Integer stage;
     private  ItemsResult itemsResult;
 
+
     /**
      * 发货详情id
      */

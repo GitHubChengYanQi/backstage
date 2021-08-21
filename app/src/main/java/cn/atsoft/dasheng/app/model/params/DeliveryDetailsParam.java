@@ -26,6 +26,8 @@ public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private Integer stage;
 
+
+    private  Long itemId;
     /**
      * 发货详情id
      */
