@@ -117,7 +117,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                         if (stockDetailList.getStockId().equals(StockList.getStockId())) {
                                             // 减去出库明细产品
                                             StockDetails StockDetailsList = stockDetail.get(j);
-                                            stockItemIds.add(StockDetailsList);
+                                            stockItemIds.add(StockDetailsList.getStockItemId());
                                         }
                                     }
                                     queryWrapper1.in("stock_item_id", stockItemIds);

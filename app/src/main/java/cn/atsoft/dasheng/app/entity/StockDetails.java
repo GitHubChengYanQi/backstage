@@ -24,7 +24,7 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @TableField("stock_item_id")
+    @TableField("outstock_order_id")
     private Long outStockOrderId;
     @TableField("stage")
     private Integer stage;
