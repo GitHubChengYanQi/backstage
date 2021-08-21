@@ -109,15 +109,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 if (ToolUtil.isEmpty(stockDetail)) {
                                     throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
                                 } else {
-//                                    for (StockDetails stockDetails : stockDetail) {
-//                                        StockDetailsParam stockDetailsParam = new StockDetailsParam();
-//                                        stockDetailsParam.setStockItemId(stockDetails.getStockItemId());
-//                                        stockDetailsParam.setStage(2);
-//                                        stockDetailsParam.setOutStockOrderId(outStockOrderId);
-//                                        stockDetailsService.update(stockDetailsParam);
-//                                    }
-
-
                                     List stockItemIds = new ArrayList<>();
                                     QueryWrapper<StockDetails> queryWrapper1 = new QueryWrapper<>();
                                     for (int j = 0; j < outstock.getNumber(); j++) {
@@ -129,11 +120,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                             stockItemIds.add(StockDetailsList);
                                         }
                                     }
-                                    queryWrapper1.in("stock_item_id",stockItemIds);
+                                    queryWrapper1.in("stock_item_id", stockItemIds);
                                     StockDetails stockDetails = new StockDetails();
                                     stockDetails.setStage(2);
                                     stockDetails.setOutStockOrderId(outStockOrderId);
-                                    this.stockDetailsService.update(stockDetails,queryWrapper1);
+                                    this.stockDetailsService.update(stockDetails, queryWrapper1);
                                 }
                             }
                         }
