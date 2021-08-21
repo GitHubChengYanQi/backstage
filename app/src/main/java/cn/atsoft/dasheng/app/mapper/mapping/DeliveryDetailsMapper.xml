@@ -31,18 +31,6 @@
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
-        <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-        </if>
-        <if test="paramCondition.adressId != null">
-            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
-        </if>
-        <if test="paramCondition.contactsId != null">
-            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-        </if>
-        <if test="paramCondition.phoneId != null">
-            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
-        </if>
         <if test="paramCondition.stockItemId != null">
             and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
         </if>
@@ -57,18 +45,6 @@
         from daoxin_erp_delivery_details where 1 = 1
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
-        <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-        </if>
-        <if test="paramCondition.adressId != null">
-            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
-        </if>
-        <if test="paramCondition.contactsId != null">
-            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-        </if>
-        <if test="paramCondition.phoneId != null">
-            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
         </if>
         <if test="paramCondition.stockItemId != null">
             and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
@@ -86,18 +62,6 @@
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
         </if>
-        <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-        </if>
-        <if test="paramCondition.adressId != null">
-            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
-        </if>
-        <if test="paramCondition.contactsId != null">
-            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-        </if>
-        <if test="paramCondition.phoneId != null">
-            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
-        </if>
         <if test="paramCondition.stockItemId != null">
             and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
         </if>
@@ -113,18 +77,6 @@
         from daoxin_erp_delivery_details where 1 = 1
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-        </if>
-        <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-        </if>
-        <if test="paramCondition.adressId != null">
-            and adress_id like CONCAT('%',#{paramCondition.adressId},'%')
-        </if>
-        <if test="paramCondition.contactsId != null">
-            and contacts_id like CONCAT('%',#{paramCondition.contactsId},'%')
-        </if>
-        <if test="paramCondition.phoneId != null">
-            and phone_id like CONCAT('%',#{paramCondition.phoneId},'%')
         </if>
         <if test="paramCondition.stockItemId != null">
             and stock_item_id like CONCAT('%',#{paramCondition.stockItemId},'%')
