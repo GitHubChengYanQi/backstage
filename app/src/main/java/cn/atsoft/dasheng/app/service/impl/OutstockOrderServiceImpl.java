@@ -58,6 +58,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
 
+
     @Override
     public void outStock(OutstockOrderParam param){
 
@@ -66,7 +67,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         // 判断出库单对应出库明细数据有无
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
         if(ToolUtil.isNotEmpty(outStockOrderId)){
-            outstockQueryWrapper.in("outstock_order_id" , outStockOrderId);
+            outstockQueryWrapper.in("outstock_order_id" , outStockOrderId).in("display",1);
         }
         List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
 
@@ -89,7 +90,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 && StockList.getStorehouseId().equals(outstock.getStorehouseId())
                         ) {
                             queryWrapper.in("stock_id",StockList.getStockId());
-                            List<StockDetails> stockDetail = this.stockDetailsService.list(queryWrapper);
+                            List<StockDetails> stockDetail = stockDetailsService.list(queryWrapper);
                             // 库存数据数量的判断
                             if (StockList.getInventory() == 0) {
                                 throw new ServiceException(500, "此产品仓库库存不足！");
@@ -105,9 +106,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 // 减去出库数量
                                 this.stockService.update(stockParam);
 
-                                DeliveryParam deliveryParam = new DeliveryParam();
-                                deliveryParam.setOutstockOrderId(param.getOutstockOrderId());
-                                Long deliverId = deliveryService.add(deliveryParam);
 
 
                                 if (ToolUtil.isEmpty(stockDetail)) {
@@ -118,11 +116,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                         StockDetails stockDetailList = stockDetail.get(j);
                                         // 匹配库存明细里对应的数据
                                         if (stockDetailList.getStockId().equals(StockList.getStockId())) {
-                                            DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
-                                            deliveryDetailsParam.setDeliveryId(deliverId);
-                                            deliveryDetailsParam.setItemId(stockDetailList.getItemId());
-                                            deliveryDetailsParam.setStockItemId(stockDetailList.getStockItemId());
-                                            deliveryDetailsService.add(deliveryDetailsParam);
                                             // 减去出库明细产品
                                             StockDetails StockDetailsList = stockDetail.get(j);
                                             stockItemIds.add(StockDetailsList.getStockItemId());
