@@ -118,6 +118,7 @@ public class CompanyAddressResult implements Serializable {
      */
     @ApiModelProperty("区分：报修单位1，使用单位2")
     private Long identify;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
