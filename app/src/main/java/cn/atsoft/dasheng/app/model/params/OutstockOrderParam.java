@@ -29,6 +29,8 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("出库详细id")
     private Long outstockOrderId;
 
+    private Long storehouseId;
+
     /**
      * 出库状态
      */

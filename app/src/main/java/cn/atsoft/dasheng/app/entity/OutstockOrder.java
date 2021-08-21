@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
@@ -26,6 +28,18 @@ public class OutstockOrder implements Serializable {
      */
       @TableId(value = "outstock_order_id", type = IdType.ID_WORKER)
     private Long outstockOrderId;
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
+
+    @TableField("storehouse_id")
+    private Long storehouseId;
+
 
 
 

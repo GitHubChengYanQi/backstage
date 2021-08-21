@@ -25,7 +25,7 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @author cheng
      * @Date 2021-08-16
      */
-    Long add(OutstockOrderParam param);
+    OutstockOrder add(OutstockOrderParam param);
 
     /**
      * 删除
