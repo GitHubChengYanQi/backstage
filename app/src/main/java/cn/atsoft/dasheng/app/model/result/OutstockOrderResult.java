@@ -27,6 +27,8 @@ public class OutstockOrderResult implements Serializable {
     @ApiModelProperty("出库详细id")
     private Long outstockOrderId;
 
+    private Long storehouseId;
+
     /**
      * 出库状态
      */

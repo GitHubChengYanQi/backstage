@@ -46,10 +46,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
 
     @Override
-    public Long add(OutstockOrderParam param) {
+    public OutstockOrder add(OutstockOrderParam param) {
         OutstockOrder entity = getEntity(param);
         this.save(entity);
-        return entity.getOutstockOrderId();
+        return entity;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         if (ToolUtil.isNotEmpty(outstockList)) {
             List<Stock> Stock = this.stockService.list();
-            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+
 
             // 出库明细里进行出库
             for (int i = 0; i < outstockList.size(); i++) {
@@ -86,8 +86,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                         // 匹配库存里对应的数据
                         if (StockList.getItemId().equals(outstock.getItemId())
                                 && StockList.getBrandId().equals(outstock.getBrandId())
-                                && StockList.getStorehouseId().equals(outstock.getStorehouseId())
+                                && StockList.getStorehouseId().equals(entity.getStorehouseId())
                         ) {
+                            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
                             queryWrapper.in("stock_id", StockList.getStockId()).in("stage", 1);
                             List<StockDetails> stockDetail = stockDetailsService.list(queryWrapper);
                             // 库存数据数量的判断

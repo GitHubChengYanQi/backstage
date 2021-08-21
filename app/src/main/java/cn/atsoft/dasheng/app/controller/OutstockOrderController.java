@@ -44,7 +44,7 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OutstockOrderParam outstockOrderParam) {
-        Long add = this.outstockOrderService.add(outstockOrderParam);
+        OutstockOrder add = this.outstockOrderService.add(outstockOrderParam);
         return ResponseData.success(add);
     }
 

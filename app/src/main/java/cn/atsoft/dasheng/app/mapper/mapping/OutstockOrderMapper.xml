@@ -4,56 +4,64 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.OutstockOrder">
-        <id column="outstock_order_id" property="outstockOrderId" />
-        <result column="state" property="state" />
-        <result column="time" property="time" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="outstock_order_id" property="outstockOrderId"/>
+        <result column="state" property="state"/>
+        <result column="time" property="time"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        outstock_order_id AS "outstockOrderId", state AS "state", time AS "time", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        storehouse_id
+        AS "storehouseId" ,outstock_order_id AS "outstockOrderId", state AS "state", time AS "time", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OutstockOrderResult" parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.OutstockOrderResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_order where 1 = 1
-            <if test="paramCondition.time != null and paramCondition.time != ''">
-                and time like CONCAT('%',#{paramCondition.time},'%')
-            </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_order where 1 = 1
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.OutstockOrderResult" parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.OutstockOrderResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_order where display = 1
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.storehouseId != null and paramCondition.storehouseId != ''">
+            and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.OutstockOrderParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_order where 1 = 1
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
     </select>
 
 </mapper>
