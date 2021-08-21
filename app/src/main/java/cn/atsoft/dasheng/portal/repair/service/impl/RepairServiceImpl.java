@@ -29,9 +29,10 @@ import java.util.List;
 public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> implements RepairService {
 
     @Override
-    public void add(RepairParam param){
+    public Long add(RepairParam param){
         Repair entity = getEntity(param);
         this.save(entity);
+        return entity.getRepairId();
     }
 
     @Override

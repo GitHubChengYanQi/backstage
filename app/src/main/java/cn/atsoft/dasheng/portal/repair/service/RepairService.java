@@ -24,7 +24,7 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-    void add(RepairParam param);
+    Long add(RepairParam param);
 
     /**
      * 删除
