@@ -82,7 +82,6 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         List<Long> Iids = new ArrayList<>();
 
 
-        List<Long> pIds = new ArrayList<>();
         for (DeliveryDetailsResult record : page.getRecords()) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
