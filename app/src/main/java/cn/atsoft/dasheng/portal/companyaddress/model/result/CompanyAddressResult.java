@@ -75,6 +75,8 @@ public class CompanyAddressResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
+    private Long imgUrl;
+
     /**
      * 修改时间
      */

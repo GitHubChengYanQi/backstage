@@ -38,6 +38,16 @@ public class CompanyAddress implements Serializable {
      */
     @TableField("customer_id")
     private Long customerId;
+    @TableField("imgUrl")
+    private Long imgUrl;
+
+    public Long getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(Long imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public Long getCustomerId() {
         return customerId;
