@@ -169,7 +169,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         List<Long> ids = outstockRequest.getIds();
         List<Delivery> deliveryList = new ArrayList<>();
         //添加批量发货
-        for (Long id : ids) {
             DeliveryParam deliveryParam = new DeliveryParam();
             deliveryParam.setAdressId(outstockRequest.getAdressId());
             deliveryParam.setContactsId(outstockRequest.getContactsId());
@@ -178,10 +177,9 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             Delivery entity = getEntity(deliveryParam);
             deliveryList.add(entity);
 
-        }
         for (Long id : ids) {
             QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
-            stockDetailsQueryWrapper.in("stock_item_id", id);
+            stockDetailsQueryWrapper.in("stock_item_id", id).orderByDesc("storage_time");
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStage(3);
             stockDetailsService.update(stockDetails, stockDetailsQueryWrapper);
@@ -189,36 +187,18 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         this.saveBatch(deliveryList);
         List<Delivery> deliveries = this.list();
         List<DeliveryDetails> deliveryDetails = new ArrayList<>();
+
+        // 发表详情表添加发货id
         for (Delivery delivery : deliveries) {
-            Long deliveryId = delivery.getDeliveryId();
-            // 发表详情表添加发货id
-            DeliveryDetails details = new DeliveryDetails();
-            details.setDeliveryId(deliveryId);
-            deliveryDetails.add(details);
-        }
-        deliveryDetailsService.saveBatch(deliveryDetails);
+            for (Long id : ids) {
+                Long deliveryId = delivery.getDeliveryId();
+                DeliveryDetails details = new DeliveryDetails();
+                details.setDeliveryId(deliveryId);
+                details.setStockItemId(id);
+                deliveryDetails.add(details);
+            }
+        } deliveryDetailsService.saveBatch(deliveryDetails);
 
-
-//        List<DeliveryDetails> deliveryDetails = new ArrayList<>();
-//        for (Long id : outstockRequest.getIds()) {
-//            QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-//            outstockQueryWrapper.in("outstock_id", id);
-//            List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
-//            for (Outstock outstock : outstockList) {
-//                number = Math.toIntExact(outstock.getNumber());
-//
-//            }
-//
-//        }
-//        for (int i = 0; i < number; i++) {
-//            DeliveryDetails details = new DeliveryDetails();
-//            details.setPhoneId(outstockRequest.getPhoneId());
-//            details.setCustomerId(outstockRequest.getCustomerId());
-//            details.setContactsId(outstockRequest.getContactsId());
-//            details.setAdressId(outstockRequest.getAdressId());
-//            deliveryDetails.add(details);
-//        }
-//        deliveryDetailsService.saveBatch(deliveryDetails);
 
     }
 
