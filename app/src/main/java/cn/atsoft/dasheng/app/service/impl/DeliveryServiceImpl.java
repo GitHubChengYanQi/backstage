@@ -169,7 +169,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         List<Long> ids = outstockRequest.getIds();
         List<Delivery> deliveryList = new ArrayList<>();
         //添加批量发货
-        for (Long id : ids) {
             DeliveryParam deliveryParam = new DeliveryParam();
             deliveryParam.setAdressId(outstockRequest.getAdressId());
             deliveryParam.setContactsId(outstockRequest.getContactsId());
@@ -177,8 +176,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             deliveryParam.setPhoneId(outstockRequest.getPhoneId());
             Delivery entity = getEntity(deliveryParam);
             deliveryList.add(entity);
-
-        }
         for (Long id : ids) {
             QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
             stockDetailsQueryWrapper.in("stock_item_id", id);
@@ -189,14 +186,17 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         this.saveBatch(deliveryList);
         List<Delivery> deliveries = this.list();
         List<DeliveryDetails> deliveryDetails = new ArrayList<>();
+
         for (Delivery delivery : deliveries) {
-            Long deliveryId = delivery.getDeliveryId();
-            // 发表详情表添加发货id
-            DeliveryDetails details = new DeliveryDetails();
-            details.setDeliveryId(deliveryId);
-            deliveryDetails.add(details);
-        }
-        deliveryDetailsService.saveBatch(deliveryDetails);
+            for (Long id : ids) {
+                Long deliveryId = delivery.getDeliveryId();
+                // 发表详情表添加发货id
+                DeliveryDetails details = new DeliveryDetails();
+                details.setDeliveryId(deliveryId);
+                deliveryDetails.add(details);
+            }
+        } deliveryDetailsService.saveBatch(deliveryDetails);
+
 
 
 //        List<DeliveryDetails> deliveryDetails = new ArrayList<>();
