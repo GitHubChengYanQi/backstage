@@ -34,10 +34,18 @@ public class CompanyAddress implements Serializable {
     private Long repairId;
 
     /**
-     * 报修地址
+     * 客户id
      */
-    @TableField("address_id")
-    private Long addressId;
+    @TableField("customer_id")
+    private Long customerId;
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
     /**
      * 省
@@ -134,13 +142,6 @@ public class CompanyAddress implements Serializable {
         this.repairId = repairId;
     }
 
-    public Long getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Long addressId) {
-        this.addressId = addressId;
-    }
 
     public String getProvince() {
         return province;
@@ -251,7 +252,6 @@ public class CompanyAddress implements Serializable {
         return "CompanyAddress{" +
         "companyId=" + companyId +
         ", repairId=" + repairId +
-        ", addressId=" + addressId +
         ", province=" + province +
         ", city=" + city +
         ", area=" + area +

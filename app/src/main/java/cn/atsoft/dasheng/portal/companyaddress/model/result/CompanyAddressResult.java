@@ -37,7 +37,7 @@ public class CompanyAddressResult implements Serializable {
      * 报修地址
      */
     @ApiModelProperty("报修地址")
-    private Long addressId;
+    private Long customerId;
 
     /**
      * 省
