@@ -197,21 +197,21 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             stockDetailsService.update(stockDetails, stockDetailsQueryWrapper);
         }
         this.saveBatch(deliveryList);
-        List<Delivery> deliveries = this.list();
+
         List<DeliveryDetails> deliveryDetails = new ArrayList<>();
 
         // 发表详情表添加发货id
-        for (Delivery delivery : deliveries) {
-            for (Long id : ids) {
-                for (Long itemId : itemIds) {
-                    DeliveryDetails details = new DeliveryDetails();
-                    details.setDeliveryId(add);
-                    details.setStockItemId(id);
-                    details.setItemId(itemId);
-                    deliveryDetails.add(details);
-                }
 
+        for (Long id : ids) {
+            for (Long itemId : itemIds) {
+                DeliveryDetails details = new DeliveryDetails();
+                details.setDeliveryId(add);
+                details.setStockItemId(id);
+                details.setItemId(itemId);
+                deliveryDetails.add(details);
             }
+
+
         }
         deliveryDetailsService.saveBatch(deliveryDetails);
 
