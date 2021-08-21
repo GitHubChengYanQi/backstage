@@ -88,6 +88,9 @@ stage
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
+        <if test="paramCondition.outStockOrderId != null">
+            and outstock_order_id = #{paramCondition.outStockOrderId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
