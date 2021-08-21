@@ -4,49 +4,60 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.companyaddress.entity.CompanyAddress">
-        <id column="company_id" property="companyId" />
-        <result column="repair_id" property="repairId" />
-        <result column="customer_id" property="customerId" />
-        <result column="province" property="province" />
-        <result column="city" property="city" />
-        <result column="area" property="area" />
-        <result column="address" property="address" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
-        <result column="people" property="people" />
-        <result column="position" property="position" />
-        <result column="telephone" property="telephone" />
-        <result column="identify" property="identify" />
+        <id column="company_id" property="companyId"/>
+        <result column="repair_id" property="repairId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="area" property="area"/>
+        <result column="address" property="address"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="people" property="people"/>
+        <result column="position" property="position"/>
+        <result column="telephone" property="telephone"/>
+        <result column="identify" property="identify"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        imgUrl AS "imgUrl",company_id AS "companyId", repair_id AS "repairId", customer_id AS "customerId", province AS "province", city AS "city", area AS "area", address AS "address", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", people AS "people", position AS "position", telephone AS "telephone", identify AS "identify"
+        imgUrl
+        AS "imgUrl",company_id AS "companyId", repair_id AS "repairId", customer_id AS "customerId", province AS "province", city AS "city", area AS "area", address AS "address", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", people AS "people", position AS "position", telephone AS "telephone", identify AS "identify"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.companyaddress.model.result.CompanyAddressResult" parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.portal.companyaddress.model.result.CompanyAddressResult"
+            parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_company_address where 1 = 1
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_company_address where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.companyaddress.model.result.CompanyAddressResult" parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.companyaddress.model.result.CompanyAddressResult"
+            parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_company_address where 1 = 1
+        <if test="paramCondition.repairId != null">
+            and repair_id = #{paramCondition.repairId}
+        </if>
+        <if test="paramCondition.identify != null">
+            and identify = #{paramCondition.identify}
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.companyaddress.model.params.CompanyAddressParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_company_address where 1 = 1
