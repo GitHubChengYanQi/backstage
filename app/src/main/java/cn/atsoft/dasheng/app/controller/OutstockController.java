@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.OutstockRequest;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.wrapper.OutstockSelectWrapper;
@@ -132,8 +133,9 @@ public class OutstockController extends BaseController {
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public ResponseData bulkShipment(List<Long> ids, Long id) {
-        outstockService.bulkShipment(ids, id);
+    public ResponseData bulkShipment(@RequestBody OutstockRequest outstockRequest) {
+        System.err.println(outstockRequest);
+
         return ResponseData.success();
     }
 

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.OutstockRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
@@ -103,8 +104,12 @@ public class DeliveryController extends BaseController {
         return this.deliveryService.findPageBySpec(deliveryParam);
     }
 
-
-
+    @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData bulkShipment(@RequestBody OutstockRequest outstockRequest){
+        deliveryService.bulkShipment(outstockRequest);
+        return ResponseData.success();
+    }
 
 }
 

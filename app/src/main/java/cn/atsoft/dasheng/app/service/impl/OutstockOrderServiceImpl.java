@@ -46,37 +46,36 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
 
     @Override
-    public Long add(OutstockOrderParam param){
+    public Long add(OutstockOrderParam param) {
         OutstockOrder entity = getEntity(param);
         this.save(entity);
         return entity.getOutstockOrderId();
     }
 
     @Override
-    public void delete(OutstockOrderParam param){
+    public void delete(OutstockOrderParam param) {
         this.removeById(getKey(param));
     }
 
 
-
     @Override
-    public void outStock(OutstockOrderParam param){
+    public void outStock(OutstockOrderParam param) {
 
         OutstockOrder entity = getEntity(param);
         Long outStockOrderId = entity.getOutstockOrderId();
         // 判断出库单对应出库明细数据有无
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(outStockOrderId)){
-            outstockQueryWrapper.in("outstock_order_id" , outStockOrderId).in("display",1);
+        if (ToolUtil.isNotEmpty(outStockOrderId)) {
+            outstockQueryWrapper.in("outstock_order_id", outStockOrderId).in("display", 1);
         }
         List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
 
-        if(ToolUtil.isNotEmpty(outstockList)){
+        if (ToolUtil.isNotEmpty(outstockList)) {
             List<Stock> Stock = this.stockService.list();
             QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
 
             // 出库明细里进行出库
-            for(int i = 0; i < outstockList.size(); i++){
+            for (int i = 0; i < outstockList.size(); i++) {
                 Outstock outstock = outstockList.get(i);
                 // 判断库存里数据是否存在
                 if (ToolUtil.isEmpty(Stock)) {
@@ -89,7 +88,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 && StockList.getBrandId().equals(outstock.getBrandId())
                                 && StockList.getStorehouseId().equals(outstock.getStorehouseId())
                         ) {
-                            queryWrapper.in("stock_id",StockList.getStockId());
+                            queryWrapper.in("stock_id", StockList.getStockId()).in("stage", 1);
                             List<StockDetails> stockDetail = stockDetailsService.list(queryWrapper);
                             // 库存数据数量的判断
                             if (StockList.getInventory() == 0) {
@@ -107,10 +106,18 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                                 this.stockService.update(stockParam);
 
 
-
                                 if (ToolUtil.isEmpty(stockDetail)) {
                                     throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
                                 } else {
+                                    for (StockDetails stockDetails : stockDetail) {
+                                        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+                                        stockDetailsParam.setStockItemId(stockDetails.getStockItemId());
+                                        stockDetailsParam.setStage(2);
+                                        stockDetailsParam.setOutStockOrderId(outStockOrderId);
+                                        stockDetailsService.update(stockDetailsParam);
+                                    }
+
+
                                     List stockItemIds = new ArrayList<>();
                                     for (int j = 0; j < outstock.getNumber(); j++) {
                                         StockDetails stockDetailList = stockDetail.get(j);
@@ -132,15 +139,15 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             OutstockOrder newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
-        }else{
+        } else {
             throw new ServiceException(500, "仓库没有此产品！");
         }
+
     }
 
 
-
     @Override
-    public void update(OutstockOrderParam param){
+    public void update(OutstockOrderParam param) {
 
         OutstockOrder oldEntity = getOldEntity(param);
         OutstockOrder newEntity = getEntity(param);
@@ -149,23 +156,23 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     @Override
-    public OutstockOrderResult findBySpec(OutstockOrderParam param){
+    public OutstockOrderResult findBySpec(OutstockOrderParam param) {
         return null;
     }
 
     @Override
-    public List<OutstockOrderResult> findListBySpec(OutstockOrderParam param){
+    public List<OutstockOrderResult> findListBySpec(OutstockOrderParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param){
+    public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param) {
         Page<OutstockOrderResult> pageContext = getPageContext();
         IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(OutstockOrderParam param){
+    private Serializable getKey(OutstockOrderParam param) {
         return param.getOutstockOrderId();
     }
 
