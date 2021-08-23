@@ -172,15 +172,22 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
     @Override
     public void bulkShipment(OutstockRequest outstockRequest) {
-        List<Long> ids = outstockRequest.getIds();
         List<Delivery> deliveryList = new ArrayList<>();
+        List<StockDetailsParam> deliveryDetailsParams = outstockRequest.getIds();
+        List<Long> ids = new ArrayList<>();
+        for (StockDetailsParam deliveryDetailsParam : deliveryDetailsParams) {
+            ids.add(deliveryDetailsParam.getStockItemId());
+        }
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("stock_item_id", ids);
+        queryWrapper.in("stock_item_id",ids );
         List<Long> itemIds = new ArrayList<>();
+
         List<StockDetails> detailsList = stockDetailsService.list(queryWrapper);
+
         for (StockDetails stockDetails : detailsList) {
             itemIds.add(stockDetails.getItemId());
         }
+
         //添加批量发货
         DeliveryParam deliveryParam = new DeliveryParam();
         deliveryParam.setAdressId(outstockRequest.getAdressId());
@@ -189,12 +196,13 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         deliveryParam.setPhoneId(outstockRequest.getPhoneId());
         Long add = this.add(deliveryParam);
 
-        for (Long id : ids) {
+        for (StockDetailsParam deliveryDetailsParam : outstockRequest.getIds()) {
             QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
-            stockDetailsQueryWrapper.in("stock_item_id", id).orderByDesc("storage_time");
+            stockDetailsQueryWrapper.in("stock_item_id", deliveryDetailsParam.getStockItemId()).orderByDesc("storage_time");
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStage(3);
             stockDetailsService.update(stockDetails, stockDetailsQueryWrapper);
+
         }
         this.saveBatch(deliveryList);
 
@@ -202,18 +210,23 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
         // 发表详情表添加发货id
 
-        for (Long id : ids) {
-            for (Long itemId : itemIds) {
-                DeliveryDetails details = new DeliveryDetails();
-                details.setDeliveryId(add);
-                details.setStockItemId(id);
-                details.setItemId(itemId);
-                deliveryDetails.add(details);
-            }
-
-
+//        for (Long id : ids) {
+//            DeliveryDetails details = new DeliveryDetails();
+//            details.setDeliveryId(add);
+//            details.setStockItemId(id);
+//            deliveryDetails.add(details);
+//
+//        }
+        for (StockDetailsParam deliveryDetailsParam : outstockRequest.getIds()) {
+            DeliveryDetails details = new DeliveryDetails();
+            details.setDeliveryId(add);
+            details.setStockItemId(deliveryDetailsParam.getStockItemId());
+            details.setItemId(deliveryDetailsParam.getItemId());
+            deliveryDetails.add(details);
         }
+
         deliveryDetailsService.saveBatch(deliveryDetails);
+
 
 
     }
