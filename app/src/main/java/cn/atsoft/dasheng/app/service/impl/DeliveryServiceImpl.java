@@ -188,6 +188,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             itemIds.add(stockDetails.getItemId());
         }
 
+
         //添加批量发货
         DeliveryParam deliveryParam = new DeliveryParam();
         deliveryParam.setAdressId(outstockRequest.getAdressId());
@@ -223,6 +224,9 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
             deliveryDetails.add(details);
+            Long itemId = deliveryDetailsParam.getItemId();
+            Date createTime = deliveryDetailsParam.getCreateTime();
+
         }
 
         deliveryDetailsService.saveBatch(deliveryDetails);
