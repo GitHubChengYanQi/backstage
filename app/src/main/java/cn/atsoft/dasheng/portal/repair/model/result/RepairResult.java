@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.repair.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import lombok.Data;
 import java.util.Date;
@@ -22,6 +23,7 @@ public class RepairResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
    private DeliveryDetailsResult deliveryDetailsResult;
+   private CustomerResult customerResult;
     /**
      * 报修id
      */
