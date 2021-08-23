@@ -72,23 +72,31 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
 
     @Override
     public DeliveryDetailsResult findBySpec(DeliveryDetailsParam param) {
+
         return null;
     }
 
     @Override
     public List<DeliveryDetailsResult> findListBySpec(DeliveryDetailsParam param) {
-        return null;
+        List<DeliveryDetailsResult> deliveryDetailsResults = this.baseMapper.customList(param);
+        format(deliveryDetailsResults);
+        return deliveryDetailsResults;
     }
 
     @Override
     public PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param) {
         Page<DeliveryDetailsResult> pageContext = getPageContext();
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
+       format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
+    public DeliveryDetailsResult format(List<DeliveryDetailsResult> data){
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
 
 
-        for (DeliveryDetailsResult record : page.getRecords()) {
+        for (DeliveryDetailsResult record : data) {
             dids.add(record.getDeliveryId());
             Iids.add(record.getItemId());
 
@@ -103,7 +111,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         List<Items> itemsList = Iids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
 
 
-        for (DeliveryDetailsResult record : page.getRecords()) {
+        for (DeliveryDetailsResult record : data) {
             for (Delivery delivery : deliveryList) {
                 if (record.getDeliveryId().equals(delivery.getDeliveryId())) {
                     DeliveryResult deliveryResult = new DeliveryResult();
@@ -152,8 +160,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
 
 
         }
-        return PageFactory.createPageInfo(page);
-    }
+
+        return data.size() == 0 ? null : data.get(0);
+    };
 
     private Serializable getKey(DeliveryDetailsParam param) {
         return param.getDeliveryDetailsId();
