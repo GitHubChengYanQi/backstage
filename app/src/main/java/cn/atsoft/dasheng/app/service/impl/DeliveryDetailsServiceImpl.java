@@ -42,13 +42,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     @Autowired
     private ItemsService itemsService;
     @Autowired
-    private CustomerService customerService;
-    @Autowired
-    private AdressService adressService;
-    @Autowired
-    private ContactsService contactsService;
-    @Autowired
-    private PhoneService phoneService;
+    private BrandService brandService;
 
     @Override
     public DeliveryDetails add(DeliveryDetailsParam param) {
@@ -103,6 +97,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
             results.add(deliveryDetailsResult);
         }
         getItems(results);
+        getBrands(results);
         return results;
     }
 
@@ -218,5 +213,25 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
             }
         }
 
+    }
+
+    public void getBrands(List<DeliveryDetailsResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (DeliveryDetailsResult datum : data) {
+            ids.add(datum.getBrandId());
+        }
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.in("brand_id", ids);
+        List<Brand> brands = brandService.list(brandQueryWrapper);
+        for (DeliveryDetailsResult datum : data) {
+            for (Brand brand : brands) {
+                if (brand.getBrandId().equals(datum.getBrandId())) {
+                    BrandResult brandResult = new BrandResult();
+                    ToolUtil.copyProperties(brand, brandResult);
+                    datum.setDetailsBrand(brandResult);
+                    break;
+                }
+            }
+        }
     }
 }

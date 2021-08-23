@@ -33,6 +33,7 @@ public class DeliveryDetailsResult implements Serializable {
     private  ItemsResult  detailesItems;
     private String qualityType;
     private  Long brandId;
+    private  BrandResult detailsBrand;
     /**
      * 发货详情id
      */
