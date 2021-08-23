@@ -4,14 +4,11 @@ package cn.atsoft.dasheng.portal.repair.service.impl;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 
-import cn.atsoft.dasheng.app.entity.Items;
-
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
-import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -25,7 +22,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -49,10 +45,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private CustomerService customerService;
 
     @Override
-    public Long add(RepairParam param){
+    public Repair add(RepairParam param){
         Repair entity = getEntity(param);
         this.save(entity);
-        return entity.getRepairId();
+        return entity;
     }
 
     @Override
@@ -61,11 +57,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     }
 
     @Override
-    public void update(RepairParam param){
+    public Repair update(RepairParam param){
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

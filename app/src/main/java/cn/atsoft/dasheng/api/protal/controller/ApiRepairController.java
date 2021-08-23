@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -26,8 +27,8 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public Long saveRepair(@RequestBody RepairParam repairParam) {
-        Long repairId = this.repairService.add(repairParam);
-        return repairId;
+        Repair repair = this.repairService.add(repairParam);
+        return repair.getRepairId();
     }
 
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
