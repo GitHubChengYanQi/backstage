@@ -27,7 +27,6 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Integer stage;
     private String iname;
     private String pname;
-
     private Long storehouseId;
     private Long outStockOrderId;
     /**

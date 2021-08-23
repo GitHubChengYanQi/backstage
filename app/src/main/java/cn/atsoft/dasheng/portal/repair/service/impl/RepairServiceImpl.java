@@ -122,16 +122,21 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
         QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
         detailsQueryWrapper.in("delivery_details_id", ids);
-        List<DeliveryDetails> deliveryDetails = deliveryDetailsService.list(detailsQueryWrapper);
+        List<DeliveryDetailsResult> byIds = deliveryDetailsService.getByIds(ids);
         for (RepairResult record : data) {
-            for (DeliveryDetails deliveryDetail : deliveryDetails) {
-                if (deliveryDetail.getDeliveryDetailsId().equals(record.getItemId())) {
-                    DeliveryDetailsResult deliveryDetailsResult = new DeliveryDetailsResult();
-                    ToolUtil.copyProperties(deliveryDetail, deliveryDetailsResult);
-                    record.setDeliveryDetailsResult(deliveryDetailsResult);
-                    break;
+            for (DeliveryDetailsResult byId : byIds) {
+                if (byId.getDeliveryDetailsId().equals(record.getItemId())) {
+                    record.setDeliveryDetailsResult(byId);
                 }
             }
+//            for (DeliveryDetails deliveryDetail : deliveryDetails) {
+//                if (deliveryDetail.getDeliveryDetailsId().equals(record.getItemId())) {
+//                    DeliveryDetailsResult deliveryDetailsResult = new DeliveryDetailsResult();
+//                    ToolUtil.copyProperties(deliveryDetail, deliveryDetailsResult);
+//                    record.setDeliveryDetailsResult(deliveryDetailsResult);
+//                    break;
+//                }
+//            }
         }
         return data.size() == 0 ? null : data.get(0);
     }
