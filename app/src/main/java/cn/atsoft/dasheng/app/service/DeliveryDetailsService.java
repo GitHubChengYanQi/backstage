@@ -69,5 +69,7 @@ public interface DeliveryDetailsService extends IService<DeliveryDetails> {
 
     List<DeliveryDetailsResult> getByIds(List<Long> ids);
 
+    DeliveryDetailsResult format(List<DeliveryDetailsResult> data);
+
 
 }

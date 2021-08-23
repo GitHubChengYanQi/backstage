@@ -59,9 +59,11 @@ public class ApiDeliveryController {
                 res.setQualityType(data.getQualityType());
                 res.setDeliveryId(data.getDeliveryId());
                 res.setBrandId(data.getBrandId());
+                res.setCreateTime(data.getCreateTime());
                 rtnList.add(res);
             }
         }
+        deliveryDetailsService.format(rtnList);
         return  rtnList;
     }
 
