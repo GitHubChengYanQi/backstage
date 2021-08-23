@@ -66,4 +66,6 @@ public interface RepairService extends IService<Repair> {
      */
      PageInfo<RepairResult> findPageBySpec(RepairParam param);
 
+    RepairResult detail(Long id);
+
 }
