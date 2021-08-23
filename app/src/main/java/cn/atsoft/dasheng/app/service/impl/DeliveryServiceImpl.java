@@ -223,6 +223,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             details.setDeliveryId(add);
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
+            details.setBrandId(deliveryDetailsParam.getBrandId());
             deliveryDetails.add(details);
 
 

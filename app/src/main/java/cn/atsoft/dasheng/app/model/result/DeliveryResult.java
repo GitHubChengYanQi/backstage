@@ -28,6 +28,8 @@ public class DeliveryResult implements Serializable {
     private ContactsResult contactsResult;
 
     private PhoneResult phoneResult;
+
+
     /**
      * 产品id
      */

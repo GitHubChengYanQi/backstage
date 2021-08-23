@@ -30,8 +30,9 @@ public class DeliveryDetailsResult implements Serializable {
     private DeliveryResult deliveryResult;
     private Integer stage;
     private  ItemsResult itemsResult;
-
+    private  ItemsResult  detailesItems;
     private String qualityType;
+    private  Long brandId;
     /**
      * 发货详情id
      */
