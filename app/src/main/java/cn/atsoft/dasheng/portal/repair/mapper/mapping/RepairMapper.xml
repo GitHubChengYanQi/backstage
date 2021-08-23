@@ -18,13 +18,14 @@
         <result column="display" property="display" />
         <result column="progress" property="progress" />
         <result column="money" property="money" />
+        <result column="number" property="number" />
         <result column="quality_type" property="qualityType" />
         <result column="contract_type" property="contractType" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        repair_id AS "repairId", company_id AS "companyId", item_img_url AS "itemImgUrl", item_id AS "itemId", service_type AS "serviceType", expect_time AS "expectTime", comment AS "comment", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", progress AS "progress", money AS "money", quality_type AS "qualityType", contract_type AS "contractType"
+        number AS "number",repair_id AS "repairId", company_id AS "companyId", item_img_url AS "itemImgUrl", item_id AS "itemId", service_type AS "serviceType", expect_time AS "expectTime", comment AS "comment", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", progress AS "progress", money AS "money", quality_type AS "qualityType", contract_type AS "contractType"
     </sql>
 
 

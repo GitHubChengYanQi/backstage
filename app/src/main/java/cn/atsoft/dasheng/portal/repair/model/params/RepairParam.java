@@ -48,6 +48,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("设备id")
     private Long itemId;
+    private Long number;
 
     /**
      * 服务类型
