@@ -59,7 +59,7 @@ public class RepairController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody RepairParam repairParam) {
         Repair update = this.repairService.update(repairParam);
-        return ResponseData.success();
+        return ResponseData.success(update);
     }
 
     /**
