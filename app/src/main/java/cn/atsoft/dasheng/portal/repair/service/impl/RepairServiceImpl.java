@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -45,7 +46,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Autowired
     private DeliveryDetailsService deliveryDetailsService;
     @Autowired
-    private ItemsService itemsService;
+    private CustomerService customerService;
 
     @Override
     public Long add(RepairParam param){
@@ -99,7 +100,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     private RepairResult format(List<RepairResult> data){
         List<Long> ids = new ArrayList<>();
-
+        List<Long> cIds = new ArrayList<>();
 //        List<Long> itemIds = new ArrayList<>();
 //
 //        for (RepairResult record : page.getRecords()) {
@@ -118,25 +119,32 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
         for (RepairResult record : data) {
             ids.add(record.getItemId());
+            cIds.add(record.getCustomerId());
         }
 
         QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
         detailsQueryWrapper.in("delivery_details_id", ids);
         List<DeliveryDetailsResult> byIds = deliveryDetailsService.getByIds(ids);
+
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.in("customer_id",cIds);
+        List<Customer> customers = customerService.list(customerQueryWrapper);
+
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
                 if (byId.getDeliveryDetailsId().equals(record.getItemId())) {
                     record.setDeliveryDetailsResult(byId);
                 }
             }
-//            for (DeliveryDetails deliveryDetail : deliveryDetails) {
-//                if (deliveryDetail.getDeliveryDetailsId().equals(record.getItemId())) {
-//                    DeliveryDetailsResult deliveryDetailsResult = new DeliveryDetailsResult();
-//                    ToolUtil.copyProperties(deliveryDetail, deliveryDetailsResult);
-//                    record.setDeliveryDetailsResult(deliveryDetailsResult);
-//                    break;
-//                }
-//            }
+            for (Customer customer : customers) {
+                if (customer.getCustomerId().equals(record.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer,customerResult);
+                    record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+
         }
         return data.size() == 0 ? null : data.get(0);
     }
