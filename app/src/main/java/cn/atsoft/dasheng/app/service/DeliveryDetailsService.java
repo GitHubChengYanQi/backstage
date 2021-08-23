@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
@@ -65,6 +66,8 @@ public interface DeliveryDetailsService extends IService<DeliveryDetails> {
      * @Date 2021-08-20
      */
      PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param);
+
+    List<DeliveryDetailsResult> getByIds(List<Long> ids);
 
 
 }
