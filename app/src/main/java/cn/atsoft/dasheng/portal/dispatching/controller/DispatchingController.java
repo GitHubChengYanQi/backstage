@@ -85,7 +85,6 @@ public class DispatchingController extends BaseController {
         DispatchingResult result = new DispatchingResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
