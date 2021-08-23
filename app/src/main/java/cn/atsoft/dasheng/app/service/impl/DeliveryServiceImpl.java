@@ -11,7 +11,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -224,8 +226,9 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
             deliveryDetails.add(details);
-            Long itemId = deliveryDetailsParam.getItemId();
-            Date createTime = deliveryDetailsParam.getCreateTime();
+//            Long itemId = deliveryDetailsParam.getItemId();
+//            Date createTime = deliveryDetailsParam.getCreateTime();
+//            DateUtil.today(createTime);
 
         }
 
