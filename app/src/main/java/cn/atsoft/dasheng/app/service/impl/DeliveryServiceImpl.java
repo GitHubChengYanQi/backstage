@@ -11,6 +11,10 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
@@ -39,8 +43,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     @Autowired
     private DeliveryDetailsService deliveryDetailsService;
     @Autowired
-    private OutstockService outstockService;
-    @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
     private ItemsService itemsService;
@@ -52,6 +54,8 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     private ContactsService contactsService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private RepairService repairService;
 
 
     @Override
@@ -181,7 +185,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             ids.add(deliveryDetailsParam.getStockItemId());
         }
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("stock_item_id",ids );
+        queryWrapper.in("stock_item_id", ids);
         List<Long> itemIds = new ArrayList<>();
 
         List<StockDetails> detailsList = stockDetailsService.list(queryWrapper);
@@ -213,27 +217,49 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
         // 发表详情表添加发货id
 
-//        for (Long id : ids) {
-//            DeliveryDetails details = new DeliveryDetails();
-//            details.setDeliveryId(add);
-//            details.setStockItemId(id);
-//            deliveryDetails.add(details);
-//
-//        }
         for (StockDetailsParam deliveryDetailsParam : outstockRequest.getIds()) {
             DeliveryDetails details = new DeliveryDetails();
             details.setDeliveryId(add);
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
             deliveryDetails.add(details);
-//            Long itemId = deliveryDetailsParam.getItemId();
-//            Date createTime = deliveryDetailsParam.getCreateTime();
-//            DateUtil.today(createTime);
+            //保修期
+            Long itemId = deliveryDetailsParam.getItemId();
+            QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+            itemsQueryWrapper.in("item_id", itemId);
+            List<Items> items = itemsService.list(itemsQueryWrapper);
+            //查询产品质保期
+            for (Items item : items) {
+                Integer shelfLife = item.getShelfLife();
+                //保修期截至时间
+                String time = String.valueOf(deliveryDetailsParam.getCreateTime());
+                Date date = DateUtil.parse(time, "yyyy-MM-dd");
+                Date offset = DateUtil.offset(date, DateField.DAY_OF_MONTH, shelfLife);
+                //相差日期
+                long between = DateUtil.between(date, offset, DateUnit.DAY);
+                QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+                repairQueryWrapper.in("item_id", item);
+                List<Repair> repairs = repairService.list(repairQueryWrapper);
+                for (Repair repairss : repairs) {
+                    RepairParam param = new RepairParam();
+                    ToolUtil.copyProperties(repairss, param);
+                    if (between > shelfLife) {
+                        param.setQualityType("质保内");
+                        repairService.update(param);
+                    } else {
+                        param.setQualityType("质保外");
+                        repairService.update(param);
+                    }
+
+
+                }
+
+            }
+
 
         }
 
         deliveryDetailsService.saveBatch(deliveryDetails);
-
 
 
     }
