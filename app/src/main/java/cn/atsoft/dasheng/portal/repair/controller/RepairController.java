@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.repair.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -81,11 +82,9 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<RepairResult> detail(@RequestBody RepairParam repairParam) {
-        Repair detail = this.repairService.getById(repairParam.getRepairId());
-        RepairResult result = new RepairResult();
-        ToolUtil.copyProperties(detail, result);
-
-        return ResponseData.success(result);
+        Long result = repairParam.getRepairId();
+        RepairResult repairResult = repairService.detail(result);
+        return ResponseData.success(repairResult);
     }
 
     /**
