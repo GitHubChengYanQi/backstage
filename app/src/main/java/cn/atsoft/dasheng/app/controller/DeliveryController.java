@@ -108,7 +108,7 @@ public class DeliveryController extends BaseController {
     @ApiOperation("所有列表")
     public List<Delivery> listAll(@RequestBody(required = false) DeliveryParam deliveryParam) {
         QueryWrapper<Delivery> deliveryResultQueryWrapper = new QueryWrapper<>();
-        deliveryResultQueryWrapper.in("display",1).in("customerId",deliveryParam.getCustomerId());
+        deliveryResultQueryWrapper.in("display",1).in("customer_id",deliveryParam.getCustomerId());
         List<Delivery> list = deliveryService.list(deliveryResultQueryWrapper);
         return list;
     }
