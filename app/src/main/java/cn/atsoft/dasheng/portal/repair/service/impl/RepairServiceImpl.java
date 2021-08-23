@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.portal.repair.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
+import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
+import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -17,6 +19,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -35,6 +38,8 @@ import java.util.List;
 public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> implements RepairService {
     @Autowired
     private DeliveryDetailsService deliveryDetailsService;
+    @Autowired
+    private ItemsService itemsService;
 
     @Override
     public Long add(RepairParam param) {
@@ -71,9 +76,21 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Page<RepairResult> pageContext = getPageContext();
         IPage<RepairResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> ids = new ArrayList<>();
-        for (RepairResult record : page.getRecords()) {
-            ids.add(record.getItemId());
-        }
+//        List<Long> itemIds = new ArrayList<>();
+//
+//        for (RepairResult record : page.getRecords()) {
+//            ids.add(record.getItemId());
+//            itemIds.add(record.getItemId());
+//        }
+//        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+//        itemsQueryWrapper.in("item_id", itemIds);
+//        List<Items> items = itemsService.list(itemsQueryWrapper);
+//        for (Items item : items) {
+//              QueryWrapper<DeliveryDetails>detailsQueryWrapper = new QueryWrapper<>();
+//              detailsQueryWrapper.in("item_id",item.getItemId());
+//        }
+
+        //映射发货详情
         QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
         detailsQueryWrapper.in("delivery_details_id", ids);
         List<DeliveryDetails> deliveryDetails = deliveryDetailsService.list(detailsQueryWrapper);
