@@ -33,6 +33,17 @@ public class Repair implements Serializable {
     @TableField("company_id")
     private Long companyId;
 
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    @TableField("number")
+    private Long number;
+
     /**
      * 保修部位图片
      */
