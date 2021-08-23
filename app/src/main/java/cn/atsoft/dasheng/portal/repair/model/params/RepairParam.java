@@ -116,6 +116,51 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("质保类型")
     private String qualityType;
 
+    private Long customerId;
+
+    /**
+     * 省
+     */
+    @ApiModelProperty("省")
+    private String province;
+
+    /**
+     * 市
+     */
+    @ApiModelProperty("市")
+    private String city;
+
+    /**
+     * 区
+     */
+    @ApiModelProperty("区")
+    private String area;
+
+    /**
+     * 详细地址
+     */
+    @ApiModelProperty("详细地址")
+    private String address;
+
+
+    /**
+     * 姓名
+     */
+    @ApiModelProperty("姓名")
+    private String people;
+
+    /**
+     * 职务
+     */
+    @ApiModelProperty("职务")
+    private String position;
+
+    /**
+     * 电话
+     */
+    @ApiModelProperty("电话")
+    private Integer telephone;
+
     /**
      * 合同类型
      */

@@ -128,6 +128,118 @@ public class Repair implements Serializable {
     @TableField("contract_type")
     private String contractType;
 
+    /**
+     * 客户id
+     */
+    @TableField("customer_id")
+    private Long customerId;
+
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    /**
+     * 省
+     */
+    @TableField("province")
+    private String province;
+
+    /**
+     * 市
+     */
+    @TableField("city")
+    private String city;
+
+    /**
+     * 区
+     */
+    @TableField("area")
+    private String area;
+
+    /**
+     * 详细地址
+     */
+    @TableField("address")
+    private String address;
+
+    /**
+     * 姓名
+     */
+    @TableField("people")
+    private String people;
+
+    /**
+     * 职务
+     */
+    @TableField("position")
+    private String position;
+
+    /**
+     * 电话
+     */
+    @TableField("telephone")
+    private Integer telephone;
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPeople() {
+        return people;
+    }
+
+    public void setPeople(String people) {
+        this.people = people;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public Integer getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(Integer telephone) {
+        this.telephone = telephone;
+    }
 
     public Long getRepairId() {
         return repairId;
