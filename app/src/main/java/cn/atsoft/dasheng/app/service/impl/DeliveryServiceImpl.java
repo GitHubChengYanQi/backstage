@@ -224,48 +224,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
             deliveryDetails.add(details);
-//            //保修期
-//            Long itemId = deliveryDetailsParam.getItemId();
-//            QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-//            itemsQueryWrapper.in("item_id", itemId);
-//            List<Items> items = itemsService.list(itemsQueryWrapper);
-//            //查询产品质保期
-//            for (Items item : items) {
-//                int shelfLife = item.getShelfLife();
-//
-//                //发货时间
-//                String time = String.valueOf(deliveryDetailsParam.getCreateTime());
-//                Date date = DateUtil.parse(time);
-//
-//                //产品到期日期
-//                Date day = DateUtil.offsetDay(date, shelfLife);
-//
-//                //获取当前时间
-//                Date nowtime = new Date();
-//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                String format = formatter.format(nowtime);
-//                Date parse = DateUtil.parse(format);
-//
-//                //剩余保修日期
-//                long between = DateUtil.between(parse, day, DateUnit.DAY);
-//                QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-//                repairQueryWrapper.in("item_id", item.getItemId());
-//                List<Repair> repairs = repairService.list(repairQueryWrapper);
-//                for (Repair repairss : repairs) {
-//                    RepairParam param = new RepairParam();
-//                    ToolUtil.copyProperties(repairss, param);
-//                    if (between >= 0) {
-//                        param.setQualityType("质保内");
-//                        repairService.update(param);
-//                    } else {
-//                        param.setQualityType("质保外");
-//                        repairService.update(param);
-//                    }
-//
-//
-//                }
-//
-//            }
 
 
         }
