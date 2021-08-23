@@ -9,6 +9,10 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,8 +103,6 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         List<Items> itemsList = Iids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
 
 
-
-
         for (DeliveryDetailsResult record : page.getRecords()) {
             for (Delivery delivery : deliveryList) {
                 if (record.getDeliveryId().equals(delivery.getDeliveryId())) {
@@ -109,6 +113,35 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                 }
             }
             for (Items items : itemsList) {
+                if (items.getItemId().equals(record.getItemId())) {
+                    //获取产品质保期
+                    int shelfLife = items.getShelfLife();
+                    //发货时间
+                    String time = String.valueOf(record.getCreateTime());
+                    Date date = DateUtil.parse(time);
+
+                    //产品到期日期
+                    Date day = DateUtil.offsetDay(date, shelfLife);
+                    //获取当前时间
+
+                    Date nowtime = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String format = formatter.format(nowtime);
+                    Date parse = DateUtil.parse(format);
+
+                    //剩余保修日期
+                    long between = DateUtil.between(parse, day, DateUnit.DAY);
+                    DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
+                    ToolUtil.copyProperties(record, deliveryDetailsParam);
+                    if (between >= 0) {
+                        deliveryDetailsParam.setQualityType("保质期内");
+                        this.update(deliveryDetailsParam);
+                    } else {
+                        deliveryDetailsParam.setQualityType("保质期外");
+                        this.update(deliveryDetailsParam);
+                    }
+                }
+
                 if (items.getItemId().equals(record.getItemId())) {
                     ItemsResult itemsResult = new ItemsResult();
                     ToolUtil.copyProperties(items, itemsResult);
