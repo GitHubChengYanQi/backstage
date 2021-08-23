@@ -102,6 +102,20 @@ public class DeliveryDetailsController extends BaseController {
         }
         return this.deliveryDetailsService.findPageBySpec(deliveryDetailsParam);
     }
+    /**
+     * 查询所有列表
+     *
+     * @author
+     * @Date 2021-08-20
+     */
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<DeliveryDetailsResult> listAll(@RequestBody(required = false) DeliveryDetailsParam deliveryDetailsParam) {
+        if(ToolUtil.isEmpty(deliveryDetailsParam)){
+            deliveryDetailsParam = new DeliveryDetailsParam();
+        }
+        return this.deliveryDetailsService.findListBySpec(deliveryDetailsParam);
+    }
 
 
 

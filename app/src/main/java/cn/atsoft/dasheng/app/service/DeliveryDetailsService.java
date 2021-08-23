@@ -66,4 +66,5 @@ public interface DeliveryDetailsService extends IService<DeliveryDetails> {
      */
      PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param);
 
+
 }
