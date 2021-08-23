@@ -152,10 +152,10 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
                     ToolUtil.copyProperties(record, deliveryDetailsParam);
                     if (parse.before(day)) {
-                        deliveryDetailsParam.setQualityType("保质期内");
+                        deliveryDetailsParam.setQualityType("保修内");
                         this.update(deliveryDetailsParam);
                     } else {
-                        deliveryDetailsParam.setQualityType("保质期外");
+                        deliveryDetailsParam.setQualityType("保修外");
                         this.update(deliveryDetailsParam);
                     }
                 }
