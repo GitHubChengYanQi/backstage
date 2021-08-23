@@ -3,31 +3,24 @@ package cn.atsoft.dasheng.portal.repair.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
-
-import cn.atsoft.dasheng.app.entity.Items;
-
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
-
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
-import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
-import  cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,19 +42,19 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private CustomerService customerService;
 
     @Override
-    public Long add(RepairParam param){
+    public Long add(RepairParam param) {
         Repair entity = getEntity(param);
         this.save(entity);
         return entity.getRepairId();
     }
 
     @Override
-    public void delete(RepairParam param){
+    public void delete(RepairParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(RepairParam param){
+    public void update(RepairParam param) {
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -69,12 +62,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     }
 
     @Override
-    public RepairResult findBySpec(RepairParam param){
+    public RepairResult findBySpec(RepairParam param) {
         return null;
     }
 
     @Override
-    public List<RepairResult> findListBySpec(RepairParam param){
+    public List<RepairResult> findListBySpec(RepairParam param) {
         return null;
     }
 
@@ -98,22 +91,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return PageFactory.createPageInfo(page);
     }
 
-    private RepairResult format(List<RepairResult> data){
+    private RepairResult format(List<RepairResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
-//        List<Long> itemIds = new ArrayList<>();
-//
-//        for (RepairResult record : page.getRecords()) {
-//            ids.add(record.getItemId());
-//            itemIds.add(record.getItemId());
-//        }
-//        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-//        itemsQueryWrapper.in("item_id", itemIds);
-//        List<Items> items = itemsService.list(itemsQueryWrapper);
-//        for (Items item : items) {
-//              QueryWrapper<DeliveryDetails>detailsQueryWrapper = new QueryWrapper<>();
-//              detailsQueryWrapper.in("item_id",item.getItemId());
-//        }
+
 
         //映射发货详情
 
@@ -127,7 +108,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         List<DeliveryDetailsResult> byIds = deliveryDetailsService.getByIds(ids);
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id",cIds);
+        customerQueryWrapper.in("customer_id", cIds);
         List<Customer> customers = customerService.list(customerQueryWrapper);
 
         for (RepairResult record : data) {
@@ -139,7 +120,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             for (Customer customer : customers) {
                 if (customer.getCustomerId().equals(record.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer,customerResult);
+                    ToolUtil.copyProperties(customer, customerResult);
                     record.setCustomerResult(customerResult);
                     break;
                 }
@@ -149,7 +130,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return data.size() == 0 ? null : data.get(0);
     }
 
-    private Serializable getKey(RepairParam param){
+    private Serializable getKey(RepairParam param) {
         return param.getRepairId();
     }
 
