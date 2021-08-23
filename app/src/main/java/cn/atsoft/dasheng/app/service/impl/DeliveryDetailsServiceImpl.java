@@ -122,8 +122,8 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
 
                     //产品到期日期
                     Date day = DateUtil.offsetDay(date, shelfLife);
-                    //获取当前时间
 
+                    //获取当前时间
                     Date nowtime = new Date();
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String format = formatter.format(nowtime);
@@ -133,7 +133,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     long between = DateUtil.between(parse, day, DateUnit.DAY);
                     DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
                     ToolUtil.copyProperties(record, deliveryDetailsParam);
-                    if (between >= 0) {
+                    if (parse.after(day)) {
                         deliveryDetailsParam.setQualityType("保质期内");
                         this.update(deliveryDetailsParam);
                     } else {
