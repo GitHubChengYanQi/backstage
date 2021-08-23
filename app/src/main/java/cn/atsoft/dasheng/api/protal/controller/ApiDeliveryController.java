@@ -33,22 +33,36 @@ public class ApiDeliveryController {
 
     @RequestMapping(value = "/getDeliveryList", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public List<DeliveryDetails> getDeliveryList(@RequestBody(required = false) DeliveryParam deliveryParam) {
+    public List<DeliveryDetailsResult> getDeliveryList(@RequestBody(required = false) DeliveryParam deliveryParam) {
 
         Long customerId = deliveryParam.getCustomerId();
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
         deliveryQueryWrapper.in("customer_id",customerId);
         List<Delivery> list = this.deliveryService.list(deliveryQueryWrapper);
         List deliveryIds = new ArrayList<>();
+
         if(ToolUtil.isNotEmpty(list)){
             for (Delivery data: list){
                 deliveryIds.add(data.getDeliveryId());
             }
+
         }
-        QueryWrapper<DeliveryDetails> deliveryDetailQueryWrapper = new QueryWrapper<>();
-        deliveryDetailQueryWrapper.in("delivery_id",deliveryIds);
-        List<DeliveryDetails> deliveryList = this.deliveryDetailsService.list(deliveryDetailQueryWrapper);
-        return  deliveryList;
+        List<DeliveryDetailsResult> rtnList = new ArrayList<>();
+        DeliveryDetailsResult res = new DeliveryDetailsResult();
+        List<DeliveryDetails> deliveryList = this.deliveryDetailsService.list();
+        for(DeliveryDetails data : deliveryList){
+            if(deliveryIds.contains(data.getDeliveryId())){
+                res.setDeliveryDetailsId(data.getDeliveryDetailsId());
+                res.setItemId(data.getItemId());
+                res.setStockItemId(data.getStockItemId());
+                res.setStage(data.getStage());
+                res.setQualityType(data.getQualityType());
+                res.setDeliveryId(data.getDeliveryId());
+                res.setBrandId(data.getBrandId());
+                rtnList.add(res);
+            }
+        }
+        return  rtnList;
     }
 
 }
