@@ -25,6 +25,9 @@ public class DeliveryDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("quality_type")
+    private String qualityType;
+
     @TableField("stage")
     private Integer stage;
     /**
@@ -76,6 +79,13 @@ public class DeliveryDetails implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getQualityType() {
+        return qualityType;
+    }
+
+    public void setQualityType(String qualityType) {
+        this.qualityType = qualityType;
+    }
 
     public Long getDeliveryDetailsId() {
         return deliveryDetailsId;

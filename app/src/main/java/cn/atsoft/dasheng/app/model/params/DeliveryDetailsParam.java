@@ -25,7 +25,7 @@ public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private Integer stage;
-
+    private String qualityType;
 
     private  Long itemId;
     /**
