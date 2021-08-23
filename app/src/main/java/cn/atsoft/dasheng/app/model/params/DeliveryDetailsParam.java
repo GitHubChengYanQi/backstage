@@ -28,6 +28,7 @@ public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
     private String qualityType;
 
     private  Long itemId;
+    private Long brandId;
     /**
      * 发货详情id
      */

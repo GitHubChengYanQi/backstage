@@ -17,6 +17,7 @@
         <result column="adress_id" property="adressId"/>
         <result column="contacts_id" property="contactsId"/>
         <result column="phone_id" property="phoneId"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->

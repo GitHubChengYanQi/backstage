@@ -87,11 +87,26 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     public PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param) {
         Page<DeliveryDetailsResult> pageContext = getPageContext();
         IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
-       format(page.getRecords());
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    public DeliveryDetailsResult format(List<DeliveryDetailsResult> data){
+    @Override
+    public List<DeliveryDetailsResult> getByIds(List<Long> ids) {
+        QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
+        detailsQueryWrapper.in("delivery_details_id", ids);
+        List<DeliveryDetails> deliveryDetails = this.list(detailsQueryWrapper);
+        List<DeliveryDetailsResult> results = new ArrayList<>();
+        for (DeliveryDetails deliveryDetail : deliveryDetails) {
+            DeliveryDetailsResult deliveryDetailsResult = new DeliveryDetailsResult();
+            ToolUtil.copyProperties(deliveryDetail, deliveryDetailsResult);
+            results.add(deliveryDetailsResult);
+        }
+        getItems(results);
+        return results;
+    }
+
+    public DeliveryDetailsResult format(List<DeliveryDetailsResult> data) {
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();
 
@@ -162,7 +177,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         }
 
         return data.size() == 0 ? null : data.get(0);
-    };
+    }
+
+    ;
 
     private Serializable getKey(DeliveryDetailsParam param) {
         return param.getDeliveryDetailsId();
@@ -182,4 +199,24 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         return entity;
     }
 
+    public void getItems(List<DeliveryDetailsResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (DeliveryDetailsResult datum : data) {
+            ids.add(datum.getItemId());
+        }
+        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+        itemsQueryWrapper.in("item_id", ids);
+        List<Items> items = itemsService.list(itemsQueryWrapper);
+        for (DeliveryDetailsResult datum : data) {
+            for (Items item : items) {
+                if (item.getItemId().equals(datum.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(item, itemsResult);
+                    datum.setDetailesItems(itemsResult);
+                    break;
+                }
+            }
+        }
+
+    }
 }
