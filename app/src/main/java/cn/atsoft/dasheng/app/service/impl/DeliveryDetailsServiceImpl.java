@@ -133,7 +133,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     long between = DateUtil.between(parse, day, DateUnit.DAY);
                     DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
                     ToolUtil.copyProperties(record, deliveryDetailsParam);
-                    if (parse.after(day)) {
+                    if (parse.before(day)) {
                         deliveryDetailsParam.setQualityType("保质期内");
                         this.update(deliveryDetailsParam);
                     } else {
