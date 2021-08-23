@@ -230,24 +230,25 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             List<Items> items = itemsService.list(itemsQueryWrapper);
             //查询产品质保期
             for (Items item : items) {
-                Integer shelfLife = item.getShelfLife();
+                int shelfLife = item.getShelfLife();
                 //保修期截至时间
                 String time = String.valueOf(deliveryDetailsParam.getCreateTime());
-                Date date = DateUtil.parse(time, "yyyy-MM-dd");
-                Date offset = DateUtil.offset(date, DateField.DAY_OF_MONTH, shelfLife);
+                Date date = DateUtil.parse(time);
+                //产品到期日期
+                Date day = DateUtil.offsetDay(date,shelfLife);
                 //相差日期
-                long between = DateUtil.between(date, offset, DateUnit.DAY);
+                long between = DateUtil.between(date, day, DateUnit.DAY);
                 QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-                repairQueryWrapper.in("item_id", item);
+                repairQueryWrapper.in("item_id", item.getItemId());
                 List<Repair> repairs = repairService.list(repairQueryWrapper);
                 for (Repair repairss : repairs) {
                     RepairParam param = new RepairParam();
                     ToolUtil.copyProperties(repairss, param);
-                    if (between > shelfLife) {
-                        param.setQualityType("质保内");
+                    if (between >= shelfLife) {
+                        param.setQualityType("质保外");
                         repairService.update(param);
                     } else {
-                        param.setQualityType("质保外");
+                        param.setQualityType("质保内");
                         repairService.update(param);
                     }
 
