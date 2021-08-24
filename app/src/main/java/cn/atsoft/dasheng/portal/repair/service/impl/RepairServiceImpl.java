@@ -49,10 +49,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public Long add(RepairParam param) {
+    public Repair add(RepairParam param){
         Repair entity = getEntity(param);
         this.save(entity);
-        return entity.getRepairId();
+        return entity;
     }
 
     @BussinessLog
@@ -63,7 +63,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public void update(RepairParam param) {
+    public Repair update(RepairParam param){
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
         RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
@@ -94,6 +94,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

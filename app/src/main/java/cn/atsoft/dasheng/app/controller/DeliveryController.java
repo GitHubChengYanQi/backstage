@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -102,6 +103,14 @@ public class DeliveryController extends BaseController {
             deliveryParam = new DeliveryParam();
         }
         return this.deliveryService.findPageBySpec(deliveryParam);
+    }
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("所有列表")
+    public List<Delivery> listAll(@RequestBody(required = false) DeliveryParam deliveryParam) {
+        QueryWrapper<Delivery> deliveryResultQueryWrapper = new QueryWrapper<>();
+        deliveryResultQueryWrapper.in("display",1).in("customer_id",deliveryParam.getCustomerId());
+        List<Delivery> list = deliveryService.list(deliveryResultQueryWrapper);
+        return list;
     }
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)

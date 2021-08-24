@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.alibaba.fastjson.JSONPatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -17,6 +18,8 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.fastjson.JSONPatch.OperationType.add;
 
 
 /**
@@ -42,7 +45,7 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody RepairParam repairParam) {
-        Long add = this.repairService.add(repairParam);
+        Repair add = this.repairService.add(repairParam);
         return ResponseData.success(add);
     }
 
@@ -55,9 +58,8 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody RepairParam repairParam) {
-
-        this.repairService.update(repairParam);
-        return ResponseData.success();
+        Repair update = this.repairService.update(repairParam);
+        return ResponseData.success(update);
     }
 
     /**

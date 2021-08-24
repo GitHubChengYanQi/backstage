@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.portal.repair.model.params;
 
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,6 +26,9 @@ public class RepairParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<Banner> itemImgUrlList;
+    private String itemName;
+    private String customerName;
     private Long dynamic;
     /**
      * 报修id

@@ -23,8 +23,9 @@ public interface RepairService extends IService<Repair> {
      *
      * @author siqiang
      * @Date 2021-08-20
+     * @return
      */
-    Long add(RepairParam param);
+    Repair add(RepairParam param);
 
     /**
      * 删除
@@ -40,7 +41,7 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-    void update(RepairParam param);
+    Repair update(RepairParam param);
 
     /**
      * 查询单条数据，Specification模式

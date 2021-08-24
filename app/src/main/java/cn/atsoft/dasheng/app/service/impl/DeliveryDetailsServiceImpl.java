@@ -101,6 +101,8 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         return results;
     }
 
+
+    @Override
     public DeliveryDetailsResult format(List<DeliveryDetailsResult> data) {
         List<Long> dids = new ArrayList<>();
         List<Long> Iids = new ArrayList<>();

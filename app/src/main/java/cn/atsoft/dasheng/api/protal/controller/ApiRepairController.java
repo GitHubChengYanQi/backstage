@@ -4,6 +4,10 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
+import cn.atsoft.dasheng.portal.banner.service.BannerService;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -23,11 +27,20 @@ public class ApiRepairController {
     private RepairService repairService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private BannerService bannerService;
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public Long saveRepair(@RequestBody RepairParam repairParam) {
-        Long repairId = this.repairService.add(repairParam);
-        return repairId;
+        Repair repair = this.repairService.add(repairParam);
+        List<Banner> banner = repairParam.getItemImgUrlList();
+        for (Banner data : banner){
+            BannerParam bannerParam = new BannerParam();
+            bannerParam.setDifference(repair.getRepairId());
+            bannerParam.setImgUrl(data.getImgUrl());
+            this.bannerService.add(bannerParam);
+        }
+        return repair.getRepairId();
     }
 
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
