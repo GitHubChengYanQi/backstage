@@ -31,7 +31,7 @@ public class ApiRepairController {
     private BannerService bannerService;
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
-    public Long saveRepair(@RequestBody RepairParam repairParam) {
+    public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair repair = this.repairService.add(repairParam);
         List<Banner> banner = repairParam.getItemImgUrlList();
         for (Banner data : banner){
@@ -40,7 +40,7 @@ public class ApiRepairController {
             bannerParam.setImgUrl(data.getImgUrl());
             this.bannerService.add(bannerParam);
         }
-        return repair.getRepairId();
+        return ResponseData.success(repair.getRepairId());
     }
 
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
