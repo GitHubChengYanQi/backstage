@@ -8,6 +8,10 @@ import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
 import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.portal.repairdynamic.model.params.RepairDynamicParam;
+import cn.atsoft.dasheng.portal.repairdynamic.service.RepairDynamicService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -41,6 +45,8 @@ public class FreedAop {
     private ContractService contractService;
     @Autowired
     private ErpOrderService erpOrderService;
+    @Autowired
+    private RepairDynamicService repairDynamicService;
 
 
     @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.BussinessLog)")
@@ -284,6 +290,35 @@ public class FreedAop {
                     break;
             }
             customerDynamicService.add(customerDynamicParam);
+        }
+        if (target instanceof RepairService) {
+            FreedTemplateProperties.Repair repairs = freedTemplateService.getConfig().getRepair();
+            String content = "";
+            Repair repair = (Repair) result;
+            RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
+
+            switch (methodName) {
+                case "add":
+                    content = repairs.getAdd().replace("[操作人]", user.getName());
+                    repairDynamicParam.setContent(content);
+                    repairDynamicParam.setRepairId(repair.getRepairId());
+
+                    break;
+                case "update":
+                    content = repairs.getEdit().replace("[操作人]", user.getName());
+                    repairDynamicParam.setContent(content);
+                    repairDynamicParam.setRepairId(repair.getRepairId());
+
+                    break;
+                case "delete":
+                    content = repairs.getDelete().replace("[操作人]", user.getName());
+                    repairDynamicParam.setContent(content);
+                    repairDynamicParam.setRepairId(repair.getRepairId());
+
+                    break;
+            }
+
+            repairDynamicService.add(repairDynamicParam);
         }
         return result;
     }

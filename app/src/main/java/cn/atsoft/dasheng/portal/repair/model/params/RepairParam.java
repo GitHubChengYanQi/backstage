@@ -29,6 +29,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     private List<Banner> itemImgUrlList;
     private String itemName;
     private String customerName;
+    private Long dynamic;
     /**
      * 报修id
      */

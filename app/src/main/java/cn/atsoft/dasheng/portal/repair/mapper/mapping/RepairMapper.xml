@@ -4,21 +4,21 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.repair.entity.Repair">
-        <id column="repair_id" property="repairId" />
-        <result column="company_id" property="companyId" />
-        <result column="item_img_url" property="itemImgUrl" />
-        <result column="item_id" property="itemId" />
-        <result column="service_type" property="serviceType" />
-        <result column="expect_time" property="expectTime" />
-        <result column="comment" property="comment" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
-        <result column="progress" property="progress" />
-        <result column="money" property="money" />
-        <result column="number" property="number" />
+        <id column="repair_id" property="repairId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="item_img_url" property="itemImgUrl"/>
+        <result column="item_id" property="itemId"/>
+        <result column="service_type" property="serviceType"/>
+        <result column="expect_time" property="expectTime"/>
+        <result column="comment" property="comment"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="progress" property="progress"/>
+        <result column="money" property="money"/>
+        <result column="number" property="number"/>
         <result column="customer_id" property="customerId"/>
         <result column="province" property="province"/>
         <result column="city" property="city"/>
@@ -27,110 +27,116 @@
         <result column="people" property="people"/>
         <result column="position" property="position"/>
         <result column="telephone" property="telephone"/>
-        <result column="quality_type" property="qualityType" />
-        <result column="contract_type" property="contractType" />
+        <result column="quality_type" property="qualityType"/>
+        <result column="contract_type" property="contractType"/>
+        <result column="dynamic_id" property="dynamic"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">dynamic_id
+    AS "dynamic",
         customer_id AS "customerId", province AS "province", city AS "city", area AS "area", address AS "address",  people AS "people", position AS "position", telephone AS "telephone", number AS "number",repair_id AS "repairId", company_id AS "companyId", item_img_url AS "itemImgUrl", item_id AS "itemId", service_type AS "serviceType", expect_time AS "expectTime", comment AS "comment", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", progress AS "progress", money AS "money", quality_type AS "qualityType", contract_type AS "contractType"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult" parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
+            parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_repair where 1 = 1
-            <if test="paramCondition.companyId != null">
-                    and company_id = #{paramCondition.companyId}
-            </if>
-            <if test="paramCondition.itemId != null">
-                    and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
-                and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
-            </if>
-            <if test="paramCondition.progress != null">
-                and progress like CONCAT('%',#{paramCondition.progress},'%')
-            </if>
-            <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
-                and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
-            </if>
-            <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
-                and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
-            </if>
+        <if test="paramCondition.companyId != null">
+            and company_id = #{paramCondition.companyId}
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
+            and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
+        </if>
+        <if test="paramCondition.progress != null">
+            and progress like CONCAT('%',#{paramCondition.progress},'%')
+        </if>
+        <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
+            and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
+        </if>
+        <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
+            and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_repair where 1 = 1
-                <if test="paramCondition.companyId != null">
-                            and company_id = #{paramCondition.companyId}
-                </if>
-                <if test="paramCondition.itemId != null">
-                            and item_id = #{paramCondition.itemId}
-                </if>
-                <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
-                        and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
-                </if>
-                <if test="paramCondition.progress != null">
-                        and progress like CONCAT('%',#{paramCondition.progress},'%')
-                </if>
-                <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
-                        and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
-                </if>
-                <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
-                        and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
-                </if>
+        <if test="paramCondition.companyId != null">
+            and company_id = #{paramCondition.companyId}
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
+            and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
+        </if>
+        <if test="paramCondition.progress != null">
+            and progress like CONCAT('%',#{paramCondition.progress},'%')
+        </if>
+        <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
+            and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
+        </if>
+        <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
+            and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult" parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
+            parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_repair where 1 = 1
-                <if test="paramCondition.companyId != null">
-                            and company_id = #{paramCondition.companyId}
-                </if>
-                <if test="paramCondition.itemId != null">
-                            and item_id = #{paramCondition.itemId}
-                </if>
-                <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
-                        and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
-                </if>
-                <if test="paramCondition.progress != null">
-                        and progress like CONCAT('%',#{paramCondition.progress},'%')
-                </if>
-                <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
-                        and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
-                </if>
-                <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
-                        and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
-                </if>
+        <if test="paramCondition.companyId != null">
+            and company_id = #{paramCondition.companyId}
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
+            and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
+        </if>
+        <if test="paramCondition.progress != null">
+            and progress like CONCAT('%',#{paramCondition.progress},'%')
+        </if>
+        <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
+            and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
+        </if>
+        <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
+            and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_repair where 1 = 1
-                <if test="paramCondition.companyId != null">
-                        and company_id = #{paramCondition.companyId}
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id = #{paramCondition.itemId}
-                </if>
-                <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
-                        and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
-                </if>
-                <if test="paramCondition.progress != null">
-                        and progress like CONCAT('%',#{paramCondition.progress},'%')
-                </if>
-                <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
-                        and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
-                </if>
-                <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
-                        and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
-                </if>
+        <if test="paramCondition.companyId != null">
+            and company_id = #{paramCondition.companyId}
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
+            and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
+        </if>
+        <if test="paramCondition.progress != null">
+            and progress like CONCAT('%',#{paramCondition.progress},'%')
+        </if>
+        <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
+            and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
+        </if>
+        <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
+            and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
     </select>
 
 </mapper>

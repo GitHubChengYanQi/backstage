@@ -203,7 +203,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         }
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.in("item_id", ids);
-        List<Items> items = itemsService.list(itemsQueryWrapper);
+        List<Items> items = ids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
         for (DeliveryDetailsResult datum : data) {
             for (Items item : items) {
                 if (item.getItemId().equals(datum.getItemId())) {
