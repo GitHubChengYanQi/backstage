@@ -48,10 +48,11 @@ public class ApiDeliveryController {
 
         }
         List<DeliveryDetailsResult> rtnList = new ArrayList<>();
-        DeliveryDetailsResult res = new DeliveryDetailsResult();
+
         List<DeliveryDetails> deliveryList = this.deliveryDetailsService.list();
         for(DeliveryDetails data : deliveryList){
             if(deliveryIds.contains(data.getDeliveryId())){
+                DeliveryDetailsResult res = new DeliveryDetailsResult();
                 res.setDeliveryDetailsId(data.getDeliveryDetailsId());
                 res.setItemId(data.getItemId());
                 res.setStockItemId(data.getStockItemId());
