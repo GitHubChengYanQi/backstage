@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.portal.dispatching.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
@@ -9,12 +11,23 @@ import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
 import  cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.dispatching.service.WxTemplate;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +40,15 @@ import java.util.List;
  */
 @Service
 public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispatching> implements DispatchingService {
-
-    @Override
+@Autowired
+private RepairService repairService;
+@Autowired
+private CustomerService customerService;
+@Autowired
+private WxuserInfoService wxuserInfoService;
+@Autowired
+private WxTemplate wxTemplate;
+     @Override
     public void add(DispatchingParam param){
         Dispatching entity = getEntity(param);
         this.save(entity);
@@ -63,6 +83,53 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         IPage<DispatchingResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public void addwx(DispatchingParam param) {
+        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+        repairQueryWrapper.in("repair_id", param.getRepairId());
+        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
+        List<Repair> repairs = repairService.list(repairQueryWrapper);
+
+        for (Repair repair : repairs) {
+            data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
+            data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
+            String telephone = String.valueOf(repair.getTelephone());
+            data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
+            String reateTime = String.valueOf(repair.getCreateTime());
+            DateTime parse = DateUtil.parse(reateTime);
+            String time = String.valueOf(parse);
+            data.add(new WxMaSubscribeMessage.MsgData("time", time));
+
+            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+            customerQueryWrapper.in("customer_id", repair.getCustomerId());
+            List<Customer> customers = customerService.list(customerQueryWrapper);
+            String repairName = null;
+            for (Customer customer : customers) {
+                if (customer.getCustomerId().equals(repair.getCustomerId())) {
+                    repairName = customer.getCustomerName();
+                    data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
+                }
+            }
+        }
+        String openid =null;
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+        wxuserInfoQueryWrapper.in("user_id",param.getName());
+        List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        for (WxuserInfo wxuserInfo : wxuserInfoList) {
+            String uuid = wxuserInfo.getUuid();
+            openid=uuid;
+        }
+
+//        wxTemplate.send(openid, templateId, page, data);
+    }
+
+
+
+
+
+
+
 
     private Serializable getKey(DispatchingParam param){
         return param.getDispatchingId();

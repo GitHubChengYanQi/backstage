@@ -8,8 +8,6 @@ import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.repair.service.WxTemplate;
-import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -31,8 +29,6 @@ public class DispatchingController extends BaseController {
     private DispatchingService dispatchingService;
 
 
-
-
     /**
      * 新增接口
      *
@@ -45,7 +41,6 @@ public class DispatchingController extends BaseController {
         this.dispatchingService.add(dispatchingParam);
         return ResponseData.success();
     }
-
 
 
     /**
@@ -107,6 +102,12 @@ public class DispatchingController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/addwx", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addwx(@RequestBody DispatchingParam dispatchingParam) {
+        this.dispatchingService.addwx(dispatchingParam);
+        return ResponseData.success();
+    }
 }
 
 

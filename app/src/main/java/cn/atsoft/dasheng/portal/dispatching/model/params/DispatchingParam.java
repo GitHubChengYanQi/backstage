@@ -35,7 +35,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
      * 姓名
      */
     @ApiModelProperty("姓名")
-    private String name;
+    private Long name;
 
     /**
      * 手机号

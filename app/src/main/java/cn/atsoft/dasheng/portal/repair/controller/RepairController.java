@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.portal.repair.controller;
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
@@ -12,23 +9,11 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.repair.service.WxTemplate;
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSONPatch;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.atsoft.dasheng.portal.dispatching.service.WxTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.alibaba.fastjson.JSONPatch.OperationType.add;
 
 
 /**
@@ -78,35 +63,14 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/editdy", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData updatedynamic(@RequestBody RepairParam repairParam) {
-        repairService.updatedynamic(repairParam);
-        return ResponseData.success();
+        String updatedynamic = repairService.updatedynamic(repairParam);
+        return ResponseData.success(updatedynamic);
     }
 
     @RequestMapping(value = "/addWx", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addWx(String openid, String templateId, String page, RepairParam repairParam) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", repairParam.getCustomerId());
-        List<Customer> customers = customerService.list(customerQueryWrapper);
-        String repairName = null;
-        for (Customer customer : customers) {
-            if (customer.getCustomerId().equals(repairParam.getCustomerId())) {
-                repairName = customer.getCustomerName();
-            }
-        }
-
-        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
-
-        data.add(new WxMaSubscribeMessage.MsgData("name", repairParam.getPeople()));
-        data.add(new WxMaSubscribeMessage.MsgData("address", repairParam.getAddress()));
-        String telephone = String.valueOf(repairParam.getTelephone());
-        data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
-        String reateTime = String.valueOf(repairParam.getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        data.add(new WxMaSubscribeMessage.MsgData("time", time));
-        data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
-        wxTemplate.send(openid, templateId, page, data);
+    public ResponseData addWx(RepairParam repairParam) {
+//
         return ResponseData.success();
     }
 
