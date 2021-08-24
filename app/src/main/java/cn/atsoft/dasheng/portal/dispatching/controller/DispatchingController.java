@@ -105,8 +105,8 @@ public class DispatchingController extends BaseController {
     @RequestMapping(value = "/addwx", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addwx(@RequestBody DispatchingParam dispatchingParam) {
-        this.dispatchingService.addwx(dispatchingParam);
-        return ResponseData.success();
+        String addwx = this.dispatchingService.addwx(dispatchingParam);
+        return ResponseData.success(addwx);
     }
 }
 

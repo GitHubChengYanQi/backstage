@@ -5,11 +5,12 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatching.mapper.DispatchingMapper;
 import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
-import  cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
+import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.dispatching.service.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -35,32 +36,33 @@ import java.util.List;
  * 派工表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-23
  */
 @Service
 public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispatching> implements DispatchingService {
-@Autowired
-private RepairService repairService;
-@Autowired
-private CustomerService customerService;
-@Autowired
-private WxuserInfoService wxuserInfoService;
-@Autowired
-private WxTemplate wxTemplate;
-     @Override
-    public void add(DispatchingParam param){
+    @Autowired
+    private RepairService repairService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private WxTemplate wxTemplate;
+
+    @Override
+    public void add(DispatchingParam param) {
         Dispatching entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(DispatchingParam param){
+    public void delete(DispatchingParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(DispatchingParam param){
+    public void update(DispatchingParam param) {
         Dispatching oldEntity = getOldEntity(param);
         Dispatching newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -68,29 +70,29 @@ private WxTemplate wxTemplate;
     }
 
     @Override
-    public DispatchingResult findBySpec(DispatchingParam param){
+    public DispatchingResult findBySpec(DispatchingParam param) {
         return null;
     }
 
     @Override
-    public List<DispatchingResult> findListBySpec(DispatchingParam param){
+    public List<DispatchingResult> findListBySpec(DispatchingParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param){
+    public PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param) {
         Page<DispatchingResult> pageContext = getPageContext();
         IPage<DispatchingResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
     @Override
-    public void addwx(DispatchingParam param) {
+    public String addwx(DispatchingParam param) {
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
         List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
         List<Repair> repairs = repairService.list(repairQueryWrapper);
-
+        //查询报修 获取报修数据
         for (Repair repair : repairs) {
             data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
             data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
@@ -100,7 +102,7 @@ private WxTemplate wxTemplate;
             DateTime parse = DateUtil.parse(reateTime);
             String time = String.valueOf(parse);
             data.add(new WxMaSubscribeMessage.MsgData("time", time));
-
+            //查询保修单位
             QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
             customerQueryWrapper.in("customer_id", repair.getCustomerId());
             List<Customer> customers = customerService.list(customerQueryWrapper);
@@ -112,26 +114,27 @@ private WxTemplate wxTemplate;
                 }
             }
         }
-        String openid =null;
+        //查询uuit
+        String openid = null;
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id",param.getName());
+        wxuserInfoQueryWrapper.in("user_id", param.getName());
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
             String uuid = wxuserInfo.getUuid();
-            openid=uuid;
+            openid = uuid;
+        }
+        if (openid != null && data.size() != 0) {
+            //调用订阅消息方法
+//        wxTemplate.send(openid, templateId, page, data);
+            return "请求成功123";
+        } else {
+            throw new ServiceException(500, "订阅失败");
         }
 
-//        wxTemplate.send(openid, templateId, page, data);
     }
 
 
-
-
-
-
-
-
-    private Serializable getKey(DispatchingParam param){
+    private Serializable getKey(DispatchingParam param) {
         return param.getDispatchingId();
     }
 
