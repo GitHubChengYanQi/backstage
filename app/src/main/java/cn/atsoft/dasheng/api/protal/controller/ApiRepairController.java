@@ -65,7 +65,6 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
-    @ApiOperation("列表")
     public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
 
         String name = dispatchingParam.getName();
@@ -73,7 +72,7 @@ public class ApiRepairController {
         dispatchingQueryWrapper.in("name",name);
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
-        if(ToolUtil.isEmpty(list)){
+        if(ToolUtil.isNotEmpty(list)){
             for (Dispatching data : list){
 
                 Repair repair = this.repairService.getById(data.getRepairId());
