@@ -224,7 +224,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.in("brand_id", ids);
-        List<Brand> brands = brandService.list(brandQueryWrapper);
+        List<Brand> brands = ids.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
         for (DeliveryDetailsResult datum : data) {
             for (Brand brand : brands) {
                 if (brand.getBrandId().equals(datum.getBrandId())) {

@@ -31,10 +31,11 @@
             parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_delivery where 1 = 1
-        <if test="paramCondition.outstockOrderId != null">
-            and outstock_order_id = #{paramCondition.outstockOrderId}
+        from daoxin_erp_delivery where display = 1
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
         </if>
+        group by customer_id
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">
@@ -53,6 +54,9 @@
         from daoxin_erp_delivery where 1 = 1
         <if test="paramCondition.outstockOrderId != null">
             and outstock_order_id = #{paramCondition.outstockOrderId}
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id = #{paramCondition.customerId}
         </if>
     </select>
 

@@ -8,20 +8,18 @@ import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import cn.atsoft.dasheng.portal.repair.service.WxTemplate;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
  * 派工表控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-23 10:31:48
  */
 @RestController
@@ -32,10 +30,13 @@ public class DispatchingController extends BaseController {
     @Autowired
     private DispatchingService dispatchingService;
 
+
+
+
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -45,10 +46,12 @@ public class DispatchingController extends BaseController {
         return ResponseData.success();
     }
 
+
+
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +65,12 @@ public class DispatchingController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody DispatchingParam dispatchingParam)  {
+    public ResponseData delete(@RequestBody DispatchingParam dispatchingParam) {
         this.dispatchingService.delete(dispatchingParam);
         return ResponseData.success();
     }
@@ -75,7 +78,7 @@ public class DispatchingController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -91,19 +94,17 @@ public class DispatchingController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<DispatchingResult> list(@RequestBody(required = false) DispatchingParam dispatchingParam) {
-        if(ToolUtil.isEmpty(dispatchingParam)){
+        if (ToolUtil.isEmpty(dispatchingParam)) {
             dispatchingParam = new DispatchingParam();
         }
         return this.dispatchingService.findPageBySpec(dispatchingParam);
     }
-
-
 
 
 }

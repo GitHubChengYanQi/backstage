@@ -106,11 +106,10 @@ public class DeliveryController extends BaseController {
     }
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("所有列表")
-    public List<Delivery> listAll(@RequestBody(required = false) DeliveryParam deliveryParam) {
-        QueryWrapper<Delivery> deliveryResultQueryWrapper = new QueryWrapper<>();
-        deliveryResultQueryWrapper.in("display",1).in("customer_id",deliveryParam.getCustomerId());
-        List<Delivery> list = deliveryService.list(deliveryResultQueryWrapper);
-        return list;
+    public List<DeliveryResult> listAll(@RequestBody(required = false) DeliveryParam deliveryParam) {
+        List<DeliveryResult> listBySpec = deliveryService.findListBySpec(deliveryParam);
+        deliveryService.format(listBySpec);
+        return listBySpec;
     }
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)

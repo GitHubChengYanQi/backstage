@@ -73,4 +73,8 @@ public interface DeliveryService extends IService<Delivery> {
      */
      void bulkShipment (OutstockRequest outstockRequest);
 
+    void format(List<DeliveryResult> data);
+
+
+
 }
