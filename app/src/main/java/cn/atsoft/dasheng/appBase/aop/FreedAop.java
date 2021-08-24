@@ -313,7 +313,7 @@ public class FreedAop {
                 case "delete":
                     content = repairs.getDelete().replace("[操作人]", user.getName());
                     repairDynamicParam.setContent(content);
-                    repairDynamicParam.setRepairId(repair.getRepairId());
+
 
                     break;
             }
