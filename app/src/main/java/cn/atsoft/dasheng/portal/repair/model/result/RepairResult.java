@@ -3,11 +3,15 @@ package cn.atsoft.dasheng.portal.repair.model.result;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 报修
@@ -22,14 +26,14 @@ public class RepairResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-   private DeliveryDetailsResult deliveryDetailsResult;
-   private CustomerResult customerResult;
+    private DeliveryDetailsResult deliveryDetailsResult;
+    private CustomerResult customerResult;
     /**
      * 报修id
      */
     @ApiModelProperty("报修id")
     private Long repairId;
-
+    private Long dynamic;
     /**
      * 报修单位
      */
@@ -116,50 +120,50 @@ public class RepairResult implements Serializable {
     @ApiModelProperty("质保类型")
     private String qualityType;
 
- private Long customerId;
+    private Long customerId;
 
- /**
-  * 省
-  */
- @ApiModelProperty("省")
- private String province;
+    /**
+     * 省
+     */
+    @ApiModelProperty("省")
+    private String province;
 
- /**
-  * 市
-  */
- @ApiModelProperty("市")
- private String city;
+    /**
+     * 市
+     */
+    @ApiModelProperty("市")
+    private String city;
 
- /**
-  * 区
-  */
- @ApiModelProperty("区")
- private String area;
+    /**
+     * 区
+     */
+    @ApiModelProperty("区")
+    private String area;
 
- /**
-  * 详细地址
-  */
- @ApiModelProperty("详细地址")
- private String address;
+    /**
+     * 详细地址
+     */
+    @ApiModelProperty("详细地址")
+    private String address;
 
 
- /**
-  * 姓名
-  */
- @ApiModelProperty("姓名")
- private String people;
+    /**
+     * 姓名
+     */
+    @ApiModelProperty("姓名")
+    private String people;
 
- /**
-  * 职务
-  */
- @ApiModelProperty("职务")
- private String position;
+    /**
+     * 职务
+     */
+    @ApiModelProperty("职务")
+    private String position;
 
- /**
-  * 电话
-  */
- @ApiModelProperty("电话")
- private Integer telephone;
+    /**
+     * 电话
+     */
+    @ApiModelProperty("电话")
+    private Integer telephone;
 
     /**
      * 合同类型

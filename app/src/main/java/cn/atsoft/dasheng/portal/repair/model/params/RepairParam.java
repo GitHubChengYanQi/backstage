@@ -24,7 +24,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private Long dynamic;
     /**
      * 报修id
      */
