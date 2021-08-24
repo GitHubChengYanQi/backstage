@@ -70,4 +70,6 @@ public interface RepairService extends IService<Repair> {
 
     RepairResult detail(Long id);
 
+    RepairResult format(List<RepairResult> data);
+
 }
