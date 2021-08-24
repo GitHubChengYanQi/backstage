@@ -72,7 +72,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     }
 
     public void updatedynamic(RepairParam param){
-
         RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
         if (param.getProgress()==0) {
             repairDynamicParam.setContent("待派工....");

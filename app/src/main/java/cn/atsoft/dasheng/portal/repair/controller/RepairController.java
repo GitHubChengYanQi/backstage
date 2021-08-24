@@ -66,7 +66,7 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/editdy", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData updatedynamic(@RequestBody RepairParam repairParam) {
-        repairService.update(repairParam);
+        repairService.updatedynamic(repairParam);
         return ResponseData.success();
     }
 

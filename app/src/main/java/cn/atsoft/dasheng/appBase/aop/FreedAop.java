@@ -296,31 +296,6 @@ public class FreedAop {
             String content = "";
             Repair repair = (Repair) result;
             RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
-            if (repair.getProgress()==0) {
-                repairDynamicParam.setContent("待派工....");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }else if (repair.getProgress()==1){
-                repairDynamicParam.setContent("询价中....");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }else if (repair.getProgress()==2){
-                repairDynamicParam.setContent("待支付....");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }else if (repair.getProgress()==3){
-                repairDynamicParam.setContent("实施中....");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }else if (repair.getProgress()==4){
-                repairDynamicParam.setContent("待回访....");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }else if (repair.getProgress()==5){
-                repairDynamicParam.setContent("已完成");
-                repairDynamicParam.setRepairId(repair.getRepairId());
-                repairDynamicService.add(repairDynamicParam);
-            }
 
             switch (methodName) {
                 case "add":
