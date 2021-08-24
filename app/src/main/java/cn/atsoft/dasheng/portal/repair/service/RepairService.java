@@ -42,6 +42,7 @@ public interface RepairService extends IService<Repair> {
      * @Date 2021-08-20
      */
     Repair update(RepairParam param);
+    void updatedynamic(RepairParam param);
 
     /**
      * 查询单条数据，Specification模式

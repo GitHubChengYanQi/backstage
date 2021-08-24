@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,13 @@ public class RepairController extends BaseController {
         return ResponseData.success(update);
     }
 
+    @RequestMapping(value = "/editdy", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData updatedynamic(@RequestBody RepairParam repairParam) {
+        repairService.update(repairParam);
+        return ResponseData.success();
+    }
+
     /**
      * 删除接口
      *
@@ -70,7 +78,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody RepairParam repairParam)  {
+    public ResponseData delete(@RequestBody RepairParam repairParam) {
         this.repairService.delete(repairParam);
         return ResponseData.success();
     }
@@ -98,13 +106,11 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<RepairResult> list(@RequestBody(required = false) RepairParam repairParam) {
-        if(ToolUtil.isEmpty(repairParam)){
+        if (ToolUtil.isEmpty(repairParam)) {
             repairParam = new RepairParam();
         }
         return this.repairService.findPageBySpec(repairParam);
     }
-
-
 
 
 }
