@@ -90,7 +90,7 @@ private WxTemplate wxTemplate;
         repairQueryWrapper.in("repair_id", param.getRepairId());
         List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
         List<Repair> repairs = repairService.list(repairQueryWrapper);
-
+            //查询报修 获取报修数据
         for (Repair repair : repairs) {
             data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
             data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
@@ -100,7 +100,7 @@ private WxTemplate wxTemplate;
             DateTime parse = DateUtil.parse(reateTime);
             String time = String.valueOf(parse);
             data.add(new WxMaSubscribeMessage.MsgData("time", time));
-
+            //查询保修单位
             QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
             customerQueryWrapper.in("customer_id", repair.getCustomerId());
             List<Customer> customers = customerService.list(customerQueryWrapper);
@@ -112,6 +112,7 @@ private WxTemplate wxTemplate;
                 }
             }
         }
+        //查询uuit
         String openid =null;
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         wxuserInfoQueryWrapper.in("user_id",param.getName());
@@ -120,7 +121,7 @@ private WxTemplate wxTemplate;
             String uuid = wxuserInfo.getUuid();
             openid=uuid;
         }
-
+        //调用订阅消息接口
 //        wxTemplate.send(openid, templateId, page, data);
     }
 
