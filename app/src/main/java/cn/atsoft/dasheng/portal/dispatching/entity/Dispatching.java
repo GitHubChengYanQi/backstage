@@ -21,6 +21,7 @@ public class Dispatching implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 派工id
      */

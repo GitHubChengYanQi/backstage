@@ -36,6 +36,7 @@ public class RepairResult implements Serializable {
     private BannerResult bannerResult;
     private Dispatching dispatchingResult;
     private UserResult userResult;
+    private  CustomerResult company;
     /**
      * 报修id
      */
