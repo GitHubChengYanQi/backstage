@@ -79,23 +79,29 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
     @Override
     public List<DeliveryResult> findListBySpec(DeliveryParam param) {
-        return null;
+        List<DeliveryResult> deliveryResults = this.baseMapper.customList(param);
+        return deliveryResults;
     }
 
     @Override
     public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param) {
         Page<DeliveryResult> pageContext = getPageContext();
         IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param);
-        for (DeliveryResult record : page.getRecords()) {
-            Date createTime = record.getCreateTime();
-        }
+
+
+
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public void format(List<DeliveryResult> data){
 
         List<Long> Iids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
         List<Long> aIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         List<Long> pIds = new ArrayList<>();
-        for (DeliveryResult record : page.getRecords()) {
+        for (DeliveryResult record : data) {
             Iids.add(record.getItemId());
             cIds.add(record.getCustomerId());
             aIds.add(record.getAdressId());
@@ -123,7 +129,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
 
 
-        for (DeliveryResult record : page.getRecords()) {
+        for (DeliveryResult record : data) {
             for (Items items : itemsList) {
                 if (items.getItemId().equals(record.getItemId())) {
                     ItemsResult itemsResult = new ItemsResult();
@@ -166,8 +172,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             }
         }
 
-
-        return PageFactory.createPageInfo(page);
     }
 
     @Override
