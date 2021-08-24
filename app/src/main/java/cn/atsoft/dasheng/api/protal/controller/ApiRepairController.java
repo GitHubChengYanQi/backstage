@@ -48,6 +48,12 @@ public class ApiRepairController {
     @Autowired
     private UserService userService;
 
+    @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
+    public ResponseData dispatchingUpdate(@RequestBody DispatchingParam dispatchingParam) {
+        this.dispatchingService.update(dispatchingParam);
+        return ResponseData.success();
+    }
+
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair repair = this.repairService.add(repairParam);

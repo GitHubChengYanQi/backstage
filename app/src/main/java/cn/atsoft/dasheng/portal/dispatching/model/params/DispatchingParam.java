@@ -72,6 +72,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("完成照片")
     private String imgUrl;
+    private String evaluations;
 
     /**
      * 评价

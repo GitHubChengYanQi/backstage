@@ -104,6 +104,8 @@ public class DispatchingResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
+    private String evaluations;
+
     /**
      * 修改者
      */

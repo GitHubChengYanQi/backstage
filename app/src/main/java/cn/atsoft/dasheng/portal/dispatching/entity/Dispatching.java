@@ -75,6 +75,17 @@ public class Dispatching implements Serializable {
     @TableField("evaluation")
     private String evaluation;
 
+    public String getEvaluations() {
+        return evaluations;
+    }
+
+    public void setEvaluations(String evaluations) {
+        this.evaluations = evaluations;
+    }
+
+    @TableField("evaluations")
+    private String evaluations;
+
     /**
      * 报修id
      */
