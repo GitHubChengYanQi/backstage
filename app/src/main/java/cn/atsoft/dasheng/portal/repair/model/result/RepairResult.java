@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,6 +33,7 @@ public class RepairResult implements Serializable {
     private DeliveryDetailsResult deliveryDetailsResult;
     private CustomerResult customerResult;
     private BannerResult bannerResult;
+    private Dispatching dispatchingResult;
     /**
      * 报修id
      */

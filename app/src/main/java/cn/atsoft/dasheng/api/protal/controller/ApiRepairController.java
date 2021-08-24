@@ -67,7 +67,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
 
-        Long name = dispatchingParam.getName();
+        Long name = dispatchingParam.getName().longValue();
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         dispatchingQueryWrapper.in("name",name);
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
@@ -95,6 +95,7 @@ public class ApiRepairController {
                 result.setPosition(repair.getPosition());
                 result.setTelephone(repair.getTelephone());
                 result.setComment(repair.getComment());
+                result.setDispatchingResult(data);
                 res.add(result);
             }
         }
