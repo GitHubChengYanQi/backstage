@@ -67,7 +67,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
 
-        String name = dispatchingParam.getName();
+        Long name = dispatchingParam.getName();
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         dispatchingQueryWrapper.in("name",name);
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
