@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.repair.service;
+package cn.atsoft.dasheng.portal.dispatching.service;
 
 
 import cn.binarywang.wx.miniapp.api.WxMaService;

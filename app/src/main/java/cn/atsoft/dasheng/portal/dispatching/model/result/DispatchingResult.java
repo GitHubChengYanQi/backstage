@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.portal.dispatching.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 派工表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-23
  */
 @Data
@@ -31,7 +35,7 @@ public class DispatchingResult implements Serializable {
      * 姓名
      */
     @ApiModelProperty("姓名")
-    private String name;
+    private Long name;
 
     /**
      * 手机号

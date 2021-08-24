@@ -1,10 +1,7 @@
 package cn.atsoft.dasheng.portal.repair.controller;
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
@@ -12,23 +9,11 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.repair.service.WxTemplate;
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSONPatch;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.atsoft.dasheng.portal.dispatching.service.WxTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.alibaba.fastjson.JSONPatch.OperationType.add;
 
 
 /**
@@ -84,35 +69,8 @@ public class RepairController extends BaseController {
 
     @RequestMapping(value = "/addWx", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addWx(Long ids) {
-        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-        repairQueryWrapper.in("repair_id", ids);
-        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
-        List<Repair> repairs = repairService.list(repairQueryWrapper);
-
-        for (Repair repair : repairs) {
-            data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
-            data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
-            String telephone = String.valueOf(repair.getTelephone());
-            data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
-            String reateTime = String.valueOf(repair.getCreateTime());
-            DateTime parse = DateUtil.parse(reateTime);
-            String time = String.valueOf(parse);
-            data.add(new WxMaSubscribeMessage.MsgData("time", time));
-
-            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-            customerQueryWrapper.in("customer_id", repair.getCustomerId());
-            List<Customer> customers = customerService.list(customerQueryWrapper);
-            String repairName = null;
-            for (Customer customer : customers) {
-                if (customer.getCustomerId().equals(repair.getCustomerId())) {
-                    repairName = customer.getCustomerName();
-                    data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
-                }
-            }
-        }
-
-//        wxTemplate.send(openid, templateId, page, data);
+    public ResponseData addWx(RepairParam repairParam) {
+//
         return ResponseData.success();
     }
 

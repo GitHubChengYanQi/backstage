@@ -31,7 +31,7 @@ public class Dispatching implements Serializable {
      * 姓名
      */
     @TableField("name")
-    private String name;
+    private Long name;
 
     /**
      * 手机号
@@ -120,11 +120,11 @@ public class Dispatching implements Serializable {
         this.dispatchingId = dispatchingId;
     }
 
-    public String getName() {
+    public Long getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Long name) {
         this.name = name;
     }
 
