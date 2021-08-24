@@ -168,17 +168,22 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             cIds.add(record.getCustomerId());
             bIds.add(record.getRepairId());
         }
-
-        QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
-        detailsQueryWrapper.in("delivery_details_id", ids);
-        List<DeliveryDetailsResult> byIds = deliveryDetailsService.getByIds(ids);
+        List<DeliveryDetailsResult> byIds = new ArrayList<>();
+        if(ToolUtil.isNotEmpty(ids)){
+            byIds = deliveryDetailsService.getByIds(ids);
+        }
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", cIds);
+        if(ToolUtil.isNotEmpty(cIds)){
+            customerQueryWrapper.in("customer_id", cIds);
+        }
         List<Customer> customers = customerService.list(customerQueryWrapper);
 
         QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        bannerQueryWrapper.in("difference", bIds);
+        if(ToolUtil.isNotEmpty(bIds)){
+            bannerQueryWrapper.in("difference", bIds);
+        }
+
         List<Banner> banners = bannerService.list(bannerQueryWrapper);
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
@@ -202,7 +207,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     break;
                 }
             }
-
         }
         return data.size() == 0 ? null : data.get(0);
     }
