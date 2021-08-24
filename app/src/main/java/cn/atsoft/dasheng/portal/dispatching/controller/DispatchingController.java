@@ -8,19 +8,12 @@ import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.dispatching.service.WxTemplate;
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
+import cn.atsoft.dasheng.portal.repair.service.WxTemplate;
+import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -36,8 +29,8 @@ public class DispatchingController extends BaseController {
 
     @Autowired
     private DispatchingService dispatchingService;
-    @Autowired
-    private WxTemplate wxTemplate;
+
+
 
 
     /**
@@ -53,24 +46,7 @@ public class DispatchingController extends BaseController {
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "/addWx", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addWx(String openid, String templateId, String page, DispatchingParam dispatchingParam) {
 
-        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
-
-        data.add(new WxMaSubscribeMessage.MsgData("name", dispatchingParam.getName()));
-        data.add(new WxMaSubscribeMessage.MsgData("address", dispatchingParam.getAddress()));
-        data.add(new WxMaSubscribeMessage.MsgData("phone", dispatchingParam.getPhone()));
-
-        String reateTime = String.valueOf(dispatchingParam.getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        data.add(new WxMaSubscribeMessage.MsgData("time", time));
-
-        wxTemplate.send(openid, templateId, page, data);
-        return ResponseData.success();
-    }
 
     /**
      * 编辑接口
