@@ -84,29 +84,35 @@ public class RepairController extends BaseController {
 
     @RequestMapping(value = "/addWx", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addWx(String openid, String templateId, String page, RepairParam repairParam) {
-        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", repairParam.getCustomerId());
-        List<Customer> customers = customerService.list(customerQueryWrapper);
-        String repairName = null;
-        for (Customer customer : customers) {
-            if (customer.getCustomerId().equals(repairParam.getCustomerId())) {
-                repairName = customer.getCustomerName();
+    public ResponseData addWx(Long ids) {
+        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+        repairQueryWrapper.in("repair_id", ids);
+        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
+        List<Repair> repairs = repairService.list(repairQueryWrapper);
+
+        for (Repair repair : repairs) {
+            data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
+            data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
+            String telephone = String.valueOf(repair.getTelephone());
+            data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
+            String reateTime = String.valueOf(repair.getCreateTime());
+            DateTime parse = DateUtil.parse(reateTime);
+            String time = String.valueOf(parse);
+            data.add(new WxMaSubscribeMessage.MsgData("time", time));
+
+            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+            customerQueryWrapper.in("customer_id", repair.getCustomerId());
+            List<Customer> customers = customerService.list(customerQueryWrapper);
+            String repairName = null;
+            for (Customer customer : customers) {
+                if (customer.getCustomerId().equals(repair.getCustomerId())) {
+                    repairName = customer.getCustomerName();
+                    data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
+                }
             }
         }
 
-        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
-
-        data.add(new WxMaSubscribeMessage.MsgData("name", repairParam.getPeople()));
-        data.add(new WxMaSubscribeMessage.MsgData("address", repairParam.getAddress()));
-        String telephone = String.valueOf(repairParam.getTelephone());
-        data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
-        String reateTime = String.valueOf(repairParam.getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        data.add(new WxMaSubscribeMessage.MsgData("time", time));
-        data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
-        wxTemplate.send(openid, templateId, page, data);
+//        wxTemplate.send(openid, templateId, page, data);
         return ResponseData.success();
     }
 

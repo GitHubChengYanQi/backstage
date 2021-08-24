@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,37 +75,50 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     public void updatedynamic(RepairParam param) {
 
-        RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
-        if (param.getProgress() == 0) {
-            repairDynamicParam.setContent("待派工....");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
-        } else if (param.getProgress() == 1) {
-            repairDynamicParam.setContent("询价中....");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
-        } else if (param.getProgress() == 2) {
-            repairDynamicParam.setContent("待支付....");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
-        } else if (param.getProgress() == 3) {
-            repairDynamicParam.setContent("实施中....");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
-        } else if (param.getProgress() == 4) {
-            repairDynamicParam.setContent("待回访....");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
-        } else if (param.getProgress() == 5) {
-            repairDynamicParam.setContent("已完成");
-            repairDynamicParam.setRepairId(param.getRepairId());
-            repairDynamicService.add(repairDynamicParam);
+            QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+            repairQueryWrapper.in("repair_id",param.getRepairId());
+        List<Repair> repairs = this.list(repairQueryWrapper);
+        for (Repair repair : repairs) {
+            if (repair.getProgress()!=5) {
+                RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
+                if (param.getProgress() == 0) {
+                    repairDynamicParam.setContent("待派工....");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                } else if (param.getProgress() == 1) {
+                    repairDynamicParam.setContent("询价中....");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                } else if (param.getProgress() == 2) {
+                    repairDynamicParam.setContent("待支付....");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                } else if (param.getProgress() == 3) {
+                    repairDynamicParam.setContent("实施中....");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                } else if (param.getProgress() == 4) {
+                    repairDynamicParam.setContent("待回访....");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                } else if (param.getProgress() == 5) {
+                    repairDynamicParam.setContent("已完成");
+                    repairDynamicParam.setRepairId(param.getRepairId());
+                    repairDynamicService.add(repairDynamicParam);
+                }
+            }else {
+                throw new ServiceException(500,"售后已完成");
+
+
+            }
         }
+
+
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-      
+
     }
 
     @Override
