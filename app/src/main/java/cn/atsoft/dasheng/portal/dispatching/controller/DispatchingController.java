@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.List;
+
 
 /**
  * 派工表控制器
@@ -98,6 +100,7 @@ public class DispatchingController extends BaseController {
         if (ToolUtil.isEmpty(dispatchingParam)) {
             dispatchingParam = new DispatchingParam();
         }
+
         return this.dispatchingService.findPageBySpec(dispatchingParam);
     }
 
@@ -107,6 +110,12 @@ public class DispatchingController extends BaseController {
     public ResponseData addwx(@RequestBody DispatchingParam dispatchingParam) {
         String addwx = this.dispatchingService.addwx(dispatchingParam);
         return ResponseData.success(addwx);
+    }
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData listAll(@RequestBody DispatchingParam dispatchingParam) {
+        List<DispatchingResult> all = dispatchingService.getAll(dispatchingParam);
+        return ResponseData.success(all);
     }
 }
 

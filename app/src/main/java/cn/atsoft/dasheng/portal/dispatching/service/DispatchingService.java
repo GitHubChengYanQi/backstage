@@ -13,7 +13,7 @@ import java.util.List;
  * 派工表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-23
  */
 public interface DispatchingService extends IService<Dispatching> {
@@ -21,7 +21,7 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     void add(DispatchingParam param);
@@ -29,7 +29,7 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     void delete(DispatchingParam param);
@@ -37,7 +37,7 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     void update(DispatchingParam param);
@@ -45,7 +45,7 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     DispatchingResult findBySpec(DispatchingParam param);
@@ -53,7 +53,7 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
     List<DispatchingResult> findListBySpec(DispatchingParam param);
@@ -61,11 +61,13 @@ public interface DispatchingService extends IService<Dispatching> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-23
      */
-     PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param);
+    PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param);
 
-     String addwx (DispatchingParam param);
+    String addwx(DispatchingParam param);
+
+    List<DispatchingResult> getAll(DispatchingParam param);
 
 }

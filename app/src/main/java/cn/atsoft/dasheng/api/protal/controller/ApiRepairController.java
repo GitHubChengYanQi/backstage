@@ -19,6 +19,9 @@ import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +45,14 @@ public class ApiRepairController {
     private BannerService bannerService;
     @Autowired
     private DispatchingService dispatchingService;
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair repair = this.repairService.add(repairParam);
         List<Banner> banner = repairParam.getItemImgUrlList();
-        for (Banner data : banner){
+        for (Banner data : banner) {
             BannerParam bannerParam = new BannerParam();
             bannerParam.setDifference(repair.getRepairId());
             bannerParam.setImgUrl(data.getImgUrl());
@@ -59,7 +64,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
     public List<Customer> list() {
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("display",1);
+        customerQueryWrapper.in("display", 1);
         List<Customer> list = customerService.list(customerQueryWrapper);
         return list;
     }
@@ -68,12 +73,17 @@ public class ApiRepairController {
     public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
 
         Long name = dispatchingParam.getName().longValue();
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", name);
+        List<User> users = userService.list(userQueryWrapper);
+
+
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name",name);
+        dispatchingQueryWrapper.in("name", name);
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
-        if(ToolUtil.isNotEmpty(list)){
-            for (Dispatching data : list){
+        if (ToolUtil.isNotEmpty(list)) {
+            for (Dispatching data : list) {
 
                 Repair repair = this.repairService.getById(data.getRepairId());
                 RepairResult result = new RepairResult();
@@ -96,9 +106,19 @@ public class ApiRepairController {
                 result.setTelephone(repair.getTelephone());
                 result.setComment(repair.getComment());
                 result.setDispatchingResult(data);
+                for (User user : users) {
+                    if (user.getUserId().equals(data.getName())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        result.setUserResult(userResult);
+                        break;
+                    }
+                }
                 res.add(result);
+
             }
         }
+
         this.repairService.format(res);
 
         return ResponseData.success(res);

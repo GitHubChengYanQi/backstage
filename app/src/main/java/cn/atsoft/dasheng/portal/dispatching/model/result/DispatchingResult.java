@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.dispatching.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ import java.util.List;
 public class DispatchingResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private UserResult userResult;
 
     /**
      * 派工id

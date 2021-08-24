@@ -17,6 +17,9 @@ import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -49,6 +52,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private WxTemplate wxTemplate;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(DispatchingParam param) {
@@ -125,12 +130,38 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         }
         if (openid != null && data.size() != 0) {
             //调用订阅消息方法
+
 //        wxTemplate.send(openid, templateId, page, data);
-            return "请求成功123";
+            return "订阅成功";
         } else {
             throw new ServiceException(500, "订阅失败");
         }
 
+    }
+
+    @Override
+    public List<DispatchingResult> getAll(DispatchingParam param) {
+        List<DispatchingResult> dispatchingResults = this.baseMapper.customList(param);
+        List<Long> ids = new ArrayList<>();
+        for (DispatchingResult dispatchingResult : dispatchingResults) {
+            ids.add(dispatchingResult.getName());
+        }
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", ids);
+        List<User> users = userService.list(userQueryWrapper);
+
+        for (DispatchingResult dispatchingResult : dispatchingResults) {
+            for (User user : users) {
+                if (user.getUserId().equals(dispatchingResult.getName())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    dispatchingResult.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+
+        return dispatchingResults;
     }
 
 
