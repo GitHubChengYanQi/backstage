@@ -77,7 +77,7 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
-
+        //查询工程师
         Long name = dispatchingParam.getName().longValue();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", name);
@@ -88,12 +88,32 @@ public class ApiRepairController {
         dispatchingQueryWrapper.in("name", name);
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
+        //公司id
+        List<Long> companyIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(list)) {
             for (Dispatching data : list) {
 
                 Repair repair = this.repairService.getById(data.getRepairId());
                 RepairResult result = new RepairResult();
                 result.setRepairId(repair.getRepairId());
+                //查询报修获取公司id
+                QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+                repairQueryWrapper.in("repair_id", data.getRepairId());
+                List<Repair> repairs = repairService.list(repairQueryWrapper);
+                for (Repair repair1 : repairs) {
+                    companyIds.add(repair1.getCompanyId());
+                }
+                //查询公司
+                QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+                customerQueryWrapper.in("customer_id", companyIds);
+                List<Customer> customers = customerService.list(customerQueryWrapper);
+                for (Customer customer : customers) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    result.setCompany(customerResult);
+                    break;
+                }
+
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());
                 result.setServiceType(repair.getServiceType());
