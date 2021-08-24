@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.portal.repair.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class Repair implements Serializable {
     /**
      * 报修id
      */
-      @TableId(value = "repair_id", type = IdType.ID_WORKER)
+    @TableId(value = "repair_id", type = IdType.ID_WORKER)
     private Long repairId;
 
     /**
@@ -32,6 +35,10 @@ public class Repair implements Serializable {
      */
     @TableField("company_id")
     private Long companyId;
+
+    @TableField("dynamic_id")
+    private Long dynamic;
+
 
     public Long getNumber() {
         return number;
@@ -77,25 +84,25 @@ public class Repair implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -369,25 +376,33 @@ public class Repair implements Serializable {
         this.contractType = contractType;
     }
 
+    public Long getDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(Long dynamic) {
+        this.dynamic = dynamic;
+    }
+
     @Override
     public String toString() {
         return "Repair{" +
-        "repairId=" + repairId +
-        ", companyId=" + companyId +
-        ", itemImgUrl=" + itemImgUrl +
-        ", itemId=" + itemId +
-        ", serviceType=" + serviceType +
-        ", expectTime=" + expectTime +
-        ", comment=" + comment +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", progress=" + progress +
-        ", money=" + money +
-        ", qualityType=" + qualityType +
-        ", contractType=" + contractType +
-        "}";
+                "repairId=" + repairId +
+                ", companyId=" + companyId +
+                ", itemImgUrl=" + itemImgUrl +
+                ", itemId=" + itemId +
+                ", serviceType=" + serviceType +
+                ", expectTime=" + expectTime +
+                ", comment=" + comment +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", progress=" + progress +
+                ", money=" + money +
+                ", qualityType=" + qualityType +
+                ", contractType=" + contractType +
+                "}";
     }
 }

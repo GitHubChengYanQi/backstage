@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -15,12 +16,15 @@ import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.repairdynamic.model.params.RepairDynamicParam;
+import cn.atsoft.dasheng.portal.repairdynamic.service.RepairDynamicService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +44,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private DeliveryDetailsService deliveryDetailsService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private RepairDynamicService repairDynamicService;
 
+    @BussinessLog
     @Override
     public Repair add(RepairParam param){
         Repair entity = getEntity(param);
@@ -48,15 +55,43 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return entity;
     }
 
+    @BussinessLog
     @Override
     public void delete(RepairParam param) {
         this.removeById(getKey(param));
     }
 
+    @BussinessLog
     @Override
     public Repair update(RepairParam param){
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
+        RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
+        if (newEntity.getProgress()==0) {
+            repairDynamicParam.setContent("待派工....");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }else if (newEntity.getProgress()==1){
+            repairDynamicParam.setContent("询价中....");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }else if (newEntity.getProgress()==2){
+            repairDynamicParam.setContent("待支付....");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }else if (newEntity.getProgress()==3){
+            repairDynamicParam.setContent("实施中....");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }else if (newEntity.getProgress()==4){
+            repairDynamicParam.setContent("待回访....");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }else if (newEntity.getProgress()==5){
+            repairDynamicParam.setContent("已完成");
+            repairDynamicParam.setRepairId(newEntity.getRepairId());
+            repairDynamicService.add(repairDynamicParam);
+        }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         return newEntity;
