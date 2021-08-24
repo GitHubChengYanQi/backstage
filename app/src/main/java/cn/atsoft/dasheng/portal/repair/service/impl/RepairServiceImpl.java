@@ -10,6 +10,9 @@ import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
+import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
@@ -48,6 +51,8 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private CustomerService customerService;
     @Autowired
     private RepairDynamicService repairDynamicService;
+    @Autowired
+    private BannerService bannerService;
 
     @BussinessLog
     @Override
@@ -151,16 +156,18 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return PageFactory.createPageInfo(page);
     }
 
-    private RepairResult format(List<RepairResult> data) {
+    @Override
+    public RepairResult format(List<RepairResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
-
+        List<Long> bIds = new ArrayList<>();
 
         //映射发货详情
 
         for (RepairResult record : data) {
             ids.add(record.getItemId());
             cIds.add(record.getCustomerId());
+            bIds.add(record.getRepairId());
         }
 
         QueryWrapper<DeliveryDetails> detailsQueryWrapper = new QueryWrapper<>();
@@ -171,6 +178,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         customerQueryWrapper.in("customer_id", cIds);
         List<Customer> customers = customerService.list(customerQueryWrapper);
 
+        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("difference", bIds);
+        List<Banner> banners = bannerService.list(bannerQueryWrapper);
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
                 if (byId.getDeliveryDetailsId().equals(record.getItemId())) {
@@ -182,6 +192,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (Banner banner : banners) {
+                if (banner.getDifference().equals(record.getRepairId())) {
+                    BannerResult bannerResult = new BannerResult();
+                    ToolUtil.copyProperties(banner, bannerResult);
+                    record.setBannerResult(bannerResult);
                     break;
                 }
             }
