@@ -1,19 +1,13 @@
-package cn.atsoft.dasheng.portal.dispatching.service;
+package cn.atsoft.dasheng.portal.repair.service;
 
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.uc.utils.UserUtils;
+
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
 import lombok.Data;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,6 +25,7 @@ public class WxTemplate {
         wxMaSubscribeMessage.setTemplateId(templateId);
         wxMaSubscribeMessage.setPage(page);
         wxMaSubscribeMessage.setData(data);
+        wxMaSubscribeMessage.setLang("zh_CN");
 
         try {
             wxMaSubscribeService.sendSubscribeMsg(wxMaSubscribeMessage);
