@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.rmi.ServerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +77,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return newEntity;
     }
 
-    public void updatedynamic(RepairParam param) {
+    public String updatedynamic(RepairParam param) {
 
             QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
             repairQueryWrapper.in("repair_id",param.getRepairId());
@@ -123,7 +122,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-
+        return "修改成功";
     }
 
     @Override
