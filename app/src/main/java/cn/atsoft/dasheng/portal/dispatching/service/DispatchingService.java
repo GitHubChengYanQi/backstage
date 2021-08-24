@@ -66,6 +66,6 @@ public interface DispatchingService extends IService<Dispatching> {
      */
      PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param);
 
-     void addwx (DispatchingParam param);
+     String addwx (DispatchingParam param);
 
 }
