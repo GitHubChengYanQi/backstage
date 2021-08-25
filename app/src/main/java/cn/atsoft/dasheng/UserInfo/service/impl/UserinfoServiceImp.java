@@ -3,14 +3,17 @@ package cn.atsoft.dasheng.UserInfo.service.impl;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -38,14 +41,18 @@ public class UserinfoServiceImp implements UserInfoService {
 
 
         redisTemplate.boundValueOps(randStr).set(userString);
-
-        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
+//临时信息
+//        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
 
         WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
         String scene = "欢迎登录";
         try {
             if (user.getUserId() != null && user.getPage() != null) {
-                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 40, true, wxMaCodeLineColor, true);
+
+                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
+
+            } else {
+                throw new ServiceException(500, "请确定登录");
             }
 
         } catch (WxErrorException e) {
@@ -55,7 +62,9 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     @Override
-    public void redis() {
+    public void redis(String randStr) {
+        Long userId = (Long) redisTemplate.boundValueOps(randStr).get();
+        List<RedisClientInfo> clientList = redisTemplate.getClientList();
 
     }
 
