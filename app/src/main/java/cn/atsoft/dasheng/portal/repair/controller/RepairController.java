@@ -31,10 +31,7 @@ public class RepairController extends BaseController {
 
     @Autowired
     private RepairService repairService;
-    @Autowired
-    private WxTemplate wxTemplate;
-    @Autowired
-    private CustomerService customerService;
+
 
     /**
      * 新增接口
@@ -117,6 +114,7 @@ public class RepairController extends BaseController {
         }
         return this.repairService.findPageBySpec(repairParam);
     }
+
 
 
 }

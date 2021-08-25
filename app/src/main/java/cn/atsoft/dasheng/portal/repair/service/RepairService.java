@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.portal.repair.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,9 +22,9 @@ public interface RepairService extends IService<Repair> {
     /**
      * 新增
      *
+     * @return
      * @author siqiang
      * @Date 2021-08-20
-     * @return
      */
     Repair add(RepairParam param);
 
@@ -42,6 +43,7 @@ public interface RepairService extends IService<Repair> {
      * @Date 2021-08-20
      */
     Repair update(RepairParam param);
+
     String updatedynamic(RepairParam param);
 
     /**
@@ -66,10 +68,12 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-     PageInfo<RepairResult> findPageBySpec(RepairParam param);
+    PageInfo<RepairResult> findPageBySpec(RepairParam param);
 
     RepairResult detail(Long id);
 
     RepairResult format(List<RepairResult> data);
+
+    String getuser(GetUser user);
 
 }

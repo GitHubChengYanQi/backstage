@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.portal.repair.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -19,6 +18,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -230,6 +230,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
         }
         return data.size() == 0 ? null : data.get(0);
+    }
+
+    @Override
+    public String getuser(GetUser user) {
+
+        return null;
     }
 
     private Serializable getKey(RepairParam param) {
