@@ -35,21 +35,20 @@ public class UserinfoServiceImp implements UserInfoService {
     @Autowired
     private WxuserInfoService wxuserInfoService;
 
-
+    /**
+     * 返回二维码
+     *
+     * @param user
+     * @return
+     */
     @Override
     public byte[] getuser(GetUser user) {
 
         Long userId = user.getUserId();
         String userString = "bind-wx-" + userId;
-
-
         String randStr = ToolUtil.getRandomString(16);
-
         String path = user.getPage() + "?key=" + randStr;
-
         WxMaQrcodeService wxMaQrcodeService = wxMaService.getQrcodeService();
-
-
         redisTemplate.boundValueOps(randStr).set(userString);
 //临时信息
 //        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
@@ -84,6 +83,12 @@ public class UserinfoServiceImp implements UserInfoService {
         return null;
     }
 
+    /**
+     * 获取userId
+     *
+     * @param randStr
+     * @return
+     */
     @Override
     public UserResult backUser(String randStr) {
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
@@ -104,6 +109,11 @@ public class UserinfoServiceImp implements UserInfoService {
         return null;
     }
 
+    /**
+     * 绑定
+     *
+     * @param userid
+     */
     @Override
     public void binding(Long userid) {
         if (userid != null && UserUtils.getUserId() != null) {
@@ -111,6 +121,7 @@ public class UserinfoServiceImp implements UserInfoService {
             WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
             wxuserInfoParam.setUserId(userid);
             wxuserInfoParam.setMemberId(memberId);
+            wxuserInfoParam.setUuid(UserUtils.getUserAccount());
             wxuserInfoService.add(wxuserInfoParam);
         } else {
             throw new ServiceException(500, "请传入正确数据");

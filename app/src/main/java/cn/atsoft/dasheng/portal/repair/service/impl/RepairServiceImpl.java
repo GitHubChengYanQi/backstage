@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.common_area.entity.CommonArea;
+import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.common_area.service.CommonAreaService;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
@@ -19,6 +20,7 @@ import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
+import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -56,6 +58,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private BannerService bannerService;
     @Autowired
     private CommonAreaService commonAreaService;
+
 
     @BussinessLog
     @Override
@@ -181,14 +184,19 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         List<Long> ids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
         List<Long> bIds = new ArrayList<>();
-
+        List<String> comIds = new ArrayList<>();
         //映射发货详情
 
         for (RepairResult record : data) {
             ids.add(record.getItemId());
             cIds.add(record.getCustomerId());
             bIds.add(record.getRepairId());
+            comIds.add(record.getArea());
         }
+        QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
+        areaQueryWrapper.in("region_code", comIds);
+        List<CommonArea> commonAreas = comIds.size() == 0 ? new ArrayList<>() : commonAreaService.list(areaQueryWrapper);
+
         List<DeliveryDetailsResult> byIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(ids)) {
             byIds = deliveryDetailsService.getByIds(ids);
@@ -225,6 +233,37 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     BannerResult bannerResult = new BannerResult();
                     ToolUtil.copyProperties(banner, bannerResult);
                     record.setBannerResult(bannerResult);
+                    break;
+                }
+            }
+            for (CommonArea commonArea : commonAreas) {
+                RegionResult result = new RegionResult();
+                if (commonArea.getRegionCode().equals(record.getArea())) {
+
+                    CommonAreaResult commonAreaResult = new CommonAreaResult();
+                    ToolUtil.copyProperties(commonArea, commonAreaResult);
+                    result.setArea(commonAreaResult.getTitle());
+
+                    QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+                    commonAreaQueryWrapper.in("id", commonAreaResult.getParentid());
+                    List<CommonArea> cityList = commonAreaService.list(commonAreaQueryWrapper);
+
+                    for (CommonArea area : cityList) {
+                        CommonAreaResult city = new CommonAreaResult();
+                        ToolUtil.copyProperties(area, city);
+                        result.setCity(city.getTitle());
+
+                        QueryWrapper<CommonArea> commonAreaQueryWrapper1 = new QueryWrapper<>();
+                        commonAreaQueryWrapper1.in("id", city.getParentid());
+                        List<CommonArea> provinceList = commonAreaService.list(commonAreaQueryWrapper1);
+
+                        for (CommonArea commonArea1 : provinceList) {
+                            CommonAreaResult province = new CommonAreaResult();
+                            ToolUtil.copyProperties(commonArea1, province);
+                            result.setProvince(province.getTitle());
+                            record.setRegionResult(result);
+                        }
+                    }
                     break;
                 }
             }

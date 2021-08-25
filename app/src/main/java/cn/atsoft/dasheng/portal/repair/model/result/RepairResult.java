@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.portal.repair.model.result;
 
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
+import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
@@ -36,7 +37,9 @@ public class RepairResult implements Serializable {
     private BannerResult bannerResult;
     private Dispatching dispatchingResult;
     private UserResult userResult;
-    private  CustomerResult company;
+    private CustomerResult company;
+    private CommonAreaResult commonAreaResult;
+    private  RegionResult regionResult;
     /**
      * 报修id
      */
