@@ -159,8 +159,8 @@ public class CommonAreaController extends BaseController {
         for(Map<String, Object> item:list){
             TreeNode treeNode = new TreeNode();
             treeNode.setParentId(Convert.toStr(item.get("parentid")));
-            treeNode.setKey(Convert.toStr(item.get("id")));
-            treeNode.setValue(Convert.toStr(item.get("id")));
+            treeNode.setKey(Convert.toStr(item.get("region_code")));
+            treeNode.setValue(Convert.toStr(item.get("region_code")));
             treeNode.setTitle(Convert.toStr(item.get("title")));
             treeNode.setLabel(Convert.toStr(item.get("title")));
             treeViewNodes.add(treeNode);
