@@ -30,6 +30,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     private String itemName;
     private String customerName;
     private Long dynamic;
+    private String wxArea;
     /**
      * 报修id
      */
