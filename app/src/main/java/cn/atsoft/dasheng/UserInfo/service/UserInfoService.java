@@ -4,5 +4,8 @@ import cn.atsoft.dasheng.UserInfo.model.GetUser;
 
 
 public interface UserInfoService {
+
     byte[] getuser(GetUser user);
+
+    void redis ();
 }
