@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.UserInfo.service.impl;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
@@ -46,6 +47,8 @@ public class UserinfoServiceImp implements UserInfoService {
         try {
             if (user.getUserId() != null && user.getPage() != null) {
                 return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
+            }else {
+                throw  new ServiceException(500,"请确定登录");
             }
 
         } catch (WxErrorException e) {
