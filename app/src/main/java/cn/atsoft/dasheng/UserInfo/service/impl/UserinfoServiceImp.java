@@ -10,11 +10,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserinfoServiceImp implements UserInfoService {
@@ -35,7 +31,7 @@ public class UserinfoServiceImp implements UserInfoService {
 
         String randStr = ToolUtil.getRandomString(16);
 
-        String path = user.getPage() + "?key=" + randStr;
+//        String path = user.getPage() + "?key=" + randStr;
 
         WxMaQrcodeService wxMaQrcodeService = wxMaService.getQrcodeService();
 
@@ -45,7 +41,7 @@ public class UserinfoServiceImp implements UserInfoService {
 //        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
 
         WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
-        String scene = "欢迎登录";
+        String scene = "?key=" + randStr;
         try {
             if (user.getUserId() != null && user.getPage() != null) {
 
@@ -62,10 +58,10 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     @Override
-    public void redis(String randStr) {
+    public Long redis(String randStr) {
         Long userId = (Long) redisTemplate.boundValueOps(randStr).get();
-        List<RedisClientInfo> clientList = redisTemplate.getClientList();
 
+    return  userId;
     }
 
 }
