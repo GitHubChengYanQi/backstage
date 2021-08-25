@@ -187,14 +187,14 @@ public class CommonAreaController extends BaseController {
 
     @RequestMapping(value = "/getCity", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getCity(@RequestBody CommonAreaParam param) {
+    public ResponseData getCity(@RequestParam("id") CommonAreaParam param) {
         List<CommonAreaResult> province = this.commonAreaService.getCity(param);
         return ResponseData.success(province);
     }
 
     @RequestMapping(value = "/getArea", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getArea(@RequestBody CommonAreaParam param) {
+    public ResponseData getArea(@RequestParam("id") CommonAreaParam param) {
         List<CommonAreaResult> province = this.commonAreaService.getArea(param);
         return ResponseData.success(province);
     }
