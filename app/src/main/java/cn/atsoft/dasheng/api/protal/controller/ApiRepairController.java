@@ -54,6 +54,12 @@ public class ApiRepairController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/repairUpdate", method = RequestMethod.POST)
+    public ResponseData repairUpdate(@RequestBody RepairParam repairParam) {
+        this.repairService.update(repairParam);
+        return ResponseData.success();
+    }
+
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair repair = this.repairService.add(repairParam);
@@ -80,7 +86,7 @@ public class ApiRepairController {
         //查询工程师
         Long name = dispatchingParam.getName().longValue();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", name);
+        userQueryWrapper.in("user_id", name).in("state",0).orderByAsc("create_time");
         List<User> users = userService.list(userQueryWrapper);
 
 
@@ -116,6 +122,8 @@ public class ApiRepairController {
 
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());
+                result.setCustomerId(repair.getCustomerId());
+                result.setCustomerResult(result.getCustomerResult());
                 result.setServiceType(repair.getServiceType());
                 result.setExpectTime(repair.getExpectTime());
                 result.setProgress(repair.getProgress());
