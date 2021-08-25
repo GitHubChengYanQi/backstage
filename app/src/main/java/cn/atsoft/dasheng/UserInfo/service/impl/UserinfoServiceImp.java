@@ -45,7 +45,7 @@ public class UserinfoServiceImp implements UserInfoService {
         String scene = "欢迎登录";
         try {
             if (user.getUserId() != null && user.getPage() != null) {
-                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
+                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 40, true, wxMaCodeLineColor, true);
             }
 
         } catch (WxErrorException e) {
