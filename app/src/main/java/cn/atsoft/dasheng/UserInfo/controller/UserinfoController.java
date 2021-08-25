@@ -24,7 +24,7 @@ public class UserinfoController extends BaseController {
 
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     public ResponseData getuser(@RequestBody GetUser user) {
-        File getuser = userInfoService.getuser(user);
+        byte[] getuser = userInfoService.getuser(user);
 
         return ResponseData.success(getuser);
     }
