@@ -10,6 +10,8 @@ import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.common_area.entity.CommonArea;
+import cn.atsoft.dasheng.common_area.service.CommonAreaService;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
@@ -52,10 +54,20 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private RepairDynamicService repairDynamicService;
     @Autowired
     private BannerService bannerService;
+    @Autowired
+    private CommonAreaService commonAreaService;
 
     @BussinessLog
     @Override
     public Repair add(RepairParam param) {
+        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+        commonAreaQueryWrapper.in("id", param.getArea());
+        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
+        for (CommonArea commonArea : commonAreas) {
+            param.setArea(commonArea.getRegionCode());
+        }
+
+
         Repair entity = getEntity(param);
         this.save(entity);
         return entity;
@@ -70,8 +82,17 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @BussinessLog
     @Override
     public Repair update(RepairParam param) {
+        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+        commonAreaQueryWrapper.in("id", param.getArea());
+        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
+        for (CommonArea commonArea : commonAreas) {
+            param.setArea(commonArea.getRegionCode());
+        }
+
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
+
+
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         return newEntity;
@@ -79,11 +100,11 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     public String updatedynamic(RepairParam param) {
 
-            QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-            repairQueryWrapper.in("repair_id",param.getRepairId());
+        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+        repairQueryWrapper.in("repair_id", param.getRepairId());
         List<Repair> repairs = this.list(repairQueryWrapper);
         for (Repair repair : repairs) {
-            if (repair.getProgress()!=5) {
+            if (repair.getProgress() != 5) {
                 RepairDynamicParam repairDynamicParam = new RepairDynamicParam();
                 if (param.getProgress() == 0) {
                     repairDynamicParam.setContent("待派工....");
@@ -110,8 +131,8 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     repairDynamicParam.setRepairId(param.getRepairId());
                     repairDynamicService.add(repairDynamicParam);
                 }
-            }else {
-                throw new ServiceException(500,"售后已完成");
+            } else {
+                throw new ServiceException(500, "售后已完成");
 
 
             }
@@ -169,18 +190,18 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             bIds.add(record.getRepairId());
         }
         List<DeliveryDetailsResult> byIds = new ArrayList<>();
-        if(ToolUtil.isNotEmpty(ids)){
+        if (ToolUtil.isNotEmpty(ids)) {
             byIds = deliveryDetailsService.getByIds(ids);
         }
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(cIds)){
+        if (ToolUtil.isNotEmpty(cIds)) {
             customerQueryWrapper.in("customer_id", cIds);
         }
         List<Customer> customers = customerService.list(customerQueryWrapper);
 
         QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(bIds)){
+        if (ToolUtil.isNotEmpty(bIds)) {
             bannerQueryWrapper.in("difference", bIds);
         }
 
