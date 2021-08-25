@@ -15,7 +15,7 @@ import java.io.File;
 
 
 @RestController
-@RequestMapping("/bind")
+@RequestMapping("/api")
 @Api(tags = "报修")
 public class UserinfoController extends BaseController {
     @Autowired
