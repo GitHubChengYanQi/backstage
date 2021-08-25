@@ -41,11 +41,11 @@ public class UserinfoServiceImp implements UserInfoService {
 
         redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
 
-        WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0","0","0");
-        String scene =null;
+        WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
+        String scene = "欢迎登录";
         try {
 
-            return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene,user.getPage(),20,true, wxMaCodeLineColor,true);
+            return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
