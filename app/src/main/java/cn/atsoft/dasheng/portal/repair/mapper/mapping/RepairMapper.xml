@@ -97,6 +97,9 @@
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>
+        <if test="paramCondition.repairId">
+            and repair_id = #{paramCondition.repairId}
+        </if>
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
         </if>
