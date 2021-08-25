@@ -190,19 +190,19 @@ public class UcMemberAuth {
         return id;
     }
 
-    private void addOpenMember(UcOpenUserInfo userInfo) {
+    private UcOpenUserInfo addOpenMember(UcOpenUserInfo userInfo) {
         String primaryKey = userInfo.getSource() + "-" + userInfo.getUuid();
         UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.getById(primaryKey);
         if (ToolUtil.isEmpty(ucOpenUserInfo)) {
-            ucOpenUserInfo = new UcOpenUserInfo();
-            ToolUtil.copyProperties(userInfo, ucOpenUserInfo);
+            UcOpenUserInfoParam ucOpenUserInfoParam = new UcOpenUserInfoParam();
+            ToolUtil.copyProperties(userInfo, ucOpenUserInfoParam);
             ucOpenUserInfo.setPrimaryKey(primaryKey);
-            ucOpenUserInfoService.getBaseMapper().insert(ucOpenUserInfo);
+            return ucOpenUserInfoService.add(ucOpenUserInfoParam);
         } else {
             UcOpenUserInfoParam ucOpenUserInfoParam = new UcOpenUserInfoParam();
             ToolUtil.copyProperties(userInfo, ucOpenUserInfoParam);
             ucOpenUserInfoParam.setPrimaryKey(primaryKey);
-            ucOpenUserInfoService.update(ucOpenUserInfoParam);
+            return ucOpenUserInfoService.update(ucOpenUserInfoParam);
         }
     }
 
@@ -245,8 +245,8 @@ public class UcMemberAuth {
         /**
          * 保存到第三方登录信息
          */
-        addOpenMember(userInfo);
-
+        UcOpenUserInfo ucOpenUserInfo = addOpenMember(userInfo);
+        memberId = ucOpenUserInfo.getMemberId();
         /**
          * 当前已登录用户信息
          */
@@ -259,7 +259,7 @@ public class UcMemberAuth {
          */
         if (ToolUtil.isNotEmpty(loginedType) && !loginedType.equals(userInfo.getSource())) {
             String primaryKey = loginedType + "-" + loginedAccount;
-            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.getById(primaryKey);
+//            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.getById(primaryKey);
 
 
             /**
