@@ -7,5 +7,5 @@ public interface UserInfoService {
 
     byte[] getuser(GetUser user);
 
-    void redis (String randStr);
+    Long redis (String randStr);
 }

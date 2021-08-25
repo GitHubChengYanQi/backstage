@@ -24,7 +24,7 @@ public interface UcOpenUserInfoService extends IService<UcOpenUserInfo> {
      * @author Sing
      * @Date 2021-03-17
      */
-    void add(UcOpenUserInfoParam param);
+    UcOpenUserInfo add(UcOpenUserInfoParam param);
 
     /**
      * 删除
@@ -40,7 +40,7 @@ public interface UcOpenUserInfoService extends IService<UcOpenUserInfo> {
      * @author Sing
      * @Date 2021-03-17
      */
-    void update(UcOpenUserInfoParam param);
+    UcOpenUserInfo update(UcOpenUserInfoParam param);
 
     /**
      * 查询单条数据，Specification模式

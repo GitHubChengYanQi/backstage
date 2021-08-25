@@ -10,11 +10,9 @@ import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.types.RedisClientInfo;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
 
 @Service
 public class UserinfoServiceImp implements UserInfoService {
@@ -45,27 +43,40 @@ public class UserinfoServiceImp implements UserInfoService {
 //        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
 
         WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
-        String scene = "欢迎登录";
+        String scene = "?key=" + randStr;
         try {
             if (user.getUserId() != null && user.getPage() != null) {
+                File wxaCode = wxMaQrcodeService.createWxaCode(path);
+                FileInputStream fis = new FileInputStream(wxaCode);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+               byte[] b = new byte[1024];
+                int n;
+                while((n=fis.read(b))!= -1){
+                    bos.write(b,0,n);
+                }
+                fis.close();
+                byte[] byteArray = bos.toByteArray();
+                return byteArray;
+//                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
 
-                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
 
             } else {
                 throw new ServiceException(500, "请确定登录");
             }
 
-        } catch (WxErrorException e) {
+        } catch (WxErrorException | FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public void redis(String randStr) {
+    public Long redis(String randStr) {
         Long userId = (Long) redisTemplate.boundValueOps(randStr).get();
-        List<RedisClientInfo> clientList = redisTemplate.getClientList();
 
+    return  userId;
     }
 
 }

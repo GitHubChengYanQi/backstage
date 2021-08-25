@@ -29,9 +29,10 @@ import java.util.List;
 public class UcOpenUserInfoServiceImpl extends ServiceImpl<UcOpenUserInfoMapper, UcOpenUserInfo> implements UcOpenUserInfoService {
 
     @Override
-    public void add(UcOpenUserInfoParam param){
+    public UcOpenUserInfo add(UcOpenUserInfoParam param){
         UcOpenUserInfo entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override
@@ -40,11 +41,12 @@ public class UcOpenUserInfoServiceImpl extends ServiceImpl<UcOpenUserInfoMapper,
     }
 
     @Override
-    public void update(UcOpenUserInfoParam param){
+    public UcOpenUserInfo update(UcOpenUserInfoParam param){
         UcOpenUserInfo oldEntity = getOldEntity(param);
         UcOpenUserInfo newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        this.updateById(oldEntity);
+        return oldEntity;
     }
 
     @Override
