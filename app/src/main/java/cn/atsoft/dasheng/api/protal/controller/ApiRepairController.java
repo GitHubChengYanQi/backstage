@@ -86,7 +86,7 @@ public class ApiRepairController {
         //查询工程师
         Long name = dispatchingParam.getName().longValue();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", name);
+        userQueryWrapper.in("user_id", name).in("state",0).orderByAsc("create_time");
         List<User> users = userService.list(userQueryWrapper);
 
 

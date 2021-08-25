@@ -30,7 +30,7 @@ public class UserinfoController extends BaseController {
 
 
     @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
-    public ResponseData subscribe(  String randStr) {
+    public ResponseData subscribe( String randStr) {
         userInfoService.redis(randStr);
         return ResponseData.success();
     }
