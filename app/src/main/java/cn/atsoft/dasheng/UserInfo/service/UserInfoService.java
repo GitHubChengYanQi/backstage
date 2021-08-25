@@ -8,5 +8,7 @@ public interface UserInfoService {
 
     byte[] getuser(GetUser user);
 
-    UserResult redis (String randStr);
+    UserResult backUser (String randStr);
+
+    void binding (Long userid);
 }

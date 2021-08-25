@@ -32,10 +32,15 @@ public class UserinfoController extends BaseController {
 
     @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
     public ResponseData subscribe(String randStr) {
-        UserResult userResult = userInfoService.redis(randStr);
+        UserResult userResult = userInfoService.backUser(randStr);
         return ResponseData.success(userResult);
     }
 
+    @RequestMapping(value = "/binding", method = RequestMethod.GET)
+    public ResponseData binding(Long id) {
+        userInfoService.binding(id);
+        return ResponseData.success();
+    }
 }
 
 
