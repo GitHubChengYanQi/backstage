@@ -4,21 +4,28 @@ import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.List;
 
 @Service
 public class UserinfoServiceImp implements UserInfoService {
 
     @Autowired
     private WxMaService wxMaService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -49,10 +56,10 @@ public class UserinfoServiceImp implements UserInfoService {
                 File wxaCode = wxMaQrcodeService.createWxaCode(path);
                 FileInputStream fis = new FileInputStream(wxaCode);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-               byte[] b = new byte[1024];
+                byte[] b = new byte[1024];
                 int n;
-                while((n=fis.read(b))!= -1){
-                    bos.write(b,0,n);
+                while ((n = fis.read(b)) != -1) {
+                    bos.write(b, 0, n);
                 }
                 fis.close();
                 byte[] byteArray = bos.toByteArray();
@@ -73,10 +80,23 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     @Override
-    public Long redis(String randStr) {
-        Long userId = (Long) redisTemplate.boundValueOps(randStr).get();
+    public UserResult redis(String randStr) {
+        String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
 
-    return  userId;
+        String userId = wx.substring(8, wx.length());
+        Long ids = Long.valueOf(userId);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", ids);
+        List<User> users = userService.list(userQueryWrapper);
+        for (User user : users) {
+            UserResult userResult = new UserResult();
+            ToolUtil.copyProperties(user, userResult);
+            return userResult;
+        }
+
+        System.err.println(userId);
+
+        return null;
     }
 
 }
