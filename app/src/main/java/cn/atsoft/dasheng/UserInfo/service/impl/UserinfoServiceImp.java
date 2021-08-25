@@ -4,9 +4,12 @@ import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
@@ -29,6 +32,8 @@ public class UserinfoServiceImp implements UserInfoService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
 
 
     @Override
@@ -80,7 +85,7 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     @Override
-    public UserResult redis(String randStr) {
+    public UserResult backUser(String randStr) {
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
 
         String userId = wx.substring(8, wx.length());
@@ -97,6 +102,20 @@ public class UserinfoServiceImp implements UserInfoService {
         System.err.println(userId);
 
         return null;
+    }
+
+    @Override
+    public void binding(Long userid) {
+        if (userid != null && UserUtils.getUserId() != null) {
+            Long memberId = UserUtils.getUserId();
+            WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+            wxuserInfoParam.setUserId(userid);
+            wxuserInfoParam.setMemberId(memberId);
+            wxuserInfoService.add(wxuserInfoParam);
+        } else {
+            throw new ServiceException(500, "请传入正确数据");
+        }
+
     }
 
 }

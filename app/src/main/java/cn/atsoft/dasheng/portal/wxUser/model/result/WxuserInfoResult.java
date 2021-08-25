@@ -20,7 +20,7 @@ public class WxuserInfoResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private Long memberId;
     /**
      * 用户和openid关联
      */

@@ -23,7 +23,7 @@ import java.util.List;
 public class WxuserInfoParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Long memberId;
 
     /**
      * 用户和openid关联
