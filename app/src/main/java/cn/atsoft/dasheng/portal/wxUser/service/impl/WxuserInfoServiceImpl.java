@@ -72,7 +72,7 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
 
         List<Long> ids = new ArrayList<>();
         for (WxuserInfoResult record : page.getRecords()) {
-            ids.add(record.getMemberId());
+            ids.add(record.getUserId());
         }
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", ids);
