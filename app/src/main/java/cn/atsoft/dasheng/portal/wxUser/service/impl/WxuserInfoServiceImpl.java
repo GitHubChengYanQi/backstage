@@ -75,21 +75,24 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
             ids.add(record.getUserId());
         }
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", ids);
-
+        if(ToolUtil.isNotEmpty(ids)){
+            userQueryWrapper.in("user_id", ids);
+        }
         List<User> users = userService.list(userQueryWrapper);
+        if(ToolUtil.isNotEmpty(users)){
+            for (WxuserInfoResult record : page.getRecords()) {
+                for (User user : users) {
+                    if (user.getUserId().equals(record.getUserId())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        record.setUserResult(userResult);
+                        break;
+                    }
 
-        for (WxuserInfoResult record : page.getRecords()) {
-            for (User user : users) {
-                if (user.getUserId().equals(record.getUserId())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    record.setUserResult(userResult);
-                    break;
                 }
-
             }
         }
+
         return PageFactory.createPageInfo(page);
     }
 
