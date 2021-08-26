@@ -37,8 +37,8 @@ public class UserinfoController extends BaseController {
     }
 
     @RequestMapping(value = "/binding", method = RequestMethod.GET)
-    public ResponseData binding(Long id) {
-        userInfoService.binding(id);
+    public ResponseData binding(String randStr) {
+        userInfoService.binding(randStr);
         return ResponseData.success();
     }
 }
