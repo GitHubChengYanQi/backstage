@@ -116,11 +116,15 @@ public class UserinfoServiceImp implements UserInfoService {
      * @param userid
      */
     @Override
-    public void binding(Long userid) {
-        if (userid != null && UserUtils.getUserId() != null) {
+    public void binding(String randStr) {
+
+        String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
+        String userId = wx.substring(8, wx.length());
+        Long ids = Long.valueOf(userId);
+        if (ids != null && UserUtils.getUserId() != null) {
             Long memberId = UserUtils.getUserId();
             WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-            wxuserInfoParam.setUserId(userid);
+            wxuserInfoParam.setUserId(ids);
             wxuserInfoParam.setMemberId(memberId);
             wxuserInfoParam.setUuid(UserUtils.getUserAccount());
             wxuserInfoService.add(wxuserInfoParam);

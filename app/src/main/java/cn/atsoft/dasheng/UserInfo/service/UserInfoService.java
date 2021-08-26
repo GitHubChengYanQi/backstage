@@ -7,7 +7,7 @@ public interface UserInfoService {
 
     byte[] getuser(GetUser user);
 
-    String backUser (String randStr);
+    String backUser(String randStr);
 
-    void binding (Long userid);
+    void binding(String randStr);
 }
