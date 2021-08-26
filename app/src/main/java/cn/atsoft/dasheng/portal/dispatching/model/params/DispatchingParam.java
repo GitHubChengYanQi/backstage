@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * 派工表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-23
  */
 @Data
@@ -24,6 +25,8 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+
+    private String page;
 
     /**
      * 派工id
