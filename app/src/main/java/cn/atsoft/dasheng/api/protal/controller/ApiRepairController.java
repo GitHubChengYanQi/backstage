@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.api.protal.controller;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,21 +80,26 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
-        Repair repair = this.repairService.add(repairParam);
+        Repair entity = getEntity(repairParam);
+//        Repair repair = this.repairService.add(repairParam);
         List<Banner> banner = repairParam.getItemImgUrlList();
         for (Banner data : banner) {
             BannerParam bannerParam = new BannerParam();
-            bannerParam.setDifference(repair.getRepairId());
+            bannerParam.setDifference(entity.getRepairId());
             bannerParam.setImgUrl(data.getImgUrl());
             this.bannerService.add(bannerParam);
         }
-        return ResponseData.success(repair.getRepairId());
+        return ResponseData.success(entity .getRepairId());
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
-    public ResponseData updateRepair(@RequestBody RepairParam repairParam) {
-        Repair update = this.repairService.update(repairParam);
-        return ResponseData.success(update);
+    public Repair updateRepair(@RequestBody RepairParam repairParam) {
+        Repair oldEntity = getOldEntity(repairParam);
+        Repair newEntity = getEntity(repairParam);
+
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.repairService.updateById(newEntity);
+        return newEntity;
     }
 
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
@@ -358,6 +365,32 @@ public class ApiRepairController {
         this.repairService.format(res);
 
         return ResponseData.success(res);
+    }
+    private Repair getEntity(RepairParam param) {
+        Repair entity = new Repair();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+    private Repair getOldEntity(RepairParam param) {
+        return this.repairService.getById(getKey(param));
+    }
+
+    private Serializable getKey(RepairParam param) {
+        return param.getRepairId();
+    }
+
+    @RequestMapping(value = "/getRepairById", method = RequestMethod.POST)
+    public RepairResult getRepairById(@RequestBody(required = false) RepairParam repairParam) {
+
+        Repair repair = this.repairService.getById(repairParam.getRepairId());
+        RepairResult repairResult = new RepairResult();
+        ToolUtil.copyProperties(repair, repairResult);
+        List<RepairResult> results = new ArrayList<RepairResult>() {{
+            add(repairResult);
+        }};
+        this.repairService.format(results);
+        return results.get(0);
     }
 
 }
