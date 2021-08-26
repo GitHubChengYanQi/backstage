@@ -37,9 +37,9 @@ public class RepairResult implements Serializable {
     private List<BannerResult> bannerResult;
     private Dispatching dispatchingResult;
     private UserResult userResult;
+    private List<RegionResult> regionResult;
     private CustomerResult company;
     private CommonAreaResult commonAreaResult;
-    private RegionResult regionResult;
     private String wxArea;
     /**
      * 报修id

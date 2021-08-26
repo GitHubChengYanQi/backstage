@@ -6,6 +6,9 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.common_area.entity.CommonArea;
+import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
+import cn.atsoft.dasheng.common_area.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
@@ -18,6 +21,7 @@ import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -48,6 +52,8 @@ public class ApiRepairController {
     private DispatchingService dispatchingService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommonAreaService commonAreaService;
 
     @RequestMapping(value = "/RepairistAll", method = RequestMethod.POST)
     @ApiOperation("列表")
@@ -118,6 +124,7 @@ public class ApiRepairController {
                 Repair repair = this.repairService.getById(data.getRepairId());
                 RepairResult result = new RepairResult();
                 result.setRepairId(repair.getRepairId());
+
                 //查询报修获取公司id
                 QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
                 repairQueryWrapper.in("repair_id", data.getRepairId());
@@ -146,6 +153,48 @@ public class ApiRepairController {
                     bannerList.add(bannerResult);
                 }
                 result.setBannerResult(bannerList);
+
+                //获取地址
+                QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
+                areaQueryWrapper.in("id", repair.getArea());
+                List<CommonArea> commonAreas = this.commonAreaService.list(areaQueryWrapper);
+                List<RegionResult> regionList = new ArrayList<>();
+                for (CommonArea commonArea : commonAreas) {
+                    Long recordArea = repair.getArea() == null ? null : Long.valueOf(repair.getArea());
+                    RegionResult regionResult = new RegionResult();
+                    Long id = Long.valueOf(commonArea.getId());
+                    if (id == recordArea) {
+
+                        QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
+                        AreaQueryWrapper.in("parentid", commonArea.getId());
+
+                        CommonAreaResult commonAreaResult = new CommonAreaResult();
+                        ToolUtil.copyProperties(commonArea, commonAreaResult);
+                        regionResult.setArea(commonAreaResult.getTitle());
+
+                        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+                        commonAreaQueryWrapper.in("id", commonAreaResult.getParentid());
+                        List<CommonArea> cityList = commonAreaService.list(commonAreaQueryWrapper);
+
+                        for (CommonArea area : cityList) {
+                            CommonAreaResult city = new CommonAreaResult();
+                            ToolUtil.copyProperties(area, city);
+                            regionResult.setCity(city.getTitle());
+
+                            QueryWrapper<CommonArea> commonAreaQueryWrapper1 = new QueryWrapper<>();
+                            commonAreaQueryWrapper1.in("id", city.getParentid());
+                            List<CommonArea> provinceList = commonAreaService.list(commonAreaQueryWrapper1);
+
+                            for (CommonArea commonArea1 : provinceList) {
+                                CommonAreaResult province = new CommonAreaResult();
+                                ToolUtil.copyProperties(commonArea1, province);
+                                regionResult.setProvince(province.getTitle());
+                                regionList.add(regionResult);
+                            }
+                        }
+                        result.setRegionResult(regionList);
+                    }
+                }
 
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());
@@ -230,6 +279,48 @@ public class ApiRepairController {
                     bannerList.add(bannerResult);
                 }
                 result.setBannerResult(bannerList);
+
+                //获取地址
+                QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
+                areaQueryWrapper.in("id", repair.getArea());
+                List<CommonArea> commonAreas = this.commonAreaService.list(areaQueryWrapper);
+                List<RegionResult> regionList = new ArrayList<>();
+                for (CommonArea commonArea : commonAreas) {
+                    Long recordArea = repair.getArea() == null ? null : Long.valueOf(repair.getArea());
+                    RegionResult regionResult = new RegionResult();
+                    Long id = Long.valueOf(commonArea.getId());
+                    if (id == recordArea) {
+
+                        QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
+                        AreaQueryWrapper.in("parentid", commonArea.getId());
+
+                        CommonAreaResult commonAreaResult = new CommonAreaResult();
+                        ToolUtil.copyProperties(commonArea, commonAreaResult);
+                        regionResult.setArea(commonAreaResult.getTitle());
+
+                        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+                        commonAreaQueryWrapper.in("id", commonAreaResult.getParentid());
+                        List<CommonArea> cityList = commonAreaService.list(commonAreaQueryWrapper);
+
+                        for (CommonArea area : cityList) {
+                            CommonAreaResult city = new CommonAreaResult();
+                            ToolUtil.copyProperties(area, city);
+                            regionResult.setCity(city.getTitle());
+
+                            QueryWrapper<CommonArea> commonAreaQueryWrapper1 = new QueryWrapper<>();
+                            commonAreaQueryWrapper1.in("id", city.getParentid());
+                            List<CommonArea> provinceList = commonAreaService.list(commonAreaQueryWrapper1);
+
+                            for (CommonArea commonArea1 : provinceList) {
+                                CommonAreaResult province = new CommonAreaResult();
+                                ToolUtil.copyProperties(commonArea1, province);
+                                regionResult.setProvince(province.getTitle());
+                                regionList.add(regionResult);
+                            }
+                        }
+                        result.setRegionResult(regionList);
+                    }
+                }
 
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());

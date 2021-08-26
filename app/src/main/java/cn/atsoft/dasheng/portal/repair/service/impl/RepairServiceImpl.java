@@ -264,6 +264,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 }
             }
             record.setBannerResult(bannerList);
+            List<RegionResult> regionList = new ArrayList<>();
             for (CommonArea commonArea : commonAreas) {
                 Long recordArea = record.getArea() == null ? null : Long.valueOf(record.getArea());
                 RegionResult result = new RegionResult();
@@ -295,8 +296,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                             CommonAreaResult province = new CommonAreaResult();
                             ToolUtil.copyProperties(commonArea1, province);
                             result.setProvince(province.getTitle());
-                            record.setRegionResult(result);
+                            regionList.add(result);
                         }
+                        record.setRegionResult(regionList);
                     }
                     break;
 
