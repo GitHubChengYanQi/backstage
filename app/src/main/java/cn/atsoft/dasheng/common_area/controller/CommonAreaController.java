@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.common_area.service.CommonAreaService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,14 +188,20 @@ public class CommonAreaController extends BaseController {
 
     @RequestMapping(value = "/getCity", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getCity(@RequestParam("id") CommonAreaParam param) {
+    public ResponseData getCity(@RequestBody CommonAreaParam param) {
+        if (ToolUtil.isEmpty(param.getId())) {
+            throw new ServiceException(500, "请选择正确地址");
+        }
         List<CommonAreaResult> province = this.commonAreaService.getCity(param);
         return ResponseData.success(province);
     }
 
     @RequestMapping(value = "/getArea", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getArea(@RequestParam("id") CommonAreaParam param) {
+    public ResponseData getArea(@RequestBody CommonAreaParam param) {
+        if (ToolUtil.isEmpty(param.getId())) {
+            throw new ServiceException(500, "请选择正确地址");
+        }
         List<CommonAreaResult> province = this.commonAreaService.getArea(param);
         return ResponseData.success(province);
     }

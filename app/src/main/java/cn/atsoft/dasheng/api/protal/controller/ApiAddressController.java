@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
+import cn.atsoft.dasheng.common_area.model.params.CommonAreaParam;
+import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.common_area.service.CommonAreaService;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -10,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -23,6 +26,27 @@ public class ApiAddressController {
 
     @Autowired
     private CommonAreaService commonAreaService;
+
+    @RequestMapping(value = "/getProvince", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData getProvince() {
+        List<CommonAreaResult> province = this.commonAreaService.getProvince();
+        return ResponseData.success(province);
+    }
+
+    @RequestMapping(value = "/getCity", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData getCity(@RequestParam("id") CommonAreaParam param) {
+        List<CommonAreaResult> province = this.commonAreaService.getCity(param);
+        return ResponseData.success(province);
+    }
+
+    @RequestMapping(value = "/getArea", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData getArea(@RequestParam("id") CommonAreaParam param) {
+        List<CommonAreaResult> province = this.commonAreaService.getArea(param);
+        return ResponseData.success(province);
+    }
 
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     public ResponseData<List<TreeNode>> treeView() {
