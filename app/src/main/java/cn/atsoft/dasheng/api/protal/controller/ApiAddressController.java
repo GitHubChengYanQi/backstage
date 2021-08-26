@@ -10,10 +10,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +33,14 @@ public class ApiAddressController {
 
     @RequestMapping(value = "/getCity", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getCity(@RequestParam("id") CommonAreaParam param) {
+    public ResponseData getCity(@RequestBody CommonAreaParam param) {
         List<CommonAreaResult> province = this.commonAreaService.getCity(param);
         return ResponseData.success(province);
     }
 
     @RequestMapping(value = "/getArea", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData getArea(@RequestParam("id") CommonAreaParam param) {
+    public ResponseData getArea(@RequestBody CommonAreaParam param) {
         List<CommonAreaResult> province = this.commonAreaService.getArea(param);
         return ResponseData.success(province);
     }
