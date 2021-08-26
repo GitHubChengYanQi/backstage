@@ -181,7 +181,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @Override
     public List<RepairResult> findListBySpec(RepairParam param) {
-        return null;
+        List<RepairResult> repairResults = this.baseMapper.customList(param);
+        format(repairResults);
+        return repairResults;
     }
 
     @Override
