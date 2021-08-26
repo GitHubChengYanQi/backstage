@@ -4,63 +4,69 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.remind.entity.Remind">
-        <id column="remind_id" property="remindId" />
-        <result column="type" property="type" />
-        <result column="user_id" property="userId" />
+        <id column="remind_id" property="remindId"/>
+        <result column="type" property="type"/>
+        <result column="user_id" property="userId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        remind_id AS "remindId", type AS "type", user_id AS "userId"
+        remind_id
+        AS "remindId", type AS "type", user_id AS "userId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.remind.model.result.RemindResult" parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.portal.remind.model.result.RemindResult"
+            parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_remind where 1 = 1
-            <if test="paramCondition.type != null and paramCondition.type != ''">
-                and type like CONCAT('%',#{paramCondition.type},'%')
-            </if>
-            <if test="paramCondition.userId != null">
-                    and user_id = #{paramCondition.userId}
-            </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_remind where 1 = 1
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                            and user_id = #{paramCondition.userId}
-                </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.remind.model.result.RemindResult" parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.remind.model.result.RemindResult"
+            parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_remind where 1 = 1
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                            and user_id = #{paramCondition.userId}
-                </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
+group by type
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.portal.remind.model.params.RemindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_remind where 1 = 1
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id = #{paramCondition.userId}
-                </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id = #{paramCondition.userId}
+        </if>
     </select>
 
 </mapper>
