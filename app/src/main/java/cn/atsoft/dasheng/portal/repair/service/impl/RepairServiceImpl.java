@@ -230,6 +230,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
 
         List<Banner> banners = bannerService.list(bannerQueryWrapper);
+        List<BannerResult> bannerList = new ArrayList<>();
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
                 if (byId.getDeliveryDetailsId().equals(record.getItemId())) {
@@ -248,10 +249,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 if (banner.getDifference().equals(record.getRepairId())) {
                     BannerResult bannerResult = new BannerResult();
                     ToolUtil.copyProperties(banner, bannerResult);
-                    record.setBannerResult(bannerResult);
-                    break;
+                    bannerList.add(bannerResult);
                 }
             }
+            record.setBannerResult(bannerList);
             for (CommonArea commonArea : commonAreas) {
                 RegionResult result = new RegionResult();
                 if (commonArea.getRegionCode().equals(record.getArea())) {

@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
+import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
@@ -125,6 +126,17 @@ public class ApiRepairController {
                     result.setCompany(customerResult);
                     break;
                 }
+                // 查询图片
+                QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+                bannerQueryWrapper.in("difference", data.getRepairId());
+                List<Banner> banners = bannerService.list(bannerQueryWrapper);
+                List<BannerResult> bannerList = new ArrayList<>();
+                for (Banner banner : banners) {
+                    BannerResult bannerResult = new BannerResult();
+                    ToolUtil.copyProperties(banner, bannerResult);
+                    bannerList.add(bannerResult);
+                }
+                result.setBannerResult(bannerList);
 
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());
@@ -195,6 +207,18 @@ public class ApiRepairController {
                     result.setCompany(customerResult);
                     break;
                 }
+
+                // 查询图片
+                QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+                bannerQueryWrapper.in("difference", data.getRepairId());
+                List<Banner> banners = bannerService.list(bannerQueryWrapper);
+                List<BannerResult> bannerList = new ArrayList<>();
+                for (Banner banner : banners) {
+                    BannerResult bannerResult = new BannerResult();
+                    ToolUtil.copyProperties(banner, bannerResult);
+                    bannerList.add(bannerResult);
+                }
+                result.setBannerResult(bannerList);
 
                 result.setCompanyId(repair.getCompanyId());
                 result.setItemId(repair.getItemId());
