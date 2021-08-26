@@ -18,14 +18,15 @@ public class WxTemplate {
     private WxMaService wxMaService;
 
 
-    public void send(String openid, String templateId, String page, List<WxMaSubscribeMessage.MsgData> data) {
+    public void send( String openid, List<WxMaSubscribeMessage.MsgData> data) {
         WxMaSubscribeService wxMaSubscribeService = wxMaService.getSubscribeService();
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openid);
-        wxMaSubscribeMessage.setTemplateId(templateId);
-        wxMaSubscribeMessage.setPage(page);
+        wxMaSubscribeMessage.setTemplateId("32B3xgUL-IgcTfpiYlcoVNaIR_TVweOdjB0Zftu38jM");
         wxMaSubscribeMessage.setData(data);
         wxMaSubscribeMessage.setLang("zh_CN");
+
+
 
         try {
             wxMaSubscribeService.sendSubscribeMsg(wxMaSubscribeMessage);

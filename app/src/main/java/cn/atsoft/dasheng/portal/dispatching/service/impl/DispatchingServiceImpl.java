@@ -20,6 +20,9 @@ import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -54,6 +57,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     private WxTemplate wxTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
 
     @Override
     public void add(DispatchingParam param) {
@@ -99,43 +104,50 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         List<Repair> repairs = repairService.list(repairQueryWrapper);
         //查询报修 获取报修数据
         for (Repair repair : repairs) {
-            data.add(new WxMaSubscribeMessage.MsgData("name", repair.getPeople()));
-            data.add(new WxMaSubscribeMessage.MsgData("address", repair.getAddress()));
-            String telephone = String.valueOf(repair.getTelephone());
-            data.add(new WxMaSubscribeMessage.MsgData("phone", telephone));
             String reateTime = String.valueOf(repair.getCreateTime());
             DateTime parse = DateUtil.parse(reateTime);
             String time = String.valueOf(parse);
-            data.add(new WxMaSubscribeMessage.MsgData("time", time));
+            data.add(new WxMaSubscribeMessage.MsgData("time2", time));
+            data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
+            data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
+
             //查询保修单位
             QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
             customerQueryWrapper.in("customer_id", repair.getCustomerId());
             List<Customer> customers = customerService.list(customerQueryWrapper);
-            String repairName = null;
             for (Customer customer : customers) {
                 if (customer.getCustomerId().equals(repair.getCustomerId())) {
-                    repairName = customer.getCustomerName();
-                    data.add(new WxMaSubscribeMessage.MsgData("repairName", repairName));
+                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
+                }
+            }
+
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+
+            List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
+            for (User user : users) {
+                QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+                List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", user.getUserId()));
+
+                for (WxuserInfo wxuserInfo : infoList) {
+                    QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+                    List<UcOpenUserInfo> ucOpenUserInfoList = userInfoService.list(ucOpenUserInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId()));
+
+                    for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfoList) {
+                        String openid = ucOpenUserInfo.getUuid();
+                        if (openid != null) {
+                            wxTemplate.send(openid, data);
+                        }
+
+                    }
                 }
             }
         }
-        //查询uuit
-        String openid = null;
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", param.getName());
-        List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        for (WxuserInfo wxuserInfo : wxuserInfoList) {
-            String uuid = wxuserInfo.getUuid();
-            openid = uuid;
-        }
-        if (openid != null && data.size() != 0) {
-            //调用订阅消息方法
 
-//        wxTemplate.send(openid, templateId, page, data);
-            return "订阅成功";
-        } else {
-            throw new ServiceException(500, "订阅失败");
-        }
+        //调用订阅消息方法
+
+
+        return "订阅成功";
+
 
     }
 
