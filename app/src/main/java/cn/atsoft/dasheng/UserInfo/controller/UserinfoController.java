@@ -38,7 +38,7 @@ public class UserinfoController extends BaseController {
         return ResponseData.success(backUser);
     }
 
-    @RequestMapping(value = "/binding", method = RequestMethod.GET)
+    @RequestMapping(value = "/binding", method = RequestMethod.POST)
     public ResponseData binding(@RequestBody GetKey getKey) {
         userInfoService.binding(getKey);
         return ResponseData.success();
