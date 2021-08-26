@@ -106,6 +106,7 @@ public class UserinfoServiceImp implements UserInfoService {
             ToolUtil.copyProperties(user, userResult);
             backUser.setName(userResult.getName());
             backUser.setBln(true);
+            backUser.setRandStr(randStr);
 
         }
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
@@ -130,6 +131,7 @@ public class UserinfoServiceImp implements UserInfoService {
 
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
         String userId = wx.substring(8, wx.length());
+        String[] split = wx.split("bind-wx-");
         Long ids = Long.valueOf(userId);
         if (ids != null && UserUtils.getUserId() != null) {
             Long memberId = UserUtils.getUserId();

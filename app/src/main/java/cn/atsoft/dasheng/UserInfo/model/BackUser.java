@@ -6,4 +6,5 @@ import lombok.Data;
 public class BackUser {
     private  String name;
     private Boolean bln;
+    private  String randStr;
 }
