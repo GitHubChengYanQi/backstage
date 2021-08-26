@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.hutool.core.date.DateTime;
@@ -55,6 +57,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     private WxTemplate wxTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
 
     @Override
     public void add(DispatchingParam param) {
@@ -116,24 +120,34 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                     data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
                 }
             }
+
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+
+            List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
+            for (User user : users) {
+                QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+                List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", user.getUserId()));
+
+                for (WxuserInfo wxuserInfo : infoList) {
+                    QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+                    List<UcOpenUserInfo> ucOpenUserInfoList = userInfoService.list(ucOpenUserInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId()));
+
+                    for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfoList) {
+                        String openid = ucOpenUserInfo.getUuid();
+                        if (openid != null) {
+                            wxTemplate.send(openid, data);
+                        }
+
+                    }
+                }
+            }
         }
-//        //查询uuit
-//        String openid = null;
-//        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-//        wxuserInfoQueryWrapper.in("user_id", param.getName());
-//        List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-//        for (WxuserInfo wxuserInfo : wxuserInfoList) {
-//            String uuid = wxuserInfo.getUuid();
-//            openid = uuid;
-//        }
-//        if (openid != null && data.size() != 0) {
+
         //调用订阅消息方法
-        String openid = UserUtils.getUserAccount();
-        wxTemplate.send(openid, param.getPage(), data);
+
+
         return "订阅成功";
-//        } else {
-//            throw new ServiceException(500, "订阅失败");
-//        }
+
 
     }
 
