@@ -137,12 +137,12 @@ public class UserinfoServiceImp implements UserInfoService {
         Long getUserId = Long.valueOf(getKey.getGetUserId());
 
         if (ids != null && getUserId != null) {
-                Long memberId = UserUtils.getUserId();
-                WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-                wxuserInfoParam.setUserId(ids);
-                wxuserInfoParam.setMemberId(getUserId);
-                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
-                 wxuserInfoService.add(wxuserInfoParam);
+//                Long memberId = UserUtils.getUserId();
+            WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+            wxuserInfoParam.setUserId(ids);
+            wxuserInfoParam.setMemberId(getUserId);
+//                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
+            wxuserInfoService.add(wxuserInfoParam);
         } else {
             throw new ServiceException(500, "请确认登陆");
         }
