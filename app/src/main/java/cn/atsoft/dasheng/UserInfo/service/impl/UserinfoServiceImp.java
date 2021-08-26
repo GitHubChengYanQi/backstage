@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.UserInfo.service.impl;
 
 import cn.atsoft.dasheng.UserInfo.model.BackUser;
+import cn.atsoft.dasheng.UserInfo.model.GetKey;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -127,20 +128,21 @@ public class UserinfoServiceImp implements UserInfoService {
      * @param
      */
     @Override
-    public void binding(String randStr) {
-
+    public void binding(GetKey getKey) {
+        String randStr = getKey.getRandStr();
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
         String userId = wx.substring(8, wx.length());
-        String[] split = wx.split("bind-wx-");
+//        String[] split = wx.split("bind-wx-");
         Long ids = Long.valueOf(userId);
+        Long getUserId = Long.valueOf(getKey.getGetUserId());
 
-        if (ids != null && UserUtils.getUserId() != null) {
-                Long memberId = UserUtils.getUserId();
-                WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-                wxuserInfoParam.setUserId(ids);
-                wxuserInfoParam.setMemberId(memberId);
-                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
-                 wxuserInfoService.add(wxuserInfoParam);
+        if (ids != null && getUserId != null) {
+//                Long memberId = UserUtils.getUserId();
+            WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+            wxuserInfoParam.setUserId(ids);
+            wxuserInfoParam.setMemberId(getUserId);
+//                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
+            wxuserInfoService.add(wxuserInfoParam);
         } else {
             throw new ServiceException(500, "请确认登陆");
         }
