@@ -85,7 +85,7 @@ public class RemindController extends BaseController {
         RemindResult result = new RemindResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
