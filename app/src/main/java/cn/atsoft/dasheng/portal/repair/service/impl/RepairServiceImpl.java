@@ -74,13 +74,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
 
         }
-
-
         QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
         commonAreaQueryWrapper.in("id", param.getArea());
         List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
         for (CommonArea commonArea : commonAreas) {
             param.setArea(commonArea.getRegionCode());
+
         }
 
 
