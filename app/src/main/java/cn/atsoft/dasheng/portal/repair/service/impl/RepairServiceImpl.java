@@ -220,7 +220,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
         QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
         areaQueryWrapper.in("id", comIds);
-        List<CommonArea> commonAreas = commonAreaService.list(areaQueryWrapper);
+        List<CommonArea> commonAreas = comIds.size() == 0 ? new ArrayList<>() : commonAreaService.list(areaQueryWrapper);
 
         List<DeliveryDetailsResult> byIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(ids)) {
@@ -262,13 +262,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 }
             }
             for (CommonArea commonArea : commonAreas) {
+                Long recordArea = Long.valueOf(record.getArea());
                 RegionResult result = new RegionResult();
-                if (commonArea.getRegionCode().equals(record.getArea())) {
+                Long id = Long.valueOf(commonArea.getId());
+                if (id == recordArea) {
 
                     QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
                     AreaQueryWrapper.in("parentid", commonArea.getId());
                     List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
-
 
                     CommonAreaResult commonAreaResult = new CommonAreaResult();
                     ToolUtil.copyProperties(commonArea, commonAreaResult);
