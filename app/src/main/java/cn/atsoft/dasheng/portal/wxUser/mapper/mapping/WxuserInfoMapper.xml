@@ -33,6 +33,9 @@
         <if test="paramCondition.uuid != null and paramCondition.uuid != ''">
             and uuid like CONCAT('%',#{paramCondition.uuid},'%')
         </if>
+        <if test="paramCondition.memberId != null and paramCondition.memberId != ''">
+            and member_id like CONCAT('%',#{paramCondition.memberId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map"
@@ -45,6 +48,9 @@
         </if>
         <if test="paramCondition.uuid != null and paramCondition.uuid != ''">
             and uuid like CONCAT('%',#{paramCondition.uuid},'%')
+        </if>
+        <if test="paramCondition.memberId != null and paramCondition.memberId != ''">
+            and member_id like CONCAT('%',#{paramCondition.memberId},'%')
         </if>
     </select>
 
@@ -59,6 +65,9 @@
         <if test="paramCondition.uuid != null and paramCondition.uuid != ''">
             and uuid like CONCAT('%',#{paramCondition.uuid},'%')
         </if>
+        <if test="paramCondition.memberId != null and paramCondition.memberId != ''">
+            and member_id like CONCAT('%',#{paramCondition.memberId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -71,6 +80,9 @@
         </if>
         <if test="paramCondition.uuid != null and paramCondition.uuid != ''">
             and uuid like CONCAT('%',#{paramCondition.uuid},'%')
+        </if>
+        <if test="paramCondition.memberId != null and paramCondition.memberId != ''">
+            and member_id like CONCAT('%',#{paramCondition.memberId},'%')
         </if>
     </select>
 
