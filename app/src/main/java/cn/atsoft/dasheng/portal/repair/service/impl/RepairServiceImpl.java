@@ -74,13 +74,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
 
         }
-        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-        commonAreaQueryWrapper.in("id", param.getArea());
-        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
-        for (CommonArea commonArea : commonAreas) {
-            param.setArea(commonArea.getRegionCode());
-
-        }
+//        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+//        commonAreaQueryWrapper.in("id", param.getArea());
+//        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
+//        for (CommonArea commonArea : commonAreas) {
+//            param.setArea(commonArea.getRegionCode());
+//
+//        }
 
 
         Repair entity = getEntity(param);
@@ -110,12 +110,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
         }
 
-        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-        commonAreaQueryWrapper.in("id", param.getArea());
-        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
-        for (CommonArea commonArea : commonAreas) {
-            param.setArea(commonArea.getRegionCode());
-        }
+//        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+//        commonAreaQueryWrapper.in("id", param.getArea());
+//        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
+//        for (CommonArea commonArea : commonAreas) {
+//            param.setArea(commonArea.getRegionCode());
+//        }
 
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
@@ -219,7 +219,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             comIds.add(record.getArea());
         }
         QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
-        areaQueryWrapper.in("region_code", comIds);
+        areaQueryWrapper.in("id", comIds);
         List<CommonArea> commonAreas = commonAreaService.list(areaQueryWrapper);
 
         List<DeliveryDetailsResult> byIds = new ArrayList<>();
