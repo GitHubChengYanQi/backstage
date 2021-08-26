@@ -52,29 +52,25 @@
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-miniapp</artifactId>
-            <version>4.1.0</version>
+            <version>4.0.6.B</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-open</artifactId>
-            <version>4.1.0</version>
+            <version>4.0.6.B</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-pay</artifactId>
-            <version>4.1.0</version>
+            <version>4.0.6.B</version>
         </dependency>
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
-            <version>4.1.0</version>
+            <version>4.0.6.B</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.binarywang/weixin-java-mp -->
-        <dependency>
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>weixin-java-mp</artifactId>
-            <version>4.1.0</version>
-        </dependency>
+
 
         <dependency>
             <groupId>cn.hutool</groupId>

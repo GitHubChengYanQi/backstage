@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.portal.remind.model.params;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -28,6 +30,8 @@ public class RemindParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("提醒id")
     private Long remindId;
+
+    private List<Long> users;
 
     /**
      * 提醒类型
