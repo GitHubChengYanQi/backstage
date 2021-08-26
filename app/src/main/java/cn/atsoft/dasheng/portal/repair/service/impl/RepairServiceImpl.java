@@ -65,7 +65,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     public Repair add(RepairParam param) {
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
-        }else {
+        } else {
             QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
             AreaQueryWrapper.in("parentid", param.getArea());
             List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
@@ -83,8 +83,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
 
 
-
-
         Repair entity = getEntity(param);
         this.save(entity);
         return entity;
@@ -100,6 +98,17 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Override
     public Repair update(RepairParam param) {
 
+        if (param.getArea() == null) {
+            throw new ServiceException(500, "请选择地区");
+        } else {
+            QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
+            AreaQueryWrapper.in("parentid", param.getArea());
+            List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
+            if (list.size() > 0) {
+                throw new ServiceException(500, "请选择到区或县");
+            }
+
+        }
 
         QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
         commonAreaQueryWrapper.in("id", param.getArea());
@@ -211,7 +220,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
         QueryWrapper<CommonArea> areaQueryWrapper = new QueryWrapper<>();
         areaQueryWrapper.in("region_code", comIds);
-        List<CommonArea> commonAreas = comIds.size() == 0 ? new ArrayList<>() : commonAreaService.list(areaQueryWrapper);
+        List<CommonArea> commonAreas = commonAreaService.list(areaQueryWrapper);
 
         List<DeliveryDetailsResult> byIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(ids)) {
