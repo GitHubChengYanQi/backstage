@@ -86,12 +86,12 @@ public class ApiRepairController {
         //查询工程师
         Long name = dispatchingParam.getName().longValue();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", name).in("state",0).orderByAsc("create_time");
+        userQueryWrapper.in("user_id", name);
         List<User> users = userService.list(userQueryWrapper);
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", name);
+        dispatchingQueryWrapper.in("name", name).in("state",0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         //公司id
