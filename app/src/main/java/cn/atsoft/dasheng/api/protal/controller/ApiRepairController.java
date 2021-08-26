@@ -48,6 +48,15 @@ public class ApiRepairController {
     @Autowired
     private UserService userService;
 
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<RepairResult> listAll(@RequestBody(required = false) RepairParam repairParam) {
+        if (ToolUtil.isEmpty(repairParam)) {
+            repairParam = new RepairParam();
+        }
+        return this.repairService.findListBySpec(repairParam);
+    }
+
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
     public ResponseData dispatchingUpdate(@RequestBody DispatchingParam dispatchingParam) {
         this.dispatchingService.update(dispatchingParam);
@@ -163,6 +172,8 @@ public class ApiRepairController {
 
         return ResponseData.success(res);
     }
+
+
 
     @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
     public ResponseData getRepairAll() {
