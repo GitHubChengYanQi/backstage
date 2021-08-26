@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.dispatching.service;
+package cn.atsoft.dasheng.UserInfo.controller;
 
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
