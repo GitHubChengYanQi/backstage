@@ -84,8 +84,6 @@ public class RemindController extends BaseController {
         Remind detail = this.remindService.getById(remindParam.getRemindId());
         RemindResult result = new RemindResult();
         ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

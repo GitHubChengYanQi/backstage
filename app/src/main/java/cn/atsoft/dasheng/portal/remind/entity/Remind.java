@@ -22,7 +22,7 @@ public class Remind implements Serializable {
     /**
      * 提醒id
      */
-      @TableId(value = "remind_id", type = IdType.ID_WORKER)
+      @TableId(value = "remind_id", type = IdType.AUTO)
     private Long remindId;
 
     /**
