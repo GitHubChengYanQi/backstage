@@ -244,9 +244,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     AreaQueryWrapper.in("parentid", commonArea.getId());
                     List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
 
-                    if (list.size() > 0) {
-                        throw new ServiceException(500, "请输入到区或县");
-                    } else {
+//                    if (list.size() > 0) {
+//                        throw new ServiceException(500, "请输入到区或县");
+//                    } else {
                         CommonAreaResult commonAreaResult = new CommonAreaResult();
                         ToolUtil.copyProperties(commonArea, commonAreaResult);
                         result.setArea(commonAreaResult.getTitle());
@@ -272,7 +272,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                             }
                         }
                         break;
-                    }
+//                    }
                 }
 
 
