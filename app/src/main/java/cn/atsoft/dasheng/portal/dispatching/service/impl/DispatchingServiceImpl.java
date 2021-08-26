@@ -59,10 +59,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     private UserService userService;
     @Autowired
     private UcOpenUserInfoService userInfoService;
-//    @Autowired
-//    private WxMpConfigStorage wxMpConfigStorage;
-//    @Autowired
-//    private WxMpService wxMpService;
+
+    @Autowired
+    private WxMpService wxMpService;
 
     @Override
     public void add(DispatchingParam param) {
