@@ -133,13 +133,14 @@ public class UserinfoServiceImp implements UserInfoService {
         String userId = wx.substring(8, wx.length());
         String[] split = wx.split("bind-wx-");
         Long ids = Long.valueOf(userId);
+
         if (ids != null && UserUtils.getUserId() != null) {
-            Long memberId = UserUtils.getUserId();
-            WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-            wxuserInfoParam.setUserId(ids);
-            wxuserInfoParam.setMemberId(memberId);
-            wxuserInfoParam.setUuid(UserUtils.getUserAccount());
-            wxuserInfoService.add(wxuserInfoParam);
+                Long memberId = UserUtils.getUserId();
+                WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+                wxuserInfoParam.setUserId(ids);
+                wxuserInfoParam.setMemberId(memberId);
+                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
+                 wxuserInfoService.add(wxuserInfoParam);
         } else {
             throw new ServiceException(500, "请确认登陆");
         }
