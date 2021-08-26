@@ -29,6 +29,8 @@ public class Repair implements Serializable {
      */
     @TableId(value = "repair_id", type = IdType.ID_WORKER)
     private Long repairId;
+    @TableField("wx_area")
+    private String wxArea;
 
     /**
      * 报修单位
@@ -382,6 +384,14 @@ public class Repair implements Serializable {
 
     public void setDynamic(Long dynamic) {
         this.dynamic = dynamic;
+    }
+
+    public String getWxArea() {
+        return wxArea;
+    }
+
+    public void setWxArea(String wxArea) {
+        this.wxArea = wxArea;
     }
 
     @Override

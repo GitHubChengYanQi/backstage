@@ -85,6 +85,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @BussinessLog
     @Override
     public Repair update(RepairParam param) {
+
+
+
         QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
         commonAreaQueryWrapper.in("id", param.getArea());
         List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
@@ -282,10 +285,11 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     }
 
     @Override
-    public String getuser(GetUser user) {
+    public void getWxMap(RepairParam param) {
 
-        return null;
     }
+
+
 
     private Serializable getKey(RepairParam param) {
         return param.getRepairId();

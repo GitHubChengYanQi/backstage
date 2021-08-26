@@ -13,7 +13,7 @@ import java.util.List;
  * 逐渐取代region表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-24
  */
 public interface CommonAreaService extends IService<CommonArea> {
@@ -21,7 +21,7 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
     void add(CommonAreaParam param);
@@ -29,7 +29,7 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
     void delete(CommonAreaParam param);
@@ -37,7 +37,7 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
     void update(CommonAreaParam param);
@@ -45,7 +45,7 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
     CommonAreaResult findBySpec(CommonAreaParam param);
@@ -53,7 +53,7 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
     List<CommonAreaResult> findListBySpec(CommonAreaParam param);
@@ -61,9 +61,15 @@ public interface CommonAreaService extends IService<CommonArea> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-08-24
      */
-     PageInfo<CommonAreaResult> findPageBySpec(CommonAreaParam param);
+    PageInfo<CommonAreaResult> findPageBySpec(CommonAreaParam param);
 
+    List<CommonAreaResult> getProvince();
+
+
+    List<CommonAreaResult> getCity(CommonAreaParam param);
+
+    List<CommonAreaResult> getArea(CommonAreaParam param);
 }
