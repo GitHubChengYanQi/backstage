@@ -73,6 +73,12 @@ public class ApiRepairController {
         return ResponseData.success(repair.getRepairId());
     }
 
+    @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
+    public ResponseData updateRepair(@RequestBody RepairParam repairParam) {
+        Repair update = this.repairService.update(repairParam);
+        return ResponseData.success(update);
+    }
+
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
     public List<Customer> list() {
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
@@ -93,6 +99,76 @@ public class ApiRepairController {
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         dispatchingQueryWrapper.in("name", name).in("state",0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
+        List<RepairResult> res = new ArrayList<>();
+        //公司id
+        List<Long> companyIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(list)) {
+            for (Dispatching data : list) {
+
+                Repair repair = this.repairService.getById(data.getRepairId());
+                RepairResult result = new RepairResult();
+                result.setRepairId(repair.getRepairId());
+                //查询报修获取公司id
+                QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+                repairQueryWrapper.in("repair_id", data.getRepairId());
+                List<Repair> repairs = repairService.list(repairQueryWrapper);
+                for (Repair repair1 : repairs) {
+                    companyIds.add(repair1.getCompanyId());
+                }
+                //查询公司
+                QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+                customerQueryWrapper.in("customer_id", companyIds);
+                List<Customer> customers = customerService.list(customerQueryWrapper);
+                for (Customer customer : customers) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    result.setCompany(customerResult);
+                    break;
+                }
+
+                result.setCompanyId(repair.getCompanyId());
+                result.setItemId(repair.getItemId());
+                result.setCustomerId(repair.getCustomerId());
+                result.setCustomerResult(result.getCustomerResult());
+                result.setServiceType(repair.getServiceType());
+                result.setExpectTime(repair.getExpectTime());
+                result.setProgress(repair.getProgress());
+                result.setMoney(repair.getMoney());
+                result.setQualityType(repair.getQualityType());
+                result.setContractType(repair.getContractType());
+                result.setNumber(repair.getNumber());
+                result.setProvince(repair.getProvince());
+                result.setCity(repair.getCity());
+                result.setArea(repair.getArea());
+                result.setAddress(repair.getAddress());
+                result.setPeople(repair.getPeople());
+                result.setPosition(repair.getPosition());
+                result.setTelephone(repair.getTelephone());
+                result.setComment(repair.getComment());
+                result.setDispatchingResult(data);
+                for (User user : users) {
+                    if (user.getUserId().equals(data.getName())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        result.setUserResult(userResult);
+                        break;
+                    }
+                }
+                res.add(result);
+
+            }
+        }
+
+        this.repairService.format(res);
+
+        return ResponseData.success(res);
+    }
+
+    @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
+    public ResponseData getRepairAll() {
+        //查询工程师
+        List<User> users = userService.list();
+        List<Dispatching> list = this.dispatchingService.list();
         List<RepairResult> res = new ArrayList<>();
         //公司id
         List<Long> companyIds = new ArrayList<>();
