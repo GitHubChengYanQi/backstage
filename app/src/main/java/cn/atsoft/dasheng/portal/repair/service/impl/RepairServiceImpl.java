@@ -63,12 +63,26 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @BussinessLog
     @Override
     public Repair add(RepairParam param) {
+        if (param.getArea() == null) {
+            throw new ServiceException(500, "请选择地区");
+        }else {
+            QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
+            AreaQueryWrapper.in("parentid", param.getArea());
+            List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
+            if (list.size() > 0) {
+                throw new ServiceException(500, "请选择到区或县");
+            }
+
+        }
         QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
         commonAreaQueryWrapper.in("id", param.getArea());
         List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
         for (CommonArea commonArea : commonAreas) {
             param.setArea(commonArea.getRegionCode());
+
         }
+
+
 
 
         Repair entity = getEntity(param);
@@ -85,7 +99,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @BussinessLog
     @Override
     public Repair update(RepairParam param) {
-
 
 
         QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
@@ -247,35 +260,33 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     AreaQueryWrapper.in("parentid", commonArea.getId());
                     List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
 
-//                    if (list.size() > 0) {
-//                        throw new ServiceException(500, "请输入到区或县");
-//                    } else {
-                        CommonAreaResult commonAreaResult = new CommonAreaResult();
-                        ToolUtil.copyProperties(commonArea, commonAreaResult);
-                        result.setArea(commonAreaResult.getTitle());
 
-                        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-                        commonAreaQueryWrapper.in("id", commonAreaResult.getParentid());
-                        List<CommonArea> cityList = commonAreaService.list(commonAreaQueryWrapper);
+                    CommonAreaResult commonAreaResult = new CommonAreaResult();
+                    ToolUtil.copyProperties(commonArea, commonAreaResult);
+                    result.setArea(commonAreaResult.getTitle());
 
-                        for (CommonArea area : cityList) {
-                            CommonAreaResult city = new CommonAreaResult();
-                            ToolUtil.copyProperties(area, city);
-                            result.setCity(city.getTitle());
+                    QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
+                    commonAreaQueryWrapper.in("id", commonAreaResult.getParentid());
+                    List<CommonArea> cityList = commonAreaService.list(commonAreaQueryWrapper);
 
-                            QueryWrapper<CommonArea> commonAreaQueryWrapper1 = new QueryWrapper<>();
-                            commonAreaQueryWrapper1.in("id", city.getParentid());
-                            List<CommonArea> provinceList = commonAreaService.list(commonAreaQueryWrapper1);
+                    for (CommonArea area : cityList) {
+                        CommonAreaResult city = new CommonAreaResult();
+                        ToolUtil.copyProperties(area, city);
+                        result.setCity(city.getTitle());
 
-                            for (CommonArea commonArea1 : provinceList) {
-                                CommonAreaResult province = new CommonAreaResult();
-                                ToolUtil.copyProperties(commonArea1, province);
-                                result.setProvince(province.getTitle());
-                                record.setRegionResult(result);
-                            }
+                        QueryWrapper<CommonArea> commonAreaQueryWrapper1 = new QueryWrapper<>();
+                        commonAreaQueryWrapper1.in("id", city.getParentid());
+                        List<CommonArea> provinceList = commonAreaService.list(commonAreaQueryWrapper1);
+
+                        for (CommonArea commonArea1 : provinceList) {
+                            CommonAreaResult province = new CommonAreaResult();
+                            ToolUtil.copyProperties(commonArea1, province);
+                            result.setProvince(province.getTitle());
+                            record.setRegionResult(result);
                         }
-                        break;
-//                    }
+                    }
+                    break;
+
                 }
 
 
@@ -288,7 +299,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     public void getWxMap(RepairParam param) {
 
     }
-
 
 
     private Serializable getKey(RepairParam param) {

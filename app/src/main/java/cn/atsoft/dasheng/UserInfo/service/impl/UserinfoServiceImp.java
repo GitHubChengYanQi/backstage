@@ -90,7 +90,7 @@ public class UserinfoServiceImp implements UserInfoService {
      * @return
      */
     @Override
-    public UserResult backUser(String randStr) {
+    public String backUser(String randStr) {
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
 
         String userId = wx.substring(8, wx.length());
@@ -101,7 +101,8 @@ public class UserinfoServiceImp implements UserInfoService {
         for (User user : users) {
             UserResult userResult = new UserResult();
             ToolUtil.copyProperties(user, userResult);
-            return userResult;
+
+            return userResult.getName();
         }
 
         System.err.println(userId);
