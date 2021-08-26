@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.UserInfo.service.impl;
 
+import cn.atsoft.dasheng.UserInfo.model.BackUser;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -90,7 +92,7 @@ public class UserinfoServiceImp implements UserInfoService {
      * @return
      */
     @Override
-    public String backUser(String randStr) {
+    public BackUser backUser(String randStr) {
         String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
 
         String userId = wx.substring(8, wx.length());
@@ -98,22 +100,30 @@ public class UserinfoServiceImp implements UserInfoService {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", ids);
         List<User> users = userService.list(userQueryWrapper);
+        BackUser backUser = new BackUser();
         for (User user : users) {
             UserResult userResult = new UserResult();
             ToolUtil.copyProperties(user, userResult);
+            backUser.setName(userResult.getName());
+            backUser.setBln(true);
 
-            return userResult.getName();
         }
-
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+        wxuserInfoQueryWrapper.in("user_id", ids);
+        List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        if (infoList.size() > 0) {
+            backUser.setBln(false);
+//            throw new ServiceException(500, "账户已绑定");
+        }
         System.err.println(userId);
 
-        return null;
+        return backUser;
     }
 
     /**
      * 绑定
      *
-     * @param userid
+     * @param
      */
     @Override
     public void binding(String randStr) {
@@ -129,8 +139,9 @@ public class UserinfoServiceImp implements UserInfoService {
             wxuserInfoParam.setUuid(UserUtils.getUserAccount());
             wxuserInfoService.add(wxuserInfoParam);
         } else {
-            throw new ServiceException(500, "请传入正确数据");
+            throw new ServiceException(500, "请确认登陆");
         }
+
 
     }
 

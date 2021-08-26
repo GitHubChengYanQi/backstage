@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.UserInfo.service;
 
+import cn.atsoft.dasheng.UserInfo.model.BackUser;
 import cn.atsoft.dasheng.UserInfo.model.GetUser;
 
 
@@ -7,7 +8,7 @@ public interface UserInfoService {
 
     byte[] getuser(GetUser user);
 
-    String backUser(String randStr);
+    BackUser backUser(String randStr);
 
     void binding(String randStr);
 }
