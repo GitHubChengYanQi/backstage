@@ -96,7 +96,7 @@ freed-template:
 wx:
   # 小程序相关配置
   miniapp:
-    appid: wx8f5e5bc74c513993
+    appid: wxec126d7b5337447a
     secret: 761055370ec074c2604a1497ec77c86d
     aesKey: 3333
     token: 11111

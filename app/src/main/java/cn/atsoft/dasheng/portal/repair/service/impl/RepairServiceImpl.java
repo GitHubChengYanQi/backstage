@@ -264,7 +264,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 }
             }
             for (CommonArea commonArea : commonAreas) {
-                Long recordArea = Long.valueOf(record.getArea());
+                Long recordArea = record.getArea() == null ? null : Long.valueOf(record.getArea());
                 RegionResult result = new RegionResult();
                 Long id = Long.valueOf(commonArea.getId());
                 if (id == recordArea) {

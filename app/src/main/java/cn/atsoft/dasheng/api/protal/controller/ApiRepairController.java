@@ -48,7 +48,7 @@ public class ApiRepairController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @RequestMapping(value = "/RepairistAll", method = RequestMethod.POST)
     @ApiOperation("列表")
     public List<RepairResult> listAll(@RequestBody(required = false) RepairParam repairParam) {
         if (ToolUtil.isEmpty(repairParam)) {
