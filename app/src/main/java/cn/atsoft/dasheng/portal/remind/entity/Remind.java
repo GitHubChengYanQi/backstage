@@ -29,7 +29,7 @@ public class Remind implements Serializable {
      * 提醒类型
      */
     @TableField("type")
-    private String type;
+    private Long type;
 
     /**
      * 提醒人
@@ -46,11 +46,11 @@ public class Remind implements Serializable {
         this.remindId = remindId;
     }
 
-    public String getType() {
+    public Long getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Long type) {
         this.type = type;
     }
 
