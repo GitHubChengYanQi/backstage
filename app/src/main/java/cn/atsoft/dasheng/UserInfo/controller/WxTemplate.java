@@ -4,10 +4,19 @@ package cn.atsoft.dasheng.UserInfo.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
+import com.github.xiaoymin.swaggerbootstrapui.util.CommonUtils;
 import lombok.Data;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.WxMpTemplateMsgService;
+import me.chanjar.weixin.mp.api.impl.BaseWxMpServiceImpl;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import me.chanjar.weixin.mp.config.WxMpConfigStorage;
+import me.chanjar.weixin.mp.enums.WxMpApiUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -16,9 +25,11 @@ import java.util.List;
 public class WxTemplate {
     @Autowired
     private WxMaService wxMaService;
+    @Autowired
+    private WxMpService wxMpService;
 
 
-    public void send( String openid, List<WxMaSubscribeMessage.MsgData> data) {
+    public void send(String openid, List<WxMaSubscribeMessage.MsgData> data) {
         WxMaSubscribeService wxMaSubscribeService = wxMaService.getSubscribeService();
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
         wxMaSubscribeMessage.setToUser(openid);
@@ -27,9 +38,27 @@ public class WxTemplate {
         wxMaSubscribeMessage.setLang("zh_CN");
 
 
-
         try {
             wxMaSubscribeService.sendSubscribeMsg(wxMaSubscribeMessage);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void template(String user, List<WxMpTemplateData> data) {
+
+        WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
+        WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
+        wxMpTemplateMessage.setTemplateId("32B3xgUL-IgcTfpiYlcoVNaIR_TVweOdjB0Zftu38jM");
+        wxMpTemplateMessage.setUrl("https://api.weixin.qq.com/cgi-bin/template/del_private_template?access_token=ACCESS_TOKEN");
+        wxMpTemplateMessage.setData(data);
+        wxMpTemplateMessage.setToUser(user);
+        WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
+        miniProgram.setAppid("wxec126d7b5337447a");
+
+
+        try {
+            templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }

@@ -36,7 +36,7 @@ public class RemindResult implements Serializable {
      * 提醒类型
      */
     @ApiModelProperty("提醒类型")
-    private String type;
+    private Long type;
 
     /**
      * 提醒人

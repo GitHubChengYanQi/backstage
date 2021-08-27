@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.config.WxMpConfigStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
-        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
+//        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
+        List<WxMpTemplateData> data = new ArrayList<>();
         List<Repair> repairs = repairService.list(repairQueryWrapper);
         //查询报修 获取报修数据
         if (repairs.size() == 0) {
@@ -119,22 +121,27 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             String reateTime = String.valueOf(repair.getCreateTime());
             DateTime parse = DateUtil.parse(reateTime);
             String time = String.valueOf(parse);
-            data.add(new WxMaSubscribeMessage.MsgData("time2", time));
-            data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
-            data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
+            data.add(new WxMpTemplateData("time2", time));
+            data.add(new WxMpTemplateData("thing4", repair.getServiceType()));
+            data.add(new WxMpTemplateData("thing5", repair.getComment()));
 
-//            //查询保修单位
-//            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-//            customerQueryWrapper.in("customer_id", repair.getCustomerId());
-//            List<Customer> customers = customerService.list(customerQueryWrapper);
-//            if (customers.size()==0){
-//                throw new ServiceException(500,"没有此公司");
-//            }
-//            for (Customer customer : customers) {
-//                if (customer.getCustomerId().equals(repair.getCustomerId())) {
+//            data.add(new WxMaSubscribeMessage.MsgData("time2", time));
+//            data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
+//            data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
+
+            //查询报修单位
+            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+            customerQueryWrapper.in("customer_id", repair.getCustomerId());
+            List<Customer> customers = customerService.list(customerQueryWrapper);
+            if (customers.size() == 0) {
+                throw new ServiceException(500, "没有此公司");
+            }
+            for (Customer customer : customers) {
+                if (customer.getCustomerId().equals(repair.getCustomerId())) {
+                    data.add(new WxMpTemplateData("customer1", customer.getCustomerName()));
 //                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
-//                }
-//            }
+                }
+            }
 
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
@@ -142,7 +149,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                 throw new ServiceException(500, "没有此负责人");
             }
             for (User user : users) {
-                data.add(new WxMaSubscribeMessage.MsgData("name1", user.getName()));
+                data.add(new WxMpTemplateData("name1", user.getName()));
+//                data.add(new WxMaSubscribeMessage.MsgData("name1", user.getName()));
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", user.getUserId()));
 
@@ -153,7 +161,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                     for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfoList) {
                         String openid = ucOpenUserInfo.getUuid();
                         if (openid != null) {
-                            wxTemplate.send(openid, data);
+//                            wxTemplate.send(openid, data);
+                            wxTemplate.template(openid, data);
                         }
 
                     }

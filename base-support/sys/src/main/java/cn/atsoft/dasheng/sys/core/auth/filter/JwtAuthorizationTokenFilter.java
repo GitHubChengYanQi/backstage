@@ -46,17 +46,17 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 
-        response.setHeader("Access-Control-Allow-Origin",request.getHeader("Origin"));
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE, PATCH");
+//        response.setHeader("Access-Control-Allow-Origin",request.getHeader("Origin"));
+//        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE, PATCH");
 //        // Access-Control-Max-Age 用于 CORS 相关配置的缓存
 //        //response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization,Origin,X-Requested-With, Content-Type, Accept");
+//        response.setHeader("Access-Control-Allow-Headers", "Authorization,Origin,X-Requested-With, Content-Type, Accept");
 //        //若要返回cookie、携带seesion等信息则将此项设置我true
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        if (HttpMethod.OPTIONS.toString().equals(request.getMethod())) {
-            response.setStatus(HttpStatus.NO_CONTENT.value());
-            return;
-        }
+//        response.setHeader("Access-Control-Allow-Credentials", "true");
+//        if (HttpMethod.OPTIONS.toString().equals(request.getMethod())) {
+//            response.setStatus(HttpStatus.NO_CONTENT.value());
+//            return;
+//        }
 
         // 1.静态资源直接过滤，不走此过滤器
         for (String reg : NoneAuthedResources.FRONTEND_RESOURCES) {

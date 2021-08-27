@@ -22,13 +22,17 @@ import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getJwtSecretExpireSec;
@@ -54,9 +58,47 @@ public class UcMemberAuth {
     private WxMaService wxMaService;
 
     @Autowired
+    private WxMpService wxMpService;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     final private String redisPreKey = "user-center-";
+
+
+    /**
+     * 构建Url
+     *
+     * @return String 授权地址
+     */
+    public String buildAuthorizationUrl() {
+        HttpServletRequest request = HttpContext.getRequest();
+        return wxMpService.getOAuth2Service().buildAuthorizationUrl(request.getHeader("Origin"), "", "");
+    }
+
+    public String mpLogin(String code) {
+
+        try {
+            WxOAuth2AccessToken wxOAuth2AccessToken = wxMpService.getOAuth2Service().getAccessToken(code);
+            WxOAuth2UserInfo wxOAuth2UserInfo = wxMpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
+
+            UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
+            ucOpenUserInfo.setUuid(wxOAuth2UserInfo.getOpenid());
+            ucOpenUserInfo.setSource("wxMp");
+
+            ucOpenUserInfo.setUsername(wxOAuth2UserInfo.getNickname());
+            ucOpenUserInfo.setNickname(wxOAuth2UserInfo.getNickname());
+            ucOpenUserInfo.setAvatar(wxOAuth2UserInfo.getHeadImgUrl());
+            ucOpenUserInfo.setGender(wxOAuth2UserInfo.getSex());
+            String raw = JSON.toJSONString(wxOAuth2UserInfo);// .toString();
+            ucOpenUserInfo.setRawUserInfo(raw);
+            ucOpenUserInfo.setLocation(wxOAuth2UserInfo.getCountry() + "-" + wxOAuth2UserInfo.getProvince() + "-" + wxOAuth2UserInfo.getCity());
+            return login(ucOpenUserInfo);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 根据手机验证码登录
@@ -291,7 +333,7 @@ public class UcMemberAuth {
         }
 
 //        JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
-        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(),memberId, account, "xxxx");
+        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
 //        payLoad.setType(userInfo.getSource());
         payLoad.setMobile(mobile);
         String token = JwtTokenUtil.generateToken(payLoad);
@@ -310,7 +352,7 @@ public class UcMemberAuth {
         Long id = UserUtils.getUserId();
         String mobile = UserUtils.getMobile();
 
-        UcJwtPayLoad payLoad = new UcJwtPayLoad(type,id, account, "xxxx");
+        UcJwtPayLoad payLoad = new UcJwtPayLoad(type, id, account, "xxxx");
 //        payLoad.setType(type);
         payLoad.setMobile(mobile);
         String token = JwtTokenUtil.generateToken(payLoad);
