@@ -109,9 +109,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Override
     public Repair update(RepairParam param) {
 
-        if (param.getArea() == null) {
-            throw new ServiceException(500, "请选择地区");
-        } else {
+//        if (param.getArea() == null) {
+//            throw new ServiceException(500, "请选择地区");
+//        } else {
             QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
             AreaQueryWrapper.in("parentid", param.getArea());
             List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
@@ -119,7 +119,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 throw new ServiceException(500, "请选择到区或县");
             }
 
-        }
+
 
 //        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
 //        commonAreaQueryWrapper.in("id", param.getArea());

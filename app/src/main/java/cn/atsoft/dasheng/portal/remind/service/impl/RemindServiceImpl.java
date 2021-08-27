@@ -15,6 +15,9 @@ import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import  cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
+import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
+import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -44,18 +47,22 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RemindUserService remindUserService;
+
     @Override
     public void add(RemindParam param){
-
+        Remind entity = getEntity(param);
+        this.save(entity);
         List<Long> users = param.getUsers();
-        List<Remind> list = new ArrayList<>();
+        List<RemindUser> list = new ArrayList<>();
         for (Long user : users) {
-            Remind result = new Remind();
-            result.setType(param.getType());
-            result.setUserId(user);
-            list.add(result);
+            RemindUser remind = new RemindUser();
+            remind.setRemindId(entity.getRemindId());
+            remind.setUserId(user);
+            list.add(remind);
         }
-        this.saveBatch(list);
+        remindUserService.saveBatch(list);
     }
 
     @Override
@@ -65,6 +72,25 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Override
     public void update(RemindParam param){
+        QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("remind_id",param.getRemindId());
+        List<RemindUser> list =  remindUserService.list(queryWrapper);
+        List<Long> ids = new ArrayList<>();
+        for (RemindUser remindUser : list) {
+            ids.add(remindUser.getRemindUserId());
+        }
+        remindUserService.removeByIds(ids);
+
+        List<Long> users = param.getUsers();
+        List<RemindUser> remindUsers = new ArrayList<>();
+        for (Long user : users) {
+            RemindUser remind = new RemindUser();
+            remind.setRemindId(param.getRemindId());
+            remind.setUserId(user);
+            remindUsers.add(remind);
+        }
+        remindUserService.saveBatch(remindUsers);
+
         Remind oldEntity = getOldEntity(param);
         Remind newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -88,12 +114,12 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
 
         for (RemindResult record : page.getRecords()) {
-            QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
-            remindQueryWrapper.in("type",record.getType());
-             List<Remind> list = this.list(remindQueryWrapper);
+            QueryWrapper<RemindUser> remindQueryWrapper = new QueryWrapper<>();
+            remindQueryWrapper.in("remind_id",record.getRemindId());
+            List<RemindUser> list = remindUserService.list(remindQueryWrapper);
             List<Long> longs = new ArrayList<>();
-            for (Remind remind : list) {
-                longs.add(remind.getUserId());
+            for (RemindUser remindUser : list) {
+                longs.add(remindUser.getUserId());
             }
             QueryWrapper<User> differenceQueryWrapper = new QueryWrapper<>();
             differenceQueryWrapper.in("user_id", longs);

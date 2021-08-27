@@ -24,6 +24,7 @@
         <module>generator</module>
         <module>dbctn</module>
         <module>oauth2</module>
+        <module>form</module>
     </modules>
 
 </project>
