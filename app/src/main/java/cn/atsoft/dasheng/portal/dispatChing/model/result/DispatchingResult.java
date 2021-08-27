@@ -1,8 +1,6 @@
-package cn.atsoft.dasheng.portal.dispatching.model.result;
+package cn.atsoft.dasheng.portal.dispatChing.model.result;
 
-import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;

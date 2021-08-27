@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.dispatching.service.impl;
+package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
@@ -6,11 +6,11 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatching.mapper.DispatchingMapper;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
-import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.mapper.DispatchingMapper;
+import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
+import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.UserInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -22,16 +22,13 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
-import me.chanjar.weixin.mp.config.WxMpConfigStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

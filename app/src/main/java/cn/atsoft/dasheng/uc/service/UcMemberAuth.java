@@ -71,9 +71,9 @@ public class UcMemberAuth {
      *
      * @return String 授权地址
      */
-    public String buildAuthorizationUrl() {
+    public String buildAuthorizationUrl(String url) {
         HttpServletRequest request = HttpContext.getRequest();
-        return wxMpService.getOAuth2Service().buildAuthorizationUrl(request.getHeader("referer"), "snsapi_userinfo", "");
+        return wxMpService.getOAuth2Service().buildAuthorizationUrl(url, "snsapi_userinfo", "");
     }
 
     public String mpLogin(String code) {
@@ -238,7 +238,7 @@ public class UcMemberAuth {
         if (ToolUtil.isEmpty(ucOpenUserInfo)) {
             UcOpenUserInfoParam ucOpenUserInfoParam = new UcOpenUserInfoParam();
             ToolUtil.copyProperties(userInfo, ucOpenUserInfoParam);
-            ucOpenUserInfo.setPrimaryKey(primaryKey);
+            ucOpenUserInfoParam.setPrimaryKey(primaryKey);
             return ucOpenUserInfoService.add(ucOpenUserInfoParam);
         } else {
             UcOpenUserInfoParam ucOpenUserInfoParam = new UcOpenUserInfoParam();

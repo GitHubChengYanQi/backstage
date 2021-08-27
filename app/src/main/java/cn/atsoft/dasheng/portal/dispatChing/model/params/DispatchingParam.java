@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.dispatching.model.params;
+package cn.atsoft.dasheng.portal.dispatChing.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -8,6 +8,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
     /**
      * 姓名
      */
+    @NotNull
     @ApiModelProperty("姓名")
     private Long name;
 

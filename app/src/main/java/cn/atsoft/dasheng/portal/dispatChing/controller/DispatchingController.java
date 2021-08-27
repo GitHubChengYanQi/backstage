@@ -1,18 +1,20 @@
-package cn.atsoft.dasheng.portal.dispatching.controller;
+package cn.atsoft.dasheng.portal.dispatChing.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
-import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
+import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -107,10 +109,15 @@ public class DispatchingController extends BaseController {
 
     @RequestMapping(value = "/addwx", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addwx(@RequestBody DispatchingParam dispatchingParam) {
+    public ResponseData addwx(@RequestBody @Valid DispatchingParam dispatchingParam, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseData.success(bindingResult.getAllErrors().get(0).getDefaultMessage());
+
+        }
         String addwx = this.dispatchingService.addwx(dispatchingParam);
         return ResponseData.success(addwx);
     }
+
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData listAll(@RequestBody DispatchingParam dispatchingParam) {

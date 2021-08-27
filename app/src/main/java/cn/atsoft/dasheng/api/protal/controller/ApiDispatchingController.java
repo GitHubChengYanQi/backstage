@@ -1,9 +1,8 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
-import io.swagger.annotations.ApiOperation;
+import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
+import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

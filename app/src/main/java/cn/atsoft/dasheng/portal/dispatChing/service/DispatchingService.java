@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.portal.dispatching.service;
+package cn.atsoft.dasheng.portal.dispatChing.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
+import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

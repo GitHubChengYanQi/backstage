@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.portal.dispatching.mapper;
+package cn.atsoft.dasheng.portal.dispatChing.mapper;
 
-import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
-import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
+import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
