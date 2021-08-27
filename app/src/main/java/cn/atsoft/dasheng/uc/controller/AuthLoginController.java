@@ -25,13 +25,11 @@ import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.request.AuthWeChatOpenRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +63,8 @@ public class AuthLoginController extends BaseController {
      */
     @RequestMapping("/oauth/{source}")
     @ApiOperation(value = "OAuth2.0发起授权接口", httpMethod = "GET")
-    public ResponseData renderAuth(@PathVariable("source") String source) throws IOException {
+    public ResponseData renderAuth(@PathVariable("source") String source) {
+
         switch (source){
             case "wxMp":
                 Map<String,Object> result = new HashMap<String,Object>(){
@@ -157,6 +156,12 @@ public class AuthLoginController extends BaseController {
 //        String token = ucMemberAuth.login(ucOpenUserInfo);
 //    }
 
+    @RequestMapping("/mp/loginNyCode")
+    @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
+    public ResponseData<String> mpLoginByCode(@RequestParam("code") String code){
+        String token = ucMemberAuth.mpLogin(code);
+        return ResponseData.success(token);
+    }
     /**
      * @return
      */
