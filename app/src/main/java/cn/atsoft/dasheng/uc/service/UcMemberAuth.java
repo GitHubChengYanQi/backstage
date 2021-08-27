@@ -23,12 +23,14 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getJwtSecretExpireSec;
@@ -54,10 +56,18 @@ public class UcMemberAuth {
     private WxMaService wxMaService;
 
     @Autowired
+    private WxMpService wxMpService;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     final private String redisPreKey = "user-center-";
 
+
+    public String buildAuthorizationUrl(){
+        HttpServletRequest request = HttpContext.getRequest();
+        return wxMpService.getOAuth2Service().buildAuthorizationUrl(request.getHeader("Origin"),"","");
+    }
     /**
      * 根据手机验证码登录
      *
