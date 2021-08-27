@@ -162,7 +162,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                         String openid = ucOpenUserInfo.getUuid();
                         if (openid != null) {
 //                            wxTemplate.send(openid, data);
-                            wxTemplate.template(openid, data);
+                            String template = wxTemplate.template(openid, data);
+                            return template;
                         }
 
                     }
@@ -174,7 +175,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         Dispatching entity = getEntity(param);
         this.save(entity);
 
-        return "订阅成功";
+        return "订阅失败";
 
 
     }

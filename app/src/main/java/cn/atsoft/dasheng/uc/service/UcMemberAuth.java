@@ -73,7 +73,7 @@ public class UcMemberAuth {
      */
     public String buildAuthorizationUrl() {
         HttpServletRequest request = HttpContext.getRequest();
-        return wxMpService.getOAuth2Service().buildAuthorizationUrl(request.getHeader("Origin"), "", "");
+        return wxMpService.getOAuth2Service().buildAuthorizationUrl(request.getHeader("referer"), "", "");
     }
 
     public String mpLogin(String code) {

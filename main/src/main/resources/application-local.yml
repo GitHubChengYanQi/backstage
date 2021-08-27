@@ -103,8 +103,8 @@ wx:
     msg-data-format: JSON
 
   mp:
-    appId: wxec126d7b5337447a
-    secret: 63d936d430de5bc1783408a50ed05376
+    appId: wx6b94599d68b93b0f
+    secret: 623b049c5bad1bba929b055bdd4862f0
     token: 11111
     aesKey: 3333
 
