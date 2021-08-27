@@ -56,10 +56,14 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
         QueryWrapper<Remind> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("type", type);
         List<Remind> list = this.list(queryWrapper);
-        if (list.size()>0){
+
+        if (list.size() > 0) {
+            QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+            remindUserQueryWrapper.in("remind_id", list.get(0).getRemindId());
+            List<RemindUser> remindUsers1 = remindUserService.list(remindUserQueryWrapper);
             List<Long> ids = new ArrayList<>();
-            for (Remind remind : list) {
-                ids.add(remind.getRemindId());
+            for (RemindUser remindUser : remindUsers1) {
+                ids.add(remindUser.getRemindUserId());
             }
             remindUserService.removeByIds(ids);
 
