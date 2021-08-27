@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.dispatChing.controller;
 
+import cn.atsoft.dasheng.UserInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -113,6 +115,7 @@ public class DispatchingController extends BaseController {
         if (bindingResult.hasErrors()) {
             return ResponseData.success(bindingResult.getFieldError().getDefaultMessage());
         }
+
         String addwx = this.dispatchingService.addwx(dispatchingParam);
         return ResponseData.success(addwx);
     }

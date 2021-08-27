@@ -56,7 +56,7 @@ public class WxTemplate {
         wxMpTemplateMessage.setToUser(openid);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid("wxec126d7b5337447a");
-
+        wxMpTemplateMessage.setMiniProgram(miniProgram);
 
         try {
             String s = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
