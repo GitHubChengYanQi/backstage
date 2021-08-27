@@ -57,6 +57,7 @@ public class UserinfoServiceImp implements UserInfoService {
 //        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
 
         WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
+        System.err.println(randStr);
         String scene = "?key=" + randStr;
         try {
             if (user.getUserId() != null && user.getPage() != null) {

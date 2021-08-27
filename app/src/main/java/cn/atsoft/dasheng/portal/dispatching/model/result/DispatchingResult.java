@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.portal.dispatching.model.result;
 
+import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,7 +27,7 @@ public class DispatchingResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private UserResult userResult;
-
+    private String userName;
     /**
      * 派工id
      */
