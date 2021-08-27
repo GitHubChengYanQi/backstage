@@ -28,7 +28,7 @@
             parameterType="cn.atsoft.dasheng.portal.banner.model.params.BannerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_banner where 1 = 1
+        from daoxin_portal_banner where difference in(1,2)]
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
@@ -38,7 +38,7 @@
             parameterType="cn.atsoft.dasheng.portal.banner.model.params.BannerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_banner where 1 = 1
+        from daoxin_portal_banner where difference in(1,2)
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
@@ -48,7 +48,7 @@
             parameterType="cn.atsoft.dasheng.portal.banner.model.params.BannerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_banner where display = 1
+        from daoxin_portal_banner where display = 1 and difference in(1,2)
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
@@ -62,7 +62,7 @@
             parameterType="cn.atsoft.dasheng.portal.banner.model.params.BannerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_banner where 1 = 1
+        from daoxin_portal_banner where difference in(1,2)
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
