@@ -177,7 +177,7 @@ public class RepairResult implements Serializable {
      * 电话
      */
     @ApiModelProperty("电话")
-    private Integer telephone;
+    private Long telephone;
 
     /**
      * 合同类型

@@ -81,6 +81,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair entity = getEntity(repairParam);
+        this.repairService.save(entity);
 //        Repair repair = this.repairService.add(repairParam);
         List<Banner> banner = repairParam.getItemImgUrlList();
         for (Banner data : banner) {

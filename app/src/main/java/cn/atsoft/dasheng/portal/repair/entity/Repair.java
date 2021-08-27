@@ -192,7 +192,7 @@ public class Repair implements Serializable {
      * 电话
      */
     @TableField("telephone")
-    private Integer telephone;
+    private Long telephone;
 
     public String getProvince() {
         return province;
@@ -242,11 +242,11 @@ public class Repair implements Serializable {
         this.position = position;
     }
 
-    public Integer getTelephone() {
+    public Long getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(Integer telephone) {
+    public void setTelephone(Long telephone) {
         this.telephone = telephone;
     }
 
