@@ -36,6 +36,7 @@ public class RepairResult implements Serializable {
     private CustomerResult customerResult;
     private List<BannerResult> bannerResult;
     private Dispatching dispatchingResult;
+    private List<DispatchingResult> dispatchingResults;
     private UserResult userResult;
     private List<RegionResult> regionResult;
     private CustomerResult company;

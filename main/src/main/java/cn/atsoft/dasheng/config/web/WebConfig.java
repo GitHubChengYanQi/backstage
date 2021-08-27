@@ -15,6 +15,7 @@
  */
 package cn.atsoft.dasheng.config.web;
 
+import cn.atsoft.dasheng.core.util.HttpContext;
 import cn.atsoft.dasheng.sys.core.exception.page.GunsErrorView;
 import cn.atsoft.dasheng.sys.core.listener.ConfigListener;
 import cn.atsoft.dasheng.core.xss.XssFilter;
@@ -33,11 +34,14 @@ import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -49,7 +53,18 @@ import java.util.Properties;
  * @date 2016年11月12日 下午5:03:32
  */
 @Configuration
+@Order(2)
 public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+//        HttpServletRequest request = HttpContext.getRequest();
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*")
+                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "DELETE", "PUT", "PATCH")
+                .maxAge(3600 * 24);
+    }
 
     /**
      * 配置string解析器放在json解析器前边
