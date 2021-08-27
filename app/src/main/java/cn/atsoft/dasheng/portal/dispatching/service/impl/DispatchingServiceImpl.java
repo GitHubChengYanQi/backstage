@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatching.mapper.DispatchingMapper;
 import cn.atsoft.dasheng.portal.dispatching.model.params.DispatchingParam;
@@ -99,6 +100,12 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 发送订阅消息
+     *
+     * @param param
+     * @return
+     */
     @Override
     public String addwx(DispatchingParam param) {
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
@@ -106,6 +113,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
         List<Repair> repairs = repairService.list(repairQueryWrapper);
         //查询报修 获取报修数据
+        if (repairs.size() == 0) {
+            throw new ServiceException(500, "请确认报修信息");
+        }
         for (Repair repair : repairs) {
             String reateTime = String.valueOf(repair.getCreateTime());
             DateTime parse = DateUtil.parse(reateTime);
@@ -114,20 +124,26 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
             data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
 
-            //查询保修单位
-            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-            customerQueryWrapper.in("customer_id", repair.getCustomerId());
-            List<Customer> customers = customerService.list(customerQueryWrapper);
-            for (Customer customer : customers) {
-                if (customer.getCustomerId().equals(repair.getCustomerId())) {
-                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
-                }
-            }
+//            //查询保修单位
+//            QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+//            customerQueryWrapper.in("customer_id", repair.getCustomerId());
+//            List<Customer> customers = customerService.list(customerQueryWrapper);
+//            if (customers.size()==0){
+//                throw new ServiceException(500,"没有此公司");
+//            }
+//            for (Customer customer : customers) {
+//                if (customer.getCustomerId().equals(repair.getCustomerId())) {
+//                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
+//                }
+//            }
 
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-
             List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
+            if (users.size() == 0) {
+                throw new ServiceException(500, "没有此负责人");
+            }
             for (User user : users) {
+                data.add(new WxMaSubscribeMessage.MsgData("name1", user.getName()));
                 QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
                 List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", user.getUserId()));
 
@@ -196,6 +212,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         Dispatching entity = new Dispatching();
         ToolUtil.copyProperties(param, entity);
         return entity;
+
     }
 
 }
