@@ -153,7 +153,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 
                 for (WxuserInfo wxuserInfo : infoList) {
                     QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-                    List<UcOpenUserInfo> ucOpenUserInfoList = userInfoService.list(ucOpenUserInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId()));
+                    List<UcOpenUserInfo> ucOpenUserInfoList = userInfoService.list(ucOpenUserInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId()).in("source", "wxMp"));
 
                     for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfoList) {
                         String openid = ucOpenUserInfo.getUuid();

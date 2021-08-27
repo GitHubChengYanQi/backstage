@@ -39,7 +39,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
     /**
      * 姓名
      */
-    @NotNull
+    @NotNull(message = "请选择工程师")
     @ApiModelProperty("姓名")
     private Long name;
 
@@ -89,6 +89,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
     /**
      * 报修id
      */
+    @NotNull(message = "请确认报修信息")
     @ApiModelProperty("报修id")
     private Long repairId;
 

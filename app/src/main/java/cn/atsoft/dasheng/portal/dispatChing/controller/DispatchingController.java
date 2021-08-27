@@ -111,8 +111,7 @@ public class DispatchingController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addwx(@RequestBody @Valid DispatchingParam dispatchingParam, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseData.success(bindingResult.getAllErrors().get(0).getDefaultMessage());
-
+            return ResponseData.success(bindingResult.getFieldError().getDefaultMessage());
         }
         String addwx = this.dispatchingService.addwx(dispatchingParam);
         return ResponseData.success(addwx);
