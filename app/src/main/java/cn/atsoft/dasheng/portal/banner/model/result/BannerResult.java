@@ -1,6 +1,6 @@
 package  cn.atsoft.dasheng.portal.banner.model.result;
 
-import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
+import cn.atsoft.dasheng.portal.bannerDifference.model.result.BannerDifferenceResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;

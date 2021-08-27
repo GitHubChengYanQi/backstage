@@ -2,11 +2,10 @@ package cn.atsoft.dasheng.portal.repair.model.result;
 
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
-import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
-import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
-import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 

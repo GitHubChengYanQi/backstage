@@ -1,8 +1,8 @@
 package cn.atsoft.dasheng.api.shop.controller;
 
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.shop.classdifferencedetail.entity.ClassDifferenceDetails;
-import cn.atsoft.dasheng.shop.classdifferencedetail.service.ClassDifferenceDetailsService;
+import cn.atsoft.dasheng.shop.classDifferenceDetail.entity.ClassDifferenceDetails;
+import cn.atsoft.dasheng.shop.classDifferenceDetail.service.ClassDifferenceDetailsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
