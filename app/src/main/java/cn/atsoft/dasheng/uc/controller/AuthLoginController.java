@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/login")
@@ -59,13 +61,22 @@ public class AuthLoginController extends BaseController {
      * OAuth2.0
      *
      * @param source
-     * @param response
      * @throws IOException
      */
     @RequestMapping("/oauth/{source}")
     @ApiOperation(value = "OAuth2.0发起授权接口", httpMethod = "GET")
-    public void renderAuth(@PathVariable("source") String source, HttpServletResponse response) throws IOException {
-
+    public ResponseData renderAuth(@PathVariable("source") String source) throws IOException {
+        switch (source){
+            case "wxMp":
+                Map<String,Object> result = new HashMap<String,Object>(){
+                    {
+                        put("url",ucMemberAuth.buildAuthorizationUrl());
+                    }
+                };
+                return ResponseData.success(result);
+            default:
+                throw new ServiceException(500, "暂不支持:" + source);
+        }
     }
 
     /**
