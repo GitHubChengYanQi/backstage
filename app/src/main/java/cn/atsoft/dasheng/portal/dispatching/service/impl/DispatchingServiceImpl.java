@@ -108,6 +108,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
      */
     @Override
     public String addwx(DispatchingParam param) {
+
+
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
         List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
@@ -163,7 +165,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         }
 
         //调用订阅消息方法
-
+        Dispatching entity = getEntity(param);
+        this.save(entity);
 
         return "订阅成功";
 
