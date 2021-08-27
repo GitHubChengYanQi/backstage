@@ -123,6 +123,7 @@ public class ApiRepairController {
         dispatchingQueryWrapper.in("name", name).in("state",0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
+        List<DispatchingResult> dispatchingResult = new ArrayList<>();
         //公司id
         List<Long> companyIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(list)) {

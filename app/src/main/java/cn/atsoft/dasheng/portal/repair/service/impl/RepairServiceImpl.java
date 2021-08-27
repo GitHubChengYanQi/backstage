@@ -16,6 +16,9 @@ import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.portal.dispatching.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatching.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.dispatching.service.DispatchingService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -26,6 +29,10 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.repairdynamic.model.params.RepairDynamicParam;
 import cn.atsoft.dasheng.portal.repairdynamic.service.RepairDynamicService;
+import cn.atsoft.dasheng.sys.modular.rest.entity.RestUserPos;
+import cn.atsoft.dasheng.sys.modular.rest.service.RestUserPosService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -33,6 +40,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +66,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private BannerService bannerService;
     @Autowired
     private CommonAreaService commonAreaService;
-
+    @Autowired
+    private DispatchingService dispatchingService;
+    @Resource
+    private UserService userService;
 
     @BussinessLog
     @Override
@@ -239,9 +250,16 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         if (ToolUtil.isNotEmpty(bIds)) {
             bannerQueryWrapper.in("difference", bIds);
         }
-
         List<Banner> banners = bannerService.list(bannerQueryWrapper);
+
+        QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(bIds)) {
+            dispatchingQueryWrapper.in("repair_id", bIds);
+        }
+        List<Dispatching> dispatchings = dispatchingService.list(dispatchingQueryWrapper);
+
         List<BannerResult> bannerList = new ArrayList<>();
+        List<DispatchingResult> dispatchingList = new ArrayList<>();
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
                 if (byId.getDeliveryDetailsId().equals(record.getItemId())) {
@@ -263,7 +281,17 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     bannerList.add(bannerResult);
                 }
             }
+            for (Dispatching dispatching : dispatchings) {
+                if (dispatching.getRepairId().equals(record.getRepairId())) {
+                    User userInfo =  userService.getById(dispatching.getName());
+                    DispatchingResult dispatchingResult = new DispatchingResult();
+                    ToolUtil.copyProperties(dispatching, dispatchingResult);
+                    dispatchingResult.setUserName(userInfo.getName());
+                    dispatchingList.add(dispatchingResult);
+                }
+            }
             record.setBannerResult(bannerList);
+            record.setDispatchingResults(dispatchingList);
             List<RegionResult> regionList = new ArrayList<>();
             for (CommonArea commonArea : commonAreas) {
                 Long recordArea = record.getArea() == null ? null : Long.valueOf(record.getArea());
