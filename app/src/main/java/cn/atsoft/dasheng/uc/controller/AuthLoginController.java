@@ -156,7 +156,7 @@ public class AuthLoginController extends BaseController {
 //        String token = ucMemberAuth.login(ucOpenUserInfo);
 //    }
 
-    @RequestMapping("/mp/loginNyCode")
+    @RequestMapping("/mp/loginByCode")
     @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
     public ResponseData<String> mpLoginByCode(@RequestParam("code") String code){
         String token = ucMemberAuth.mpLogin(code);
