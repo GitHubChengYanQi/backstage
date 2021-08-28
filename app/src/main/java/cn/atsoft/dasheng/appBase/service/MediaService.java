@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -18,6 +19,7 @@ import java.util.List;
  */
 public interface MediaService extends IService<Media> {
 
+    Map<String,Object> getOssToken(Media media);
     /**
      * 新增
      *
