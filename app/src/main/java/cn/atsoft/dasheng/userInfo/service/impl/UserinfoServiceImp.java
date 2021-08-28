@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.userInfo.service.impl;
 
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.atsoft.dasheng.userInfo.model.BackUser;
 import cn.atsoft.dasheng.userInfo.model.GetKey;
 import cn.atsoft.dasheng.userInfo.model.GetUser;
@@ -134,14 +135,14 @@ public class UserinfoServiceImp implements UserInfoService {
         String userId = wx.substring(8, wx.length());
 //        String[] split = wx.split("bind-wx-");
         Long ids = Long.valueOf(userId);
-        Long getMemberId = Long.valueOf(getKey.getGetUserId());
+//        Long getMemberId = Long.valueOf(getKey.getGetUserId());
 
-        if (ids != null && getMemberId != null) {
+        if (ids != null && UserUtils.getUserId()!= null) {
 //                Long memberId = UserUtils.getUserId();
             WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
             wxuserInfoParam.setUserId(ids);
-            wxuserInfoParam.setMemberId(getMemberId);
-//                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
+            wxuserInfoParam.setMemberId(UserUtils.getUserId());
+            wxuserInfoParam.setUuid(UserUtils.getUserAccount());
             wxuserInfoService.add(wxuserInfoParam);
         } else {
             throw new ServiceException(500, "请确认登陆");
