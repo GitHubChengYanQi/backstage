@@ -100,7 +100,7 @@ public class ApiRepairController {
             bannerParam.setImgUrl(data.getImgUrl());
             this.bannerService.add(bannerParam);
         }
-        return ResponseData.success(entity .getRepairId());
+        return ResponseData.success(entity.getRepairId());
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
@@ -131,7 +131,7 @@ public class ApiRepairController {
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", name).in("state",0).orderByAsc("create_time");
+        dispatchingQueryWrapper.in("name", name).in("state", 0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         List<DispatchingResult> dispatchingResult = new ArrayList<>();
@@ -252,7 +252,6 @@ public class ApiRepairController {
 
         return ResponseData.success(res);
     }
-
 
 
     @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
@@ -378,6 +377,7 @@ public class ApiRepairController {
 
         return ResponseData.success(res);
     }
+
     private Repair getEntity(RepairParam param) {
         Repair entity = new Repair();
         ToolUtil.copyProperties(param, entity);
@@ -410,7 +410,7 @@ public class ApiRepairController {
     public ResponseData getToken(@Param("type") String type) {
 
         Long userId = UserUtils.getUserId();
-        Media media = mediaService.getMediaId(type,userId);
+        Media media = mediaService.getMediaId(type, userId);
 
         return ResponseData.success(mediaService.getOssToken(media));
     }

@@ -29,7 +29,12 @@ public class WxTemplate {
     @Autowired
     private WxMpService wxMpService;
 
-
+    /**
+     * 订阅消息
+     *
+     * @param openid
+     * @param data
+     */
     public void send(String openid, List<WxMaSubscribeMessage.MsgData> data) {
         WxMaSubscribeService wxMaSubscribeService = wxMaService.getSubscribeService();
         WxMaSubscribeMessage wxMaSubscribeMessage = new WxMaSubscribeMessage();
@@ -37,8 +42,6 @@ public class WxTemplate {
         wxMaSubscribeMessage.setTemplateId("32B3xgUL-IgcTfpiYlcoVNaIR_TVweOdjB0Zftu38jM");
         wxMaSubscribeMessage.setData(data);
         wxMaSubscribeMessage.setLang("zh_CN");
-
-
         try {
             wxMaSubscribeService.sendSubscribeMsg(wxMaSubscribeMessage);
         } catch (WxErrorException e) {
@@ -46,24 +49,31 @@ public class WxTemplate {
         }
     }
 
-    public String template(String openid, List<WxMpTemplateData> data) {
+    /**
+     * 模板消息
+     *
+     * @param openid
+     * @param data
+     * @return
+     */
 
+    public String template(String openid, List<WxMpTemplateData> data) {
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
         wxMpTemplateMessage.setTemplateId("623b049c5bad1bba929b055bdd4862f0");
-
         wxMpTemplateMessage.setData(data);
         wxMpTemplateMessage.setToUser(openid);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid("wx6b94599d68b93b0f");
         wxMpTemplateMessage.setMiniProgram(miniProgram);
-
         try {
-            String s = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
-            return s;
+            String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+            return sendTemplateMsg;
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
         return null;
     }
+
+
 }

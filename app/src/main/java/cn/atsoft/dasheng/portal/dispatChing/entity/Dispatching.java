@@ -27,6 +27,8 @@ public class Dispatching implements Serializable {
      */
       @TableId(value = "dispatching_id", type = IdType.ID_WORKER)
     private Long dispatchingId;
+      @TableField("subscription_type")
+      private  String subscriptionType;
 
     /**
      * 姓名
@@ -242,6 +244,14 @@ public class Dispatching implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public String getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(String subscriptionType) {
+        this.subscriptionType = subscriptionType;
     }
 
     @Override
