@@ -50,12 +50,12 @@ public class WxTemplate {
 
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
-        wxMpTemplateMessage.setTemplateId("32B3xgUL-IgcTfpiYlcoVNaIR_TVweOdjB0Zftu38jM");
+        wxMpTemplateMessage.setTemplateId("623b049c5bad1bba929b055bdd4862f0");
 
         wxMpTemplateMessage.setData(data);
         wxMpTemplateMessage.setToUser(openid);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
-        miniProgram.setAppid("wxec126d7b5337447a");
+        miniProgram.setAppid("wx6b94599d68b93b0f");
         wxMpTemplateMessage.setMiniProgram(miniProgram);
 
         try {

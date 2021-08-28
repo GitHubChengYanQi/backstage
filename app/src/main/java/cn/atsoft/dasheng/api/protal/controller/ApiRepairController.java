@@ -28,6 +28,7 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.common.utils.BinaryUtil;
@@ -408,66 +409,9 @@ public class ApiRepairController {
     @ApiOperation("获取阿里云OSS临时上传token")
     public ResponseData getToken(@Param("type") String type) {
 
+        Long userId = UserUtils.getUserId();
+        Media media = mediaService.getMediaId(type,userId);
 
-        Media media = mediaService.getMediaId(type);
-
-
-        AliConfiguration aliConfiguration = aliyunService.getConfiguration();
-        OSS ossClient = aliyunService.getOssClient();
-        try {
-            String accessId = aliConfiguration.getAccessId();
-            String host = "https://" + aliConfiguration.getOss().getBucket() + "." + aliConfiguration.getOss().getEndpoint();
-            String dir = media.getPath();
-            String callBackUrl = aliConfiguration.getOss().getCallbackUrl() + "/media/callback";
-
-
-            long expireTime = 30;
-            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
-            Date expiration = new Date(expireEndTime);
-            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
-            PolicyConditions policyConds = new PolicyConditions();
-            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
-//            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
-            policyConds.addConditionItem(MatchMode.Exact, PolicyConditions.COND_KEY, dir);
-//            policyConds.addConditionItem(MatchMode.Exact, PolicyConditions.COND_KEY, dir);
-//            policyConds.addConditionItem(MatchMode.Range, PolicyConditions.COND_KEY, dir);
-//            policyConds.addConditionItem(PolicyConditions.COND_KEY, dir);
-
-            String postPolicy = ossClient.generatePostPolicy(expiration, policyConds);
-            byte[] binaryData = postPolicy.getBytes("utf-8");
-            String encodedPolicy = BinaryUtil.toBase64String(binaryData);
-            String postSignature = ossClient.calculatePostSignature(postPolicy);
-
-            Map<String, String> respMap = new LinkedHashMap<String, String>();
-            respMap.put("OSSAccessKeyId", accessId);
-            respMap.put("policy", encodedPolicy);
-            respMap.put("Signature", postSignature);
-            respMap.put("key", dir);
-            respMap.put("host", host);
-            respMap.put("expire", String.valueOf(expireEndTime / 1000));
-//             respMap.put("expire", formatISO8601Date(expiration));
-
-            JSONObject jasonCallback = new JSONObject();
-            jasonCallback.put("callbackUrl", callBackUrl);
-            jasonCallback.put("callbackBody",
-                    "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
-            jasonCallback.put("callbackBodyType", "application/json");
-            String base64CallbackBody = BinaryUtil.toBase64String(jasonCallback.toString().getBytes());
-//            respMap.put("callback", base64CallbackBody);
-            respMap.put("mediaId", media.getMediaId().toString());
-
-//            JSONObject ja1 = JSONObject.fromObject(respMap);
-            // System.out.println(ja1.toString());
-//            response.setHeader("Access-Control-Allow-Origin", "*");
-//            response.setHeader("Access-Control-Allow-Methods", "GET, POST");
-//            response(request, response, ja1.toString());
-            return ResponseData.success(respMap);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } finally {
-            ossClient.shutdown();
-        }
-
-        return ResponseData.error("错误");
+        return ResponseData.success(mediaService.getOssToken(media));
     }
 }
