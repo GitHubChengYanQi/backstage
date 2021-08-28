@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.UserInfo.model;
+package cn.atsoft.dasheng.userInfo.model;
 
 import lombok.Data;
 

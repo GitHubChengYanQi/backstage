@@ -1,20 +1,15 @@
-package cn.atsoft.dasheng.UserInfo.controller;
+package cn.atsoft.dasheng.userInfo.controller;
 
 
-import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import com.github.xiaoymin.swaggerbootstrapui.util.CommonUtils;
 import lombok.Data;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.WxMpTemplateMsgService;
-import me.chanjar.weixin.mp.api.impl.BaseWxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
-import me.chanjar.weixin.mp.config.WxMpConfigStorage;
-import me.chanjar.weixin.mp.enums.WxMpApiUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,19 +1,14 @@
-package cn.atsoft.dasheng.UserInfo.controller;
+package cn.atsoft.dasheng.userInfo.controller;
 
-import cn.atsoft.dasheng.UserInfo.model.BackUser;
-import cn.atsoft.dasheng.UserInfo.model.GetKey;
-import cn.atsoft.dasheng.UserInfo.model.GetUser;
-import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
+import cn.atsoft.dasheng.userInfo.model.BackUser;
+import cn.atsoft.dasheng.userInfo.model.GetKey;
+import cn.atsoft.dasheng.userInfo.model.GetUser;
+import cn.atsoft.dasheng.userInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import io.swagger.annotations.Api;
-import org.apache.commons.codec.binary.Base64;
-import org.postgresql.core.Encoding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.File;
 
 
 @RestController

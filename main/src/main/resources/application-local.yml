@@ -126,9 +126,14 @@ pushPayInfo: false
 aliyun:
   accessId: LTAIypr5IqQ1tvpM
   accessKey: TKG3sSvijsG4sq0q1b7Y9aQVYtMk7b
+
+  Sms:
+    SignName: 工业服务网
+    templateCode: SMS_137360127
   oss:
     endpoint: oss-cn-beijing.aliyuncs.com
     bucket: gpkx
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
+
 

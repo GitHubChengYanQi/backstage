@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.UserInfo.service.impl;
+package cn.atsoft.dasheng.userInfo.service.impl;
 
-import cn.atsoft.dasheng.UserInfo.model.BackUser;
-import cn.atsoft.dasheng.UserInfo.model.GetKey;
-import cn.atsoft.dasheng.UserInfo.model.GetUser;
-import cn.atsoft.dasheng.UserInfo.service.UserInfoService;
+import cn.atsoft.dasheng.userInfo.model.BackUser;
+import cn.atsoft.dasheng.userInfo.model.GetKey;
+import cn.atsoft.dasheng.userInfo.model.GetUser;
+import cn.atsoft.dasheng.userInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
@@ -12,7 +12,6 @@ import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;

@@ -18,7 +18,7 @@ public class SmsPhoneParam implements Serializable, BaseValidatingParam {
     private String phone;
 
     @ApiModelProperty("图形验证码")
-    @ApiParam(required = true)
-    @NotBlank(message = "验证码为必填")
+//    @ApiParam(required = true)
+//    @NotBlank(message = "验证码为必填")
     private String kaptcha;
 }

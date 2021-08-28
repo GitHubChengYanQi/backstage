@@ -13,7 +13,7 @@ import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.UserInfo.controller.WxTemplate;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;

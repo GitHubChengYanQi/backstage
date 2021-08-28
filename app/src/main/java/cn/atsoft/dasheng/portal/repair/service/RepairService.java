@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.portal.repair.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
-import cn.atsoft.dasheng.UserInfo.model.GetUser;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 

@@ -12,12 +12,14 @@ public class SpringSessionConfiguration {
     public CookieSerializer cookieSerializer() {
         DefaultCookieSerializer serializer = new DefaultCookieSerializer();
         serializer.setCookieName("JSESSIONID");
-        serializer.setDomainName("localhost");
+        serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//        serializer.setDomainName("*");
         serializer.setCookiePath("/");
         serializer.setCookieMaxAge(3600);
-        serializer.setSameSite("none");  // 设置SameSite属性
+        serializer.setSameSite("None");  // 设置SameSite属性
+        serializer.setUseSecureCookie(true);
         serializer.setUseHttpOnlyCookie(true);
-        serializer.setUseSecureCookie(false);
+//        serializer.setUseSecureCookie(false);
         return serializer;
     }
 }

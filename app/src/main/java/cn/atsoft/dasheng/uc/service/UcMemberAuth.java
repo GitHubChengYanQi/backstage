@@ -113,7 +113,7 @@ public class UcMemberAuth {
 
         String dateTime = ToolUtil.getCreateTimeBefore(600);
         queryWrapper.gt("create_time", dateTime);
-        queryWrapper.eq("phone", phone);
+//        queryWrapper.eq("phone", phone);
         int count = loginLogService.count(queryWrapper);
         if (count >= 10) {
             LogManager.me().executeLog(LogTaskFactory.loginLog(phone, "登录错误次数过多:" + code, getIp()));

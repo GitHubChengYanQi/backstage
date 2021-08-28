@@ -38,12 +38,12 @@ public class SmsController extends BaseController {
             throw new MissingServletRequestParameterException("手机必填", "SmsPhoneParam");
         }
 
-        String kaptcha = phoneParam.getKaptcha().trim();
-        String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
-        super.getSession().removeAttribute(Constants.KAPTCHA_SESSION_KEY);
-        if (ToolUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
-            throw new InvalidKaptchaException();
-        }
+//        String kaptcha = phoneParam.getKaptcha().trim();
+//        String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+//        super.getSession().removeAttribute(Constants.KAPTCHA_SESSION_KEY);
+//        if (ToolUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
+//            throw new InvalidKaptchaException();
+//        }
 
         String dateTime = ToolUtil.getCreateTimeBefore(60);
         QueryWrapper<UcSmsCode> queryWrapper = new QueryWrapper<>();
