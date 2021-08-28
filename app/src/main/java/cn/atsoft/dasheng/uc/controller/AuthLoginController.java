@@ -64,7 +64,6 @@ public class AuthLoginController extends BaseController {
     @RequestMapping("/oauth/{source}")
     @ApiOperation(value = "OAuth2.0发起授权接口", httpMethod = "GET")
     public ResponseData renderAuth(@PathVariable("source") String source,@RequestParam(value = "url",required = true) String url) {
-
         switch (source){
             case "wxMp":
                 Map<String,Object> result = new HashMap<String,Object>(){
