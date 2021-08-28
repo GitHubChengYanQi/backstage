@@ -45,7 +45,7 @@ dynamic_id
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_repair where 1 = 1
+        from daoxin_portal_repair where display = 1
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>
@@ -73,7 +73,7 @@ dynamic_id
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_repair where 1 = 1
+        from daoxin_portal_repair where display = 1
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>
@@ -98,7 +98,7 @@ dynamic_id
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_repair where 1 = 1
+        from daoxin_portal_repair where display = 1
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>
@@ -126,7 +126,7 @@ dynamic_id
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_repair where 1 = 1
+        from daoxin_portal_repair where display = 1
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>

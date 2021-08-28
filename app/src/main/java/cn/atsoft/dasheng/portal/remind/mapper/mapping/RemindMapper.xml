@@ -53,6 +53,9 @@
         <if test="paramCondition.userId != null">
             and user_id = #{paramCondition.userId}
         </if>
+        <if test="paramCondition.remindId != null">
+            and remind_id = #{paramCondition.remindId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"

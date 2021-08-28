@@ -1,14 +1,8 @@
 package cn.atsoft.dasheng.portal.remind.service.impl;
 
 
-import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.common_area.entity.CommonArea;
-import cn.atsoft.dasheng.portal.banner.entity.Banner;
-import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
-import cn.atsoft.dasheng.portal.bannerdifference.entity.BannerDifference;
-import cn.atsoft.dasheng.portal.bannerdifference.model.result.BannerDifferenceResult;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.mapper.RemindMapper;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
@@ -17,10 +11,7 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
-import cn.atsoft.dasheng.portal.repair.entity.Repair;
-import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -96,6 +87,14 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
     @Override
     public void delete(RemindParam param) {
         this.removeById(getKey(param));
+        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+        remindUserQueryWrapper.in("remind_id", param.getRemindId());
+        List<RemindUser> remindUsers1 = remindUserService.list(remindUserQueryWrapper);
+        List<Long> ids = new ArrayList<>();
+        for (RemindUser remindUser : remindUsers1) {
+            ids.add(remindUser.getRemindUserId());
+        }
+        remindUserService.removeByIds(ids);
     }
 
     @Override

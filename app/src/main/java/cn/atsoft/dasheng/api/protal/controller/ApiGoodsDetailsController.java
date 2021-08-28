@@ -1,20 +1,14 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
-import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.banner.entity.Banner;
-import cn.atsoft.dasheng.portal.goods.entity.Goods;
-import cn.atsoft.dasheng.portal.goods.service.GoodsService;
-import cn.atsoft.dasheng.portal.goodsdetails.entity.GoodsDetails;
-import cn.atsoft.dasheng.portal.goodsdetails.model.params.GoodsDetailsParam;
-import cn.atsoft.dasheng.portal.goodsdetails.model.result.GoodsDetailsResult;
-import cn.atsoft.dasheng.portal.goodsdetails.service.GoodsDetailsService;
-import cn.atsoft.dasheng.portal.goodsdetailsbanner.entity.GoodsDetailsBanner;
-import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.params.GoodsDetailsBannerParam;
-import cn.atsoft.dasheng.portal.goodsdetailsbanner.model.result.GoodsDetailsBannerResult;
-import cn.atsoft.dasheng.portal.goodsdetailsbanner.service.GoodsDetailsBannerService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.atsoft.dasheng.portal.goodsDetails.entity.GoodsDetails;
+import cn.atsoft.dasheng.portal.goodsDetails.model.params.GoodsDetailsParam;
+import cn.atsoft.dasheng.portal.goodsDetails.model.result.GoodsDetailsResult;
+import cn.atsoft.dasheng.portal.goodsDetails.service.GoodsDetailsService;
+import cn.atsoft.dasheng.portal.goodsDetailsBanner.entity.GoodsDetailsBanner;
+import cn.atsoft.dasheng.portal.goodsDetailsBanner.model.result.GoodsDetailsBannerResult;
+import cn.atsoft.dasheng.portal.goodsDetailsBanner.service.GoodsDetailsBannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

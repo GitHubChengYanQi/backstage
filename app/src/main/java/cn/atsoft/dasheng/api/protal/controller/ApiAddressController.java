@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
-import cn.atsoft.dasheng.common_area.model.params.CommonAreaParam;
-import cn.atsoft.dasheng.common_area.model.result.CommonAreaResult;
-import cn.atsoft.dasheng.common_area.service.CommonAreaService;
+import cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam;
+import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
+import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;

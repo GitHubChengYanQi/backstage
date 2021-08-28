@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.portal.navigation.model.result;
 
-import cn.atsoft.dasheng.portal.navigationdifference.model.result.NavigationDifferenceResult;
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.atsoft.dasheng.portal.navigationDifference.model.result.NavigationDifferenceResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;

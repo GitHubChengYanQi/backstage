@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.UserInfo.controller;
 
 
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
@@ -45,22 +46,24 @@ public class WxTemplate {
         }
     }
 
-    public void template(String user, List<WxMpTemplateData> data) {
+    public String template(String openid, List<WxMpTemplateData> data) {
 
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
         wxMpTemplateMessage.setTemplateId("32B3xgUL-IgcTfpiYlcoVNaIR_TVweOdjB0Zftu38jM");
-        wxMpTemplateMessage.setUrl("https://api.weixin.qq.com/cgi-bin/template/del_private_template?access_token=ACCESS_TOKEN");
+
         wxMpTemplateMessage.setData(data);
-        wxMpTemplateMessage.setToUser(user);
+        wxMpTemplateMessage.setToUser(openid);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid("wxec126d7b5337447a");
-
+        wxMpTemplateMessage.setMiniProgram(miniProgram);
 
         try {
-            templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+            String s = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+            return s;
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

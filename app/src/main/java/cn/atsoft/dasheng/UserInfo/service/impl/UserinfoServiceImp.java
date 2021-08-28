@@ -135,13 +135,13 @@ public class UserinfoServiceImp implements UserInfoService {
         String userId = wx.substring(8, wx.length());
 //        String[] split = wx.split("bind-wx-");
         Long ids = Long.valueOf(userId);
-        Long getUserId = Long.valueOf(getKey.getGetUserId());
+        Long getMemberId = Long.valueOf(getKey.getGetUserId());
 
-        if (ids != null && getUserId != null) {
+        if (ids != null && getMemberId != null) {
 //                Long memberId = UserUtils.getUserId();
             WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
             wxuserInfoParam.setUserId(ids);
-            wxuserInfoParam.setMemberId(getUserId);
+            wxuserInfoParam.setMemberId(getMemberId);
 //                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
             wxuserInfoService.add(wxuserInfoParam);
         } else {
