@@ -19,6 +19,8 @@ import java.util.List;
 public interface UcSmsCodeService extends IService<UcSmsCode> {
 
     String getCode(String phone);
+
+    Boolean sendCode(String phone,String Code);
     /**
      * 新增
      *

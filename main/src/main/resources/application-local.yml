@@ -131,3 +131,4 @@ aliyun:
     bucket: gpkx
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
+

@@ -3,6 +3,10 @@ package cn.atsoft.dasheng.api.protal.controller;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.appBase.config.AliConfiguration;
+import cn.atsoft.dasheng.appBase.config.AliyunService;
+import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
@@ -24,8 +28,15 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
+import com.alibaba.fastjson.JSONObject;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.MatchMode;
+import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,8 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -52,6 +62,10 @@ public class ApiRepairController {
     private UserService userService;
     @Autowired
     private CommonAreaService commonAreaService;
+    @Autowired
+    private AliyunService aliyunService;
+    @Autowired
+    private MediaService mediaService;
 
     @RequestMapping(value = "/RepairistAll", method = RequestMethod.POST)
     @ApiOperation("列表")
@@ -86,7 +100,7 @@ public class ApiRepairController {
             bannerParam.setImgUrl(data.getImgUrl());
             this.bannerService.add(bannerParam);
         }
-        return ResponseData.success(entity .getRepairId());
+        return ResponseData.success(entity.getRepairId());
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
@@ -117,7 +131,7 @@ public class ApiRepairController {
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", name).in("state",0).orderByAsc("create_time");
+        dispatchingQueryWrapper.in("name", name).in("state", 0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         List<DispatchingResult> dispatchingResult = new ArrayList<>();
@@ -238,7 +252,6 @@ public class ApiRepairController {
 
         return ResponseData.success(res);
     }
-
 
 
     @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
@@ -364,6 +377,7 @@ public class ApiRepairController {
 
         return ResponseData.success(res);
     }
+
     private Repair getEntity(RepairParam param) {
         Repair entity = new Repair();
         ToolUtil.copyProperties(param, entity);
@@ -391,4 +405,13 @@ public class ApiRepairController {
         return results.get(0);
     }
 
+    @RequestMapping(value = "/getToken", method = RequestMethod.GET)
+    @ApiOperation("获取阿里云OSS临时上传token")
+    public ResponseData getToken(@Param("type") String type) {
+
+        Long userId = UserUtils.getUserId();
+        Media media = mediaService.getMediaId(type, userId);
+
+        return ResponseData.success(mediaService.getOssToken(media));
+    }
 }

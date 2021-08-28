@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -99,12 +100,11 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
      * 发送订阅消息
      *
      * @param param
-     * @return
      */
     @Override
-    public String addwx(DispatchingParam param) {
-
-
+    @BussinessLog
+    public void addwx(DispatchingParam param) {
+        this.add(param);
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
 //        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
@@ -121,11 +121,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             data.add(new WxMpTemplateData("time2", time));
             data.add(new WxMpTemplateData("thing4", repair.getServiceType()));
             data.add(new WxMpTemplateData("thing5", repair.getComment()));
-
 //            data.add(new WxMaSubscribeMessage.MsgData("time2", time));
 //            data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
 //            data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
-
             //查询报修单位
             QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
             customerQueryWrapper.in("customer_id", repair.getCustomerId());
@@ -139,7 +137,6 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 //                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
                 }
             }
-
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
             if (users.size() == 0) {
@@ -159,20 +156,16 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                         String openid = ucOpenUserInfo.getUuid();
                         if (openid != null) {
 //                            wxTemplate.send(openid, data);
-                            String template = wxTemplate.template(openid, data);
-                            return template;
+                            wxTemplate.template(openid, data);
+                        } else {
+                            throw new ServiceException(500, "模板消息发送失败");
                         }
 
                     }
                 }
             }
+
         }
-
-        //调用订阅消息方法
-        Dispatching entity = getEntity(param);
-        this.save(entity);
-
-        return "订阅失败";
 
 
     }

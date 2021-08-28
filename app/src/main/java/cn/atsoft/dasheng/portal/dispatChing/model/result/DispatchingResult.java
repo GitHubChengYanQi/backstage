@@ -26,6 +26,7 @@ public class DispatchingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private UserResult userResult;
     private String userName;
+    private  String subscriptionType;
     /**
      * 派工id
      */

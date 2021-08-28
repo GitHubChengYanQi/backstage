@@ -13,6 +13,8 @@ public class AliConfiguration {
 
     private OSS oss;
 
+    private Sms sms;
+
     @Data
     public static class OSS{
 
@@ -23,5 +25,13 @@ public class AliConfiguration {
         private String callbackUrl;
 
         private String path;
+    }
+
+    @Data
+    public static class Sms{
+
+        private String signName;
+
+        private String templateCode;
     }
 }
