@@ -87,6 +87,14 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
     @Override
     public void delete(RemindParam param) {
         this.removeById(getKey(param));
+        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+        remindUserQueryWrapper.in("remind_id", param.getRemindId());
+        List<RemindUser> remindUsers1 = remindUserService.list(remindUserQueryWrapper);
+        List<Long> ids = new ArrayList<>();
+        for (RemindUser remindUser : remindUsers1) {
+            ids.add(remindUser.getRemindUserId());
+        }
+        remindUserService.removeByIds(ids);
     }
 
     @Override
