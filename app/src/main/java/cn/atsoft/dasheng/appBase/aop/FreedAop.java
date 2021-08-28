@@ -8,11 +8,14 @@ import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
 import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
+import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.portal.repairDynamic.model.params.RepairDynamicParam;
 import cn.atsoft.dasheng.portal.repairDynamic.service.RepairDynamicService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -320,6 +323,9 @@ public class FreedAop {
 
             repairDynamicService.add(repairDynamicParam);
         }
+
+
+
         return result;
     }
 }

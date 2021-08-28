@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -102,9 +103,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
      * @return
      */
     @Override
+    @BussinessLog
     public String addwx(DispatchingParam param) {
-
-
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
 //        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
@@ -168,10 +168,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             }
         }
 
-        //调用订阅消息方法
-        Dispatching entity = getEntity(param);
-        this.save(entity);
 
+        this.add(param);
         return "订阅失败";
 
 

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.dispatChing.model.params;
 
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +28,7 @@ import java.util.List;
 public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private  String subscriptionType;
 
     private String page;
 
@@ -46,6 +48,10 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
     /**
      * 手机号
      */
+
+    @ApiParam(required = true)
+    @Pattern(regexp = "^1\\d{10}", message = "手机号码格式错误")
+    @NotBlank(message = "请填写手机号")
     @ApiModelProperty("手机号")
     private String phone;
 
