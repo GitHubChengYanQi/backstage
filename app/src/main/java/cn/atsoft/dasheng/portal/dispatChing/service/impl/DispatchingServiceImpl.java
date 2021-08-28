@@ -100,11 +100,10 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
      * 发送订阅消息
      *
      * @param param
-     * @return
      */
     @Override
     @BussinessLog
-    public String addwx(DispatchingParam param) {
+    public void addwx(DispatchingParam param) {
         this.add(param);
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
@@ -140,7 +139,6 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 //                    data.add(new WxMaSubscribeMessage.MsgData("name1", customer.getCustomerName()));
                 }
             }
-
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             List<User> users = userService.list(userQueryWrapper.in("user_id", param.getName()));
             if (users.size() == 0) {
@@ -160,20 +158,16 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                         String openid = ucOpenUserInfo.getUuid();
                         if (openid != null) {
 //                            wxTemplate.send(openid, data);
-                            String template = wxTemplate.template(openid, data);
-
-                            return template;
-
+                            wxTemplate.template(openid, data);
+                        } else {
+                            throw new ServiceException(500, "订阅失败");
                         }
 
                     }
                 }
             }
+
         }
-
-
-
-        return "订阅失败";
 
 
     }
