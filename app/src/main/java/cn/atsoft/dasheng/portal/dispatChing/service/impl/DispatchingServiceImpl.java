@@ -121,11 +121,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             data.add(new WxMpTemplateData("time2", time));
             data.add(new WxMpTemplateData("thing4", repair.getServiceType()));
             data.add(new WxMpTemplateData("thing5", repair.getComment()));
-
 //            data.add(new WxMaSubscribeMessage.MsgData("time2", time));
 //            data.add(new WxMaSubscribeMessage.MsgData("thing4", repair.getServiceType()));
 //            data.add(new WxMaSubscribeMessage.MsgData("thing5", param.getNote()));
-
             //查询报修单位
             QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
             customerQueryWrapper.in("customer_id", repair.getCustomerId());
@@ -160,7 +158,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 //                            wxTemplate.send(openid, data);
                             wxTemplate.template(openid, data);
                         } else {
-                            throw new ServiceException(500, "订阅失败");
+                            throw new ServiceException(500, "模板消息发送失败");
                         }
 
                     }

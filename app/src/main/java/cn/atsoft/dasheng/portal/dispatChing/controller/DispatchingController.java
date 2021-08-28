@@ -116,8 +116,8 @@ public class DispatchingController extends BaseController {
             return ResponseData.success(bindingResult.getFieldError().getDefaultMessage());
         }
 
-        String addwx = this.dispatchingService.addwx(dispatchingParam);
-        return ResponseData.success(addwx);
+      this.dispatchingService.addwx(dispatchingParam);
+        return ResponseData.success();
     }
 
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
