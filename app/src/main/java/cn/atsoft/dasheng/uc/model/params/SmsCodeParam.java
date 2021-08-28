@@ -15,7 +15,7 @@ public class SmsCodeParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("手机号码")
     @ApiParam(required = true)
     @Pattern(regexp = "^1\\d{10}", message = "手机号码格式错误")
-    @NotBlank
+    @NotBlank(message = "请填写手机号")
     private String phone;
 
     @ApiModelProperty("短信验证码")

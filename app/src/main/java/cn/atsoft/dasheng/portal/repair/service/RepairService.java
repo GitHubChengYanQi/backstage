@@ -76,4 +76,5 @@ public interface RepairService extends IService<Repair> {
 
     void getWxMap (RepairParam param);
 
+
 }
