@@ -105,6 +105,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @Override
     @BussinessLog
     public String addwx(DispatchingParam param) {
+        this.add(param);
         QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
         repairQueryWrapper.in("repair_id", param.getRepairId());
 //        List<WxMaSubscribeMessage.MsgData> data = new ArrayList();
@@ -160,7 +161,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                         if (openid != null) {
 //                            wxTemplate.send(openid, data);
                             String template = wxTemplate.template(openid, data);
+
                             return template;
+
                         }
 
                     }
@@ -169,7 +172,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         }
 
 
-        this.add(param);
+
         return "订阅失败";
 
 
