@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.uc.controller;
 
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
 import cn.atsoft.dasheng.uc.config.ShanyanConfiguration;
@@ -10,11 +11,14 @@ import cn.atsoft.dasheng.uc.httpRequest.request.ShanyanRequest;
 import cn.atsoft.dasheng.uc.model.params.MiniAppLoginParam;
 import cn.atsoft.dasheng.uc.model.params.MiniAppUserProfileParam;
 import cn.atsoft.dasheng.uc.model.params.SmsCodeParam;
+import cn.atsoft.dasheng.uc.model.params.UcOpenUserInfoParam;
+import cn.atsoft.dasheng.uc.model.result.UcOpenUserInfoResult;
 import cn.atsoft.dasheng.uc.service.UcMemberAuth;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -47,6 +51,18 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
+    @Autowired
+    private UcOpenUserInfoService ucOpenUserInfoService;
+
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<UcOpenUserInfoResult> list(@RequestBody(required = false) UcOpenUserInfoParam ucOpenUserInfoParam) {
+        if (ToolUtil.isEmpty(ucOpenUserInfoParam)) {
+            ucOpenUserInfoParam = new UcOpenUserInfoParam();
+        }
+
+        return this.ucOpenUserInfoService.findPageBySpec(ucOpenUserInfoParam);
+    }
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -63,12 +79,12 @@ public class AuthLoginController extends BaseController {
      */
     @RequestMapping("/oauth/{source}")
     @ApiOperation(value = "OAuth2.0发起授权接口", httpMethod = "GET")
-    public ResponseData renderAuth(@PathVariable("source") String source,@RequestParam(value = "url",required = true) String url) {
-        switch (source){
+    public ResponseData renderAuth(@PathVariable("source") String source, @RequestParam(value = "url", required = true) String url) {
+        switch (source) {
             case "wxMp":
-                Map<String,Object> result = new HashMap<String,Object>(){
+                Map<String, Object> result = new HashMap<String, Object>() {
                     {
-                        put("url",ucMemberAuth.buildAuthorizationUrl(url));
+                        put("url", ucMemberAuth.buildAuthorizationUrl(url));
                     }
                 };
                 return ResponseData.success(result);
@@ -157,18 +173,19 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/mp/loginByCode")
     @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
-    public ResponseData<String> mpLoginByCode(@RequestParam("code") String code){
+    public ResponseData<String> mpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.mpLogin(code);
         return ResponseData.success(token);
     }
+
     /**
      * @return
      */
     @RequestMapping("/miniprogram/code2session")
     @ApiOperation(value = "小程序code2session", httpMethod = "POST")
     public ResponseData<String> wxMiniApp(@RequestBody @Valid MiniAppLoginParam miniAppLoginParam) throws WxErrorException {
-        if(ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getCode())){
-            throw new ServiceException(500,"参数错误");
+        if (ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getCode())) {
+            throw new ServiceException(500, "参数错误");
         }
         String token = ucMemberAuth.code2session(miniAppLoginParam);
 //        String token = ucMemberAuth.getUserProfile(miniAppLoginParam, sessionKey);
@@ -178,8 +195,8 @@ public class AuthLoginController extends BaseController {
     @RequestMapping("/miniprogram/loginByPhone")
     @ApiOperation(value = "小程序code2session", httpMethod = "POST")
     public ResponseData<String> loginByPhone(@RequestBody @Valid MiniAppUserProfileParam miniAppLoginParam) throws WxErrorException {
-        if(ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getIv(),miniAppLoginParam.getEncryptedData())){
-            throw new ServiceException(500,"参数错误");
+        if (ToolUtil.isOneEmpty(miniAppLoginParam, miniAppLoginParam.getIv(), miniAppLoginParam.getEncryptedData())) {
+            throw new ServiceException(500, "参数错误");
         }
         String token = ucMemberAuth.loginByPhone(miniAppLoginParam);
 //        String token = ucMemberAuth.getUserProfile(miniAppLoginParam, sessionKey);
@@ -188,9 +205,9 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/miniprogram/getUserProfile")
     @ApiOperation(value = "小程序提交用户加密信息及iv返回全新token", httpMethod = "POST")
-    public ResponseData<String> userInfo(@RequestBody MiniAppUserProfileParam miniAppUserProfileParam){
-        if(ToolUtil.isOneEmpty(miniAppUserProfileParam, miniAppUserProfileParam.getIv(),miniAppUserProfileParam.getEncryptedData())){
-            throw new ServiceException(500,"参数错误");
+    public ResponseData<String> userInfo(@RequestBody MiniAppUserProfileParam miniAppUserProfileParam) {
+        if (ToolUtil.isOneEmpty(miniAppUserProfileParam, miniAppUserProfileParam.getIv(), miniAppUserProfileParam.getEncryptedData())) {
+            throw new ServiceException(500, "参数错误");
         }
         String token = ucMemberAuth.getUserProfile(miniAppUserProfileParam);
         return ResponseData.success(token);
@@ -198,7 +215,7 @@ public class AuthLoginController extends BaseController {
 
     @RequestMapping("/refreshToken")
     @ApiOperation(value = "刷新token")
-    public ResponseData refreshToken(){
+    public ResponseData refreshToken() {
         return ResponseData.success(ucMemberAuth.refreshToken());
     }
 }
