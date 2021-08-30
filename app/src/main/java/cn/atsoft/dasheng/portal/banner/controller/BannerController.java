@@ -10,10 +10,13 @@ import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 
 
 /**
@@ -99,6 +102,19 @@ public class BannerController extends BaseController {
             bannerParam = new BannerParam();
         }
         return this.bannerService.findPageBySpec(bannerParam);
+    }
+    @RequestMapping(value = "/repairList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<Banner> repairList(@RequestBody(required = false) BannerParam bannerParam) {
+        if (bannerParam.getDifference()!=null){
+            QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+            bannerQueryWrapper.in("difference",bannerParam.getDifference());
+            List<Banner> list = bannerService.list(bannerQueryWrapper);
+            return list;
+        }else {
+            return null;
+        }
+
     }
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
