@@ -4,6 +4,10 @@ package cn.atsoft.dasheng.userInfo.controller;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
@@ -33,6 +37,10 @@ public class WxTemplate {
     private WxMpService wxMpService;
     @Autowired
     private RemindService remindService;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
 
 
     /**
@@ -62,13 +70,13 @@ public class WxTemplate {
      * @return
      */
 
-    public String template(List<Long> openid,int type) {
+    public String template(List<Long> openid, int type) {
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
 
         String templateType = null;
         QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
-         remindQueryWrapper.in("type",type);
-         List<Remind> reminds = remindService.list(remindQueryWrapper);
+        remindQueryWrapper.in("type", type);
+        List<Remind> reminds = remindService.list(remindQueryWrapper);
         for (Remind remind : reminds) {
             templateType = remind.getTemplateType();
         }
@@ -82,12 +90,29 @@ public class WxTemplate {
             wxMpTemplateData.setValue(dataList.getValue());
             data.add(wxMpTemplateData);
         }
-        for (Long aLong : openid) {
+
+
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+        wxuserInfoQueryWrapper.in("user_id", openid);
+        List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        List<Long> memberIds = new ArrayList<>();
+        for (WxuserInfo wxuserInfo : wxuserInfoList) {
+            memberIds.add(wxuserInfo.getMemberId());
+        }
+        QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+        ucOpenUserInfoQueryWrapper.in("member_id", memberIds);
+        List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
+        List<String> uuids = new ArrayList<>();
+        for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+            uuids.add(ucOpenUserInfo.getUuid());
+        }
+
+        for (String uuid : uuids) {
+
             WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
             wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
             wxMpTemplateMessage.setData(data);
-            String  toUser = String.valueOf(aLong);
-            wxMpTemplateMessage.setToUser(toUser);
+            wxMpTemplateMessage.setToUser(uuid);
             WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
             miniProgram.setAppid("wx6b94599d68b93b0f");
             wxMpTemplateMessage.setMiniProgram(miniProgram);
@@ -98,6 +123,8 @@ public class WxTemplate {
                 e.printStackTrace();
             }
         }
+
+
         return null;
     }
 
