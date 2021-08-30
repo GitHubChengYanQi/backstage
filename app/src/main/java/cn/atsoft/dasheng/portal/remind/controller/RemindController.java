@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.portal.remind.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
+import cn.atsoft.dasheng.portal.remind.model.params.JsonDataList;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
@@ -58,7 +59,13 @@ public class RemindController extends BaseController {
         this.remindService.update(remindParam);
         return ResponseData.success();
     }
+    @RequestMapping(value = "/addJson", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData addJson(@RequestBody JsonDataList JsonDataList) {
 
+
+        return ResponseData.success();
+    }
     /**
      * 删除接口
      *

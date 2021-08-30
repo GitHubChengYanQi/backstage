@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.portal.remind.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
+import cn.atsoft.dasheng.portal.remind.model.params.JsonDataList;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import com.baomidou.mybatisplus.extension.service.IService;

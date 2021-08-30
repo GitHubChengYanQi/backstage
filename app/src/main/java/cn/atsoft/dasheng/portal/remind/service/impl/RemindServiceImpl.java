@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.mapper.RemindMapper;
+import cn.atsoft.dasheng.portal.remind.model.params.JsonDataList;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
@@ -18,6 +19,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,9 +102,10 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Override
     public void update(RemindParam param) {
+        param.getJsonDataList();
 
 
-        param.setTemplateType(JSON.toJSONString(param.getDataList()));
+        param.setTemplateType(JSON.toJSONString(param.getJsonDataList() ));
 
 
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
@@ -183,5 +186,6 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }

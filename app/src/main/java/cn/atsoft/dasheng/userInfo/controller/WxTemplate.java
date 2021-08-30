@@ -66,7 +66,7 @@ public class WxTemplate {
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid("wx6b94599d68b93b0f");
         wxMpTemplateMessage.setMiniProgram(miniProgram);
-        WxMpTemplateIndustry wxMpTemplateIndustry = new WxMpTemplateIndustry();
+
 
 
         try {

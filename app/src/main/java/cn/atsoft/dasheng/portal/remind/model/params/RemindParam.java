@@ -26,7 +26,7 @@ public class RemindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private  String templateType;
+    private String templateType;
 
 
     /**
@@ -52,17 +52,12 @@ public class RemindParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
-    private List<DataList> dataList;
+    private JsonDataList jsonDataList;
+
 
     @Override
     public String checkParam() {
         return null;
     }
 
-    @Data
-    public static class DataList {
-        private String key;
-        private String value;
-        private  String templateId;
-    }
 }
