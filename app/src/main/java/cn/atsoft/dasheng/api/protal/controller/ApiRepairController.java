@@ -129,6 +129,7 @@ public class ApiRepairController {
             BannerParam bannerParam = new BannerParam();
             bannerParam.setDifference(entity.getRepairId());
             bannerParam.setImgUrl(data.getImgUrl());
+            bannerParam.setTitle(data.getTitle());
             this.bannerService.add(bannerParam);
         }
         return ResponseData.success(entity.getRepairId());
