@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class JsonDataList {
+public class WxTemplateData {
     private String templateId;
     private List<DataList> dataList;
 
