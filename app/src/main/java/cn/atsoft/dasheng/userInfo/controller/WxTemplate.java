@@ -5,8 +5,6 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
-import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
-import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
@@ -45,8 +43,6 @@ public class WxTemplate {
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private UcOpenUserInfoService userInfoService;
-    @Autowired
-    private RemindUserService remindUserService;
 
 
     /**
@@ -89,7 +85,7 @@ public class WxTemplate {
         List<Remind> reminds = remindService.list(remindQueryWrapper);
         List<Long> ids = new ArrayList<>();
         for (Remind remind : reminds) {
-            ids.add(remind.getRemindId());
+            ids.add(remind.getUserId());
             templateType = remind.getTemplateType();
         }
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
