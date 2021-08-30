@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -99,10 +100,18 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Override
     public void update(RemindParam param) {
+
+
+
+        param.setSubscriptionType(JSON.toJSONString(param.getDataList()));
+
+
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("remind_id", param.getRemindId());
         List<RemindUser> list = remindUserService.list(queryWrapper);
+
         List<Long> ids = new ArrayList<>();
+
         for (RemindUser remindUser : list) {
             ids.add(remindUser.getRemindUserId());
         }

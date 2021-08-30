@@ -9,6 +9,8 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.WxMpTemplateMsgService;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateIndustry;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateIndustryEnum;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,8 +66,12 @@ public class WxTemplate {
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid("wx6b94599d68b93b0f");
         wxMpTemplateMessage.setMiniProgram(miniProgram);
+        WxMpTemplateIndustry wxMpTemplateIndustry = new WxMpTemplateIndustry();
+
+
         try {
             String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+
             return sendTemplateMsg;
         } catch (WxErrorException e) {
             e.printStackTrace();
