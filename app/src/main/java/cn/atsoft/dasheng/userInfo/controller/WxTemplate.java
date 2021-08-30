@@ -88,6 +88,14 @@ public class WxTemplate {
             ids.add(remind.getUserId());
             templateType = remind.getTemplateType();
         }
+        QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("remind_id", ids);
+        List<RemindUser> remindUserList = remindUserService.list(queryWrapper);
+        List<Long> userIds = new ArrayList<>();
+        for (RemindUser remindUser : remindUserList) {
+            userIds.add(remindUser.getUserId());
+        }
+
         WxTemplateData parse = JSON.parseObject(templateType, WxTemplateData.class);
 
         List<WxMpTemplateData> data = new ArrayList<>();
@@ -101,14 +109,14 @@ public class WxTemplate {
 
         //模板消息发送人
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", ids);
+        wxuserInfoQueryWrapper.in("user_id", userIds);
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
             memberIds.add(wxuserInfo.getMemberId());
         }
         QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-        ucOpenUserInfoQueryWrapper.in("member_id", memberIds);
+        ucOpenUserInfoQueryWrapper.in("member_id", memberIds).in("source", "wxMp");
         List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
         List<String> uuids = new ArrayList<>();
         for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
@@ -120,9 +128,8 @@ public class WxTemplate {
             wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
             wxMpTemplateMessage.setData(data);
             wxMpTemplateMessage.setToUser(uuid);
-            WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
-            miniProgram.setAppid("wx6b94599d68b93b0f");
-            wxMpTemplateMessage.setMiniProgram(miniProgram);
+            wxMpTemplateMessage.setUrl(parse.getUrl());
+
             try {
                 String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
                 return sendTemplateMsg;
