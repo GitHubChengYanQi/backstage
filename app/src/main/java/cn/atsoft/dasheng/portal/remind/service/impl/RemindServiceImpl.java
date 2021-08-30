@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,9 +42,13 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Autowired
     private RemindUserService remindUserService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     @Override
     public void add(RemindParam param) {
+
+
         Long type = param.getType();
         QueryWrapper<Remind> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("type", type);
@@ -100,9 +105,10 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Override
     public void update(RemindParam param) {
+        param.getTemplate();
 
 
-        param.setTemplateType(JSON.toJSONString(param.getDataList()));
+        param.setTemplateType(JSON.toJSONString(param.getTemplate()));
 
 
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
@@ -183,5 +189,6 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }

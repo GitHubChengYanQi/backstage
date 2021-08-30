@@ -1,7 +1,5 @@
 package cn.atsoft.dasheng.portal.remind.model.params;
 
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -26,7 +24,7 @@ public class RemindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private  String templateType;
+    private String templateType;
 
 
     /**
@@ -52,17 +50,12 @@ public class RemindParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
-    private List<DataList> dataList;
+    private WxTemplateData template;
+
 
     @Override
     public String checkParam() {
         return null;
     }
 
-    @Data
-    public static class DataList {
-        private String key;
-        private String value;
-        private  String templateId;
-    }
 }

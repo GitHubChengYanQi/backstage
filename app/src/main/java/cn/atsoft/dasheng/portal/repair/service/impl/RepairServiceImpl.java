@@ -13,12 +13,14 @@ import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -82,17 +84,19 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
 
         }
-//        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-//        commonAreaQueryWrapper.in("id", param.getArea());
-//        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
-//        for (CommonArea commonArea : commonAreas) {
-//            param.setArea(commonArea.getRegionCode());
-//
-//        }
-
-
         Repair entity = getEntity(param);
         this.save(entity);
+
+        List<Banner> banner = param.getItemImgUrlList();
+        for (Banner data : banner) {
+            BannerParam bannerParam = new BannerParam();
+            bannerParam.setDifference(entity.getRepairId());
+            bannerParam.setImgUrl(data.getImgUrl());
+            bannerParam.setTitle(data.getTitle());
+            this.bannerService.add(bannerParam);
+        }
+
+
         return entity;
     }
 
@@ -109,13 +113,33 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 //        if (param.getArea() == null) {
 //            throw new ServiceException(500, "请选择地区");
 //        } else {
-            QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
-            AreaQueryWrapper.in("parentid", param.getArea());
-            List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
-            if (list.size() > 0) {
-                throw new ServiceException(500, "请选择到区或县");
-            }
+        QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
+        AreaQueryWrapper.in("parentid", param.getArea());
+        List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
+        if (list.size() > 0) {
+            throw new ServiceException(500, "请选择到区或县");
+        }
 
+
+        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("difference", param.getRepairId());
+        List<Banner> list1 = bannerService.list(bannerQueryWrapper);
+
+        List<Long> ids = new ArrayList<>();
+
+        for (Banner banner : list1) {
+            ids.add(banner.getBannerId());
+        }
+        bannerService.removeByIds(ids);
+
+        List<Banner> banner = param.getItemImgUrlList();
+        for (Banner data : banner) {
+            BannerParam bannerParam = new BannerParam();
+            bannerParam.setDifference(param.getRepairId());
+            bannerParam.setImgUrl(data.getImgUrl());
+            bannerParam.setTitle(data.getTitle());
+            this.bannerService.add(bannerParam);
+        }
 
 
 //        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
@@ -202,6 +226,8 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         List<RepairResult> results = new ArrayList<RepairResult>() {{
             add(repairResult);
         }};
+
+
         this.format(results);
         return results.get(0);
     }
@@ -280,7 +306,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
             for (Dispatching dispatching : dispatchings) {
                 if (dispatching.getRepairId().equals(record.getRepairId())) {
-                    User userInfo =  userService.getById(dispatching.getName());
+                    User userInfo = userService.getById(dispatching.getName());
                     DispatchingResult dispatchingResult = new DispatchingResult();
                     ToolUtil.copyProperties(dispatching, dispatchingResult);
                     dispatchingResult.setUserName(userInfo.getName());
