@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.mapper.RemindMapper;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
+import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -154,8 +155,10 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
         Page<RemindResult> pageContext = getPageContext();
         IPage<RemindResult> page = this.baseMapper.customPageList(pageContext, param);
 
-
         for (RemindResult record : page.getRecords()) {
+
+            WxTemplateData wxTemplateData = JSON.parseObject(record.getTemplateType(), WxTemplateData.class);
+            record.setWxTemplateData(wxTemplateData);
             QueryWrapper<RemindUser> remindQueryWrapper = new QueryWrapper<>();
             remindQueryWrapper.in("remind_id", record.getRemindId());
             List<RemindUser> list = remindUserService.list(remindQueryWrapper);

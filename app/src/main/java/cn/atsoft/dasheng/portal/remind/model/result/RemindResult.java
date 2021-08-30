@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.portal.remind.model.result;
 
+import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,7 +25,7 @@ public class RemindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+   private WxTemplateData wxTemplateData;
     private String templateType;
 
     /**
