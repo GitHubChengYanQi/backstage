@@ -8,11 +8,13 @@ import java.util.List;
 public class WxTemplateData {
     private String templateId;
     private List<DataList> dataList;
+    private String url;
 
     @Data
     public static class DataList {
         private String key;
         private String value;
+
 
     }
 }
