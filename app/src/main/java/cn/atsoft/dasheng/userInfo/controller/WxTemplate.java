@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.userInfo.controller;
 
 
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
@@ -65,25 +67,31 @@ public class WxTemplate {
 
     /**
      * 模板消息
-     *
-     * @param openid
-     * @return
      */
 
-    public String template(List<Long> openid, int type) {
+    public String template(Long type) {
+
+
+//        if (UserUtils.getUserId() == null) {
+//            throw new ServiceException(500, "请先登录");
+//        }
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
 
+
+        //查询data
         String templateType = null;
         QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
         remindQueryWrapper.in("type", type);
         List<Remind> reminds = remindService.list(remindQueryWrapper);
+        List<Long> ids = new ArrayList<>();
         for (Remind remind : reminds) {
+            ids.add(remind.getUserId());
             templateType = remind.getTemplateType();
         }
         WxTemplateData parse = JSON.parseObject(templateType, WxTemplateData.class);
 
         List<WxMpTemplateData> data = new ArrayList<>();
-
+        //赋值data
         for (WxTemplateData.DataList dataList : parse.getDataList()) {
             WxMpTemplateData wxMpTemplateData = new WxMpTemplateData();
             wxMpTemplateData.setName(dataList.getKey());
@@ -91,9 +99,9 @@ public class WxTemplate {
             data.add(wxMpTemplateData);
         }
 
-
+        //模板消息发送人
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", openid);
+        wxuserInfoQueryWrapper.in("user_id", ids);
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -108,7 +116,6 @@ public class WxTemplate {
         }
 
         for (String uuid : uuids) {
-
             WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
             wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
             wxMpTemplateMessage.setData(data);
