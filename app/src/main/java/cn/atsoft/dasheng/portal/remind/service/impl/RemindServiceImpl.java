@@ -102,8 +102,7 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
     public void update(RemindParam param) {
 
 
-
-        param.setSubscriptionType(JSON.toJSONString(param.getDataList()));
+        param.setTemplateType(JSON.toJSONString(param.getDataList()));
 
 
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();

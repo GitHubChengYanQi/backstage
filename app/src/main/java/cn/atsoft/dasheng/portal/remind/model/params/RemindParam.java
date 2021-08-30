@@ -63,5 +63,6 @@ public class RemindParam implements Serializable, BaseValidatingParam {
     public static class DataList {
         private String key;
         private String value;
+        private  String templateId;
     }
 }
