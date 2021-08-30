@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
+import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
@@ -43,6 +45,8 @@ public class WxTemplate {
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private UcOpenUserInfoService userInfoService;
+    @Autowired
+    private RemindUserService remindUserService;
 
 
     /**
@@ -85,9 +89,17 @@ public class WxTemplate {
         List<Remind> reminds = remindService.list(remindQueryWrapper);
         List<Long> ids = new ArrayList<>();
         for (Remind remind : reminds) {
-            ids.add(remind.getUserId());
+            ids.add(remind.getRemindId());
             templateType = remind.getTemplateType();
         }
+        QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("remind_id",ids);
+        List<RemindUser> remindUserList = remindUserService.list(queryWrapper);
+        List<Long> userIds = new ArrayList<>();
+        for (RemindUser remindUser : remindUserList) {
+            userIds.add(remindUser.getUserId());
+        }
+
         WxTemplateData parse = JSON.parseObject(templateType, WxTemplateData.class);
 
         List<WxMpTemplateData> data = new ArrayList<>();
@@ -101,7 +113,7 @@ public class WxTemplate {
 
         //模板消息发送人
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", ids);
+        wxuserInfoQueryWrapper.in("user_id",userIds );
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {

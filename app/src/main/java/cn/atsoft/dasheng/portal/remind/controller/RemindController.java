@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -27,6 +28,8 @@ public class RemindController extends BaseController {
 
     @Autowired
     private RemindService remindService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     /**
      * 新增接口
@@ -37,7 +40,8 @@ public class RemindController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody RemindParam remindParam) {
-        this.remindService.add(remindParam);
+//        this.remindService.add(remindParam);
+        wxTemplate.template(1L);
         return ResponseData.success();
     }
 
@@ -63,7 +67,7 @@ public class RemindController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody RemindParam remindParam)  {
+    public ResponseData delete(@RequestBody RemindParam remindParam) {
         this.remindService.delete(remindParam);
         return ResponseData.success();
     }
@@ -90,13 +94,11 @@ public class RemindController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<RemindResult> list(@RequestBody(required = false) RemindParam remindParam) {
-        if(ToolUtil.isEmpty(remindParam)){
+        if (ToolUtil.isEmpty(remindParam)) {
             remindParam = new RemindParam();
         }
         return this.remindService.findPageBySpec(remindParam);
     }
-
-
 
 
 }
