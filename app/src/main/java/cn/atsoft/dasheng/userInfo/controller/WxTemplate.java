@@ -55,9 +55,6 @@ public class WxTemplate {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private RemindUserService remindUserService;
-
 
     /**
      * 订阅消息
@@ -182,7 +179,7 @@ public class WxTemplate {
                 replace = replace.replace("{{note}}", note);
             }
             if (details != null) {
-                replace.replace("{{details}}", details);
+                replace = replace.replace("{{details}}", details);
             }
         }
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
@@ -209,6 +206,9 @@ public class WxTemplate {
         wxuserInfoQueryWrapper.in("user_id", userIds);
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
+        if (memberIds.size() == 0) {
+            throw new ServiceException(500, "账户未绑定");
+        }
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
             memberIds.add(wxuserInfo.getMemberId());
         }

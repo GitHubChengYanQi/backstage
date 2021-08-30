@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.dispatChing.model.params;
 
+import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -132,6 +133,8 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    private RepairParam repair;
 
     @Override
     public String checkParam() {

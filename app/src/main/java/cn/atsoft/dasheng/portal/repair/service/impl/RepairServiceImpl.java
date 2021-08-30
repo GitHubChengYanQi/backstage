@@ -32,6 +32,9 @@ import cn.atsoft.dasheng.portal.repairDynamic.model.params.RepairDynamicParam;
 import cn.atsoft.dasheng.portal.repairDynamic.service.RepairDynamicService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +45,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,10 +73,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private DispatchingService dispatchingService;
     @Resource
     private UserService userService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     @BussinessLog
     @Override
     public Repair add(RepairParam param) {
+
+
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         } else {
@@ -87,6 +95,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Repair entity = getEntity(param);
         this.save(entity);
 
+        String reateTime = String.valueOf(entity.getCreateTime());
+        DateTime parse = DateUtil.parse(reateTime);
+        String time = String.valueOf(parse);
+        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getComment(), entity.getComment());
         List<Banner> banner = param.getItemImgUrlList();
         for (Banner data : banner) {
             if (data != null) {
