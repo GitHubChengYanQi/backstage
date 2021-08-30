@@ -5,7 +5,6 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.mapper.RemindMapper;
-import cn.atsoft.dasheng.portal.remind.model.params.JsonDataList;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
@@ -14,12 +13,12 @@ import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +42,13 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Autowired
     private RemindUserService remindUserService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     @Override
     public void add(RemindParam param) {
+
+
         Long type = param.getType();
         QueryWrapper<Remind> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("type", type);
@@ -102,10 +105,10 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Override
     public void update(RemindParam param) {
-        param.getJsonDataList();
+        param.getTemplate();
 
 
-        param.setTemplateType(JSON.toJSONString(param.getJsonDataList() ));
+        param.setTemplateType(JSON.toJSONString(param.getTemplate()));
 
 
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();

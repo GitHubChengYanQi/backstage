@@ -38,6 +38,7 @@ public class UserinfoController extends BaseController {
         userInfoService.binding(getKey);
         return ResponseData.success();
     }
+
 }
 
 
