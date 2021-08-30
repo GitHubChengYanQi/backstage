@@ -33,6 +33,9 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.common.utils.BinaryUtil;
@@ -72,6 +75,8 @@ public class ApiRepairController {
     private RemindService remindService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     private Long UserId = 1425292658129031170L;
 
@@ -83,10 +88,10 @@ public class ApiRepairController {
         List<Remind> remindList = remindService.list();
         Boolean permission = false;
         List<Long> types = new ArrayList<>();
-        for(RemindUser data : remindUserList){
-            for (Remind user : remindList){
-                if(data.getRemindId().equals(user.getRemindId())){
-                    if(user.getType().equals(0L)){
+        for (RemindUser data : remindUserList) {
+            for (Remind user : remindList) {
+                if (data.getRemindId().equals(user.getRemindId())) {
+                    if (user.getType().equals(0L)) {
                         permission = true;
                         break;
                     }
@@ -94,10 +99,10 @@ public class ApiRepairController {
             }
         }
         RepairParam repairParam = new RepairParam();
-        if(permission){
+        if (permission) {
             repairParam.setCreateUser(UserId);
             return repairService.findListBySpec(repairParam);
-        }else {
+        } else {
             return null;
         }
     }
@@ -134,6 +139,10 @@ public class ApiRepairController {
             bannerParam.setTitle(data.getTitle());
             this.bannerService.add(bannerParam);
         }
+        String reateTime = String.valueOf(entity.getCreateTime());
+        DateTime parse = DateUtil.parse(reateTime);
+        String time = String.valueOf(parse);
+        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getComment(), entity.getComment());
         return ResponseData.success(entity.getRepairId());
     }
 
@@ -141,9 +150,23 @@ public class ApiRepairController {
     public Repair updateRepair(@RequestBody RepairParam repairParam) {
         Repair oldEntity = getOldEntity(repairParam);
         Repair newEntity = getEntity(repairParam);
-
         ToolUtil.copyProperties(newEntity, oldEntity);
+        repairParam.getRepairId();
+        List<Repair> list = repairService.list(new QueryWrapper<Repair>().in("repair_id", repairParam.getRepairId()));
+        List<Repair> list1 = new ArrayList<>();
+        for (Repair repair : list) {
+            list1.add(repair);
+        }
         this.repairService.updateById(newEntity);
+        String reateTime = String.valueOf(list1.get(0).getCreateTime());
+        DateTime parse = DateUtil.parse(reateTime);
+        String time = String.valueOf(parse);
+        if (repairParam.getProgress().equals(1L)) {
+            return newEntity;
+        } else {
+            wxTemplate.template(repairParam.getType(), list1.get(0).getCreateUser(), time, list1.get(0).getComment(), list1.get(0).getComment());
+        }
+
         return newEntity;
     }
 

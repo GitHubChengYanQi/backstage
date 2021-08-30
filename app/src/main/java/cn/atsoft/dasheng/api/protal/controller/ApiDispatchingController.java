@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.api.protal.controller;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
+import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiDispatchingController {
     @Autowired
     private DispatchingService dispatchingService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     @RequestMapping(value = "/saveDispatching", method = RequestMethod.POST)
     public ResponseData saveDispatching(@RequestBody DispatchingParam dispatchingParam) {

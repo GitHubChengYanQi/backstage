@@ -109,7 +109,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         String reateTime = String.valueOf(param.getTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getNote(), null);
+
+        wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getRepair().getComment(), param.getRepair().getComment());
 
 
 //        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
