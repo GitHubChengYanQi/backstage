@@ -25,16 +25,16 @@ public class Remind implements Serializable {
       @TableId(value = "remind_id", type = IdType.AUTO)
     private Long remindId;
 
-    public String getSubscriptionType() {
-        return subscriptionType;
+    public String getTemplateType() {
+        return templateType;
     }
 
-    public void setSubscriptionType(String subscriptionType) {
-        this.subscriptionType = subscriptionType;
+    public void setTemplateType(String templateType) {
+        this.templateType = templateType;
     }
 
-    @TableField("subscription_type")
-    private  String subscriptionType;
+    @TableField("template_type")
+    private  String templateType;
 
     /**
      * 提醒类型

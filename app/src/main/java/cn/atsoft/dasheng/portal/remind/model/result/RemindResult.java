@@ -2,12 +2,13 @@ package cn.atsoft.dasheng.portal.remind.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
-import lombok.Data;
-import java.util.Date;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 import java.util.List;
+
 /**
  * <p>
  * 提醒表
@@ -23,7 +24,7 @@ public class RemindResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    private  String subscriptionType;
+    private String templateType;
 
     /**
      * 提醒id
