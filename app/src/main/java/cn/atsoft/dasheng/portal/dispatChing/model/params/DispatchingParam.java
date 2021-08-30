@@ -29,6 +29,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Long type;
 
     private String page;
 

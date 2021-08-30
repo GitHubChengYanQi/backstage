@@ -13,6 +13,9 @@ import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.portal.remind.entity.Remind;
+import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
+import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
@@ -25,6 +28,7 @@ import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -47,18 +51,12 @@ import java.util.List;
  */
 @Service
 public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispatching> implements DispatchingService {
-    @Autowired
-    private RepairService repairService;
-    @Autowired
-    private CustomerService customerService;
-    @Autowired
-    private WxuserInfoService wxuserInfoService;
-    @Autowired
-    private WxTemplate wxTemplate;
+
     @Autowired
     private UserService userService;
+
     @Autowired
-    private UcOpenUserInfoService userInfoService;
+    private RemindService remindService;
 
     @Override
     public void add(DispatchingParam param) {
@@ -104,6 +102,28 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @Override
     @BussinessLog
     public void addwx(DispatchingParam param) {
+        QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
+        remindQueryWrapper.in("type", param.getType());
+        List<Remind> reminds = remindService.list(remindQueryWrapper);
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", param.getName());
+        List<User> users = userService.list(userQueryWrapper);
+        for (Remind remind : reminds) {
+            for (User user : users) {
+                String templateType = remind.getTemplateType();
+                String reateTime = String.valueOf(param.getTime());
+                DateTime parse = DateUtil.parse(reateTime);
+                String time = String.valueOf(parse);
+                templateType.replace("name", user.getName()).replace("time", time);
+                RemindParam remindParam = new RemindParam();
+                remindParam.setType(param.getType());
+                remindParam.setTemplateType(templateType);
+                remindService.update(remindParam);
+            }
+
+        }
+
         this.add(param);
 
 //        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
