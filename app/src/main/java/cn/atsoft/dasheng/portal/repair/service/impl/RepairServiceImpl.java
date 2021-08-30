@@ -121,33 +121,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
 
 
-        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        bannerQueryWrapper.in("difference", param.getRepairId());
-        List<Banner> list1 = bannerService.list(bannerQueryWrapper);
-
-        List<Long> ids = new ArrayList<>();
-
-        for (Banner banner : list1) {
-            ids.add(banner.getBannerId());
-        }
-        bannerService.removeByIds(ids);
-
-        List<Banner> banner = param.getItemImgUrlList();
-        for (Banner data : banner) {
-            BannerParam bannerParam = new BannerParam();
-            bannerParam.setDifference(param.getRepairId());
-            bannerParam.setImgUrl(data.getImgUrl());
-            bannerParam.setTitle(data.getTitle());
-            this.bannerService.add(bannerParam);
-        }
-
-
-//        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-//        commonAreaQueryWrapper.in("id", param.getArea());
-//        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
-//        for (CommonArea commonArea : commonAreas) {
-//            param.setArea(commonArea.getRegionCode());
-//        }
 
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
@@ -222,6 +195,18 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     public RepairResult detail(Long id) {
         Repair repair = this.getById(id);
         RepairResult repairResult = new RepairResult();
+
+        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("difference",id);
+        List<Banner> list = bannerService.list(bannerQueryWrapper);
+        List<BannerResult> bannerResults = new ArrayList<>();
+        for (Banner banner : list) {
+            BannerResult result = new BannerResult();
+            ToolUtil.copyProperties(banner,result);
+            bannerResults.add(result);
+        }
+        repairResult.setBannerResult(bannerResults);
+
         ToolUtil.copyProperties(repair, repairResult);
         List<RepairResult> results = new ArrayList<RepairResult>() {{
             add(repairResult);
