@@ -55,6 +55,10 @@ public class WxTemplate {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RemindUserService remindUserService;
+
+
     /**
      * 订阅消息
      *

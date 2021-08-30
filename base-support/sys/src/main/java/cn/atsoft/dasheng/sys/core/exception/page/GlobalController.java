@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @date 2016年11月13日 下午11:04:45
  */
 @Controller
-@RequestMapping("/global")
+//@RequestMapping("/global")
 public class GlobalController {
 
     /**

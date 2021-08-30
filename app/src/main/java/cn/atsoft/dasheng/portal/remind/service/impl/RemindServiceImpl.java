@@ -156,9 +156,8 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
         IPage<RemindResult> page = this.baseMapper.customPageList(pageContext, param);
 
         for (RemindResult record : page.getRecords()) {
-
             WxTemplateData wxTemplateData = JSON.parseObject(record.getTemplateType(), WxTemplateData.class);
-            record.setWxTemplateData(wxTemplateData);
+            record.setTemplate(wxTemplateData);
             QueryWrapper<RemindUser> remindQueryWrapper = new QueryWrapper<>();
             remindQueryWrapper.in("remind_id", record.getRemindId());
             List<RemindUser> list = remindUserService.list(remindQueryWrapper);
