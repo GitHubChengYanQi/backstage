@@ -115,7 +115,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
                 String reateTime = String.valueOf(param.getTime());
                 DateTime parse = DateUtil.parse(reateTime);
                 String time = String.valueOf(parse);
-                templateType.replace("name", user.getName()).replace("time", time);
+                templateType.replace("name", param.getCreateUser().toString()).replace("time", time);
                 RemindParam remindParam = new RemindParam();
                 remindParam.setType(param.getType());
                 remindParam.setTemplateType(templateType);
