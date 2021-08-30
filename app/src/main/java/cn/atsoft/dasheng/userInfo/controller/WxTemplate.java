@@ -45,6 +45,8 @@ public class WxTemplate {
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private UcOpenUserInfoService userInfoService;
+    @Autowired
+    private RemindUserService remindUserService;
 
     @Autowired
     private RemindUserService remindUserService;
@@ -90,7 +92,7 @@ public class WxTemplate {
         List<Remind> reminds = remindService.list(remindQueryWrapper);
         List<Long> ids = new ArrayList<>();
         for (Remind remind : reminds) {
-            ids.add(remind.getUserId());
+            ids.add(remind.getRemindId());
             templateType = remind.getTemplateType();
         }
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
