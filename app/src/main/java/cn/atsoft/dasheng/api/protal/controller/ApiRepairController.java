@@ -20,6 +20,10 @@ import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
+import cn.atsoft.dasheng.portal.remind.entity.Remind;
+import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
+import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
@@ -63,17 +67,44 @@ public class ApiRepairController {
     @Autowired
     private CommonAreaService commonAreaService;
     @Autowired
-    private AliyunService aliyunService;
+    private RemindUserService remindUserService;
+    @Autowired
+    private RemindService remindService;
     @Autowired
     private MediaService mediaService;
 
-    @RequestMapping(value = "/RepairistAll", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public List<RepairResult> listAll(@RequestBody(required = false) RepairParam repairParam) {
-        if (ToolUtil.isEmpty(repairParam)) {
-            repairParam = new RepairParam();
+    @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
+    public List<RepairResult> getRepairOrder() {
+        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+        remindUserQueryWrapper.in("user_id", UserUtils.getUserId());
+        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
+        List<Remind> remindList = remindService.list();
+        Boolean permission = false;
+        List<Long> types = new ArrayList<>();
+        for(RemindUser data : remindUserList){
+            for (Remind user : remindList){
+                if(data.getRemindId().equals(user.getRemindId())){
+                    if(user.getType().equals(0L)){
+                        permission = true;
+                        break;
+                    }
+                }
+            }
         }
-        return this.repairService.findListBySpec(repairParam);
+        RepairParam repairParam = new RepairParam();
+        if(permission){
+            repairParam.setCreateUser(UserUtils.getUserId());
+            return repairService.findListBySpec(repairParam);
+        }else {
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
+    public List<RepairResult> getMyRepair() {
+        RepairParam repairParam = new RepairParam();
+        repairParam.setCreateUser(UserUtils.getUserId());
+        return repairService.findListBySpec(repairParam);
     }
 
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
@@ -122,16 +153,15 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
-    public ResponseData getRepair(@RequestBody(required = false) DispatchingParam dispatchingParam) {
+    public ResponseData getRepair() {
         //查询工程师
-        Long name = dispatchingParam.getName().longValue();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", name);
+        userQueryWrapper.in("user_id", UserUtils.getUserId());
         List<User> users = userService.list(userQueryWrapper);
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", name).in("state", 0).orderByAsc("create_time");
+        dispatchingQueryWrapper.in("name", UserUtils.getUserId()).in("state", 0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         List<DispatchingResult> dispatchingResult = new ArrayList<>();
