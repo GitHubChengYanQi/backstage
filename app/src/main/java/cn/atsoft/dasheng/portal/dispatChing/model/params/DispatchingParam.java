@@ -28,7 +28,7 @@ import java.util.List;
 public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  String subscriptionType;
+
 
     private String page;
 

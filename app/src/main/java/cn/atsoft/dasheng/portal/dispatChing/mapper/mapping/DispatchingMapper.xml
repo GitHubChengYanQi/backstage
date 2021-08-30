@@ -20,12 +20,11 @@
         <result column="evaluations" property="evaluations"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
-        <result column="subscription_type" property="subscriptionType"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">subscription_type
-    AS "subscriptionType",
+    <sql id="Base_Column_List">
         evaluations AS "evaluations",dispatching_id AS "dispatchingId", name AS "name", phone AS "phone", time AS "time", address AS "address", state AS "state", note AS "note", imgUrl AS "imgUrl", evaluation AS "evaluation", repair_id AS "repairId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 

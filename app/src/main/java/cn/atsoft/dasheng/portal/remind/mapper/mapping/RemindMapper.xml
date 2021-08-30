@@ -7,11 +7,13 @@
         <id column="remind_id" property="remindId"/>
         <result column="type" property="type"/>
         <result column="user_id" property="userId"/>
+        <result column="subscription_type" property="subscriptionType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        remind_id
+        subscription_type
+        AS "subscriptionType", remind_id
         AS "remindId", type AS "type", user_id AS "userId"
     </sql>
 

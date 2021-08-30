@@ -24,6 +24,8 @@ public class RemindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private  String subscriptionType;
+
 
     /**
      * 提醒id
