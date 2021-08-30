@@ -24,6 +24,7 @@ public class WxTemplate {
     @Autowired
     private WxMpService wxMpService;
 
+
     /**
      * 订阅消息
      *
@@ -54,6 +55,8 @@ public class WxTemplate {
 
     public String template(String openid, List<WxMpTemplateData> data) {
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
+//        templateMsgService.setIndustry();
+
         WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
         wxMpTemplateMessage.setTemplateId("623b049c5bad1bba929b055bdd4862f0");
         wxMpTemplateMessage.setData(data);

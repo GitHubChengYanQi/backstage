@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.model.params.RemindUserParam;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,8 +31,10 @@ public class ApiReminedController {
         if(ToolUtil.isEmpty(remindUserParam)){
             remindUserParam = new RemindUserParam();
         }
+
+
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
-        remindUserQueryWrapper.in("user_id", remindUserParam.getUserId());
+        remindUserQueryWrapper.in("user_id", UserUtils.getUserId());
         List<RemindUser> remindUserList = this.remindUserService.list(remindUserQueryWrapper);
         List<Remind> remindList = remindService.list();
         List<Long> types = new ArrayList<>();
