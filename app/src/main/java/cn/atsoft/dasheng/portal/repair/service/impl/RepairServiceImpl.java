@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
+import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.banner.service.BannerService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -82,17 +83,21 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
 
         }
-//        QueryWrapper<CommonArea> commonAreaQueryWrapper = new QueryWrapper<>();
-//        commonAreaQueryWrapper.in("id", param.getArea());
-//        List<CommonArea> commonAreas = commonAreaService.list(commonAreaQueryWrapper);
-//        for (CommonArea commonArea : commonAreas) {
-//            param.setArea(commonArea.getRegionCode());
-//
-//        }
-
-
         Repair entity = getEntity(param);
         this.save(entity);
+
+        List<Banner> banner = param.getItemImgUrlList();
+        for (Banner data : banner) {
+            BannerParam bannerParam = new BannerParam();
+            bannerParam.setDifference(entity.getRepairId());
+            bannerParam.setImgUrl(data.getImgUrl());
+            bannerParam.setTitle(data.getTitle());
+            this.bannerService.add(bannerParam);
+        }
+
+
+
+
         return entity;
     }
 
@@ -198,10 +203,22 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     public RepairResult detail(Long id) {
         Repair repair = this.getById(id);
         RepairResult repairResult = new RepairResult();
+        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("difference",id);
+        List<Banner> list = bannerService.list(bannerQueryWrapper);
+        List<BannerResult>bannerResults = new ArrayList<>();
+        for (Banner banner : list) {
+            BannerResult result = new BannerResult();
+            ToolUtil.copyProperties(banner,result);
+            bannerResults.add(result);
+        }
+        repairResult.setBannerResult(bannerResults);
         ToolUtil.copyProperties(repair, repairResult);
         List<RepairResult> results = new ArrayList<RepairResult>() {{
             add(repairResult);
         }};
+
+
         this.format(results);
         return results.get(0);
     }
