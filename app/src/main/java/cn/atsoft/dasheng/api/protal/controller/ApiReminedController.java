@@ -27,12 +27,7 @@ public class ApiReminedController {
     private RemindUserService remindUserService;
 
     @RequestMapping(value = "/getUserPermission", method = RequestMethod.POST)
-    public List<Long> getPermission(@RequestBody(required = false) RemindUserParam remindUserParam) {
-        if(ToolUtil.isEmpty(remindUserParam)){
-            remindUserParam = new RemindUserParam();
-        }
-
-
+    public List<Long> getPermission() {
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
         remindUserQueryWrapper.in("user_id", UserUtils.getUserId());
         List<RemindUser> remindUserList = this.remindUserService.list(remindUserQueryWrapper);
