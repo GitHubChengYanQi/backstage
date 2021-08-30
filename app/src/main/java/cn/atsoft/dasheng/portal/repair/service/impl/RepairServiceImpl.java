@@ -89,11 +89,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
         List<Banner> banner = param.getItemImgUrlList();
         for (Banner data : banner) {
-            BannerParam bannerParam = new BannerParam();
-            bannerParam.setDifference(entity.getRepairId());
-            bannerParam.setImgUrl(data.getImgUrl());
-            bannerParam.setTitle(data.getTitle());
-            this.bannerService.add(bannerParam);
+            if (data != null) {
+                BannerParam bannerParam = new BannerParam();
+                bannerParam.setDifference(entity.getRepairId());
+                bannerParam.setImgUrl(data.getImgUrl());
+                bannerParam.setTitle(data.getTitle());
+                this.bannerService.add(bannerParam);
+            }
+
         }
 
 
@@ -119,7 +122,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         if (list.size() > 0) {
             throw new ServiceException(500, "请选择到区或县");
         }
-
 
 
         Repair oldEntity = getOldEntity(param);
@@ -197,12 +199,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         RepairResult repairResult = new RepairResult();
 
         QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        bannerQueryWrapper.in("difference",id);
+        bannerQueryWrapper.in("difference", id);
         List<Banner> list = bannerService.list(bannerQueryWrapper);
         List<BannerResult> bannerResults = new ArrayList<>();
         for (Banner banner : list) {
             BannerResult result = new BannerResult();
-            ToolUtil.copyProperties(banner,result);
+            ToolUtil.copyProperties(banner, result);
             bannerResults.add(result);
         }
         repairResult.setBannerResult(bannerResults);

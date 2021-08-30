@@ -57,6 +57,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 
     @Autowired
     private RemindService remindService;
+    @Autowired
+    private WxTemplate wxTemplate;
 
     @Override
     public void add(DispatchingParam param) {
@@ -102,29 +104,13 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @Override
     @BussinessLog
     public void addwx(DispatchingParam param) {
-        QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
-        remindQueryWrapper.in("type", param.getType());
-        List<Remind> reminds = remindService.list(remindQueryWrapper);
+        Dispatching entity = getEntity(param);
+        this.save(entity);
+        String reateTime = String.valueOf(param.getTime());
+        DateTime parse = DateUtil.parse(reateTime);
+        String time = String.valueOf(parse);
+        wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getNote(), null);
 
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", param.getName());
-        List<User> users = userService.list(userQueryWrapper);
-        for (Remind remind : reminds) {
-            for (User user : users) {
-                String templateType = remind.getTemplateType();
-                String reateTime = String.valueOf(param.getTime());
-                DateTime parse = DateUtil.parse(reateTime);
-                String time = String.valueOf(parse);
-                templateType.replace("name", param.getCreateUser().toString()).replace("time", time);
-                RemindParam remindParam = new RemindParam();
-                remindParam.setType(param.getType());
-                remindParam.setTemplateType(templateType);
-                remindService.update(remindParam);
-            }
-
-        }
-
-        this.add(param);
 
 //        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
 //        repairQueryWrapper.in("repair_id", param.getRepairId());

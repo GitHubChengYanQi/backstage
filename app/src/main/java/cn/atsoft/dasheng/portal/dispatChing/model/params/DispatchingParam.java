@@ -50,10 +50,10 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
      * 手机号
      */
 
-    @ApiParam(required = true)
-    @Pattern(regexp = "^1\\d{10}", message = "手机号码格式错误")
-    @NotBlank(message = "请填写手机号")
-    @ApiModelProperty("手机号")
+//    @ApiParam(required = true)
+//    @Pattern(regexp = "^1\\d{10}", message = "手机号码格式错误")
+//    @NotBlank(message = "请填写手机号")
+//    @ApiModelProperty("手机号")
     private String phone;
 
     /**
