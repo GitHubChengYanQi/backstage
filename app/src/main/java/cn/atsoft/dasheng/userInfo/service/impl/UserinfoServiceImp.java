@@ -40,8 +40,7 @@ public class UserinfoServiceImp implements UserInfoService {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private WxuserInfoService wxuserInfoService;
-    @Autowired
-    private UcOpenUserInfoService userInfoService;
+
 
     /**
      * 返回二维码
@@ -82,7 +81,6 @@ public class UserinfoServiceImp implements UserInfoService {
                 fis.close();
                 byte[] byteArray = bos.toByteArray();
                 return byteArray;
-//                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
             } else {
                 throw new ServiceException(500, "请确定登录");
             }
@@ -119,8 +117,6 @@ public class UserinfoServiceImp implements UserInfoService {
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
             }
-
-
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
@@ -129,8 +125,6 @@ public class UserinfoServiceImp implements UserInfoService {
                 memberIds.add(wxuserInfo.getMemberId());
                 backUser.setBln(false);
             }
-
-
             System.err.println(userId);
             return backUser;
         }
