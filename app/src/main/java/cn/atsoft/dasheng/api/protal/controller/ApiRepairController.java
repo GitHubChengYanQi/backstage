@@ -119,7 +119,9 @@ public class ApiRepairController {
             repairParam.setCreateUser(userId);
             return repairService.findListBySpec(repairParam);
         } else {
-            return null;
+            repairParam.setCreateUser(0L);
+            return repairService.findListBySpec(repairParam);
+
         }
     }
 
