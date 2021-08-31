@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.appBase.config.AliConfiguration;
 import cn.atsoft.dasheng.appBase.config.AliyunService;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
@@ -29,6 +30,10 @@ import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
+import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -77,12 +82,24 @@ public class ApiRepairController {
     private MediaService mediaService;
     @Autowired
     private WxTemplate wxTemplate;
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
 
+    public Long getWxUser(Long memberId) {
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+        wxuserInfoQueryWrapper.in("member_id", memberId);
+        List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        for(WxuserInfo data : userList){
+           return  data.getUserId();
+        }
+        return null;
+    }
 
     @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
     public List<RepairResult> getRepairOrder() {
+        Long userId = getWxUser(UserUtils.getUserId());
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
-        remindUserQueryWrapper.in("user_id", UserUtils.getUserId());
+        remindUserQueryWrapper.in("user_id", userId);
         List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
         List<Remind> remindList = remindService.list();
         Boolean permission = false;
@@ -99,7 +116,7 @@ public class ApiRepairController {
         }
         RepairParam repairParam = new RepairParam();
         if (permission) {
-            repairParam.setCreateUser(UserUtils.getUserId());
+            repairParam.setCreateUser(userId);
             return repairService.findListBySpec(repairParam);
         } else {
             return null;
@@ -108,8 +125,9 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
     public List<RepairResult> getMyRepair() {
+        Long userId = getWxUser(UserUtils.getUserId());
         RepairParam repairParam = new RepairParam();
-        repairParam.setCreateUser(UserUtils.getUserId());
+        repairParam.setCreateUser(userId);
         return repairService.findListBySpec(repairParam);
     }
 
@@ -179,15 +197,15 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
-
+        Long userId = getWxUser(UserUtils.getUserId());
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", UserUtils.getUserId());
+        userQueryWrapper.in("user_id", userId);
         List<User> users = userService.list(userQueryWrapper);
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", UserUtils.getUserId()).in("state", 0).orderByAsc("create_time");
+        dispatchingQueryWrapper.in("name", userId).in("state", 0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         List<DispatchingResult> dispatchingResult = new ArrayList<>();
@@ -465,7 +483,7 @@ public class ApiRepairController {
     @ApiOperation("获取阿里云OSS临时上传token")
     public ResponseData getToken(@Param("type") String type) {
 
-        Long userId = UserUtils.getUserId();
+        Long userId = getWxUser(UserUtils.getUserId());
         Media media = mediaService.getMediaId(type, userId);
 
         return ResponseData.success(mediaService.getOssToken(media));
