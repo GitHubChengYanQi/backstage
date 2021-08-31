@@ -109,13 +109,15 @@ public class UserinfoServiceImp implements UserInfoService {
             userQueryWrapper.in("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
             BackUser backUser = new BackUser();
-            backUser.setBln(true);
+
             for (User user : users) {
                 UserResult userResult = new UserResult();
                 ToolUtil.copyProperties(user, userResult);
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
             }
+
+
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
@@ -127,15 +129,11 @@ public class UserinfoServiceImp implements UserInfoService {
             ucOpenUserInfoQueryWrapper.in("member_id", memberIds);
             List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
 
-            if (ucOpenUserInfos.size() == 0) {
-                backUser.setBln(false);
-//            throw new ServiceException(500, "账户已绑定");
-            }
             System.err.println(userId);
             return backUser;
         }
 
-        throw new ServiceException(500, "请先登录");
+   return  null;
 
     }
 
@@ -165,7 +163,7 @@ public class UserinfoServiceImp implements UserInfoService {
                 wxuserInfoService.add(wxuserInfoParam);
             }
         } else {
-            throw new ServiceException(500, "账户已经绑定");
+            throw new ServiceException(505, "账户已经绑定");
         }
 
     }
