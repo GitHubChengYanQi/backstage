@@ -215,6 +215,9 @@ public class ApiRepairController {
             for (Dispatching data : list) {
 
                 Repair repair = this.repairService.getById(data.getRepairId());
+                if(ToolUtil.isEmpty(repair)){
+                    continue;
+                }
                 RepairResult result = new RepairResult();
                 result.setRepairId(repair.getRepairId());
 
