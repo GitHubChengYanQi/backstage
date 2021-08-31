@@ -93,7 +93,7 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     /**
-     * 返回user名称
+     * 获取userId
      *
      * @param randStr
      * @return
@@ -116,11 +116,22 @@ public class UserinfoServiceImp implements UserInfoService {
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
             }
+
+
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("user_id", ids);
+            List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            List<Long> memberIds = new ArrayList<>();
+            for (WxuserInfo wxuserInfo : infoList) {
+                memberIds.add(wxuserInfo.getMemberId());
+            }
+
+
             System.err.println(userId);
             return backUser;
         }
 
-   return  null;
+        return null;
 
     }
 
@@ -131,27 +142,32 @@ public class UserinfoServiceImp implements UserInfoService {
      */
     @Override
     public void binding(GetKey getKey) {
-        String randStr = getKey.getRandStr();
-        String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
-        String userId = wx.substring(8, wx.length());
+        if (getKey.getRandStr() != null) {
+            String randStr = getKey.getRandStr();
+            String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
+            String userId = wx.substring(8, wx.length());
 //        String[] split = wx.split("bind-wx-");
-        Long ids = Long.valueOf(userId);
+            Long ids = Long.valueOf(userId);
 //        Long getMemberId = Long.valueOf(getKey.getGetUserId());
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", ids);
-        List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        if (list.size() < 0) {
-            if (ids != null && UserUtils.getUserId() != null) {
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("user_id", ids);
+            List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            if (list.size() <= 0) {
+                if (ids != null && UserUtils.getUserId() != null) {
 //                Long memberId = UserUtils.getUserId();
-                WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-                wxuserInfoParam.setUserId(ids);
-                wxuserInfoParam.setMemberId(UserUtils.getUserId());
-                wxuserInfoParam.setUuid(UserUtils.getUserAccount());
-                wxuserInfoService.add(wxuserInfoParam);
+                    WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+                    wxuserInfoParam.setUserId(ids);
+                    wxuserInfoParam.setMemberId(UserUtils.getUserId());
+                    wxuserInfoParam.setUuid(UserUtils.getUserAccount());
+                    wxuserInfoService.add(wxuserInfoParam);
+                }
+            } else {
+                throw new ServiceException(505, "账户已经绑定");
             }
         } else {
-            throw new ServiceException(505, "账户已经绑定");
+            throw new ServiceException(505, "绑定失败,请确认用户存在");
         }
+
 
     }
 
