@@ -46,6 +46,7 @@ public class JwtTokenUtil {
      */
     public static String generateToken(JwtPayLoad jwtPayLoad) {
         Long expiredSeconds = getExpireSeconds();
+        jwtPayLoad.setExpiresIn(expiredSeconds);
         final Date expirationDate = new Date(System.currentTimeMillis() + expiredSeconds * 1000);
         return generateToken(String.valueOf(jwtPayLoad.getUserId()), expirationDate, jwtPayLoad.toMap());
     }

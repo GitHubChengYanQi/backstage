@@ -29,6 +29,8 @@ public class JwtPayLoad {
      */
     private String userKey;
 
+    private Long expiresIn;
+
     public JwtPayLoad() {
     }
 
@@ -49,14 +51,12 @@ public class JwtPayLoad {
         map.put("userId", this.userId);
         map.put("account", this.account);
         map.put("userKey", this.userKey);
+        map.put("expiresIn", this.expiresIn);
         return map;
     }
 
     /**
      * payload转化为map形式
-     *
-     * @author fengshuonan
-     * @Date 2019/7/20 20:50
      */
     public static JwtPayLoad toBean(Map<String, Object> map) {
         if (map == null || map.size() == 0) {

@@ -25,19 +25,13 @@ public class UcJwtPayLoad extends JwtPayLoad {
      * payload转化为map形式
      */
     public Map<String, Object> toMap() {
-        HashMap<String, Object> map = new HashMap<>();
+        Map<String, Object> map = super.toMap();
         map.put("type", this.type);
-        map.put("userId", this.getUserId());
-        map.put("account", this.getAccount());
-        map.put("userKey", "");
         return map;
     }
 
     /**
      * payload转化为map形式
-     *
-     * @author fengshuonan
-     * @Date 2019/7/20 20:50
      */
     public static UcJwtPayLoad toBean(Map<String, Object> map) {
         if (map == null || map.size() == 0) {
