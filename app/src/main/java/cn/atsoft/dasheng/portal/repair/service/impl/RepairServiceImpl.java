@@ -98,7 +98,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         String reateTime = String.valueOf(entity.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getComment(), entity.getComment());
+        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
         List<Banner> banner = param.getItemImgUrlList();
         for (Banner data : banner) {
             if (data != null) {

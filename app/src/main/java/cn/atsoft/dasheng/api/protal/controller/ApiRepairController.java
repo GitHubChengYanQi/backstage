@@ -141,7 +141,7 @@ public class ApiRepairController {
         String reateTime = String.valueOf(entity.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getComment(), entity.getComment());
+        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
         return ResponseData.success(entity.getRepairId());
     }
 
@@ -163,7 +163,7 @@ public class ApiRepairController {
         if (repairParam.getProgress().equals(1L)) {
             return newEntity;
         } else {
-            wxTemplate.template(repairParam.getType(), list1.get(0).getCreateUser(), time, list1.get(0).getComment(), list1.get(0).getComment());
+            wxTemplate.template(repairParam.getType(), list1.get(0).getCreateUser(), time, list1.get(0).getServiceType(), list1.get(0).getComment());
         }
 
         return newEntity;
@@ -179,7 +179,7 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
-        if(ToolUtil.isEmpty(UserUtils.getUserId())){
+        if (ToolUtil.isEmpty(UserUtils.getUserId())) {
             return ResponseData.error("认证失败！");
         }
         //查询工程师

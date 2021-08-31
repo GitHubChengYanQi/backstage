@@ -124,30 +124,34 @@ public class WxTemplate {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         wxuserInfoQueryWrapper.in("user_id", userIds);
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+
         List<Long> memberIds = new ArrayList<>();
-        for (WxuserInfo wxuserInfo : wxuserInfoList) {
-            memberIds.add(wxuserInfo.getMemberId());
-        }
-        QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-        ucOpenUserInfoQueryWrapper.in("member_id", memberIds).in("source", "wxMp");
-        List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
-        List<String> uuids = new ArrayList<>();
-        for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
-            uuids.add(ucOpenUserInfo.getUuid());
-        }
 
-        for (String uuid : uuids) {
-            WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
-            wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
-            wxMpTemplateMessage.setData(data);
-            wxMpTemplateMessage.setToUser(uuid);
-            wxMpTemplateMessage.setUrl(parse.getUrl());
+        if (wxuserInfoList.size() > 0) {
+            for (WxuserInfo wxuserInfo : wxuserInfoList) {
+                memberIds.add(wxuserInfo.getMemberId());
+            }
+            QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+            ucOpenUserInfoQueryWrapper.in("member_id", memberIds).in("source", "wxMp");
+            List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
+            List<String> uuids = new ArrayList<>();
+            for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+                uuids.add(ucOpenUserInfo.getUuid());
+            }
 
-            try {
-                String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
-                return sendTemplateMsg;
-            } catch (WxErrorException e) {
-                e.printStackTrace();
+            for (String uuid : uuids) {
+                WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
+                wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
+                wxMpTemplateMessage.setData(data);
+                wxMpTemplateMessage.setToUser(uuid);
+                wxMpTemplateMessage.setUrl(parse.getUrl());
+
+                try {
+                    String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+                    return sendTemplateMsg;
+                } catch (WxErrorException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -215,7 +219,7 @@ public class WxTemplate {
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
 
-        if (memberIds.size() > 0) {
+        if (wxuserInfoList.size() > 0) {
             for (WxuserInfo wxuserInfo : wxuserInfoList) {
                 memberIds.add(wxuserInfo.getMemberId());
             }
@@ -242,7 +246,6 @@ public class WxTemplate {
                 }
             }
         }
-
 
 
         return null;
