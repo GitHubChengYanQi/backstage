@@ -33,7 +33,7 @@ public class UserUtils {
         UcJwtPayLoad ucJwtPayLoad = getPayLoad();
         Long userId =  ucJwtPayLoad.getUserId();
         if(ToolUtil.isEmpty(userId)){
-            throw new AuthException();
+            throw new AuthException(402);
         }
         return userId;
     }

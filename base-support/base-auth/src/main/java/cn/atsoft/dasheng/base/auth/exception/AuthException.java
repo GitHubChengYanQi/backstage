@@ -21,6 +21,12 @@ public class AuthException extends RuntimeException {
         this.errorMessage = "认证失败！";
     }
 
+    public AuthException(Integer code) {
+        super("认证失败！");
+        this.code = code;
+        this.errorMessage = "认证失败！";
+    }
+
     public AuthException(AbstractBaseExceptionEnum exception) {
         super(exception.getMessage());
         this.code = exception.getCode();
