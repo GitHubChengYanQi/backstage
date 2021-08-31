@@ -96,8 +96,8 @@ public class UcMemberAuth {
             return login(ucOpenUserInfo);
         } catch (WxErrorException e) {
             e.printStackTrace();
+            throw new ServiceException(500,e.getMessage());
         }
-        return null;
     }
 
     /**

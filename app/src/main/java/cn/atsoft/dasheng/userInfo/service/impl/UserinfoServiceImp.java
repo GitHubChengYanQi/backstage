@@ -95,32 +95,36 @@ public class UserinfoServiceImp implements UserInfoService {
      */
     @Override
     public BackUser backUser(String randStr) {
-        String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
 
-        String userId = wx.substring(8, wx.length());
-        Long ids = Long.valueOf(userId);
-        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", ids);
-        List<User> users = userService.list(userQueryWrapper);
-        BackUser backUser = new BackUser();
-        for (User user : users) {
-            UserResult userResult = new UserResult();
-            ToolUtil.copyProperties(user, userResult);
-            backUser.setName(userResult.getName());
+        if (UserUtils.getUserId() != null) {
+            String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
+            String userId = wx.substring(8, wx.length());
+            Long ids = Long.valueOf(userId);
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.in("user_id", ids);
+            List<User> users = userService.list(userQueryWrapper);
+            BackUser backUser = new BackUser();
             backUser.setBln(true);
-            backUser.setRandStr(randStr);
+            for (User user : users) {
+                UserResult userResult = new UserResult();
+                ToolUtil.copyProperties(user, userResult);
+                backUser.setName(userResult.getName());
+                backUser.setRandStr(randStr);
 
-        }
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id", ids);
-        List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        if (infoList.size() > 0) {
-            backUser.setBln(false);
+            }
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("user_id", ids);
+            List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            if (infoList.size() > 0) {
+                backUser.setBln(false);
 //            throw new ServiceException(500, "账户已绑定");
+            }
+            System.err.println(userId);
+            return backUser;
         }
-        System.err.println(userId);
 
-        return backUser;
+        throw new ServiceException(500, "请先登录");
+
     }
 
     /**
@@ -137,7 +141,7 @@ public class UserinfoServiceImp implements UserInfoService {
         Long ids = Long.valueOf(userId);
 //        Long getMemberId = Long.valueOf(getKey.getGetUserId());
 
-        if (ids != null && UserUtils.getUserId()!= null) {
+        if (ids != null && UserUtils.getUserId() != null) {
 //                Long memberId = UserUtils.getUserId();
             WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
             wxuserInfoParam.setUserId(ids);

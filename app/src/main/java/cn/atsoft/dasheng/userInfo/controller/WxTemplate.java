@@ -81,7 +81,9 @@ public class WxTemplate {
      */
 
     public String template(Long type) {
-
+        if (UserUtils.getUserId() == null) {
+            throw new ServiceException(500, "请先登录");
+        }
 
 //        if (UserUtils.getUserId() == null) {
 //            throw new ServiceException(500, "请先登录");
@@ -154,6 +156,9 @@ public class WxTemplate {
     }
 
     public String template(Long type, Long id, String time, String note, String details) {
+        if (UserUtils.getUserId() == null) {
+            throw new ServiceException(500, "请先登录");
+        }
         String repalceName = null;
         String replace = null;
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
@@ -174,7 +179,9 @@ public class WxTemplate {
         for (Remind remind : reminds) {
             ids.add(remind.getRemindId());
             templateType = remind.getTemplateType();
-            replace = templateType.replace("{{name}}", repalceName).replace("{{time}}", time);
+            if (repalceName != null) {
+                replace = templateType.replace("{{name}}", repalceName).replace("{{time}}", time);
+            }
             if (note != null) {
                 replace = replace.replace("{{note}}", note);
             }
