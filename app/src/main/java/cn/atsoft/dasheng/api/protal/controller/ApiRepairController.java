@@ -96,7 +96,7 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
-    public List<RepairResult> getRepairOrder() {
+    public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
         remindUserQueryWrapper.in("user_id", userId);
@@ -117,20 +117,18 @@ public class ApiRepairController {
         RepairParam repairParam = new RepairParam();
         if (permission) {
             repairParam.setCreateUser(userId);
-            return repairService.findListBySpec(repairParam);
         } else {
             repairParam.setCreateUser(0L);
-            return repairService.findListBySpec(repairParam);
-
         }
+        return ResponseData.success(repairService.findListBySpec(repairParam));
     }
 
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
-    public List<RepairResult> getMyRepair() {
+    public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
-        return repairService.findListBySpec(repairParam);
+        return ResponseData.success(repairService.findListBySpec(repairParam));
     }
 
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
