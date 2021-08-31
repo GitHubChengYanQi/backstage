@@ -51,7 +51,9 @@ public class UserinfoServiceImp implements UserInfoService {
      */
     @Override
     public byte[] getuser(GetUser user) {
-
+        /**
+         * 获取userid 存入readis 生成随机数作为key
+         */
         Long userId = user.getUserId();
         String userString = "bind-wx-" + userId;
         String randStr = ToolUtil.getRandomString(16);
@@ -64,6 +66,9 @@ public class UserinfoServiceImp implements UserInfoService {
         WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
         System.err.println(randStr);
         String scene = "?key=" + randStr;
+        /**
+         * file改成byte【】
+         */
         try {
             if (user.getUserId() != null) {
                 File wxaCode = wxMaQrcodeService.createWxaCode(path);
@@ -141,18 +146,30 @@ public class UserinfoServiceImp implements UserInfoService {
     @Override
     public void binding(GetKey getKey) {
         if (getKey.getRandStr() != null) {
+            /**
+             * 从getKey取出key
+             */
             String randStr = getKey.getRandStr();
+            /**
+             * 通过key从redis取出userid
+             */
             String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
+            /**
+             * 截取userid
+             */
             String userId = wx.substring(8, wx.length());
-//        String[] split = wx.split("bind-wx-");
             Long ids = Long.valueOf(userId);
-//        Long getMemberId = Long.valueOf(getKey.getGetUserId());
+            /**
+             * 通过userid查询是否绑定
+             */
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            /**
+             * 绑定
+             */
             if (list.size() <= 0) {
                 if (ids != null && UserUtils.getUserId() != null) {
-//                Long memberId = UserUtils.getUserId();
                     WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
                     wxuserInfoParam.setUserId(ids);
                     wxuserInfoParam.setMemberId(UserUtils.getUserId());
