@@ -179,9 +179,7 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
-        if (ToolUtil.isEmpty(UserUtils.getUserId())) {
-            return ResponseData.error("认证失败！");
-        }
+     
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", UserUtils.getUserId());
