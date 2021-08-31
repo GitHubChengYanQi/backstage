@@ -241,10 +241,10 @@ public class UcMemberAuth {
             ucOpenUserInfoParam.setPrimaryKey(primaryKey);
             return ucOpenUserInfoService.add(ucOpenUserInfoParam);
         } else {
-            UcOpenUserInfoParam ucOpenUserInfoParam = new UcOpenUserInfoParam();
-            ToolUtil.copyProperties(userInfo, ucOpenUserInfoParam);
-            ucOpenUserInfoParam.setPrimaryKey(primaryKey);
-            return ucOpenUserInfoService.update(ucOpenUserInfoParam);
+            ToolUtil.copyProperties(userInfo, ucOpenUserInfo);
+//            userInfo.setPrimaryKey(primaryKey);
+            ucOpenUserInfoService.updateById(ucOpenUserInfo);
+            return ucOpenUserInfo;
         }
     }
 
