@@ -93,7 +93,7 @@ public class UserinfoServiceImp implements UserInfoService {
     }
 
     /**
-     * 获取userId
+     * 返回user名称
      *
      * @param randStr
      * @return
@@ -116,19 +116,6 @@ public class UserinfoServiceImp implements UserInfoService {
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
             }
-
-
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("user_id", ids);
-            List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            List<Long> memberIds = new ArrayList<>();
-            for (WxuserInfo wxuserInfo : infoList) {
-                memberIds.add(wxuserInfo.getMemberId());
-            }
-            QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-            ucOpenUserInfoQueryWrapper.in("member_id", memberIds);
-            List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
-
             System.err.println(userId);
             return backUser;
         }
