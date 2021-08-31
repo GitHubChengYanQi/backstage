@@ -78,12 +78,11 @@ public class ApiRepairController {
     @Autowired
     private WxTemplate wxTemplate;
 
-    private Long UserId = 1425292658129031170L;
 
     @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
     public List<RepairResult> getRepairOrder() {
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
-        remindUserQueryWrapper.in("user_id", UserId);
+        remindUserQueryWrapper.in("user_id", UserUtils.getUserId());
         List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
         List<Remind> remindList = remindService.list();
         Boolean permission = false;
@@ -100,7 +99,7 @@ public class ApiRepairController {
         }
         RepairParam repairParam = new RepairParam();
         if (permission) {
-            repairParam.setCreateUser(UserId);
+            repairParam.setCreateUser(UserUtils.getUserId());
             return repairService.findListBySpec(repairParam);
         } else {
             return null;
@@ -110,7 +109,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
     public List<RepairResult> getMyRepair() {
         RepairParam repairParam = new RepairParam();
-        repairParam.setCreateUser(UserId);
+        repairParam.setCreateUser(UserUtils.getUserId());
         return repairService.findListBySpec(repairParam);
     }
 
@@ -180,14 +179,17 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
+        if(ToolUtil.isEmpty(UserUtils.getUserId())){
+            return ResponseData.error("认证失败！");
+        }
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id", UserId);
+        userQueryWrapper.in("user_id", UserUtils.getUserId());
         List<User> users = userService.list(userQueryWrapper);
 
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
-        dispatchingQueryWrapper.in("name", UserId).in("state", 0).orderByAsc("create_time");
+        dispatchingQueryWrapper.in("name", UserUtils.getUserId()).in("state", 0).orderByAsc("create_time");
         List<Dispatching> list = this.dispatchingService.list(dispatchingQueryWrapper);
         List<RepairResult> res = new ArrayList<>();
         List<DispatchingResult> dispatchingResult = new ArrayList<>();
