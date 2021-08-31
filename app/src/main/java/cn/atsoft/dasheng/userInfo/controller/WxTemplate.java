@@ -176,9 +176,9 @@ public class WxTemplate {
         QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
         remindQueryWrapper.in("type", type);
         List<Remind> reminds = remindService.list(remindQueryWrapper);
-        List<Long> ids = new ArrayList<>();
+        List<Long> remindids = new ArrayList<>();
         for (Remind remind : reminds) {
-            ids.add(remind.getRemindId());
+            remindids.add(remind.getRemindId());
             templateType = remind.getTemplateType();
             if (repalceName != null) {
                 replace = templateType.replace("{{name}}", repalceName).replace("{{time}}", time);
@@ -191,7 +191,7 @@ public class WxTemplate {
             }
         }
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("remind_id", ids);
+        queryWrapper.in("remind_id", remindids);
         List<RemindUser> remindUserList = remindUserService.list(queryWrapper);
         List<Long> userIds = new ArrayList<>();
         for (RemindUser remindUser : remindUserList) {
@@ -214,34 +214,36 @@ public class WxTemplate {
         wxuserInfoQueryWrapper.in("user_id", userIds);
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
         List<Long> memberIds = new ArrayList<>();
-        if (memberIds.size() == 0) {
-            throw new ServiceException(500, "账户未绑定");
-        }
-        for (WxuserInfo wxuserInfo : wxuserInfoList) {
-            memberIds.add(wxuserInfo.getMemberId());
-        }
-        QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-        ucOpenUserInfoQueryWrapper.in("member_id", memberIds).in("source", "wxMp");
-        List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
-        List<String> uuids = new ArrayList<>();
-        for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
-            uuids.add(ucOpenUserInfo.getUuid());
-        }
 
-        for (String uuid : uuids) {
-            WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
-            wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
-            wxMpTemplateMessage.setData(data);
-            wxMpTemplateMessage.setToUser(uuid);
-            wxMpTemplateMessage.setUrl(parse.getUrl());
+        if (memberIds.size() > 0) {
+            for (WxuserInfo wxuserInfo : wxuserInfoList) {
+                memberIds.add(wxuserInfo.getMemberId());
+            }
+            QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+            ucOpenUserInfoQueryWrapper.in("member_id", memberIds).in("source", "wxMp");
+            List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
+            List<String> uuids = new ArrayList<>();
+            for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+                uuids.add(ucOpenUserInfo.getUuid());
+            }
 
-            try {
-                String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
-                return sendTemplateMsg;
-            } catch (WxErrorException e) {
-                e.printStackTrace();
+            for (String uuid : uuids) {
+                WxMpTemplateMessage wxMpTemplateMessage = new WxMpTemplateMessage();
+                wxMpTemplateMessage.setTemplateId(parse.getTemplateId());
+                wxMpTemplateMessage.setData(data);
+                wxMpTemplateMessage.setToUser(uuid);
+                wxMpTemplateMessage.setUrl(parse.getUrl());
+
+                try {
+                    String sendTemplateMsg = templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+                    return sendTemplateMsg;
+                } catch (WxErrorException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+
 
         return null;
     }
