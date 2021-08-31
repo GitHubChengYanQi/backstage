@@ -301,23 +301,25 @@ public class UcMemberAuth {
          */
         if (ToolUtil.isNotEmpty(loginedType) && !loginedType.equals(userInfo.getSource())) {
             String primaryKey = loginedType + "-" + loginedAccount;
-//            UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.getById(primaryKey);
+            UcOpenUserInfo updateUcOpenUserInfo = ucOpenUserInfoService.getById(primaryKey);
 
 
             /**
              * 新登录用户没有memberId，并且当前的有memberId（先是手机登录，后用微信等方式登录）
              * 这种情况给memberId赋值
              */
-            if (ToolUtil.isNotEmpty(ucOpenUserInfo.getMemberId()) && memberId <= 0) {
-                memberId = ucOpenUserInfo.getMemberId();
+            if (ToolUtil.isNotEmpty(updateUcOpenUserInfo.getMemberId()) && memberId <= 0) {
+                memberId = updateUcOpenUserInfo.getMemberId();
+                ucOpenUserInfo.setMemberId(memberId);
+                ucOpenUserInfoService.updateById(ucOpenUserInfo);
             }
             /**
              * 新登录用户信息有memberId 并且当前登录信息没有 memberId（先是微信等登录方式，后用手机登录方式会是这种情况）
              * 这种情况memberId直接更新当前数据
              */
-            if (ToolUtil.isNotEmpty(ucOpenUserInfo) && ToolUtil.isNotEmpty(memberId)) {
-                ucOpenUserInfo.setMemberId(memberId);
-                ucOpenUserInfoService.updateById(ucOpenUserInfo);
+            if (ToolUtil.isNotEmpty(updateUcOpenUserInfo) && ToolUtil.isNotEmpty(memberId)) {
+                updateUcOpenUserInfo.setMemberId(memberId);
+                ucOpenUserInfoService.updateById(updateUcOpenUserInfo);
             }
         }
 
