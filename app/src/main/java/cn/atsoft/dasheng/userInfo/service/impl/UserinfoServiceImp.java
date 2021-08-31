@@ -65,7 +65,7 @@ public class UserinfoServiceImp implements UserInfoService {
         System.err.println(randStr);
         String scene = "?key=" + randStr;
         try {
-            if (user.getUserId() != null && user.getPage() != null) {
+            if (user.getUserId() != null) {
                 File wxaCode = wxMaQrcodeService.createWxaCode(path);
                 FileInputStream fis = new FileInputStream(wxaCode);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
@@ -78,8 +78,6 @@ public class UserinfoServiceImp implements UserInfoService {
                 byte[] byteArray = bos.toByteArray();
                 return byteArray;
 //                return wxMaQrcodeService.createWxaCodeUnlimitBytes(scene, user.getPage(), 430, true, wxMaCodeLineColor, true);
-
-
             } else {
                 throw new ServiceException(500, "请确定登录");
             }
@@ -165,7 +163,7 @@ public class UserinfoServiceImp implements UserInfoService {
                 throw new ServiceException(505, "账户已经绑定");
             }
         } else {
-            throw new ServiceException(505, "绑定失败,请确认用户存在");
+            throw new ServiceException(500, "绑定失败,请确认用户存在");
         }
 
 
