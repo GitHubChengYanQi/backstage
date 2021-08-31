@@ -103,20 +103,24 @@ public class UserinfoServiceImp implements UserInfoService {
     public BackUser backUser(String randStr) {
 
         if (UserUtils.getUserId() != null) {
+            //通过key获取userid
             String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
             String userId = wx.substring(8, wx.length());
             Long ids = Long.valueOf(userId);
+            //查询userid信息
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             userQueryWrapper.in("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
             BackUser backUser = new BackUser();
             backUser.setBln(true);
+            //获取user信息返回数据
             for (User user : users) {
                 UserResult userResult = new UserResult();
                 ToolUtil.copyProperties(user, userResult);
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
             }
+            //查询当前userid是否绑定 绑定返回false
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);

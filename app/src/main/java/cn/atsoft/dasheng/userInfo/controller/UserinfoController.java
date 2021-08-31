@@ -18,7 +18,12 @@ public class UserinfoController extends BaseController {
     @Autowired
     private UserInfoService userInfoService;
 
-
+    /**
+     * 返回二维码
+     *
+     * @param user
+     * @return
+     */
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     public ResponseData getuser(@RequestBody GetUser user) {
         byte[] getuser = userInfoService.getuser(user);
@@ -26,13 +31,24 @@ public class UserinfoController extends BaseController {
         return ResponseData.success(getuser);
     }
 
-
+    /**
+     * 返回绑定用户
+     *
+     * @param randStr
+     * @return
+     */
     @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
-    public ResponseData subscribe(String randStr) {
+    public ResponseData subscribe(@RequestParam("randStr") String randStr) {
         BackUser backUser = userInfoService.backUser(randStr);
         return ResponseData.success(backUser);
     }
 
+    /**
+     * 绑定
+     *
+     * @param getKey
+     * @return
+     */
     @RequestMapping(value = "/binding", method = RequestMethod.POST)
     public ResponseData binding(@RequestBody GetKey getKey) {
         userInfoService.binding(getKey);
