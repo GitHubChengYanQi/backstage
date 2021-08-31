@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.userInfo.service.impl;
 
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.atsoft.dasheng.userInfo.model.BackUser;
 import cn.atsoft.dasheng.userInfo.model.GetKey;
@@ -23,6 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,6 +40,8 @@ public class UserinfoServiceImp implements UserInfoService {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
 
     /**
      * 返回二维码
@@ -110,12 +115,19 @@ public class UserinfoServiceImp implements UserInfoService {
                 ToolUtil.copyProperties(user, userResult);
                 backUser.setName(userResult.getName());
                 backUser.setRandStr(randStr);
-
             }
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            if (infoList.size() > 0) {
+            List<Long> memberIds = new ArrayList<>();
+            for (WxuserInfo wxuserInfo : infoList) {
+                memberIds.add(wxuserInfo.getMemberId());
+            }
+               QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+            ucOpenUserInfoQueryWrapper.in("member_id",memberIds);
+            List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
+
+            if (ucOpenUserInfos.size()== 0) {
                 backUser.setBln(false);
 //            throw new ServiceException(500, "账户已绑定");
             }

@@ -54,9 +54,6 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private RemindService remindService;
     @Autowired
     private WxTemplate wxTemplate;
 
@@ -110,7 +107,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
 
-        wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getRepair().getComment(), param.getRepair().getComment());
+        wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getRepair().getComment(), param.getRepair().getServiceType());
 
 
 //        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();

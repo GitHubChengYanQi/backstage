@@ -17,7 +17,7 @@ public class AuthException extends RuntimeException {
 
     public AuthException() {
         super("认证失败！");
-        this.code = 500;
+        this.code = 401;
         this.errorMessage = "认证失败！";
     }
 
