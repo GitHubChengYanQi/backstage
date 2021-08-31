@@ -40,6 +40,8 @@ public class UserinfoServiceImp implements UserInfoService {
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
 
 
     /**
@@ -103,6 +105,13 @@ public class UserinfoServiceImp implements UserInfoService {
     public BackUser backUser(String randStr) {
 
         if (UserUtils.getUserId() != null) {
+            BackUser backUser = new BackUser();
+            QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+            ucOpenUserInfoQueryWrapper.in("member_id", UserUtils.getUserId());
+            List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
+            for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+                backUser.setUcName(ucOpenUserInfo.getUsername());
+            }
             //通过key获取userid
             String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
             String userId = wx.substring(8, wx.length());
@@ -111,7 +120,7 @@ public class UserinfoServiceImp implements UserInfoService {
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
             userQueryWrapper.in("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
-            BackUser backUser = new BackUser();
+
             backUser.setBln(true);
             //获取user信息返回数据
             for (User user : users) {
