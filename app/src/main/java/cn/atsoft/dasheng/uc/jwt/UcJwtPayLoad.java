@@ -27,6 +27,7 @@ public class UcJwtPayLoad extends JwtPayLoad {
     public Map<String, Object> toMap() {
         Map<String, Object> map = super.toMap();
         map.put("type", this.type);
+        map.put("mobile", this.mobile);
         return map;
     }
 

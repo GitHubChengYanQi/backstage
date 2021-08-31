@@ -51,7 +51,7 @@ public class UserUtils {
         UcJwtPayLoad ucJwtPayLoad = getPayLoad();
         String mobile =  ucJwtPayLoad.getMobile();
         if(ToolUtil.isEmpty(mobile)){
-            throw new AuthException();
+            throw new AuthException(402);
         }
         return mobile;
     }
