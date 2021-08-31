@@ -30,9 +30,6 @@ import javax.validation.Valid;
 
 /**
  * rest方式的登录控制器
- *
- * @author fengshuonan
- * @Date 2017年1月10日 下午8:25:24
  */
 @Controller
 @RequestMapping("/rest")
@@ -44,9 +41,6 @@ public class RestLoginController extends BaseController {
 
     /**
      * 点击登录执行的动作
-     *
-     * @author fengshuonan
-     * @Date 2018/12/23 5:42 PM
      */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
