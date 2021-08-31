@@ -65,7 +65,7 @@ public class RepairController extends BaseController {
     @RequestMapping(value = "/addWx", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addWx(RepairParam repairParam) {
-//
+
         return ResponseData.success();
     }
 
