@@ -123,11 +123,11 @@ public class UserinfoServiceImp implements UserInfoService {
             for (WxuserInfo wxuserInfo : infoList) {
                 memberIds.add(wxuserInfo.getMemberId());
             }
-               QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
-            ucOpenUserInfoQueryWrapper.in("member_id",memberIds);
+            QueryWrapper<UcOpenUserInfo> ucOpenUserInfoQueryWrapper = new QueryWrapper<>();
+            ucOpenUserInfoQueryWrapper.in("member_id", memberIds);
             List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
 
-            if (ucOpenUserInfos.size()== 0) {
+            if (ucOpenUserInfos.size() == 0) {
                 backUser.setBln(false);
 //            throw new ServiceException(500, "账户已绑定");
             }
@@ -153,9 +153,9 @@ public class UserinfoServiceImp implements UserInfoService {
         Long ids = Long.valueOf(userId);
 //        Long getMemberId = Long.valueOf(getKey.getGetUserId());
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("user_id",ids);
+        wxuserInfoQueryWrapper.in("user_id", ids);
         List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        if (list.size()<0) {
+        if (list.size() < 0) {
             if (ids != null && UserUtils.getUserId() != null) {
 //                Long memberId = UserUtils.getUserId();
                 WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
@@ -164,7 +164,10 @@ public class UserinfoServiceImp implements UserInfoService {
                 wxuserInfoParam.setUuid(UserUtils.getUserAccount());
                 wxuserInfoService.add(wxuserInfoParam);
             }
+        } else {
+            throw new ServiceException(500, "账户已经绑定");
         }
+
     }
 
 }
