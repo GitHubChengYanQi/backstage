@@ -112,7 +112,7 @@ public class UserinfoServiceImp implements UserInfoService {
             userQueryWrapper.in("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
             BackUser backUser = new BackUser();
-
+            backUser.setBln(true);
             for (User user : users) {
                 UserResult userResult = new UserResult();
                 ToolUtil.copyProperties(user, userResult);
@@ -127,6 +127,7 @@ public class UserinfoServiceImp implements UserInfoService {
             List<Long> memberIds = new ArrayList<>();
             for (WxuserInfo wxuserInfo : infoList) {
                 memberIds.add(wxuserInfo.getMemberId());
+                backUser.setBln(false);
             }
 
 
