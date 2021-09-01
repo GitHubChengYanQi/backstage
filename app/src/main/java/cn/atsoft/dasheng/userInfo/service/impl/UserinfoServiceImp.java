@@ -133,9 +133,7 @@ public class UserinfoServiceImp implements UserInfoService {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            List<Long> memberIds = new ArrayList<>();
-            for (WxuserInfo wxuserInfo : infoList) {
-                memberIds.add(wxuserInfo.getMemberId());
+            if (infoList.size() > 0) {
                 backUser.setBln(false);
             }
             System.err.println(userId);
