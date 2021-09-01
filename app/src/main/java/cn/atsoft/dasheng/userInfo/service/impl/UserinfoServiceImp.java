@@ -121,9 +121,9 @@ public class UserinfoServiceImp implements UserInfoService {
             userQueryWrapper.in("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
 
-            backUser.setBln(true);
             //获取user信息返回数据
             for (User user : users) {
+
                 UserResult userResult = new UserResult();
                 ToolUtil.copyProperties(user, userResult);
                 backUser.setName(userResult.getName());
