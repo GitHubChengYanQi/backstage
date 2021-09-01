@@ -51,48 +51,51 @@ public class UserinfoServiceImp implements UserInfoService {
      * @return
      */
     @Override
-    public byte[] getuser(GetUser user) {
+    public String getuser(GetUser user) {
         /**
          * 获取userid 存入readis 生成随机数作为key
          */
         Long userId = user.getUserId();
         String userString = "bind-wx-" + userId;
         String randStr = ToolUtil.getRandomString(16);
-        String path = user.getPage() + "?key=" + randStr;
-        WxMaQrcodeService wxMaQrcodeService = wxMaService.getQrcodeService();
+
+
+//        String path = user.getPage() + "?key=" + randStr;
+//        WxMaQrcodeService wxMaQrcodeService = wxMaService.getQrcodeService();
         redisTemplate.boundValueOps(randStr).set(userString);
+        return randStr;
 //临时信息
 //        redisTemplate.expire(randStr, 360000, TimeUnit.MINUTES);
-
-        WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
-        System.err.println(randStr);
-        String scene = "?key=" + randStr;
-        /**
-         * file改成byte【】
-         */
-        try {
-            if (user.getUserId() != null) {
-                File wxaCode = wxMaQrcodeService.createWxaCode(path);
-                FileInputStream fis = new FileInputStream(wxaCode);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
-                byte[] b = new byte[1024];
-                int n;
-                while ((n = fis.read(b)) != -1) {
-                    bos.write(b, 0, n);
-                }
-                fis.close();
-                byte[] byteArray = bos.toByteArray();
-                return byteArray;
-            } else {
-                throw new ServiceException(500, "请确定登录");
-            }
-
-        } catch (WxErrorException | FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+//
+//        WxMaCodeLineColor wxMaCodeLineColor = new WxMaCodeLineColor("0", "0", "0");
+//        System.err.println(randStr);
+//        String scene = "?key=" + randStr;
+//        /**
+//         * file改成byte【】
+//         */
+//        try {
+//            if (user.getUserId() != null) {
+//                File wxaCode = wxMaQrcodeService.createWxaCode(path);
+//                FileInputStream fis = new FileInputStream(wxaCode);
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+//                byte[] b = new byte[1024];
+//                int n;
+//                while ((n = fis.read(b)) != -1) {
+//                    bos.write(b, 0, n);
+//                }
+//                fis.close();
+//                byte[] byteArray = bos.toByteArray();
+//                return byteArray;
+//            } else {
+//                throw new ServiceException(500, "请确定登录");
+//            }
+//
+//        } catch (WxErrorException | FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
     }
 
     /**

@@ -272,10 +272,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
         List<Customer> customers = customerService.list(customerQueryWrapper);
 
-        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<RepairImage> bannerQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(bIds)) {
-            bannerQueryWrapper.in("difference", bIds);
+            bannerQueryWrapper.in("repair_id", bIds);
         }
+
+        List<RepairImage> repairImages = repairImageService.list(bannerQueryWrapper);
+
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(bIds)) {
@@ -283,7 +286,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         }
         List<Dispatching> dispatchings = dispatchingService.list(dispatchingQueryWrapper);
 
-        List<BannerResult> bannerList = new ArrayList<>();
+        List<RepairImageResult> repairImages1 = new ArrayList<>();
         List<DispatchingResult> dispatchingList = new ArrayList<>();
         for (RepairResult record : data) {
             for (DeliveryDetailsResult byId : byIds) {
@@ -300,6 +303,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                 }
             }
 
+            for (RepairImage repairImage : repairImages) {
+                if (repairImage.getRepairId().equals(record.getRepairId())) {
+                    RepairImageResult result = new RepairImageResult();
+                    ToolUtil.copyProperties(repairImage, result);
+                    repairImages1.add(result);
+                }
+            }
+
             for (Dispatching dispatching : dispatchings) {
                 if (dispatching.getRepairId().equals(record.getRepairId())) {
                     User userInfo = userService.getById(dispatching.getName());
@@ -309,6 +320,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     dispatchingList.add(dispatchingResult);
                 }
             }
+            record.setBannerResult(repairImages1);
             record.setDispatchingResults(dispatchingList);
             List<RegionResult> regionList = new ArrayList<>();
             for (CommonArea commonArea : commonAreas) {
