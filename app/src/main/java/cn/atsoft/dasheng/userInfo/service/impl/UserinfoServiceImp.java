@@ -111,6 +111,7 @@ public class UserinfoServiceImp implements UserInfoService {
             List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(ucOpenUserInfoQueryWrapper);
             for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
                 backUser.setUcName(ucOpenUserInfo.getUsername());
+                backUser.setUcAvatar(ucOpenUserInfo.getAvatar());
             }
             //通过key获取userid
             String wx = String.valueOf(redisTemplate.boundValueOps(randStr).get());
@@ -133,20 +134,9 @@ public class UserinfoServiceImp implements UserInfoService {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-
-            for (WxuserInfo wxuserInfo : infoList) {
+            if (infoList.size() > 0) {
                 backUser.setBln(false);
-                QueryWrapper<UcOpenUserInfo> userInfoQueryWrapper = new QueryWrapper<>();
-                userInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId());
-                List<UcOpenUserInfo> userInfos = userInfoService.list(userInfoQueryWrapper);
-                if (userInfos.size() > 0) {
-                    for (UcOpenUserInfo userInfo : userInfos) {
-                        backUser.setUcAvatar(userInfo.getAvatar());
-                    }
-                }
-
             }
-
             return backUser;
 
 
