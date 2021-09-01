@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
@@ -29,7 +30,7 @@ public class ApiCompanyController {
     private WxuserInfoService wxuserInfoService;
 
     @RequestMapping(value = "/getCompannyList", method = RequestMethod.POST)
-    public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
+    public ResponseData list(@RequestBody(required = false) CustomerParam customerParam) {
         WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
         Long userId = null;
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
@@ -46,9 +47,9 @@ public class ApiCompanyController {
             if (ToolUtil.isEmpty(customerParam)) {
                 customerParam = new CustomerParam();
             }
-            return customerService.findPageBySpec(customerParam);
+            return ResponseData.success(customerService.findPageBySpec(customerParam));
         }else{
-            return null;
+            return  ResponseData.success();
         }
     }
 }

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.api.protal.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
@@ -20,9 +21,10 @@ public class ApiWxUserController {
     @Autowired
     private WxuserInfoService wxuserInfoService;
     @RequestMapping(value = "/getWxUser", method = RequestMethod.POST)
-    public PageInfo<WxuserInfoResult> getWxUser() {
+    public ResponseData getWxUser() {
         WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
         wxuserInfoParam.setMemberId(UserUtils.getUserId());
-        return this.wxuserInfoService.findPageBySpec(wxuserInfoParam);
+
+        return  ResponseData.success(this.wxuserInfoService.findPageBySpec(wxuserInfoParam));
     }
 }

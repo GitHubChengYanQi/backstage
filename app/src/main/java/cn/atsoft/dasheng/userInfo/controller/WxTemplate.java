@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.userInfo.controller;
 
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
@@ -184,14 +185,19 @@ public class WxTemplate {
         for (Remind remind : reminds) {
             remindids.add(remind.getRemindId());
             templateType = remind.getTemplateType();
-            if (repalceName != null) {
-                replace = templateType.replace("{{name}}", repalceName).replace("{{time}}", time);
-            }
-            if (note != null) {
-                replace = replace.replace("{{note}}", note);
-            }
-            if (details != null) {
-                replace = replace.replace("{{details}}", details);
+            if(ToolUtil.isNotEmpty(templateType)){
+                if (ToolUtil.isNotEmpty(repalceName)) {
+                    replace = templateType.replace("{{name}}", repalceName).replace("{{time}}", time);
+                    if(ToolUtil.isNotEmpty(replace)){
+                        if (ToolUtil.isNotEmpty(note)) {
+                            replace = replace.replace("{{note}}", note);
+                        }
+                        if (ToolUtil.isNotEmpty(details) ) {
+                            replace = replace.replace("{{details}}", details);
+                        }
+                    }
+                }
+
             }
         }
         QueryWrapper<RemindUser> queryWrapper = new QueryWrapper<>();

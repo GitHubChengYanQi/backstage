@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.app.service.impl.DeliveryDetailsServiceImpl;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,7 @@ public class ApiDeliveryController {
     private DeliveryService deliveryService;
 
     @RequestMapping(value = "/getDeliveryList", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public List<DeliveryDetailsResult> getDeliveryList(@RequestBody(required = false) DeliveryParam deliveryParam) {
+    public ResponseData getDeliveryList(@RequestBody(required = false) DeliveryParam deliveryParam) {
 
         Long customerId = deliveryParam.getCustomerId();
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
@@ -65,7 +65,7 @@ public class ApiDeliveryController {
             }
         }
         deliveryDetailsService.format(rtnList);
-        return  rtnList;
+        return  ResponseData.success(rtnList);
     }
 
 }

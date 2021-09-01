@@ -164,7 +164,7 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
-    public Repair updateRepair(@RequestBody RepairParam repairParam) {
+    public ResponseData updateRepair(@RequestBody RepairParam repairParam) {
         Repair oldEntity = getOldEntity(repairParam);
         Repair newEntity = getEntity(repairParam);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -179,20 +179,20 @@ public class ApiRepairController {
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
         if (repairParam.getProgress().equals(1L)) {
-            return newEntity;
+            return ResponseData.success(newEntity);
         } else {
             wxTemplate.template(repairParam.getType(), list1.get(0).getCreateUser(), time, list1.get(0).getServiceType(), list1.get(0).getComment());
         }
 
-        return newEntity;
+        return ResponseData.success(newEntity);
     }
 
     @RequestMapping(value = "/customerList", method = RequestMethod.POST)
-    public List<Customer> list() {
+    public ResponseData list() {
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("display", 1);
         List<Customer> list = customerService.list(customerQueryWrapper);
-        return list;
+        return ResponseData.success(list);
     }
 
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
@@ -470,7 +470,7 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/getRepairById", method = RequestMethod.POST)
-    public RepairResult getRepairById(@RequestBody(required = false) RepairParam repairParam) {
+    public ResponseData getRepairById(@RequestBody(required = false) RepairParam repairParam) {
 
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         RepairResult repairResult = new RepairResult();
@@ -479,7 +479,7 @@ public class ApiRepairController {
             add(repairResult);
         }};
         this.repairService.format(results);
-        return results.get(0);
+        return ResponseData.success(results.get(0));
     }
 
     @RequestMapping(value = "/getToken", method = RequestMethod.GET)
