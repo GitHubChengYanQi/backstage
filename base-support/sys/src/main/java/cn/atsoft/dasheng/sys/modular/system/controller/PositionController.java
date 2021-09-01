@@ -13,9 +13,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author stylefeng
  * @Date 2019-06-27 21:33:47
  */
-@Controller
+@RestController
 @RequestMapping("/position")
 public class PositionController extends BaseController {
 
@@ -75,9 +73,8 @@ public class PositionController extends BaseController {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    @RequestMapping("/addItem")
-    @ResponseBody
-    public ResponseData addItem(PositionParam positionParam) {
+    @RequestMapping(value = "/addItem", method = RequestMethod.POST)
+    public ResponseData addItem(@RequestBody PositionParam positionParam) {
         this.positionService.add(positionParam);
         return ResponseData.success();
     }
@@ -88,9 +85,8 @@ public class PositionController extends BaseController {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    @RequestMapping("/editItem")
-    @ResponseBody
-    public ResponseData editItem(PositionParam positionParam) {
+    @RequestMapping(value = "/editItem", method = RequestMethod.POST)
+    public ResponseData editItem(@RequestBody PositionParam positionParam) {
         this.positionService.update(positionParam);
         return ResponseData.success();
     }
@@ -101,9 +97,9 @@ public class PositionController extends BaseController {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData delete(PositionParam positionParam) {
+    public ResponseData delete(@RequestBody PositionParam positionParam) {
         this.positionService.delete(positionParam);
         return ResponseData.success();
     }
@@ -114,7 +110,7 @@ public class PositionController extends BaseController {
      * @author stylefeng
      * @Date 2019-06-27
      */
-    @RequestMapping("/detail")
+    @RequestMapping(value = "/detail",method = RequestMethod.POST)
     @ResponseBody
     public ResponseData detail(PositionParam positionParam) {
         Position detail = this.positionService.getById(positionParam.getPositionId());

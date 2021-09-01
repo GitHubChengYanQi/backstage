@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.userInfo.model.GetUser;
 
 public interface UserInfoService {
 
-    byte[] getuser(GetUser user);
+    String getuser(GetUser user);
 
     BackUser backUser(String randStr);
 

@@ -30,6 +30,10 @@ import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
+import cn.atsoft.dasheng.portal.repairImage.entity.RepairImage;
+import cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam;
+import cn.atsoft.dasheng.portal.repairImage.model.result.RepairImageResult;
+import cn.atsoft.dasheng.portal.repairImage.service.RepairImageService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
@@ -84,6 +88,8 @@ public class ApiRepairController {
     private WxTemplate wxTemplate;
     @Autowired
     private WxuserInfoService wxuserInfoService;
+    @Autowired
+    private RepairImageService repairImageService;
 
     public Long getWxUser(Long memberId) {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
@@ -147,14 +153,13 @@ public class ApiRepairController {
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
         Repair entity = getEntity(repairParam);
         this.repairService.save(entity);
-//        Repair repair = this.repairService.add(repairParam);
-        List<Banner> banner = repairParam.getItemImgUrlList();
-        for (Banner data : banner) {
-            BannerParam bannerParam = new BannerParam();
-            bannerParam.setDifference(entity.getRepairId());
-            bannerParam.setImgUrl(data.getImgUrl());
-            bannerParam.setTitle(data.getTitle());
-            this.bannerService.add(bannerParam);
+        List<RepairImage> repairImages = repairParam.getItemImgUrlList();
+        for (RepairImage data : repairImages) {
+            RepairImageParam repairImageParam = new RepairImageParam();
+            repairImageParam.setRepairId(entity.getRepairId());
+            repairImageParam.setImgUrl(data.getImgUrl());
+            repairImageParam.setTitle(data.getTitle());
+            this.repairImageService.add(repairImageParam);
         }
         String reateTime = String.valueOf(entity.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
@@ -237,14 +242,14 @@ public class ApiRepairController {
                     break;
                 }
                 // 查询图片
-                QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-                bannerQueryWrapper.in("difference", data.getRepairId());
-                List<Banner> banners = bannerService.list(bannerQueryWrapper);
-                List<BannerResult> bannerList = new ArrayList<>();
-                for (Banner banner : banners) {
-                    BannerResult bannerResult = new BannerResult();
-                    ToolUtil.copyProperties(banner, bannerResult);
-                    bannerList.add(bannerResult);
+                QueryWrapper<RepairImage> repairImageQueryWrapper = new QueryWrapper<>();
+                repairImageQueryWrapper.in("repair_id", data.getRepairId());
+                List<RepairImage> repairImages = repairImageService.list(repairImageQueryWrapper);
+                List<RepairImageResult> bannerList = new ArrayList<>();
+                for (RepairImage repairImage : repairImages) {
+                    RepairImageResult repairImageResult = new RepairImageResult();
+                    ToolUtil.copyProperties(repairImage, repairImageResult);
+                    bannerList.add(repairImageResult);
                 }
                 result.setBannerResult(bannerList);
 
@@ -362,14 +367,14 @@ public class ApiRepairController {
                 }
 
                 // 查询图片
-                QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-                bannerQueryWrapper.in("difference", data.getRepairId());
-                List<Banner> banners = bannerService.list(bannerQueryWrapper);
-                List<BannerResult> bannerList = new ArrayList<>();
-                for (Banner banner : banners) {
-                    BannerResult bannerResult = new BannerResult();
-                    ToolUtil.copyProperties(banner, bannerResult);
-                    bannerList.add(bannerResult);
+                QueryWrapper<RepairImage> repairImageQueryWrapper = new QueryWrapper<>();
+                repairImageQueryWrapper.in("repair_id", data.getRepairId());
+                List<RepairImage> repairImages = repairImageService.list(repairImageQueryWrapper);
+                List<RepairImageResult> bannerList = new ArrayList<>();
+                for (RepairImage repairImage : repairImages) {
+                    RepairImageResult repairImageResult = new RepairImageResult();
+                    ToolUtil.copyProperties(repairImage, repairImageResult);
+                    bannerList.add(repairImageResult);
                 }
                 result.setBannerResult(bannerList);
 

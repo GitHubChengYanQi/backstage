@@ -26,8 +26,7 @@ public class UserinfoController extends BaseController {
      */
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     public ResponseData getuser(@RequestBody GetUser user) {
-        byte[] getuser = userInfoService.getuser(user);
-//        String base64String = Base64.encodeBase64String(getuser);
+        String getuser = userInfoService.getuser(user);
         return ResponseData.success(getuser);
     }
 

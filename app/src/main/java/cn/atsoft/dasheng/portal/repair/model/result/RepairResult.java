@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
+import cn.atsoft.dasheng.portal.repairImage.model.result.RepairImageResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -33,7 +34,7 @@ public class RepairResult implements Serializable {
 
     private DeliveryDetailsResult deliveryDetailsResult;
     private CustomerResult customerResult;
-    private List<BannerResult> bannerResult;
+    private List<RepairImageResult> bannerResult;
 
     private Dispatching dispatchingResult;
     private List<DispatchingResult> dispatchingResults;
