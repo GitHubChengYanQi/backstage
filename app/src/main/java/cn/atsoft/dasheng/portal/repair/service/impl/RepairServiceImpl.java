@@ -30,6 +30,10 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.repairDynamic.model.params.RepairDynamicParam;
 import cn.atsoft.dasheng.portal.repairDynamic.service.RepairDynamicService;
+import cn.atsoft.dasheng.portal.repairImage.entity.RepairImage;
+import cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam;
+import cn.atsoft.dasheng.portal.repairImage.model.result.RepairImageResult;
+import cn.atsoft.dasheng.portal.repairImage.service.RepairImageService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
@@ -66,7 +70,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Autowired
     private RepairDynamicService repairDynamicService;
     @Autowired
-    private BannerService bannerService;
+    private RepairImageService repairImageService;
     @Autowired
     private CommonAreaService commonAreaService;
     @Autowired
@@ -99,14 +103,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
         wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
-        List<Banner> banner = param.getItemImgUrlList();
-        for (Banner data : banner) {
+        List<RepairImage> repairImages = param.getItemImgUrlList();
+        for (RepairImage data : repairImages) {
             if (data != null) {
-                BannerParam bannerParam = new BannerParam();
-                bannerParam.setDifference(entity.getRepairId());
-                bannerParam.setImgUrl(data.getImgUrl());
-                bannerParam.setTitle(data.getTitle());
-                this.bannerService.add(bannerParam);
+                RepairImageParam repairImageParam = new RepairImageParam();
+                repairImageParam.setRepairId(entity.getRepairId());
+                repairImageParam.setImgUrl(data.getImgUrl());
+                repairImageParam.setTitle(data.getTitle());
+                this.repairImageService.add(repairImageParam);
             }
 
         }
@@ -210,16 +214,16 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Repair repair = this.getById(id);
         RepairResult repairResult = new RepairResult();
 
-        QueryWrapper<Banner> bannerQueryWrapper = new QueryWrapper<>();
-        bannerQueryWrapper.in("difference", id);
-        List<Banner> list = bannerService.list(bannerQueryWrapper);
-        List<BannerResult> bannerResults = new ArrayList<>();
-        for (Banner banner : list) {
-            BannerResult result = new BannerResult();
-            ToolUtil.copyProperties(banner, result);
-            bannerResults.add(result);
+        QueryWrapper<RepairImage> bannerQueryWrapper = new QueryWrapper<>();
+        bannerQueryWrapper.in("repair_id", id);
+        List<RepairImage> list = repairImageService.list(bannerQueryWrapper);
+        List<RepairImageResult> repairImageResults = new ArrayList<>();
+        for (RepairImage repairImage : list) {
+            RepairImageResult result = new RepairImageResult();
+            ToolUtil.copyProperties(repairImage, result);
+            repairImageResults.add(result);
         }
-        repairResult.setBannerResult(bannerResults);
+        repairResult.setBannerResult(repairImageResults);
 
         ToolUtil.copyProperties(repair, repairResult);
         List<RepairResult> results = new ArrayList<RepairResult>() {{
@@ -272,7 +276,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         if (ToolUtil.isNotEmpty(bIds)) {
             bannerQueryWrapper.in("difference", bIds);
         }
-        List<Banner> banners = bannerService.list(bannerQueryWrapper);
 
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(bIds)) {
@@ -296,13 +299,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     break;
                 }
             }
-            for (Banner banner : banners) {
-                if (banner.getDifference().equals(record.getRepairId())) {
-                    BannerResult bannerResult = new BannerResult();
-                    ToolUtil.copyProperties(banner, bannerResult);
-                    bannerList.add(bannerResult);
-                }
-            }
+
             for (Dispatching dispatching : dispatchings) {
                 if (dispatching.getRepairId().equals(record.getRepairId())) {
                     User userInfo = userService.getById(dispatching.getName());
@@ -312,7 +309,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
                     dispatchingList.add(dispatchingResult);
                 }
             }
-            record.setBannerResult(bannerList);
             record.setDispatchingResults(dispatchingList);
             List<RegionResult> regionList = new ArrayList<>();
             for (CommonArea commonArea : commonAreas) {
