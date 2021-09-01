@@ -8,4 +8,5 @@ public class BackUser {
     private Boolean bln;
     private String randStr;
     private  String ucName;
+    private  String ucAvatar;
 }

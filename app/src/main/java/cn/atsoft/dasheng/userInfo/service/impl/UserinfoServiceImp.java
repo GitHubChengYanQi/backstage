@@ -133,13 +133,23 @@ public class UserinfoServiceImp implements UserInfoService {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            if (infoList.size() > 0) {
-                backUser.setBln(false);
-            }
-            List<Long> memberIds = new ArrayList<>();
 
-            System.err.println(userId);
+            for (WxuserInfo wxuserInfo : infoList) {
+                backUser.setBln(false);
+                QueryWrapper<UcOpenUserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+                userInfoQueryWrapper.in("member_id", wxuserInfo.getMemberId());
+                List<UcOpenUserInfo> userInfos = userInfoService.list(userInfoQueryWrapper);
+                if (userInfos.size() > 0) {
+                    for (UcOpenUserInfo userInfo : userInfos) {
+                        backUser.setUcAvatar(userInfo.getAvatar());
+                    }
+                }
+
+            }
+
             return backUser;
+
+
         }
 
         return null;
