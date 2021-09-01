@@ -32,7 +32,7 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
 
     private Long type;
 
-    private String page;
+
 
     /**
      * 派工id

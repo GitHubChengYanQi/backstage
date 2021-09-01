@@ -82,6 +82,8 @@ public class Repair implements Serializable {
      */
     @TableField("comment")
     private String comment;
+    @TableField("name")
+    private Long name;
 
     /**
      * 创建时间
@@ -392,6 +394,14 @@ public class Repair implements Serializable {
 
     public void setWxArea(String wxArea) {
         this.wxArea = wxArea;
+    }
+
+    public Long getName() {
+        return name;
+    }
+
+    public void setName(Long name) {
+        this.name = name;
     }
 
     @Override

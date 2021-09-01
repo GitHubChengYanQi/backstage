@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
@@ -56,10 +58,11 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
 
     @Autowired
     private UserService userService;
+
     @Autowired
-    private WxTemplate wxTemplate;
+    private RepairService repairService;
     @Autowired
-    private WxuserInfoService wxuserInfoService;
+    private RepairSendTemplate repairSendTemplate;
 
     @Override
     public void add(DispatchingParam param) {
@@ -78,6 +81,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         Dispatching newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
     }
 
     @Override
@@ -107,15 +111,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     public void addwx(DispatchingParam param) {
         Dispatching entity = getEntity(param);
         this.save(entity);
-        String reateTime = String.valueOf(param.getTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        QueryWrapper<WxuserInfo> userInfoQueryWrapper = new QueryWrapper<>();
-        userInfoQueryWrapper.in("user_id", entity.getCreateUser());
-        List<WxuserInfo> list = wxuserInfoService.list(userInfoQueryWrapper);
-        if (list.size() > 0) {
-            wxTemplate.template(param.getType(), entity.getCreateUser(), time, param.getRepair().getComment(), param.getRepair().getServiceType());
-        }
+
+
     }
 
     @Override

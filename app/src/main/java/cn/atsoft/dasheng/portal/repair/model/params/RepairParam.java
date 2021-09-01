@@ -31,7 +31,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     private String customerName;
     private Long dynamic;
     private String wxArea;
-    private  Long type;
+
     /**
      * 报修id
      */
@@ -56,6 +56,8 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("设备id")
     private Long itemId;
     private Long number;
+
+    private  Long name;
 
     /**
      * 服务类型
@@ -176,6 +178,8 @@ public class RepairParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    private String page;
 
     @Override
     public String checkParam() {

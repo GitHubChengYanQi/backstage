@@ -180,8 +180,6 @@ public class ApiRepairController {
         String time = String.valueOf(parse);
         if (repairParam.getProgress().equals(1L)) {
             return ResponseData.success(newEntity);
-        } else {
-            wxTemplate.template(repairParam.getType(), list1.get(0).getCreateUser(), time, list1.get(0).getServiceType(), list1.get(0).getComment());
         }
 
         return ResponseData.success(newEntity);

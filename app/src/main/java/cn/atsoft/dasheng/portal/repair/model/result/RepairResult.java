@@ -53,7 +53,7 @@ public class RepairResult implements Serializable {
      */
     @ApiModelProperty("报修单位")
     private Long companyId;
-
+    private  Long name;
     private Long number;
 
     /**

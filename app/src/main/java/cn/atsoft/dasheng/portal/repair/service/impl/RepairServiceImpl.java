@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
+import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.repairDynamic.model.params.RepairDynamicParam;
@@ -75,12 +76,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private UserService userService;
     @Autowired
     private WxTemplate wxTemplate;
+    @Autowired
+    private RepairSendTemplate repairSendTemplate;
+
 
     @BussinessLog
     @Override
     public Repair add(RepairParam param) {
-
-
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         } else {
@@ -90,15 +92,20 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             if (list.size() > 0) {
                 throw new ServiceException(500, "请选择到区或县");
             }
-
         }
         Repair entity = getEntity(param);
         this.save(entity);
+        param.setProgress(0L);
+        param.setRepairId(entity.getRepairId());
+        param.setCreateTime(entity.getCreateTime());
+        repairSendTemplate.setRepairParam(param);
+        repairSendTemplate.send();
+
 
         String reateTime = String.valueOf(entity.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
+//        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
         List<Banner> banner = param.getItemImgUrlList();
         for (Banner data : banner) {
             if (data != null) {
@@ -125,23 +132,23 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Override
     public Repair update(RepairParam param) {
 
-//        if (param.getArea() == null) {
-//            throw new ServiceException(500, "请选择地区");
-//        } else {
+
         QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
         AreaQueryWrapper.in("parentid", param.getArea());
         List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
         if (list.size() > 0) {
             throw new ServiceException(500, "请选择到区或县");
         }
-
-
         Repair oldEntity = getOldEntity(param);
         Repair newEntity = getEntity(param);
-
-
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        param.setRepairId(newEntity.getRepairId());
+        param.setRepairId(newEntity.getRepairId());
+        param.setCreateTime(newEntity.getUpdateTime());
+        repairSendTemplate.setRepairParam(param);
+        repairSendTemplate.send();
+
         return newEntity;
     }
 
@@ -358,11 +365,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             }
         }
         return data.size() == 0 ? null : data.get(0);
-    }
-
-    @Override
-    public void getWxMap(RepairParam param) {
-
     }
 
 
