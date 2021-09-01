@@ -136,6 +136,8 @@ public class UserinfoServiceImp implements UserInfoService {
             if (infoList.size() > 0) {
                 backUser.setBln(false);
             }
+            List<Long> memberIds = new ArrayList<>();
+
             System.err.println(userId);
             return backUser;
         }
