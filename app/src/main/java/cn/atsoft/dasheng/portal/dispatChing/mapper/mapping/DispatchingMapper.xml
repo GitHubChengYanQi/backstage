@@ -47,6 +47,9 @@
         <if test="paramCondition.name != null">
             and name = #{paramCondition.name}
         </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult"
@@ -63,8 +66,8 @@
         <if test="paramCondition.repairId != null">
             and repair_id = #{paramCondition.repairId}
         </if>
-        <if test="paramCondition.name != null">
-            and name = #{paramCondition.name}
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
         </if>
     </select>
 
@@ -78,6 +81,9 @@
         </if>
         <if test="paramCondition.name != null">
             and name = #{paramCondition.name}
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
         </if>
     </select>
 
