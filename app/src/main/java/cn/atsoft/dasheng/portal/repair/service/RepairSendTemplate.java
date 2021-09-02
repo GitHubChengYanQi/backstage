@@ -157,21 +157,21 @@ public class RepairSendTemplate extends sendTemplae {
         /**
          * 判断备注是否存在
          */
-//        if (reminds.getTemplateType().contains("{{note}}")) {
-//            if (note != null && backTemplat != null) {
-//                backTemplat = backTemplat.replace("{{note}}", note);
-//            } else {
-//                backTemplat = backTemplat.replace("{{note}}", "系统");
-//            }
-//        }
+        if (reminds.getTemplateType().contains("{{note}}")) {
+            if (note != null && backTemplat != null) {
+                backTemplat = backTemplat.replace("{{note}}", note);
+            } else {
+                backTemplat = backTemplat.replace("{{note}}", "系统");
+            }
+        }
 
         /**
          * 判断详情是否存在
          */
 
         if (reminds.getTemplateType().contains("{{details}}")) {
-            if (remindResult.getComment() != null && backTemplat != null) {
-                backTemplat = backTemplat.replace("{{details}}", remindResult.getComment());
+            if (remindResult.getComment() != null && backTemplat != "") {
+                backTemplat = backTemplat.replace("{{details}}", repairParam.getComment());
             } else {
                 backTemplat = backTemplat.replace("{{details}}", "无");
             }
