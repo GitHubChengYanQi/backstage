@@ -107,7 +107,7 @@ public class RepairSendTemplate extends sendTemplae {
 
 
         Remind reminds = getReminds(repairParam.getProgress());
-
+        backTemplat = reminds.getTemplateType();
         Dispatching dispatching = getDispatching(repairParam.getRepairId());
         Long name = dispatching.getName();
         String note = dispatching.getNote();
@@ -130,14 +130,14 @@ public class RepairSendTemplate extends sendTemplae {
             userQueryWrapper.in("user_id", wxuserInfo.getUserId());
             User user = userService.getOne(userQueryWrapper);
             if (reminds.getTemplateType().contains("{{name}}")) {
-                if (user != null ) {
+                if (user != null) {
                     backTemplat = reminds.getTemplateType().replace("{{name}}", user.getName());
                 } else {
                     backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
                 }
             }
 
-        }else {
+        } else {
             if (reminds.getTemplateType().contains("{{name}}")) {
                 if (userId != null && userId != "") {
                     backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
@@ -149,8 +149,6 @@ public class RepairSendTemplate extends sendTemplae {
         String reateTime = String.valueOf(repairParam.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-
-
 
 
         if (reminds.getTemplateType() != null) {
