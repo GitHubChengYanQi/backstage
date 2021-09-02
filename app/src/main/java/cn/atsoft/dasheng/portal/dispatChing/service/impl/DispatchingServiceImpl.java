@@ -37,6 +37,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,19 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     public void addwx(DispatchingParam param) {
         Dispatching entity = getEntity(param);
         this.save(entity);
+        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+        repairQueryWrapper.in("repair_id", param.getRepairId());
+        Repair repair = repairService.getOne(repairQueryWrapper);
+        RepairParam repairParam = new RepairParam();
+        ToolUtil.copyProperties(repair, repairParam);
+        repairParam.setProgress(1L);
+        repairParam.setCreateTime(entity.getCreateTime());
+        repairSendTemplate.setRepairParam(repairParam);
+        try {
+            repairSendTemplate.send();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
 
 
     }

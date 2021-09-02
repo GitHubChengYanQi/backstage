@@ -77,9 +77,7 @@ public class RepairSendTemplate extends sendTemplae {
         Remind reminds = getReminds(progress);
         List<Long> getremindUserids = getremindUserids(reminds.getRemindId());
         List<Long> userIds = new ArrayList<>();
-        if (repairParam.getName() != null) {
-            userIds.add(repairParam.getName());
-        }
+
         for (Long getremindUserid : getremindUserids) {
             userIds.add(getremindUserid);
         }
@@ -90,7 +88,7 @@ public class RepairSendTemplate extends sendTemplae {
             memberIds.add(wxuserInfo.getMemberId());
         }
         QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-        infoQueryWrapper.in("member_id", memberIds);
+        infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
         List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
         List<String> openids = new ArrayList<>();
         for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
@@ -139,9 +137,9 @@ public class RepairSendTemplate extends sendTemplae {
 
         } else {
             if (reminds.getTemplateType().contains("{{name}}")) {
-                if (userId != null && userId != "") {
-                    backTemplat =backTemplat .replace("{{name}}", "系统");
-                }
+
+                backTemplat = backTemplat.replace("{{name}}", "系统");
+
             }
         }
 

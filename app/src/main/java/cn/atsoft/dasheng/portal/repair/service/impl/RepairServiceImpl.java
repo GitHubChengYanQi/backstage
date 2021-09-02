@@ -149,15 +149,16 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-        param.setRepairId(newEntity.getRepairId());
-        param.setRepairId(newEntity.getRepairId());
-        param.setCreateTime(newEntity.getUpdateTime());
-        repairSendTemplate.setRepairParam(param);
-        try {
-            repairSendTemplate.send();
-        } catch (WxErrorException e) {
-            e.printStackTrace();
-        }
+//        param.setRepairId(newEntity.getRepairId());
+//        param.setRepairId(newEntity.getRepairId());
+//        param.setCreateTime(newEntity.getUpdateTime());
+//        param.setProgress(1L);
+//        repairSendTemplate.setRepairParam(param);
+//        try {
+//            repairSendTemplate.send();
+//        } catch (WxErrorException e) {
+//            e.printStackTrace();
+//        }
         return newEntity;
 
     }
