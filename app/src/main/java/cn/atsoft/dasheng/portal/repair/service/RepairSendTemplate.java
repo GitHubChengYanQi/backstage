@@ -137,6 +137,12 @@ public class RepairSendTemplate extends sendTemplae {
                 }
             }
 
+        }else {
+            if (reminds.getTemplateType().contains("{{name}}")) {
+                if (userId != null && userId != "") {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                }
+            }
         }
 
 
@@ -144,28 +150,22 @@ public class RepairSendTemplate extends sendTemplae {
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
 
-        if (reminds.getTemplateType().contains("{{name}}")) {
-            if (userId != null && userId != "") {
-                backTemplat = reminds.getTemplateType().replace("{{name}}", userId);
-            } else {
-                backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
-            }
-        }
+
 
 
         if (reminds.getTemplateType() != null) {
-            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
+            backTemplat = reminds.getTemplateType().replace("{{time}}", time);
         }
         /**
          * 判断备注是否存在
          */
-        if (reminds.getTemplateType().contains("{{note}}")) {
-            if (note != null && backTemplat != null) {
-                backTemplat = backTemplat.replace("{{note}}", note);
-            } else {
-                backTemplat = backTemplat.replace("{{note}}", "系统");
-            }
-        }
+//        if (reminds.getTemplateType().contains("{{note}}")) {
+//            if (note != null && backTemplat != null) {
+//                backTemplat = backTemplat.replace("{{note}}", note);
+//            } else {
+//                backTemplat = backTemplat.replace("{{note}}", "系统");
+//            }
+//        }
 
         /**
          * 判断详情是否存在
