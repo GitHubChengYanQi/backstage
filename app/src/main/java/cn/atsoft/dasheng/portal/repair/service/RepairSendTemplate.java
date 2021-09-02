@@ -123,16 +123,45 @@ public class RepairSendTemplate extends sendTemplae {
         String reateTime = String.valueOf(repairParam.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
+        //判断name是否存在
+        if (reminds.getTemplateType().contains("{{name}}")) {
+            if (userId != null && userId != "") {
+                backTemplat = reminds.getTemplateType().replace("{{name}}", userId);
+            }
+        }
+        //判断时间是否存在
+        if (reminds.getTemplateType().contains("{{time}}")) {
+            if (time != null && time != "") {
+                backTemplat = backTemplat.replace("{{time}}", time);
+            }
+        }
 
-        if (reminds.getTemplateType() != null) {
-            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
+//        if (reminds.getTemplateType() != null) {
+//            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
+//        }
+        /**
+         * 判断备注是否存在
+         */
+        if (reminds.getTemplateType().contains("{{note}}")) {
+            if (note != null && backTemplat != null) {
+                backTemplat = backTemplat.replace("{{note}}", note);
+            } else {
+                backTemplat = backTemplat.replace("{{note}}", "无");
+            }
         }
-        if (note != null && backTemplat != null) {
-            backTemplat = backTemplat.replace("{{note}}", note);
+
+        /**
+         * 判断详情是否存在
+         */
+
+        if (reminds.getTemplateType().contains("{{details}}")) {
+            if (remindResult.getComment() != null && backTemplat != null) {
+                backTemplat = backTemplat.replace("{{details}}", remindResult.getComment());
+            } else {
+                backTemplat = backTemplat.replace("{{details}}", "无");
+            }
         }
-        if (remindResult.getComment() != null && backTemplat != null) {
-            backTemplat = backTemplat.replace("{{details}}", remindResult.getComment());
-        }
+
         WxTemplateData wxTemplateData = JSON.parseObject(backTemplat, WxTemplateData.class);
 
 

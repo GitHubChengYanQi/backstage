@@ -29,9 +29,14 @@ abstract public class sendTemplae implements sendTemplateInterface {
         wxMpTemplateMessage.setData(data);
         wxMpTemplateMessage.setUrl(page);
         wxMpTemplateMessage.setUrl(page);
+
         for (String openId : openIds) {
             wxMpTemplateMessage.setToUser(openId);
-            templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+            try {
+                templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
+            } catch (WxErrorException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

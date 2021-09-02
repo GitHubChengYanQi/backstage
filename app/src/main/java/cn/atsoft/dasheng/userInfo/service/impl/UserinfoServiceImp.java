@@ -122,7 +122,8 @@ public class UserinfoServiceImp implements UserInfoService {
             Long ids = Long.valueOf(userId);
             //查询userid信息
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.in("user_id", ids);
+//            userQueryWrapper.in("user_id", ids);
+            userQueryWrapper.eq("user_id", ids).or().eq("member_id", UserUtils.getUserId());
             List<User> users = userService.list(userQueryWrapper);
 
             //获取user信息返回数据
