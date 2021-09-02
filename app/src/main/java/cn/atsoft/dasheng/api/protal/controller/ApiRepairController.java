@@ -71,8 +71,6 @@ public class ApiRepairController {
     @Autowired
     private CustomerService customerService;
     @Autowired
-    private BannerService bannerService;
-    @Autowired
     private DispatchingService dispatchingService;
     @Autowired
     private UserService userService;
@@ -104,12 +102,14 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
     public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            return ResponseData.success();
+        }
         QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
         remindUserQueryWrapper.in("user_id", userId);
         List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
         List<Remind> remindList = remindService.list();
         Boolean permission = false;
-        List<Long> types = new ArrayList<>();
         for (RemindUser data : remindUserList) {
             for (Remind user : remindList) {
                 if (data.getRemindId().equals(user.getRemindId())) {
@@ -132,6 +132,9 @@ public class ApiRepairController {
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
     public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            return ResponseData.success();
+        }
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
         return ResponseData.success(repairService.findListBySpec(repairParam));
@@ -201,6 +204,9 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            return ResponseData.success();
+        }
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", userId);
