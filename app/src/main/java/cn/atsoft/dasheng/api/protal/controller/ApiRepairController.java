@@ -127,7 +127,7 @@ public class ApiRepairController {
         if (!permission) {
             return ResponseData.success();
         }
-        return ResponseData.success(repairService.findListBySpec(repairParam));
+        return ResponseData.success(repairService.findPageBySpec(repairParam));
     }
 
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
@@ -138,12 +138,9 @@ public class ApiRepairController {
         }
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
-        List<RepairResult> user = repairService.findListBySpec(repairParam);
-        repairParam.setCreateUser(null);
         repairParam.setName(UserUtils.getUserId());
-        List<RepairResult> name = repairService.findListBySpec(repairParam);
-        user.addAll(name);
-        return ResponseData.success(user);
+        PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
+        return ResponseData.success(repairList);
     }
 
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
