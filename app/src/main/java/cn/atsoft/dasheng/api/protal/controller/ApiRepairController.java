@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.banner.entity.Banner;
 import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
@@ -29,6 +30,7 @@ import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
+import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.portal.repairImage.entity.RepairImage;
 import cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam;
@@ -52,6 +54,7 @@ import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,6 +91,8 @@ public class ApiRepairController {
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private RepairImageService repairImageService;
+    @Autowired
+    private RepairSendTemplate repairSendTemplate;
 
     public Long getWxUser(Long memberId) {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
@@ -145,13 +150,13 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/repairUpdate", method = RequestMethod.POST)
-    public ResponseData repairUpdate(@RequestBody RepairParam repairParam) {
+    public ResponseData repairUpdate(@RequestBody RepairParam repairParam) throws WxErrorException {
         this.repairService.update(repairParam);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
-    public ResponseData saveRepair(@RequestBody RepairParam repairParam) {
+    public ResponseData saveRepair(@RequestBody RepairParam repairParam)  throws WxErrorException {
         Repair entity = getEntity(repairParam);
         this.repairService.save(entity);
         List<RepairImage> repairImages = repairParam.getItemImgUrlList();
@@ -162,32 +167,26 @@ public class ApiRepairController {
             repairImageParam.setTitle(data.getTitle());
             this.repairImageService.add(repairImageParam);
         }
-        String reateTime = String.valueOf(entity.getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
+
+        repairParam.setRepairId(entity.getRepairId());
+        repairParam.setCreateTime(entity.getCreateTime());
+        repairSendTemplate.setRepairParam(repairParam);
+        repairSendTemplate.send();
         return ResponseData.success(entity.getRepairId());
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
-    public ResponseData updateRepair(@RequestBody RepairParam repairParam) {
+    public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Repair oldEntity = getOldEntity(repairParam);
         Repair newEntity = getEntity(repairParam);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        repairParam.getRepairId();
-        List<Repair> list = repairService.list(new QueryWrapper<Repair>().in("repair_id", repairParam.getRepairId()));
-        List<Repair> list1 = new ArrayList<>();
-        for (Repair repair : list) {
-            list1.add(repair);
-        }
         this.repairService.updateById(newEntity);
-        String reateTime = String.valueOf(list1.get(0).getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-        if (repairParam.getProgress().equals(1L)) {
-            return ResponseData.success(newEntity);
-        }
+        RepairParam Param = new RepairParam();
 
+        Repair data = this.repairService.getById( repairParam.getRepairId());
+        ToolUtil.copyProperties(Param, data);
+        repairSendTemplate.setRepairParam(Param);
+        repairSendTemplate.send();
         return ResponseData.success(newEntity);
     }
 
@@ -478,7 +477,9 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepairById", method = RequestMethod.POST)
     public ResponseData getRepairById(@RequestBody(required = false) RepairParam repairParam) {
-
+        if(ToolUtil.isEmpty(repairParam.getRepairId())){
+            throw new ServiceException(500, "未选择报修数据");
+        }
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         RepairResult repairResult = new RepairResult();
         ToolUtil.copyProperties(repair, repairResult);

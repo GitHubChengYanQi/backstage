@@ -45,6 +45,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,9 +105,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setRepairId(entity.getRepairId());
         param.setCreateTime(entity.getCreateTime());
         repairSendTemplate.setRepairParam(param);
-        repairSendTemplate.send();
+        try {
+            repairSendTemplate.send();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
 
-        
 
         List<RepairImage> repairImages = param.getItemImgUrlList();
         for (RepairImage data : repairImages) {
@@ -149,9 +153,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setRepairId(newEntity.getRepairId());
         param.setCreateTime(newEntity.getUpdateTime());
         repairSendTemplate.setRepairParam(param);
-        repairSendTemplate.send();
-
+        try {
+            repairSendTemplate.send();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
         return newEntity;
+
     }
 
     public String updatedynamic(RepairParam param) {

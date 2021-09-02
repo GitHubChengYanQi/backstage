@@ -49,7 +49,7 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
     @Override
     public void add(RemindParam param) {
 
-        wxTemplate.template(param.getType());
+//        wxTemplate.template(param.getType());
 
         Long type = param.getType();
         QueryWrapper<Remind> queryWrapper = new QueryWrapper<>();

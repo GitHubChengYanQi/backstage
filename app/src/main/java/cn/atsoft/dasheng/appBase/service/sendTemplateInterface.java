@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.appBase.service;
 
+import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 
 import java.util.ArrayList;
@@ -17,5 +18,5 @@ public interface sendTemplateInterface {
 
     String getPage();
 
-    void send();
+    void send() throws WxErrorException;
 }

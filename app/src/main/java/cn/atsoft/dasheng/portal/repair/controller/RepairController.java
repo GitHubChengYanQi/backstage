@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.portal.repair.service.RepairService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -37,7 +38,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody RepairParam repairParam) {
+    public ResponseData addItem(@RequestBody RepairParam repairParam) throws WxErrorException {
         Repair add = this.repairService.add(repairParam);
         return ResponseData.success(add);
     }
@@ -50,7 +51,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody RepairParam repairParam) {
+    public ResponseData update(@RequestBody RepairParam repairParam) throws WxErrorException {
         Repair update = this.repairService.update(repairParam);
         return ResponseData.success(update);
     }
