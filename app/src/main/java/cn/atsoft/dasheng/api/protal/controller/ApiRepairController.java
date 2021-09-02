@@ -52,6 +52,7 @@ import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -147,7 +148,7 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/repairUpdate", method = RequestMethod.POST)
-    public ResponseData repairUpdate(@RequestBody RepairParam repairParam) {
+    public ResponseData repairUpdate(@RequestBody RepairParam repairParam) throws WxErrorException {
         this.repairService.update(repairParam);
         return ResponseData.success();
     }

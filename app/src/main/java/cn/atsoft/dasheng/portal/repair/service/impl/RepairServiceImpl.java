@@ -44,6 +44,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +87,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public Repair add(RepairParam param) {
+    public Repair add(RepairParam param) throws WxErrorException {
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         } else {
@@ -131,7 +132,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public Repair update(RepairParam param) {
+    public Repair update(RepairParam param) throws WxErrorException {
 
 
         QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();

@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.chanjar.weixin.common.error.WxErrorException;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-    Repair add(RepairParam param);
+    Repair add(RepairParam param) throws WxErrorException;
 
     /**
      * 删除
@@ -41,7 +42,7 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-    Repair update(RepairParam param);
+    Repair update(RepairParam param) throws WxErrorException;
 
     String updatedynamic(RepairParam param);
 
