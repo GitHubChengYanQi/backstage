@@ -123,27 +123,17 @@ public class RepairSendTemplate extends sendTemplae {
         String reateTime = String.valueOf(repairParam.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        //判断name是否存在
+
         if (reminds.getTemplateType().contains("{{name}}")) {
-            if (userId != null && userId != "") {
+            if (userId!= null&&userId !="") {
                 backTemplat = reminds.getTemplateType().replace("{{name}}", userId);
             }
         }
-        //判断时间是否存在
-        if (reminds.getTemplateType().contains("{{time}}")) {
-            if (time != null && time != "") {
-                backTemplat = backTemplat.replace("{{time}}", time);
-            }
-        }
-        if (reminds.getTemplateType().contains("{{money}}")) {
-            if (repairParam.getMoney() != null) {
-                backTemplat = backTemplat.replace("{{money}}", String.valueOf(repairParam.getMoney()));
-            }
-        }
+   
 
-//        if (reminds.getTemplateType() != null) {
-//            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
-//        }
+        if (reminds.getTemplateType() != null) {
+            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
+        }
         /**
          * 判断备注是否存在
          */
