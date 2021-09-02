@@ -16,7 +16,7 @@ abstract public class sendTemplae implements sendTemplateInterface {
 
 
     @Override
-    public void send() {
+    public void send() throws WxErrorException {
 
         List<WxMpTemplateData> data = this.getTemplateData();
         String templateId = this.getTemplateId();
@@ -31,12 +31,7 @@ abstract public class sendTemplae implements sendTemplateInterface {
         wxMpTemplateMessage.setUrl(page);
         for (String openId : openIds) {
             wxMpTemplateMessage.setToUser(openId);
-            try {
-                templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
-            } catch (WxErrorException e) {
-                e.printStackTrace();
-            }
-
+            templateMsgService.sendTemplateMsg(wxMpTemplateMessage);
         }
     }
 }

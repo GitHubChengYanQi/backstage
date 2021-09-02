@@ -19,6 +19,8 @@ import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
@@ -52,6 +54,9 @@ public class RepairSendTemplate extends sendTemplae {
     @Autowired
     private RemindUserService remindUserService;
 
+    @Autowired
+    private UcOpenUserInfoService userInfoService;
+
     private RepairParam repairParam;
 
     RepairResult remindResult = new RepairResult();
@@ -78,10 +83,13 @@ public class RepairSendTemplate extends sendTemplae {
             userIds.add(getremindUserid);
         }
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        List<WxuserInfo> wxuserInfos = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", userIds));
+        WxuserInfo infoServiceOne = wxuserInfoService.getOne(wxuserInfoQueryWrapper.in("user_id", userIds));
+        QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
+        infoQueryWrapper.in("member_id", infoServiceOne.getMemberId());
+        List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
         List<String> openids = new ArrayList<>();
-        for (WxuserInfo wxuserInfo : wxuserInfos) {
-            openids.add(wxuserInfo.getUuid());
+        for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+            openids.add(ucOpenUserInfo.getUuid());
         }
         return openids;
     }
