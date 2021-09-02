@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -83,6 +84,8 @@ public class RepairSendTemplate extends sendTemplae {
         }
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         List<WxuserInfo> wxuserInfos = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", userIds));
+//        AbstractWrapper userId = wxuserInfoService.query().in("user_id", userIds).getWrapper();`
+        List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfos) {
             memberIds.add(wxuserInfo.getMemberId());

@@ -89,6 +89,8 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @BussinessLog
     @Override
     public Repair add(RepairParam param) {
+
+
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         } else {

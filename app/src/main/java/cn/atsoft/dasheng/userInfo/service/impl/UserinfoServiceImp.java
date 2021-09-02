@@ -19,6 +19,7 @@ import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaCodeLineColor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -125,6 +126,8 @@ public class UserinfoServiceImp implements UserInfoService {
 //            userQueryWrapper.in("user_id", ids);
             userQueryWrapper.eq("user_id", ids).or().eq("member_id", UserUtils.getUserId());
             List<User> users = userService.list(userQueryWrapper);
+
+
 
             //获取user信息返回数据
             for (User user : users) {
