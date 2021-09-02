@@ -57,6 +57,7 @@ public class RepairSendTemplate extends sendTemplae {
     @Autowired
     private UcOpenUserInfoService userInfoService;
 
+
     private RepairParam repairParam;
 
     RepairResult remindResult = new RepairResult();
@@ -106,7 +107,7 @@ public class RepairSendTemplate extends sendTemplae {
 
 
         Remind reminds = getReminds(repairParam.getProgress());
-
+        backTemplat = reminds.getTemplateType();
         Dispatching dispatching = getDispatching(repairParam.getRepairId());
         Long name = dispatching.getName();
         String note = dispatching.getNote();
@@ -118,32 +119,51 @@ public class RepairSendTemplate extends sendTemplae {
             User username = userService.getOne(userQueryWrapper);
             userId = username.getName();
         }
+/**
+ * 判断登录是否小程序
+ */
+        if (repairParam.getName() != null) {
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
+            WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.in("user_id", wxuserInfo.getUserId());
+            User user = userService.getOne(userQueryWrapper);
+            if (reminds.getTemplateType().contains("{{name}}")) {
+                if (user != null) {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", user.getName());
+                } else {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                }
+            }
+
+        } else {
+            if (reminds.getTemplateType().contains("{{name}}")) {
+                if (userId != null && userId != "") {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                }
+            }
+        }
 
 
         String reateTime = String.valueOf(repairParam.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
 
-        if (reminds.getTemplateType().contains("{{name}}")) {
-            if (userId!= null&&userId !="") {
-                backTemplat = reminds.getTemplateType().replace("{{name}}", userId);
-            }
-        }
-   
 
         if (reminds.getTemplateType() != null) {
-            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
+            backTemplat = reminds.getTemplateType().replace("{{time}}", time);
         }
         /**
          * 判断备注是否存在
          */
-        if (reminds.getTemplateType().contains("{{note}}")) {
-            if (note != null && backTemplat != null) {
-                backTemplat = backTemplat.replace("{{note}}", note);
-            } else {
-                backTemplat = backTemplat.replace("{{note}}", "无");
-            }
-        }
+//        if (reminds.getTemplateType().contains("{{note}}")) {
+//            if (note != null && backTemplat != null) {
+//                backTemplat = backTemplat.replace("{{note}}", note);
+//            } else {
+//                backTemplat = backTemplat.replace("{{note}}", "系统");
+//            }
+//        }
 
         /**
          * 判断详情是否存在
