@@ -156,9 +156,9 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             repairSendTemplate.send();
         } catch (WxErrorException e) {
             e.printStackTrace();
-        }finally {
-            return newEntity;
         }
+        return newEntity;
+
     }
 
     public String updatedynamic(RepairParam param) {

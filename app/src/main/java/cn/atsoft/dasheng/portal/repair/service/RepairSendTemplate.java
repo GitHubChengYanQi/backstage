@@ -135,6 +135,11 @@ public class RepairSendTemplate extends sendTemplae {
                 backTemplat = backTemplat.replace("{{time}}", time);
             }
         }
+        if (reminds.getTemplateType().contains("{{money}}")) {
+            if (repairParam.getMoney() != null) {
+                backTemplat = backTemplat.replace("{{money}}", String.valueOf(repairParam.getMoney()));
+            }
+        }
 
 //        if (reminds.getTemplateType() != null) {
 //            backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
