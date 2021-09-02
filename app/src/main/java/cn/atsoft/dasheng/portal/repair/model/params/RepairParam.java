@@ -27,6 +27,7 @@ public class RepairParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+
     private List<RepairImage> itemImgUrlList;
     private String itemName;
     private String customerName;

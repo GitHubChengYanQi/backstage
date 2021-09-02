@@ -121,10 +121,8 @@ public class ApiRepairController {
             }
         }
         RepairParam repairParam = new RepairParam();
-        if (permission) {
-            repairParam.setCreateUser(userId);
-        } else {
-            repairParam.setCreateUser(0L);
+        if (!permission) {
+            return ResponseData.success();
         }
         return ResponseData.success(repairService.findListBySpec(repairParam));
     }
