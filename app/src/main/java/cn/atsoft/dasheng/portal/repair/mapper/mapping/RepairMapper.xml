@@ -67,6 +67,7 @@
         </if>
         <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.name != null and paramCondition.name != ''">
             or name = #{paramCondition.name}
         </if>
@@ -122,6 +123,12 @@
         </if>
         <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
             and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            or name = #{paramCondition.name}
+        </if>
+        <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
         </if>
     </select>
 
