@@ -86,8 +86,6 @@ public class ApiRepairController {
     @Autowired
     private MediaService mediaService;
     @Autowired
-    private WxTemplate wxTemplate;
-    @Autowired
     private WxuserInfoService wxuserInfoService;
     @Autowired
     private RepairImageService repairImageService;
@@ -126,10 +124,8 @@ public class ApiRepairController {
             }
         }
         RepairParam repairParam = new RepairParam();
-        if (permission) {
-            repairParam.setCreateUser(userId);
-        } else {
-            repairParam.setCreateUser(0L);
+        if (!permission) {
+            return ResponseData.success();
         }
         return ResponseData.success(repairService.findListBySpec(repairParam));
     }
@@ -142,7 +138,12 @@ public class ApiRepairController {
         }
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
-        return ResponseData.success(repairService.findListBySpec(repairParam));
+        List<RepairResult> user = repairService.findListBySpec(repairParam);
+        repairParam.setCreateUser(null);
+        repairParam.setName(UserUtils.getUserId());
+        List<RepairResult> name = repairService.findListBySpec(repairParam);
+        user.addAll(name);
+        return ResponseData.success(user);
     }
 
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)

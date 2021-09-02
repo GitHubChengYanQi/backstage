@@ -68,6 +68,9 @@
         <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
         </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name = #{paramCondition.name}
+        </if>
     </select>
 
     <select id="customMapList" resultType="map"
