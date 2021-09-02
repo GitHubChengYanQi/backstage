@@ -57,6 +57,7 @@ public class RepairSendTemplate extends sendTemplae {
     @Autowired
     private UcOpenUserInfoService userInfoService;
 
+
     private RepairParam repairParam;
 
     RepairResult remindResult = new RepairResult();
@@ -118,6 +119,25 @@ public class RepairSendTemplate extends sendTemplae {
             User username = userService.getOne(userQueryWrapper);
             userId = username.getName();
         }
+/**
+ * 判断登录是否小程序
+ */
+        if (repairParam.getName() != null) {
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
+            WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.in("user_id", wxuserInfo.getUserId());
+            User user = userService.getOne(userQueryWrapper);
+            if (reminds.getTemplateType().contains("{{name}}")) {
+                if (userId != null && userId != "") {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", user.getName());
+                } else {
+                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                }
+            }
+
+        }
 
 
         String reateTime = String.valueOf(repairParam.getCreateTime());
@@ -125,11 +145,13 @@ public class RepairSendTemplate extends sendTemplae {
         String time = String.valueOf(parse);
 
         if (reminds.getTemplateType().contains("{{name}}")) {
-            if (userId!= null&&userId !="") {
+            if (userId != null && userId != "") {
                 backTemplat = reminds.getTemplateType().replace("{{name}}", userId);
+            } else {
+                backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
             }
         }
-   
+
 
         if (reminds.getTemplateType() != null) {
             backTemplat = reminds.getTemplateType().replace("{{name}}", userId).replace("{{time}}", time);
@@ -141,7 +163,7 @@ public class RepairSendTemplate extends sendTemplae {
             if (note != null && backTemplat != null) {
                 backTemplat = backTemplat.replace("{{note}}", note);
             } else {
-                backTemplat = backTemplat.replace("{{note}}", "无");
+                backTemplat = backTemplat.replace("{{note}}", "系统");
             }
         }
 
