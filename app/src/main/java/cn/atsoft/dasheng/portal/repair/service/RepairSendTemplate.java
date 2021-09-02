@@ -130,7 +130,7 @@ public class RepairSendTemplate extends sendTemplae {
             userQueryWrapper.in("user_id", wxuserInfo.getUserId());
             User user = userService.getOne(userQueryWrapper);
             if (reminds.getTemplateType().contains("{{name}}")) {
-                if (userId != null && userId != "") {
+                if (user != null ) {
                     backTemplat = reminds.getTemplateType().replace("{{name}}", user.getName());
                 } else {
                     backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
