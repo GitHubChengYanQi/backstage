@@ -87,7 +87,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public Repair add(RepairParam param) throws WxErrorException {
+    public Repair add(RepairParam param) {
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         } else {
@@ -104,9 +104,12 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setRepairId(entity.getRepairId());
         param.setCreateTime(entity.getCreateTime());
         repairSendTemplate.setRepairParam(param);
-        repairSendTemplate.send();
+        try {
+            repairSendTemplate.send();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }
 
-        
 
         List<RepairImage> repairImages = param.getItemImgUrlList();
         for (RepairImage data : repairImages) {
@@ -132,7 +135,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @BussinessLog
     @Override
-    public Repair update(RepairParam param) throws WxErrorException {
+    public Repair update(RepairParam param) {
 
 
         QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
@@ -149,9 +152,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setRepairId(newEntity.getRepairId());
         param.setCreateTime(newEntity.getUpdateTime());
         repairSendTemplate.setRepairParam(param);
-        repairSendTemplate.send();
-
-        return newEntity;
+        try {
+            repairSendTemplate.send();
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+        }finally {
+            return newEntity;
+        }
     }
 
     public String updatedynamic(RepairParam param) {

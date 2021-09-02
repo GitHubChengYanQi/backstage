@@ -42,7 +42,7 @@ public interface RepairService extends IService<Repair> {
      * @author siqiang
      * @Date 2021-08-20
      */
-    Repair update(RepairParam param) throws WxErrorException;
+    Repair update(RepairParam param);
 
     String updatedynamic(RepairParam param);
 

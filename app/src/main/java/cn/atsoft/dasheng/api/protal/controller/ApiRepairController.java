@@ -168,7 +168,7 @@ public class ApiRepairController {
         String reateTime = String.valueOf(entity.getCreateTime());
         DateTime parse = DateUtil.parse(reateTime);
         String time = String.valueOf(parse);
-        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
+//        wxTemplate.template(0L, entity.getCreateUser(), time, entity.getServiceType(), entity.getComment());
         return ResponseData.success(entity.getRepairId());
     }
 

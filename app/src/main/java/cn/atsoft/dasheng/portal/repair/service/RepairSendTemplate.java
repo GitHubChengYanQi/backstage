@@ -83,9 +83,13 @@ public class RepairSendTemplate extends sendTemplae {
             userIds.add(getremindUserid);
         }
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        WxuserInfo infoServiceOne = wxuserInfoService.getOne(wxuserInfoQueryWrapper.in("user_id", userIds));
+        List<WxuserInfo> wxuserInfos = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", userIds));
+        List<Long> memberIds = new ArrayList<>();
+        for (WxuserInfo wxuserInfo : wxuserInfos) {
+            memberIds.add(wxuserInfo.getMemberId());
+        }
         QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-        infoQueryWrapper.in("member_id", infoServiceOne.getMemberId());
+        infoQueryWrapper.in("member_id", memberIds);
         List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
         List<String> openids = new ArrayList<>();
         for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
@@ -161,6 +165,7 @@ public class RepairSendTemplate extends sendTemplae {
     private Dispatching getDispatching(Long id) {
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         dispatchingQueryWrapper.in("repair_id", id);
+
         Dispatching dispatchingServiceOne = dispatchingService.getOne(dispatchingQueryWrapper);
         if (ToolUtil.isEmpty(dispatchingServiceOne)) {
             Dispatching dispatching = new Dispatching();
