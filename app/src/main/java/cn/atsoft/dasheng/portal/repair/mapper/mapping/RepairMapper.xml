@@ -96,6 +96,9 @@
         <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
             and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
         </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            or name = #{paramCondition.name}
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
