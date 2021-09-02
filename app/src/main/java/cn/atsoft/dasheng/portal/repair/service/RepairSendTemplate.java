@@ -131,16 +131,16 @@ public class RepairSendTemplate extends sendTemplae {
             User user = userService.getOne(userQueryWrapper);
             if (reminds.getTemplateType().contains("{{name}}")) {
                 if (user != null) {
-                    backTemplat = reminds.getTemplateType().replace("{{name}}", user.getName());
+                    backTemplat = backTemplat.replace("{{name}}", user.getName());
                 } else {
-                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                    backTemplat = backTemplat.replace("{{name}}", "系统");
                 }
             }
 
         } else {
             if (reminds.getTemplateType().contains("{{name}}")) {
                 if (userId != null && userId != "") {
-                    backTemplat = reminds.getTemplateType().replace("{{name}}", "系统");
+                    backTemplat =backTemplat .replace("{{name}}", "系统");
                 }
             }
         }
@@ -152,7 +152,7 @@ public class RepairSendTemplate extends sendTemplae {
 
 
         if (reminds.getTemplateType() != null) {
-            backTemplat = reminds.getTemplateType().replace("{{time}}", time);
+            backTemplat = backTemplat.replace("{{time}}", time);
         }
         /**
          * 判断备注是否存在
