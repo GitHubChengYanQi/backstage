@@ -409,7 +409,7 @@ public class ApiRepairController {
 //                }
 //            }
 //        }
-        if(repair.getProgress() != 5L || repair.getProgress() != 1L ){
+        if(repair.getProgress() != 5L && repair.getProgress() != 1L ){
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
         if(permission){
