@@ -177,6 +177,10 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam)  throws WxErrorException {
+        Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            throw new ServiceException(500, "此账户未绑定!");
+        }
         repairParam.setName(UserUtils.getUserId());
         Repair entity = getEntity(repairParam);
         this.repairService.save(entity);
