@@ -145,6 +145,17 @@ public class ApiRepairController {
         return ResponseData.success(repairList);
     }
 
+    @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
+    public ResponseData getRepairAll() {
+        Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            return ResponseData.success();
+        }
+        RepairParam repairParam = new RepairParam();
+        PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
+        return ResponseData.success(repairList);
+    }
+
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
     public ResponseData dispatchingUpdate(@RequestBody DispatchingParam dispatchingParam) {
         this.dispatchingService.update(dispatchingParam);
