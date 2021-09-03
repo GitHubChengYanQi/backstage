@@ -74,4 +74,5 @@ public interface RepairService extends IService<Repair> {
 
     RepairResult format(List<RepairResult> data);
 
+    PageInfo<RepairResult> findMyPageBySpec(RepairParam param);
 }

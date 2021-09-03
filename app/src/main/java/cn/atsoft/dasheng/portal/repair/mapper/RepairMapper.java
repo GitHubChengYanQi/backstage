@@ -53,4 +53,14 @@ public interface RepairMapper extends BaseMapper<Repair> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") RepairParam paramCondition);
 
+    /**
+     * 获取分页实体列表
+     *
+     * @author siqiang
+     * @Date 2021-08-20
+     */
+    Page<RepairResult> customMyPageList(@Param("page") Page page, @Param("paramCondition") RepairParam paramCondition);
+
+
+
 }

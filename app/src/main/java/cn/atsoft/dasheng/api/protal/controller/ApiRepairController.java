@@ -22,11 +22,13 @@ import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
+import cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
@@ -53,6 +55,8 @@ import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
@@ -125,11 +129,12 @@ public class ApiRepairController {
         }
         RepairParam repairParam = new RepairParam();
         //获取报修中的数据
-        repairParam.setProgress(0L);
+
+        PageInfo<RepairResult> repairResult =  repairService.findMyPageBySpec(repairParam);
         if (!permission) {
             return ResponseData.success();
         }
-        return ResponseData.success(repairService.findPageBySpec(repairParam));
+        return ResponseData.success(repairResult);
     }
 
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
