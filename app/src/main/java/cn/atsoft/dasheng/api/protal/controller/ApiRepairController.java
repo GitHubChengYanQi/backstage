@@ -117,7 +117,7 @@ public class ApiRepairController {
 
         permission = wxuserInfoService.sendPermissions(0L, userId);
         if(!permission){
-            return ResponseData.error("没有权限查阅信息!");
+            return ResponseData.success();
         }else{
             RepairParam repairParam = new RepairParam();
             PageInfo<RepairResult> repairResult =  repairService.findMyPageBySpec(repairParam);
@@ -147,7 +147,9 @@ public class ApiRepairController {
         }
         Boolean permission = false;
         for(int i = 0; i < 5; i ++){
-            permission = wxuserInfoService.sendPermissions((long) i, userId);
+            if(i != 1){
+                permission = wxuserInfoService.sendPermissions((long) i, userId);
+            }
             if(!permission){
                 break;
             }
@@ -157,7 +159,7 @@ public class ApiRepairController {
             PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
             return ResponseData.success(repairList);
         }else{
-            return ResponseData.error("没有权限查阅信息!");
+            return ResponseData.success();
         }
     }
 
@@ -224,7 +226,11 @@ public class ApiRepairController {
         if (ToolUtil.isEmpty(userId)){
             return ResponseData.success();
         }
-
+        Boolean permission = false;
+        permission = wxuserInfoService.sendPermissions(1L, userId);
+        if(!permission){
+            return ResponseData.success();
+        }
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", userId);
@@ -402,7 +408,7 @@ public class ApiRepairController {
 //                }
 //            }
 //        }
-        if(repair.getProgress() != 5L){
+        if(repair.getProgress() != 5L || repair.getProgress() != 1L ){
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
         if(permission){
