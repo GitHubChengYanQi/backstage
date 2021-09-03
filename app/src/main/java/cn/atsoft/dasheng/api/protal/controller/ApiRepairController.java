@@ -269,7 +269,7 @@ public class ApiRepairController {
                 //查询公司
                 QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
                 customerQueryWrapper.in("customer_id", companyIds);
-                List<Customer> customers = customerService.list(customerQueryWrapper);
+                List<Customer> customers = companyIds.size() == 0 ? new ArrayList<>() :  customerService.list(customerQueryWrapper);
                 for (Customer customer : customers) {
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
