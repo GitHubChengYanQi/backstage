@@ -124,9 +124,8 @@ public class UserinfoServiceImp implements UserInfoService {
             //查询userid信息
             QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
 //            userQueryWrapper.in("user_id", ids);
-            userQueryWrapper.eq("user_id", ids).or().eq("member_id", UserUtils.getUserId());
+            userQueryWrapper.eq("user_id", ids);
             List<User> users = userService.list(userQueryWrapper);
-
 
 
             //获取user信息返回数据
@@ -139,7 +138,7 @@ public class UserinfoServiceImp implements UserInfoService {
             }
             //查询当前userid是否绑定 绑定返回false
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("user_id", ids);
+            wxuserInfoQueryWrapper.eq("user_id", ids).or().eq("member_id", UserUtils.getUserId());
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
             if (infoList.size() > 0) {
                 backUser.setBln(false);
