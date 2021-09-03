@@ -138,23 +138,22 @@ public class RepairSendTemplate extends sendTemplae {
                 }
             }
 
-        } else {
-            if (reminds.getTemplateType().contains("{{name}}")) {
-
-                backTemplat = backTemplat.replace("{{name}}", "系统");
-
+        }
+        try {
+            if (reminds.getTemplateType().contains("{{time}}")) {
+                if (repairParam.getCreateTime() != null) {
+                    String reateTime = String.valueOf(repairParam.getCreateTime());
+                    DateTime parse = DateUtil.parse(reateTime);
+                    String time = String.valueOf(parse);
+                    if (reminds.getTemplateType() != null) {
+                        backTemplat = backTemplat.replace("{{time}}", time);
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-
-        String reateTime = String.valueOf(repairParam.getCreateTime());
-        DateTime parse = DateUtil.parse(reateTime);
-        String time = String.valueOf(parse);
-
-
-        if (reminds.getTemplateType() != null) {
-            backTemplat = backTemplat.replace("{{time}}", time);
-        }
         /**
          * 判断备注是否存在
          */

@@ -129,15 +129,11 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
         List<Remind> remindList = remindService.lambdaQuery().list();
 
         for (Remind remind : remindList) {
-
             List<RemindUser> remindUserList = remindUserService.lambdaQuery().in(RemindUser::getRemindId, remind.getRemindId()).list();
-
             List<Long> list = new ArrayList<>();
             for (RemindUser remindUser : remindUserList) {
                 list.add(remindUser.getUserId());
             }
-
-
             map.put(remind.getType(), list);
         }
 

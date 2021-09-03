@@ -67,6 +67,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -211,6 +212,8 @@ public class ApiRepairController {
 
         Repair data = this.repairService.getById( repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
+        Date date=new Date();
+        repairParam.setCreateTime(date);
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);
