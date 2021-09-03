@@ -41,8 +41,9 @@ public class WxuserInfoController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody WxuserInfoParam wxuserInfoParam) {
-        this.wxuserInfoService.add(wxuserInfoParam);
-        return ResponseData.success();
+//        this.wxuserInfoService.add(wxuserInfoParam);
+        Boolean aBoolean = wxuserInfoService.sendPermissions(4L, 1430422569372217346L);
+        return ResponseData.success(aBoolean);
     }
 
     /**

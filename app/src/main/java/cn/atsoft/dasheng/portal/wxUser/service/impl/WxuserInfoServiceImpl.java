@@ -122,20 +122,28 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
 //        return false;
 //    }
     @Override
-    public Boolean sendPermissions(Long type, Long userid) {
+    public Boolean sendPermissions(Long type, Long userId) {
         Map<Long, List> map = new HashMap<>();
-        List<Long> list = new ArrayList<>();
+
+
         List<Remind> remindList = remindService.lambdaQuery().list();
+
         for (Remind remind : remindList) {
+
             List<RemindUser> remindUserList = remindUserService.lambdaQuery().in(RemindUser::getRemindId, remind.getRemindId()).list();
+
+            List<Long> list = new ArrayList<>();
             for (RemindUser remindUser : remindUserList) {
                 list.add(remindUser.getUserId());
             }
+
+
             map.put(remind.getType(), list);
         }
+
         List<Long> useridsList = map.get(type);
         for (Long aLong : useridsList) {
-            if (aLong.equals(userid)) {
+            if (aLong.equals(userId)) {
                 return true;
             }
         }

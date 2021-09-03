@@ -121,8 +121,8 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         Dispatching entity = getEntity(param);
         LoginUser user = LoginContextHolder.getContext().getUser();
 
-//        Boolean aBoolean = wxuserInfoService.sendPermissions(user.getId());
-//        if (aBoolean == true) {
+        Boolean aBoolean = wxuserInfoService.sendPermissions(1L, user.getId());
+        if (aBoolean == true) {
             this.save(entity);
             QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
             repairQueryWrapper.in("repair_id", param.getRepairId());
@@ -137,9 +137,9 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             } catch (WxErrorException e) {
                 e.printStackTrace();
             }
-//        } else {
-//            throw new ServiceException(500, "当前用户没有权限");
-//        }
+        } else {
+            throw new ServiceException(500, "当前用户没有权限");
+        }
 
 
     }
