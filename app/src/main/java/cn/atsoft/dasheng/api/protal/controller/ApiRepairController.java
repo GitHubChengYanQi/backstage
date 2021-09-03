@@ -182,14 +182,8 @@ public class ApiRepairController {
         if (ToolUtil.isEmpty(userId)){
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
-        Boolean permission = false;
         repairParam.setName(UserUtils.getUserId());
         Repair entity = getEntity(repairParam);
-        // 判断权限
-        permission = wxuserInfoService.sendPermissions((long) entity.getProgress(), userId);
-        if(!permission){
-            throw new ServiceException(403, "当前用户没有此权限!");
-        }
         this.repairService.save(entity);
         List<RepairImage> repairImages = repairParam.getItemImgUrlList();
         for (RepairImage data : repairImages) {
@@ -210,12 +204,21 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
+        Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+        }
         Repair oldEntity = getOldEntity(repairParam);
         Repair newEntity = getEntity(repairParam);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        Boolean permission = false;
+        // 判断权限
+        permission = wxuserInfoService.sendPermissions((long) newEntity.getProgress(), userId);
+        if(!permission){
+            throw new ServiceException(403, "当前用户没有此权限!");
+        }
         this.repairService.updateById(newEntity);
         RepairParam Param = new RepairParam();
-
         Repair data = this.repairService.getById( repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
         Date date=new Date();
