@@ -213,8 +213,8 @@ public class ApiRepairController {
         ToolUtil.copyProperties(newEntity, oldEntity);
         Boolean permission = false;
         // 判断权限
-        permission = wxuserInfoService.sendPermissions((long) newEntity.getProgress(), userId);
-        if (!permission) {
+        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress(), userId);
+        if(!permission){
             throw new ServiceException(403, "当前用户没有此权限!");
         }
         this.repairService.updateById(newEntity);
@@ -405,28 +405,12 @@ public class ApiRepairController {
             throw new ServiceException(500, "未选择报修数据");
         }
         Repair repair = this.repairService.getById(repairParam.getRepairId());
-
-
-//        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
         Long userId = getWxUser(UserUtils.getUserId());
-//        remindUserQueryWrapper.in("user_id", userId);
-//        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
-//        List<Remind> remindList = remindService.list();
         Boolean permission = false;
-//        for (RemindUser data : remindUserList) {
-//            for (Remind user : remindList) {
-//                if (data.getRemindId().equals(user.getRemindId())) {
-//                    if (user.getType().equals(repair.getProgress())) {
-//                        permission = 1;
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-        if (repair.getProgress() != 5L && repair.getProgress() != 1L) {
+        if(repair.getProgress() != 5L ){
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
-        if (permission || repair.getProgress() == 1L) {
+        if(permission){
             repair.setPower(1);
         } else {
             repair.setPower(0);
