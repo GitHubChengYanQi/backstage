@@ -416,7 +416,7 @@ public class ApiRepairController {
         if(repair.getProgress() != 5L && repair.getProgress() != 1L ){
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
-        if(permission){
+        if(permission || repair.getProgress() == 1L){
             repair.setPower(1);
         }else{
             repair.setPower(0);
