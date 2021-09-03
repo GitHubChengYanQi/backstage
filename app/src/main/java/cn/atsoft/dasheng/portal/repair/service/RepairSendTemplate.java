@@ -91,13 +91,22 @@ public class RepairSendTemplate extends sendTemplae {
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
             memberIds.add(wxuserInfo.getMemberId());
         }
-        QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-        infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
-        List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
         List<String> openids = new ArrayList<>();
-        for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
-            openids.add(ucOpenUserInfo.getUuid());
+        if (wxuserInfoList.size() != 0) {
+            QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
+            infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
+
+            if (memberIds.size() != 0) {
+                List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
+
+                for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+                    openids.add(ucOpenUserInfo.getUuid());
+                }
+                return openids;
+            }
         }
+
+
         return openids;
     }
 
