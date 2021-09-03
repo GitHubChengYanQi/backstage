@@ -384,6 +384,14 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return data.size() == 0 ? null : data.get(0);
     }
 
+    @Override
+    public PageInfo<RepairResult> findMyPageBySpec(RepairParam param) {
+        Page<RepairResult> pageContext = getPageContext();
+        IPage<RepairResult> page = this.baseMapper.customMyPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
+    }
+
 
     private Serializable getKey(RepairParam param) {
         return param.getRepairId();

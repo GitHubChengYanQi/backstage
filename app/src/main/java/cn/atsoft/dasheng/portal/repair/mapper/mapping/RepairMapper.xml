@@ -144,6 +144,45 @@
         </choose>
     </select>
 
+    <select id="customMyPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
+            parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_portal_repair where display = 1 and progress in(0, 1)
+        <if test="paramCondition.companyId != null">
+            and company_id = #{paramCondition.companyId}
+        </if>
+        <if test="paramCondition.repairId">
+            and repair_id = #{paramCondition.repairId}
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.serviceType != null and paramCondition.serviceType != ''">
+            and service_type like CONCAT('%',#{paramCondition.serviceType},'%')
+        </if>
+        <if test="paramCondition.qualityType != null and paramCondition.qualityType != ''">
+            and quality_type like CONCAT('%',#{paramCondition.qualityType},'%')
+        </if>
+        <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
+            and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
+        </if>
+        <choose>
+            <when test="paramCondition.name != null and paramCondition.name != '' and paramCondition.createUser != null and paramCondition.createUser != ''">
+                and name = #{paramCondition.name}
+                or create_user like CONCAT('%',#{paramCondition.createUser},'%')
+            </when>
+            <when test="paramCondition.name != null and paramCondition.name != ''">
+                and name = #{paramCondition.name}
+            </when>
+            <otherwise >
+                <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
+                    and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select

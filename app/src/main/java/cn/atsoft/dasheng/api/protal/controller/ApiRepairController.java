@@ -22,11 +22,13 @@ import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
+import cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
+import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
@@ -53,6 +55,8 @@ import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
@@ -108,28 +112,18 @@ public class ApiRepairController {
         if (ToolUtil.isEmpty(userId)){
             return ResponseData.success();
         }
-        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
-        remindUserQueryWrapper.in("user_id", userId);
-        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
-        List<Remind> remindList = remindService.list();
+
         Boolean permission = false;
-        for (RemindUser data : remindUserList) {
-            for (Remind user : remindList) {
-                if (data.getRemindId().equals(user.getRemindId())) {
-                    if (user.getType().equals(0L)) {
-                        permission = true;
-                        break;
-                    }
-                }
-            }
+
+        permission = wxuserInfoService.sendPermissions(0L, userId);
+        if(!permission){
+            return ResponseData.error("没有权限查阅信息!");
+        }else{
+            RepairParam repairParam = new RepairParam();
+            PageInfo<RepairResult> repairResult =  repairService.findMyPageBySpec(repairParam);
+            return ResponseData.success(repairResult);
+
         }
-        RepairParam repairParam = new RepairParam();
-        //获取报修中的数据
-        repairParam.setProgress(0L);
-        if (!permission) {
-            return ResponseData.success();
-        }
-        return ResponseData.success(repairService.findPageBySpec(repairParam));
     }
 
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
@@ -143,6 +137,28 @@ public class ApiRepairController {
         repairParam.setName(UserUtils.getUserId());
         PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
         return ResponseData.success(repairList);
+    }
+
+    @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
+    public ResponseData getRepairAll() {
+        Long userId = getWxUser(UserUtils.getUserId());
+        if (ToolUtil.isEmpty(userId)){
+            return ResponseData.success();
+        }
+        Boolean permission = false;
+        for(int i = 0; i < 5; i ++){
+            permission = wxuserInfoService.sendPermissions((long) i, userId);
+            if(!permission){
+                break;
+            }
+        }
+        if(permission){
+            RepairParam repairParam = new RepairParam();
+            PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
+            return ResponseData.success(repairList);
+        }else{
+            return ResponseData.error("没有权限查阅信息!");
+        }
     }
 
     @RequestMapping(value = "/dispatchingUpdate", method = RequestMethod.POST)
@@ -208,6 +224,7 @@ public class ApiRepairController {
         if (ToolUtil.isEmpty(userId)){
             return ResponseData.success();
         }
+
         //查询工程师
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.in("user_id", userId);
@@ -369,23 +386,31 @@ public class ApiRepairController {
         Repair repair = this.repairService.getById(repairParam.getRepairId());
 
 
-        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+//        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
         Long userId = getWxUser(UserUtils.getUserId());
-        remindUserQueryWrapper.in("user_id", userId);
-        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
-        List<Remind> remindList = remindService.list();
-        int permission = 0;
-        for (RemindUser data : remindUserList) {
-            for (Remind user : remindList) {
-                if (data.getRemindId().equals(user.getRemindId())) {
-                    if (user.getType().equals(repair.getProgress())) {
-                        permission = 1;
-                        break;
-                    }
-                }
-            }
+//        remindUserQueryWrapper.in("user_id", userId);
+//        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
+//        List<Remind> remindList = remindService.list();
+        Boolean permission = false;
+//        for (RemindUser data : remindUserList) {
+//            for (Remind user : remindList) {
+//                if (data.getRemindId().equals(user.getRemindId())) {
+//                    if (user.getType().equals(repair.getProgress())) {
+//                        permission = 1;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+        if(repair.getProgress() != 5L){
+            permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
-        repair.setPower(permission);
+        if(permission){
+            repair.setPower(1);
+        }else{
+            repair.setPower(0);
+        }
+
         RepairResult repairResult = new RepairResult();
         ToolUtil.copyProperties(repair, repairResult);
         List<RepairResult> results = new ArrayList<RepairResult>() {{
