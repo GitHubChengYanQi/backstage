@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -16,6 +18,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
+import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
@@ -65,6 +69,10 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @Autowired
     private RepairSendTemplate repairSendTemplate;
 
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
+
+
     @Override
     public void add(DispatchingParam param) {
         Dispatching entity = getEntity(param);
@@ -111,19 +119,26 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @BussinessLog
     public void addwx(DispatchingParam param) {
         Dispatching entity = getEntity(param);
-        this.save(entity);
-        QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-        repairQueryWrapper.in("repair_id", param.getRepairId());
-        Repair repair = repairService.getOne(repairQueryWrapper);
-        RepairParam repairParam = new RepairParam();
-        ToolUtil.copyProperties(repair, repairParam);
-        repairParam.setProgress(1L);
-        repairParam.setCreateTime(entity.getCreateTime());
-        repairSendTemplate.setRepairParam(repairParam);
-        try {
-            repairSendTemplate.send();
-        } catch (WxErrorException e) {
-            e.printStackTrace();
+        LoginUser user = LoginContextHolder.getContext().getUser();
+
+        Boolean aBoolean = wxuserInfoService.sendPermissions(1L, user.getId());
+        if (aBoolean == true) {
+            this.save(entity);
+            QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
+            repairQueryWrapper.in("repair_id", param.getRepairId());
+            Repair repair = repairService.getOne(repairQueryWrapper);
+            RepairParam repairParam = new RepairParam();
+            ToolUtil.copyProperties(repair, repairParam);
+            repairParam.setProgress(1L);
+            repairParam.setCreateTime(entity.getCreateTime());
+            repairSendTemplate.setRepairParam(repairParam);
+            try {
+                repairSendTemplate.send();
+            } catch (WxErrorException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new ServiceException(500, "当前用户没有权限");
         }
 
 

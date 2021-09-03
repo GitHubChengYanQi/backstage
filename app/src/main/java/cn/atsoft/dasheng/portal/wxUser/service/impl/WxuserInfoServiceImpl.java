@@ -1,8 +1,14 @@
 package cn.atsoft.dasheng.portal.wxUser.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.portal.remind.entity.Remind;
+import cn.atsoft.dasheng.portal.remind.service.RemindService;
+import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
+import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.mapper.WxuserInfoMapper;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
@@ -35,6 +41,13 @@ import java.util.List;
 public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserInfo> implements WxuserInfoService {
     @Autowired
     private UserService userService;
+    @Autowired
+    private RemindUserService remindUserService;
+    @Autowired
+    private RemindService remindService;
+
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
 
     @Override
     public void add(WxuserInfoParam param) {
@@ -75,11 +88,11 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
             ids.add(record.getUserId());
         }
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(ids)){
+        if (ToolUtil.isNotEmpty(ids)) {
             userQueryWrapper.in("user_id", ids);
         }
         List<User> users = userService.list(userQueryWrapper);
-        if(ToolUtil.isNotEmpty(users)){
+        if (ToolUtil.isNotEmpty(users)) {
             for (WxuserInfoResult record : page.getRecords()) {
                 for (User user : users) {
                     if (user.getUserId().equals(record.getUserId())) {
@@ -94,6 +107,17 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
         }
 
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public Boolean sendPermissions(Long type, Long userid) {
+        //获取权限拥有者
+        Remind remind = remindService.lambdaQuery().eq(Remind::getType, type).one();
+        RemindUser remindUser = remindUserService.lambdaQuery().eq(RemindUser::getUserId, userid).and(i -> i.eq(RemindUser::getRemindId, remind.getRemindId())).one();
+        if (remindUser != null) {
+            return true;
+        }
+        return false;
     }
 
     private Serializable getKey(WxuserInfoParam param) {

@@ -66,4 +66,11 @@ public interface WxuserInfoService extends IService<WxuserInfo> {
      */
      PageInfo<WxuserInfoResult> findPageBySpec(WxuserInfoParam param);
 
+    /**
+     * 分配权限
+     * @param type
+     * @return
+     */
+     Boolean sendPermissions (Long type,Long userid);
+
 }

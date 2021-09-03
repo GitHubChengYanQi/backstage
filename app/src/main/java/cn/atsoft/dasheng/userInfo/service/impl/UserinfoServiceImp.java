@@ -140,9 +140,13 @@ public class UserinfoServiceImp implements UserInfoService {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.eq("user_id", ids).or().eq("member_id", UserUtils.getUserId());
             List<WxuserInfo> infoList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+//            WxuserInfo one = wxuserInfoService.lambdaQuery().eq(WxuserInfo::getUserId, ids).and(i -> i.eq(WxuserInfo::getMemberId, UserUtils.getUserId())).one();
             if (infoList.size() > 0) {
                 backUser.setBln(false);
             }
+//            if (one!=null) {
+//                backUser.setBln(false);
+//            }
             return backUser;
 
 
