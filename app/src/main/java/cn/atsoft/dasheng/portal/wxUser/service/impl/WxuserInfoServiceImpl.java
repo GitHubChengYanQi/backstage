@@ -109,14 +109,36 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
         return PageFactory.createPageInfo(page);
     }
 
+    //    @Override
+//    public Boolean sendPermissions(Long type, Long userid) {
+//        //获取权限拥有者
+//        Remind remind = remindService.lambdaQuery().eq(Remind::getType, type).one();
+//        RemindUser remindUser = remindUserService.lambdaQuery().eq(RemindUser::getUserId, userid).and(i -> i.eq(RemindUser::getRemindId, remind.getRemindId())).one();
+//        if (remindUser != null) {
+//            return true;
+//        }
+//        return false;
+//    }
     @Override
-    public Boolean sendPermissions(Long type, Long userid) {
+    public Boolean sendPermissions(Long userid) {
         //获取权限拥有者
-        Remind remind = remindService.lambdaQuery().eq(Remind::getType, type).one();
-        RemindUser remindUser = remindUserService.lambdaQuery().eq(RemindUser::getUserId, userid).and(i -> i.eq(RemindUser::getRemindId, remind.getRemindId())).one();
-        if (remindUser != null) {
-            return true;
+        List<Remind> remindList = remindService.lambdaQuery().list();
+        List<Long> reminds = new ArrayList<>();
+        for (Remind remind : remindList) {
+            reminds.add(remind.getRemindId());
         }
+//    remindUserService.lambdaQuery().in("remind",reminds)
+        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+        remindUserQueryWrapper.in("remind", reminds);
+        List<RemindUser> remindUsers = remindUserService.list(remindUserQueryWrapper);
+        for (RemindUser remindUser : remindUsers) {
+            if (remindUser.getUserId().equals(userid)) {
+                return true;
+            }else {
+                return  false;
+            }
+        }
+
         return false;
     }
 

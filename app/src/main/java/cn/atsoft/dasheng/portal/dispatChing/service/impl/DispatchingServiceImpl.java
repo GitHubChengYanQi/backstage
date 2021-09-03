@@ -121,7 +121,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         Dispatching entity = getEntity(param);
         LoginUser user = LoginContextHolder.getContext().getUser();
 
-        Boolean aBoolean = wxuserInfoService.sendPermissions(1L, user.getId());
+        Boolean aBoolean = wxuserInfoService.sendPermissions(user.getId());
         if (aBoolean == true) {
             this.save(entity);
             QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
