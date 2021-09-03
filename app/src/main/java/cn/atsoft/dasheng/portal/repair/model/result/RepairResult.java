@@ -181,6 +181,12 @@ public class RepairResult implements Serializable {
     private Long telephone;
 
     /**
+     * 权限
+     */
+    @ApiModelProperty("权限")
+    private int power;
+
+    /**
      * 合同类型
      */
     @ApiModelProperty("合同类型")

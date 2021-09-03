@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -195,6 +196,13 @@ public class Repair implements Serializable {
      */
     @TableField("telephone")
     private Long telephone;
+
+    /**
+     * 权限
+     */
+    @TableField("power")
+    private int power;
+
 
     public String getProvince() {
         return province;
@@ -402,6 +410,15 @@ public class Repair implements Serializable {
 
     public void setName(Long name) {
         this.name = name;
+    }
+
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
     }
 
     @Override
