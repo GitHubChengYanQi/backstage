@@ -124,6 +124,8 @@ public class ApiRepairController {
             }
         }
         RepairParam repairParam = new RepairParam();
+        //获取报修中的数据
+        repairParam.setProgress(0L);
         if (!permission) {
             return ResponseData.success();
         }
@@ -233,8 +235,11 @@ public class ApiRepairController {
 
                 //查询报修获取公司id
                 QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
-                repairQueryWrapper.in("repair_id", data.getRepairId());
+                repairQueryWrapper.in("repair_id", data.getRepairId()).in("progress", 2);
                 List<Repair> repairs = repairService.list(repairQueryWrapper);
+                repairQueryWrapper.in("repair_id", data.getRepairId()).in("progress", 3);
+                List<Repair> repairs2 = repairService.list(repairQueryWrapper);
+                repairs.addAll(repairs2);
                 for (Repair repair1 : repairs) {
                     companyIds.add(repair1.getCompanyId());
                 }
@@ -362,12 +367,32 @@ public class ApiRepairController {
             throw new ServiceException(500, "未选择报修数据");
         }
         Repair repair = this.repairService.getById(repairParam.getRepairId());
+
+
+        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
+        Long userId = getWxUser(UserUtils.getUserId());
+        remindUserQueryWrapper.in("user_id", userId);
+        List<RemindUser> remindUserList = remindUserService.list(remindUserQueryWrapper);
+        List<Remind> remindList = remindService.list();
+        int permission = 0;
+        for (RemindUser data : remindUserList) {
+            for (Remind user : remindList) {
+                if (data.getRemindId().equals(user.getRemindId())) {
+                    if (user.getType().equals(repair.getProgress())) {
+                        permission = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        repair.setPower(permission);
         RepairResult repairResult = new RepairResult();
         ToolUtil.copyProperties(repair, repairResult);
         List<RepairResult> results = new ArrayList<RepairResult>() {{
             add(repairResult);
         }};
         this.repairService.format(results);
+
         return ResponseData.success(results.get(0));
     }
 
