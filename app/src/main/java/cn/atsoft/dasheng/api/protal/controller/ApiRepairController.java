@@ -110,7 +110,7 @@ public class ApiRepairController {
     public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)){
-            return ResponseData.success();
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
 
         Boolean permission = false;
@@ -130,7 +130,7 @@ public class ApiRepairController {
     public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)){
-            return ResponseData.success();
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
@@ -143,7 +143,7 @@ public class ApiRepairController {
     public ResponseData getRepairAll() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)){
-            return ResponseData.success();
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
         for(int i = 0; i < 5; i ++){
@@ -179,10 +179,16 @@ public class ApiRepairController {
     public ResponseData saveRepair(@RequestBody RepairParam repairParam)  throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)){
-            throw new ServiceException(500, "此账户未绑定!");
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
+        Boolean permission = false;
         repairParam.setName(UserUtils.getUserId());
         Repair entity = getEntity(repairParam);
+        // 判断权限
+        permission = wxuserInfoService.sendPermissions((long) entity.getProgress(), userId);
+        if(!permission){
+            throw new ServiceException(403, "当前用户没有此权限!");
+        }
         this.repairService.save(entity);
         List<RepairImage> repairImages = repairParam.getItemImgUrlList();
         for (RepairImage data : repairImages) {
@@ -228,7 +234,7 @@ public class ApiRepairController {
     public ResponseData getRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)){
-            return ResponseData.success();
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
         permission = wxuserInfoService.sendPermissions(1L, userId);
