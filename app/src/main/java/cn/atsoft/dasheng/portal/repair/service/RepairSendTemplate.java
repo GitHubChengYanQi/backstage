@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -142,7 +143,8 @@ public class RepairSendTemplate extends sendTemplae {
         try {
             if (reminds.getTemplateType().contains("{{time}}")) {
                 if (repairParam.getCreateTime() != null) {
-                    String reateTime = String.valueOf(repairParam.getCreateTime());
+                    Date date = new Date();
+                    String reateTime = String.valueOf(date);
                     DateTime parse = DateUtil.parse(reateTime);
                     String time = String.valueOf(parse);
                     if (reminds.getTemplateType() != null) {

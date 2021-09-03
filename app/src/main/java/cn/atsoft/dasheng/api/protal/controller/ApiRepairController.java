@@ -101,8 +101,8 @@ public class ApiRepairController {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         wxuserInfoQueryWrapper.in("member_id", memberId);
         List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        for(WxuserInfo data : userList){
-           return  data.getUserId();
+        for (WxuserInfo data : userList) {
+            return data.getUserId();
         }
         return null;
     }
@@ -110,18 +110,18 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepairOrder", method = RequestMethod.POST)
     public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
 
         Boolean permission = false;
 
         permission = wxuserInfoService.sendPermissions(0L, userId);
-        if(!permission){
+        if (!permission) {
             return ResponseData.success();
-        }else{
+        } else {
             RepairParam repairParam = new RepairParam();
-            PageInfo<RepairResult> repairResult =  repairService.findMyPageBySpec(repairParam);
+            PageInfo<RepairResult> repairResult = repairService.findMyPageBySpec(repairParam);
             return ResponseData.success(repairResult);
 
         }
@@ -130,7 +130,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/getMyRepair", method = RequestMethod.POST)
     public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         RepairParam repairParam = new RepairParam();
@@ -143,23 +143,23 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepairAll", method = RequestMethod.POST)
     public ResponseData getRepairAll() {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
-        for(int i = 0; i < 5; i ++){
-            if(i != 1){
+        for (int i = 0; i < 5; i++) {
+            if (i != 1) {
                 permission = wxuserInfoService.sendPermissions((long) i, userId);
             }
-            if(!permission){
+            if (!permission) {
                 break;
             }
         }
-        if(permission){
+        if (permission) {
             RepairParam repairParam = new RepairParam();
             PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
             return ResponseData.success(repairList);
-        }else{
+        } else {
             return ResponseData.success();
         }
     }
@@ -177,9 +177,9 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
-    public ResponseData saveRepair(@RequestBody RepairParam repairParam)  throws WxErrorException {
+    public ResponseData saveRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         repairParam.setName(UserUtils.getUserId());
@@ -205,7 +205,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Repair oldEntity = getOldEntity(repairParam);
@@ -214,15 +214,13 @@ public class ApiRepairController {
         Boolean permission = false;
         // 判断权限
         permission = wxuserInfoService.sendPermissions((long) newEntity.getProgress(), userId);
-        if(!permission){
+        if (!permission) {
             throw new ServiceException(403, "当前用户没有此权限!");
         }
         this.repairService.updateById(newEntity);
         RepairParam Param = new RepairParam();
-        Repair data = this.repairService.getById( repairParam.getRepairId());
+        Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
-        Date date=new Date();
-        repairParam.setCreateTime(date);
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);
@@ -239,12 +237,12 @@ public class ApiRepairController {
     @RequestMapping(value = "/getRepair", method = RequestMethod.POST)
     public ResponseData getRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)){
+        if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
         permission = wxuserInfoService.sendPermissions(1L, userId);
-        if(!permission){
+        if (!permission) {
             return ResponseData.success();
         }
         //查询工程师
@@ -263,10 +261,10 @@ public class ApiRepairController {
         //公司id
         List<Long> companyIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(dispatchingList)) {
-           for(DispatchingResult data : dispatchingList.getData()){
+            for (DispatchingResult data : dispatchingList.getData()) {
 
                 Repair repair = this.repairService.getById(data.getRepairId());
-                if(ToolUtil.isEmpty(repair)){
+                if (ToolUtil.isEmpty(repair)) {
                     continue;
                 }
                 RepairResult result = new RepairResult();
@@ -285,7 +283,7 @@ public class ApiRepairController {
                 //查询公司
                 QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
                 customerQueryWrapper.in("customer_id", companyIds);
-                List<Customer> customers = companyIds.size() == 0 ? new ArrayList<>() :  customerService.list(customerQueryWrapper);
+                List<Customer> customers = companyIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
                 for (Customer customer : customers) {
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
@@ -381,7 +379,7 @@ public class ApiRepairController {
         }
 
         this.repairService.format(res);
-        for (int i = 0; i < res.size(); i++){
+        for (int i = 0; i < res.size(); i++) {
             resList.setData(res);
         }
         return ResponseData.success(resList);
@@ -403,7 +401,7 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepairById", method = RequestMethod.POST)
     public ResponseData getRepairById(@RequestBody(required = false) RepairParam repairParam) {
-        if(ToolUtil.isEmpty(repairParam.getRepairId())){
+        if (ToolUtil.isEmpty(repairParam.getRepairId())) {
             throw new ServiceException(500, "未选择报修数据");
         }
         Repair repair = this.repairService.getById(repairParam.getRepairId());
@@ -425,12 +423,12 @@ public class ApiRepairController {
 //                }
 //            }
 //        }
-        if(repair.getProgress() != 5L && repair.getProgress() != 1L ){
+        if (repair.getProgress() != 5L && repair.getProgress() != 1L) {
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
-        if(permission || repair.getProgress() == 1L){
+        if (permission || repair.getProgress() == 1L) {
             repair.setPower(1);
-        }else{
+        } else {
             repair.setPower(0);
         }
 
