@@ -349,6 +349,7 @@ public class ApiRepairController {
                 result.setPosition(repair.getPosition());
                 result.setTelephone(repair.getTelephone());
                 result.setComment(repair.getComment());
+                result.setProgress(repair.getProgress());
                 result.setDispatchingResult(data);
                 for (User user : users) {
                     if (user.getUserId().equals(data.getName())) {
