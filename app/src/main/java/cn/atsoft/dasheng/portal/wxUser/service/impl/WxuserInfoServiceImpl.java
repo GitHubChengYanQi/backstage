@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.portal.wxUser.service.impl;
 
 
-import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
@@ -18,6 +16,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,7 +26,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -48,6 +49,7 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
 
     @Autowired
     private WxuserInfoService wxuserInfoService;
+
 
     @Override
     public void add(WxuserInfoParam param) {
@@ -120,25 +122,23 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
 //        return false;
 //    }
     @Override
-    public Boolean sendPermissions(Long userid) {
-        //获取权限拥有者
+    public Boolean sendPermissions(Long type, Long userid) {
+        Map<Long, List> map = new HashMap<>();
+        List<Long> list = new ArrayList<>();
         List<Remind> remindList = remindService.lambdaQuery().list();
-        List<Long> reminds = new ArrayList<>();
         for (Remind remind : remindList) {
-            reminds.add(remind.getRemindId());
+            List<RemindUser> remindUserList = remindUserService.lambdaQuery().in(RemindUser::getRemindId, remind.getRemindId()).list();
+            for (RemindUser remindUser : remindUserList) {
+                list.add(remindUser.getUserId());
+            }
+            map.put(remind.getType(), list);
         }
-//    remindUserService.lambdaQuery().in("remind",reminds)
-        QueryWrapper<RemindUser> remindUserQueryWrapper = new QueryWrapper<>();
-        remindUserQueryWrapper.in("remind", reminds);
-        List<RemindUser> remindUsers = remindUserService.list(remindUserQueryWrapper);
-        for (RemindUser remindUser : remindUsers) {
-            if (remindUser.getUserId().equals(userid)) {
+        List<Long> useridsList = map.get(type);
+        for (Long aLong : useridsList) {
+            if (aLong.equals(userid)) {
                 return true;
-            }else {
-                return  false;
             }
         }
-
         return false;
     }
 
