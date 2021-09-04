@@ -223,6 +223,8 @@ public class ApiRepairController {
         RepairParam Param = new RepairParam();
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
+        Param.setName(UserUtils.getUserId());
+        Param.setProgress(repairParam.getProgress());
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);
@@ -409,7 +411,7 @@ public class ApiRepairController {
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         Long userId = getWxUser(UserUtils.getUserId());
         Boolean permission = false;
-        if(repair.getProgress() != 5L && repair.getProgress() != 1L){
+        if (repair.getProgress() != 5L && repair.getProgress() != 1L) {
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
         if (permission) {

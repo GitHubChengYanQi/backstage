@@ -120,7 +120,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     public void addwx(DispatchingParam param) {
         Dispatching entity = getEntity(param);
         LoginUser user = LoginContextHolder.getContext().getUser();
-
+        //判断权限
         Boolean aBoolean = wxuserInfoService.sendPermissions(1L, user.getId());
         if (aBoolean == true) {
             this.save(entity);

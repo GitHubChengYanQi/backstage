@@ -83,6 +83,9 @@ public class RepairSendTemplate extends sendTemplae {
     @Override
     public List<String> getOpenIds() {
 
+        if (repairParam.getProgress()==null){
+            throw new ServiceException(500,"请确定步骤流程");
+        }
         Long progress = repairParam.getProgress();
         Remind reminds = getReminds(progress);
         List<Long> getremindUserids = getremindUserids(reminds.getRemindId());
@@ -124,7 +127,9 @@ public class RepairSendTemplate extends sendTemplae {
 
         List<WxMpTemplateData> dataList = new ArrayList<>();
 
-
+        if (repairParam.getProgress()==null){
+            throw new ServiceException(500,"请确定步骤流程");
+        }
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
 
@@ -157,7 +162,6 @@ public class RepairSendTemplate extends sendTemplae {
                 }
             }
 
-
         } else {
             if (backTemplat.contains("{{name}}")) {
                 backTemplat = backTemplat.replace("{{name}}", ":系统");
@@ -172,7 +176,7 @@ public class RepairSendTemplate extends sendTemplae {
                 DateTime parse = DateUtil.parse(reateTime);
                 String time = String.valueOf(parse);
                 if (reminds.getTemplateType() != null) {
-                    backTemplat = backTemplat.replace("{{time}}", time);
+                    backTemplat = backTemplat.replace("{{time}}", ":" + time);
                 }
 
             }
