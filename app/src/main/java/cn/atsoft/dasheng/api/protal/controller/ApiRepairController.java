@@ -221,6 +221,7 @@ public class ApiRepairController {
         }
         this.repairService.updateById(newEntity);
         RepairParam Param = new RepairParam();
+        Param.setProgress(repairParam.getProgress());
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
         repairSendTemplate.setRepairParam(Param);
