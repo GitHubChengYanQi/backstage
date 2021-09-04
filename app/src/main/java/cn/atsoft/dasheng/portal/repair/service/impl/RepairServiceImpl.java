@@ -81,8 +81,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Resource
     private UserService userService;
     @Autowired
-    private WxTemplate wxTemplate;
-    @Autowired
     private RepairSendTemplate repairSendTemplate;
 
 

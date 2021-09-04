@@ -97,6 +97,7 @@ public class ApiRepairController {
     @Autowired
     private RepairSendTemplate repairSendTemplate;
 
+
     public Long getWxUser(Long memberId) {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         wxuserInfoQueryWrapper.in("member_id", memberId);
@@ -208,13 +209,14 @@ public class ApiRepairController {
         if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
+
         Repair oldEntity = getOldEntity(repairParam);
         Repair newEntity = getEntity(repairParam);
         ToolUtil.copyProperties(newEntity, oldEntity);
         Boolean permission = false;
         // 判断权限
         permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress(), userId);
-        if(!permission){
+        if (!permission) {
             throw new ServiceException(403, "当前用户没有此权限!");
         }
         this.repairService.updateById(newEntity);
@@ -407,10 +409,10 @@ public class ApiRepairController {
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         Long userId = getWxUser(UserUtils.getUserId());
         Boolean permission = false;
-        if(repair.getProgress() != 5L ){
+        if (repair.getProgress() != 5L) {
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
-        if(permission){
+        if (permission) {
             repair.setPower(1);
         } else {
             repair.setPower(0);

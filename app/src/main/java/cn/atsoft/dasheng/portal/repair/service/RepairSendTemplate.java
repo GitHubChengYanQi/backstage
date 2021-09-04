@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.portal.repair.service;
 
 import cn.atsoft.dasheng.appBase.service.sendTemplae;
+import cn.atsoft.dasheng.commonArea.entity.CommonArea;
+import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
@@ -13,6 +16,7 @@ import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
+import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
@@ -26,6 +30,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import lombok.Data;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +63,9 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Autowired
     private UcOpenUserInfoService userInfoService;
+
+    @Autowired
+    private CommonAreaService commonAreaService;
 
 
     private RepairParam repairParam;
@@ -119,17 +127,14 @@ public class RepairSendTemplate extends sendTemplae {
 
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
-        Dispatching dispatching = getDispatching(repairParam.getRepairId());
-        Long name = dispatching.getName();
-        String note = dispatching.getNote();
 
-        String userId = "";
-        if (name != null) {
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.in("user_id", name);
-            User username = userService.getOne(userQueryWrapper);
-            userId = username.getName();
+        Dispatching dispatching = getDispatching(repairParam.getRepairId());
+        String note = "";
+        if (dispatching != null) {
+            note = dispatching.getNote();
         }
+
+
 /**
  * 判断登录是否小程序
  */
@@ -137,29 +142,39 @@ public class RepairSendTemplate extends sendTemplae {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.in("user_id", wxuserInfo.getUserId());
-            User user = userService.getOne(userQueryWrapper);
-            if (reminds.getTemplateType().contains("{{name}}")) {
+            if (wxuserInfo != null) {
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
+                User user = userService.getOne(userQueryWrapper);
                 if (user != null) {
-                    backTemplat = backTemplat.replace("{{name}}", user.getName());
-                } else {
-                    backTemplat = backTemplat.replace("{{name}}", "系统");
+                    if (backTemplat.contains("{{name}}")) {
+                        if (user != null) {
+                            backTemplat = backTemplat.replace("{{name}}", user.getName());
+                        } else {
+                            backTemplat = backTemplat.replace("{{name}}", ":系统");
+                        }
+                    }
                 }
             }
 
+
+        } else {
+            if (backTemplat.contains("{{name}}")) {
+                backTemplat = backTemplat.replace("{{name}}", ":系统");
+            }
         }
+
+
         try {
-            if (reminds.getTemplateType().contains("{{time}}")) {
-                if (repairParam.getCreateTime() != null) {
-                    Date date = new Date();
-                    String reateTime = String.valueOf(date);
-                    DateTime parse = DateUtil.parse(reateTime);
-                    String time = String.valueOf(parse);
-                    if (reminds.getTemplateType() != null) {
-                        backTemplat = backTemplat.replace("{{time}}", time);
-                    }
+            if (backTemplat.contains("{{time}}")) {
+                Date date = new Date();
+                String reateTime = String.valueOf(date);
+                DateTime parse = DateUtil.parse(reateTime);
+                String time = String.valueOf(parse);
+                if (reminds.getTemplateType() != null) {
+                    backTemplat = backTemplat.replace("{{time}}", time);
                 }
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,11 +197,20 @@ public class RepairSendTemplate extends sendTemplae {
 
         if (reminds.getTemplateType().contains("{{details}}")) {
             if (remindResult.getComment() != null && backTemplat != "") {
-                backTemplat = backTemplat.replace("{{details}}", repairParam.getComment());
+
             } else {
                 backTemplat = backTemplat.replace("{{details}}", "无");
             }
         }
+
+
+        if (reminds.getTemplateType().contains("{{area}}")) {
+            if (repairParam.getArea() != null) {
+                RegionResult area = getArea(repairParam.getArea());
+                backTemplat = backTemplat.replace("{{area}}", area.getProvince() + "/" + area.getCity() + "/" + area.getArea());
+            }
+        }
+
 
         WxTemplateData wxTemplateData = JSON.parseObject(backTemplat, WxTemplateData.class);
 
@@ -241,5 +265,16 @@ public class RepairSendTemplate extends sendTemplae {
             remindUserIds.add(remindUser.getUserId());
         }
         return remindUserIds;
+    }
+
+    private RegionResult getArea(String area) {
+        RegionResult regionResult = new RegionResult();
+        CommonArea commonArea = commonAreaService.lambdaQuery().eq(CommonArea::getId, area).one();
+        regionResult.setArea(commonArea.getTitle());
+        CommonArea city = commonAreaService.lambdaQuery().eq(CommonArea::getId, commonArea.getParentid()).one();
+        regionResult.setCity(city.getTitle());
+        CommonArea province = commonAreaService.lambdaQuery().eq(CommonArea::getId, city.getParentid()).one();
+        regionResult.setProvince(province.getTitle());
+        return regionResult;
     }
 }
