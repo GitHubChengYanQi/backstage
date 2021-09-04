@@ -407,7 +407,7 @@ public class ApiRepairController {
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         Long userId = getWxUser(UserUtils.getUserId());
         Boolean permission = false;
-        if(repair.getProgress() != 5L ){
+        if(repair.getProgress() != 5L && repair.getProgress() != 1L){
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
         if(permission){
