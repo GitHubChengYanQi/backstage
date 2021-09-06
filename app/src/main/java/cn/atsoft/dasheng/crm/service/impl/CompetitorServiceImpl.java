@@ -1,7 +1,6 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -10,12 +9,9 @@ import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import  cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -29,9 +25,7 @@ import java.util.List;
  * @author 
  * @since 2021-09-06
  */
-
 @Service
-
 public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competitor> implements CompetitorService {
 
     @Override
