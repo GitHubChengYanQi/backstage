@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.wxUser.model.result;
+package cn.atsoft.dasheng.binding.wxUser.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;

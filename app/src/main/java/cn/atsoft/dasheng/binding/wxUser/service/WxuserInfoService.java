@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.portal.wxUser.service;
+package cn.atsoft.dasheng.binding.wxUser.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
-import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.binding.wxUser.model.result.WxuserInfoResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

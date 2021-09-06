@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.portal.wxUser.mapper.WxuserInfoMapper">
+<mapper namespace="cn.atsoft.dasheng.binding.wxUser.mapper.WxuserInfoMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo">
         <id column="user_info_id" property="userInfoId"/>
         <result column="user_id" property="userId"/>
         <result column="uuid" property="uuid"/>
@@ -22,8 +22,8 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult"
-            parameterType="cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.binding.wxUser.model.result.WxuserInfoResult"
+            parameterType="cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_wxuser_info where 1 = 1
@@ -39,7 +39,7 @@
     </select>
 
     <select id="customMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam">
+            parameterType="cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_wxuser_info where 1 = 1
@@ -54,8 +54,8 @@
         </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult"
-            parameterType="cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.binding.wxUser.model.result.WxuserInfoResult"
+            parameterType="cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_wxuser_info where 1 = 1
@@ -71,7 +71,7 @@
     </select>
 
     <select id="customPageMapList" resultType="map"
-            parameterType="cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam">
+            parameterType="cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_portal_wxuser_info where 1 = 1

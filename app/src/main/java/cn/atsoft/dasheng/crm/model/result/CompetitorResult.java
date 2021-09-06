@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BusinessRequest;
+import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +21,7 @@ import java.util.List;
 public class CompetitorResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private CrmBusinessResult businessResult;
 
     /**
      * 竞争对手id

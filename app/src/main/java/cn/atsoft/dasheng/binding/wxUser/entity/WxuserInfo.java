@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.wxUser.entity;
+package cn.atsoft.dasheng.binding.wxUser.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;

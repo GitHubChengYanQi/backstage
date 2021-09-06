@@ -48,6 +48,9 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
+        <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
+            and business_id = #{paramCondition.businessId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
