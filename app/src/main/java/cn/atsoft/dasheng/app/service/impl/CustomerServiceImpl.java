@@ -60,7 +60,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public Customer add(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
-        if (param.getContactsParams().size() != 0) {
+        if (param.getContactsParams() != null) {
             for (ContactsParam contactsParam : param.getContactsParams()) {
                 contactsParam.setCustomerId(entity.getCustomerId());
                 Contacts contacts = contactsService.add(contactsParam);
@@ -73,7 +73,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             }
         }
-        if (param.getAdressParams().size() != 0) {
+        if (param.getAdressParams() != null) {
             for (AdressParam adressParam : param.getAdressParams()) {
                 adressParam.setCustomerId(entity.getCustomerId());
                 adressService.add(adressParam);
