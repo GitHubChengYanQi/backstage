@@ -96,6 +96,7 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
         for (CompetitorQuoteResult datum : data) {
             ids.add(datum.getCompetitorId());
         }
+
         List<Competitor> competitorList = ids.size() == 0 ? new ArrayList<>() : competitorService.lambdaQuery().in(Competitor::getCompetitorId).list();
         for (CompetitorQuoteResult datum : data) {
             for (Competitor competitor : competitorList) {

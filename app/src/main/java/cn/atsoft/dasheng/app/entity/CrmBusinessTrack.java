@@ -23,8 +23,8 @@ import java.io.Serializable;
 public class CrmBusinessTrack implements Serializable {
 
     private static final long serialVersionUID = 1L;
-@TableField("name")
-  private  String name;
+    @TableField("name")
+    private String name;
     /**
      * 商机跟踪id
      */
@@ -49,8 +49,8 @@ public class CrmBusinessTrack implements Serializable {
     private Integer offer;
     @TableField("business_id")
     private Long businessId;
-
-
+    @TableField("competitors_quote_id")
+    private Long competitorsQuoteId;
     @TableField("note")
     private String note;
     /**
@@ -191,6 +191,14 @@ public class CrmBusinessTrack implements Serializable {
 
     public void setBusinessId(Long businessId) {
         this.businessId = businessId;
+    }
+
+    public Long getCompetitorsQuoteId() {
+        return competitorsQuoteId;
+    }
+
+    public void setCompetitorsQuoteId(Long competitorsQuoteId) {
+        this.competitorsQuoteId = competitorsQuoteId;
     }
 
     @Override
