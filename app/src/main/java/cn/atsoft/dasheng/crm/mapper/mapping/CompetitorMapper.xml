@@ -44,13 +44,14 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor where 1 = 1
+        from daoxin_crm_competitor where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
         <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
             and business_id = #{paramCondition.businessId}
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">

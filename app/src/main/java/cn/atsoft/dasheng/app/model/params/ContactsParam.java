@@ -23,6 +23,7 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private List<PhoneParam> phoneParams;
     /**
      * 联系人id
      */

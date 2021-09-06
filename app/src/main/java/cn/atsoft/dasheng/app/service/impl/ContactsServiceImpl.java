@@ -2,8 +2,11 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -42,6 +45,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private CustomerService customerService;
     @Autowired
     private CompanyRoleService companyRoleService;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     @BussinessLog
@@ -104,7 +109,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         IPage<ContactsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> cIds = new ArrayList<>();
         List<Long> roleIds = new ArrayList<>();
+        List<Long> contactsIds = new ArrayList<>();
         for (ContactsResult record : page.getRecords()) {
+            contactsIds.add(record.getContactsId());
             cIds.add(record.getCustomerId());
             roleIds.add(record.getCompanyRole());
         }
@@ -113,6 +120,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);
         List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
+
+        QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
+        phoneQueryWrapper.in("contacts_id", contactsIds);
+        List<Phone> phoneList = cIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneQueryWrapper);
+
+
         for (ContactsResult record : page.getRecords()) {
             for (Customer customer : customerList) {
                 if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
@@ -130,6 +143,15 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                     break;
                 }
             }
+            List<PhoneResult> List = new ArrayList<>();
+            for (Phone phone : phoneList) {
+                if (phone.getContactsId().equals(record.getContactsId())) {
+                    PhoneResult phoneResult = new PhoneResult();
+                    ToolUtil.copyProperties(phone, phoneResult);
+                    List.add(phoneResult);
+                }
+            }
+            record.setPhoneResult(List);
         }
         return PageFactory.createPageInfo(page);
     }
