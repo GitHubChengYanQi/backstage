@@ -244,7 +244,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         adressResults.add(adressResult);
                     }
                 }
-                record.setAdressResults(adressResults);
+                record.setAdressParams(adressResults);
             }
 
             List<ContactsResult> contactsResults = new ArrayList<>();
@@ -254,15 +254,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
                     contactsResults.add(contactsResult);
-                    Phone phone = phoneService.lambdaQuery().eq(Phone::getPhoneId, contactsResult.getPhone()).one();
+                    Phone phone = phoneService.lambdaQuery().eq(Phone::getPhoneId, contacts.getPhone()).one();
                     PhoneResult phoneResult = new PhoneResult();
                     ToolUtil.copyProperties(phone, phoneResult);
                     phoneResults.add(phoneResult);
-                    contactsResult.setPhoneResult(phoneResults);
+                    contactsResult.setPhoneParams(phoneResults);
                     break;
                 }
             }
-            record.setContactsResult(contactsResults);
+            record.setContactsParams(contactsResults);
         }
         return data.size() == 0 ? null : data.get(0);
     }
