@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
+import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -48,18 +50,30 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private CrmIndustryService crmIndustryService;
     @Autowired
     private ContactsService contactsService;
-
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
-        for (Contacts contact : param.getContacts()) {
-            ContactsParam contactsParam = new ContactsParam();
-            ToolUtil.copyProperties(contact, contactsParam);
-            contactsService.add(contactsParam);
+
+        for (ContactsParam contactsParam : param.getContactsParams()) {
+            contactsParam.setCustomerId(entity.getCustomerId());
+            Contacts contacts = contactsService.add(contactsParam);
+            for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                phoneParam.setContactsId(contacts.getContactsId());
+                phoneService.add(phoneParam);
+            }
         }
+        for (AdressParam adressParam : param.getAdressParams()) {
+            adressParam.setCustomerId(entity.getCustomerId());
+            adressService.add(adressParam);
+        }
+
         return entity;
     }
 
