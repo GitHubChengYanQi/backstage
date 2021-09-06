@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor_quote where 1 = 1
+        from daoxin_crm_competitor_quote where display = 1
             <if test="paramCondition.competitorId != null">
                 and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
             </if>
