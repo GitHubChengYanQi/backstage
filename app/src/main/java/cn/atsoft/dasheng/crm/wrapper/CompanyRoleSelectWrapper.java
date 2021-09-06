@@ -15,5 +15,10 @@ public class CompanyRoleSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("position"));
+        String value = Convert.toStr(map.get("company_role_id"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }

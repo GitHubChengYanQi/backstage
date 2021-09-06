@@ -24,7 +24,7 @@ public interface CompanyRoleService extends IService<CompanyRole> {
      * @author 
      * @Date 2021-09-06
      */
-    void add(CompanyRoleParam param);
+    CompanyRole add(CompanyRoleParam param);
 
     /**
      * 删除

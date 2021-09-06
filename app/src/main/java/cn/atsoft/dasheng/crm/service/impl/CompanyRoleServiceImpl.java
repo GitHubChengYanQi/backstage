@@ -29,9 +29,10 @@ import java.util.List;
 public class CompanyRoleServiceImpl extends ServiceImpl<CompanyRoleMapper, CompanyRole> implements CompanyRoleService {
 
     @Override
-    public void add(CompanyRoleParam param){
+    public CompanyRole add(CompanyRoleParam param){
         CompanyRole entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override
