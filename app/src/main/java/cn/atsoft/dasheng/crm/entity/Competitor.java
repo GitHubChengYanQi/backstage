@@ -27,6 +27,8 @@ public class Competitor implements Serializable {
       @TableId(value = "competitor_id", type = IdType.AUTO)
     private Long competitorId;
 
+      @TableField("business_id")
+      private  Long businessId;
     /**
      * 竞争对手企业名称
      */
@@ -118,6 +120,14 @@ public class Competitor implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessId) {
+        this.businessId = businessId;
     }
 
     @Override
