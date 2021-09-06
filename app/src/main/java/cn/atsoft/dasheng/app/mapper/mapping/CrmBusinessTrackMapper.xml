@@ -13,17 +13,18 @@
         <result column="display" property="display"/>
         <result column="type" property="type"/>
         <result column="money" property="money"/>
-        <result column="business_id" property="businessId" />
+        <result column="business_id" property="businessId"/>
         <result column="note" property="note"/>
         <result column="time" property="time"/>
         <result column="offer" property="offer"/>
         <result column="name" property="name"/>
+        <result column="competitors_quote_id" property="competitorsQuoteId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         money
-    AS "money" ,type AS "type",note AS "note",name AS "name",
+        AS "money" ,type AS "type",note AS "note",name AS "name",competitors_quote_id AS "competitorsQuoteId",
         track_id AS "trackId", note_id AS "noteId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",business_id AS "businessId"
     </sql>
 
@@ -65,7 +66,7 @@
         <if test="paramCondition.businessId != null">
             and business_id = #{paramCondition.businessId}
         </if>
-        order by createTime desc 
+        order by createTime desc
     </select>
     <resultMap id="rsp" type="cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult">
         <collection property="User" ofType="cn.atsoft.dasheng.sys.modular.system.entity.User" javaType="ArrayList"

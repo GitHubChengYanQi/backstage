@@ -31,6 +31,7 @@ public class CompanyRoleParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("公司角色id")
     private Long companyRoleId;
 
+
     /**
      * 职位
      */

@@ -1,16 +1,18 @@
-package cn.atsoft.dasheng.crm.model.result;
+package cn.atsoft.dasheng.crm.model.params;
 
-import cn.atsoft.dasheng.app.model.result.BusinessRequest;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
- * 竞争对手管理
+ * 竞争对手报价
  * </p>
  *
  * @author 
@@ -18,10 +20,22 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CompetitorResult implements Serializable {
+public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private CrmBusinessResult businessResult;
+
+
+    /**
+     * 竞争对手id
+     */
+    @ApiModelProperty("竞争对手id")
+    private Long competitorsQuoteId;
+
+    /**
+     * 竞争对手报价
+     */
+    @ApiModelProperty("竞争对手报价")
+    private Integer competitorsQuote;
 
     /**
      * 竞争对手id
@@ -30,17 +44,10 @@ public class CompetitorResult implements Serializable {
     private Long competitorId;
 
     /**
-     * 竞争对手企业名称
+     * 创建者
      */
-    @ApiModelProperty("竞争对手企业名称")
-    private String name;
-
-    /**
-     * 竞争对手企业性质
-     */
-    @ApiModelProperty("竞争对手企业性质")
-    private Integer nature;
-    private  Long businessId;
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
 
     /**
      * 修改者
@@ -65,6 +72,13 @@ public class CompetitorResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

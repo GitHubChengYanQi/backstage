@@ -1,7 +1,6 @@
-package cn.atsoft.dasheng.crm.model.result;
+package cn.atsoft.dasheng.binding.wxUser.model.result;
 
-import cn.atsoft.dasheng.app.model.result.BusinessRequest;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -10,37 +9,44 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 竞争对手管理
+ * 用户 小程序 关联
  * </p>
  *
  * @author 
- * @since 2021-09-06
+ * @since 2021-08-24
  */
 @Data
 @ApiModel
-public class CompetitorResult implements Serializable {
+public class WxuserInfoResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private CrmBusinessResult businessResult;
+
+    private UserResult userResult;
+
+    private Long memberId;
+    /**
+     * 用户和openid关联
+     */
+    @ApiModelProperty("用户和openid关联")
+    private Long userInfoId;
 
     /**
-     * 竞争对手id
+     * 用户id
      */
-    @ApiModelProperty("竞争对手id")
-    private Long competitorId;
+    @ApiModelProperty("用户id")
+    private Long userId;
 
     /**
-     * 竞争对手企业名称
+     * 用户第三方系统的唯一id
      */
-    @ApiModelProperty("竞争对手企业名称")
-    private String name;
+    @ApiModelProperty("用户第三方系统的唯一id")
+    private String uuid;
 
     /**
-     * 竞争对手企业性质
+     * 创建者
      */
-    @ApiModelProperty("竞争对手企业性质")
-    private Integer nature;
-    private  Long businessId;
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
 
     /**
      * 修改者

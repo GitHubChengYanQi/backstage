@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -50,6 +52,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
     @Autowired
     private BusinessDynamicService businessDynamicService;
+    @Autowired
+    private CompetitorService competitorService;
 
     public CrmBusinessResult detail(Long id) {
 
@@ -218,6 +222,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         List<Long> userIds = new ArrayList<>();
         List<Long> trackList = new ArrayList<>();
         List<Long> processIds = new ArrayList<>();
+        List<Long> businessIds = new ArrayList<>();
 
         for (CrmBusinessResult item : data) {
             cids.add(item.getCustomerId());
@@ -226,6 +231,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             userIds.add(item.getPerson());
             trackList.add(item.getTrackId());
             processIds.add(item.getProcessId());
+            businessIds.add(item.getBusinessId());
         }
         /**
          * 获取负责人
@@ -264,6 +270,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         QueryWrapper<CrmBusinessSalesProcess> processQueryWrapper = new QueryWrapper<>();
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
+
+        List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getBusinessId, businessIds).list();
 
 
         for (CrmBusinessResult item : data) {

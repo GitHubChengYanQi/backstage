@@ -10,36 +10,40 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 竞争对手管理
+ * 竞争对手报价
  * </p>
  *
  * @author 
  * @since 2021-09-06
  */
-@TableName("daoxin_crm_competitor")
-public class Competitor implements Serializable {
+@TableName("daoxin_crm_competitor_quote")
+public class CompetitorQuote implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 竞争对手id
      */
-      @TableId(value = "competitor_id", type = IdType.AUTO)
+      @TableId(value = "competitors_quote_id", type = IdType.ID_WORKER)
+    private Long competitorsQuoteId;
+
+    /**
+     * 竞争对手报价
+     */
+    @TableField("competitors_quote")
+    private Integer competitorsQuote;
+
+    /**
+     * 竞争对手id
+     */
+    @TableField("competitor_id")
     private Long competitorId;
 
-      @TableField("business_id")
-      private  Long businessId;
     /**
-     * 竞争对手企业名称
+     * 创建者
      */
-    @TableField("name")
-    private String name;
-
-    /**
-     * 竞争对手企业性质
-     */
-    @TableField("nature")
-    private Integer nature;
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
 
     /**
      * 修改者
@@ -66,6 +70,22 @@ public class Competitor implements Serializable {
     private Integer display;
 
 
+    public Long getCompetitorsQuoteId() {
+        return competitorsQuoteId;
+    }
+
+    public void setCompetitorsQuoteId(Long competitorsQuoteId) {
+        this.competitorsQuoteId = competitorsQuoteId;
+    }
+
+    public Integer getCompetitorsQuote() {
+        return competitorsQuote;
+    }
+
+    public void setCompetitorsQuote(Integer competitorsQuote) {
+        this.competitorsQuote = competitorsQuote;
+    }
+
     public Long getCompetitorId() {
         return competitorId;
     }
@@ -74,20 +94,12 @@ public class Competitor implements Serializable {
         this.competitorId = competitorId;
     }
 
-    public String getName() {
-        return name;
+    public Long getCreateUser() {
+        return createUser;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getNature() {
-        return nature;
-    }
-
-    public void setNature(Integer nature) {
-        this.nature = nature;
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
     }
 
     public Long getUpdateUser() {
@@ -122,20 +134,13 @@ public class Competitor implements Serializable {
         this.display = display;
     }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
     @Override
     public String toString() {
-        return "Competitor{" +
-        "competitorId=" + competitorId +
-        ", name=" + name +
-        ", nature=" + nature +
+        return "CompetitorQuote{" +
+        "competitorsQuoteId=" + competitorsQuoteId +
+        ", competitorsQuote=" + competitorsQuote +
+        ", competitorId=" + competitorId +
+        ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +

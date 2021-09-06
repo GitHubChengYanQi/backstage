@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.portal.wxUser.mapper;
+package cn.atsoft.dasheng.binding.wxUser.mapper;
 
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
-import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.binding.wxUser.model.result.WxuserInfoResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

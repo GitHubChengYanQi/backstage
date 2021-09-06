@@ -1,41 +1,16 @@
 package cn.atsoft.dasheng.userInfo.controller;
 
 
-import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.portal.remind.entity.Remind;
-import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
-import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
-import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
-import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
-import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.api.WxMpTemplateMsgService;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateIndustry;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateIndustryEnum;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @Data

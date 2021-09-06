@@ -4,55 +4,62 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Competitor">
-        <id column="competitor_id" property="competitorId" />
-        <result column="name" property="name" />
-        <result column="nature" property="nature" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="competitor_id" property="competitorId"/>
+        <result column="name" property="name"/>
+        <result column="nature" property="nature"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="business_id" property="businessId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">business_id
+    AS "businessId",
         competitor_id AS "competitorId", name AS "name", nature AS "nature", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
-            </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
+            and business_id = #{paramCondition.businessId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
     </select>
 
 </mapper>
