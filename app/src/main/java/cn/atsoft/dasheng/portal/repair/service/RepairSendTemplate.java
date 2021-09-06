@@ -83,8 +83,8 @@ public class RepairSendTemplate extends sendTemplae {
     @Override
     public List<String> getOpenIds() {
 
-        if (repairParam.getProgress()==null){
-            throw new ServiceException(500,"请确定步骤流程");
+        if (repairParam.getProgress() == null) {
+            throw new ServiceException(500, "请确定步骤流程");
         }
         Long progress = repairParam.getProgress();
         Remind reminds = getReminds(progress);
@@ -127,8 +127,8 @@ public class RepairSendTemplate extends sendTemplae {
 
         List<WxMpTemplateData> dataList = new ArrayList<>();
 
-        if (repairParam.getProgress()==null){
-            throw new ServiceException(500,"请确定步骤流程");
+        if (repairParam.getProgress() == null) {
+            throw new ServiceException(500, "请确定步骤流程");
         }
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
@@ -239,8 +239,7 @@ public class RepairSendTemplate extends sendTemplae {
         QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
         Remind remindServiceOne = remindService.getOne(remindQueryWrapper.in("type", type));
         if (ToolUtil.isEmpty(remindServiceOne)) {
-            Remind remind = new Remind();
-            return remind;
+            throw new ServiceException(500, "模板消息发送失败!");
         }
         return remindServiceOne;
     }
