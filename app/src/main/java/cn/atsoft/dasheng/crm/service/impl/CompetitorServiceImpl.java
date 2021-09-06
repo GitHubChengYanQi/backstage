@@ -95,17 +95,19 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         for (CompetitorResult datum : data) {
             businessIds.add(datum.getBusinessId());
         }
-
-        List<CrmBusiness> businessList = businessService.lambdaQuery().in(CrmBusiness::getBusinessId, businessIds).list();
-        for (CompetitorResult datum : data) {
-            for (CrmBusiness crmBusiness : businessList) {
-                if (crmBusiness.getBusinessId().equals(datum.getBusinessId())) {
-                    CrmBusinessResult businessResult = new CrmBusinessResult();
-                    ToolUtil.copyProperties(crmBusiness, businessResult);
-                    datum.setBusinessResult(businessResult);
-                    break;
+        if (businessIds.size() != 0) {
+            List<CrmBusiness> businessList = businessIds.size() == 0 ? new ArrayList<>() : businessService.lambdaQuery().in(CrmBusiness::getBusinessId, businessIds).list();
+            for (CompetitorResult datum : data) {
+                for (CrmBusiness crmBusiness : businessList) {
+                    if (crmBusiness.getBusinessId().equals(datum.getBusinessId())) {
+                        CrmBusinessResult businessResult = new CrmBusinessResult();
+                        ToolUtil.copyProperties(crmBusiness, businessResult);
+                        datum.setBusinessResult(businessResult);
+                        break;
+                    }
                 }
             }
         }
+
     }
 }
