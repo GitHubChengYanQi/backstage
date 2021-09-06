@@ -15,5 +15,6 @@ public class CompetitorQuoteSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+
     }
 }

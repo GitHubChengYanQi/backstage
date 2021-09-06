@@ -37,9 +37,10 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
 
 
     @Override
-    public void add(CompetitorQuoteParam param) {
+    public CompetitorQuote add(CompetitorQuoteParam param) {
         CompetitorQuote entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override
@@ -48,11 +49,12 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     }
 
     @Override
-    public void update(CompetitorQuoteParam param) {
+    public CompetitorQuote update(CompetitorQuoteParam param) {
         CompetitorQuote oldEntity = getOldEntity(param);
         CompetitorQuote newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

@@ -24,7 +24,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * @author 
      * @Date 2021-09-06
      */
-    void add(CompetitorQuoteParam param);
+    CompetitorQuote add(CompetitorQuoteParam param);
 
     /**
      * 删除
@@ -40,7 +40,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * @author 
      * @Date 2021-09-06
      */
-    void update(CompetitorQuoteParam param);
+    CompetitorQuote update(CompetitorQuoteParam param);
 
     /**
      * 查询单条数据，Specification模式

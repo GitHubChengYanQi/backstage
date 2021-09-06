@@ -2,13 +2,17 @@ package cn.atsoft.dasheng.crm.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.CompetitorQuoteSelectWrapper;
+import cn.atsoft.dasheng.crm.wrapper.CompetitorSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -103,6 +107,27 @@ public class CompetitorController extends BaseController {
         }
         return this.competitorService.findPageBySpec(competitorParam);
     }
+
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String,Object>>> listSelect(@RequestBody CompetitorParam competitorParam) {
+        QueryWrapper<Competitor> competitorQueryWrapper = new QueryWrapper<>();
+        competitorQueryWrapper.in("display",1);
+        if (competitorParam.getBusinessId()!=null){
+            competitorQueryWrapper.in("business_id",competitorParam.getBusinessId());
+        }
+        List<Map<String,Object>> list = this.competitorService.listMaps(competitorQueryWrapper);
+        CompetitorSelectWrapper factory = new CompetitorSelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 
