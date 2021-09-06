@@ -215,7 +215,7 @@ public class ApiRepairController {
         ToolUtil.copyProperties(newEntity, oldEntity);
         Boolean permission = false;
         // 判断权限
-        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress(), userId);
+        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress()-1, userId);
         if (!permission) {
             throw new ServiceException(403, "当前用户没有此权限!");
         }
@@ -225,7 +225,7 @@ public class ApiRepairController {
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
         Param.setName(UserUtils.getUserId());
-        Param.setProgress(repairParam.getProgress());
+        Param.setProgress(repairParam.getProgress()-1);
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);
@@ -412,7 +412,7 @@ public class ApiRepairController {
         Repair repair = this.repairService.getById(repairParam.getRepairId());
         Long userId = getWxUser(UserUtils.getUserId());
         Boolean permission = false;
-        if (repair.getProgress() != 5L && repair.getProgress() != 1L) {
+        if (repair.getProgress() != 5L) {
             permission = wxuserInfoService.sendPermissions(repair.getProgress(), userId);
         }
         if (permission) {
