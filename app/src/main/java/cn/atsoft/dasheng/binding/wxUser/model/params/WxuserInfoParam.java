@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.wxUser.model.params;
+package cn.atsoft.dasheng.binding.wxUser.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;

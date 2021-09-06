@@ -1,15 +1,14 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
-import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
-import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.binding.wxUser.model.result.WxuserInfoResult;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

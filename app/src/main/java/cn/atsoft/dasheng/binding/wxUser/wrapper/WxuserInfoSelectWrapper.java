@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.wxUser.wrapper;
+package cn.atsoft.dasheng.binding.wxUser.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;

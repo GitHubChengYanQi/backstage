@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -15,34 +13,19 @@ import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.portal.remind.entity.Remind;
-import cn.atsoft.dasheng.portal.remind.model.params.RemindParam;
-import cn.atsoft.dasheng.portal.remind.service.RemindService;
-import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
-import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
-import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.service.RepairService;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
-import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
-import cn.atsoft.dasheng.userInfo.service.UserInfoService;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.system.UserInfo;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
