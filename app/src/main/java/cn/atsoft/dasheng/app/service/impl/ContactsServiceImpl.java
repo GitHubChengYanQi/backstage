@@ -91,9 +91,12 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     }
 
     @Override
+
     public List<ContactsResult> findListBySpec(ContactsParam param) {
         return null;
     }
+
+
 
     @Override
     public PageInfo<ContactsResult> findPageBySpec(ContactsParam param) {
