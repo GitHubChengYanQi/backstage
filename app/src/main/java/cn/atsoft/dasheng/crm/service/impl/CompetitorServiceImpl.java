@@ -36,7 +36,14 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public void delete(CompetitorParam param){
-        this.removeById(getKey(param));
+        Competitor getId=this.getById(param.getCompetitorId());
+        if (ToolUtil.isEmpty(getId)){
+            throw new ServiceException(500,"所删除目标不存在");
+        }else {
+            Competitor entity = getEntity(param);
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
