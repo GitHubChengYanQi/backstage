@@ -28,6 +28,10 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("联系人id")
     private Long contactsId;
+    /**
+     * 公司角色
+     */
+    private Long companyRole;
 
     /**
      * 联系人姓名

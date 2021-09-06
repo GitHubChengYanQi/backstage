@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 联系人表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-23
  */
 @Data
@@ -20,12 +25,19 @@ public class ContactsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-   private CustomerResult customerResult;
+    private CustomerResult customerResult;
+    private CompanyRoleResult companyRoleResult;
     /**
      * 联系人id
      */
     @ApiModelProperty("联系人id")
     private Long contactsId;
+
+    /**
+     * 公司角色
+     */
+    private Long companyRole;
+
 
     /**
      * 联系人姓名

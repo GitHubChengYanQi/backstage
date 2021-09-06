@@ -13,6 +13,9 @@ import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.CompanyRole;
+import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
+import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -37,6 +40,8 @@ import java.util.List;
 public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> implements ContactsService {
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CompanyRoleService companyRoleService;
 
     @Override
     @BussinessLog
@@ -44,7 +49,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Contacts entity = getEntity(param);
             this.save(entity);
             return entity;
@@ -57,7 +62,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Contacts contacts = this.getById(param.getContactsId());
         if (ToolUtil.isEmpty(contacts)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Contacts entity = getEntity(param);
             param.setDisplay(0);
             this.update(param);
@@ -71,7 +76,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Contacts oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Contacts newEntity = getEntity(param);
             newEntity.setCustomerId(null);
             ToolUtil.copyProperties(newEntity, oldEntity);
@@ -95,18 +100,30 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         Page<ContactsResult> pageContext = getPageContext();
         IPage<ContactsResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> cIds = new ArrayList<>();
+        List<Long> roleIds = new ArrayList<>();
         for (ContactsResult record : page.getRecords()) {
             cIds.add(record.getCustomerId());
+            roleIds.add(record.getCompanyRole());
         }
+        List<CompanyRole> companyRoleList = companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
+
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);
-        List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() :  customerService.list(customerQueryWrapper);
+        List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
         for (ContactsResult record : page.getRecords()) {
             for (Customer customer : customerList) {
                 if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (CompanyRole companyRole : companyRoleList) {
+                if (companyRole.getCompanyRoleId().equals(record.getCompanyRole())) {
+                    CompanyRoleResult companyRoleResult = new CompanyRoleResult();
+                    ToolUtil.copyProperties(companyRole, companyRoleResult);
+                    record.setCompanyRoleResult(companyRoleResult);
                     break;
                 }
             }
@@ -118,9 +135,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     public void batchDelete(List<Long> id) {
         Contacts contacts = new Contacts();
         contacts.setDisplay(0);
-        QueryWrapper<Contacts> contactsQueryWrapper =new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id",id);
-        this.update(contacts,contactsQueryWrapper);
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("contacts_id", id);
+        this.update(contacts, contactsQueryWrapper);
     }
 
     private Serializable getKey(ContactsParam param) {
