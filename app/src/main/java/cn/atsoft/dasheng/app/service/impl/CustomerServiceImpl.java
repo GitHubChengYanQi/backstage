@@ -87,15 +87,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     @BussinessLog
     public Customer delete(CustomerParam param) {
-        Customer customer = this.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        } else {
-            param.setDisplay(0);
-            this.update(param);
-            Customer entity = getEntity(param);
-            return entity;
-        }
+        Customer oldEntity = getOldEntity(param);
+        Customer newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override
@@ -254,7 +250,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
                     contactsResults.add(contactsResult);
-                    Phone phone = phoneService.lambdaQuery().eq(Phone::getPhoneId, contacts.getPhone()).one();
+                    Phone phone = phoneService.lambdaQuery().eq(Phone::getPhoneNumber, contactsResult.getPhone()).one();
                     PhoneResult phoneResult = new PhoneResult();
                     ToolUtil.copyProperties(phone, phoneResult);
                     phoneResults.add(phoneResult);
