@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -45,17 +46,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private UserService userService;
     @Autowired
     private CrmIndustryService crmIndustryService;
-
     @Autowired
     private ContactsService contactsService;
+
 
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
+        for (Contacts contact : param.getContacts()) {
+            ContactsParam contactsParam = new ContactsParam();
+            ToolUtil.copyProperties(contact, contactsParam);
+            contactsService.add(contactsParam);
+        }
         return entity;
-
     }
 
     @Override
