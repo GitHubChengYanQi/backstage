@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.crm.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
+import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
  * 商机 竞争对手 绑定 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 public interface BusinessCompetitionService extends IService<BusinessCompetition> {
@@ -21,7 +23,7 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     void add(BusinessCompetitionParam param);
@@ -29,7 +31,7 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     void delete(BusinessCompetitionParam param);
@@ -37,7 +39,7 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     void update(BusinessCompetitionParam param);
@@ -45,7 +47,7 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     BusinessCompetitionResult findBySpec(BusinessCompetitionParam param);
@@ -53,7 +55,7 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     List<BusinessCompetitionResult> findListBySpec(BusinessCompetitionParam param);
@@ -61,9 +63,11 @@ public interface BusinessCompetitionService extends IService<BusinessCompetition
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
-     PageInfo<BusinessCompetitionResult> findPageBySpec(BusinessCompetitionParam param);
+    PageInfo<BusinessCompetitionResult> findPageBySpec(BusinessCompetitionParam param);
+
+    List<CompetitorResult> findComptitor(BusinessCompetitionParam param);
 
 }

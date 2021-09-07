@@ -27,7 +27,7 @@ public class ContactsResult implements Serializable {
 
     private CustomerResult customerResult;
     private CompanyRoleResult companyRoleResult;
-    private List<PhoneResult> phoneResult;
+    private List<PhoneResult> phoneParams;
     /**
      * 联系人id
      */

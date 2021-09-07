@@ -27,14 +27,16 @@
         <result column="emall" property="emall"/>
         <result column="agent" property="agent"/>
         <result column="url" property="url"/>
-        <result column="sort" property="sort" />
+        <result column="sort" property="sort"/>
+        <result column="region" property="region"/>
         <result column="classification" property="classification"/>
         <result column="industry_id" property="industryId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">region
+    AS "region",
         industry_id AS "industryId" ,agent AS "agent",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id
@@ -86,7 +88,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where  display = 1
+        from daoxin_crm_customer where display = 1
         <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -100,16 +102,16 @@
             and status = #{paramCondition.status}
         </if>
         <if test="paramCondition.classification !=null  ">
-            and classification =  #{paramCondition.classification}
+            and classification = #{paramCondition.classification}
         </if>
         <if test="paramCondition.customerLevelId !=null and paramCondition.customerLevelId != '' ">
-            and customer_level_id =  #{paramCondition.customerLevelId}
+            and customer_level_id = #{paramCondition.customerLevelId}
         </if>
         <if test="paramCondition.industryId !=null and paramCondition.industryId != '' ">
-            and industry_id =  #{paramCondition.industryId}
+            and industry_id = #{paramCondition.industryId}
         </if>
         <if test="paramCondition.originId !=null and paramCondition.originId != '' ">
-            and origin_id =  #{paramCondition.originId}
+            and origin_id = #{paramCondition.originId}
         </if>
         <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')

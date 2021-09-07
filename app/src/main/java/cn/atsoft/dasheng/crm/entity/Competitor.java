@@ -27,12 +27,11 @@ public class Competitor implements Serializable {
     /**
      * 竞争对手id
      */
-    @TableId(value = "competitor_id", type = IdType.AUTO)
+    @TableId(value = "competitor_id", type = IdType.ID_WORKER)
     private Long competitorId;
     @TableField("adress")
     private String adress;
-    @TableField("business_id")
-    private Long businessId;
+
 
     /**
      * 报价id
@@ -50,7 +49,7 @@ public class Competitor implements Serializable {
      * 联系电话
      */
     @TableField("phone")
-    private Integer phone;
+    private Long phone;
 
     /**
      * 网址
@@ -186,11 +185,11 @@ public class Competitor implements Serializable {
         this.name = name;
     }
 
-    public Integer getPhone() {
+    public Long getPhone() {
         return phone;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(Long phone) {
         this.phone = phone;
     }
 
@@ -330,13 +329,7 @@ public class Competitor implements Serializable {
         this.display = display;
     }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
 
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
 
     @Override
     public String toString() {
