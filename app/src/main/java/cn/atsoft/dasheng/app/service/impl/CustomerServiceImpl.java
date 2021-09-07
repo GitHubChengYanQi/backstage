@@ -250,10 +250,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
                     contactsResults.add(contactsResult);
-                    Phone phone = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).one();
-                    PhoneResult phoneResult = new PhoneResult();
-                    ToolUtil.copyProperties(phone, phoneResult);
-                    phoneResults.add(phoneResult);
+                    List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
+                    for (Phone phone : phones) {
+                        PhoneResult phoneResult = new PhoneResult();
+                        ToolUtil.copyProperties(phone, phoneResult);
+                        phoneResults.add(phoneResult);
+                    }
+
                     contactsResult.setPhoneResult(phoneResults);
                     break;
                 }
