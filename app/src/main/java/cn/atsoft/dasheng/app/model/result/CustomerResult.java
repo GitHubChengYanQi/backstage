@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -41,6 +42,8 @@ public class CustomerResult implements Serializable {
     private Long industryId;
     private String industryName;
     private Integer agent;
+    private String region;
+    private RegionResult regionResult;
     /**
      * 客户id
      */

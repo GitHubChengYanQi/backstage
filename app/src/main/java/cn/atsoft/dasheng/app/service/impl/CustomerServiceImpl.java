@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.region.GetRegionService;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -54,6 +56,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private GetRegionService getRegionService;
 
     @Override
     @BussinessLog
@@ -95,13 +99,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.updateById(newEntity);
 
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("customer_id",customerId);
-        List<Contacts> list =  contactsService.list(contactsQueryWrapper);
+        contactsQueryWrapper.in("customer_id", customerId);
+        List<Contacts> list = contactsService.list(contactsQueryWrapper);
         List<Long> contactsId = new ArrayList<>();
         for (Contacts contacts : list) {
             contactsId.add(contacts.getContactsId());
             QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
-            phoneQueryWrapper.in("contacts_id",contacts.getContactsId());
+            phoneQueryWrapper.in("contacts_id", contacts.getContactsId());
             List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
             List<Long> phoneId = new ArrayList<>();
             for (Phone phone : phoneList) {
@@ -112,7 +116,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         contactsService.removeByIds(contactsId);
 
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
-        adressQueryWrapper.in("customer_id",customerId);
+        adressQueryWrapper.in("customer_id", customerId);
         List<Adress> list1 = adressService.list(adressQueryWrapper);
         List<Long> adressId = new ArrayList<>();
         for (Adress adress : list1) {
@@ -137,13 +141,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             Long customerId = param.getCustomerId();
             QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-            contactsQueryWrapper.in("customer_id",customerId);
-            List<Contacts> list =  contactsService.list(contactsQueryWrapper);
+            contactsQueryWrapper.in("customer_id", customerId);
+            List<Contacts> list = contactsService.list(contactsQueryWrapper);
             List<Long> contactsId = new ArrayList<>();
             for (Contacts contacts : list) {
                 contactsId.add(contacts.getContactsId());
                 QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
-                phoneQueryWrapper.in("contacts_id",contacts.getContactsId());
+                phoneQueryWrapper.in("contacts_id", contacts.getContactsId());
                 List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
                 List<Long> phoneId = new ArrayList<>();
                 for (Phone phone : phoneList) {
@@ -154,7 +158,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsService.removeByIds(contactsId);
 
             QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
-            adressQueryWrapper.in("customer_id",customerId);
+            adressQueryWrapper.in("customer_id", customerId);
             List<Adress> list1 = adressService.list(adressQueryWrapper);
             List<Long> adressId = new ArrayList<>();
             for (Adress adress : list1) {
@@ -271,6 +275,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
         for (CustomerResult record : data) {
+            RegionResult region = getRegionService.getRegion(record.getRegion());
+            record.setRegionResult(region);
+
 
             if (record.getClassification() == 1) {
                 record.setClassificationName("终端用户");

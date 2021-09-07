@@ -88,10 +88,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
 
         for (CompetitorResult record : page.getRecords()) {
-            if (record.getCompetitorId().equals(param.getCompetitorId())) {
+
                 RegionResult region = getRegionService.getRegion(record.getRegion());
                 record.setRegionResult(region);
-            }
+
         }
         return PageFactory.createPageInfo(page);
     }

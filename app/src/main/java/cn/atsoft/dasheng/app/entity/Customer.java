@@ -38,7 +38,8 @@ public class Customer implements Serializable {
 
     @TableField("sort")
     private Long sort;
-
+    @TableField("region")
+    private String region;
 
     /**
      * 客户名称
@@ -297,8 +298,6 @@ public class Customer implements Serializable {
     }
 
 
-
-
     public Date getSetup() {
         return setup;
     }
@@ -403,5 +402,11 @@ public class Customer implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getRegion() {
+        return region;
+    }
 
+    public void setRegion(String region) {
+        this.region = region;
+    }
 }
