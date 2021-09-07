@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
@@ -83,12 +84,9 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CompetitorResult> detail(@RequestBody CompetitorParam competitorParam) {
-        Competitor detail = this.competitorService.getById(competitorParam.getCompetitorId());
-        CompetitorResult result = new CompetitorResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        Long competitorId = competitorParam.getCompetitorId();
+        final CompetitorResult detail = competitorService.detail(competitorId);
+        return ResponseData.success(detail);
     }
 
     /**
