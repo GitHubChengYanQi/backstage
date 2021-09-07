@@ -3,14 +3,13 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
-import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
-import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
+import cn.atsoft.dasheng.crm.region.GetRegionService;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +39,8 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Autowired
     private CompetitorQuoteService competitorQuoteService;
+    @Autowired
+    private GetRegionService getRegionService;
 
 
     @Override
@@ -86,6 +86,13 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param) {
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        for (CompetitorResult record : page.getRecords()) {
+            if (record.getCompetitorId().equals(param.getCompetitorId())) {
+                RegionResult region = getRegionService.getRegion(record.getRegion());
+                record.setRegionResult(region);
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 

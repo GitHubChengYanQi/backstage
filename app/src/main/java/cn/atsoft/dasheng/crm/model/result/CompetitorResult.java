@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Data
@@ -29,7 +34,8 @@ public class CompetitorResult implements Serializable {
 
     private String adress;
     private List<CompetitorResult> competitorResults;
-    private List<CompetitorQuoteResult>competitorQuoteResults;
+    private List<CompetitorQuoteResult> competitorQuoteResults;
+    private RegionResult regionResult;
 
 
     /**
@@ -51,7 +57,7 @@ public class CompetitorResult implements Serializable {
     private Integer phone;
 
     /**
-     * 网址 
+     * 网址
      */
     @ApiModelProperty("网址 ")
     private String url;
