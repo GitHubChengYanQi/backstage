@@ -30,6 +30,7 @@ public class CompetitorResult implements Serializable {
     private String adress;
 
     private List<CompetitorQuoteResult>competitorQuoteResults;
+    private Long businessId;
 
     /**
      * 报价id

@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,10 +13,10 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Data
@@ -32,7 +33,10 @@ public class CompetitorParam implements Serializable, BaseValidatingParam {
     private Long competitorId;
 
     private String adress;
-    private  Long businessId;
+
+    private Long businessId;
+
+
 
     /**
      * 报价id
@@ -53,7 +57,7 @@ public class CompetitorParam implements Serializable, BaseValidatingParam {
     private Integer phone;
 
     /**
-     * 网址 
+     * 网址
      */
     @ApiModelProperty("网址 ")
     private String url;
