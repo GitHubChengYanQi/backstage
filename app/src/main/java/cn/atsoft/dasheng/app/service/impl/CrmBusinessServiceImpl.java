@@ -281,11 +281,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
 
 
-//        for (BusinessCompetition businessCompetition : competitionList) {
-//            competitorIds.add(businessCompetition.getCompetitorId());
-//        }
-//        List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
-
         for (CrmBusinessResult item : data) {
             if (item.getBusinessId()!=null) {
                 List<Long> competitorIds = new ArrayList<>();

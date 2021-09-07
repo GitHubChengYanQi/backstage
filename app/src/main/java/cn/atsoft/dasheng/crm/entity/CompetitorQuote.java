@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 
- * @since 2021-09-06
+ * @since 2021-09-07
  */
 @TableName("daoxin_crm_competitor_quote")
 public class CompetitorQuote implements Serializable {
@@ -22,22 +22,55 @@ public class CompetitorQuote implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 竞争对手id
+     * 报价id
      */
-      @TableId(value = "competitors_quote_id", type = IdType.ID_WORKER)
-    private Long competitorsQuoteId;
-
+      @TableId(value = "quote_id", type = IdType.ID_WORKER)
+    private Long quoteId;
     /**
-     * 竞争对手报价
+     * 商机id
      */
-    @TableField("competitors_quote")
-    private Integer competitorsQuote;
+    @TableField("business_id")
+    private Long businessId;
 
     /**
      * 竞争对手id
      */
     @TableField("competitor_id")
     private Long competitorId;
+    /**
+     * 是否我的报价
+     */
+    @TableField("camp_type")
+    private  Long campType;
+    /**
+     * 报价金额
+     */
+    @TableField("competitors_quote")
+    private Integer competitorsQuote;
+
+    /**
+     * 报价状态
+     */
+    @TableField("quote_status")
+    private Integer quoteStatus;
+
+    /**
+     * 关联客户
+     */
+    @TableField("related_customers")
+    private String relatedCustomers;
+
+    /**
+     * 报价分类
+     */
+    @TableField("quote_type")
+    private Integer quoteType;
+
+    /**
+     * 报价日期
+     */
+    @TableField("quote_date")
+    private Date quoteDate;
 
     /**
      * 创建者
@@ -70,12 +103,36 @@ public class CompetitorQuote implements Serializable {
     private Integer display;
 
 
-    public Long getCompetitorsQuoteId() {
-        return competitorsQuoteId;
+    public Long getQuoteId() {
+        return quoteId;
     }
 
-    public void setCompetitorsQuoteId(Long competitorsQuoteId) {
-        this.competitorsQuoteId = competitorsQuoteId;
+    public void setQuoteId(Long quoteId) {
+        this.quoteId = quoteId;
+    }
+
+    public Long getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Long businessid) {
+        this.businessId = businessid;
+    }
+
+    public Long getCompetitorId() {
+        return competitorId;
+    }
+
+    public void setCompetitorId(Long competitorId) {
+        this.competitorId = competitorId;
+    }
+
+    public Long getCampType() {
+        return campType;
+    }
+
+    public void setCampType(Long campType) {
+        this.campType = campType;
     }
 
     public Integer getCompetitorsQuote() {
@@ -86,12 +143,36 @@ public class CompetitorQuote implements Serializable {
         this.competitorsQuote = competitorsQuote;
     }
 
-    public Long getCompetitorId() {
-        return competitorId;
+    public Integer getQuoteStatus() {
+        return quoteStatus;
     }
 
-    public void setCompetitorId(Long competitorId) {
-        this.competitorId = competitorId;
+    public void setQuoteStatus(Integer quoteStatus) {
+        this.quoteStatus = quoteStatus;
+    }
+
+    public String getRelatedCustomers() {
+        return relatedCustomers;
+    }
+
+    public void setRelatedCustomers(String relatedCustomers) {
+        this.relatedCustomers = relatedCustomers;
+    }
+
+    public Integer getQuoteType() {
+        return quoteType;
+    }
+
+    public void setQuoteType(Integer quoteType) {
+        this.quoteType = quoteType;
+    }
+
+    public Date getQuoteDate() {
+        return quoteDate;
+    }
+
+    public void setQuoteDate(Date quoteDate) {
+        this.quoteDate = quoteDate;
     }
 
     public Long getCreateUser() {
@@ -137,9 +218,14 @@ public class CompetitorQuote implements Serializable {
     @Override
     public String toString() {
         return "CompetitorQuote{" +
-        "competitorsQuoteId=" + competitorsQuoteId +
-        ", competitorsQuote=" + competitorsQuote +
+        "quoteId=" + quoteId +
+        ", businessId=" + businessId +
         ", competitorId=" + competitorId +
+        ", competitorsQuote=" + competitorsQuote +
+        ", quoteStatus=" + quoteStatus +
+        ", relatedCustomers=" + relatedCustomers +
+        ", quoteType=" + quoteType +
+        ", quoteDate=" + quoteDate +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
