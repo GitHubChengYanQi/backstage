@@ -1,22 +1,22 @@
 package cn.atsoft.dasheng.crm.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.Competitor;
-import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
-import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
+import cn.atsoft.dasheng.crm.entity.TrackMessage;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
+import cn.atsoft.dasheng.crm.model.result.TrackMessageResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 商机跟踪内容 服务类
  * </p>
  *
  * @author 
  * @since 2021-09-07
  */
-public interface CompetitorService extends IService<Competitor> {
+public interface TrackMessageService extends IService<TrackMessage> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    void add(CompetitorParam param);
+    void add(TrackMessageParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    void delete(CompetitorParam param);
+    void delete(TrackMessageParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    void update(CompetitorParam param);
+    void update(TrackMessageParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    CompetitorResult findBySpec(CompetitorParam param);
+    TrackMessageResult findBySpec(TrackMessageParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    List<CompetitorResult> findListBySpec(CompetitorParam param);
+    List<TrackMessageResult> findListBySpec(TrackMessageParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-     PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param);
+     PageInfo<TrackMessageResult> findPageBySpec(TrackMessageParam param);
 
 }

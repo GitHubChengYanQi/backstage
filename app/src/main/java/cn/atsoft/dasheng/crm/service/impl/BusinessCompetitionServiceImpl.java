@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
+import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
@@ -36,11 +39,18 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
 
     @Autowired
     private CompetitorService competitorService;
+    @Autowired
+    private CrmBusinessTrackService crmBusinessTrackService;
 
     @Override
     public void add(BusinessCompetitionParam param) {
         BusinessCompetition entity = getEntity(param);
         this.save(entity);
+        CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+        crmBusinessTrackParam.setBusinessId(entity.getBusinessId());
+        crmBusinessTrackParam.setCompetitionId(entity.getCompetitorId());
+        crmBusinessTrackService.add(crmBusinessTrackParam);
+
     }
 
     @Override

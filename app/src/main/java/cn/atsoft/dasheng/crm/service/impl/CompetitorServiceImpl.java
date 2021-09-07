@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -41,10 +42,12 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     private CompetitorQuoteService competitorQuoteService;
     @Autowired
     private GetRegionService getRegionService;
+    @Autowired
+    private CrmBusinessTrackService crmBusinessTrackService;
 
 
     @Override
-    public Competitor add(CompetitorParam param) {
+    public void add(CompetitorParam param) {
         Competitor entity = getEntity(param);
         this.save(entity);
         if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
@@ -55,7 +58,6 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         }
 
 
-        return entity;
 
     }
 

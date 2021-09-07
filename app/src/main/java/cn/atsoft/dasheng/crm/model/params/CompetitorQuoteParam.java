@@ -24,7 +24,7 @@ public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private  Long businessId;
     /**
      * 报价id
      */

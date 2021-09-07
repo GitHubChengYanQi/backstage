@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.crm.mapper.TrackMessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.TrackMessage">
+        <id column="track_message_id" property="trackMessageId"/>
+        <result column="message" property="message"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="business_id" property="businessId"/>
+        <result column="display" property="display"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">business_id
+    AS "businessId",
+        track_message_id AS "trackMessageId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.TrackMessageResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.TrackMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_track_message where 1 = 1
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.TrackMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_track_message where 1 = 1
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.TrackMessageResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.TrackMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_track_message where 1 = 1
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.crm.model.params.TrackMessageParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_business_track_message where 1 = 1
+    </select>
+
+</mapper>
