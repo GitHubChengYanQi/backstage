@@ -52,7 +52,7 @@ public class CompetitorQuote implements Serializable {
      * 报价状态
      */
     @TableField("quote_status")
-    private Integer quoteStatus;
+    private String quoteStatus;
 
     /**
      * 关联客户
@@ -64,7 +64,7 @@ public class CompetitorQuote implements Serializable {
      * 报价分类
      */
     @TableField("quote_type")
-    private Integer quoteType;
+    private String quoteType;
 
     /**
      * 报价日期
@@ -143,11 +143,11 @@ public class CompetitorQuote implements Serializable {
         this.competitorsQuote = competitorsQuote;
     }
 
-    public Integer getQuoteStatus() {
+    public String getQuoteStatus() {
         return quoteStatus;
     }
 
-    public void setQuoteStatus(Integer quoteStatus) {
+    public void setQuoteStatus(String quoteStatus) {
         this.quoteStatus = quoteStatus;
     }
 
@@ -159,11 +159,11 @@ public class CompetitorQuote implements Serializable {
         this.relatedCustomers = relatedCustomers;
     }
 
-    public Integer getQuoteType() {
+    public String getQuoteType() {
         return quoteType;
     }
 
-    public void setQuoteType(Integer quoteType) {
+    public void setQuoteType(String quoteType) {
         this.quoteType = quoteType;
     }
 
