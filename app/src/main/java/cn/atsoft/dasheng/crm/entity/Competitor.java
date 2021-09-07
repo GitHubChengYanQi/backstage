@@ -10,11 +10,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 竞争对手管理
+ * 
  * </p>
  *
  * @author 
- * @since 2021-09-06
+ * @since 2021-09-07
  */
 @TableName("daoxin_crm_competitor")
 public class Competitor implements Serializable {
@@ -27,8 +27,12 @@ public class Competitor implements Serializable {
       @TableId(value = "competitor_id", type = IdType.AUTO)
     private Long competitorId;
 
-      @TableField("business_id")
-      private  Long businessId;
+    /**
+     * 报价id
+     */
+    @TableField("competitors_quote_id")
+    private Long competitorsQuoteId;
+
     /**
      * 竞争对手企业名称
      */
@@ -36,10 +40,88 @@ public class Competitor implements Serializable {
     private String name;
 
     /**
-     * 竞争对手企业性质
+     * 联系电话
      */
-    @TableField("nature")
-    private Integer nature;
+    @TableField("phone")
+    private Integer phone;
+
+    /**
+     * 网址 
+     */
+    @TableField("url")
+    private String url;
+
+    /**
+     * 创立日期
+     */
+    @TableField("creation_date")
+    private Date creationDate;
+
+    /**
+     * 邮箱
+     */
+    @TableField("email")
+    private String email;
+
+    /**
+     * 员工规模
+     */
+    @TableField("staff_size")
+    private Long staffSize;
+
+    /**
+     * 公司所有制
+     */
+    @TableField("ownership")
+    private Integer ownership;
+
+    /**
+     * 地区
+     */
+    @TableField("region")
+    private String region;
+
+    /**
+     * 竞争级别
+     */
+    @TableField("competition_level")
+    private Integer competitionLevel;
+
+    /**
+     * 年销售
+     */
+    @TableField("annual_sales")
+    private Integer annualSales;
+
+    /**
+     * 公司简介
+     */
+    @TableField("company_profile")
+    private String companyProfile;
+
+    /**
+     * 对手优势
+     */
+    @TableField("rival_advantage")
+    private String rivalAdvantage;
+
+    /**
+     * 对手劣势
+     */
+    @TableField("opponents_weaknesses")
+    private String opponentsWeaknesses;
+
+    /**
+     * 采取对策
+     */
+    @TableField("take_countermeasures")
+    private String takeCountermeasures;
+
+    /**
+     * 创建者
+     */
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
 
     /**
      * 修改者
@@ -74,6 +156,14 @@ public class Competitor implements Serializable {
         this.competitorId = competitorId;
     }
 
+    public Long getCompetitorsQuoteId() {
+        return competitorsQuoteId;
+    }
+
+    public void setCompetitorsQuoteId(Long competitorsQuoteId) {
+        this.competitorsQuoteId = competitorsQuoteId;
+    }
+
     public String getName() {
         return name;
     }
@@ -82,12 +172,116 @@ public class Competitor implements Serializable {
         this.name = name;
     }
 
-    public Integer getNature() {
-        return nature;
+    public Integer getPhone() {
+        return phone;
     }
 
-    public void setNature(Integer nature) {
-        this.nature = nature;
+    public void setPhone(Integer phone) {
+        this.phone = phone;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getStaffSize() {
+        return staffSize;
+    }
+
+    public void setStaffSize(Long staffSize) {
+        this.staffSize = staffSize;
+    }
+
+    public Integer getOwnership() {
+        return ownership;
+    }
+
+    public void setOwnership(Integer ownership) {
+        this.ownership = ownership;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public Integer getCompetitionLevel() {
+        return competitionLevel;
+    }
+
+    public void setCompetitionLevel(Integer competitionLevel) {
+        this.competitionLevel = competitionLevel;
+    }
+
+    public Integer getAnnualSales() {
+        return annualSales;
+    }
+
+    public void setAnnualSales(Integer annualSales) {
+        this.annualSales = annualSales;
+    }
+
+    public String getCompanyProfile() {
+        return companyProfile;
+    }
+
+    public void setCompanyProfile(String companyProfile) {
+        this.companyProfile = companyProfile;
+    }
+
+    public String getRivalAdvantage() {
+        return rivalAdvantage;
+    }
+
+    public void setRivalAdvantage(String rivalAdvantage) {
+        this.rivalAdvantage = rivalAdvantage;
+    }
+
+    public String getOpponentsWeaknesses() {
+        return opponentsWeaknesses;
+    }
+
+    public void setOpponentsWeaknesses(String opponentsWeaknesses) {
+        this.opponentsWeaknesses = opponentsWeaknesses;
+    }
+
+    public String getTakeCountermeasures() {
+        return takeCountermeasures;
+    }
+
+    public void setTakeCountermeasures(String takeCountermeasures) {
+        this.takeCountermeasures = takeCountermeasures;
+    }
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
     }
 
     public Long getUpdateUser() {
@@ -122,20 +316,26 @@ public class Competitor implements Serializable {
         this.display = display;
     }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
-
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
-
     @Override
     public String toString() {
         return "Competitor{" +
         "competitorId=" + competitorId +
+        ", competitorsQuoteId=" + competitorsQuoteId +
         ", name=" + name +
-        ", nature=" + nature +
+        ", phone=" + phone +
+        ", url=" + url +
+        ", creationDate=" + creationDate +
+        ", email=" + email +
+        ", staffSize=" + staffSize +
+        ", ownership=" + ownership +
+        ", region=" + region +
+        ", competitionLevel=" + competitionLevel +
+        ", annualSales=" + annualSales +
+        ", companyProfile=" + companyProfile +
+        ", rivalAdvantage=" + rivalAdvantage +
+        ", opponentsWeaknesses=" + opponentsWeaknesses +
+        ", takeCountermeasures=" + takeCountermeasures +
+        ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +

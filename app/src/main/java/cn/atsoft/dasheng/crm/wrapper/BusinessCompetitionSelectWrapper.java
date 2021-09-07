@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CompetitorSelectWrapper extends BaseControllerWrapper {
+public class BusinessCompetitionSelectWrapper extends BaseControllerWrapper {
 
-    public CompetitorSelectWrapper(List<Map<String, Object>> multi) {
+    public BusinessCompetitionSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
