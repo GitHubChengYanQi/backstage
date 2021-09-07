@@ -4,249 +4,254 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Competitor">
-        <id column="competitor_id" property="competitorId" />
-        <result column="competitors_quote_id" property="competitorsQuoteId" />
-        <result column="name" property="name" />
-        <result column="phone" property="phone" />
-        <result column="url" property="url" />
-        <result column="creation_date" property="creationDate" />
-        <result column="email" property="email" />
-        <result column="staff_size" property="staffSize" />
-        <result column="ownership" property="ownership" />
-        <result column="region" property="region" />
-        <result column="competition_level" property="competitionLevel" />
-        <result column="annual_sales" property="annualSales" />
-        <result column="company_profile" property="companyProfile" />
-        <result column="rival_advantage" property="rivalAdvantage" />
-        <result column="opponents_weaknesses" property="opponentsWeaknesses" />
-        <result column="take_countermeasures" property="takeCountermeasures" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="competitor_id" property="competitorId"/>
+        <result column="competitors_quote_id" property="competitorsQuoteId"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="url" property="url"/>
+        <result column="creation_date" property="creationDate"/>
+        <result column="email" property="email"/>
+        <result column="staff_size" property="staffSize"/>
+        <result column="ownership" property="ownership"/>
+        <result column="region" property="region"/>
+        <result column="competition_level" property="competitionLevel"/>
+        <result column="annual_sales" property="annualSales"/>
+        <result column="company_profile" property="companyProfile"/>
+        <result column="rival_advantage" property="rivalAdvantage"/>
+        <result column="opponents_weaknesses" property="opponentsWeaknesses"/>
+        <result column="take_countermeasures" property="takeCountermeasures"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="adress" property="adress"/>
+        <result column="business_id" property="businessId"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">  adress
+    AS "adress",business_id AS "businessId",
         competitor_id AS "competitorId", competitors_quote_id AS "competitorsQuoteId", name AS "name", phone AS "phone", url AS "url", creation_date AS "creationDate", email AS "email", staff_size AS "staffSize", ownership AS "ownership", region AS "region", competition_level AS "competitionLevel", annual_sales AS "annualSales", company_profile AS "companyProfile", rival_advantage AS "rivalAdvantage", opponents_weaknesses AS "opponentsWeaknesses", take_countermeasures AS "takeCountermeasures", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-            <if test="paramCondition.competitorId != null">
-                and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
-            </if>
-            <if test="paramCondition.competitorsQuoteId != null">
-                and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
-            </if>
-            <if test="paramCondition.name != null and paramCondition.name != ''">
-                and name like CONCAT('%',#{paramCondition.name},'%')
-            </if>
-            <if test="paramCondition.phone != null">
-                and phone like CONCAT('%',#{paramCondition.phone},'%')
-            </if>
-            <if test="paramCondition.url != null and paramCondition.url != ''">
-                and url like CONCAT('%',#{paramCondition.url},'%')
-            </if>
-            <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
-                and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
-            </if>
-            <if test="paramCondition.email != null and paramCondition.email != ''">
-                and email like CONCAT('%',#{paramCondition.email},'%')
-            </if>
-            <if test="paramCondition.staffSize != null">
-                and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
-            </if>
-            <if test="paramCondition.ownership != null">
-                and ownership like CONCAT('%',#{paramCondition.ownership},'%')
-            </if>
-            <if test="paramCondition.region != null and paramCondition.region != ''">
-                and region like CONCAT('%',#{paramCondition.region},'%')
-            </if>
-            <if test="paramCondition.competitionLevel != null">
-                and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
-            </if>
-            <if test="paramCondition.annualSales != null">
-                and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
-            </if>
-            <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
-                and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
-            </if>
-            <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
-                and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
-            </if>
-            <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
-                and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
-            </if>
-            <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
-                and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
-            </if>
+        <if test="paramCondition.competitorId != null">
+            and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
+        </if>
+        <if test="paramCondition.competitorsQuoteId != null">
+            and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone like CONCAT('%',#{paramCondition.phone},'%')
+        </if>
+        <if test="paramCondition.url != null and paramCondition.url != ''">
+            and url like CONCAT('%',#{paramCondition.url},'%')
+        </if>
+        <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
+            and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.staffSize != null">
+            and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
+        </if>
+        <if test="paramCondition.ownership != null">
+            and ownership like CONCAT('%',#{paramCondition.ownership},'%')
+        </if>
+        <if test="paramCondition.region != null and paramCondition.region != ''">
+            and region like CONCAT('%',#{paramCondition.region},'%')
+        </if>
+        <if test="paramCondition.competitionLevel != null">
+            and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
+        </if>
+        <if test="paramCondition.annualSales != null">
+            and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
+        </if>
+        <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
+            and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
+        </if>
+        <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
+            and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
+        </if>
+        <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
+            and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
+        </if>
+        <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
+            and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.competitorId != null">
-                        and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
-                </if>
-                <if test="paramCondition.competitorsQuoteId != null">
-                        and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
-                </if>
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                        and phone like CONCAT('%',#{paramCondition.phone},'%')
-                </if>
-                <if test="paramCondition.url != null and paramCondition.url != ''">
-                        and url like CONCAT('%',#{paramCondition.url},'%')
-                </if>
-                <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
-                        and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.staffSize != null">
-                        and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
-                </if>
-                <if test="paramCondition.ownership != null">
-                        and ownership like CONCAT('%',#{paramCondition.ownership},'%')
-                </if>
-                <if test="paramCondition.region != null and paramCondition.region != ''">
-                        and region like CONCAT('%',#{paramCondition.region},'%')
-                </if>
-                <if test="paramCondition.competitionLevel != null">
-                        and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
-                </if>
-                <if test="paramCondition.annualSales != null">
-                        and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
-                </if>
-                <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
-                        and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
-                </if>
-                <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
-                        and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
-                </if>
-                <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
-                        and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
-                </if>
-                <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
-                        and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
-                </if>
+        <if test="paramCondition.competitorId != null">
+            and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
+        </if>
+        <if test="paramCondition.competitorsQuoteId != null">
+            and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone like CONCAT('%',#{paramCondition.phone},'%')
+        </if>
+        <if test="paramCondition.url != null and paramCondition.url != ''">
+            and url like CONCAT('%',#{paramCondition.url},'%')
+        </if>
+        <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
+            and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.staffSize != null">
+            and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
+        </if>
+        <if test="paramCondition.ownership != null">
+            and ownership like CONCAT('%',#{paramCondition.ownership},'%')
+        </if>
+        <if test="paramCondition.region != null and paramCondition.region != ''">
+            and region like CONCAT('%',#{paramCondition.region},'%')
+        </if>
+        <if test="paramCondition.competitionLevel != null">
+            and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
+        </if>
+        <if test="paramCondition.annualSales != null">
+            and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
+        </if>
+        <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
+            and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
+        </if>
+        <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
+            and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
+        </if>
+        <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
+            and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
+        </if>
+        <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
+            and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.competitorId != null">
-                        and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
-                </if>
-                <if test="paramCondition.competitorsQuoteId != null">
-                        and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
-                </if>
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                        and phone like CONCAT('%',#{paramCondition.phone},'%')
-                </if>
-                <if test="paramCondition.url != null and paramCondition.url != ''">
-                        and url like CONCAT('%',#{paramCondition.url},'%')
-                </if>
-                <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
-                        and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.staffSize != null">
-                        and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
-                </if>
-                <if test="paramCondition.ownership != null">
-                        and ownership like CONCAT('%',#{paramCondition.ownership},'%')
-                </if>
-                <if test="paramCondition.region != null and paramCondition.region != ''">
-                        and region like CONCAT('%',#{paramCondition.region},'%')
-                </if>
-                <if test="paramCondition.competitionLevel != null">
-                        and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
-                </if>
-                <if test="paramCondition.annualSales != null">
-                        and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
-                </if>
-                <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
-                        and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
-                </if>
-                <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
-                        and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
-                </if>
-                <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
-                        and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
-                </if>
-                <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
-                        and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
-                </if>
+        <if test="paramCondition.competitorId != null">
+            and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
+        </if>
+        <if test="paramCondition.competitorsQuoteId != null">
+            and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone like CONCAT('%',#{paramCondition.phone},'%')
+        </if>
+        <if test="paramCondition.url != null and paramCondition.url != ''">
+            and url like CONCAT('%',#{paramCondition.url},'%')
+        </if>
+        <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
+            and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.staffSize != null">
+            and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
+        </if>
+        <if test="paramCondition.ownership != null">
+            and ownership like CONCAT('%',#{paramCondition.ownership},'%')
+        </if>
+        <if test="paramCondition.region != null and paramCondition.region != ''">
+            and region like CONCAT('%',#{paramCondition.region},'%')
+        </if>
+        <if test="paramCondition.competitionLevel != null">
+            and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
+        </if>
+        <if test="paramCondition.annualSales != null">
+            and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
+        </if>
+        <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
+            and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
+        </if>
+        <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
+            and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
+        </if>
+        <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
+            and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
+        </if>
+        <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
+            and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_competitor where 1 = 1
-                <if test="paramCondition.competitorId != null">
-                        and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
-                </if>
-                <if test="paramCondition.competitorsQuoteId != null">
-                        and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
-                </if>
-                <if test="paramCondition.name != null and paramCondition.name != ''">
-                        and name like CONCAT('%',#{paramCondition.name},'%')
-                </if>
-                <if test="paramCondition.phone != null">
-                        and phone like CONCAT('%',#{paramCondition.phone},'%')
-                </if>
-                <if test="paramCondition.url != null and paramCondition.url != ''">
-                        and url like CONCAT('%',#{paramCondition.url},'%')
-                </if>
-                <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
-                        and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
-                </if>
-                <if test="paramCondition.email != null and paramCondition.email != ''">
-                        and email like CONCAT('%',#{paramCondition.email},'%')
-                </if>
-                <if test="paramCondition.staffSize != null">
-                        and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
-                </if>
-                <if test="paramCondition.ownership != null">
-                        and ownership like CONCAT('%',#{paramCondition.ownership},'%')
-                </if>
-                <if test="paramCondition.region != null and paramCondition.region != ''">
-                        and region like CONCAT('%',#{paramCondition.region},'%')
-                </if>
-                <if test="paramCondition.competitionLevel != null">
-                        and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
-                </if>
-                <if test="paramCondition.annualSales != null">
-                        and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
-                </if>
-                <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
-                        and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
-                </if>
-                <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
-                        and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
-                </if>
-                <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
-                        and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
-                </if>
-                <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
-                        and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
-                </if>
+        <if test="paramCondition.competitorId != null">
+            and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
+        </if>
+        <if test="paramCondition.competitorsQuoteId != null">
+            and competitors_quote_id like CONCAT('%',#{paramCondition.competitorsQuoteId},'%')
+        </if>
+        <if test="paramCondition.name != null and paramCondition.name != ''">
+            and name like CONCAT('%',#{paramCondition.name},'%')
+        </if>
+        <if test="paramCondition.phone != null">
+            and phone like CONCAT('%',#{paramCondition.phone},'%')
+        </if>
+        <if test="paramCondition.url != null and paramCondition.url != ''">
+            and url like CONCAT('%',#{paramCondition.url},'%')
+        </if>
+        <if test="paramCondition.creationDate != null and paramCondition.creationDate != ''">
+            and creation_date like CONCAT('%',#{paramCondition.creationDate},'%')
+        </if>
+        <if test="paramCondition.email != null and paramCondition.email != ''">
+            and email like CONCAT('%',#{paramCondition.email},'%')
+        </if>
+        <if test="paramCondition.staffSize != null">
+            and staff_size like CONCAT('%',#{paramCondition.staffSize},'%')
+        </if>
+        <if test="paramCondition.ownership != null">
+            and ownership like CONCAT('%',#{paramCondition.ownership},'%')
+        </if>
+        <if test="paramCondition.region != null and paramCondition.region != ''">
+            and region like CONCAT('%',#{paramCondition.region},'%')
+        </if>
+        <if test="paramCondition.competitionLevel != null">
+            and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')
+        </if>
+        <if test="paramCondition.annualSales != null">
+            and annual_sales like CONCAT('%',#{paramCondition.annualSales},'%')
+        </if>
+        <if test="paramCondition.companyProfile != null and paramCondition.companyProfile != ''">
+            and company_profile like CONCAT('%',#{paramCondition.companyProfile},'%')
+        </if>
+        <if test="paramCondition.rivalAdvantage != null and paramCondition.rivalAdvantage != ''">
+            and rival_advantage like CONCAT('%',#{paramCondition.rivalAdvantage},'%')
+        </if>
+        <if test="paramCondition.opponentsWeaknesses != null and paramCondition.opponentsWeaknesses != ''">
+            and opponents_weaknesses like CONCAT('%',#{paramCondition.opponentsWeaknesses},'%')
+        </if>
+        <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
+            and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
+        </if>
     </select>
 
 </mapper>

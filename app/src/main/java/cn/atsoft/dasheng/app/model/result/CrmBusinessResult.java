@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
+import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -34,6 +36,7 @@ public class CrmBusinessResult implements Serializable {
     private Long trackId;
     private Long processId;
     private String personName;
+    private  List<CompetitorResult> competitorResults;
    private  int sort;
 
 
