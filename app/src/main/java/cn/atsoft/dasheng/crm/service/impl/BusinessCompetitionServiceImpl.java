@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.mapper.BusinessCompetitionMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
+import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -69,9 +70,28 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
     public PageInfo<BusinessCompetitionResult> findPageBySpec(BusinessCompetitionParam param) {
         Page<BusinessCompetitionResult> pageContext = getPageContext();
         IPage<BusinessCompetitionResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
+    public void format(List<BusinessCompetitionResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (BusinessCompetitionResult datum : data) {
+            ids.add(datum.getCompetitorId());
+        }
+        List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+
+        for (BusinessCompetitionResult datum : data) {
+            for (Competitor competitor : competitors) {
+                if(datum.getCompetitorId().equals(competitor.getCompetitorId())){
+                    CompetitorResult competitorResult = new CompetitorResult();
+                    ToolUtil.copyProperties(competitor, competitorResult);
+                    datum.setCompetitorResult(competitorResult);
+                }
+            }
+        }
+
+    }
     @Override
     public List<CompetitorResult> findComptitor(BusinessCompetitionParam param) {
         List<BusinessCompetitionResult> businessCompetitionResults = this.baseMapper.customList(param);
