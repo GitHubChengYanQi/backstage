@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,9 @@ import java.util.List;
 public class CompetitorQuoteResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-        private List<CompetitorQuoteResult> list;
+//        private List<CompetitorQuoteResult> list;
+        private   CompetitorResult competitorResult;
+        private CrmBusinessResult crmBusinessResult;
 
     /**
      * 报价id
@@ -27,6 +30,7 @@ public class CompetitorQuoteResult implements Serializable {
     @ApiModelProperty("报价id")
     private Long quoteId;
 
+    private Long businessId;
     /**
      * 竞争对手id
      */
@@ -40,17 +44,12 @@ public class CompetitorQuoteResult implements Serializable {
     private Integer competitorsQuote;
 
     private Integer campType;
+
     /**
      * 报价状态
      */
     @ApiModelProperty("报价状态")
     private Integer quoteStatus;
-
-    /**
-     * 关联客户
-     */
-    @ApiModelProperty("关联客户")
-    private String relatedCustomers;
 
     /**
      * 报价分类

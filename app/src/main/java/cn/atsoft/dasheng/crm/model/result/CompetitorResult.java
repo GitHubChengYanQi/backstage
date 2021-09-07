@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import lombok.Data;
 
@@ -32,10 +33,14 @@ public class CompetitorResult implements Serializable {
     @ApiModelProperty("竞争对手id")
     private Long competitorId;
 
+    private String level;
+
     private String adress;
     private List<CompetitorResult> competitorResults;
     private List<CompetitorQuoteResult> competitorQuoteResults;
     private RegionResult regionResult;
+
+    private List<CrmBusiness> crmBusinessList;
 
 
     /**

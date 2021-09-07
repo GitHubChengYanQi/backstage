@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
@@ -65,5 +66,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @Date 2021-09-07
      */
      PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param);
+
+    CompetitorResult detail (Long id);
 
 }
