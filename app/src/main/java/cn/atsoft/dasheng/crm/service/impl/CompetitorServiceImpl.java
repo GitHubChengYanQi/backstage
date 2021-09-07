@@ -3,12 +3,16 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
+import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
+import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +38,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Autowired
     private BusinessCompetitionService businessCompetitionService;
+
+    @Autowired
+    private CompetitorQuoteService competitorQuoteService;
+
 
     @Override
     public void add(CompetitorParam param) {
@@ -76,6 +85,8 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param) {
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -97,4 +108,22 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         return entity;
     }
 
+    public void format(List<CompetitorResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (CompetitorResult datum : data) {
+            ids.add(datum.getCompetitorsQuoteId());
+        }
+        List<CompetitorQuote> competitorQuoteList = competitorQuoteService.lambdaQuery().in(CompetitorQuote::getCompetitorsQuote, ids).list();
+        for (CompetitorResult datum : data) {
+            List<CompetitorQuoteResult> competitorQuoteResults = new ArrayList<>();
+            for (CompetitorQuote competitorQuote : competitorQuoteList) {
+                if (datum.getCompetitorId().equals(competitorQuote.getCompetitorId())) {
+                    CompetitorQuoteResult competitorQuoteResult = new CompetitorQuoteResult();
+                    ToolUtil.copyProperties(competitorQuote, competitorQuoteResult);
+                    competitorQuoteResults.add(competitorQuoteResult);
+                }
+            }
+            datum.setCompetitorQuoteResults(competitorQuoteResults);
+        }
+    }
 }

@@ -29,6 +29,8 @@ public class CompetitorResult implements Serializable {
 
     private String adress;
 
+    private List<CompetitorQuoteResult>competitorQuoteResults;
+
     /**
      * 报价id
      */
