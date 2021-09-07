@@ -86,7 +86,7 @@ public class CompetitorController extends BaseController {
         CompetitorResult result = new CompetitorResult();
         ToolUtil.copyProperties(detail, result);
 
-      
+
         return ResponseData.success(result);
     }
 
