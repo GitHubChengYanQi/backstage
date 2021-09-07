@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -292,7 +293,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 for (BusinessCompetition businessCompetition : businessCompetitionList) {
                     competitorIds.add(businessCompetition.getCompetitorId());
                 }
-                if (competitorIds!=null){
+                if (ToolUtil.isNotEmpty(competitorIds) ){
                     List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
                     List<CompetitorResult> competitorResults = new ArrayList<>();
                     for (Competitor competitor : competitorList) {
