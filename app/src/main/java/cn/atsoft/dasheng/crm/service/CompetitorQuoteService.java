@@ -14,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author 
- * @since 2021-09-06
+ * @since 2021-09-07
  */
 public interface CompetitorQuoteService extends IService<CompetitorQuote> {
 
@@ -22,15 +22,15 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * 新增
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
-    CompetitorQuote add(CompetitorQuoteParam param);
+    void add(CompetitorQuoteParam param);
 
     /**
      * 删除
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
     void delete(CompetitorQuoteParam param);
 
@@ -38,15 +38,15 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * 更新
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
-    CompetitorQuote update(CompetitorQuoteParam param);
+    void update(CompetitorQuoteParam param);
 
     /**
      * 查询单条数据，Specification模式
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
     CompetitorQuoteResult findBySpec(CompetitorQuoteParam param);
 
@@ -54,7 +54,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * 查询列表，Specification模式
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
     List<CompetitorQuoteResult> findListBySpec(CompetitorQuoteParam param);
 
@@ -62,8 +62,10 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * 查询分页数据，Specification模式
      *
      * @author 
-     * @Date 2021-09-06
+     * @Date 2021-09-07
      */
      PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param);
+
+
 
 }

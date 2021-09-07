@@ -11,7 +11,10 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
+import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -21,6 +24,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +58,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private BusinessDynamicService businessDynamicService;
     @Autowired
     private CompetitorService competitorService;
+    @Autowired
+    private BusinessCompetitionService businessCompetitionService;
 
     public CrmBusinessResult detail(Long id) {
 
@@ -233,6 +239,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             processIds.add(item.getProcessId());
             businessIds.add(item.getBusinessId());
         }
+
+
         /**
          * 获取负责人
          */
@@ -271,9 +279,32 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
-        
+
 
         for (CrmBusinessResult item : data) {
+            if (item.getBusinessId()!=null) {
+                List<Long> competitorIds = new ArrayList<>();
+                List<BusinessCompetition> businessCompetitionList = businessCompetitionService.lambdaQuery().in(BusinessCompetition::getBusinessId, item.getBusinessId()).list();
+                for (BusinessCompetition businessCompetition : businessCompetitionList) {
+                    competitorIds.add(businessCompetition.getCompetitorId());
+                }
+                if (ToolUtil.isNotEmpty(competitorIds) ){
+                    List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
+                    List<CompetitorResult> competitorResults = new ArrayList<>();
+                    for (Competitor competitor : competitorList) {
+                        CompetitorResult competitorResult = new CompetitorResult();
+                        ToolUtil.copyProperties(competitor,competitorResult);
+                        competitorResults.add(competitorResult);
+                    }
+                    item.setCompetitorResults(competitorResults);
+                }
+
+            }
+
+
+
+
+
             for (Customer customer : customerList) {
                 if (item.getCustomerId() != null && item.getCustomerId().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();

@@ -13,7 +13,7 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
-import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;

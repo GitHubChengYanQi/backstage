@@ -2,18 +2,21 @@ package cn.atsoft.dasheng.crm.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @TableName("daoxin_crm_competitor")
@@ -24,8 +27,11 @@ public class Competitor implements Serializable {
     /**
      * 竞争对手id
      */
-      @TableId(value = "competitor_id", type = IdType.AUTO)
+    @TableId(value = "competitor_id", type = IdType.ID_WORKER)
     private Long competitorId;
+    @TableField("adress")
+    private String adress;
+
 
     /**
      * 报价id
@@ -43,10 +49,10 @@ public class Competitor implements Serializable {
      * 联系电话
      */
     @TableField("phone")
-    private Integer phone;
+    private Long phone;
 
     /**
-     * 网址 
+     * 网址
      */
     @TableField("url")
     private String url;
@@ -120,25 +126,25 @@ public class Competitor implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -147,6 +153,13 @@ public class Competitor implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getAdress() {
+        return adress;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
+    }
 
     public Long getCompetitorId() {
         return competitorId;
@@ -172,11 +185,11 @@ public class Competitor implements Serializable {
         this.name = name;
     }
 
-    public Integer getPhone() {
+    public Long getPhone() {
         return phone;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(Long phone) {
         this.phone = phone;
     }
 
@@ -316,30 +329,32 @@ public class Competitor implements Serializable {
         this.display = display;
     }
 
+
+
     @Override
     public String toString() {
         return "Competitor{" +
-        "competitorId=" + competitorId +
-        ", competitorsQuoteId=" + competitorsQuoteId +
-        ", name=" + name +
-        ", phone=" + phone +
-        ", url=" + url +
-        ", creationDate=" + creationDate +
-        ", email=" + email +
-        ", staffSize=" + staffSize +
-        ", ownership=" + ownership +
-        ", region=" + region +
-        ", competitionLevel=" + competitionLevel +
-        ", annualSales=" + annualSales +
-        ", companyProfile=" + companyProfile +
-        ", rivalAdvantage=" + rivalAdvantage +
-        ", opponentsWeaknesses=" + opponentsWeaknesses +
-        ", takeCountermeasures=" + takeCountermeasures +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "competitorId=" + competitorId +
+                ", competitorsQuoteId=" + competitorsQuoteId +
+                ", name=" + name +
+                ", phone=" + phone +
+                ", url=" + url +
+                ", creationDate=" + creationDate +
+                ", email=" + email +
+                ", staffSize=" + staffSize +
+                ", ownership=" + ownership +
+                ", region=" + region +
+                ", competitionLevel=" + competitionLevel +
+                ", annualSales=" + annualSales +
+                ", companyProfile=" + companyProfile +
+                ", rivalAdvantage=" + rivalAdvantage +
+                ", opponentsWeaknesses=" + opponentsWeaknesses +
+                ", takeCountermeasures=" + takeCountermeasures +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

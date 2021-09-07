@@ -1,47 +1,72 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
  * 竞争对手报价
  * </p>
  *
- * @author
- * @since 2021-09-06
+ * @author 
+ * @since 2021-09-07
  */
 @Data
 @ApiModel
 public class CompetitorQuoteResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private CompetitorResult competitorResult;
-    /**
-     * 竞争对手id
-     */
-    @ApiModelProperty("竞争对手id")
-    private Long competitorsQuoteId;
+        private List<CompetitorQuoteResult> list;
+        private   CompetitorResult competitorResult;
+        private CrmBusinessResult crmBusinessResult;
 
     /**
-     * 竞争对手报价
+     * 报价id
      */
-    @ApiModelProperty("竞争对手报价")
-    private Integer competitorsQuote;
+    @ApiModelProperty("报价id")
+    private Long quoteId;
 
+    private Long businessId;
     /**
      * 竞争对手id
      */
     @ApiModelProperty("竞争对手id")
     private Long competitorId;
+
+    /**
+     * 报价金额
+     */
+    @ApiModelProperty("报价金额")
+    private Integer competitorsQuote;
+
+    private Integer campType;
+    /**
+     * 报价状态
+     */
+    @ApiModelProperty("报价状态")
+    private Integer quoteStatus;
+
+    /**
+     * 关联客户
+     */
+    @ApiModelProperty("关联客户")
+    private String relatedCustomers;
+
+    /**
+     * 报价分类
+     */
+    @ApiModelProperty("报价分类")
+    private Integer quoteType;
+
+    /**
+     * 报价日期
+     */
+    @ApiModelProperty("报价日期")
+    private Date quoteDate;
 
     /**
      * 创建者

@@ -20,7 +20,7 @@ public class BusinessCompetitionResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private CompetitorResult competitorResult;
     /**
      * 商机 竞争对手绑定id
      */

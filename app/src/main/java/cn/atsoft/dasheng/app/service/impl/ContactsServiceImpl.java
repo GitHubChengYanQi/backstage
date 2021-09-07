@@ -151,7 +151,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                     List.add(phoneResult);
                 }
             }
-            record.setPhoneResult(List);
+            record.setPhoneParams(List);
         }
         return PageFactory.createPageInfo(page);
     }

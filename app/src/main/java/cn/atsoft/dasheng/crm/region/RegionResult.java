@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.portal.repair.model.result;
+package cn.atsoft.dasheng.crm.region;
 
 import lombok.Data;
 
