@@ -22,7 +22,6 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        camp_type AS "campType",
         quote_id AS "quoteId",business_id AS "businessId", competitor_id AS "competitorId", camp_type AS "campType", competitors_quote AS "competitorsQuote", quote_status AS "quoteStatus", related_customers AS "relatedCustomers", quote_type AS "quoteType", quote_date AS "quoteDate", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
@@ -54,7 +53,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor_quote where 1 = 1
+        from daoxin_crm_competitor_quote where display = 1
                 <if test="paramCondition.competitorId != null">
                         and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
                 </if>
@@ -64,6 +63,13 @@
                 <if test="paramCondition.campType != null" >
                         and camp_type = #{paramCondition.campType}
                 </if>
+                <if test="paramCondition.quoteId != null" >
+                    and quote_id = #{paramCondition.quoteId}
+                </if>
+                <if test="paramCondition.competitorId != null" >
+                    and competitor_id = #{paramCondition.competitorId}
+                </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
