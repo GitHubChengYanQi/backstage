@@ -51,11 +51,7 @@ public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
 
     private Integer campType;
 
-    /**
-     * 关联客户
-     */
-    @ApiModelProperty("关联客户")
-    private String relatedCustomers;
+    private Long businessId;
 
     /**
      * 报价分类

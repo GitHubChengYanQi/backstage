@@ -55,12 +55,6 @@ public class CompetitorQuote implements Serializable {
     private String quoteStatus;
 
     /**
-     * 关联客户
-     */
-    @TableField("related_customers")
-    private String relatedCustomers;
-
-    /**
      * 报价分类
      */
     @TableField("quote_type")
@@ -151,14 +145,6 @@ public class CompetitorQuote implements Serializable {
         this.quoteStatus = quoteStatus;
     }
 
-    public String getRelatedCustomers() {
-        return relatedCustomers;
-    }
-
-    public void setRelatedCustomers(String relatedCustomers) {
-        this.relatedCustomers = relatedCustomers;
-    }
-
     public String getQuoteType() {
         return quoteType;
     }
@@ -223,7 +209,6 @@ public class CompetitorQuote implements Serializable {
         ", competitorId=" + competitorId +
         ", competitorsQuote=" + competitorsQuote +
         ", quoteStatus=" + quoteStatus +
-        ", relatedCustomers=" + relatedCustomers +
         ", quoteType=" + quoteType +
         ", quoteDate=" + quoteDate +
         ", createUser=" + createUser +

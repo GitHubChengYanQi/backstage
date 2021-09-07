@@ -104,39 +104,36 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
         return entity;
     }
   public void format (List<CompetitorQuoteResult> data){
-        List<Long> ids = new ArrayList<>();
-        List<Long>  business = new ArrayList<>();
-      for (CompetitorQuoteResult datum : data) {
-          ids.add(datum.getCompetitorId());
-          business.add(datum.getBusinessId());
-      }
-      List<CrmBusiness> crmBusinessList = crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
-      List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
-      for (CompetitorQuoteResult datum : data) {
-          for (Competitor competitor : competitorList) {
-              if (datum.getCompetitorId()!= null && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
+      if(data.size() > 0) {
+          List<Long> ids = new ArrayList<>();
+          List<Long> business = new ArrayList<>();
+          for (CompetitorQuoteResult datum : data) {
+              ids.add(datum.getCompetitorId());
+              business.add(datum.getBusinessId());
+          }
+          List<CrmBusiness> crmBusinessList = crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
+          List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+          for (CompetitorQuoteResult datum : data) {
+              for (Competitor competitor : competitorList) {
+                  if (ToolUtil.isNotEmpty(datum.getCompetitorId()) && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
 
-                    CompetitorResult competitorResult =  new CompetitorResult();
-                    ToolUtil.copyProperties(competitor,competitorResult);
-                    datum.setCompetitorResult(competitorResult);
+                      CompetitorResult competitorResult = new CompetitorResult();
+                      ToolUtil.copyProperties(competitor, competitorResult);
+                      datum.setCompetitorResult(competitorResult);
 
+                  }
+              }
+              for (CrmBusiness crmBusiness : crmBusinessList) {
+                  if (ToolUtil.isNotEmpty(datum.getBusinessId()) && datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
+
+                      CrmBusinessResult crmBusinessResult = new CrmBusinessResult();
+                      ToolUtil.copyProperties(crmBusiness, crmBusinessResult);
+                      datum.setCrmBusinessResult(crmBusinessResult);
+
+                  }
               }
           }
-          for (CrmBusiness crmBusiness : crmBusinessList) {
-              if (datum.getBusinessId()!=null&&datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
-
-                  CrmBusinessResult crmBusinessResult= new CrmBusinessResult();
-                  ToolUtil.copyProperties(crmBusiness,crmBusinessResult);
-                  datum.setCrmBusinessResult(crmBusinessResult);
-
-              }
-          }
       }
-
-
-
-
-
   }
 
 }
