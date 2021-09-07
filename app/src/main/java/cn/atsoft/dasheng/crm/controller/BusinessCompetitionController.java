@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
+import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ import java.util.Map;
 /**
  * 商机竞争对手绑定控制器
  *
- * @author 
+ * @author
  * @Date 2021-09-07 09:55:06
  */
 @RestController
@@ -35,7 +37,7 @@ public class BusinessCompetitionController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -48,7 +50,7 @@ public class BusinessCompetitionController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +64,12 @@ public class BusinessCompetitionController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BusinessCompetitionParam businessCompetitionParam)  {
+    public ResponseData delete(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
         this.businessCompetitionService.delete(businessCompetitionParam);
         return ResponseData.success();
     }
@@ -75,7 +77,7 @@ public class BusinessCompetitionController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -92,19 +94,25 @@ public class BusinessCompetitionController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-09-07
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BusinessCompetitionResult> list(@RequestBody(required = false) BusinessCompetitionParam businessCompetitionParam) {
-        if(ToolUtil.isEmpty(businessCompetitionParam)){
+        if (ToolUtil.isEmpty(businessCompetitionParam)) {
             businessCompetitionParam = new BusinessCompetitionParam();
         }
         return this.businessCompetitionService.findPageBySpec(businessCompetitionParam);
     }
 
 
+    @RequestMapping(value = "/listCompetition", method = RequestMethod.POST)
+    @ApiOperation("查询竞争对手")
+    public ResponseData listCompetition(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
+        List<CompetitorResult> comptitor = businessCompetitionService.findComptitor(businessCompetitionParam);
+        return ResponseData.success(comptitor);
+    }
 
 
 }

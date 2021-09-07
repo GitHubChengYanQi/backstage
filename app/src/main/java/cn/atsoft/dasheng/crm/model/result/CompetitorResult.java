@@ -28,9 +28,9 @@ public class CompetitorResult implements Serializable {
     private Long competitorId;
 
     private String adress;
-
+    private List<CompetitorResult> competitorResults;
     private List<CompetitorQuoteResult>competitorQuoteResults;
-    private Long businessId;
+
 
     /**
      * 报价id

@@ -31,8 +31,7 @@ public class Competitor implements Serializable {
     private Long competitorId;
     @TableField("adress")
     private String adress;
-    @TableField("business_id")
-    private Long businessId;
+
 
     /**
      * 报价id
@@ -330,13 +329,7 @@ public class Competitor implements Serializable {
         this.display = display;
     }
 
-    public Long getBusinessId() {
-        return businessId;
-    }
 
-    public void setBusinessId(Long businessId) {
-        this.businessId = businessId;
-    }
 
     @Override
     public String toString() {

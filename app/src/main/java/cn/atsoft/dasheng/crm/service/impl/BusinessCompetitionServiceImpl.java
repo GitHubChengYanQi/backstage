@@ -4,17 +4,22 @@ package cn.atsoft.dasheng.crm.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
+import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.mapper.BusinessCompetitionMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
-import  cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
+import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
+import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.CompetitorService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,25 +27,28 @@ import java.util.List;
  * 商机 竞争对手 绑定 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Service
 public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetitionMapper, BusinessCompetition> implements BusinessCompetitionService {
 
+    @Autowired
+    private CompetitorService competitorService;
+
     @Override
-    public void add(BusinessCompetitionParam param){
+    public void add(BusinessCompetitionParam param) {
         BusinessCompetition entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(BusinessCompetitionParam param){
+    public void delete(BusinessCompetitionParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(BusinessCompetitionParam param){
+    public void update(BusinessCompetitionParam param) {
         BusinessCompetition oldEntity = getOldEntity(param);
         BusinessCompetition newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +56,43 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
     }
 
     @Override
-    public BusinessCompetitionResult findBySpec(BusinessCompetitionParam param){
+    public BusinessCompetitionResult findBySpec(BusinessCompetitionParam param) {
         return null;
     }
 
     @Override
-    public List<BusinessCompetitionResult> findListBySpec(BusinessCompetitionParam param){
+    public List<BusinessCompetitionResult> findListBySpec(BusinessCompetitionParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<BusinessCompetitionResult> findPageBySpec(BusinessCompetitionParam param){
+    public PageInfo<BusinessCompetitionResult> findPageBySpec(BusinessCompetitionParam param) {
         Page<BusinessCompetitionResult> pageContext = getPageContext();
         IPage<BusinessCompetitionResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(BusinessCompetitionParam param){
+    @Override
+    public List<CompetitorResult> findComptitor(BusinessCompetitionParam param) {
+        List<BusinessCompetitionResult> businessCompetitionResults = this.baseMapper.customList(param);
+        List<Long> ids = new ArrayList<>();
+        for (BusinessCompetitionResult businessCompetitionResult : businessCompetitionResults) {
+            ids.add(businessCompetitionResult.getCompetitorId());
+        }
+        List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+
+        List<CompetitorResult> competitorResults = new ArrayList<>();
+
+        for (Competitor competitor : competitors) {
+            CompetitorResult competitorResult = new CompetitorResult();
+            ToolUtil.copyProperties(competitor, competitorResult);
+            competitorResults.add(competitorResult);
+        }
+
+        return competitorResults;
+    }
+
+    private Serializable getKey(BusinessCompetitionParam param) {
         return param.getBusinessCompetitionId();
     }
 
@@ -81,5 +109,6 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }
