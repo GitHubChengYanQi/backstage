@@ -2,17 +2,21 @@ package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 商机跟踪表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @Data
@@ -22,15 +26,16 @@ public class CrmBusinessTrackResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UserResult User;
-    private  List<CrmBusinessResult> Business;
+    private List<CrmBusinessResult> Business;
+    private Long competitorsQuoteId;
 
     /**
      * 商机跟踪id
      */
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
-    private  String type;
-    private  String note;
+    private String type;
+    private String note;
     private Integer money;
     private String time;
     private String name;

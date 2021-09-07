@@ -3,8 +3,6 @@ package cn.atsoft.dasheng.api.protal.controller;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
-import cn.atsoft.dasheng.appBase.config.AliConfiguration;
-import cn.atsoft.dasheng.appBase.config.AliyunService;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -14,21 +12,12 @@ import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.portal.banner.entity.Banner;
-import cn.atsoft.dasheng.portal.banner.model.params.BannerParam;
-import cn.atsoft.dasheng.portal.banner.model.result.BannerResult;
-import cn.atsoft.dasheng.portal.banner.service.BannerService;
-import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
-import cn.atsoft.dasheng.portal.navigation.model.result.NavigationResult;
-import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
-import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
-import cn.atsoft.dasheng.portal.repair.mapper.RepairMapper;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
@@ -38,25 +27,13 @@ import cn.atsoft.dasheng.portal.repairImage.entity.RepairImage;
 import cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam;
 import cn.atsoft.dasheng.portal.repairImage.model.result.RepairImageResult;
 import cn.atsoft.dasheng.portal.repairImage.service.RepairImageService;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
-import cn.atsoft.dasheng.portal.wxUser.model.result.WxuserInfoResult;
-import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
-import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.model.MatchMode;
-import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
@@ -67,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -215,7 +191,7 @@ public class ApiRepairController {
         ToolUtil.copyProperties(newEntity, oldEntity);
         Boolean permission = false;
         // 判断权限
-        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress(), userId);
+        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress()-1, userId);
         if (!permission) {
             throw new ServiceException(403, "当前用户没有此权限!");
         }
@@ -225,7 +201,7 @@ public class ApiRepairController {
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
         Param.setName(UserUtils.getUserId());
-        Param.setProgress(repairParam.getProgress());
+        Param.setProgress(repairParam.getProgress()-1);
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);

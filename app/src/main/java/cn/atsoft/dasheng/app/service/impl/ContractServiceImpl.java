@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -49,6 +50,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractService contractService;
     @Autowired
     private OrderDetailsService orderDetailsService;
+
 
     @Override
     public ContractResult detail(Long id) {
@@ -196,6 +198,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Long> adressIdsB = new ArrayList<>();
         List<Long> phoneAIds = new ArrayList<>();
         List<Long> phoneBIds = new ArrayList<>();
+
         for (ContractResult record : data) {
             partA.add(record.getPartyA());
             partB.add(record.getPartyB());
@@ -205,6 +208,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             adressIdsB.add(record.getPartyBAdressId());
             phoneAIds.add(record.getPartyAPhone());
             phoneBIds.add(record.getPartyBPhone());
+
         }
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
@@ -239,6 +243,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
         phoneBwapper.in("phone_id", phoneBIds);
         List<Phone> phoneBlist = phoneBIds.size() == 0 ? new ArrayList<>() :  phoneService.list(phoneBwapper);
+
+
+
+
 
         for (ContractResult record : data) {
 

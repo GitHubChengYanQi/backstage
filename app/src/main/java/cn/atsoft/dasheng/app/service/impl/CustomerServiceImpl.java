@@ -2,6 +2,9 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.AdressParam;
+import cn.atsoft.dasheng.app.model.params.ContactsParam;
+import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
@@ -45,31 +48,50 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private UserService userService;
     @Autowired
     private CrmIndustryService crmIndustryService;
-
     @Autowired
     private ContactsService contactsService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
         Customer entity = getEntity(param);
         this.save(entity);
-        return entity;
+        if (param.getContactsParams() != null) {
+            for (ContactsParam contactsParam : param.getContactsParams()) {
+                contactsParam.setCustomerId(entity.getCustomerId());
+                Contacts contacts = contactsService.add(contactsParam);
+                if (contactsParam.getPhoneParams() != null) {
+                    for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                        phoneParam.setContactsId(contacts.getContactsId());
+                        phoneService.add(phoneParam);
+                    }
+                }
 
+            }
+        }
+        if (param.getAdressParams() != null) {
+            for (AdressParam adressParam : param.getAdressParams()) {
+                adressParam.setCustomerId(entity.getCustomerId());
+                adressService.add(adressParam);
+            }
+        }
+
+
+        return entity;
     }
 
     @Override
     @BussinessLog
     public Customer delete(CustomerParam param) {
-        Customer customer = this.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        } else {
-            param.setDisplay(0);
-            this.update(param);
-            Customer entity = getEntity(param);
-            return entity;
-        }
+        Customer oldEntity = getOldEntity(param);
+        Customer newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override
@@ -82,6 +104,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Customer newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
+            contactsService.lambdaQuery().in(Contacts::getContactsId, param.getContactsParams().get(0));
             return oldEntity;
         }
 
@@ -118,6 +141,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> userIds = new ArrayList<>();
         List<Long> industryIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
+        Long customerId = null;
+
 
         for (CustomerResult record : data) {
             originIds.add(record.getOriginId());
@@ -126,6 +151,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             industryIds.add(record.getIndustryId());
             dycustomerIds.add(record.getCustomerId());
             contactsIds.add(record.getCustomerId());
+            customerId = record.getCustomerId();
 
         }
         /**
@@ -159,6 +185,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<CrmIndustry> industryQueryWrapper = new QueryWrapper<>();
         industryQueryWrapper.in("industry_id", industryIds);
         List<CrmIndustry> industryList = industryIds.size() == 0 ? new ArrayList<>() : crmIndustryService.list(industryQueryWrapper);
+        List<Adress> adressList = null;
+
+        if (customerId != null) {
+            adressList = adressService.lambdaQuery().eq(Adress::getCustomerId, customerId).list();
+        }
 
 
         for (CustomerResult record : data) {
@@ -200,14 +231,38 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     break;
                 }
             }
+            List<AdressResult> adressResults = new ArrayList<>();
+            if (adressList != null) {
+                for (Adress adress : adressList) {
+                    if (record.getCustomerId().equals(adress.getCustomerId())) {
+                        AdressResult adressResult = new AdressResult();
+                        ToolUtil.copyProperties(adress, adressResult);
+                        adressResults.add(adressResult);
+                    }
+                }
+                record.setAdressResults(adressResults);
+            }
+
+            List<ContactsResult> contactsResults = new ArrayList<>();
+
             for (Contacts contacts : contactsList) {
+                List<PhoneResult> phoneResults = new ArrayList<>();
                 if (record.getCustomerId().equals(contacts.getCustomerId())) {
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
-                    record.setContactsResult(contactsResult);
-                    break;
+                    contactsResults.add(contactsResult);
+                    List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
+                    for (Phone phone : phones) {
+                        PhoneResult phoneResult = new PhoneResult();
+                        ToolUtil.copyProperties(phone, phoneResult);
+                        phoneResults.add(phoneResult);
+                    }
+
+                    contactsResult.setPhoneResult(phoneResults);
+
                 }
             }
+            record.setContactsResult(contactsResults);
         }
         return data.size() == 0 ? null : data.get(0);
     }

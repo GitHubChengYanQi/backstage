@@ -28,6 +28,11 @@ public class Contacts implements Serializable {
      */
     @TableId(value = "contacts_id", type = IdType.ID_WORKER)
     private Long contactsId;
+    /**
+     * 公司角色
+     */
+    @TableField("company_role_id")
+    private Long companyRole;
 
     /**
      * 联系人姓名
@@ -178,6 +183,13 @@ public class Contacts implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getCompanyRole() {
+        return companyRole;
+    }
+
+    public void setCompanyRole(Long companyRole) {
+        this.companyRole = companyRole;
+    }
 
     @Override
     public String toString() {

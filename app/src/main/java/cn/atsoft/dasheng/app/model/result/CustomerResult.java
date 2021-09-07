@@ -29,7 +29,9 @@ public class CustomerResult implements Serializable {
     private OriginResult originResult;
     private UserResult userResult;
     private CrmIndustryResult crmIndustryResult;
-    private  ContactsResult contactsResult;
+    //    private  ContactsResult contactsResult;
+    private List<ContactsResult> contactsResult;
+    private List<AdressResult> adressResults;
     private String classificationName;
     private Long originId;
     private String note;

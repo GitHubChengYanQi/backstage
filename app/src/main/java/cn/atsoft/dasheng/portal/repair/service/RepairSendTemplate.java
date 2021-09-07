@@ -6,21 +6,17 @@ import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
-import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.portal.remind.entity.Remind;
 import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
-import cn.atsoft.dasheng.portal.remind.model.result.RemindResult;
 import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
-import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.portal.repair.model.result.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
-import cn.atsoft.dasheng.portal.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.portal.wxUser.model.params.WxuserInfoParam;
-import cn.atsoft.dasheng.portal.wxUser.service.WxuserInfoService;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
@@ -28,9 +24,7 @@ import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
 import lombok.Data;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +77,8 @@ public class RepairSendTemplate extends sendTemplae {
     @Override
     public List<String> getOpenIds() {
 
-        if (repairParam.getProgress()==null){
-            throw new ServiceException(500,"请确定步骤流程");
+        if (repairParam.getProgress() == null) {
+            throw new ServiceException(500, "请确定步骤流程");
         }
         Long progress = repairParam.getProgress();
         Remind reminds = getReminds(progress);
@@ -127,8 +121,8 @@ public class RepairSendTemplate extends sendTemplae {
 
         List<WxMpTemplateData> dataList = new ArrayList<>();
 
-        if (repairParam.getProgress()==null){
-            throw new ServiceException(500,"请确定步骤流程");
+        if (repairParam.getProgress() == null) {
+            throw new ServiceException(500, "请确定步骤流程");
         }
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
@@ -239,8 +233,7 @@ public class RepairSendTemplate extends sendTemplae {
         QueryWrapper<Remind> remindQueryWrapper = new QueryWrapper<>();
         Remind remindServiceOne = remindService.getOne(remindQueryWrapper.in("type", type));
         if (ToolUtil.isEmpty(remindServiceOne)) {
-            Remind remind = new Remind();
-            return remind;
+            throw new ServiceException(500, "模板消息发送失败!");
         }
         return remindServiceOne;
     }
