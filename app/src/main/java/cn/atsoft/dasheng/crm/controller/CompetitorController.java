@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.crm.controller;
 
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
@@ -8,8 +7,9 @@ import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.CompetitorSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -102,6 +102,19 @@ public class CompetitorController extends BaseController {
             competitorParam = new CompetitorParam();
         }
         return this.competitorService.findPageBySpec(competitorParam);
+    }
+
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Competitor> competitorQueryWrapper = new QueryWrapper<>();
+        competitorQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.competitorService.listMaps(competitorQueryWrapper);
+        CompetitorSelectWrapper competitorSelectWrapper = new CompetitorSelectWrapper(list);
+        List<Map<String, Object>> result = competitorSelectWrapper.wrap();
+        return ResponseData.success(result);
+
     }
 
 
