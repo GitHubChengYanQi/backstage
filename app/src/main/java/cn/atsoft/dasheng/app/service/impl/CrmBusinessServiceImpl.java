@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -54,6 +55,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private BusinessDynamicService businessDynamicService;
     @Autowired
     private CompetitorService competitorService;
+    @Autowired
+    private BusinessCompetitionService competitionService;
 
     public CrmBusinessResult detail(Long id) {
 
@@ -271,7 +274,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
-        
+
 
         for (CrmBusinessResult item : data) {
             for (Customer customer : customerList) {

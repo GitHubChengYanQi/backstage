@@ -27,6 +27,8 @@ public class CompetitorResult implements Serializable {
     @ApiModelProperty("竞争对手id")
     private Long competitorId;
 
+    private String adress;
+
     /**
      * 报价id
      */

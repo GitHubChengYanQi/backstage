@@ -31,6 +31,8 @@ public class CompetitorParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("竞争对手id")
     private Long competitorId;
 
+    private String adress;
+
     /**
      * 报价id
      */
