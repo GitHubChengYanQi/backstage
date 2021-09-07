@@ -87,10 +87,39 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     @BussinessLog
     public Customer delete(CustomerParam param) {
+        param.setDisplay(0);
+        Long customerId = param.getCustomerId();
         Customer oldEntity = getOldEntity(param);
         Customer newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("customer_id",customerId);
+        List<Contacts> list =  contactsService.list(contactsQueryWrapper);
+        List<Long> contactsId = new ArrayList<>();
+        for (Contacts contacts : list) {
+            contactsId.add(contacts.getContactsId());
+            QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
+            phoneQueryWrapper.in("contacts_id",contacts.getContactsId());
+            List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
+            List<Long> phoneId = new ArrayList<>();
+            for (Phone phone : phoneList) {
+                phoneId.add(phone.getPhoneId());
+            }
+            phoneService.removeByIds(phoneId);
+        }
+        contactsService.removeByIds(contactsId);
+
+        QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
+        adressQueryWrapper.in("customer_id",customerId);
+        List<Adress> list1 = adressService.list(adressQueryWrapper);
+        List<Long> adressId = new ArrayList<>();
+        for (Adress adress : list1) {
+            adressId.add(adress.getAdressId());
+        }
+        adressService.removeByIds(adressId);
+
         return newEntity;
     }
 
@@ -104,7 +133,56 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Customer newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
-            contactsService.lambdaQuery().in(Contacts::getContactsId, param.getContactsParams().get(0));
+//            contactsService.lambdaQuery().in(Contacts::getContactsId, param.getContactsParams().get(0));
+
+            Long customerId = param.getCustomerId();
+            QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+            contactsQueryWrapper.in("customer_id",customerId);
+            List<Contacts> list =  contactsService.list(contactsQueryWrapper);
+            List<Long> contactsId = new ArrayList<>();
+            for (Contacts contacts : list) {
+                contactsId.add(contacts.getContactsId());
+                QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
+                phoneQueryWrapper.in("contacts_id",contacts.getContactsId());
+                List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
+                List<Long> phoneId = new ArrayList<>();
+                for (Phone phone : phoneList) {
+                    phoneId.add(phone.getPhoneId());
+                }
+                phoneService.removeByIds(phoneId);
+            }
+            contactsService.removeByIds(contactsId);
+
+            QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
+            adressQueryWrapper.in("customer_id",customerId);
+            List<Adress> list1 = adressService.list(adressQueryWrapper);
+            List<Long> adressId = new ArrayList<>();
+            for (Adress adress : list1) {
+                adressId.add(adress.getAdressId());
+            }
+            adressService.removeByIds(adressId);
+
+            if (param.getContactsParams() != null) {
+                for (ContactsParam contactsParam : param.getContactsParams()) {
+                    contactsParam.setCustomerId(customerId);
+                    Contacts contacts = contactsService.add(contactsParam);
+                    if (contactsParam.getPhoneParams() != null) {
+                        for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                            phoneParam.setContactsId(contacts.getContactsId());
+                            phoneService.add(phoneParam);
+                        }
+                    }
+
+                }
+            }
+            if (param.getAdressParams() != null) {
+                for (AdressParam adressParam : param.getAdressParams()) {
+                    adressParam.setCustomerId(customerId);
+                    adressService.add(adressParam);
+                }
+            }
+
+
             return oldEntity;
         }
 
@@ -244,9 +322,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
             List<ContactsResult> contactsResults = new ArrayList<>();
-            List<PhoneResult> phoneResults = new ArrayList<>();
+
             for (Contacts contacts : contactsList) {
                 if (record.getCustomerId().equals(contacts.getCustomerId())) {
+                    List<PhoneResult> phoneResults = new ArrayList<>();
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
                     contactsResults.add(contactsResult);
@@ -257,8 +336,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         phoneResults.add(phoneResult);
                     }
 
-                    contactsResult.setPhoneResult(phoneResults);
-                    break;
+                    contactsResult.setPhoneParams(phoneResults);
                 }
             }
             record.setContactsParams(contactsResults);

@@ -271,7 +271,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
-        List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getBusinessId, businessIds).list();
+
 
 
         for (CrmBusinessResult item : data) {
