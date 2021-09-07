@@ -32,6 +32,7 @@ public class CompetitorParam implements Serializable, BaseValidatingParam {
     private Long competitorId;
 
     private String adress;
+    private  Long businessId;
 
     /**
      * 报价id
