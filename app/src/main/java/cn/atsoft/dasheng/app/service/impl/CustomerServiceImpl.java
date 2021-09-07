@@ -244,8 +244,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
             List<ContactsResult> contactsResults = new ArrayList<>();
-            List<PhoneResult> phoneResults = new ArrayList<>();
+
             for (Contacts contacts : contactsList) {
+                List<PhoneResult> phoneResults = new ArrayList<>();
                 if (record.getCustomerId().equals(contacts.getCustomerId())) {
                     ContactsResult contactsResult = new ContactsResult();
                     ToolUtil.copyProperties(contacts, contactsResult);
@@ -258,7 +259,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     }
 
                     contactsResult.setPhoneResult(phoneResults);
-                    break;
+
                 }
             }
             record.setContactsResult(contactsResults);
