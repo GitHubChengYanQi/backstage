@@ -75,6 +75,13 @@
             <artifactId>wx-java-mp-spring-boot-starter</artifactId>
             <version>4.1.7.B</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.binarywang/weixin-java-cp -->
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-cp</artifactId>
+            <version>4.1.7.B</version>
+        </dependency>
+
 
         <dependency>
             <groupId>cn.hutool</groupId>

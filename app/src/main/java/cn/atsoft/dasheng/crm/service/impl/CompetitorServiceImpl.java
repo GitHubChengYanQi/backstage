@@ -1,63 +1,46 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.CrmBusiness;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
-import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
-import cn.atsoft.dasheng.crm.service.CompetitorService;
+import  cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <p>
- * 竞争对手管理 服务实现类
+ *  服务实现类
  * </p>
  *
- * @author
- * @since 2021-09-06
+ * @author 
+ * @since 2021-09-07
  */
 @Service
 public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competitor> implements CompetitorService {
-    @Autowired
-    private CrmBusinessService businessService;
 
     @Override
-    public void add(CompetitorParam param) {
+    public void add(CompetitorParam param){
         Competitor entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CompetitorParam param) {
-        param.setDisplay(0);
-        this.update(param);
-//        Competitor getId=this.getById(param.getCompetitorId());
-//        if (ToolUtil.isEmpty(getId)){
-//            throw new ServiceException(500,"所删除目标不存在");
-//        }else {
-//            Competitor entity = getEntity(param);
-//            param.setDisplay(0);
-//            this.update(param);
-//        }
+    public void delete(CompetitorParam param){
+        this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CompetitorParam param) {
+    public void update(CompetitorParam param){
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -65,24 +48,23 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     }
 
     @Override
-    public CompetitorResult findBySpec(CompetitorParam param) {
+    public CompetitorResult findBySpec(CompetitorParam param){
         return null;
     }
 
     @Override
-    public List<CompetitorResult> findListBySpec(CompetitorParam param) {
+    public List<CompetitorResult> findListBySpec(CompetitorParam param){
         return null;
     }
 
     @Override
-    public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param) {
+    public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param){
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CompetitorParam param) {
+    private Serializable getKey(CompetitorParam param){
         return param.getCompetitorId();
     }
 
@@ -100,24 +82,4 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         return entity;
     }
 
-    private void format(List<CompetitorResult> data) {
-        List<Long> businessIds = new ArrayList<>();
-        for (CompetitorResult datum : data) {
-            businessIds.add(datum.getBusinessId());
-        }
-        if (businessIds.size() != 0) {
-            List<CrmBusiness> businessList = businessIds.size() == 0 ? new ArrayList<>() : businessService.lambdaQuery().in(CrmBusiness::getBusinessId, businessIds).list();
-            for (CompetitorResult datum : data) {
-                for (CrmBusiness crmBusiness : businessList) {
-                    if (crmBusiness.getBusinessId().equals(datum.getBusinessId())) {
-                        CrmBusinessResult businessResult = new CrmBusinessResult();
-                        ToolUtil.copyProperties(crmBusiness, businessResult);
-                        datum.setBusinessResult(businessResult);
-                        break;
-                    }
-                }
-            }
-        }
-
-    }
 }
