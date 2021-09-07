@@ -54,7 +54,7 @@ public class CompetitorResult implements Serializable {
      * 联系电话
      */
     @ApiModelProperty("联系电话")
-    private Integer phone;
+    private Long phone;
 
     /**
      * 网址

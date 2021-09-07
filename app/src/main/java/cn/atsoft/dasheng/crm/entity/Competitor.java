@@ -49,7 +49,7 @@ public class Competitor implements Serializable {
      * 联系电话
      */
     @TableField("phone")
-    private Integer phone;
+    private Long phone;
 
     /**
      * 网址
@@ -185,11 +185,11 @@ public class Competitor implements Serializable {
         this.name = name;
     }
 
-    public Integer getPhone() {
+    public Long getPhone() {
         return phone;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(Long phone) {
         this.phone = phone;
     }
 

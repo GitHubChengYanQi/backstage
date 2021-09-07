@@ -54,7 +54,7 @@ public class CompetitorParam implements Serializable, BaseValidatingParam {
      * 联系电话
      */
     @ApiModelProperty("联系电话")
-    private Integer phone;
+    private Long phone;
 
     /**
      * 网址
