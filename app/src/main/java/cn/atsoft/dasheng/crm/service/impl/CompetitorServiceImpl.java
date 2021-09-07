@@ -43,17 +43,16 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
 
     @Override
-    public Competitor add(CompetitorParam param) {
-        Competitor competitor = add(param);
-        if (param.getBusinessId() != null && competitor.getCompetitorId() != null) {
+    public void add(CompetitorParam param) {
+        Competitor entity = getEntity(param);
+        this.save(entity);
+        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
             BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
             businessCompetitionParam.setBusinessId(param.getBusinessId());
-            businessCompetitionParam.setCompetitorId(competitor.getCompetitorId());
+            businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
 
-
-        return competitor;
 
     }
 
