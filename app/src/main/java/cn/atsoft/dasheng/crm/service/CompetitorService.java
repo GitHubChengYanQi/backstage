@@ -23,8 +23,9 @@ public interface CompetitorService extends IService<Competitor> {
      *
      * @author 
      * @Date 2021-09-07
+     * @return
      */
-    void add(CompetitorParam param);
+    Competitor add(CompetitorParam param);
 
     /**
      * 删除

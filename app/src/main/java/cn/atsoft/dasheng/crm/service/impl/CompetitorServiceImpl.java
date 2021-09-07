@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
@@ -44,17 +43,17 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
 
     @Override
-    public void add(CompetitorParam param) {
-        Competitor entity = getEntity(param);
-        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
+    public Competitor add(CompetitorParam param) {
+        Competitor competitor = add(param);
+        if (param.getBusinessId() != null && competitor.getCompetitorId() != null) {
             BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
             businessCompetitionParam.setBusinessId(param.getBusinessId());
-            businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
+            businessCompetitionParam.setCompetitorId(competitor.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
 
 
-        this.save(entity);
+        return competitor;
 
     }
 
