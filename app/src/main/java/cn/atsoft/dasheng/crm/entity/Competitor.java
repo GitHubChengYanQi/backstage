@@ -27,7 +27,7 @@ public class Competitor implements Serializable {
     /**
      * 竞争对手id
      */
-    @TableId(value = "competitor_id", type = IdType.AUTO)
+    @TableId(value = "competitor_id", type = IdType.ID_WORKER)
     private Long competitorId;
     @TableField("adress")
     private String adress;
