@@ -78,6 +78,7 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
                 CrmBusiness business = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, competitorQuote.getBusinessId()).one();
                 Competitor competitorOne = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, competitorQuote.getCompetitorId()).one();
                 trackMessageParam.setMessage("商机：" + business.getBusinessName() + "的竞争对手：" + competitorOne.getName() + "添加了报价：" + competitorQuote.getCompetitorsQuote());
+                trackMessageService.add(trackMessageParam);
             }
 
         }

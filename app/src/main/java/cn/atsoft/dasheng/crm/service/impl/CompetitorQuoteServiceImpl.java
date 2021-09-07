@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
+import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -46,6 +48,8 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     private CompetitorService competitorService;
     @Autowired
     private CrmBusinessService crmBusinessService;
+    @Autowired
+    private CrmBusinessTrackService crmBusinessTrackService;
 
     @Override
     public void add(CompetitorQuoteParam param) {

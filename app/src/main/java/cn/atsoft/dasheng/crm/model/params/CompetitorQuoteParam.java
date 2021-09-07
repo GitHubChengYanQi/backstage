@@ -51,7 +51,7 @@ public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
 
     private Integer campType;
 
-    private Long businessId;
+
 
     /**
      * 报价分类
