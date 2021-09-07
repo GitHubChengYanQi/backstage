@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.uc.controller;
 
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
@@ -51,18 +52,9 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
+
     @Autowired
-    private UcOpenUserInfoService ucOpenUserInfoService;
-
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<UcOpenUserInfoResult> list(@RequestBody(required = false) UcOpenUserInfoParam ucOpenUserInfoParam) {
-        if (ToolUtil.isEmpty(ucOpenUserInfoParam)) {
-            ucOpenUserInfoParam = new UcOpenUserInfoParam();
-        }
-
-        return this.ucOpenUserInfoService.findPageBySpec(ucOpenUserInfoParam);
-    }
+    private WxCpService wxCpService;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -88,6 +80,8 @@ public class AuthLoginController extends BaseController {
                     }
                 };
                 return ResponseData.success(result);
+            case "wxCp":
+//                wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl();
             default:
                 throw new ServiceException(500, "暂不支持:" + source);
         }
