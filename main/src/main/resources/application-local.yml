@@ -135,5 +135,10 @@ aliyun:
     bucket: gpkx
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
-
+wxcp:
+  corpId:
+  secret:
+  agentId:
+  token:
+  aesKey:
 
