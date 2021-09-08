@@ -32,6 +32,16 @@ public class Adress implements Serializable {
      */
     @TableField("location")
     private String location;
+    @TableField("region")
+    private String region;
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
     /**
      * 经度

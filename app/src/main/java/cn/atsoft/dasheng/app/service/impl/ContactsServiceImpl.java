@@ -115,7 +115,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             cIds.add(record.getCustomerId());
             roleIds.add(record.getCompanyRole());
         }
-        List<CompanyRole> companyRoleList = companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
+        List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);

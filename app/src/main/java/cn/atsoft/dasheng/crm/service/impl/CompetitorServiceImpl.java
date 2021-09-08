@@ -123,7 +123,7 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("competitor_id",longs);
             List<Competitor> competitorList = this.list(queryWrapper);
-        
+
             List<CompetitorResult> competitorResultList = new ArrayList<>();
             for (Competitor competitor : competitorList) {
                 CompetitorResult competitorResult = new CompetitorResult();
