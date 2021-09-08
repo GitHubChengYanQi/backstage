@@ -109,7 +109,7 @@ public class BusinessCompetitionController extends BaseController {
 
     @RequestMapping(value = "/listCompetition", method = RequestMethod.POST)
     @ApiOperation("查询竞争对手")
-    public ResponseData listCompetition(@RequestBody BusinessCompetitionParam businessCompetitionParam) {
+    public ResponseData listCompetition(@RequestBody(required = false) BusinessCompetitionParam businessCompetitionParam) {
         List<CompetitorResult> comptitor = businessCompetitionService.findComptitor(businessCompetitionParam);
         return ResponseData.success(comptitor);
     }
