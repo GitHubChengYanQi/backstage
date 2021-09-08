@@ -64,28 +64,27 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
             competitorQuote.setCampType(1);
             competitorQuoteService.addTrack(competitorQuote);
         }
-        List<String> names = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(competitorIds)) {
-            List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
-            for (Competitor competitor : competitors) {
-                names.add(competitor.getName());
-            }
-            if (param.getBusinessId() != null) {
-                CrmBusiness crmBusiness = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
-                param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB");
-//                if (param.getTime()!=null) {
-//                    message="商机：" + crmBusiness.getBusinessName() + "   竞争对手" + names.toString() + "   添加了报价" + money+"RMB"
+//        List<String> names = new ArrayList<>();
+//        if (ToolUtil.isNotEmpty(competitorIds)) {
+//            List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
+//            for (Competitor competitor : competitors) {
+//                names.add(competitor.getName());
+//            }
+//            if (param.getBusinessId() != null) {
+//                CrmBusiness crmBusiness = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
+//                param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB");
+////                if (param.getTime()!=null) {
+////                    message="商机：" + crmBusiness.getBusinessName() + "   竞争对手" + names.toString() + "   添加了报价" + money+"RMB"
+////                }
+//                if (param.getMoney() != null) {
+//                    param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "      自己添加了报价：" + param.getMoney() + "RMB" + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB");
+//                    if (param.getNote() != null) {
+//                        param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "      自己添加了报价：" + param.getMoney() + "RMB" + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB" + "(设置了提醒消息)");
+//                    }
 //                }
-                if (param.getMoney() != null) {
-                    param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "      自己添加了报价：" + param.getMoney() + "RMB" + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB");
-                    if (param.getNote() != null) {
-                        param.setMessage("当前商机：" + crmBusiness.getBusinessName() + "      自己添加了报价：" + param.getMoney() + "RMB" + "   当前竞争对手：" + names.toString() + "   添加了新的报价：" + money + "RMB" + "(设置了提醒消息)");
-                    }
-                }
-
-            }
-        }
-
+//
+//            }
+//        }
 
         TrackMessage entity = getEntity(param);
         this.save(entity);

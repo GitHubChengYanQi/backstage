@@ -29,9 +29,6 @@ public class TrackMessageResult implements Serializable {
 
     private BigDecimal latitude;
 
-
-    private String tixing;
-
     private  String type;
 
     /**
