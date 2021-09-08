@@ -24,12 +24,6 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_competition where 1 = 1
-            <if test="paramCondition.businessId != null">
-                and business_id like CONCAT('%',#{paramCondition.businessId},'%')
-            </if>
-            <if test="paramCondition.competitorId != null">
-                and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
-            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam">

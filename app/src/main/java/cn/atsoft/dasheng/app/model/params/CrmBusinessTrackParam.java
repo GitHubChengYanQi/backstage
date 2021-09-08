@@ -26,20 +26,19 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
     private List<CompetitorQuoteParam> competitorQuoteParam;
-    private Integer quoteStatus;
     private Long competitorsQuoteId;
     private Integer campType;
     /**
      * 商机跟踪id
      */
-    private Long competitionId;
+
     private String name;
     private Date time;
 
     private Integer offer;
     private String note;
     private String type;
-
+    private Long competitionId;
     private Integer money;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
