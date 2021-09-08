@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -54,7 +56,9 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     @Autowired
     private GetRegionService getRegionService;
     @Autowired
-    private CrmBusinessService crmBusinessService;
+    private TrackMessageService trackMessageService;
+    @Autowired
+    private CrmBusinessService businessService;
 
 
     @Override
@@ -67,6 +71,14 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
+        TrackMessageParam trackMessageParam = new TrackMessageParam();
+        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
+            trackMessageParam.setBusinessId(param.getBusinessId());
+            CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
+            trackMessageParam.setMessage("当前商机：" + crmBusiness.getBusinessName() + "添加了" + param.getName() + "竞争对手");
+            trackMessageService.byCompetitionAdd(trackMessageParam);
+        }
+
         return entity;
 
 
@@ -80,10 +92,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     @Override
     public void update(CompetitorParam param) {
         if (ToolUtil.isNotEmpty(param.getCompetitorId())) {
-            QueryWrapper<BusinessCompetition> queryWrapper=new QueryWrapper<>();
-            queryWrapper.in("competitor_id",param.getCompetitorId());
+            QueryWrapper<BusinessCompetition> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("competitor_id", param.getCompetitorId());
             List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
-            if (list.size()>0){
+            if (list.size() > 0) {
                 BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
                 businessCompetition.setBusinessId(param.getBusinessId());
                 businessCompetitionService.updateById(businessCompetition);
@@ -114,16 +126,16 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
 
-        if (ToolUtil.isNotEmpty(businessId)){
+        if (ToolUtil.isNotEmpty(businessId)) {
             QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
-            businessCompetitionQueryWrapper.in("business_id",businessId);
+            businessCompetitionQueryWrapper.in("business_id", businessId);
             List<BusinessCompetition> list = businessCompetitionService.list(businessCompetitionQueryWrapper);
             List<Long> longs = new ArrayList<>();
             for (BusinessCompetition businessCompetition : list) {
                 longs.add(businessCompetition.getCompetitorId());
             }
             QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("competitor_id",longs);
+            queryWrapper.in("competitor_id", longs);
             List<Competitor> competitorList = this.list(queryWrapper);
 
             List<CompetitorResult> competitorResultList = new ArrayList<>();
@@ -133,11 +145,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
                 competitorResultList.add(competitorResult);
             }
 
-            if (competitorResultList.size()>0){
+            if (competitorResultList.size() > 0) {
                 page.setRecords(competitorResultList);
             }
         }
-
 
 
         for (CompetitorResult record : page.getRecords()) {
@@ -158,15 +169,15 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             }
 
             QueryWrapper<BusinessCompetition> crmBusinessQueryWrapper = new QueryWrapper<>();
-            crmBusinessQueryWrapper.in("competitor_id",record.getCompetitorId());
+            crmBusinessQueryWrapper.in("competitor_id", record.getCompetitorId());
             List<BusinessCompetition> list = businessCompetitionService.list(crmBusinessQueryWrapper);
             List<Long> bussinessId = new ArrayList<>();
             for (BusinessCompetition businessCompetition : list) {
                 bussinessId.add(businessCompetition.getBusinessId());
             }
             QueryWrapper<CrmBusiness> crmBusinessQueryWrapper1 = new QueryWrapper<>();
-            crmBusinessQueryWrapper1.in("business_id",bussinessId);
-            List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : crmBusinessService.list(crmBusinessQueryWrapper1);
+            crmBusinessQueryWrapper1.in("business_id", bussinessId);
+            List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : businessService.list(crmBusinessQueryWrapper1);
             record.setCrmBusinessList(list1);
 
             if (ToolUtil.isNotEmpty(record.getRegion())) {
@@ -208,15 +219,15 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         }};
 
         QueryWrapper<BusinessCompetition> crmBusinessQueryWrapper = new QueryWrapper<>();
-        crmBusinessQueryWrapper.in("competitor_id",id);
+        crmBusinessQueryWrapper.in("competitor_id", id);
         List<BusinessCompetition> list = businessCompetitionService.list(crmBusinessQueryWrapper);
         List<Long> bussinessId = new ArrayList<>();
         for (BusinessCompetition businessCompetition : list) {
             bussinessId.add(businessCompetition.getBusinessId());
         }
         QueryWrapper<CrmBusiness> crmBusinessQueryWrapper1 = new QueryWrapper<>();
-        crmBusinessQueryWrapper1.in("business_id",bussinessId);
-        List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : crmBusinessService.list(crmBusinessQueryWrapper1);
+        crmBusinessQueryWrapper1.in("business_id", bussinessId);
+        List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : businessService.list(crmBusinessQueryWrapper1);
         competitorResult.setCrmBusinessList(list1);
 
         if (ToolUtil.isNotEmpty(competitorResult.getCompetitionLevel())) {
@@ -234,20 +245,21 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
                     break;
             }
         }
-            if (ToolUtil.isNotEmpty(competitorResult.getRegion())) {
-                RegionResult region = getRegionService.getRegion(competitorResult.getRegion());
-                competitorResult.setRegionResult(region);
-            }
+        if (ToolUtil.isNotEmpty(competitorResult.getRegion())) {
+            RegionResult region = getRegionService.getRegion(competitorResult.getRegion());
+            competitorResult.setRegionResult(region);
+        }
         return results.get(0);
     }
+
     @Override
     public void deleteByIds(CompetitorIdsRequest param) {
-        if (ToolUtil.isNotEmpty(param)){
+        if (ToolUtil.isNotEmpty(param)) {
             Competitor competitor = new Competitor();
             competitor.setDisplay(0);
             UpdateWrapper<Competitor> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.in("competitor_id",param);
-            this.update(competitor,updateWrapper);
+            updateWrapper.in("competitor_id", param);
+            this.update(competitor, updateWrapper);
         }
     }
 

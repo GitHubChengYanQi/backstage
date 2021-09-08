@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.BusinessCompetitionMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
@@ -18,6 +19,7 @@ import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -45,15 +47,15 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
     private CrmBusinessTrackService crmBusinessTrackService;
     @Autowired
     private CompetitorQuoteService competitorQuoteService;
+    @Autowired
+    private TrackMessageService trackMessageService;
 
     @Override
     public void add(BusinessCompetitionParam param) {
         BusinessCompetition entity = getEntity(param);
         this.save(entity);
-        CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
-        crmBusinessTrackParam.setBusinessId(entity.getBusinessId());
-        crmBusinessTrackParam.setCompetitionId(entity.getCompetitorId());
-        crmBusinessTrackService.add(crmBusinessTrackParam);
+        TrackMessageParam trackMessageParam = new TrackMessageParam();
+
 
     }
 
