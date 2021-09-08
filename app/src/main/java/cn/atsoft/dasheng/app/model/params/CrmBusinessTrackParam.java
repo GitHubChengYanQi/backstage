@@ -32,14 +32,14 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
     /**
      * 商机跟踪id
      */
-    private Long competitionId;
+
     private String name;
     private Date time;
 
     private Integer offer;
     private String note;
     private String type;
-
+    private Long competitionId;
     private Integer money;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;
