@@ -8,14 +8,11 @@ import cn.atsoft.dasheng.crm.service.CustomerFileService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -92,14 +89,16 @@ public class CustomerFileController extends BaseController {
      *
      * @author 
      * @Date 2021-09-08
+     * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<CustomerFileResult> list(@RequestBody(required = false) CustomerFileParam customerFileParam) {
+    public ResponseData<PageInfo<CustomerFileResult>> list(@RequestBody(required = false) CustomerFileParam customerFileParam) {
         if(ToolUtil.isEmpty(customerFileParam)){
             customerFileParam = new CustomerFileParam();
         }
-        return this.customerFileService.findPageBySpec(customerFileParam);
+        PageInfo<CustomerFileResult> pageBySpec = customerFileService.findPageBySpec(customerFileParam);
+        return ResponseData.success(pageBySpec);
     }
 
 

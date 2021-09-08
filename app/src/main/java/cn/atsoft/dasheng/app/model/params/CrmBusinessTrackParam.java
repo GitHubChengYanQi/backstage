@@ -26,7 +26,6 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
 
     private static final long serialVersionUID = 1L;
     private List<CompetitorQuoteParam> competitorQuoteParam;
-    private Integer quoteStatus;
     private Long competitorsQuoteId;
     private Integer campType;
     /**

@@ -74,24 +74,20 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 //        };
 //        Timer timer = new Timer();
 //        timer.schedule(timerTask,10,3000);
-        //添加竞争对手报价
+        // 添加竞争对手报价
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
         for (CompetitorQuoteParam data : competitorQuoteParams) {
             data.setBusinessId(param.getBusinessId());
-            data.setCampType(0);
+            data.setCampType(0); 
             competitorQuoteService.addTrack(data);
 
-            CompetitorQuoteParam competitorQuote = new CompetitorQuoteParam();
-            competitorQuote.setCompetitorId(data.getCompetitorId());
-            competitorQuote.setBusinessId(param.getBusinessId());
-            competitorQuote.setQuoteStatus(param.getQuoteStatus());
-            competitorQuote.setCompetitorsQuote(param.getMoney());
-            competitorQuote.setCampType(1);
-            competitorQuoteService.addTrack(competitorQuote);
         }
-
-        //
-
+        // 添加我的报价
+        CompetitorQuoteParam myCompetitorQuote = new CompetitorQuoteParam();
+        myCompetitorQuote.setBusinessId(param.getBusinessId());
+        myCompetitorQuote.setCompetitorsQuote(param.getMoney());
+        myCompetitorQuote.setCampType(1);
+        competitorQuoteService.addTrack(myCompetitorQuote);
 
         CrmBusinessTrack entity = getEntity(param);
         this.save(entity);

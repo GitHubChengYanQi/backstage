@@ -72,6 +72,7 @@ public class CustomerFileResult implements Serializable {
     /**
      * 状态
      */
+
     @ApiModelProperty("状态")
     private Integer display;
     @ApiModelProperty("父ID顺序数组")

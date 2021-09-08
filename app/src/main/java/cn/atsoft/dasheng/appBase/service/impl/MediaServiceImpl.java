@@ -89,7 +89,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        if (!userId.equals(0)) {
+        if (!userId.equals(0L)) {
             List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
             if (!types.contains(type)) {
                 throw new ServiceException(500, "数据类型错误");
