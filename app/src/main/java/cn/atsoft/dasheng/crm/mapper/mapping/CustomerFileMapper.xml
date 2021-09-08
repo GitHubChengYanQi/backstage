@@ -47,7 +47,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_crm_customer_file where 1 = 1
         <if test="paramCondition.customerId != null">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+            and customer_id = #{paramCondition.customerId}
         </if>
     </select>
 
