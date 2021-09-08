@@ -38,7 +38,7 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
     private Integer quoteStatus;
 
     private String tixing;
-
+    private Long userId;
     private  String type;
     /**
      * 经度

@@ -16,11 +16,14 @@
         <result column="latitude" property="latitude"/>
         <result column="longitude" property="longitude"/>
         <result column="image" property="image"/>
+        <result column="type" property="type"/>
+        <result column="user_id" property="userId"/>
         <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">tixing AS "tixing",type AS "type",business_id
+    <sql id="Base_Column_List">user_id
+    AS "userId",type AS "type",business_id
     AS "businessId",  note AS "note",  time AS "time", latitude AS "latitude", longitude AS "longitude", image AS "image",
         track_message_id AS "trackMessageId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>

@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -45,6 +47,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 
     @Override
     public void add(TrackMessageParam param) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
         String message = null;
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
         List<Long> competitorIds = new ArrayList<>();
