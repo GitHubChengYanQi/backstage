@@ -45,6 +45,10 @@ public class TrackMessageResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    private Date time;
+
+    private String note;
+
     /**
      * 创建时间
      */

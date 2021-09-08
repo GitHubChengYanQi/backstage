@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * <p>
@@ -59,9 +61,23 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 
     @Override
     public void add(CrmBusinessTrackParam param) {
+        TrackMessageParam trackMessageParam = new TrackMessageParam();
+
+//        TimerTask timerTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                trackMessageParam.setTime(param.getTime());
+//                trackMessageParam.setNote(param.getNote());
+//                trackMessageParam.setBusinessId(param.getBusinessId());
+//            }
+//        };
+//        Timer timer = new Timer();
+//        timer.schedule(timerTask,10,3000);
+
+
         CrmBusinessTrack entity = getEntity(param);
         this.save(entity);
-        TrackMessageParam trackMessageParam = new TrackMessageParam();
+
         if (param.getCompetitorsQuoteId() == null && entity.getBusinessId() != null && entity.getCompetitionId() != null) {
             CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, entity.getBusinessId()).one();
             Competitor competitor = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, entity.getCompetitionId()).one();
@@ -82,7 +98,7 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
                 }
             } else {
                 CrmBusiness business = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, competitorQuote.getBusinessId()).one();
-                trackMessageParam.setMessage("商机：" + business.getBusinessName()  + "自己添加了报价：" + competitorQuote.getCompetitorsQuote());
+                trackMessageParam.setMessage("商机：" + business.getBusinessName() + "自己添加了报价：" + competitorQuote.getCompetitorsQuote());
             }
 
 

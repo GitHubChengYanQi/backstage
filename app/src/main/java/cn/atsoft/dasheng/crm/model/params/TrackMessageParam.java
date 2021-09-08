@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -36,6 +37,10 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("跟踪内容")
     private String message;
+
+    private Date time;
+
+    private String note;
 
     /**
      * 创建者

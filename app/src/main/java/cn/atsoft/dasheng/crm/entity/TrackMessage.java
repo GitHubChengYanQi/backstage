@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.crm.entity;
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +17,7 @@ import java.io.Serializable;
  * 商机跟踪内容
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @TableName("daoxin_crm_business_track_message")
@@ -24,11 +28,15 @@ public class TrackMessage implements Serializable {
     /**
      * 商机跟踪内容id
      */
-      @TableId(value = "track_message_id", type = IdType.ID_WORKER)
+    @TableId(value = "track_message_id", type = IdType.ID_WORKER)
     private Long trackMessageId;
 
-      @TableField("business_id")
-      private  Long businessId;
+    @TableField("business_id")
+    private Long businessId;
+    @TableField("time")
+    private Date time;
+    @TableField("note")
+    private String note;
 
     /**
      * 跟踪内容
@@ -39,25 +47,25 @@ public class TrackMessage implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -131,16 +139,32 @@ public class TrackMessage implements Serializable {
         this.businessId = businessId;
     }
 
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     @Override
     public String toString() {
         return "TrackMessage{" +
-        "trackMessageId=" + trackMessageId +
-        ", message=" + message +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "trackMessageId=" + trackMessageId +
+                ", message=" + message +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

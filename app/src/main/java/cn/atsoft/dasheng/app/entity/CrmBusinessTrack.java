@@ -46,7 +46,7 @@ public class CrmBusinessTrack implements Serializable {
     @TableField("money")
     private Integer money;
     @TableField("time")
-    private String time;
+    private Date time;
     @TableField("offer")
     private Integer offer;
     @TableField("business_id")
@@ -99,11 +99,11 @@ public class CrmBusinessTrack implements Serializable {
         this.name = name;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
