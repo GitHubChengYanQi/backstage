@@ -26,6 +26,7 @@ public class CustomerFileResult implements Serializable {
      */
     @ApiModelProperty("id")
     private Long fileId;
+    private String uid;
 
     /**
      * 客户id

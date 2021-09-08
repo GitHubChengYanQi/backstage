@@ -31,6 +31,8 @@ public class CustomerFileParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("id")
     private Long fileId;
 
+    private String uid;
+
     /**
      * 客户id
      */
