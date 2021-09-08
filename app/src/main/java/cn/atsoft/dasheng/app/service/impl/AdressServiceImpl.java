@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.app.mapper.AdressMapper;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.commonArea.entity.CommonArea;
+import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -38,18 +40,21 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     private CustomerService customerService;
     @Autowired
     private GetRegionService getRegionService;
+    @Autowired
+    private CommonAreaService commonAreaService;
 
     @BussinessLog
     @Override
     public Adress add(AdressParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        }else {
-            Adress entity = getEntity(param);
+        List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
+        if (commonAreas.size()>0){
+            throw new ServiceException(500,"地址请选择区或县");
+        }
+
+        Adress entity = getEntity(param);
             this.save(entity);
             return entity;
-        }
+
     }
 
 
