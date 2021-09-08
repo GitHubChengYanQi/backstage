@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
@@ -20,6 +22,20 @@ public class TrackMessageResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private  Long businessId;
+
+    /**
+     * 纬度
+     */
+
+    private BigDecimal latitude;
+
+
+    /**
+     * 经度
+     */
+
+    private BigDecimal longitude;
+
 
     /**
      * 商机跟踪内容id
@@ -48,6 +64,7 @@ public class TrackMessageResult implements Serializable {
     private Date time;
 
     private String note;
+    private String image;
 
     /**
      * 创建时间
