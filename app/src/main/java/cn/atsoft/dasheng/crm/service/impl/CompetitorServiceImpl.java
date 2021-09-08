@@ -78,12 +78,15 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     @Override
     public void update(CompetitorParam param) {
         if (ToolUtil.isNotEmpty(param.getCompetitorId())) {
-            param.getBusinessId();
             QueryWrapper<BusinessCompetition> queryWrapper=new QueryWrapper<>();
             queryWrapper.in("competitor_id",param.getCompetitorId());
-            BusinessCompetition businessCompetition = businessCompetitionService.getById(queryWrapper);
-            businessCompetition.setBusinessId(param.getBusinessId());
-            businessCompetitionService.updateById(businessCompetition);
+            List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
+            if (list.size()>0){
+                BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
+                businessCompetition.setBusinessId(param.getBusinessId());
+                businessCompetitionService.updateById(businessCompetition);
+            }
+
         }
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);
@@ -120,9 +123,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("competitor_id",longs);
             List<Competitor> competitorList = this.list(queryWrapper);
-            CompetitorResult competitorResult = new CompetitorResult();
+        
             List<CompetitorResult> competitorResultList = new ArrayList<>();
             for (Competitor competitor : competitorList) {
+                CompetitorResult competitorResult = new CompetitorResult();
                 ToolUtil.copyProperties(competitor, competitorResult);
                 competitorResultList.add(competitorResult);
             }
