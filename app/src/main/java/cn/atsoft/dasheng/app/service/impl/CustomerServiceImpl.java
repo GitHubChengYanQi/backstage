@@ -56,8 +56,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
-    @Autowired
-    private GetRegionService getRegionService;
 
     @Override
     @BussinessLog
@@ -275,8 +273,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
 
         for (CustomerResult record : data) {
-            RegionResult region = getRegionService.getRegion(record.getRegion());
-            record.setRegionResult(region);
+//            RegionResult region = getRegionService.getRegion(record.getRegion());
+//            record.setRegionResult(region);
 
 
             if (record.getClassification() == 1) {

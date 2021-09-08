@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.region.GetRegionService;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +36,8 @@ import java.util.List;
 public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService{
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private GetRegionService getRegionService;
 
     @BussinessLog
     @Override
@@ -92,6 +96,16 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     public PageInfo<AdressResult> findPageBySpec(AdressParam param) {
         Page<AdressResult> pageContext = getPageContext();
         IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        for (AdressResult record : page.getRecords()) {
+            if (ToolUtil.isNotEmpty(record.getRegion())){
+                RegionResult region = getRegionService.getRegion(record.getRegion());
+                record.setRegionResult(region);
+            }
+        }
+
+
+
         return PageFactory.createPageInfo(page);
     }
 

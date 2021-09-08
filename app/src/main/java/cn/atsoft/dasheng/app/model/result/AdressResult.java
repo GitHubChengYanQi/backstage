@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,8 @@ public class AdressResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private RegionResult regionResult;
+
 
     /**
      * 地址id
@@ -32,6 +35,8 @@ public class AdressResult implements Serializable {
      */
     @ApiModelProperty("地址")
     private String location;
+
+    private String region;
 
     /**
      * 经度
