@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -29,11 +30,10 @@ public class TrackMessageResult implements Serializable {
     /**
      * 纬度
      */
-
+    private UserResult userResult;
     private BigDecimal latitude;
 
 
-    private String tixing;
 
     private String type;
 

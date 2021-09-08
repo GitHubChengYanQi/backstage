@@ -197,13 +197,7 @@ public class TrackMessage implements Serializable {
         this.image = image;
     }
 
-    public String getTixing() {
-        return tixing;
-    }
 
-    public void setTixing(String tixing) {
-        this.tixing = tixing;
-    }
 
     public String getType() {
         return type;

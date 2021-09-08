@@ -17,6 +17,9 @@ import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,10 +47,13 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     private CompetitorService competitorService;
     @Autowired
     private CompetitorQuoteService competitorQuoteService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(TrackMessageParam param) {
         LoginUser user = LoginContextHolder.getContext().getUser();
+        param.setUserId(user.getId());
         String message = null;
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
         List<Long> competitorIds = new ArrayList<>();
@@ -126,6 +132,25 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     public PageInfo<TrackMessageResult> findPageBySpec(TrackMessageParam param) {
         Page<TrackMessageResult> pageContext = getPageContext();
         IPage<TrackMessageResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long> ids = new ArrayList<>();
+        for (TrackMessageResult record : page.getRecords()) {
+            ids.add(record.getUserId());
+        }
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<User> users = userService.lambdaQuery().in(User::getUserId, ids).list();
+            if (ToolUtil.isNotEmpty(users)) {
+                for (TrackMessageResult record : page.getRecords()) {
+                    for (User user : users) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        record.setUserResult(userResult);
+                    }
+
+                }
+            }
+
+        }
+
         return PageFactory.createPageInfo(page);
     }
 
