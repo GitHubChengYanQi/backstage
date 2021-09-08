@@ -29,7 +29,9 @@ import org.springframework.stereotype.Service;
 import javax.websocket.OnError;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,6 +53,7 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     @Autowired
     private CrmBusinessTrackService crmBusinessTrackService;
 
+
     @Override
     public void add(CompetitorQuoteParam param) {
         CompetitorQuote entity = getEntity(param);
@@ -59,7 +62,19 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
 
             crmBusinessTrackParam.setBusinessId(entity.getBusinessId());
             crmBusinessTrackParam.setCompetitorsQuoteId(entity.getQuoteId());
+            crmBusinessTrackParam.setCampType(param.getCampType());
             crmBusinessTrackService.add(crmBusinessTrackParam);
+
+
+
+
+
+
+
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("business_id",param.getBusinessId());
+//        List<CompetitorQuote> quoteList = competitorQuoteService.query().allEq(map).list();
+
 
 
     }
