@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-08
  */
 @Data
@@ -27,6 +31,7 @@ public class CustomerFileResult implements Serializable {
     @ApiModelProperty("id")
     private Long fileId;
     private String uid;
+    private String name;
 
     /**
      * 客户id

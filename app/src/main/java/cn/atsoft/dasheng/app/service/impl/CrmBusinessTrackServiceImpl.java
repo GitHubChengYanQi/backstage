@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
+import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
@@ -73,6 +74,23 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 //        };
 //        Timer timer = new Timer();
 //        timer.schedule(timerTask,10,3000);
+        //添加竞争对手报价
+        List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
+        for(CompetitorQuoteParam data : competitorQuoteParams){
+            data.setBusinessId(param.getBusinessId());
+            data.setCampType(0);
+            competitorQuoteService.add(data);
+
+            CompetitorQuoteParam competitorQuote = new CompetitorQuoteParam();
+            competitorQuote.setCompetitorId(data.getCompetitorId());
+            competitorQuote.setBusinessId(param.getBusinessId());
+            competitorQuote.setQuoteStatus(param.getQuoteStatus());
+            competitorQuote.setCompetitorsQuote(param.getMoney());
+            competitorQuote.setCampType(1);
+            competitorQuoteService.add(competitorQuote);
+        }
+
+        //
 
 
         CrmBusinessTrack entity = getEntity(param);

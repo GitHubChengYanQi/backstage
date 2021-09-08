@@ -29,6 +29,8 @@ public class CustomerFile implements Serializable {
      */
     @TableId(value = "file_id", type = IdType.ID_WORKER)
     private Long fileId;
+    @TableField("name")
+    private String name;
 
     @TableField("uid")
     private String uid;
@@ -146,6 +148,14 @@ public class CustomerFile implements Serializable {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
