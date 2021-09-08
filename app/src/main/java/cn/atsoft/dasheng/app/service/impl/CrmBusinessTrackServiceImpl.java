@@ -62,7 +62,7 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
         CrmBusinessTrack entity = getEntity(param);
         this.save(entity);
         TrackMessageParam trackMessageParam = new TrackMessageParam();
-        if (param.getCompetitorsQuoteId() == null&&entity.getBusinessId()!=null&&entity.getCompetitionId()!=null) {
+        if (param.getCompetitorsQuoteId() == null && entity.getBusinessId() != null && entity.getCompetitionId() != null) {
             CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, entity.getBusinessId()).one();
             Competitor competitor = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, entity.getCompetitionId()).one();
             trackMessageParam.setMessage("商机：" + crmBusiness.getBusinessName() + "添加了竞争对手" + competitor.getName());
@@ -73,13 +73,18 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 
         if (param.getCompetitorsQuoteId() != null) {
             CompetitorQuote competitorQuote = competitorQuoteService.lambdaQuery().eq(CompetitorQuote::getQuoteId, param.getCompetitorsQuoteId()).one();
-
-            if (competitorQuote.getBusinessId() != null && competitorQuote.getCompetitorId() != null) {
+            if (param.getCampType() == 0) {
+                if (competitorQuote.getBusinessId() != null && competitorQuote.getCompetitorId() != null) {
+                    CrmBusiness business = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, competitorQuote.getBusinessId()).one();
+                    Competitor competitorOne = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, competitorQuote.getCompetitorId()).one();
+                    trackMessageParam.setMessage("商机：" + business.getBusinessName() + "的竞争对手：" + competitorOne.getName() + "添加了报价：" + competitorQuote.getCompetitorsQuote());
+                    trackMessageService.add(trackMessageParam);
+                }
+            } else {
                 CrmBusiness business = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, competitorQuote.getBusinessId()).one();
-                Competitor competitorOne = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, competitorQuote.getCompetitorId()).one();
-                trackMessageParam.setMessage("商机：" + business.getBusinessName() + "的竞争对手：" + competitorOne.getName() + "添加了报价：" + competitorQuote.getCompetitorsQuote());
-                trackMessageService.add(trackMessageParam);
+                trackMessageParam.setMessage("商机：" + business.getBusinessName() + "的竞争对手：" + "自己添加了报价：" + competitorQuote.getCompetitorsQuote());
             }
+
 
         }
     }
