@@ -29,6 +29,7 @@ public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam 
     /**
      * 商机跟踪id
      */
+    private Long competitionId;
     private String name;
     private String time;
 

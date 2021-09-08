@@ -25,6 +25,8 @@ public class CrmBusinessTrack implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableField("name")
     private String name;
+    @TableField("competition_id")
+    private Long competitionId;
     /**
      * 商机跟踪id
      */
@@ -199,6 +201,14 @@ public class CrmBusinessTrack implements Serializable {
 
     public void setCompetitorsQuoteId(Long competitorsQuoteId) {
         this.competitorsQuoteId = competitorsQuoteId;
+    }
+
+    public Long getCompetitionId() {
+        return competitionId;
+    }
+
+    public void setCompetitionId(Long competitionId) {
+        this.competitionId = competitionId;
     }
 
     @Override

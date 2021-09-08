@@ -1,51 +1,37 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.crm.model.result;
 
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 商机跟踪表
+ * 商机跟踪内容
  * </p>
  *
- * @author
- * @since 2021-08-04
+ * @author 
+ * @since 2021-09-07
  */
 @Data
 @ApiModel
-public class CrmBusinessTrackResult implements Serializable {
+public class TrackMessageResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private  Long businessId;
 
-    private UserResult User;
-    private List<CrmBusinessResult> Business;
-    private Long competitorsQuoteId;
-    private Long competitionId;
     /**
-     * 商机跟踪id
+     * 商机跟踪内容id
      */
-    @ApiModelProperty("商机跟踪id")
-    private Long trackId;
-    private String type;
-    private String note;
-    private Integer money;
-    private String time;
-    private String name;
-    private Integer offer;
-    private Long businessId;
+    @ApiModelProperty("商机跟踪内容id")
+    private Long trackMessageId;
+
     /**
-     * 备注
+     * 跟踪内容
      */
-    @ApiModelProperty("备注")
-    private Long noteId;
+    @ApiModelProperty("跟踪内容")
+    private String message;
 
     /**
      * 创建者

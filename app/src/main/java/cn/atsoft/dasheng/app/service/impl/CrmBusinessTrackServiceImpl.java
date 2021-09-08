@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.service.CrmBusinessService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessTrack;
@@ -9,6 +12,12 @@ import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessTrackResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
+import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
+import cn.atsoft.dasheng.crm.service.CompetitorService;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -16,6 +25,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,17 +47,48 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private CrmBusinessService businessService;
+    @Autowired
+    private CompetitorService competitorService;
+    @Autowired
+    private TrackMessageService trackMessageService;
+    @Autowired
+    private CompetitorQuoteService competitorQuoteService;
+
 
     @Override
     public void add(CrmBusinessTrackParam param) {
         CrmBusinessTrack entity = getEntity(param);
         this.save(entity);
+        TrackMessageParam trackMessageParam = new TrackMessageParam();
+        if (param.getCompetitorsQuoteId() == null&&entity.getBusinessId()!=null&&entity.getCompetitionId()!=null) {
+            CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, entity.getBusinessId()).one();
+            Competitor competitor = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, entity.getCompetitionId()).one();
+            trackMessageParam.setMessage("商机：" + crmBusiness.getBusinessName() + "添加了竞争对手" + competitor.getName());
+            trackMessageParam.setBusinessId(entity.getBusinessId());
+            trackMessageService.add(trackMessageParam);
+        }
+
+
+        if (param.getCompetitorsQuoteId() != null) {
+            CompetitorQuote competitorQuote = competitorQuoteService.lambdaQuery().eq(CompetitorQuote::getQuoteId, param.getCompetitorsQuoteId()).one();
+
+            if (competitorQuote.getBusinessId() != null && competitorQuote.getCompetitorId() != null) {
+                CrmBusiness business = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, competitorQuote.getBusinessId()).one();
+                Competitor competitorOne = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, competitorQuote.getCompetitorId()).one();
+                trackMessageParam.setMessage("商机：" + business.getBusinessName() + "的竞争对手：" + competitorOne.getName() + "添加了报价：" + competitorQuote.getCompetitorsQuote());
+                trackMessageService.add(trackMessageParam);
+            }
+
+        }
     }
 
     @Override
     public void delete(CrmBusinessTrackParam param) {
         this.removeById(getKey(param));
     }
+
 
     @Override
     public void update(CrmBusinessTrackParam param) {
@@ -76,13 +117,13 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
             createUsers.add(record.getCreateUser());
         }
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("user_id",createUsers);
+        userQueryWrapper.in("user_id", createUsers);
         List<User> userList = userService.list(userQueryWrapper);
         for (CrmBusinessTrackResult record : page.getRecords()) {
             for (User user : userList) {
-                if (record.getCreateUser().equals(user.getUserId())){
+                if (record.getCreateUser().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user,userResult);
+                    ToolUtil.copyProperties(user, userResult);
                     record.setUser(userResult);
                     break;
                 }

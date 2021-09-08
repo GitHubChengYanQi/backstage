@@ -8,6 +8,10 @@ import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
 import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
+import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
+import cn.atsoft.dasheng.crm.service.CompetitorService;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -50,7 +54,12 @@ public class FreedAop {
     private ErpOrderService erpOrderService;
     @Autowired
     private RepairDynamicService repairDynamicService;
-
+    @Autowired
+    private CrmBusinessService crmBusinessService;
+    @Autowired
+    private CompetitorService competitorService;
+    @Autowired
+    private TrackMessageService trackMessageService;
 
     @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.BussinessLog)")
     public void cutService() {
@@ -325,6 +334,34 @@ public class FreedAop {
         }
 
 
+        if (target instanceof CrmBusinessTrackService) {
+
+//            FreedTemplateProperties.ErpOrder erpOrder = freedTemplateService.getConfig().getErpOrder();
+            CrmBusinessTrack crmBusinessTrack = (CrmBusinessTrack) result;
+            TrackMessageParam trackMessageParam = new TrackMessageParam();
+
+            String content = "";
+            switch (methodName) {
+                case "add":
+                    CrmBusiness business = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, crmBusinessTrack.getBusinessId()).one();
+                    Competitor competitor = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, crmBusinessTrack.getCompetitionId()).one();
+                    content = business.getBusinessName() + "添加了竞争对手" + competitor.getName();
+                    trackMessageParam.setMessage(content);
+
+//                    break;
+//                case "update":
+//                    content = erpOrder.getEdit().replace("[操作人]", user.getName());
+//                    businessDynamicParam.setContent(content);
+//
+//                    break;
+//                case "delete":
+//                    content = erpOrder.getDelete().replace("[操作人]", user.getName());
+//                    businessDynamicParam.setContent(content);
+//
+//                    break;
+            }
+            trackMessageService.add(trackMessageParam);
+        }
 
         return result;
     }
