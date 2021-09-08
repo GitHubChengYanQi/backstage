@@ -71,13 +71,13 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
-        TrackMessageParam trackMessageParam = new TrackMessageParam();
-        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
-            trackMessageParam.setBusinessId(param.getBusinessId());
-            CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
-            trackMessageParam.setMessage("当前商机：" + crmBusiness.getBusinessName() + "添加了" + param.getName() + "竞争对手");
-            trackMessageService.byCompetitionAdd(trackMessageParam);
-        }
+//        TrackMessageParam trackMessageParam = new TrackMessageParam();
+//        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
+//            trackMessageParam.setBusinessId(param.getBusinessId());
+//            CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
+//            trackMessageParam.setMessage("当前商机：" + crmBusiness.getBusinessName() + "添加了" + param.getName() + "竞争对手");
+//            trackMessageService.byCompetitionAdd(trackMessageParam);
+//        }
 
         return entity;
 
