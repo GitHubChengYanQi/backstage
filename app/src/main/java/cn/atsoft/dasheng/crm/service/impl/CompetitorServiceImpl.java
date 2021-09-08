@@ -56,7 +56,7 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
 
     @Override
-    public void add(CompetitorParam param) {
+    public Competitor add(CompetitorParam param) {
         Competitor entity = getEntity(param);
         this.save(entity);
         if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
@@ -65,7 +65,7 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
-
+        return entity;
 
 
     }

@@ -43,9 +43,9 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CompetitorParam competitorParam) {
-         competitorService.add(competitorParam);
+        Competitor competitor = competitorService.add(competitorParam);
 
-        return ResponseData.success();
+        return ResponseData.success(competitor);
     }
 
     /**
