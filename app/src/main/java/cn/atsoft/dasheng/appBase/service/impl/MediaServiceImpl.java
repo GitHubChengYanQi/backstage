@@ -89,10 +89,13 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media getMediaId(String type, Long userId) {
-        List<String> types = Arrays.asList("png", "jpg", "jpeg","gif", "mp4", "mp3", "flac", "aac");
-        if (!types.contains(type)) {
-            throw new ServiceException(500, "数据类型错误");
+        if (!userId.equals(0)) {
+            List<String> types = Arrays.asList("png", "jpg", "jpeg", "gif", "mp4", "mp3", "flac", "aac");
+            if (!types.contains(type)) {
+                throw new ServiceException(500, "数据类型错误");
+            }
         }
+
         String date = DateUtil.format(DateUtil.date(), "yyyyMMdd");
         String path = aliyunService.getConfig().getOss().getPath() + type + "/" + date + "/" + date + RandomUtil.randomNumbers(6) + "." + type;
         String endpoint = aliyunService.getConfig().getOss().getEndpoint();
@@ -110,7 +113,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
     }
 
     @Override
-    public Map<String,Object> getOssToken(Media media){
+    public Map<String, Object> getOssToken(Media media) {
 
         AliConfiguration aliConfiguration = aliyunService.getConfiguration();
         OSS ossClient = aliyunService.getOssClient();
