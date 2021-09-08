@@ -26,6 +26,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      */
     void add(CompetitorQuoteParam param);
 
+    void addTrack (CompetitorQuoteParam param);
     /**
      * 删除
      *

@@ -80,6 +80,12 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     }
 
     @Override
+    public void addTrack(CompetitorQuoteParam param) {
+        CompetitorQuote entity = getEntity(param);
+        this.save(entity);
+    }
+
+    @Override
     public void delete(CompetitorQuoteParam param) {
         param.setDisplay(0);
         this.update(param);
