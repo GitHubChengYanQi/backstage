@@ -26,6 +26,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.tools.Tool;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,9 +75,20 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public void update(CompetitorParam param) {
+
+
+        if (ToolUtil.isNotEmpty(param.getCompetitorId())) {
+            param.getBusinessId();
+            QueryWrapper<BusinessCompetition> queryWrapper=new QueryWrapper<>();
+            queryWrapper.in("competitor_id",param.getCompetitorId());
+            BusinessCompetition businessCompetition = businessCompetitionService.getById(queryWrapper);
+            businessCompetition.setBusinessId(param.getBusinessId());
+            businessCompetitionService.updateById(businessCompetition);
+        }
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
         this.updateById(newEntity);
     }
 

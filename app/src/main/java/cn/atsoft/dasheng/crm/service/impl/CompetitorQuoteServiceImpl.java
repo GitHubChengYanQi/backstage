@@ -72,6 +72,7 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
 
     @Override
     public void update(CompetitorQuoteParam param) {
+
         CompetitorQuote oldEntity = getOldEntity(param);
         CompetitorQuote newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
