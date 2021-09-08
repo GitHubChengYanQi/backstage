@@ -26,21 +26,21 @@ public interface TrackMessageService extends IService<TrackMessage> {
      */
     void add(TrackMessageParam param);
 
-    /**
-     * 删除
-     *
-     * @author 
-     * @Date 2021-09-07
-     */
-    void delete(TrackMessageParam param);
-
-    /**
-     * 更新
-     *
-     * @author 
-     * @Date 2021-09-07
-     */
-    void update(TrackMessageParam param);
+//    /**
+//     * 删除
+//     *
+//     * @author
+//     * @Date 2021-09-07
+//     */
+//    void delete(TrackMessageParam param);
+//
+//    /**
+//     * 更新
+//     *
+//     * @author
+//     * @Date 2021-09-07
+//     */
+//    void update(TrackMessageParam param);
 
     /**
      * 查询单条数据，Specification模式

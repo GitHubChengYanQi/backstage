@@ -45,32 +45,32 @@ public class TrackMessageController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 编辑接口
-     *
-     * @author 
-     * @Date 2021-09-07
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody TrackMessageParam trackMessageParam) {
-
-        this.trackMessageService.update(trackMessageParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author 
-     * @Date 2021-09-07
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody TrackMessageParam trackMessageParam)  {
-        this.trackMessageService.delete(trackMessageParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 编辑接口
+//     *
+//     * @author
+//     * @Date 2021-09-07
+//     */
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody TrackMessageParam trackMessageParam) {
+//
+//        this.trackMessageService.update(trackMessageParam);
+//        return ResponseData.success();
+//    }
+//
+//    /**
+//     * 删除接口
+//     *
+//     * @author
+//     * @Date 2021-09-07
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody TrackMessageParam trackMessageParam)  {
+//        this.trackMessageService.delete(trackMessageParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
