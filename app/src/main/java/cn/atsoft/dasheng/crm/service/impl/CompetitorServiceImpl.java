@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
@@ -238,5 +240,16 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             }
         return results.get(0);
     }
+    @Override
+    public void deleteByIds(CompetitorIdsRequest param) {
+        if (ToolUtil.isNotEmpty(param)){
+            Competitor competitor = new Competitor();
+            competitor.setDisplay(0);
+            UpdateWrapper<Competitor> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.in("competitor_id",param);
+            this.update(competitor,updateWrapper);
+        }
+    }
+
 
 }
