@@ -16,7 +16,7 @@ public class GetRegionServiceImp implements GetRegionService {
     public RegionResult getRegion(String area) {
         //判断地址填入是否正确
         List<CommonArea> list = commonAreaService.lambdaQuery().eq(CommonArea::getParentid, area).list();
-        if (list.size()>=0) {
+        if (list.size()>0) {
             return null;
         }
 

@@ -35,7 +35,7 @@ import java.util.List;
  * @since 2021-07-23
  */
 @Service
-public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService{
+public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
     @Autowired
     private CustomerService customerService;
     @Autowired
@@ -47,13 +47,13 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @Override
     public Adress add(AdressParam param) {
         List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
-        if (commonAreas.size()>0){
-            throw new ServiceException(500,"地址请选择区或县");
+        if (commonAreas.size() > 0) {
+            throw new ServiceException(500, "地址请选择区或县");
         }
 
         Adress entity = getEntity(param);
-            this.save(entity);
-            return entity;
+        this.save(entity);
+        return entity;
 
     }
 
@@ -64,7 +64,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         Customer adress = customerService.getById(param.getAdressId());
         if (ToolUtil.isEmpty(adress)) {
             throw new ServiceException(500, "删除前请确定客户");
-        }else {
+        } else {
             param.setDisplay(0);
             this.update(param);
             Adress entity = getEntity(param);
@@ -75,10 +75,14 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @BussinessLog
     @Override
     public Adress update(AdressParam param) {
+        List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
+        if (commonAreas.size() > 0) {
+            throw new ServiceException(500, "地址请选择区或县");
+        }
         Adress oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Adress newEntity = getEntity(param);
             newEntity.setCustomerId(null);
             ToolUtil.copyProperties(newEntity, oldEntity);
@@ -103,12 +107,11 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param);
 
         for (AdressResult record : page.getRecords()) {
-            if (ToolUtil.isNotEmpty(record.getRegion())){
+            if (ToolUtil.isNotEmpty(record.getRegion())) {
                 RegionResult region = getRegionService.getRegion(record.getRegion());
                 record.setRegionResult(region);
             }
         }
-
 
 
         return PageFactory.createPageInfo(page);
