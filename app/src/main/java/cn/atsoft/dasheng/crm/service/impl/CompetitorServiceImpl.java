@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.tools.Tool;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,14 +77,21 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public void update(CompetitorParam param) {
-//        if (param.getBusinessId() != null && param.getCompetitorId() != null) {
-//            Long competitorId = param.getCompetitorId();
-//            List<BusinessCompetition> businessCompetitions = businessCompetitionService.query().in("competitor_id", competitorId).list();
-//            businessCompetitionService.update().set("business_id",param.getBusinessId());
-//        }
+        if (ToolUtil.isNotEmpty(param.getCompetitorId())) {
+            QueryWrapper<BusinessCompetition> queryWrapper=new QueryWrapper<>();
+            queryWrapper.in("competitor_id",param.getCompetitorId());
+            List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
+            if (list.size()>0){
+                BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
+                businessCompetition.setBusinessId(param.getBusinessId());
+                businessCompetitionService.updateById(businessCompetition);
+            }
+
+        }
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
         this.updateById(newEntity);
     }
 
@@ -115,9 +123,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("competitor_id",longs);
             List<Competitor> competitorList = this.list(queryWrapper);
-            CompetitorResult competitorResult = new CompetitorResult();
+        
             List<CompetitorResult> competitorResultList = new ArrayList<>();
             for (Competitor competitor : competitorList) {
+                CompetitorResult competitorResult = new CompetitorResult();
                 ToolUtil.copyProperties(competitor, competitorResult);
                 competitorResultList.add(competitorResult);
             }
