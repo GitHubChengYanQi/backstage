@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,10 +13,10 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-08
  */
 @Data
@@ -30,7 +31,7 @@ public class CustomerFileParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("id")
     private Long fileId;
-
+    private String name;
     private String uid;
 
     /**
