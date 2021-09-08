@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,19 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private  Long businessId;
 
+    /**
+     * 纬度
+     */
+
+    private BigDecimal latitude;
+
+
+    /**
+     * 经度
+     */
+
+    private BigDecimal longitude;
+    private String image;
     /**
      * 商机跟踪内容id
      */

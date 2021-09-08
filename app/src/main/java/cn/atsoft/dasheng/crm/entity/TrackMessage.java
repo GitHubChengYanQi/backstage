@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -25,6 +26,20 @@ public class TrackMessage implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 纬度
+     */
+    @TableField("latitude")
+    private BigDecimal latitude;
+
+
+    /**
+     * 经度
+     */
+    @TableField("longitude")
+    private BigDecimal longitude;
+    @TableField("image")
+    private String image;
     /**
      * 商机跟踪内容id
      */
@@ -139,6 +154,22 @@ public class TrackMessage implements Serializable {
         this.businessId = businessId;
     }
 
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
     public Date getTime() {
         return time;
     }
@@ -153,6 +184,14 @@ public class TrackMessage implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override

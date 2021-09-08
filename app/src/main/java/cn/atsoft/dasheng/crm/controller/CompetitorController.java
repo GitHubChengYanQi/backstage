@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.crm.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
@@ -34,6 +35,7 @@ public class CompetitorController extends BaseController {
     @Autowired
     private CompetitorService competitorService;
 
+
     /**
      * 新增接口
      *
@@ -43,9 +45,9 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CompetitorParam competitorParam) {
-         competitorService.add(competitorParam);
+        Competitor competitor = competitorService.add(competitorParam);
 
-        return ResponseData.success();
+        return ResponseData.success(competitor);
     }
 
     /**
@@ -117,6 +119,12 @@ public class CompetitorController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/deleteByIds", method = RequestMethod.POST)
+    @ApiOperation("多选删除")
+    public ResponseData deleteByIds(@RequestBody CompetitorIdsRequest competitorIdsRequest) {
+        this.competitorService.deleteByIds(competitorIdsRequest);
+        return ResponseData.success();
+    }
 
 }
 
