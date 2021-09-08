@@ -33,7 +33,9 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private BigDecimal latitude;
 
+    private String tixing;
 
+    private  String type;
     /**
      * 经度
      */

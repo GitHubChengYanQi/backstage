@@ -32,7 +32,11 @@ public class TrackMessage implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
+    @TableField("tixing")
+    private String tixing;
 
+    @TableField("type")
+    private String type;
     /**
      * 经度
      */
