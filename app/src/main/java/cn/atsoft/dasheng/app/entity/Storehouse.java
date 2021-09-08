@@ -33,6 +33,7 @@ public class Storehouse implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
+
     /**
      * 经度
      */
