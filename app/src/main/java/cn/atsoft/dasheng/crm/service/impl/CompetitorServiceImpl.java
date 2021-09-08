@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,6 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             businessCompetitionService.add(businessCompetitionParam);
         }
 
-
         return entity;
 
     }
@@ -75,6 +76,11 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public void update(CompetitorParam param) {
+//        if (param.getBusinessId() != null && param.getCompetitorId() != null) {
+//            Long competitorId = param.getCompetitorId();
+//            List<BusinessCompetition> businessCompetitions = businessCompetitionService.query().in("competitor_id", competitorId).list();
+//            businessCompetitionService.update().set("business_id",param.getBusinessId());
+//        }
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -93,8 +99,35 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param) {
+
+        Long businessId = param.getBusinessId();
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        if (ToolUtil.isNotEmpty(businessId)){
+            QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
+            businessCompetitionQueryWrapper.in("business_id",businessId);
+            List<BusinessCompetition> list = businessCompetitionService.list(businessCompetitionQueryWrapper);
+            List<Long> longs = new ArrayList<>();
+            for (BusinessCompetition businessCompetition : list) {
+                longs.add(businessCompetition.getCompetitorId());
+            }
+            QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("competitor_id",longs);
+            List<Competitor> competitorList = this.list(queryWrapper);
+            CompetitorResult competitorResult = new CompetitorResult();
+            List<CompetitorResult> competitorResultList = new ArrayList<>();
+            for (Competitor competitor : competitorList) {
+                ToolUtil.copyProperties(competitor, competitorResult);
+                competitorResultList.add(competitorResult);
+            }
+
+            if (competitorResultList.size()>0){
+                page.setRecords(competitorResultList);
+            }
+        }
+
+
 
         for (CompetitorResult record : page.getRecords()) {
             if (record.getCompetitionLevel() != null) {
