@@ -1,8 +1,10 @@
-package cn.atsoft.dasheng.app.entity;
+package cn.atsoft.dasheng.crm.entity;
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,53 +15,52 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 商机跟踪表
+ * 商机跟踪内容
  * </p>
  *
  * @author
- * @since 2021-08-04
+ * @since 2021-09-07
  */
-@TableName("daoxin_crm_business_track")
-public class CrmBusinessTrack implements Serializable {
+@TableName("daoxin_crm_business_track_message")
+public class TrackMessage implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @TableField("name")
-    private String name;
-    @TableField("competition_id")
-    private Long competitionId;
+
     /**
-     * 商机跟踪id
+     * 纬度
      */
-    @TableId(value = "track_id", type = IdType.ID_WORKER)
-    private Long trackId;
+    @TableField("latitude")
+    private BigDecimal latitude;
+
     @TableField("type")
     private String type;
+    /**
+     * 经度
+     */
+    @TableField("longitude")
+    private BigDecimal longitude;
+    @TableField("image")
+    private String image;
+    /**
+     * 商机跟踪内容id
+     */
+    @TableId(value = "track_message_id", type = IdType.ID_WORKER)
+    private Long trackMessageId;
 
-    public Integer getMoney() {
-        return money;
-    }
-
-    public void setMoney(Integer money) {
-        this.money = money;
-    }
-
-    @TableField("money")
-    private Integer money;
-    @TableField("time")
-    private Date time;
-    @TableField("offer")
-    private Integer offer;
     @TableField("business_id")
     private Long businessId;
-    @TableField("competitors_quote_id")
-    private Long competitorsQuoteId;
+    @TableField("time")
+    private Date time;
     @TableField("note")
     private String note;
+    @TableField("user_id")
+    private Long userId;
+
     /**
-     * 备注
+     * 跟踪内容
      */
-    @TableField("note_id")
-    private Long noteId;
+    @TableField("message")
+    private String message;
 
     /**
      * 创建者
@@ -91,60 +92,21 @@ public class CrmBusinessTrack implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public String getName() {
-        return name;
+
+    public Long getTrackMessageId() {
+        return trackMessageId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTrackMessageId(Long trackMessageId) {
+        this.trackMessageId = trackMessageId;
     }
 
-    public Date getTime() {
-        return time;
+    public String getMessage() {
+        return message;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public Integer getOffer() {
-        return offer;
-    }
-
-    public void setOffer(Integer offer) {
-        this.offer = offer;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public Long getTrackId() {
-        return trackId;
-    }
-
-    public void setTrackId(Long trackId) {
-        this.trackId = trackId;
-    }
-
-    public Long getNoteId() {
-        return noteId;
-    }
-
-    public void setNoteId(Long noteId) {
-        this.noteId = noteId;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Long getCreateUser() {
@@ -195,27 +157,69 @@ public class CrmBusinessTrack implements Serializable {
         this.businessId = businessId;
     }
 
-    public Long getCompetitorsQuoteId() {
-        return competitorsQuoteId;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setCompetitorsQuoteId(Long competitorsQuoteId) {
-        this.competitorsQuoteId = competitorsQuoteId;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 
-    public Long getCompetitionId() {
-        return competitionId;
+    public BigDecimal getLongitude() {
+        return longitude;
     }
 
-    public void setCompetitionId(Long competitionId) {
-        this.competitionId = competitionId;
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
     public String toString() {
-        return "CrmBusinessTrack{" +
-                "trackId=" + trackId +
-                ", noteId=" + noteId +
+        return "TrackMessage{" +
+                "trackMessageId=" + trackMessageId +
+                ", message=" + message +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +

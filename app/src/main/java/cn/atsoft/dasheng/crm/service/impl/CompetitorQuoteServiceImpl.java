@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
+import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -27,14 +29,16 @@ import org.springframework.stereotype.Service;
 import javax.websocket.OnError;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
  * 竞争对手报价 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Service
@@ -46,21 +50,50 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     private CompetitorService competitorService;
     @Autowired
     private CrmBusinessService crmBusinessService;
+    @Autowired
+    private CrmBusinessTrackService crmBusinessTrackService;
+
 
     @Override
-    public void add(CompetitorQuoteParam param){
+    public void add(CompetitorQuoteParam param) {
+        CompetitorQuote entity = getEntity(param);
+        this.save(entity);
+        CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
+
+            crmBusinessTrackParam.setBusinessId(entity.getBusinessId());
+            crmBusinessTrackParam.setCompetitorsQuoteId(entity.getQuoteId());
+            crmBusinessTrackParam.setCampType(param.getCampType());
+            crmBusinessTrackService.add(crmBusinessTrackParam);
+
+
+
+
+
+
+
+//        Map<String,Object> map = new HashMap<>();
+//        map.put("business_id",param.getBusinessId());
+//        List<CompetitorQuote> quoteList = competitorQuoteService.query().allEq(map).list();
+
+
+
+    }
+
+    @Override
+    public void addTrack(CompetitorQuoteParam param) {
         CompetitorQuote entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CompetitorQuoteParam param){
+    public void delete(CompetitorQuoteParam param) {
         param.setDisplay(0);
         this.update(param);
     }
 
     @Override
-    public void update(CompetitorQuoteParam param){
+    public void update(CompetitorQuoteParam param) {
+
         CompetitorQuote oldEntity = getOldEntity(param);
         CompetitorQuote newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -68,17 +101,17 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     }
 
     @Override
-    public CompetitorQuoteResult findBySpec(CompetitorQuoteParam param){
+    public CompetitorQuoteResult findBySpec(CompetitorQuoteParam param) {
         return null;
     }
 
     @Override
-    public List<CompetitorQuoteResult> findListBySpec(CompetitorQuoteParam param){
+    public List<CompetitorQuoteResult> findListBySpec(CompetitorQuoteParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param){
+    public PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param) {
         Page<CompetitorQuoteResult> pageContext = getPageContext();
 
         IPage<CompetitorQuoteResult> page = this.baseMapper.customPageList(pageContext, param);
@@ -86,7 +119,7 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CompetitorQuoteParam param){
+    private Serializable getKey(CompetitorQuoteParam param) {
         return param.getQuoteId();
     }
 
@@ -104,39 +137,36 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
         return entity;
     }
   public void format (List<CompetitorQuoteResult> data){
-        List<Long> ids = new ArrayList<>();
-        List<Long>  business = new ArrayList<>();
-      for (CompetitorQuoteResult datum : data) {
-          ids.add(datum.getCompetitorId());
-          business.add(datum.getBusinessId());
-      }
-      List<CrmBusiness> crmBusinessList = crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
-      List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
-      for (CompetitorQuoteResult datum : data) {
-          for (Competitor competitor : competitorList) {
-              if (datum.getCompetitorId()!= null && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
+      if(data.size() > 0) {
+          List<Long> ids = new ArrayList<>();
+          List<Long> business = new ArrayList<>();
+          for (CompetitorQuoteResult datum : data) {
+              ids.add(datum.getCompetitorId());
+              business.add(datum.getBusinessId());
+          }
+          List<CrmBusiness> crmBusinessList = crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
+          List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+          for (CompetitorQuoteResult datum : data) {
+              for (Competitor competitor : competitorList) {
+                  if (ToolUtil.isNotEmpty(datum.getCompetitorId()) && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
 
-                    CompetitorResult competitorResult =  new CompetitorResult();
-                    ToolUtil.copyProperties(competitor,competitorResult);
-                    datum.setCompetitorResult(competitorResult);
+                      CompetitorResult competitorResult = new CompetitorResult();
+                      ToolUtil.copyProperties(competitor, competitorResult);
+                      datum.setCompetitorResult(competitorResult);
 
+                  }
+              }
+              for (CrmBusiness crmBusiness : crmBusinessList) {
+                  if (ToolUtil.isNotEmpty(datum.getBusinessId()) && datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
+
+                      CrmBusinessResult crmBusinessResult = new CrmBusinessResult();
+                      ToolUtil.copyProperties(crmBusiness, crmBusinessResult);
+                      datum.setCrmBusinessResult(crmBusinessResult);
+
+                  }
               }
           }
-          for (CrmBusiness crmBusiness : crmBusinessList) {
-              if (datum.getBusinessId()!=null&&datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
-
-                  CrmBusinessResult crmBusinessResult= new CrmBusinessResult();
-                  ToolUtil.copyProperties(crmBusiness,crmBusinessResult);
-                  datum.setCrmBusinessResult(crmBusinessResult);
-
-              }
-          }
       }
-
-
-
-
-
   }
 
 }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -7,12 +8,13 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 竞争对手报价
+ * 商机跟踪内容
  * </p>
  *
  * @author 
@@ -20,50 +22,45 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
+public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
     private  Long businessId;
+//    private List<CompetitorParam>
     /**
-     * 报价id
+     * 纬度
      */
-    @ApiModelProperty("报价id")
-    private Long quoteId;
 
-    /**
-     * 竞争对手id
-     */
-    @ApiModelProperty("竞争对手id")
-    private Long competitorId;
+    private Integer money;
+    private BigDecimal latitude;
 
-    /**
-     * 报价金额
-     */
-    @ApiModelProperty("报价金额")
-    private Integer competitorsQuote;
-
-    /**
-     * 报价状态
-     */
-    @ApiModelProperty("报价状态")
+    private List<CompetitorQuoteParam> competitorQuoteParam;
     private Integer quoteStatus;
 
-    private Integer campType;
 
+    private Long userId;
+    private  String type;
+    /**
+     * 经度
+     */
 
+    private BigDecimal longitude;
+    private String image;
+    /**
+     * 商机跟踪内容id
+     */
+    @ApiModelProperty("商机跟踪内容id")
+    private Long trackMessageId;
 
     /**
-     * 报价分类
+     * 跟踪内容
      */
-    @ApiModelProperty("报价分类")
-    private Integer quoteType;
+    @ApiModelProperty("跟踪内容")
+    private String message;
 
-    /**
-     * 报价日期
-     */
-    @ApiModelProperty("报价日期")
-    private Date quoteDate;
+    private Date time;
+
+    private String note;
 
     /**
      * 创建者

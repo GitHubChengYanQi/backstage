@@ -1,18 +1,25 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
+import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.BusinessCompetitionMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,11 +43,20 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
 
     @Autowired
     private CompetitorService competitorService;
+    @Autowired
+    private CrmBusinessTrackService crmBusinessTrackService;
+    @Autowired
+    private CompetitorQuoteService competitorQuoteService;
+    @Autowired
+    private TrackMessageService trackMessageService;
 
     @Override
     public void add(BusinessCompetitionParam param) {
         BusinessCompetition entity = getEntity(param);
         this.save(entity);
+        TrackMessageParam trackMessageParam = new TrackMessageParam();
+
+
     }
 
     @Override
@@ -83,7 +99,7 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
 
         for (BusinessCompetitionResult datum : data) {
             for (Competitor competitor : competitors) {
-                if(datum.getCompetitorId().equals(competitor.getCompetitorId())){
+                if (datum.getCompetitorId().equals(competitor.getCompetitorId())) {
                     CompetitorResult competitorResult = new CompetitorResult();
                     ToolUtil.copyProperties(competitor, competitorResult);
                     datum.setCompetitorResult(competitorResult);
@@ -92,6 +108,7 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
         }
 
     }
+
     @Override
     public List<CompetitorResult> findComptitor(BusinessCompetitionParam param) {
         List<BusinessCompetitionResult> businessCompetitionResults = this.baseMapper.customList(param);
@@ -106,6 +123,16 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
         for (Competitor competitor : competitors) {
             CompetitorResult competitorResult = new CompetitorResult();
             ToolUtil.copyProperties(competitor, competitorResult);
+            List<CompetitorQuote> competitorQuotes = competitorQuoteService.lambdaQuery().in(CompetitorQuote::getCompetitorId, competitorResult.getCompetitorId()).list();
+            List<CompetitorQuoteResult> competitorQuoteResults = new ArrayList<>();
+            for (CompetitorQuote competitorQuote : competitorQuotes) {
+                if (competitorQuote.getCompetitorId().equals(competitorResult.getCompetitorId())) {
+                    CompetitorQuoteResult competitorQuoteResult = new CompetitorQuoteResult();
+                    ToolUtil.copyProperties(competitorQuote, competitorQuoteResult);
+                    competitorQuoteResults.add(competitorQuoteResult);
+                }
+            }
+            competitorResult.setCompetitorQuoteResults(competitorQuoteResults);
             competitorResults.add(competitorResult);
         }
 

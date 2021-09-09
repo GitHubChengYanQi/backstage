@@ -1,6 +1,5 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.crm.model.result;
 
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,39 +12,38 @@ import java.util.List;
 
 /**
  * <p>
- * 商机跟踪表
+ *
  * </p>
  *
  * @author
- * @since 2021-08-04
+ * @since 2021-09-08
  */
 @Data
 @ApiModel
-public class CrmBusinessTrackResult implements Serializable {
+public class CustomerFileResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private UserResult User;
-    private List<CrmBusinessResult> Business;
-    private Long competitorsQuoteId;
-    private Long competitionId;
+
     /**
-     * 商机跟踪id
+     * id
      */
-    @ApiModelProperty("商机跟踪id")
-    private Long trackId;
-    private String type;
-    private String note;
-    private Integer money;
-    private Date time;
+    @ApiModelProperty("id")
+    private Long fileId;
+    private String uid;
     private String name;
-    private Integer offer;
-    private Long businessId;
+
     /**
-     * 备注
+     * 客户id
      */
-    @ApiModelProperty("备注")
-    private Long noteId;
+    @ApiModelProperty("客户id")
+    private Long customerId;
+
+    /**
+     * 附件地址
+     */
+    @ApiModelProperty("附件地址")
+    private String url;
 
     /**
      * 创建者
@@ -74,6 +72,7 @@ public class CrmBusinessTrackResult implements Serializable {
     /**
      * 状态
      */
+
     @ApiModelProperty("状态")
     private Integer display;
     @ApiModelProperty("父ID顺序数组")

@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GetRegionServiceImp implements GetRegionService {
     @Autowired
@@ -12,6 +14,12 @@ public class GetRegionServiceImp implements GetRegionService {
 
     @Override
     public RegionResult getRegion(String area) {
+        //判断地址填入是否正确
+        List<CommonArea> list = commonAreaService.lambdaQuery().eq(CommonArea::getParentid, area).list();
+        if (list.size()>0) {
+            return null;
+        }
+
         RegionResult regionResult = new RegionResult();
 
         CommonArea Area = commonAreaService.lambdaQuery().eq(CommonArea::getId, area).one();

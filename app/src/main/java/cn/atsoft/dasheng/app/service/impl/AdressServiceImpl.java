@@ -11,7 +11,11 @@ import cn.atsoft.dasheng.app.mapper.AdressMapper;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.commonArea.entity.CommonArea;
+import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.region.GetRegionService;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,21 +35,26 @@ import java.util.List;
  * @since 2021-07-23
  */
 @Service
-public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService{
+public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private GetRegionService getRegionService;
+    @Autowired
+    private CommonAreaService commonAreaService;
 
     @BussinessLog
     @Override
     public Adress add(AdressParam param) {
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        }else {
-            Adress entity = getEntity(param);
-            this.save(entity);
-            return entity;
+        List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
+        if (commonAreas.size() > 0) {
+            throw new ServiceException(500, "地址请选择区或县");
         }
+
+        Adress entity = getEntity(param);
+        this.save(entity);
+        return entity;
+
     }
 
 
@@ -55,7 +64,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         Customer adress = customerService.getById(param.getAdressId());
         if (ToolUtil.isEmpty(adress)) {
             throw new ServiceException(500, "删除前请确定客户");
-        }else {
+        } else {
             param.setDisplay(0);
             this.update(param);
             Adress entity = getEntity(param);
@@ -66,10 +75,14 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @BussinessLog
     @Override
     public Adress update(AdressParam param) {
+        List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
+        if (commonAreas.size() > 0) {
+            throw new ServiceException(500, "地址请选择区或县");
+        }
         Adress oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Adress newEntity = getEntity(param);
             newEntity.setCustomerId(null);
             ToolUtil.copyProperties(newEntity, oldEntity);
@@ -92,6 +105,15 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     public PageInfo<AdressResult> findPageBySpec(AdressParam param) {
         Page<AdressResult> pageContext = getPageContext();
         IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param);
+
+        for (AdressResult record : page.getRecords()) {
+            if (ToolUtil.isNotEmpty(record.getRegion())) {
+                RegionResult region = getRegionService.getRegion(record.getRegion());
+                record.setRegionResult(region);
+            }
+        }
+
+
         return PageFactory.createPageInfo(page);
     }
 

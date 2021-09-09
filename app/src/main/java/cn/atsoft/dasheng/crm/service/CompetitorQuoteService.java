@@ -26,6 +26,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      */
     void add(CompetitorQuoteParam param);
 
+    void addTrack (CompetitorQuoteParam param);
     /**
      * 删除
      *
@@ -65,6 +66,8 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * @Date 2021-09-07
      */
      PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param);
+
+
 
 
 

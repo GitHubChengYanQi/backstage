@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,58 +13,38 @@ import java.util.List;
 
 /**
  * <p>
- * 竞争对手报价
+ *
  * </p>
  *
- * @author 
- * @since 2021-09-07
+ * @author
+ * @since 2021-09-08
  */
 @Data
 @ApiModel
-public class CompetitorQuoteParam implements Serializable, BaseValidatingParam {
+public class CustomerFileParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private  Long businessId;
-    /**
-     * 报价id
-     */
-    @ApiModelProperty("报价id")
-    private Long quoteId;
 
     /**
-     * 竞争对手id
+     * id
      */
-    @ApiModelProperty("竞争对手id")
-    private Long competitorId;
+    @ApiModelProperty("id")
+    private Long fileId;
+    private String name;
+    private String uid;
 
     /**
-     * 报价金额
+     * 客户id
      */
-    @ApiModelProperty("报价金额")
-    private Integer competitorsQuote;
+    @ApiModelProperty("客户id")
+    private Long customerId;
 
     /**
-     * 报价状态
+     * 附件地址
      */
-    @ApiModelProperty("报价状态")
-    private Integer quoteStatus;
-
-    private Integer campType;
-
-
-
-    /**
-     * 报价分类
-     */
-    @ApiModelProperty("报价分类")
-    private Integer quoteType;
-
-    /**
-     * 报价日期
-     */
-    @ApiModelProperty("报价日期")
-    private Date quoteDate;
+    @ApiModelProperty("附件地址")
+    private String url;
 
     /**
      * 创建者

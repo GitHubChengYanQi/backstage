@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,18 +25,20 @@ import java.util.List;
 public class CrmBusinessTrackParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<CompetitorQuoteParam> competitorQuoteParam;
     private Long competitorsQuoteId;
+    private Integer campType;
     /**
      * 商机跟踪id
      */
+
     private String name;
-    private String time;
+    private Date time;
 
     private Integer offer;
     private String note;
     private String type;
-
+    private Long competitionId;
     private Integer money;
     @ApiModelProperty("商机跟踪id")
     private Long trackId;

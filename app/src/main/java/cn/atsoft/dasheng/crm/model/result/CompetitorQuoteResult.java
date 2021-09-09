@@ -20,7 +20,7 @@ import java.util.List;
 public class CompetitorQuoteResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-        private List<CompetitorQuoteResult> list;
+//        private List<CompetitorQuoteResult> list;
         private   CompetitorResult competitorResult;
         private CrmBusinessResult crmBusinessResult;
 
@@ -44,17 +44,12 @@ public class CompetitorQuoteResult implements Serializable {
     private Integer competitorsQuote;
 
     private Integer campType;
+
     /**
      * 报价状态
      */
     @ApiModelProperty("报价状态")
     private Integer quoteStatus;
-
-    /**
-     * 关联客户
-     */
-    @ApiModelProperty("关联客户")
-    private String relatedCustomers;
 
     /**
      * 报价分类
