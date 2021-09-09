@@ -31,7 +31,7 @@ public class CommonAreaResult implements Serializable {
     private String title;
 
     @ApiModelProperty("")
-    private Boolean grade;
+    private Integer grade;
 
     /**
      * （字符型级别）

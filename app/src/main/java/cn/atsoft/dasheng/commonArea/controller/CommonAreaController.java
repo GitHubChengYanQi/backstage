@@ -114,9 +114,14 @@ public class CommonAreaController extends BaseController {
         }
         if (ToolUtil.isNotEmpty(commonAreaParam.getPidValue())) {
             List<String> pidValue = commonAreaParam.getPidValue();
-//            commonAreaParam.setParentid(pidValue.get(pidValue.size()-1));
         }
         return this.commonAreaService.findPageBySpec(commonAreaParam);
+    }
+
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<CommonAreaResult> listAll(@RequestBody(required = false) CommonAreaParam commonAreaParam) {
+        return this.commonAreaService.findListBySpec(commonAreaParam);
     }
 
     /**

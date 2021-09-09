@@ -4,54 +4,62 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.commonArea.entity.CommonArea">
-        <id column="id" property="id" />
-        <result column="parentid" property="parentid" />
-        <result column="title" property="title" />
-        <result column="grade" property="grade" />
-        <result column="grade_code" property="gradeCode" />
-        <result column="region_code" property="regionCode" />
+        <id column="id" property="id"/>
+        <result column="parentid" property="parentid"/>
+        <result column="title" property="title"/>
+        <result column="grade" property="grade"/>
+        <result column="grade_code" property="gradeCode"/>
+        <result column="region_code" property="regionCode"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id AS "id", parentid AS "parentid", title AS "title", grade AS "grade", grade_code AS "gradeCode", region_code AS "regionCode"
+        id
+        AS "id", parentid AS "parentid", title AS "title", grade AS "grade", grade_code AS "gradeCode", region_code AS "regionCode"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult" parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult"
+            parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
         select
         <include refid="Base_Column_List"/>
         from sys_common_area where 1 = 1
-            <if test="paramCondition.parentid != null">
-                    and parentid = #{paramCondition.parentid}
-            </if>
+        <if test="paramCondition.parentid != null">
+            and parentid = #{paramCondition.parentid}
+        </if>
+        <if test="paramCondition.grade != null">
+            and grade = #{paramCondition.grade}
+        </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
         select
         <include refid="Base_Column_List"/>
         from sys_common_area where 1 = 1
-                <if test="paramCondition.parentid != null">
-                            and parentid = #{paramCondition.parentid}
-                </if>
+        <if test="paramCondition.parentid != null">
+            and parentid = #{paramCondition.parentid}
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult" parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult"
+            parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
         select
         <include refid="Base_Column_List"/>
         from sys_common_area where 1 = 1
-                <if test="paramCondition.parentid != null">
-                            and parentid = #{paramCondition.parentid}
-                </if>
+        <if test="paramCondition.parentid != null">
+            and parentid = #{paramCondition.parentid}
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.commonArea.model.params.CommonAreaParam">
         select
         <include refid="Base_Column_List"/>
         from sys_common_area where 1 = 1
-                <if test="paramCondition.parentid != null">
-                        and parentid = #{paramCondition.parentid}
-                </if>
+        <if test="paramCondition.parentid != null">
+            and parentid = #{paramCondition.parentid}
+        </if>
     </select>
 
 </mapper>

@@ -42,7 +42,6 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
-//        adressParam.setCustomerId(clientId);
         this.adressService.add(adressParam);
         return ResponseData.success();
     }
@@ -83,12 +82,9 @@ public class AdressController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<AdressResult> detail(@RequestBody AdressParam adressParam) {
-        Adress detail = this.adressService.getById(adressParam.getAdressId());
-        AdressResult result = new AdressResult();
-        ToolUtil.copyProperties(detail, result);
 
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
+        return ResponseData.success(pageBySpec.getData().get(0));
     }
 
     /**

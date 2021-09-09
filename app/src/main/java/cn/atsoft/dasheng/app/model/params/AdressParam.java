@@ -29,6 +29,8 @@ public class AdressParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("地址id")
     private Long adressId;
 
+    private CustomerMap map;
+
     /**
      * 地址
      */

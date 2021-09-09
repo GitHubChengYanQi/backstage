@@ -33,7 +33,7 @@ public class CommonAreaParam implements Serializable, BaseValidatingParam {
     private String title;
 
     @ApiModelProperty("")
-    private Boolean grade;
+    private Integer grade;
 
     /**
      * （字符型级别）

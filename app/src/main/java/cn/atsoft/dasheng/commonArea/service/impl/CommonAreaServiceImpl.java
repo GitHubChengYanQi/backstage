@@ -59,7 +59,8 @@ public class CommonAreaServiceImpl extends ServiceImpl<CommonAreaMapper, CommonA
 
     @Override
     public List<CommonAreaResult> findListBySpec(CommonAreaParam param) {
-        return null;
+        List<CommonAreaResult> commonAreaResults = baseMapper.customList(param);
+        return commonAreaResults;
     }
 
     @Override

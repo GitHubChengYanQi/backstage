@@ -29,7 +29,7 @@ public class CommonArea implements Serializable {
     private String title;
 
     @TableField("grade")
-    private Boolean grade;
+    private Integer grade;
 
     /**
      * （字符型级别）
@@ -68,11 +68,11 @@ public class CommonArea implements Serializable {
         this.title = title;
     }
 
-    public Boolean getGrade() {
+    public Integer getGrade() {
         return grade;
     }
 
-    public void setGrade(Boolean grade) {
+    public void setGrade(Integer grade) {
         this.grade = grade;
     }
 

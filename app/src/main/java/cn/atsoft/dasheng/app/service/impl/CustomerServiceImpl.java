@@ -2,16 +2,13 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.params.AdressParam;
-import cn.atsoft.dasheng.app.model.params.ContactsParam;
-import cn.atsoft.dasheng.app.model.params.PhoneParam;
+import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
-import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -320,6 +317,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     if (record.getCustomerId().equals(adress.getCustomerId())) {
                         AdressResult adressResult = new AdressResult();
                         ToolUtil.copyProperties(adress, adressResult);
+
+                        Double longitude = adressResult.getLongitude();
+                        Double latitude = adressResult.getLatitude();
+                        CustomerMap customerMap = new CustomerMap();
+                        List<Double> list = new ArrayList<>();
+                        list.add(longitude);
+                        list.add(latitude);
+                        customerMap.setAddress(adress.getLocation());
+                        customerMap.setMap(list);
+                        adressResult.setMap(customerMap);
+
                         adressResults.add(adressResult);
                     }
                 }

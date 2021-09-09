@@ -49,6 +49,9 @@
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
+        <if test="paramCondition.adressId != null">
+            and adress_id = #{paramCondition.adressId}
+        </if>
 
     </select>
 
