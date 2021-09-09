@@ -12,10 +12,12 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +44,8 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody CrmBusinessParam crmBusinessParam) {
+    public ResponseData addItem(@RequestBody @Valid CrmBusinessParam crmBusinessParam) {
+
         CrmBusiness result = crmBusinessService.add(crmBusinessParam);
         return ResponseData.success(result.getBusinessId());
     }

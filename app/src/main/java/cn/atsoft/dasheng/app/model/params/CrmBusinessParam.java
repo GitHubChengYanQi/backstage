@@ -9,6 +9,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -51,6 +53,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
     /**
      * 客户id
      */
+    @NotNull(message = "请选择客户！")
     @ApiModelProperty("客户id")
     private Long customerId;
 
