@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.uc.service;
 
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.entity.UcSmsCode;
@@ -61,6 +62,9 @@ public class UcMemberAuth {
     private WxMpService wxMpService;
 
     @Autowired
+    private WxCpService wxCpService;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     final private String redisPreKey = "user-center-";
@@ -72,8 +76,11 @@ public class UcMemberAuth {
      * @return String 授权地址
      */
     public String buildAuthorizationUrl(String url) {
-        HttpServletRequest request = HttpContext.getRequest();
         return wxMpService.getOAuth2Service().buildAuthorizationUrl(url, "snsapi_userinfo", "");
+    }
+    public String buildAuthori0zationUrlCp(String url) {
+
+        return  wxCpService.getOAuth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
     }
 
     public String mpLogin(String code) {
@@ -85,6 +92,30 @@ public class UcMemberAuth {
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
             ucOpenUserInfo.setUuid(wxOAuth2UserInfo.getOpenid());
             ucOpenUserInfo.setSource("wxMp");
+
+            ucOpenUserInfo.setUsername(wxOAuth2UserInfo.getNickname());
+            ucOpenUserInfo.setNickname(wxOAuth2UserInfo.getNickname());
+            ucOpenUserInfo.setAvatar(wxOAuth2UserInfo.getHeadImgUrl());
+            ucOpenUserInfo.setGender(wxOAuth2UserInfo.getSex());
+            String raw = JSON.toJSONString(wxOAuth2UserInfo);// .toString();
+            ucOpenUserInfo.setRawUserInfo(raw);
+            ucOpenUserInfo.setLocation(wxOAuth2UserInfo.getCountry() + "-" + wxOAuth2UserInfo.getProvince() + "-" + wxOAuth2UserInfo.getCity());
+            return login(ucOpenUserInfo);
+        } catch (WxErrorException e) {
+            e.printStackTrace();
+            throw new ServiceException(500,e.getMessage());
+        }
+    }
+
+    public String cpLogin(String code) {
+
+        try {
+            WxOAuth2AccessToken wxOAuth2AccessToken = wxCpService.getOAuth2Service().getAccessToken(code);
+            WxOAuth2UserInfo wxOAuth2UserInfo = wxCpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
+
+            UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
+            ucOpenUserInfo.setUuid(wxOAuth2UserInfo.getOpenid());
+            ucOpenUserInfo.setSource("wxCp");
 
             ucOpenUserInfo.setUsername(wxOAuth2UserInfo.getNickname());
             ucOpenUserInfo.setNickname(wxOAuth2UserInfo.getNickname());

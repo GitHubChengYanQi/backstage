@@ -53,8 +53,6 @@ public class AuthLoginController extends BaseController {
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
 
-    @Autowired
-    private WxCpService wxCpService;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -81,7 +79,12 @@ public class AuthLoginController extends BaseController {
                 };
                 return ResponseData.success(result);
             case "wxCp":
-//                wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl();
+                Map<String, Object> cpResult = new HashMap<String, Object>() {
+                    {
+                        put("url", ucMemberAuth.buildAuthori0zationUrlCp(url));
+                    }
+                };
+                return ResponseData.success(cpResult);
             default:
                 throw new ServiceException(500, "暂不支持:" + source);
         }
@@ -169,6 +172,14 @@ public class AuthLoginController extends BaseController {
     @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
     public ResponseData<String> mpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.mpLogin(code);
+        return ResponseData.success(token);
+    }
+
+
+    @RequestMapping("/cp/loginByCode")
+    @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
+    public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
+        String token = ucMemberAuth.cpLogin(code);
         return ResponseData.success(token);
     }
 
