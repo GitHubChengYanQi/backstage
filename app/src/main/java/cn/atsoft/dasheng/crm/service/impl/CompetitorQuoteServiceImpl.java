@@ -58,25 +58,6 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     public void add(CompetitorQuoteParam param) {
         CompetitorQuote entity = getEntity(param);
         this.save(entity);
-        CrmBusinessTrackParam crmBusinessTrackParam = new CrmBusinessTrackParam();
-
-            crmBusinessTrackParam.setBusinessId(entity.getBusinessId());
-            crmBusinessTrackParam.setCompetitorsQuoteId(entity.getQuoteId());
-            crmBusinessTrackParam.setCampType(param.getCampType());
-            crmBusinessTrackService.add(crmBusinessTrackParam);
-
-
-
-
-
-
-
-//        Map<String,Object> map = new HashMap<>();
-//        map.put("business_id",param.getBusinessId());
-//        List<CompetitorQuote> quoteList = competitorQuoteService.query().allEq(map).list();
-
-
-
     }
 
     @Override

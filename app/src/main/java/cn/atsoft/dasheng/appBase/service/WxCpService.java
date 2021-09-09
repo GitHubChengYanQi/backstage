@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.appBase.service;
 
 import cn.atsoft.dasheng.appBase.config.WxCpProperties;
+import me.chanjar.weixin.common.service.WxOAuth2Service;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
 import me.chanjar.weixin.cp.config.impl.WxCpDefaultConfigImpl;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @EnableConfigurationProperties(WxCpProperties.class)
-public class WxCpService {
+public class WxCpService  {
 
     private WxCpProperties config;
 

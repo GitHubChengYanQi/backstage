@@ -321,8 +321,14 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return param.getContractId();
     }
 
+//    private Page<ContractResult> getPageContext() {
+//        return PageFactory.defaultPage();
+//    }
     private Page<ContractResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<String>() {{
+            add("createTime");
+        }};
+        return PageFactory.defaultPage(fields);
     }
 
     private Contract getOldEntity(ContractParam param) {

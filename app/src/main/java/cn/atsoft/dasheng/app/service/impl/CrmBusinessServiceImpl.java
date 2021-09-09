@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
@@ -74,21 +75,21 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-
+    @BussinessLog
     public CrmBusiness add(CrmBusinessParam param) {
-        CrmBusiness  entity = getEntity(param);
+        CrmBusiness entity = getEntity(param);
         this.save(entity);
         return entity;
 
     }
 
     @Override
-
+    @BussinessLog
     public CrmBusiness delete(CrmBusinessParam param) {
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             param.setDisplay(0);
             this.update(param);
             CrmBusiness entity = getEntity(param);
@@ -98,12 +99,12 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
- 
+    @BussinessLog
     public CrmBusiness update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             CrmBusiness newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
@@ -207,7 +208,12 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     private Page<CrmBusinessResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<>();
+        fields.add("businessName");
+        fields.add("time");
+        fields.add("state");
+        fields.add("opportunityAmount");
+        return PageFactory.defaultPage(fields);
     }
 
     private CrmBusiness getOldEntity(CrmBusinessParam param) {
@@ -280,29 +286,25 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
 
-
         for (CrmBusinessResult item : data) {
-            if (item.getBusinessId()!=null) {
+            if (item.getBusinessId() != null) {
                 List<Long> competitorIds = new ArrayList<>();
                 List<BusinessCompetition> businessCompetitionList = businessCompetitionService.lambdaQuery().in(BusinessCompetition::getBusinessId, item.getBusinessId()).list();
                 for (BusinessCompetition businessCompetition : businessCompetitionList) {
                     competitorIds.add(businessCompetition.getCompetitorId());
                 }
-                if (ToolUtil.isNotEmpty(competitorIds) ){
+                if (ToolUtil.isNotEmpty(competitorIds)) {
                     List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, competitorIds).list();
                     List<CompetitorResult> competitorResults = new ArrayList<>();
                     for (Competitor competitor : competitorList) {
                         CompetitorResult competitorResult = new CompetitorResult();
-                        ToolUtil.copyProperties(competitor,competitorResult);
+                        ToolUtil.copyProperties(competitor, competitorResult);
                         competitorResults.add(competitorResult);
                     }
                     item.setCompetitorResults(competitorResults);
                 }
 
             }
-
-
-
 
 
             for (Customer customer : customerList) {

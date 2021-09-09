@@ -32,7 +32,8 @@ public class TrackMessage implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
-
+    @TableField("type")
+    private String type;
     /**
      * 经度
      */
@@ -52,6 +53,8 @@ public class TrackMessage implements Serializable {
     private Date time;
     @TableField("note")
     private String note;
+    @TableField("user_id")
+    private Long userId;
 
     /**
      * 跟踪内容
@@ -192,6 +195,24 @@ public class TrackMessage implements Serializable {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override

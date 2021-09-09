@@ -1,17 +1,23 @@
 package cn.atsoft.dasheng.sys.modular.system.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 管理员表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-06
  */
 @Data
@@ -24,31 +30,37 @@ public class UserResult implements Serializable {
     /**
      * 主键id
      */
-    @ApiModelProperty("主键id")
+
+    @ApiModelProperty(hidden = true)
+    @JSONField(serialize = false)
     private Long userId;
 
     /**
      * 头像
      */
-    @ApiModelProperty("头像")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String avatar;
 
     /**
      * 账号
      */
-    @ApiModelProperty("账号")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String account;
 
     /**
      * 密码
      */
-    @ApiModelProperty("密码")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String password;
 
     /**
      * md5密码盐
      */
-    @ApiModelProperty("md5密码盐")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String salt;
 
     /**
@@ -72,30 +84,35 @@ public class UserResult implements Serializable {
     /**
      * 电子邮件
      */
-    @ApiModelProperty("电子邮件")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String email;
 
     /**
      * 电话
      */
-    @ApiModelProperty("电话")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String phone;
 
     /**
      * 角色id(多个逗号隔开)
      */
-    @ApiModelProperty("角色id(多个逗号隔开)")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private String roleId;
 
     /**
      * 部门id(多个逗号隔开)
      */
-    @ApiModelProperty("部门id(多个逗号隔开)")
+    @JSONField(serialize = false)
+    @ApiModelProperty(hidden = true)
     private Long deptId;
 
     /**
      * 状态(字典)
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态(字典)")
     private String status;
 

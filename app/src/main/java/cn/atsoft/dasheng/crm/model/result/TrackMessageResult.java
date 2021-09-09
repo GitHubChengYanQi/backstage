@@ -1,19 +1,23 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 商机跟踪内容
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Data
@@ -21,21 +25,24 @@ import java.util.List;
 public class TrackMessageResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private  Long businessId;
+    private Long businessId;
 
     /**
      * 纬度
      */
-
+    private UserResult userResult;
     private BigDecimal latitude;
 
+
+
+    private String type;
 
     /**
      * 经度
      */
 
     private BigDecimal longitude;
-
+    private Long userId;
 
     /**
      * 商机跟踪内容id

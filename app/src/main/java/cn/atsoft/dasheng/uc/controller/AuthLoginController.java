@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.uc.controller;
 
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
@@ -51,18 +52,7 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
-    @Autowired
-    private UcOpenUserInfoService ucOpenUserInfoService;
 
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<UcOpenUserInfoResult> list(@RequestBody(required = false) UcOpenUserInfoParam ucOpenUserInfoParam) {
-        if (ToolUtil.isEmpty(ucOpenUserInfoParam)) {
-            ucOpenUserInfoParam = new UcOpenUserInfoParam();
-        }
-
-        return this.ucOpenUserInfoService.findPageBySpec(ucOpenUserInfoParam);
-    }
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -88,6 +78,13 @@ public class AuthLoginController extends BaseController {
                     }
                 };
                 return ResponseData.success(result);
+            case "wxCp":
+                Map<String, Object> cpResult = new HashMap<String, Object>() {
+                    {
+                        put("url", ucMemberAuth.buildAuthori0zationUrlCp(url));
+                    }
+                };
+                return ResponseData.success(cpResult);
             default:
                 throw new ServiceException(500, "暂不支持:" + source);
         }
@@ -175,6 +172,14 @@ public class AuthLoginController extends BaseController {
     @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
     public ResponseData<String> mpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.mpLogin(code);
+        return ResponseData.success(token);
+    }
+
+
+    @RequestMapping("/cp/loginByCode")
+    @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
+    public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
+        String token = ucMemberAuth.cpLogin(code);
         return ResponseData.success(token);
     }
 

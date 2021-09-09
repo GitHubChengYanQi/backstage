@@ -16,11 +16,14 @@
         <result column="latitude" property="latitude"/>
         <result column="longitude" property="longitude"/>
         <result column="image" property="image"/>
+        <result column="type" property="type"/>
+        <result column="user_id" property="userId"/>
         <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">business_id
+    <sql id="Base_Column_List">user_id
+    AS "userId",type AS "type",business_id
     AS "businessId",  note AS "note",  time AS "time", latitude AS "latitude", longitude AS "longitude", image AS "image",
         track_message_id AS "trackMessageId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
@@ -31,12 +34,18 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track_message where 1 = 1
+        <if test="paramCondition.businessId != null">
+            and business_id like CONCAT('%',#{paramCondition.businessId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.TrackMessageParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track_message where 1 = 1
+        <if test="paramCondition.businessId != null">
+            and business_id like CONCAT('%',#{paramCondition.businessId},'%')
+        </if>
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.TrackMessageResult"
@@ -44,6 +53,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track_message where 1 = 1
+        <if test="paramCondition.businessId != null">
+            and business_id like CONCAT('%',#{paramCondition.businessId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -51,6 +63,9 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track_message where 1 = 1
+        <if test="paramCondition.businessId != null">
+            and business_id like CONCAT('%',#{paramCondition.businessId},'%')
+        </if>
     </select>
 
 </mapper>

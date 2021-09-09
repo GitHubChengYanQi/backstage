@@ -26,6 +26,8 @@ public interface TrackMessageService extends IService<TrackMessage> {
      */
     void add(TrackMessageParam param);
 
+    void byCompetitionAdd(TrackMessageParam param);
+
 //    /**
 //     * 删除
 //     *
