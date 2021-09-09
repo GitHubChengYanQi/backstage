@@ -30,7 +30,4 @@ public class WxCpService  {
         wxCpService.setWxCpConfigStorage(config);
         return  wxCpService;
     }
-    public WxOAuth2Service getOAuth2Service() {
-        return null;
-    }
 }

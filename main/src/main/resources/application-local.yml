@@ -136,9 +136,9 @@ aliyun:
     callbackUrl: https://dasheng-soft.picp.vip/v1
     path: upload/
 wxcp:
-  corpId:
-  secret:
-  agentId:
+  corpId: wwac1139dc197ffe88
+  secret: 03QfUze77kkLavSSzG_AOwRwIM8AsPjGvxm3NLJe2l0
+  agentId: 1000008
   token:
   aesKey:
 
