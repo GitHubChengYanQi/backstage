@@ -209,7 +209,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private Page<CrmBusinessResult> getPageContext() {
         List<String> fields = new ArrayList<>();
         fields.add("businessName");
-        fields.add("customerId");
         fields.add("time");
         fields.add("state");
         fields.add("opportunityAmount");
