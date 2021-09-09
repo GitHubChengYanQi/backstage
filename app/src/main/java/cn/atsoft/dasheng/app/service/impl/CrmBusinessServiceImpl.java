@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
@@ -74,7 +75,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-
+    @BussinessLog
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
@@ -83,7 +84,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-
+    @BussinessLog
     public CrmBusiness delete(CrmBusinessParam param) {
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {
@@ -98,7 +99,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-
+    @BussinessLog
     public CrmBusiness update(CrmBusinessParam param) {
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
