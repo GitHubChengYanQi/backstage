@@ -92,16 +92,6 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
                 businessCompetitionService.updateById(competition);
             }
 
-
-//            QueryWrapper<BusinessCompetition> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.in("competitor_id", param.getCompetitorId());
-//            List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
-//            if (list.size() > 0) {
-//                BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
-//                businessCompetition.setBusinessId(param.getBusinessId());
-//                businessCompetitionService.updateById(businessCompetition);
-//            }
-
         }
         Competitor oldEntity = getOldEntity(param);
         Competitor newEntity = getEntity(param);

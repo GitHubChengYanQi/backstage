@@ -123,27 +123,30 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
               ids.add(datum.getCompetitorId());
               business.add(datum.getBusinessId());
           }
-          List<CrmBusiness> crmBusinessList = crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
-          List<Competitor> competitorList = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+          List<CrmBusiness> crmBusinessList=business.size()==0?new ArrayList<>():  crmBusinessService.lambdaQuery().in(CrmBusiness::getBusinessId, business).list();
+          List<Competitor> competitorList =ids.size()==0?new ArrayList<>(): competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
           for (CompetitorQuoteResult datum : data) {
               for (Competitor competitor : competitorList) {
-                  if (ToolUtil.isNotEmpty(datum.getCompetitorId()) && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
-
-                      CompetitorResult competitorResult = new CompetitorResult();
-                      ToolUtil.copyProperties(competitor, competitorResult);
-                      datum.setCompetitorResult(competitorResult);
-
+                  if (ToolUtil.isNotEmpty(competitorList)) {
+                      if (ToolUtil.isNotEmpty(datum.getCompetitorId()) && datum.getCompetitorId().equals(competitor.getCompetitorId())) {
+                          CompetitorResult competitorResult = new CompetitorResult();
+                          ToolUtil.copyProperties(competitor, competitorResult);
+                          datum.setCompetitorResult(competitorResult);
+                      }
                   }
+
               }
-              for (CrmBusiness crmBusiness : crmBusinessList) {
-                  if (ToolUtil.isNotEmpty(datum.getBusinessId()) && datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
-
-                      CrmBusinessResult crmBusinessResult = new CrmBusinessResult();
-                      ToolUtil.copyProperties(crmBusiness, crmBusinessResult);
-                      datum.setCrmBusinessResult(crmBusinessResult);
-
+              if (ToolUtil.isNotEmpty(crmBusinessList)) {
+                  for (CrmBusiness crmBusiness : crmBusinessList) {
+                      if (ToolUtil.isNotEmpty(datum.getBusinessId()) && datum.getBusinessId().equals(crmBusiness.getBusinessId())) {
+                          CrmBusinessResult crmBusinessResult = new CrmBusinessResult();
+                          ToolUtil.copyProperties(crmBusiness, crmBusinessResult);
+                          datum.setCrmBusinessResult(crmBusinessResult);
+                      }
                   }
+
               }
+
           }
       }
   }

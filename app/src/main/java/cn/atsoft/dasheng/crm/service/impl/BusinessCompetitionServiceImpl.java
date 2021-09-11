@@ -52,9 +52,6 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
     public void add(BusinessCompetitionParam param) {
         BusinessCompetition entity = getEntity(param);
         this.save(entity);
-        TrackMessageParam trackMessageParam = new TrackMessageParam();
-
-
     }
 
     @Override
@@ -93,17 +90,22 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
         for (BusinessCompetitionResult datum : data) {
             ids.add(datum.getCompetitorId());
         }
-        List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
-
-        for (BusinessCompetitionResult datum : data) {
-            for (Competitor competitor : competitors) {
-                if (datum.getCompetitorId().equals(competitor.getCompetitorId())) {
-                    CompetitorResult competitorResult = new CompetitorResult();
-                    ToolUtil.copyProperties(competitor, competitorResult);
-                    datum.setCompetitorResult(competitorResult);
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+            if (ToolUtil.isNotEmpty(competitors)) {
+                for (BusinessCompetitionResult datum : data) {
+                    for (Competitor competitor : competitors) {
+                        if (datum.getCompetitorId().equals(competitor.getCompetitorId())) {
+                            CompetitorResult competitorResult = new CompetitorResult();
+                            ToolUtil.copyProperties(competitor, competitorResult);
+                            datum.setCompetitorResult(competitorResult);
+                        }
+                    }
                 }
+
             }
         }
+
 
     }
 
@@ -114,27 +116,33 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
         for (BusinessCompetitionResult businessCompetitionResult : businessCompetitionResults) {
             ids.add(businessCompetitionResult.getCompetitorId());
         }
-        List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<Competitor> competitors = competitorService.lambdaQuery().in(Competitor::getCompetitorId, ids).list();
+            if (ToolUtil.isNotEmpty(competitors)) {
+                List<CompetitorResult> competitorResults = new ArrayList<>();
 
-        List<CompetitorResult> competitorResults = new ArrayList<>();
-
-        for (Competitor competitor : competitors) {
-            CompetitorResult competitorResult = new CompetitorResult();
-            ToolUtil.copyProperties(competitor, competitorResult);
-            List<CompetitorQuote> competitorQuotes = competitorQuoteService.lambdaQuery().in(CompetitorQuote::getCompetitorId, competitorResult.getCompetitorId()).list();
-            List<CompetitorQuoteResult> competitorQuoteResults = new ArrayList<>();
-            for (CompetitorQuote competitorQuote : competitorQuotes) {
-                if (competitorQuote.getCompetitorId().equals(competitorResult.getCompetitorId())) {
-                    CompetitorQuoteResult competitorQuoteResult = new CompetitorQuoteResult();
-                    ToolUtil.copyProperties(competitorQuote, competitorQuoteResult);
-                    competitorQuoteResults.add(competitorQuoteResult);
+                for (Competitor competitor : competitors) {
+                    CompetitorResult competitorResult = new CompetitorResult();
+                    ToolUtil.copyProperties(competitor, competitorResult);
+                    List<CompetitorQuote> competitorQuotes = competitorQuoteService.lambdaQuery().in(CompetitorQuote::getCompetitorId, competitorResult.getCompetitorId()).list();
+                    List<CompetitorQuoteResult> competitorQuoteResults = new ArrayList<>();
+                    for (CompetitorQuote competitorQuote : competitorQuotes) {
+                        if (competitorQuote.getCompetitorId().equals(competitorResult.getCompetitorId())) {
+                            CompetitorQuoteResult competitorQuoteResult = new CompetitorQuoteResult();
+                            ToolUtil.copyProperties(competitorQuote, competitorQuoteResult);
+                            competitorQuoteResults.add(competitorQuoteResult);
+                        }
+                    }
+                    competitorResult.setCompetitorQuoteResults(competitorQuoteResults);
+                    competitorResults.add(competitorResult);
                 }
+
+                return competitorResults;
             }
-            competitorResult.setCompetitorQuoteResults(competitorQuoteResults);
-            competitorResults.add(competitorResult);
         }
 
-        return competitorResults;
+        return null;
+
     }
 
     private Serializable getKey(BusinessCompetitionParam param) {
