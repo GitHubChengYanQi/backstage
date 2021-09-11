@@ -1,0 +1,104 @@
+package cn.atsoft.dasheng.crm.service.impl;
+
+
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.crm.entity.ItemData;
+import cn.atsoft.dasheng.crm.mapper.DataMapper;
+import cn.atsoft.dasheng.crm.model.params.DataParam;
+import cn.atsoft.dasheng.crm.model.params.ItemDataParam;
+import cn.atsoft.dasheng.crm.model.result.DataResult;
+import cn.atsoft.dasheng.crm.service.DataService;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.service.ItemDataService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>
+ * 资料 服务实现类
+ * </p>
+ *
+ * @author song
+ * @since 2021-09-11
+ */
+@Service
+public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements DataService {
+    @Autowired
+    private ItemDataService itemDataService;
+
+    @Override
+    public void add(DataParam param) {
+        Data entity = getEntity(param);
+        this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getItemId())) {
+            List<ItemData> itemDatas = new ArrayList<>();
+            for (Long aLong : param.getItemId()) {
+                ItemData itemData = new ItemData();
+                itemData.setDataId(entity.getDataId());
+                itemData.setItemId(aLong);
+                itemDatas.add(itemData);
+            }
+            if (ToolUtil.isNotEmpty(itemDatas)) {
+                itemDataService.saveBatch(itemDatas);
+            }
+        }
+    }
+
+    @Override
+    public void delete(DataParam param) {
+        this.removeById(getKey(param));
+    }
+
+    @Override
+    public void update(DataParam param) {
+        Data oldEntity = getOldEntity(param);
+        Data newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
+
+    @Override
+    public DataResult findBySpec(DataParam param) {
+        return null;
+    }
+
+    @Override
+    public List<DataResult> findListBySpec(DataParam param) {
+        return null;
+    }
+
+    @Override
+    public PageInfo<DataResult> findPageBySpec(DataParam param) {
+        Page<DataResult> pageContext = getPageContext();
+        IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
+        return PageFactory.createPageInfo(page);
+    }
+
+    private Serializable getKey(DataParam param) {
+        return param.getDataId();
+    }
+
+    private Page<DataResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private Data getOldEntity(DataParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private Data getEntity(DataParam param) {
+        Data entity = new Data();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+}
