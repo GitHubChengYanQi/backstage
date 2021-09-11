@@ -56,6 +56,18 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     @Override
     public void delete(DataParam param) {
         this.removeById(getKey(param));
+        if (ToolUtil.isNotEmpty(param.getDataId())) {
+            List<ItemData> itemDataList = itemDataService.lambdaQuery().in(ItemData::getDataId, param.getDataId()).list();
+            if (ToolUtil.isNotEmpty(itemDataList)) {
+                for (ItemData itemData : itemDataList) {
+                    ItemDataParam itemDataParam = new ItemDataParam();
+                    ToolUtil.copyProperties(itemData, itemDataParam);
+                    itemDataService.delete(itemDataParam);
+                }
+            }
+        }
+
+
     }
 
     @Override
@@ -64,6 +76,24 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         Data newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        if (ToolUtil.isNotEmpty(param.getItemId())) {
+            List<Long> ids = new ArrayList<>();
+            for (Long aLong : param.getItemId()) {
+                ids.add(aLong);
+            }
+            if (ToolUtil.isNotEmpty(ids)) {
+                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).list();
+                if (ToolUtil.isNotEmpty(itemDataList)) {
+                    for (ItemData itemData : itemDataList) {
+                        ItemDataParam itemDataParam = new ItemDataParam();
+                        ToolUtil.copyProperties(itemData, itemDataParam);
+                        itemDataService.delete(itemDataParam);
+                    }
+                }
+
+            }
+
+        }
     }
 
     @Override
