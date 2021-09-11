@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
@@ -34,6 +37,9 @@ import java.util.List;
 public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements DataService {
     @Autowired
     private ItemDataService itemDataService;
+    @Autowired
+    private ItemsService itemsService;
+
 
     @Override
     public void add(DataParam param) {
@@ -110,6 +116,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     public PageInfo<DataResult> findPageBySpec(DataParam param) {
         Page<DataResult> pageContext = getPageContext();
         IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -131,4 +138,36 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         return entity;
     }
 
+    public void format(List<DataResult> data) {
+        List<Long> ids = new ArrayList<>();
+        List<Long> itemIds = new ArrayList<>();
+        for (DataResult datum : data) {
+            ids.add(datum.getDataId());
+        }
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<ItemData> itemDataList = itemDataService.lambdaQuery().in(ItemData::getDataId, ids).list();
+            if (ToolUtil.isNotEmpty(itemDataList)) {
+                for (ItemData itemData : itemDataList) {
+                    itemIds.add(itemData.getItemId());
+                }
+            }
+            if (ToolUtil.isNotEmpty(itemIds)) {
+                List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+                if (ToolUtil.isNotEmpty(itemsList)) {
+                    for (DataResult datum : data) {
+                        List<ItemsResult> itemsResults = new ArrayList<>();
+                        for (Items items : itemsList) {
+                            ItemsResult itemsResult = new ItemsResult();
+                            ToolUtil.copyProperties(items, itemsResult);
+                            itemsResults.add(itemsResult);
+                        }
+                        datum.setItemsResults(itemsResults);
+                    }
+
+
+                }
+            }
+
+        }
+    }
 }

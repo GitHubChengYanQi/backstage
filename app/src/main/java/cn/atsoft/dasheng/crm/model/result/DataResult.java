@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 资料
@@ -20,7 +25,7 @@ public class DataResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<ItemsResult> itemsResults;
     /**
      * 资料id
      */
