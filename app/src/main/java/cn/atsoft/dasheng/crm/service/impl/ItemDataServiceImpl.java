@@ -56,10 +56,7 @@ public class ItemDataServiceImpl extends ServiceImpl<ItemDataMapper, ItemData> i
 
     @Override
     public ItemDataResult findBySpec(ItemDataParam param) {
-        Page<ItemDataResult> pageContext = getPageContext();
-        IPage<ItemDataResult> page = this.baseMapper.customPageList(pageContext, param);
-        ItemDataResult result = format(page.getRecords());
-        return result;
+        return null;
     }
 
     @Override
@@ -93,7 +90,7 @@ public class ItemDataServiceImpl extends ServiceImpl<ItemDataMapper, ItemData> i
         return entity;
     }
 
-    public ItemDataResult format(List<ItemDataResult> data) {
+    public void format(List<ItemDataResult> data) {
         List<Long> ids = new ArrayList<>();
         for (ItemDataResult datum : data) {
             ids.add(datum.getDataId());
@@ -112,6 +109,6 @@ public class ItemDataServiceImpl extends ServiceImpl<ItemDataMapper, ItemData> i
                 }
             }
         }
-        return data.get(0);
+
     }
 }

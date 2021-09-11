@@ -104,7 +104,10 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     @Override
     public DataResult findBySpec(DataParam param) {
-        return null;
+        Page<DataResult> pageContext = getPageContext();
+        IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
+        DataResult format = format(page.getRecords());
+        return format;
     }
 
     @Override
@@ -138,7 +141,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         return entity;
     }
 
-    public void format(List<DataResult> data) {
+    public DataResult format(List<DataResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> itemIds = new ArrayList<>();
         for (DataResult datum : data) {
@@ -169,5 +172,6 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
             }
 
         }
+        return  data.get(0);
     }
 }
