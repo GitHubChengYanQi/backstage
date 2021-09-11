@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class ItemsResult implements Serializable {
     /**
      * 物品Id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("物品Id")
     private Long itemId;
 
@@ -36,6 +38,7 @@ public class ItemsResult implements Serializable {
     /**
      * 质保期
      */
+
     @ApiModelProperty("质保期")
     private Integer shelfLife;
 

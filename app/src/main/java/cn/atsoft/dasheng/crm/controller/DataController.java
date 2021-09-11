@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
+import cn.atsoft.dasheng.crm.model.result.ItemDataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -81,12 +82,9 @@ public class DataController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
-        Data detail = this.dataService.getById(dataParam.getDataId());
-        DataResult result = new DataResult();
-        ToolUtil.copyProperties(detail, result);
 
-
-        return ResponseData.success(result);
+        DataResult bySpec = dataService.findBySpec(dataParam);
+        return ResponseData.success(bySpec);
     }
 
     /**
