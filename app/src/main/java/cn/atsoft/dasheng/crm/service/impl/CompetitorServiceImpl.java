@@ -51,12 +51,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     @Autowired
     private BusinessCompetitionService businessCompetitionService;
 
-    @Autowired
-    private CompetitorQuoteService competitorQuoteService;
+
     @Autowired
     private GetRegionService getRegionService;
-    @Autowired
-    private TrackMessageService trackMessageService;
+
     @Autowired
     private CrmBusinessService businessService;
 
@@ -65,19 +63,14 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     public Competitor add(CompetitorParam param) {
         Competitor entity = getEntity(param);
         this.save(entity);
+
+        //竞争对手与商机绑定
         if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
             BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
             businessCompetitionParam.setBusinessId(param.getBusinessId());
             businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
             businessCompetitionService.add(businessCompetitionParam);
         }
-//        TrackMessageParam trackMessageParam = new TrackMessageParam();
-//        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
-//            trackMessageParam.setBusinessId(param.getBusinessId());
-//            CrmBusiness crmBusiness = businessService.lambdaQuery().eq(CrmBusiness::getBusinessId, param.getBusinessId()).one();
-//            trackMessageParam.setMessage("当前商机：" + crmBusiness.getBusinessName() + "添加了" + param.getName() + "竞争对手");
-//            trackMessageService.byCompetitionAdd(trackMessageParam);
-//        }
 
         return entity;
 
@@ -91,15 +84,23 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public void update(CompetitorParam param) {
+
         if (ToolUtil.isNotEmpty(param.getCompetitorId())) {
-            QueryWrapper<BusinessCompetition> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("competitor_id", param.getCompetitorId());
-            List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
-            if (list.size() > 0) {
-                BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
-                businessCompetition.setBusinessId(param.getBusinessId());
-                businessCompetitionService.updateById(businessCompetition);
+            BusinessCompetition competition = businessCompetitionService.lambdaQuery().eq(BusinessCompetition::getCompetitorId, param.getCompetitorId()).one();
+            if (ToolUtil.isNotEmpty(competition)) {
+                competition.setBusinessId(param.getBusinessId());
+                businessCompetitionService.updateById(competition);
             }
+
+
+//            QueryWrapper<BusinessCompetition> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.in("competitor_id", param.getCompetitorId());
+//            List<BusinessCompetition> list = businessCompetitionService.list(queryWrapper);
+//            if (list.size() > 0) {
+//                BusinessCompetition businessCompetition = businessCompetitionService.getById(list.get(0).getBusinessCompetitionId());
+//                businessCompetition.setBusinessId(param.getBusinessId());
+//                businessCompetitionService.updateById(businessCompetition);
+//            }
 
         }
         Competitor oldEntity = getOldEntity(param);

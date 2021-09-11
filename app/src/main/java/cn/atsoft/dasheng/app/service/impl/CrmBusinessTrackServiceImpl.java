@@ -50,14 +50,7 @@ public class CrmBusinessTrackServiceImpl extends ServiceImpl<CrmBusinessTrackMap
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private CrmBusinessService businessService;
-    @Autowired
-    private CompetitorService competitorService;
-    @Autowired
-    private TrackMessageService trackMessageService;
-    @Autowired
-    private CompetitorQuoteService competitorQuoteService;
+
 
 
     @Override

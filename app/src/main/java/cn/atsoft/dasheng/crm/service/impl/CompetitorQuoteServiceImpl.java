@@ -43,15 +43,13 @@ import java.util.Map;
  */
 @Service
 public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMapper, CompetitorQuote> implements CompetitorQuoteService {
-    @Autowired
-    private CompetitorQuoteService competitorQuoteService;
+
 
     @Autowired
     private CompetitorService competitorService;
     @Autowired
     private CrmBusinessService crmBusinessService;
-    @Autowired
-    private CrmBusinessTrackService crmBusinessTrackService;
+
 
 
     @Override

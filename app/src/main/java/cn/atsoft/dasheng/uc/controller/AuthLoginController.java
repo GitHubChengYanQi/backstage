@@ -177,7 +177,7 @@ public class AuthLoginController extends BaseController {
 
 
     @RequestMapping("/cp/loginByCode")
-    @ApiOperation(value = "公众号通过Code登录", httpMethod = "GET")
+    @ApiOperation(value = "企业微信通过Code登录", httpMethod = "GET")
     public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.cpLogin(code);
         return ResponseData.success(token);

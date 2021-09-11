@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
@@ -244,6 +245,23 @@ public class FreedAop {
             }
             businessDynamicService.add(businessDynamicParam);
         }
+        //跟踪动态
+        if (target instanceof TrackMessageService) {
+
+            FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
+            TrackMessage trackMessageResult = (TrackMessage) result;
+            businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
+            String content = "";
+            switch (methodName) {
+                case "add":
+                    content = trackMessage.getAdd().replace("[操作人]", user.getName());
+                    businessDynamicParam.setContent(content);
+                    break;
+            }
+            businessDynamicService.add(businessDynamicParam);
+        }
+
+
 /**
  * 合同状态
  */
@@ -333,35 +351,6 @@ public class FreedAop {
             repairDynamicService.add(repairDynamicParam);
         }
 
-
-        if (target instanceof CrmBusinessTrackService) {
-
-//            FreedTemplateProperties.ErpOrder erpOrder = freedTemplateService.getConfig().getErpOrder();
-            CrmBusinessTrack crmBusinessTrack = (CrmBusinessTrack) result;
-            TrackMessageParam trackMessageParam = new TrackMessageParam();
-
-            String content = "";
-            switch (methodName) {
-                case "add":
-                    CrmBusiness business = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, crmBusinessTrack.getBusinessId()).one();
-                    Competitor competitor = competitorService.lambdaQuery().eq(Competitor::getCompetitorId, crmBusinessTrack.getCompetitionId()).one();
-                    content = business.getBusinessName() + "添加了竞争对手" + competitor.getName();
-                    trackMessageParam.setMessage(content);
-
-//                    break;
-//                case "update":
-//                    content = erpOrder.getEdit().replace("[操作人]", user.getName());
-//                    businessDynamicParam.setContent(content);
-//
-//                    break;
-//                case "delete":
-//                    content = erpOrder.getDelete().replace("[操作人]", user.getName());
-//                    businessDynamicParam.setContent(content);
-//
-//                    break;
-            }
-            trackMessageService.add(trackMessageParam);
-        }
 
         return result;
     }

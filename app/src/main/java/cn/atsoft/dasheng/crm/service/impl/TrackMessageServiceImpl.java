@@ -1,13 +1,12 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.mapper.TrackMessageMapper;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
@@ -42,16 +41,13 @@ import java.util.List;
 public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, TrackMessage> implements TrackMessageService {
 
     @Autowired
-    private CrmBusinessService crmBusinessService;
-    @Autowired
-    private CompetitorService competitorService;
-    @Autowired
     private CompetitorQuoteService competitorQuoteService;
     @Autowired
     private UserService userService;
 
+    @BussinessLog
     @Override
-    public void add(TrackMessageParam param) {
+    public TrackMessage add(TrackMessageParam param) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
@@ -72,6 +68,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         // 添加跟踪信息
         TrackMessage entity = getEntity(param);
         this.save(entity);
+        return entity;
     }
 
     @Override

@@ -43,12 +43,10 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
 
     @Autowired
     private CompetitorService competitorService;
-    @Autowired
-    private CrmBusinessTrackService crmBusinessTrackService;
+
     @Autowired
     private CompetitorQuoteService competitorQuoteService;
-    @Autowired
-    private TrackMessageService trackMessageService;
+
 
     @Override
     public void add(BusinessCompetitionParam param) {

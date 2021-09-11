@@ -23,8 +23,9 @@ public interface TrackMessageService extends IService<TrackMessage> {
      *
      * @author 
      * @Date 2021-09-07
+     * @return
      */
-    void add(TrackMessageParam param);
+    TrackMessage add(TrackMessageParam param);
 
     void byCompetitionAdd(TrackMessageParam param);
 
