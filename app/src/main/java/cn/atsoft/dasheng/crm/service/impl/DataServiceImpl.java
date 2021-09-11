@@ -164,33 +164,42 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     public DataResult format(List<DataResult> data) {
         List<Long> ids = new ArrayList<>();
-        List<Long> itemIds = new ArrayList<>();
+
         for (DataResult datum : data) {
             ids.add(datum.getDataId());
         }
         if (ToolUtil.isNotEmpty(ids)) {
-            List<ItemData> itemDataList = itemDataService.lambdaQuery().in(ItemData::getDataId, ids).list();
-            if (ToolUtil.isNotEmpty(itemDataList)) {
-                for (ItemData itemData : itemDataList) {
-                    itemIds.add(itemData.getItemId());
-                }
-            }
-            if (ToolUtil.isNotEmpty(itemIds)) {
-                List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
-                if (ToolUtil.isNotEmpty(itemsList)) {
-                    for (DataResult datum : data) {
-                        List<ItemsResult> itemsResults = new ArrayList<>();
-                        for (Items items : itemsList) {
-                            ItemsResult itemsResult = new ItemsResult();
-                            ToolUtil.copyProperties(items, itemsResult);
-                            itemsResults.add(itemsResult);
-                        }
-                        datum.setItemsResults(itemsResults);
+            for (Long id : ids) {
+                List<Long> itemIds = new ArrayList<>();
+                List<ItemData> itemDataList = itemDataService.lambdaQuery().in(ItemData::getDataId, id).list();
+                if (ToolUtil.isNotEmpty(itemDataList)) {
+                    for (ItemData itemData : itemDataList) {
+                        itemIds.add(itemData.getItemId());
                     }
-
-
                 }
+                if (ToolUtil.isNotEmpty(itemIds)) {
+                    List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+                    if (ToolUtil.isNotEmpty(itemsList)) {
+                        for (DataResult datum : data) {
+                            if (datum.getDataId().equals(id)) {
+                                List<ItemsResult> itemsResults = new ArrayList<>();
+                                for (Items items : itemsList) {
+                                    ItemsResult itemsResult = new ItemsResult();
+                                    ToolUtil.copyProperties(items, itemsResult);
+                                    itemsResults.add(itemsResult);
+                                }
+                                datum.setItemsResults(itemsResults);
+                            }
+
+
+                        }
+
+
+                    }
+                }
+
             }
+
 
         }
         return data.get(0);
