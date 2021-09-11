@@ -97,23 +97,21 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                     }
                 }
                 List<ItemData> itemData = itemDataService.lambdaQuery().eq(ItemData::getDataId, param.getDataId()).list();
-                if (ToolUtil.isNotEmpty(itemData)) {
-                    for (ItemData itemDatum : itemData) {
-                        for (Long id : ids) {
-                            if (itemDatum.getItemId().equals(id)) {
-                                ids.remove(id);
-                                break;
-                            }
 
-                        }
-                    }
+                for (ItemData itemDatum : itemData) {
                     for (Long id : ids) {
-                        ItemDataParam itemDataParam = new ItemDataParam();
-                        itemDataParam.setDataId(param.getDataId());
-                        itemDataParam.setItemId(id);
-                        itemDataService.add(itemDataParam);
+                        if (itemDatum.getItemId().equals(id)) {
+                            ids.remove(id);
+                            break;
+                        }
 
                     }
+                }
+                for (Long id : ids) {
+                    ItemDataParam itemDataParam = new ItemDataParam();
+                    itemDataParam.setDataId(param.getDataId());
+                    itemDataParam.setItemId(id);
+                    itemDataService.add(itemDataParam);
 
                 }
 
