@@ -88,7 +88,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 ids.add(aLong);
             }
             if (ToolUtil.isNotEmpty(ids)) {
-                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).list();
+                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).and(i -> i.eq(ItemData::getDataId, param.getDataId())).list();
                 if (ToolUtil.isNotEmpty(itemDataList)) {
                     for (ItemData itemData : itemDataList) {
                         ItemDataParam itemDataParam = new ItemDataParam();
@@ -96,7 +96,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                         itemDataService.delete(itemDataParam);
                     }
                 }
-                List<ItemData> itemData = itemDataService.lambdaQuery().list();
+                List<ItemData> itemData = itemDataService.lambdaQuery().eq(ItemData::getDataId, param.getDataId()).list();
                 if (ToolUtil.isNotEmpty(itemData)) {
                     for (ItemData itemDatum : itemData) {
                         for (Long id : ids) {
