@@ -192,13 +192,11 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                     ToolUtil.copyProperties(items, itemsResult);
                                     itemsResults.add(itemsResult);
                                 }
-                                datum.setItemsResults(itemsResults);
+                                datum.setItemId(itemsResults);
                             }
 
 
                         }
-
-
                     }
                 }
 

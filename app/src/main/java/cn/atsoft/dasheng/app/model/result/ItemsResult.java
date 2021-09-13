@@ -25,7 +25,7 @@ public class ItemsResult implements Serializable {
     /**
      * 物品Id
      */
-    @JSONField(serialize = false)
+//    @JSONField(serialize = false)
     @ApiModelProperty("物品Id")
     private Long itemId;
 

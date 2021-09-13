@@ -140,12 +140,8 @@ public class CommonAreaController extends BaseController {
         return ResponseData.success(result);
     }
 
-    /**
-     * tree列表，treeview格式
-     *
-     * @author
-     * @Date 2021-08-24
-     */
+
+
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView() {
@@ -157,10 +153,10 @@ public class CommonAreaController extends BaseController {
         List<TreeNode> treeViewNodes = new ArrayList<>();
 
         TreeNode rootTreeNode = new TreeNode();
-        rootTreeNode.setKey("0");
-        rootTreeNode.setValue("0");
-        rootTreeNode.setLabel("顶级");
-        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setKey("1");
+        rootTreeNode.setValue("1");
+        rootTreeNode.setLabel("中国");
+        rootTreeNode.setTitle("中国");
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
 
