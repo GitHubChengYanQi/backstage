@@ -50,6 +50,9 @@
         <if test="paramCondition.parentid != null">
             and parentid = #{paramCondition.parentid}
         </if>
+        <if test="paramCondition.id != null">
+            and id = #{paramCondition.id}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
