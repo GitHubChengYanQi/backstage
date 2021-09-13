@@ -1,14 +1,19 @@
 package cn.atsoft.dasheng.crm.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.DataClassification;
 import cn.atsoft.dasheng.crm.entity.SpeechcraftType;
 import cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam;
 import cn.atsoft.dasheng.crm.model.result.SpeechcraftTypeResult;
 import cn.atsoft.dasheng.crm.service.SpeechcraftTypeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.DataClassificationSelectWrapper;
+import cn.atsoft.dasheng.crm.wrapper.SpeechcraftSelectWrapper;
+import cn.atsoft.dasheng.crm.wrapper.SpeechcraftTypeSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -103,6 +108,19 @@ public class SpeechcraftTypeController extends BaseController {
         }
         return this.speechcraftTypeService.findPageBySpec(speechcraftTypeParam);
     }
+
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<SpeechcraftType> speechcraftTypeQueryWrapper = new QueryWrapper<>();
+        speechcraftTypeQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.speechcraftTypeService.listMaps(speechcraftTypeQueryWrapper);
+        SpeechcraftTypeSelectWrapper speechcraftTypeSelectWrapper = new SpeechcraftTypeSelectWrapper(list);
+        List<Map<String, Object>> result = speechcraftTypeSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 

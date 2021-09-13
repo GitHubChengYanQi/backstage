@@ -4,54 +4,58 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Speechcraft">
-        <id column="speechcraft_id" property="speechcraftId" />
-        <result column="speechcraft_title" property="speechcraftTitle" />
-        <result column="speechcraft_details" property="speechcraftDetails" />
-        <result column="speechcraft_key" property="speechcraftKey" />
+        <id column="speechcraft_id" property="speechcraftId"/>
+        <result column="speechcraft_title" property="speechcraftTitle"/>
+        <result column="speechcraft_details" property="speechcraftDetails"/>
+        <result column="speechcraft_key" property="speechcraftKey"/>
         <result column="speechcraft_type" property="speechcraftType"/>
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">speechcraft_type AS speechcraftType,
+    <sql id="Base_Column_List">speechcraft_type
+    AS speechcraftType,
         speechcraft_id AS "speechcraftId", speechcraft_title AS "speechcraftTitle", speechcraft_details AS "speechcraftDetails", speechcraft_key AS "speechcraftKey", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftResult" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_speechcraft where 1 = 1
-            <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
-                and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
-            </if>
-            <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
-                and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
-            </if>
+        <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
+            and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
+        </if>
+        <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
+            and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_speechcraft where 1 = 1
-                <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
-                        and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
-                </if>
-                <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
-                        and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
-                </if>
+        <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
+            and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
+        </if>
+        <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
+            and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftResult" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_speechcraft where 1 = 1
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
-            and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%') OR speechcraft_details like CONCAT('%',#{paramCondition.speechcraftKey},'%')
+            and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%') OR speechcraft_details like
+            CONCAT('%',#{paramCondition.speechcraftKey},'%')
         </if>
 
     </select>
@@ -60,12 +64,12 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_speechcraft where 1 = 1
-                <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
-                        and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
-                </if>
-                <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
-                        and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
-                </if>
+        <if test="paramCondition.speechcraftTitle != null and paramCondition.speechcraftTitle != ''">
+            and speechcraft_title like CONCAT('%',#{paramCondition.speechcraftTitle},'%')
+        </if>
+        <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
+            and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
+        </if>
     </select>
 
 </mapper>

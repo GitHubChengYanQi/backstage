@@ -50,6 +50,9 @@
         <if test="paramCondition.dataId != null">
             and data_id like CONCAT('%',#{paramCondition.dataId},'%')
         </if>
+        <if test="paramCondition.dataClassificationId != null">
+            and data_classification_id  = #{paramCondition.dataClassificationId}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
