@@ -61,21 +61,32 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.save(entity);
         if (param.getContactsParams() != null) {
             for (ContactsParam contactsParam : param.getContactsParams()) {
-                contactsParam.setCustomerId(entity.getCustomerId());
-                Contacts contacts = contactsService.add(contactsParam);
-                if (contactsParam.getPhoneParams() != null) {
-                    for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
-                        phoneParam.setContactsId(contacts.getContactsId());
-                        phoneService.add(phoneParam);
+                if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
+                    contactsParam.setCustomerId(entity.getCustomerId());
+                    Contacts contacts = contactsService.add(contactsParam);
+                    if (contactsParam.getPhoneParams() != null) {
+                        for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                            if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
+                                phoneParam.setContactsId(contacts.getContactsId());
+                                phoneService.add(phoneParam);
+                            }
+
+                        }
                     }
                 }
 
+
             }
         }
-        if (param.getAdressParams() != null) {
+        if (ToolUtil.isNotEmpty(param.getAdressParams())) {
             for (AdressParam adressParam : param.getAdressParams()) {
-                adressParam.setCustomerId(entity.getCustomerId());
-                adressService.add(adressParam);
+                if (ToolUtil.isNotEmpty(adressParam)) {
+                    if (ToolUtil.isNotEmpty(adressParam.getMap())) {
+                        adressParam.setCustomerId(entity.getCustomerId());
+                        adressService.add(adressParam);
+                    }
+
+                }
             }
         }
 
@@ -177,7 +188,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                                 }
 
                             }
-                         
+
 
                         }
                     }
@@ -185,10 +196,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
                 }
             }
-            if (param.getAdressParams() != null) {
+            if (ToolUtil.isNotEmpty(param.getAdressParams())) {
                 for (AdressParam adressParam : param.getAdressParams()) {
-                    adressParam.setCustomerId(customerId);
-                    adressService.add(adressParam);
+                    if (ToolUtil.isNotEmpty(adressParam)) {
+                        if (ToolUtil.isNotEmpty(adressParam.getMap())) {
+                            adressParam.setCustomerId(param.getCustomerId());
+                            adressService.add(adressParam);
+                        }
+
+                    }
                 }
             }
 
