@@ -67,7 +67,7 @@
         <if test="paramCondition.sort != null">
             and sort like CONCAT('%',#{paramCondition.sort},'%')
         </if>
-        order by sort
+        order by sort asc
     </select>
 
     <select id="customPageMapList" resultType="map"

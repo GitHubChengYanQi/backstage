@@ -85,7 +85,7 @@ public class SpeechcraftTypeController extends BaseController {
         SpeechcraftTypeResult result = new SpeechcraftTypeResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
