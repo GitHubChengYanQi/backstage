@@ -32,6 +32,8 @@ public class DataResult implements Serializable {
     @ApiModelProperty("资料id")
     private Long dataId;
 
+
+    private String name;
     /**
      * 内容
      */

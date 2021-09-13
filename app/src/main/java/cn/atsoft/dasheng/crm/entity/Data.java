@@ -27,6 +27,8 @@ public class Data implements Serializable {
       @TableId(value = "data_id", type = IdType.ID_WORKER)
     private Long dataId;
 
+      @TableField("name")
+      private  String name;
     /**
      * 内容
      */
@@ -132,6 +134,14 @@ public class Data implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

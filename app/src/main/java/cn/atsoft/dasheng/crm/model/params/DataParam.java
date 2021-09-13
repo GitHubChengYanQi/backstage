@@ -32,6 +32,8 @@ public class DataParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("资料id")
     private Long dataId;
 
+
+    private  String name;
     /**
      * 内容
      */
