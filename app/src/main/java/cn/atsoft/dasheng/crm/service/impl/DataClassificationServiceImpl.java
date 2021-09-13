@@ -102,7 +102,7 @@ public class DataClassificationServiceImpl extends ServiceImpl<DataClassificatio
             for (Data data1 : dataList) {
                 if (data1.getDataClassificationId().equals(datum.getDataClassificationId())) {
                     DataResult dataResult = new DataResult();
-                    ToolUtil.copyProperties(datum, dataResult);
+                    ToolUtil.copyProperties(data1, dataResult);
                     dataResults.add(dataResult);
                 }
             }
