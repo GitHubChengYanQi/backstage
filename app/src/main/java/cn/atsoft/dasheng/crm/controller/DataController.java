@@ -82,9 +82,9 @@ public class DataController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
-
+        DataResult detail = dataService.detail(dataParam);
         DataResult bySpec = dataService.findBySpec(dataParam);
-        return ResponseData.success(bySpec);
+        return ResponseData.success(detail);
     }
 
     /**
@@ -99,6 +99,7 @@ public class DataController extends BaseController {
         if(ToolUtil.isEmpty(dataParam)){
             dataParam = new DataParam();
         }
+
         return this.dataService.findPageBySpec(dataParam);
     }
 
