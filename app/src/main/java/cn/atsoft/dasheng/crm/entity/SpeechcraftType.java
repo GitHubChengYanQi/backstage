@@ -10,45 +10,34 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 话术基础资料
+ * 话术分类
  * </p>
  *
  * @author 
- * @since 2021-09-11
+ * @since 2021-09-13
  */
-@TableName("daoxin_crm_speechcraft")
-public class Speechcraft implements Serializable {
+@TableName("daoxin_crm_speechcraft_type")
+public class SpeechcraftType implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "speechcraft_id", type = IdType.ID_WORKER)
-    private Long speechcraftId;
+    /**
+     * 分类id
+     */
+      @TableId(value = "speechcraft_type_id", type = IdType.ID_WORKER)
+    private Long speechcraftTypeId;
 
     /**
-     * 标题
+     * 分类排序
      */
-    @TableField("speechcraft_title")
-    private String speechcraftTitle;
+    @TableField("speechcraft_type_sort")
+    private String speechcraftTypeSort;
 
     /**
-     * 详情
+     * 分类名称
      */
-    @TableField("speechcraft_details")
-    private String speechcraftDetails;
-
-    /**
-     * 关键词
-     */
-    @TableField("speechcraft_key")
-    private String speechcraftKey;
-
-    /**
-     * 话术分类
-     */
-    @TableField("speechcraft_type")
-    private Long speechcraftType;
-
-
+    @TableField("speechcraft_type_name")
+    private String speechcraftTypeName;
 
     /**
      * 创建者
@@ -81,36 +70,28 @@ public class Speechcraft implements Serializable {
     private Integer display;
 
 
-    public Long getSpeechcraftId() {
-        return speechcraftId;
+    public Long getSpeechcraftTypeId() {
+        return speechcraftTypeId;
     }
 
-    public void setSpeechcraftId(Long speechcraftId) {
-        this.speechcraftId = speechcraftId;
+    public void setSpeechcraftTypeId(Long speechcraftTypeId) {
+        this.speechcraftTypeId = speechcraftTypeId;
     }
 
-    public String getSpeechcraftTitle() {
-        return speechcraftTitle;
+    public String getSpeechcraftTypeSort() {
+        return speechcraftTypeSort;
     }
 
-    public void setSpeechcraftTitle(String speechcraftTitle) {
-        this.speechcraftTitle = speechcraftTitle;
+    public void setSpeechcraftTypeSort(String speechcraftTypeSort) {
+        this.speechcraftTypeSort = speechcraftTypeSort;
     }
 
-    public String getSpeechcraftDetails() {
-        return speechcraftDetails;
+    public String getSpeechcraftTypeName() {
+        return speechcraftTypeName;
     }
 
-    public void setSpeechcraftDetails(String speechcraftDetails) {
-        this.speechcraftDetails = speechcraftDetails;
-    }
-
-    public String getSpeechcraftKey() {
-        return speechcraftKey;
-    }
-
-    public void setSpeechcraftKey(String speechcraftKey) {
-        this.speechcraftKey = speechcraftKey;
+    public void setSpeechcraftTypeName(String speechcraftTypeName) {
+        this.speechcraftTypeName = speechcraftTypeName;
     }
 
     public Long getCreateUser() {
@@ -152,20 +133,13 @@ public class Speechcraft implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
-    public Long getSpeechcraftType() {
-        return speechcraftType;
-    }
 
-    public void setSpeechcraftType(Long speechcraftType) {
-        this.speechcraftType = speechcraftType;
-    }
     @Override
     public String toString() {
-        return "Speechcraft{" +
-        "speechcraftId=" + speechcraftId +
-        ", speechcraftTitle=" + speechcraftTitle +
-        ", speechcraftDetails=" + speechcraftDetails +
-        ", speechcraftKey=" + speechcraftKey +
+        return "SpeechcraftType{" +
+        "speechcraftTypeId=" + speechcraftTypeId +
+        ", speechcraftTypeSort=" + speechcraftTypeSort +
+        ", speechcraftTypeName=" + speechcraftTypeName +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
