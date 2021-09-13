@@ -137,7 +137,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Long customerId = param.getCustomerId();
 
 
-
             QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
             contactsQueryWrapper.in("customer_id", customerId);
             List<Contacts> list = contactsService.list(contactsQueryWrapper);
@@ -169,11 +168,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
                         contactsParam.setCustomerId(customerId);
                         Contacts contacts = contactsService.add(contactsParam);
-                        if (contactsParam.getPhoneParams() != null) {
+
+                        if (ToolUtil.isEmpty(contactsParam.getPhoneParams())) {
                             for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
-                                phoneParam.setContactsId(contacts.getContactsId());
-                                phoneService.add(phoneParam);
+                                if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
+                                    phoneParam.setContactsId(contacts.getContactsId());
+                                    phoneService.add(phoneParam);
+                                }
+
                             }
+                         
+
                         }
                     }
 
