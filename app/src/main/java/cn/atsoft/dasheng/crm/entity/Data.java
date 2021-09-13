@@ -33,6 +33,8 @@ public class Data implements Serializable {
     @TableField("data_classification_id")
     private Long dataClassificationId;
 
+    @TableField("title")
+    private  String titile;
     @TableField("name")
     private String name;
     /**
@@ -156,6 +158,14 @@ public class Data implements Serializable {
 
     public void setDataClassificationId(Long dataClassificationId) {
         this.dataClassificationId = dataClassificationId;
+    }
+
+    public String getTitile() {
+        return titile;
+    }
+
+    public void setTitile(String titile) {
+        this.titile = titile;
     }
 
     @Override
