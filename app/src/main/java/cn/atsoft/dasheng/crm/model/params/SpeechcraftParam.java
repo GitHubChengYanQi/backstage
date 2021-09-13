@@ -34,6 +34,8 @@ public class SpeechcraftParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("标题")
     private String speechcraftTitle;
 
+    private Long speechcraftType;
+
     /**
      * 详情
      */

@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">speechcraft_type
-    AS speechcraftType,
+    AS "speechcraftType",
         speechcraft_id AS "speechcraftId", speechcraft_title AS "speechcraftTitle", speechcraft_details AS "speechcraftDetails", speechcraft_key AS "speechcraftKey", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
@@ -56,6 +56,9 @@
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
             and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%') OR speechcraft_details like
             CONCAT('%',#{paramCondition.speechcraftKey},'%')
+        </if>
+        <if test="paramCondition.speechcraftType != null">
+            and speechcraft_type = #{paramCondition.speechcraftType}
         </if>
 
     </select>
