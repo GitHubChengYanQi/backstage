@@ -129,10 +129,8 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     @Override
     public DataResult findBySpec(DataParam param) {
-        Page<DataResult> pageContext = getPageContext();
-        IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
-        DataResult format = format(page.getRecords());
-        return format;
+
+        return null;
     }
 
     @Override
@@ -146,6 +144,36 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public DataResult detail(DataParam param) {
+        Data data = this.getById(param.getDataId());
+        DataResult dataResult = new DataResult();
+        ToolUtil.copyProperties(data, dataResult);
+        List<ItemData> itemDataList = itemDataService.lambdaQuery().in(ItemData::getDataId, dataResult.getDataId()).list();
+        List<Long> itemIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(itemDataList)) {
+            for (ItemData itemData : itemDataList) {
+                itemIds.add(itemData.getItemId());
+            }
+        }
+        if (ToolUtil.isNotEmpty(itemIds)) {
+            List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+            List<ItemsResult> itemsResults = new ArrayList<>();
+            for (Long itemId : itemIds) {
+                for (Items items : itemsList) {
+                    if (itemId.equals(items.getItemId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        itemsResults.add(itemsResult);
+                    }
+                    dataResult.setItemId(itemsResults);
+                }
+            }
+        }
+
+        return dataResult;
     }
 
     private Serializable getKey(DataParam param) {
@@ -166,7 +194,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         return entity;
     }
 
-    public DataResult format(List<DataResult> data) {
+    public void format(List<DataResult> data) {
         List<Long> ids = new ArrayList<>();
 
         for (DataResult datum : data) {
@@ -192,13 +220,11 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                     ToolUtil.copyProperties(items, itemsResult);
                                     itemsResults.add(itemsResult);
                                 }
-                                datum.setItemsResults(itemsResults);
+                                datum.setItemId(itemsResults);
                             }
 
 
                         }
-
-
                     }
                 }
 
@@ -206,6 +232,6 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
 
         }
-        return data.get(0);
+
     }
 }

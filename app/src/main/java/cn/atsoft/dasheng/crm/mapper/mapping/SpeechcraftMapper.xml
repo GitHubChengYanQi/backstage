@@ -53,6 +53,7 @@
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
             and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%') OR speechcraft_details like CONCAT('%',#{paramCondition.speechcraftKey},'%')
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">

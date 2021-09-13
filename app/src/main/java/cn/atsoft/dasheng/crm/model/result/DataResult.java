@@ -25,13 +25,16 @@ public class DataResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ItemsResult> itemsResults;
+    private List<ItemsResult> itemId;
     /**
      * 资料id
      */
     @ApiModelProperty("资料id")
     private Long dataId;
 
+    private Long dataClassificationId;
+
+    private String name;
     /**
      * 内容
      */

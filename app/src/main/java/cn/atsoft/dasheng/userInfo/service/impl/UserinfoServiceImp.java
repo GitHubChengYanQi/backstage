@@ -26,8 +26,7 @@ import java.util.List;
 @Service
 public class UserinfoServiceImp implements UserInfoService {
 
-    @Autowired
-    private WxMaService wxMaService;
+
     @Autowired
     private UserService userService;
 

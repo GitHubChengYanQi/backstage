@@ -4,56 +4,61 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.Data">
-        <id column="data_id" property="dataId" />
-        <result column="content" property="content" />
-        <result column="attachment" property="attachment" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
+        <id column="data_id" property="dataId"/>
+        <result column="content" property="content"/>
+        <result column="attachment" property="attachment"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="name" property="name"/>
+        <result column="data_classification_id" property="dataClassificationId"/>
+        <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">name
+    AS "name",data_classification_id AS "dataClassificationId",
         data_id AS "dataId", content AS "content", attachment AS "attachment", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.DataResult" parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.DataResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_data where 1 = 1
-            <if test="paramCondition.dataId != null">
-                and data_id like CONCAT('%',#{paramCondition.dataId},'%')
-            </if>
+        <if test="paramCondition.dataId != null">
+            and data_id like CONCAT('%',#{paramCondition.dataId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_data where 1 = 1
-                <if test="paramCondition.dataId != null">
-                        and data_id like CONCAT('%',#{paramCondition.dataId},'%')
-                </if>
+        <if test="paramCondition.dataId != null">
+            and data_id like CONCAT('%',#{paramCondition.dataId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.DataResult" parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.DataResult"
+            parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_data where 1 = 1
-                <if test="paramCondition.dataId != null">
-                        and data_id like CONCAT('%',#{paramCondition.dataId},'%')
-                </if>
+        <if test="paramCondition.dataId != null">
+            and data_id like CONCAT('%',#{paramCondition.dataId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_data where 1 = 1
-                <if test="paramCondition.dataId != null">
-                        and data_id like CONCAT('%',#{paramCondition.dataId},'%')
-                </if>
+        <if test="paramCondition.dataId != null">
+            and data_id like CONCAT('%',#{paramCondition.dataId},'%')
+        </if>
     </select>
 
 </mapper>
