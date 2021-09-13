@@ -35,7 +35,7 @@ public class SpeechcraftTypeParam implements Serializable, BaseValidatingParam {
      * 分类排序
      */
     @ApiModelProperty("分类排序")
-    private String speechcraftTypeSort;
+    private Long speechcraftTypeSort;
 
     /**
      * 分类名称

@@ -26,7 +26,7 @@ public class ErpPackageParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("套餐id")
     private Long packageId;
-
+    private Integer money;
     /**
      * 套餐名称
      */

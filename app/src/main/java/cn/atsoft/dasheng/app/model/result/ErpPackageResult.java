@@ -24,7 +24,7 @@ public class ErpPackageResult implements Serializable {
      */
     @ApiModelProperty("套餐id")
     private Long packageId;
-
+    private Integer money;
     /**
      * 套餐名曾
      */
