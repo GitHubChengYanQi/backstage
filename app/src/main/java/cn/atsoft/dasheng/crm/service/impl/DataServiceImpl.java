@@ -90,11 +90,15 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
             if (ToolUtil.isNotEmpty(ids)) {
                 List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).and(i -> i.eq(ItemData::getDataId, param.getDataId())).list();
                 if (ToolUtil.isNotEmpty(itemDataList)) {
+                    List<Long> itemDataIds = new ArrayList<>();
                     for (ItemData itemData : itemDataList) {
-                        ItemDataParam itemDataParam = new ItemDataParam();
-                        ToolUtil.copyProperties(itemData, itemDataParam);
-                        itemDataService.delete(itemDataParam);
+//                        ItemDataParam itemDataParam = new ItemDataParam();
+//                        ToolUtil.copyProperties(itemData, itemDataParam);
+//                        itemDataService.delete(itemDataParam);
+                        itemDataIds.add(itemData.getItemsDataId());
+
                     }
+                    itemDataService.removeByIds(itemDataIds);
                 }
                 List<ItemData> itemData = itemDataService.lambdaQuery().eq(ItemData::getDataId, param.getDataId()).list();
 
@@ -107,13 +111,15 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
                     }
                 }
+                List<ItemData> itemDatas = new ArrayList<>();
                 for (Long id : ids) {
-                    ItemDataParam itemDataParam = new ItemDataParam();
-                    itemDataParam.setDataId(param.getDataId());
-                    itemDataParam.setItemId(id);
-                    itemDataService.add(itemDataParam);
+                    ItemData itemDatad = new ItemData();
+                    itemDatad.setDataId(param.getDataId());
+                    itemDatad.setItemId(id);
+                    itemDatas.add(itemDatad);
 
                 }
+                itemDataService.saveBatch(itemDatas);
 
             }
 
