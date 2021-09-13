@@ -37,8 +37,8 @@ public class CustomerFileServiceImpl extends ServiceImpl<CustomerFileMapper, Cus
 
     @Override
     public void delete(CustomerFileParam param) {
-        CustomerFile file = this.query().eq("uid", param.getUid()).one();
-        param.setFileId(file.getFileId());
+        List<CustomerFile> uid = this.query().in("uid", param.getUid()).list();
+        param.setFileId(uid.get(0).getFileId());
         this.removeById(getKey(param));
     }
 
