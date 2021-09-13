@@ -1,50 +1,43 @@
-package cn.atsoft.dasheng.crm.model.params;
+package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 资料
+ * 话术分类
  * </p>
  *
- * @author song
- * @since 2021-09-11
+ * @author 
+ * @since 2021-09-13
  */
 @Data
 @ApiModel
-public class DataParam implements Serializable, BaseValidatingParam {
+public class SpeechcraftTypeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Long> itemId;
-    /**
-     * 资料id
-     */
-    @ApiModelProperty("资料id")
-    private Long dataId;
-    private Long dataClassificationId;
-
-    private  String name;
-    /**
-     * 内容
-     */
-    @ApiModelProperty("内容")
-    private String content;
 
     /**
-     * 附件
+     * 分类id
      */
-    @ApiModelProperty("附件")
-    private String attachment;
+    @ApiModelProperty("分类id")
+    private Long speechcraftTypeId;
+
+    /**
+     * 分类排序
+     */
+    @ApiModelProperty("分类排序")
+    private String speechcraftTypeSort;
+
+    /**
+     * 分类名称
+     */
+    @ApiModelProperty("分类名称")
+    private String speechcraftTypeName;
 
     /**
      * 创建者
@@ -75,13 +68,6 @@ public class DataParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

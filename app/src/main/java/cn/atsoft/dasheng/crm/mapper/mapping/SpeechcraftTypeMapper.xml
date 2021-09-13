@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.crm.mapper.SpeechcraftTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.crm.entity.SpeechcraftType">
+        <id column="speechcraft_type_id" property="speechcraftTypeId" />
+        <result column="speechcraft_type_sort" property="speechcraftTypeSort" />
+        <result column="speechcraft_type_name" property="speechcraftTypeName" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        speechcraft_type_id AS "speechcraftTypeId", speechcraft_type_sort AS "speechcraftTypeSort", speechcraft_type_name AS "speechcraftTypeName", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftTypeResult" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_speechcraft_type where 1 = 1
+            <if test="paramCondition.speechcraftTypeId != null">
+                and speechcraft_type_id like CONCAT('%',#{paramCondition.speechcraftTypeId},'%')
+            </if>
+            <if test="paramCondition.speechcraftTypeSort != null and paramCondition.speechcraftTypeSort != ''">
+                and speechcraft_type_sort like CONCAT('%',#{paramCondition.speechcraftTypeSort},'%')
+            </if>
+            <if test="paramCondition.speechcraftTypeName != null and paramCondition.speechcraftTypeName != ''">
+                and speechcraft_type_name like CONCAT('%',#{paramCondition.speechcraftTypeName},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_speechcraft_type where 1 = 1
+                <if test="paramCondition.speechcraftTypeId != null">
+                        and speechcraft_type_id like CONCAT('%',#{paramCondition.speechcraftTypeId},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeSort != null and paramCondition.speechcraftTypeSort != ''">
+                        and speechcraft_type_sort like CONCAT('%',#{paramCondition.speechcraftTypeSort},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeName != null and paramCondition.speechcraftTypeName != ''">
+                        and speechcraft_type_name like CONCAT('%',#{paramCondition.speechcraftTypeName},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftTypeResult" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_speechcraft_type where 1 = 1
+                <if test="paramCondition.speechcraftTypeId != null">
+                        and speechcraft_type_id like CONCAT('%',#{paramCondition.speechcraftTypeId},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeSort != null and paramCondition.speechcraftTypeSort != ''">
+                        and speechcraft_type_sort like CONCAT('%',#{paramCondition.speechcraftTypeSort},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeName != null and paramCondition.speechcraftTypeName != ''">
+                        and speechcraft_type_name like CONCAT('%',#{paramCondition.speechcraftTypeName},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_speechcraft_type where 1 = 1
+                <if test="paramCondition.speechcraftTypeId != null">
+                        and speechcraft_type_id like CONCAT('%',#{paramCondition.speechcraftTypeId},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeSort != null and paramCondition.speechcraftTypeSort != ''">
+                        and speechcraft_type_sort like CONCAT('%',#{paramCondition.speechcraftTypeSort},'%')
+                </if>
+                <if test="paramCondition.speechcraftTypeName != null and paramCondition.speechcraftTypeName != ''">
+                        and speechcraft_type_name like CONCAT('%',#{paramCondition.speechcraftTypeName},'%')
+                </if>
+    </select>
+
+</mapper>

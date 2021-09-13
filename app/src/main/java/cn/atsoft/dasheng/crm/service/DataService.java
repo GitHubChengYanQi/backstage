@@ -66,4 +66,7 @@ public interface DataService extends IService<Data> {
      */
      PageInfo<DataResult> findPageBySpec(DataParam param);
 
+
+     DataResult detail (DataParam param);
+
 }
