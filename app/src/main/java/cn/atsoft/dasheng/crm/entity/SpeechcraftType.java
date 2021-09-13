@@ -31,7 +31,7 @@ public class SpeechcraftType implements Serializable {
      * 分类排序
      */
     @TableField("speechcraft_type_sort")
-    private String speechcraftTypeSort;
+    private Long speechcraftTypeSort;
 
     /**
      * 分类名称
@@ -78,11 +78,11 @@ public class SpeechcraftType implements Serializable {
         this.speechcraftTypeId = speechcraftTypeId;
     }
 
-    public String getSpeechcraftTypeSort() {
+    public Long getSpeechcraftTypeSort() {
         return speechcraftTypeSort;
     }
 
-    public void setSpeechcraftTypeSort(String speechcraftTypeSort) {
+    public void setSpeechcraftTypeSort(Long speechcraftTypeSort) {
         this.speechcraftTypeSort = speechcraftTypeSort;
     }
 
