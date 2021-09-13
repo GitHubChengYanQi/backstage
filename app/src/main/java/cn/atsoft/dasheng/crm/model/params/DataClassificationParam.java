@@ -4,7 +4,6 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,38 +12,36 @@ import java.util.List;
 
 /**
  * <p>
- * 资料
+ * 资料分类表
  * </p>
  *
- * @author song
- * @since 2021-09-11
+ * @author 
+ * @since 2021-09-13
  */
 @Data
 @ApiModel
-public class DataParam implements Serializable, BaseValidatingParam {
+public class DataClassificationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Long> itemId;
+
     /**
-     * 资料id
+     * 资料分类id
      */
-    @ApiModelProperty("资料id")
-    private Long dataId;
+    @ApiModelProperty("资料分类id")
     private Long dataClassificationId;
 
-    private  String name;
     /**
-     * 内容
+     * 分类名称
      */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("分类名称")
+    private String title;
 
     /**
-     * 附件
+     * 排序
      */
-    @ApiModelProperty("附件")
-    private String attachment;
+    @ApiModelProperty("排序")
+    private Long sort;
 
     /**
      * 创建者

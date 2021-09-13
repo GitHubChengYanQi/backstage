@@ -135,6 +135,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 //            contactsService.lambdaQuery().in(Contacts::getContactsId, param.getContactsParams().get(0));
 
             Long customerId = param.getCustomerId();
+
+
+
             QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
             contactsQueryWrapper.in("customer_id", customerId);
             List<Contacts> list = contactsService.list(contactsQueryWrapper);
@@ -163,14 +166,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             if (param.getContactsParams() != null) {
                 for (ContactsParam contactsParam : param.getContactsParams()) {
-                    contactsParam.setCustomerId(customerId);
-                    Contacts contacts = contactsService.add(contactsParam);
-                    if (contactsParam.getPhoneParams() != null) {
-                        for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
-                            phoneParam.setContactsId(contacts.getContactsId());
-                            phoneService.add(phoneParam);
+                    if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
+                        contactsParam.setCustomerId(customerId);
+                        Contacts contacts = contactsService.add(contactsParam);
+                        if (contactsParam.getPhoneParams() != null) {
+                            for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                                phoneParam.setContactsId(contacts.getContactsId());
+                                phoneService.add(phoneParam);
+                            }
                         }
                     }
+
 
                 }
             }
