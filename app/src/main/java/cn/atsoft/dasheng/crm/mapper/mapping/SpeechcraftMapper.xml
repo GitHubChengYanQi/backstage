@@ -8,6 +8,7 @@
         <result column="speechcraft_title" property="speechcraftTitle" />
         <result column="speechcraft_details" property="speechcraftDetails" />
         <result column="speechcraft_key" property="speechcraftKey" />
+        <result column="speechcraft_type" property="speechcraftType"/>
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -16,7 +17,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">speechcraft_type AS speechcraftType,
         speechcraft_id AS "speechcraftId", speechcraft_title AS "speechcraftTitle", speechcraft_details AS "speechcraftDetails", speechcraft_key AS "speechcraftKey", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
