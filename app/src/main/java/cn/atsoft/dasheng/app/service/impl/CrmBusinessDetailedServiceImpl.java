@@ -44,6 +44,18 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     }
 
     @Override
+    public void addAll(CrmBusinessDetailedParam param) {
+        List<CrmBusinessDetailed> list = new ArrayList<>();
+        for (Long itemid : param.getItemids()) {
+            CrmBusinessDetailed newEntity = new CrmBusinessDetailed();
+            newEntity.setBusinessId(param.getBusinessId());
+            newEntity.setItemId(itemid);
+            list.add(newEntity);
+        }
+        this.saveBatch(list);
+    }
+
+    @Override
     public void delete(CrmBusinessDetailedParam param) {
       CrmBusinessDetailed byId = this.getById(param.getId());
       if (ToolUtil.isEmpty(byId)){
