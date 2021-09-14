@@ -57,11 +57,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
-
+        //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
         queryWrapper.lambda().eq(Customer ::getCustomerName,param.getCustomerName());
-
         List<Customer> list =baseMapper.selectList(queryWrapper);
+        //有同名客户 阻止添加
         if (ToolUtil.isEmpty(list)) {
             Customer entity = getEntity(param);
             this.save(entity);
