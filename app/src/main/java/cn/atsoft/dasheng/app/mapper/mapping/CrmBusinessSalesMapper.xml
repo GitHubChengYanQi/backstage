@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusinessSales">
         <id column="sales_id" property="salesId"/>
         <result column="name" property="name"/>
+        <result column="note" property="note"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -17,7 +18,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         sales_id
-        AS "salesId", name AS "name", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",process_id AS "processId"
+        AS "salesId", note AS "note", name AS "name", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",process_id AS "processId"
      </sql>
 
 
