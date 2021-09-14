@@ -45,24 +45,24 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
     public void update(CrmBusinessSalesProcessParam param) {
 
         param.setPlan(JSON.toJSONString(param.getPlans()));
-        if (param.getWinRate().equals(1)) {
-            param.setPercentage(100);
+//        if (param.getWinRate().equals(1)) {
+//            param.setPercentage(100);
+//            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
+//            CrmBusinessSalesProcess newEntity = getEntity(param);
+//            ToolUtil.copyProperties(newEntity, oldEntity);
+//            this.updateById(newEntity);
+//        } else if (param.getWinRate().equals(2)) {
+//            param.setPercentage(0);
+//            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
+//            CrmBusinessSalesProcess newEntity = getEntity(param);
+//            ToolUtil.copyProperties(newEntity, oldEntity);
+//            this.updateById(newEntity);
+//        } else {
             CrmBusinessSalesProcess oldEntity = getOldEntity(param);
             CrmBusinessSalesProcess newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
-        } else if (param.getWinRate().equals(2)) {
-            param.setPercentage(0);
-            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
-            CrmBusinessSalesProcess newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(newEntity);
-        } else {
-            CrmBusinessSalesProcess oldEntity = getOldEntity(param);
-            CrmBusinessSalesProcess newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(newEntity);
-        }
+//        }
 
     }
 
@@ -83,8 +83,10 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
         IPage<CrmBusinessSalesProcessResult> page = this.baseMapper.customPageList(pageContext, param);
 
         for (CrmBusinessSalesProcessResult record : page.getRecords()) {
-            PlanRequest planRequest = JSON.parseObject(record.getPlan(), PlanRequest.class);
-            record.setPlans(planRequest);
+            if (ToolUtil.isNotEmpty(record.getPlan())){
+                PlanRequest planRequest = JSON.parseObject(record.getPlan(), PlanRequest.class);
+                record.setPlans(planRequest);
+            }
         }
 
         return PageFactory.createPageInfo(page);

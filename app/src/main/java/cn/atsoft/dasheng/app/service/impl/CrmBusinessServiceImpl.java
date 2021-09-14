@@ -181,7 +181,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
     @Override
     public List<CrmBusinessResult> findListBySpec(CrmBusinessParam param) {
-        return null;
+        List<CrmBusinessResult> crmBusinessResults = this.baseMapper.customList(param);
+        return crmBusinessResults;
     }
 
     @Override
