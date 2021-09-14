@@ -180,10 +180,12 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     public void batchDelete(List<Long> ids) {
         List<Data> data = this.lambdaQuery().in(Data::getDataId, ids).list();
         for (Data datum : data) {
-            DataParam dataParam = new DataParam();
-            ToolUtil.copyProperties(datum, dataParam);
-            dataParam.setDisplay(0);
-            this.update(dataParam);
+//            DataParam dataParam = new DataParam();
+//            ToolUtil.copyProperties(datum, dataParam);
+//            dataParam.setDisplay(0);
+//            this.update(dataParam);
+            datum.setDisplay(0);
+            this.updateById(datum);
         }
 
     }
