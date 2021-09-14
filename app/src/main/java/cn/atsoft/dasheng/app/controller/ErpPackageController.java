@@ -71,6 +71,18 @@ public class ErpPackageController extends BaseController {
         this.erpPackageService.delete(erpPackageParam);
         return ResponseData.success();
     }
+    /**
+     * 批量删除接口
+     *
+     * @author qr
+     * @Date 2021-08-04
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody ErpPackageParam erpPackageParam) {
+        this.erpPackageService.batchDelete(erpPackageParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.ErpPackageTable;
 import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageResult;
 import  cn.atsoft.dasheng.app.service.ErpPackageService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,7 +37,7 @@ import java.util.List;
 public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPackage> implements ErpPackageService {
 
     @Autowired
-    private ErpPackageTableService ErpPackageTable;
+    private ErpPackageTableService erpPackageTableService;
 
     @Override
     public Long add(ErpPackageParam param){
@@ -49,13 +51,45 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
 
         ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
         erpPackageTableParam.setPackageId(param.getPackageId());
-        PageInfo<ErpPackageTableResult> pageBySpec = ErpPackageTable.findPageBySpec(erpPackageTableParam);
+        PageInfo<ErpPackageTableResult> pageBySpec = erpPackageTableService.findPageBySpec(erpPackageTableParam);
         for (int i =0 ; i < pageBySpec.getData().size(); i++){
             erpPackageTableParam.setId(pageBySpec.getData().get(i).getId());
-            ErpPackageTable.delete(erpPackageTableParam);
+            erpPackageTableService.delete(erpPackageTableParam);
         }
         this.removeById(getKey(param));
     }
+
+    @Override
+    public void batchDelete(ErpPackageParam param) {
+        //根据传入数组 查询相关数据
+        QueryWrapper<ErpPackage> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.lambda().in(ErpPackage::getPackageId,param.getPackageIds());
+        //查询结果装入List
+        List<ErpPackage> list1 = baseMapper.selectList(queryWrapper1);
+        for (ErpPackage erpPackage : list1) {
+            //逻辑删除赋值
+            erpPackage.setDisplay(0);
+        }
+        //更新本表逻辑删除
+        this.updateBatchById(list1);
+
+        //查询绑定表数据
+        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(ErpPackageTable::getPackageId,param.getPackageIds());
+        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
+
+        List<ErpPackageTable>newEntity = new ArrayList<>();
+        for (ErpPackageTable packageTable : list) {
+            ErpPackageTable erpPackageTable = new ErpPackageTable();
+            ToolUtil.copyProperties(packageTable,erpPackageTable);
+            //绑定表数据逻辑删除赋值
+           erpPackageTable.setDisplay(0);
+           newEntity.add(erpPackageTable);
+        }
+        //绑定表更新逻辑删除
+        erpPackageTableService.updateBatchById(newEntity);
+    }
+
 
     @Override
     public void update(ErpPackageParam param){

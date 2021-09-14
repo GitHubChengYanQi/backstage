@@ -33,7 +33,10 @@ public interface ErpPackageService extends IService<ErpPackage> {
      * @Date 2021-08-04
      */
     void delete(ErpPackageParam param);
-
+    /**
+     * 批量删除
+     */
+    void batchDelete(ErpPackageParam param);
     /**
      * 更新
      *
