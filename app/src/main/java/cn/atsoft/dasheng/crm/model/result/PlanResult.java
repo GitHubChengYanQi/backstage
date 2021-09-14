@@ -1,57 +1,41 @@
-package cn.atsoft.dasheng.app.model.params;
+package cn.atsoft.dasheng.crm.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
  * <p>
- * 销售流程
+ *
  * </p>
  *
- * @author 
- * @since 2021-08-04
+ * @author song
+ * @since 2021-09-14
  */
 @Data
 @ApiModel
-public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatingParam {
+public class PlanResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Date jsonTime;
     /**
-     * 赢率id
+     * 跟单计划id
      */
-    @ApiModelProperty("赢率id")
-    private Long salesProcessId;
-    private String note;
-    private  Long winRate ;
+    @ApiModelProperty("跟单计划id")
     private Long salesProcessPlanId;
-    /**
-     * 流程名称
-     */
-    @ApiModelProperty("流程名称")
-    private String name;
 
     /**
-     * 百分比
+     * json字符串
      */
-    @ApiModelProperty("百分比")
-    private Integer percentage;
-
-    /**
-     * 流程id
-     */
-    @ApiModelProperty("流程id")
-    private Long salesId;
-
-    /**
-     * 排序
-     */
-    @ApiModelProperty("排序")
-    private Integer sort;
+    @ApiModelProperty("json字符串")
+    private String time;
 
     /**
      * 创建者
@@ -82,13 +66,6 @@ public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatin
      */
     @ApiModelProperty("状态")
     private Integer display;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

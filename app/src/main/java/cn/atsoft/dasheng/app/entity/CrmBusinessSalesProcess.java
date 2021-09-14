@@ -33,6 +33,8 @@ public class CrmBusinessSalesProcess implements Serializable {
     @TableField("note")
     private String note;
 
+@TableField("sales_process_plan_id")
+    private Long salesProcessPlanId;
     /**
      * 流程名称
      */
@@ -181,6 +183,14 @@ public class CrmBusinessSalesProcess implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getSalesProcessPlanId() {
+        return salesProcessPlanId;
+    }
+
+    public void setSalesProcessPlanId(Long salesProcessPlanId) {
+        this.salesProcessPlanId = salesProcessPlanId;
     }
 
     @Override
