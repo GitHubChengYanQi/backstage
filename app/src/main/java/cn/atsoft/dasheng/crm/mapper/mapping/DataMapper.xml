@@ -47,7 +47,7 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.DataParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_data where 1 = 1
+        from daoxin_crm_data where display = 1
         <if test="paramCondition.dataId != null">
             and data_id like CONCAT('%',#{paramCondition.dataId},'%')
         </if>

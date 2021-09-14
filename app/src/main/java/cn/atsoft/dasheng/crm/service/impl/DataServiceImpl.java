@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.crm.model.result.DataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.ItemDataService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -174,6 +175,17 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         }
 
         return dataResult;
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        List<Data> data = this.lambdaQuery().in(Data::getDataId, ids).list();
+        for (Data datum : data) {
+            datum.setDisplay(0);
+            List<Data> dataId = this.list(new QueryWrapper<Data>().in("data_id", ids));
+            this.updateById(datum);
+        }
+
     }
 
     private Serializable getKey(DataParam param) {

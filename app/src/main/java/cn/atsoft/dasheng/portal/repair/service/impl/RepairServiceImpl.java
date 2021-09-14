@@ -81,7 +81,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
-        } else {
+        }else{
             QueryWrapper<CommonArea> AreaQueryWrapper = new QueryWrapper<>();
             AreaQueryWrapper.in("parentid", param.getArea());
             List<CommonArea> list = commonAreaService.list(AreaQueryWrapper);
@@ -95,15 +95,15 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setRepairId(entity.getRepairId());
         param.setCreateTime(entity.getCreateTime());
         repairSendTemplate.setRepairParam(param);
-        try {
+        try{
             repairSendTemplate.send();
-        } catch (WxErrorException e) {
+        }catch(WxErrorException e) {
             e.printStackTrace();
         }
 
 
         List<RepairImage> repairImages = param.getItemImgUrlList();
-        for (RepairImage data : repairImages) {
+        for (RepairImage data : repairImages){
             if (data != null) {
                 RepairImageParam repairImageParam = new RepairImageParam();
                 repairImageParam.setRepairId(entity.getRepairId());
@@ -139,16 +139,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         Repair newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
-//        param.setRepairId(newEntity.getRepairId());
-//        param.setRepairId(newEntity.getRepairId());
-//        param.setCreateTime(newEntity.getUpdateTime());
-//        param.setProgress(1L);
-//        repairSendTemplate.setRepairParam(param);
-//        try {
-//            repairSendTemplate.send();
-//        } catch (WxErrorException e) {
-//            e.printStackTrace();
-//        }
         return newEntity;
 
     }

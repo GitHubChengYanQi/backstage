@@ -64,9 +64,11 @@ public interface DataService extends IService<Data> {
      * @author song
      * @Date 2021-09-11
      */
-     PageInfo<DataResult> findPageBySpec(DataParam param);
+    PageInfo<DataResult> findPageBySpec(DataParam param);
 
 
-     DataResult detail (DataParam param);
+    DataResult detail(DataParam param);
+
+    void batchDelete(List<Long> ids);
 
 }
