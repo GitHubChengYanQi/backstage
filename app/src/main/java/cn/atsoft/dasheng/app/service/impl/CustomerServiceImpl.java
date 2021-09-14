@@ -57,41 +57,50 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
-        Customer entity = getEntity(param);
-        this.save(entity);
-        if (param.getContactsParams() != null) {
-            for (ContactsParam contactsParam : param.getContactsParams()) {
-                if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
-                    contactsParam.setCustomerId(entity.getCustomerId());
-                    Contacts contacts = contactsService.add(contactsParam);
-                    if (contactsParam.getPhoneParams() != null) {
-                        for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
-                            if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
-                                phoneParam.setContactsId(contacts.getContactsId());
-                                phoneService.add(phoneParam);
-                            }
 
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper();
+        queryWrapper.lambda().eq(Customer ::getCustomerName,param.getCustomerName());
+
+        List<Customer> list =baseMapper.selectList(queryWrapper);
+        if (ToolUtil.isEmpty(list)) {
+            Customer entity = getEntity(param);
+            this.save(entity);
+            if (param.getContactsParams() != null) {
+                for (ContactsParam contactsParam : param.getContactsParams()) {
+                    if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
+                        contactsParam.setCustomerId(entity.getCustomerId());
+                        Contacts contacts = contactsService.add(contactsParam);
+                        if (contactsParam.getPhoneParams() != null) {
+                            for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
+                                if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
+                                    phoneParam.setContactsId(contacts.getContactsId());
+                                    phoneService.add(phoneParam);
+                                }
+
+                            }
                         }
                     }
+
+
                 }
-
-
             }
-        }
-        if (ToolUtil.isNotEmpty(param.getAdressParams())) {
-            for (AdressParam adressParam : param.getAdressParams()) {
-                if (ToolUtil.isNotEmpty(adressParam)) {
-                    if (ToolUtil.isNotEmpty(adressParam.getMap())) {
-                        adressParam.setCustomerId(entity.getCustomerId());
-                        adressService.add(adressParam);
+            if (ToolUtil.isNotEmpty(param.getAdressParams())) {
+                for (AdressParam adressParam : param.getAdressParams()) {
+                    if (ToolUtil.isNotEmpty(adressParam)) {
+                        if (ToolUtil.isNotEmpty(adressParam.getMap())) {
+                            adressParam.setCustomerId(entity.getCustomerId());
+                            adressService.add(adressParam);
+                        }
+
                     }
-
                 }
             }
+
+            return entity;
+
+        }else {
+            throw new ServiceException(500,"已有当前客户");
         }
-
-
-        return entity;
     }
 
     @Override
