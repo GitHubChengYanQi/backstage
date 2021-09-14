@@ -51,7 +51,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
-        Contacts one = this.query().eq("contacts_name", param.getContactsName()).one();
+        Contacts one = this.query().eq("contacts_name", param.getContactsName()).and(i -> i.eq("customer_id", param.getCustomerId())).one();
         if (ToolUtil.isNotEmpty(one)) {
             throw new ServiceException(500, "联系人已存在");
         }
