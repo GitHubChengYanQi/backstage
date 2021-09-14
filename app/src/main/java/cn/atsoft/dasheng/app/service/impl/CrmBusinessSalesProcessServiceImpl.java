@@ -43,6 +43,8 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
 
     @Override
     public void update(CrmBusinessSalesProcessParam param) {
+
+        param.setPlan(JSON.toJSONString(param.getPlans()));
         if (param.getWinRate().equals(1)) {
             param.setPercentage(100);
             CrmBusinessSalesProcess oldEntity = getOldEntity(param);
@@ -76,11 +78,12 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
 
     @Override
     public PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param) {
+
         Page<CrmBusinessSalesProcessResult> pageContext = getPageContext();
         IPage<CrmBusinessSalesProcessResult> page = this.baseMapper.customPageList(pageContext, param);
 
         for (CrmBusinessSalesProcessResult record : page.getRecords()) {
-            PlanRequest planRequest = JSON.parseObject(param.getPlan(), PlanRequest.class);
+            PlanRequest planRequest = JSON.parseObject(record.getPlan(), PlanRequest.class);
             record.setPlanRequest(planRequest);
         }
 

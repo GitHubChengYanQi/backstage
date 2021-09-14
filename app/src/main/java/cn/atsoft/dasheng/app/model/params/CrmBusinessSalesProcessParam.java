@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.model.result.PlanRequest;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -28,7 +29,11 @@ public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatin
     private Long salesProcessId;
     private String note;
     private  Long winRate ;
+
+    private PlanRequest plans;
+
     private Long salesProcessPlanId;
+
     private String plan;
     /**
      * 流程名称

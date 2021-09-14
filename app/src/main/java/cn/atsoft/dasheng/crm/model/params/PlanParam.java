@@ -31,6 +31,7 @@ public class PlanParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("跟单计划id")
     private Long salesProcessPlanId;
 
+
     /**
      * json字符串
      */
