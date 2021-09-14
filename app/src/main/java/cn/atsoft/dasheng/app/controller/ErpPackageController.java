@@ -79,8 +79,8 @@ public class ErpPackageController extends BaseController {
      */
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody ErpPackageParam erpPackageParam) {
-        this.erpPackageService.batchDelete(erpPackageParam);
+    public ResponseData batchDelete(@RequestBody List<Long> packageId) {
+        this.erpPackageService.batchDelete(packageId);
         return ResponseData.success();
     }
 

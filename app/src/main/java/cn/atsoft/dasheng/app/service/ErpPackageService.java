@@ -36,7 +36,7 @@ public interface ErpPackageService extends IService<ErpPackage> {
     /**
      * 批量删除
      */
-    void batchDelete(ErpPackageParam param);
+    void batchDelete(List<Long> packageId);
     /**
      * 更新
      *
