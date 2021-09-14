@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
+import cn.atsoft.dasheng.crm.model.result.DataRequest;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
 import cn.atsoft.dasheng.crm.model.result.ItemDataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
@@ -112,8 +113,8 @@ public class DataController extends BaseController {
      */
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataResult> batchDelete(@RequestParam List<Long> ids) {
-        dataService.batchDelete(ids);
+    public ResponseData<DataResult> batchDelete(@RequestBody DataRequest dataRequest) {
+        dataService.batchDelete(dataRequest.getIds());
         return ResponseData.success();
     }
 
