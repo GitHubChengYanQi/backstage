@@ -23,7 +23,7 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
-    private List<Long> itemids;
+    private List<Long> itemIds;
 
 
     /**
