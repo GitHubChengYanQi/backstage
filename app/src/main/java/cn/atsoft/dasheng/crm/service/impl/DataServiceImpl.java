@@ -89,18 +89,19 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 ids.add(aLong);
             }
             if (ToolUtil.isNotEmpty(ids)) {
-                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).and(i -> i.eq(ItemData::getDataId, param.getDataId())).list();
-                if (ToolUtil.isNotEmpty(itemDataList)) {
-                    List<Long> itemDataIds = new ArrayList<>();
-                    for (ItemData itemData : itemDataList) {
-//                        ItemDataParam itemDataParam = new ItemDataParam();
-//                        ToolUtil.copyProperties(itemData, itemDataParam);
-//                        itemDataService.delete(itemDataParam);
-                        itemDataIds.add(itemData.getItemsDataId());
-
-                    }
-                    itemDataService.removeByIds(itemDataIds);
-                }
+                itemDataService.update().notIn("item_id",ids).and(i->i.eq("data_id",param.getDataId())).remove();
+//                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).and(i -> i.eq(ItemData::getDataId, param.getDataId())).list();
+//                if (ToolUtil.isNotEmpty(itemDataList)) {
+//                    List<Long> itemDataIds = new ArrayList<>();
+//                    for (ItemData itemData : itemDataList) {
+////                        ItemDataParam itemDataParam = new ItemDataParam();
+////                        ToolUtil.copyProperties(itemData, itemDataParam);
+////                        itemDataService.delete(itemDataParam);
+//                        itemDataIds.add(itemData.getItemsDataId());
+//
+//                    }
+//                    itemDataService.removeByIds(itemDataIds);
+//                }
                 List<ItemData> itemData = itemDataService.lambdaQuery().eq(ItemData::getDataId, param.getDataId()).list();
 
                 for (ItemData itemDatum : itemData) {
@@ -182,8 +183,9 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
         List<Data> data = this.lambdaQuery().in(Data::getDataId, ids).list();
         for (Data datum : data) {
             datum.setDisplay(0);
-            List<Data> dataId = this.list(new QueryWrapper<Data>().in("data_id", ids));
+//            List<Data> dataId = this.list(new QueryWrapper<Data>().in("data_id", ids));
             this.updateById(datum);
+            update();
         }
 
     }
