@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.beetl.ext.fn.Json;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -65,9 +66,9 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements Pl
         Page<PlanResult> pageContext = getPageContext();
         IPage<PlanResult> page = this.baseMapper.customPageList(pageContext, param);
         for (PlanResult record : page.getRecords()) {
-            record.getTime();
-            Date parse = (Date) JSON.parse(record.getTime());
-            record.setJsonTime(parse);
+
+         JSON.parse(param.getTime());
+
 
         }
         return PageFactory.createPageInfo(page);

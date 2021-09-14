@@ -24,7 +24,7 @@ public class CrmBusinessSalesProcess implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @TableField("win_rate")
-     private  Long winRate ;
+    private Long winRate;
     /**
      * 赢率id
      */
@@ -33,8 +33,10 @@ public class CrmBusinessSalesProcess implements Serializable {
     @TableField("note")
     private String note;
 
-@TableField("sales_process_plan_id")
+    @TableField("sales_process_plan_id")
     private Long salesProcessPlanId;
+    @TableField("plan")
+    private String plan;
     /**
      * 流程名称
      */
@@ -191,6 +193,14 @@ public class CrmBusinessSalesProcess implements Serializable {
 
     public void setSalesProcessPlanId(Long salesProcessPlanId) {
         this.salesProcessPlanId = salesProcessPlanId;
+    }
+
+    public String getPlan() {
+        return plan;
+    }
+
+    public void setPlan(String plan) {
+        this.plan = plan;
     }
 
     @Override

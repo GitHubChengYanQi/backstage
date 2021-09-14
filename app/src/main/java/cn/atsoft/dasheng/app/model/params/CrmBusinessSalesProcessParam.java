@@ -29,6 +29,7 @@ public class CrmBusinessSalesProcessParam implements Serializable, BaseValidatin
     private String note;
     private  Long winRate ;
     private Long salesProcessPlanId;
+    private String plan;
     /**
      * 流程名称
      */

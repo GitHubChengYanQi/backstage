@@ -1,14 +1,16 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.PlanRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessSalesProcessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
-import  cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
+import cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,38 +24,38 @@ import java.util.List;
  * 销售流程 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-04
  */
 @Service
 public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessSalesProcessMapper, CrmBusinessSalesProcess> implements CrmBusinessSalesProcessService {
 
     @Override
-    public void add(CrmBusinessSalesProcessParam param){
+    public void add(CrmBusinessSalesProcessParam param) {
         CrmBusinessSalesProcess entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CrmBusinessSalesProcessParam param){
+    public void delete(CrmBusinessSalesProcessParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CrmBusinessSalesProcessParam param){
-        if (param.getWinRate().equals(1)){
+    public void update(CrmBusinessSalesProcessParam param) {
+        if (param.getWinRate().equals(1)) {
             param.setPercentage(100);
             CrmBusinessSalesProcess oldEntity = getOldEntity(param);
             CrmBusinessSalesProcess newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
-        }else  if (param.getWinRate().equals(2)){
+        } else if (param.getWinRate().equals(2)) {
             param.setPercentage(0);
             CrmBusinessSalesProcess oldEntity = getOldEntity(param);
             CrmBusinessSalesProcess newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
-        }else {
+        } else {
             CrmBusinessSalesProcess oldEntity = getOldEntity(param);
             CrmBusinessSalesProcess newEntity = getEntity(param);
             ToolUtil.copyProperties(newEntity, oldEntity);
@@ -63,25 +65,29 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
     }
 
     @Override
-    public CrmBusinessSalesProcessResult findBySpec(CrmBusinessSalesProcessParam param){
+    public CrmBusinessSalesProcessResult findBySpec(CrmBusinessSalesProcessParam param) {
         return null;
     }
 
     @Override
-    public List<CrmBusinessSalesProcessResult> findListBySpec(CrmBusinessSalesProcessParam param){
+    public List<CrmBusinessSalesProcessResult> findListBySpec(CrmBusinessSalesProcessParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param){
+    public PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param) {
         Page<CrmBusinessSalesProcessResult> pageContext = getPageContext();
         IPage<CrmBusinessSalesProcessResult> page = this.baseMapper.customPageList(pageContext, param);
 
+        for (CrmBusinessSalesProcessResult record : page.getRecords()) {
+            PlanRequest planRequest = JSON.parseObject(param.getPlan(), PlanRequest.class);
+            record.setPlanRequest(planRequest);
+        }
 
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CrmBusinessSalesProcessParam param){
+    private Serializable getKey(CrmBusinessSalesProcessParam param) {
         return param.getSalesProcessId();
     }
 

@@ -26,6 +26,8 @@ public class CrmBusinessSalesProcessResult implements Serializable {
     private  Long winRate ;
     private String note;
     private Long salesProcessPlanId;
+    private String plan;
+    private PlanRequest planRequest;
 
     /**
      * 赢率id
