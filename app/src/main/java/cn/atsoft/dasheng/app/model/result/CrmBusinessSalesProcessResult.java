@@ -27,7 +27,7 @@ public class CrmBusinessSalesProcessResult implements Serializable {
     private String note;
     private Long salesProcessPlanId;
     private String plan;
-    private PlanRequest planRequest;
+    private PlanRequest plans;
 
     /**
      * 赢率id
