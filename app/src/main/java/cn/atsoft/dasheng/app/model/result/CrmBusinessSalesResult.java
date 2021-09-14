@@ -37,6 +37,13 @@ public class CrmBusinessSalesResult implements Serializable {
     private String name;
 
     /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String note;
+
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

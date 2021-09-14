@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import  cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,8 +32,17 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
 
     @Override
     public void add(PhoneParam param){
-        Phone entity = getEntity(param);
-        this.save(entity);
+        //查询电话号码是否已存在
+        QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber());
+        List<Phone> list = baseMapper.selectList(queryWrapper);
+        if(ToolUtil.isEmpty(list)){
+            Phone entity = getEntity(param);
+            this.save(entity);
+        }else {
+            throw new ServiceException(500,"此电话号码已存在");
+        }
+
     }
 
     @Override

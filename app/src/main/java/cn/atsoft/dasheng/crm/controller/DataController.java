@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
+import cn.atsoft.dasheng.crm.model.result.DataRequest;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
 import cn.atsoft.dasheng.crm.model.result.ItemDataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +70,7 @@ public class DataController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody DataParam dataParam)  {
+    public ResponseData delete(@RequestBody DataParam dataParam) {
         this.dataService.delete(dataParam);
         return ResponseData.success();
     }
@@ -83,7 +85,6 @@ public class DataController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
         DataResult detail = dataService.detail(dataParam);
-        DataResult bySpec = dataService.findBySpec(dataParam);
         return ResponseData.success(detail);
     }
 
@@ -96,7 +97,7 @@ public class DataController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
-        if(ToolUtil.isEmpty(dataParam)){
+        if (ToolUtil.isEmpty(dataParam)) {
             dataParam = new DataParam();
         }
 
@@ -104,7 +105,18 @@ public class DataController extends BaseController {
     }
 
 
-
+    /**
+     * 批量删除
+     *
+     * @author song
+     * @Date 2021-09-11
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<DataResult> batchDelete(@RequestBody DataRequest dataRequest) {
+        dataService.batchDelete(dataRequest.getIds());
+        return ResponseData.success();
+    }
 
 }
 

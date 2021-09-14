@@ -88,9 +88,7 @@ public class RepairSendTemplate extends sendTemplae {
         for (Long getremindUserid : getremindUserids) {
             userIds.add(getremindUserid);
         }
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-//        List<WxuserInfo> wxuserInfos = wxuserInfoService.list(wxuserInfoQueryWrapper.in("user_id", userIds));
-//        AbstractWrapper userId = wxuserInfoService.query().in("user_id", userIds).getWrapper();`
+
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {

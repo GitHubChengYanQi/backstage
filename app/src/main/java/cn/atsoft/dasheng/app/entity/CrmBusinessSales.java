@@ -35,6 +35,12 @@ public class CrmBusinessSales implements Serializable {
     private String name;
 
     /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+
+    /**
      * 创建者
      */
       @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -129,12 +135,21 @@ public class CrmBusinessSales implements Serializable {
 
         this.processId = processId;
     }
+    
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     @Override
     public String toString() {
         return "CrmBusinessSales{" +
         "salesId=" + salesId +
         ", name=" + name +
+        ", note=" + note +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

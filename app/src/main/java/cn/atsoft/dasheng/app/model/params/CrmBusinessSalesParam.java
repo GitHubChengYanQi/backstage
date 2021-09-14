@@ -38,6 +38,13 @@ public class CrmBusinessSalesParam implements Serializable, BaseValidatingParam 
     private String name;
 
     /**
+     * 备注
+     */
+    @ApiModelProperty("名称")
+    private String note;
+
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
