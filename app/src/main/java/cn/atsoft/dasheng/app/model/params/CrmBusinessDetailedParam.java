@@ -25,6 +25,8 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
 
     private List<Long> itemIds;
 
+    private List<Long> packagesIds;
+
 
     /**
      * id
