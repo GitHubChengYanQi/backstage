@@ -84,7 +84,7 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
 
         for (CrmBusinessSalesProcessResult record : page.getRecords()) {
             PlanRequest planRequest = JSON.parseObject(record.getPlan(), PlanRequest.class);
-            record.setPlanRequest(planRequest);
+            record.setPlans(planRequest);
         }
 
         return PageFactory.createPageInfo(page);

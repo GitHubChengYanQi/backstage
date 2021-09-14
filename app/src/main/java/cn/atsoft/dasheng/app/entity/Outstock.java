@@ -85,7 +85,11 @@ public class Outstock implements Serializable {
     @TableField("state")
     private Long state;
 
-
+    /**
+     * 发货申请Id
+     */
+    @TableField("outstock_apply_id")
+    private Long outstockApplyId;
       @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
@@ -211,6 +215,14 @@ public class Outstock implements Serializable {
 
     public void setOutstockOrderId(Long outstockOrderId) {
         this.outstockOrderId = outstockOrderId;
+    }
+
+    public Long getOutstockApplyId() {
+        return outstockApplyId;
+    }
+
+    public void setOutstockApplyId(Long outstockApplyId) {
+        this.outstockApplyId = outstockApplyId;
     }
 
     @Override

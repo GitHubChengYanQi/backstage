@@ -12,11 +12,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="storehouse_id" property="storehouseId"/>
+        <result column="outstock_apply_id" property="outstockApplyId"/>
         <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">outstock_apply_id AS "outstockApplyId",
         storehouse_id
         AS "storehouseId" ,outstock_order_id AS "outstockOrderId", state AS "state", time AS "time", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>

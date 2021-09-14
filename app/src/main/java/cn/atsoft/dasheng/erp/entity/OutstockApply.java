@@ -1,9 +1,7 @@
-package cn.atsoft.dasheng.app.entity;
+package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-
-import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
@@ -12,51 +10,28 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 出库单
+ * 出库申请
  * </p>
  *
- * @author cheng
- * @since 2021-08-16
+ * @author song
+ * @since 2021-09-14
  */
-@TableName("daoxin_erp_outstock_order")
-public class OutstockOrder implements Serializable {
+@TableName("daoxin_erp_outstock_apply")
+public class OutstockApply implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 出库详细id
+     * 出库申请
      */
-      @TableId(value = "outstock_order_id", type = IdType.ID_WORKER)
-    private Long outstockOrderId;
-
-    public Long getStorehouseId() {
-        return storehouseId;
-    }
-
-    public void setStorehouseId(Long storehouseId) {
-        this.storehouseId = storehouseId;
-    }
-
-    @TableField("storehouse_id")
-    private Long storehouseId;
-
-    /**
-     * 发货申请Id
-     */
-    @TableField("outstock_apply_id")
+      @TableId(value = "outstock_apply_id", type = IdType.ID_WORKER)
     private Long outstockApplyId;
 
-     /**
-     * 出库状态
-     */
-    @TableField("state")
-    private Integer state;
-
     /**
-     * 计划出库时间
+     * 负责人
      */
-    @TableField("time")
-    private Date time;
+    @TableField("user_id")
+    private Long userId;
 
     /**
      * 创建者
@@ -88,29 +63,51 @@ public class OutstockOrder implements Serializable {
     @TableField("display")
     private Integer display;
 
+    /**
+     * 申请状态
+     */
+    @TableField("apply_state")
+    private Integer applyState;
 
-    public Long getOutstockOrderId() {
-        return outstockOrderId;
+    /**
+     * 出库数量
+     */
+    @TableField("number")
+    private Long number;
+
+    /**
+     * 出库价格
+     */
+    @TableField("price")
+    private Integer price;
+
+    /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    /**
+     * 产品id
+     */
+    @TableField("item_id")
+    private Long itemId;
+
+
+    public Long getOutstockApplyId() {
+        return outstockApplyId;
     }
 
-    public void setOutstockOrderId(Long outstockOrderId) {
-        this.outstockOrderId = outstockOrderId;
+    public void setOutstockApplyId(Long outstockApplyId) {
+        this.outstockApplyId = outstockApplyId;
     }
 
-    public Integer getState() {
-        return state;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setState(Integer state) {
-        this.state = state;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Long getCreateUser() {
@@ -152,24 +149,62 @@ public class OutstockOrder implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
-    public Long getOutstockApplyId() {
-        return outstockApplyId;
+
+    public Integer getApplyState() {
+        return applyState;
     }
 
-    public void setOutstockApplyId(Long outstockApplyId) {
-        this.outstockApplyId = outstockApplyId;
+    public void setApplyState(Integer applyState) {
+        this.applyState = applyState;
     }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
+
     @Override
     public String toString() {
-        return "OutstockOrder{" +
-        "outstockOrderId=" + outstockOrderId +
-        ", state=" + state +
-        ", time=" + time +
+        return "OutstockApply{" +
+        "outstockApplyId=" + outstockApplyId +
+        ", userId=" + userId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", display=" + display +
+        ", applyState=" + applyState +
+        ", number=" + number +
+        ", price=" + price +
+        ", brandId=" + brandId +
+        ", itemId=" + itemId +
         "}";
     }
 }

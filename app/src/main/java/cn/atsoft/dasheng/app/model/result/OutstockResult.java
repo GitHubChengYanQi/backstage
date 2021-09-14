@@ -26,7 +26,7 @@ OutstockResult implements Serializable {
     private StorehouseResult storehouseResult;
 
     private Long outstockOrderId;
-
+    private Long outstockApplyId;
     private Long stockId;
 
     /**
