@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.atsoft.dasheng.userInfo.model.BackUser;
+import cn.atsoft.dasheng.userInfo.model.GetBind;
 import cn.atsoft.dasheng.userInfo.model.GetKey;
 import cn.atsoft.dasheng.userInfo.model.GetUser;
 import cn.atsoft.dasheng.userInfo.service.UserInfoService;
@@ -199,6 +200,37 @@ public class UserinfoServiceImp implements UserInfoService {
             throw new ServiceException(500, "绑定失败,请确认用户存在");
         }
 
+
+    }
+
+    @Override
+    public void binds(GetBind getBind) {
+        if (getBind.getUserId() != null && getBind.getUserId() != null) {
+            /**
+             * 通过userid查询是否绑定
+             */
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("user_id", getBind.getUserId());
+            List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            for (WxuserInfo wxuserInfo : list) {
+                if (wxuserInfo.getMemberId().equals(UserUtils.getUserId())) {
+                    throw new ServiceException(500, "该用户已被绑定");
+                }
+            }
+            /**
+             * 绑定
+             */
+            if (list.size() <= 0) {
+                    WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+                    wxuserInfoParam.setUserId(getBind.getUserId());
+                    wxuserInfoParam.setMemberId(getBind.getMemberId());
+                    wxuserInfoService.add(wxuserInfoParam);
+            } else {
+                throw new ServiceException(505, "账户已经绑定");
+            }
+        } else {
+            throw new ServiceException(500, "绑定失败,请确认用户存在");
+        }
 
     }
 

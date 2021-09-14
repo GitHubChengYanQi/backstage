@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.userInfo.controller;
 
 import cn.atsoft.dasheng.userInfo.model.BackUser;
+import cn.atsoft.dasheng.userInfo.model.GetBind;
 import cn.atsoft.dasheng.userInfo.model.GetKey;
 import cn.atsoft.dasheng.userInfo.model.GetUser;
 import cn.atsoft.dasheng.userInfo.service.UserInfoService;
@@ -51,6 +52,17 @@ public class UserinfoController extends BaseController {
     @RequestMapping(value = "/binding", method = RequestMethod.POST)
     public ResponseData binding(@RequestBody GetKey getKey) {
         userInfoService.binding(getKey);
+        return ResponseData.success();
+    }
+    /**
+     * 手动绑定
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/binds", method = RequestMethod.POST)
+    public ResponseData binds(@RequestBody GetBind getBind) {
+        userInfoService.binds(getBind);
         return ResponseData.success();
     }
 

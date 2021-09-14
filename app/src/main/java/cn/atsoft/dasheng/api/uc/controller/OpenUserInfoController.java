@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.api.uc.controller;
 
+import cn.atsoft.dasheng.api.uc.wrapper.OpenUserInfoSelectWrapper;
+import cn.atsoft.dasheng.app.entity.ErpPackage;
+import cn.atsoft.dasheng.app.wrapper.ErpPackageSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
 import cn.atsoft.dasheng.api.uc.model.params.OpenUserInfoParam;
@@ -9,6 +12,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -103,6 +107,23 @@ public class OpenUserInfoController extends BaseController {
         }
         return this.openUserInfoService.findPageBySpec(openUserInfoParam);
     }
+
+
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.openUserInfoService.listMaps();
+        OpenUserInfoSelectWrapper factory = new OpenUserInfoSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 

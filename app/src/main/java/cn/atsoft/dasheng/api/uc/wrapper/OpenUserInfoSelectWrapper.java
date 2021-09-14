@@ -15,5 +15,10 @@ public class OpenUserInfoSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("username"));
+        String value = Convert.toStr(map.get("member_id"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }
