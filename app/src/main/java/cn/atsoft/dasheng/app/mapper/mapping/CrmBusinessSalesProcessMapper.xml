@@ -58,6 +58,9 @@
         <if test="paramCondition.salesProcessPlanId != null">
             and sales_process_plan_id = #{paramCondition.salesProcessPlanId}
         </if>
+        <if test="paramCondition.salesProcessId != null">
+            and sales_process_id = #{paramCondition.salesProcessId}
+        </if>
     </select>
 
 

@@ -83,12 +83,8 @@ public class CrmBusinessSalesProcessController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CrmBusinessSalesProcessResult> detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
-        CrmBusinessSalesProcess detail = this.crmBusinessSalesProcessService.getById(crmBusinessSalesProcessParam.getSalesProcessId());
-        CrmBusinessSalesProcessResult result = new CrmBusinessSalesProcessResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam);
+        return ResponseData.success(pageBySpec.getData().get(0));
     }
 
     /**
