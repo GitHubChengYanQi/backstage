@@ -55,6 +55,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             CrmBusinessDetailed newEntity = new CrmBusinessDetailed();
             newEntity.setBusinessId(param.getBusinessId());
             newEntity.setItemId(itemId);
+            newEntity.setSalePrice(0);
+            newEntity.setQuantity(0);
+            newEntity.setTotalPrice(0);
             list.add(newEntity);
         }
         this.saveBatch(list);
@@ -77,6 +80,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             CrmBusinessDetailed newEntity = new CrmBusinessDetailed();
             newEntity.setItemId(table.getItemId());
             newEntity.setBusinessId(param.getBusinessId());
+            newEntity.setSalePrice(0);
+            newEntity.setQuantity(0);
+            newEntity.setTotalPrice(0);
             newEntryList.add(newEntity);
         }
         //newEntryList{CrmBusinessDerailed实体对象(多个)}
