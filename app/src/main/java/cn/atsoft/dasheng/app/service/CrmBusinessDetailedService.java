@@ -31,6 +31,10 @@ public interface CrmBusinessDetailedService extends IService<CrmBusinessDetailed
      */
     void addAll(CrmBusinessDetailedParam param);
     /**
+     * 批量增加
+     */
+    void addAllPackages(CrmBusinessDetailedParam param);
+    /**
      * 删除
      *
      * @author qr

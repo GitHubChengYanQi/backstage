@@ -40,10 +40,16 @@ public class CrmBusinessDetailedController extends BaseController {
         this.crmBusinessDetailedService.add(crmBusinessDetailedParam);
         return ResponseData.success();
     }
-    @RequestMapping(value = "/addAll", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
     @ApiOperation("批量新增")
     public ResponseData addAll(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
         this.crmBusinessDetailedService.addAll(crmBusinessDetailedParam);
+        return ResponseData.success();
+    }
+    @RequestMapping(value = "/addAllPackages", method = RequestMethod.POST)
+    @ApiOperation("批量新增")
+    public ResponseData addAllPackages(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
+        this.crmBusinessDetailedService.addAllPackages(crmBusinessDetailedParam);
         return ResponseData.success();
     }
 
