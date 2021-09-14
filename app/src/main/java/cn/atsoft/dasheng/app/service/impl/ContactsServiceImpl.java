@@ -51,6 +51,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
+        Contacts one = this.query().eq("contacts_name", param.getContactsName()).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            throw new ServiceException(500, "联系人已存在");
+        }
         Customer customer = customerService.getById(param.getCustomerId());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
@@ -100,7 +104,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     public List<ContactsResult> findListBySpec(ContactsParam param) {
         return null;
     }
-
 
 
     @Override
