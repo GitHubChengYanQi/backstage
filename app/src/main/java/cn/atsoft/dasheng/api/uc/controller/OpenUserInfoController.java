@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * 控制器
  *
- * @author 
+ * @author
  * @Date 2021-08-25 08:31:10
  */
 @RestController
@@ -39,7 +40,7 @@ public class OpenUserInfoController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-25
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -52,7 +53,7 @@ public class OpenUserInfoController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-25
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -66,12 +67,12 @@ public class OpenUserInfoController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-25
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OpenUserInfoParam openUserInfoParam)  {
+    public ResponseData delete(@RequestBody OpenUserInfoParam openUserInfoParam) {
         this.openUserInfoService.delete(openUserInfoParam);
         return ResponseData.success();
     }
@@ -79,7 +80,7 @@ public class OpenUserInfoController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-08-25
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -96,13 +97,13 @@ public class OpenUserInfoController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-08-25
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OpenUserInfoResult> list(@RequestBody(required = false) OpenUserInfoParam openUserInfoParam) {
-        if(ToolUtil.isEmpty(openUserInfoParam)){
+        if (ToolUtil.isEmpty(openUserInfoParam)) {
             openUserInfoParam = new OpenUserInfoParam();
         }
         return this.openUserInfoService.findPageBySpec(openUserInfoParam);
@@ -118,14 +119,13 @@ public class OpenUserInfoController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.openUserInfoService.listMaps();
+        QueryWrapper<OpenUserInfo> openUserInfoQueryWrapper = new QueryWrapper<>();
+        openUserInfoQueryWrapper.in("source", "wxMp");
+        List<Map<String, Object>> list = this.openUserInfoService.listMaps(openUserInfoQueryWrapper);
         OpenUserInfoSelectWrapper factory = new OpenUserInfoSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
-
-
 
 
 }

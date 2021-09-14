@@ -213,7 +213,7 @@ public class UserinfoServiceImp implements UserInfoService {
             wxuserInfoQueryWrapper.in("user_id", getBind.getUserId());
             List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
             for (WxuserInfo wxuserInfo : list) {
-                if (wxuserInfo.getMemberId().equals(UserUtils.getUserId())) {
+                if (wxuserInfo.getMemberId().equals(getBind.getUserId())) {
                     throw new ServiceException(500, "该用户已被绑定");
                 }
             }
