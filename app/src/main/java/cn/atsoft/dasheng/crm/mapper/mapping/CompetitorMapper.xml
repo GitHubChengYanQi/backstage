@@ -178,7 +178,7 @@
             and ownership like CONCAT('%',#{paramCondition.ownership},'%')
         </if>
         <if test="paramCondition.region != null and paramCondition.region != ''">
-            and region like CONCAT('%',#{paramCondition.region},'%')
+            and region = #{paramCondition.region}
         </if>
         <if test="paramCondition.competitionLevel != null">
             and competition_level like CONCAT('%',#{paramCondition.competitionLevel},'%')

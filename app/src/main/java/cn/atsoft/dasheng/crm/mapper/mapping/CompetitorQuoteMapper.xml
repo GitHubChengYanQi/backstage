@@ -63,7 +63,9 @@
                 <if test="paramCondition.quoteId != null" >
                     and quote_id = #{paramCondition.quoteId}
                 </if>
-
+                <if test="paramCondition.quoteStatus != null">
+                    and quote_status = #{paramCondition.quoteStatus}
+                </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">

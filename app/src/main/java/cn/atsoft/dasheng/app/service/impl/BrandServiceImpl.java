@@ -77,7 +77,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     public PageInfo<BrandResult> findPageBySpec(BrandParam param) {
         Page<BrandResult> pageContext = getPageContext();
         IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
+//        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
