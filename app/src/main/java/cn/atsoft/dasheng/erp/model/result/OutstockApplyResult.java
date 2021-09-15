@@ -69,29 +69,6 @@ public class OutstockApplyResult implements Serializable {
     @ApiModelProperty("申请状态")
     private Integer applyState;
 
-    /**
-     * 出库数量
-     */
-    @ApiModelProperty("出库数量")
-    private Long number;
-
-    /**
-     * 出库价格
-     */
-    @ApiModelProperty("出库价格")
-    private Integer price;
-
-    /**
-     * 品牌id
-     */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
-
-    /**
-     * 产品id
-     */
-    @ApiModelProperty("产品id")
-    private Long itemId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
