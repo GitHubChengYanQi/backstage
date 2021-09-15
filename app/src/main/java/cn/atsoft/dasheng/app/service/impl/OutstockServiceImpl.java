@@ -66,6 +66,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         Outstock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
     }
 
     @Override

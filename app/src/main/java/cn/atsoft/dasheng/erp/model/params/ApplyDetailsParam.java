@@ -1,11 +1,9 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -14,30 +12,42 @@ import java.util.List;
 
 /**
  * <p>
- * 出库申请
+ * 
  * </p>
  *
  * @author song
- * @since 2021-09-14
+ * @since 2021-09-15
  */
 @Data
 @ApiModel
-public class OutstockApplyParam implements Serializable, BaseValidatingParam {
+public class ApplyDetailsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ApplyDetailsParam> applyDetailsParams;
-    /**
-     * 出库申请
-     */
-    @ApiModelProperty("出库申请")
-    private Long outstockApplyId;
 
     /**
-     * 负责人
+     * 发货申请详情id
      */
-    @ApiModelProperty("负责人")
-    private Long userId;
+    @ApiModelProperty("发货申请详情id")
+    private Long outstockApplyDetailsId;
+
+    /**
+     * 产品id
+     */
+    @ApiModelProperty("产品id")
+    private Long itemId;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
+     * 发货申请id
+     */
+    @ApiModelProperty("发货申请id")
+    private Long outstockApplyId;
 
     /**
      * 创建者
@@ -70,11 +80,10 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
     private Integer display;
 
     /**
-     * 申请状态
+     * 数量
      */
-    @ApiModelProperty("申请状态")
-    private Integer applyState;
-
+    @ApiModelProperty("数量")
+    private Long number;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
