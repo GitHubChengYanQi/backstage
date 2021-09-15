@@ -32,17 +32,22 @@ public class OutBoundServiceImpl implements OutBoundService {
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
+        boolean f = false;
 
         for (OutstockListing outstockListing : outstockListings) {
             for (Stock stock : stocks) {
                 if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
+                    f = true;
                     if (stock.getInventory() < outstockListing.getNumber()) {
                         throw new ServiceException(500, "商品数量不足");
+
                     }
-                } else {
-                    throw new ServiceException(500, "没有此商品");
                 }
             }
+        }
+        if (!f) {
+            throw new ServiceException(500, "没有此商品");
+
         }
         return "出库成功";
     }
