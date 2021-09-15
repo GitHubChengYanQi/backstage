@@ -9,6 +9,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,15 +43,28 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OutstockService outstockService;
 
     @Autowired
-    private DeliveryService deliveryService;
-    @Autowired
-    private DeliveryDetailsService deliveryDetailsService;
+   private OutstockListingService outstockListingService;
 
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
         OutstockOrder entity = getEntity(param);
         this.save(entity);
+
+        List<ApplyDetails> applyDetails = param.getApplyDetails();
+
+        List<OutstockListing> outstockListings = new ArrayList<>();
+        for (ApplyDetails applyDetail : applyDetails) {
+            OutstockListing outstockListing = new OutstockListing();
+            outstockListing.setBrandId(applyDetail.getBrandId());
+            outstockListing.setItemId(applyDetail.getItemId());
+            outstockListing.setNumber(applyDetail.getNumber());
+            outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
+            outstockListings.add(outstockListing);
+        }
+
+        outstockListingService.saveBatch(outstockListings);
+
         return entity;
     }
 
