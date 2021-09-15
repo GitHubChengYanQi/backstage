@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import  cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,7 +39,13 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 
     @Override
     public void delete(OutstockListingParam param){
-        this.removeById(getKey(param));
+        OutstockListing byId = this.getById(param.getOutstockListingId());
+        if (ToolUtil.isEmpty(byId)){
+            throw new ServiceException(500,"所删除目标不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
