@@ -7,5 +7,5 @@ public interface OutBoundService {
      * @param stockHouseId
      * @return
      */
-    String judgeOutBound(Long applyId,Long stockHouseId);
+    String judgeOutBound(Long outstockOrderId,Long stockHouseId);
 }
