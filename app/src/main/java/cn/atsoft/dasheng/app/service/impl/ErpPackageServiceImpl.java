@@ -62,27 +62,16 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
     }
 
     @Override
-    public void batchDelete(List<Long> packageId) {
+    public void batchDelete(List<Long> packageIds) {
         ErpPackage erpPackage = new ErpPackage();
         erpPackage.setDisplay(0);
         UpdateWrapper<ErpPackage> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("package_id", packageId);
+        updateWrapper.in("package_id", packageIds);
         this.update(erpPackage, updateWrapper);
-
-//        //根据传入数组 查询相关数据
-//        QueryWrapper<ErpPackage> queryWrapper1 = new QueryWrapper<>();
-//        queryWrapper1.lambda().in(ErpPackage::getPackageId,param.getPackageIds());
-//        //查询结果装入List
-//        List<ErpPackage> list1 = baseMapper.selectList(queryWrapper1);
-//        for (ErpPackage erpPackage : list1) {
-//            //逻辑删除赋值
-//            erpPackage.setDisplay(0);
-//        }
-
 
         //查询绑定表数据
         QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(ErpPackageTable::getPackageId,packageId);
+        queryWrapper.lambda().in(ErpPackageTable::getPackageId,packageIds);
         List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
         List<ErpPackageTable>newEntity = new ArrayList<>();
         for (ErpPackageTable packageTable : list) {

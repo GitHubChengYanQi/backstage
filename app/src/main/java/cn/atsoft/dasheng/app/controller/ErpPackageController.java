@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.PackageRequest;
 import cn.atsoft.dasheng.app.wrapper.ErpPackageSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackage;
@@ -79,8 +80,8 @@ public class ErpPackageController extends BaseController {
      */
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-    public ResponseData batchDelete(@RequestBody ErpPackageParam erpPackageParam) {
-        this.erpPackageService.batchDelete(erpPackageParam.getPackageIds());
+    public ResponseData batchDelete(@RequestBody PackageRequest request) {
+        this.erpPackageService.batchDelete(request.getPackageId());
         return ResponseData.success();
     }
 
