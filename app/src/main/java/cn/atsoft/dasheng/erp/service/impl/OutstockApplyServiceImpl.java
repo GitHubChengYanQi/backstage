@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.mapper.OutstockApplyMapper;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,10 +47,21 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     public void add(OutstockApplyParam param) {
         OutstockApply entity = getEntity(param);
         this.save(entity);
-        for (ApplyDetailsParam applyDetailsParam : param.getApplyDetailsParams()) {
-            applyDetailsParam.setOutstockApplyId(entity.getOutstockApplyId());
-            applyDetailsService.add(applyDetailsParam);
+        List<ApplyDetails> applyDetailsList = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getApplyDetailsParams())) {
+            for (ApplyDetailsParam applyDetailsParam : param.getApplyDetailsParams()) {
+                ApplyDetails applyDetails = new ApplyDetails();
+                applyDetails.setOutstockApplyId(entity.getOutstockApplyId());
+                applyDetails.setBrandId(applyDetailsParam.getBrandId());
+                applyDetails.setItemId(applyDetailsParam.getItemId());
+                applyDetails.setNumber(applyDetailsParam.getNumber());
+                applyDetailsList.add(applyDetails);
+            }
+            if (ToolUtil.isNotEmpty(applyDetailsList)) {
+                applyDetailsService.saveBatch(applyDetailsList);
+            }
         }
+
     }
 
     @Override
