@@ -49,8 +49,8 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         OutstockApply entity = getEntity(param);
         this.save(entity);
         List<ApplyDetails> applyDetailsList = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(param.getApplyDetailsParams())) {
-            for (ApplyDetailsParam applyDetailsParam : param.getApplyDetailsParams()) {
+        if (ToolUtil.isNotEmpty(param.getApplyDetails())) {
+            for (ApplyDetailsParam applyDetailsParam : param.getApplyDetails()) {
                 ApplyDetails applyDetails = new ApplyDetails();
                 applyDetails.setOutstockApplyId(entity.getOutstockApplyId());
                 applyDetails.setBrandId(applyDetailsParam.getBrandId());
