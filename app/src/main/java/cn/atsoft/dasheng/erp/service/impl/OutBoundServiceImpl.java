@@ -42,23 +42,22 @@ public class OutBoundServiceImpl implements OutBoundService {
 
         for (OutstockListing outstockListing : outstockListings) {
             for (Stock stock : stocks) {
+
                 if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
                     f = true;
                     Long number = outstockListing.getNumber();
                     Long inventory = stock.getInventory();
-
                     if (inventory < number) {
-                        number = number - inventory;
                         throw new ServiceException(500, "商品数量不足");
-
-
                     }
+                    inventory = inventory - number;
+                }
+                if (!f) {
+                    throw new ServiceException(500, "没有此商品");
                 }
             }
         }
-        if (!f) {
-            throw new ServiceException(500, "没有此商品");
-        }
+
         return "出库成功";
     }
 }
