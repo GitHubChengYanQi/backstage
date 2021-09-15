@@ -48,6 +48,7 @@ public class OutstockParam implements Serializable, BaseValidatingParam {
     private Long outstockOrderId;
     private Long stockId;
     private Long outstockApplyId;
+    private Long stockItemId;
 
     /**
      * 仓库id

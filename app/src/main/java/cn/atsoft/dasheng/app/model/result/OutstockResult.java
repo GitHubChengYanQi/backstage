@@ -28,6 +28,7 @@ OutstockResult implements Serializable {
     private Long outstockOrderId;
     private Long outstockApplyId;
     private Long stockId;
+    private Long stockItemId;
 
     /**
      * 出库id

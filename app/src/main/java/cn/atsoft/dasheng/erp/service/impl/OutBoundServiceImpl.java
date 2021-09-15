@@ -39,27 +39,26 @@ public class OutBoundServiceImpl implements OutBoundService {
             throw new ServiceException(500, "没有此清单");
         }
 
-        boolean f = false;
+
         for (OutstockListing outstockListing : outstockListings) {
+            int i = 0;
             for (Stock stock : stocks) {
-                f = false;
+                i++;
                 if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
-                    f = true;
                     Long number = outstockListing.getNumber();
                     Long inventory = stock.getInventory();
                     if (inventory < number) {
                         throw new ServiceException(500, "商品数量不足");
                     }
+                    break;
+                }else {
+                    if (i == stocks.size() ){
+                        throw new ServiceException(500, "没有这个商品");
+                    }
                 }
-                if (!f) {
-                    throw new ServiceException(500, "没有此商品");
-                }
-
             }
         }
-        if (!f) {
-            throw new ServiceException(500, "没有此商品");
-        }
+
         return "出库成功";
     }
 }
