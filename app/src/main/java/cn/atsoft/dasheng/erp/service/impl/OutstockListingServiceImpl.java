@@ -3,8 +3,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.mapper.OutstockListingMapper;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import  cn.atsoft.dasheng.erp.service.OutstockListingService;
@@ -62,6 +64,19 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         Page<OutstockListingResult> pageContext = getPageContext();
         IPage<OutstockListingResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public void addList(List<ApplyDetailsParam> applyDetails) {
+//        for (ApplyDetailsParam applyDetail : applyDetails) {
+//            ApplyDetails details = new ApplyDetails();
+//            int number = Math.toIntExact(applyDetail.getNumber());
+//            for (int i = 0; i < number; i++) {
+//                details.setItemId(applyDetail.getItemId());
+//                details.setBrandId(details.getBrandId());
+//                details.setNumber(1L);
+//            }
+//        }
     }
 
     private Serializable getKey(OutstockListingParam param){

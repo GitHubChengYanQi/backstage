@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -64,6 +65,8 @@ public interface OutstockListingService extends IService<OutstockListing> {
      * @author cheng
      * @Date 2021-09-15
      */
-     PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param);
+    PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param);
+
+    void addList(List<ApplyDetailsParam> applyDetails);
 
 }
