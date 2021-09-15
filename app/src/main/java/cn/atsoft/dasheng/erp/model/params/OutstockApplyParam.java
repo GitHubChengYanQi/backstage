@@ -26,7 +26,7 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ApplyDetailsParam> applyDetailsParams;
+    private List<ApplyDetailsParam> applyDetails;
     /**
      * 出库申请
      */

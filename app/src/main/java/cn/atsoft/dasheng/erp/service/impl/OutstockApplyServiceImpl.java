@@ -45,7 +45,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     public void add(OutstockApplyParam param) {
         OutstockApply entity = getEntity(param);
         this.save(entity);
-        for (ApplyDetailsParam applyDetailsParam : param.getApplyDetailsParams()) {
+        for (ApplyDetailsParam applyDetailsParam : param.getApplyDetails()) {
             applyDetailsParam.setOutstockApplyId(entity.getOutstockApplyId());
             applyDetailsService.add(applyDetailsParam);
         }
