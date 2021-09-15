@@ -34,7 +34,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_outstock_apply where 1 = 1
+        from daoxin_erp_outstock_apply where 1 = 1 and display = 1
         <if test="paramCondition.applyState != null">
             and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
         </if>
@@ -45,7 +45,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_outstock_apply where 1 = 1
+        from daoxin_erp_outstock_apply where 1 = 1 and display = 1
         <if test="paramCondition.applyState != null">
             and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
         </if>
@@ -59,7 +59,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_outstock_apply where 1 = 1
+        from daoxin_erp_outstock_apply where 1 = 1 and display = 1
         <if test="paramCondition.applyState != null">
             and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
         </if>

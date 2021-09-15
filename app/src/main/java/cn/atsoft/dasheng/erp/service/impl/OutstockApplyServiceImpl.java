@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -73,7 +75,13 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
 
     @Override
     public void delete(OutstockApplyParam param) {
-        this.removeById(getKey(param));
+        OutstockApply byId = this.getById(param.getOutstockApplyId());
+        if (ToolUtil.isEmpty(byId)){
+            throw new ServiceException(500,"所删除目标不存在");
+        }else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
