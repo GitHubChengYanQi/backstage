@@ -9,8 +9,10 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.mapper.OutstockApplyMapper;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
+import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -36,12 +38,17 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     private OutstockOrderService outstockOrderService;
     @Autowired
     private OutstockService outstockService;
-
+    @Autowired
+    private ApplyDetailsService applyDetailsService;
 
     @Override
     public void add(OutstockApplyParam param) {
         OutstockApply entity = getEntity(param);
         this.save(entity);
+        for (ApplyDetailsParam applyDetailsParam : param.getApplyDetailsParams()) {
+            applyDetailsParam.setOutstockApplyId(entity.getOutstockApplyId());
+            applyDetailsService.add(applyDetailsParam);
+        }
     }
 
     @Override
