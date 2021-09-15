@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,6 +21,8 @@ import java.util.List;
 public class OutstockApplyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+   private List<ApplyDetails> applyDetails;
 
 
 

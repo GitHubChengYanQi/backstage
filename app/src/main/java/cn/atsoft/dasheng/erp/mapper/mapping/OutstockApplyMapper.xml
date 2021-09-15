@@ -4,28 +4,30 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.OutstockApply">
-        <id column="outstock_apply_id" property="outstockApplyId" />
-        <result column="user_id" property="userId" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="display" property="display" />
-        <result column="apply_state" property="applyState" />
+        <id column="outstock_apply_id" property="outstockApplyId"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="apply_state" property="applyState"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        outstock_apply_id AS "outstockApplyId", user_id AS "userId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", apply_state AS "applyState"</sql>
+        outstock_apply_id
+        AS "outstockApplyId", user_id AS "userId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", apply_state AS "applyState"</sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockApplyResult" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockApplyResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_apply where 1 = 1
-            <if test="paramCondition.applyState != null">
-                and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
-            </if>
+        <if test="paramCondition.applyState != null">
+            and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
+        </if>
 
     </select>
 
@@ -33,29 +35,34 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_apply where 1 = 1
-                <if test="paramCondition.applyState != null">
-                        and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
-                </if>
+        <if test="paramCondition.applyState != null">
+            and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
+        </if>
 
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockApplyResult" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockApplyResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_apply where 1 = 1
-                <if test="paramCondition.applyState != null">
-                        and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
-                </if>
+        <if test="paramCondition.applyState != null">
+            and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
+        </if>
+        <if test="paramCondition.outstockApplyId != null">
+            and outstock_apply_id = #{paramCondition.outstockApplyId}
+        </if>
 
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_apply where 1 = 1
-                <if test="paramCondition.applyState != null">
-                        and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
-                </if>
+        <if test="paramCondition.applyState != null">
+            and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
+        </if>
 
     </select>
 
