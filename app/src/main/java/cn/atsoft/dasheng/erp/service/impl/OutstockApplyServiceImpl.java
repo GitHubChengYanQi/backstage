@@ -62,10 +62,6 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
             outstockOrderService.add(outstockOrderParam);
             //添加出库单
             OutstockParam outstockParam = new OutstockParam();
-            outstockParam.setNumber(newEntity.getNumber());
-            outstockParam.setBrandId(newEntity.getBrandId());
-            outstockParam.setItemId(newEntity.getItemId());
-            outstockParam.setPrice(newEntity.getPrice());
             outstockParam.setOutstockApplyId(newEntity.getOutstockApplyId());
             outstockService.add(outstockParam);
 
