@@ -32,6 +32,12 @@ public class OutBoundServiceImpl implements OutBoundService {
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
+        if (ToolUtil.isEmpty(stocks)) {
+            throw new ServiceException(500, "没有次仓库");
+        }
+        if (ToolUtil.isEmpty(outstockListings)) {
+            throw new ServiceException(500, "没有此清单");
+        }
         boolean f = false;
 
         for (OutstockListing outstockListing : outstockListings) {
@@ -47,7 +53,6 @@ public class OutBoundServiceImpl implements OutBoundService {
         }
         if (!f) {
             throw new ServiceException(500, "没有此商品");
-
         }
         return "出库成功";
     }
