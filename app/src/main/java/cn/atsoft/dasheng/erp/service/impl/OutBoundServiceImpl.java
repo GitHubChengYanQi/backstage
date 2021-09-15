@@ -51,10 +51,11 @@ public class OutBoundServiceImpl implements OutBoundService {
                         throw new ServiceException(500, "商品数量不足");
                     }
                     inventory = inventory - number;
+                    if (!f) {
+                        throw new ServiceException(500, "没有此商品");
+                    }
                 }
-                if (!f) {
-                    throw new ServiceException(500, "没有此商品");
-                }
+
             }
         }
 
