@@ -69,30 +69,6 @@ public class OutstockApply implements Serializable {
     @TableField("apply_state")
     private Integer applyState;
 
-    /**
-     * 出库数量
-     */
-    @TableField("number")
-    private Long number;
-
-    /**
-     * 出库价格
-     */
-    @TableField("price")
-    private Integer price;
-
-    /**
-     * 品牌id
-     */
-    @TableField("brand_id")
-    private Long brandId;
-
-    /**
-     * 产品id
-     */
-    @TableField("item_id")
-    private Long itemId;
-
 
     public Long getOutstockApplyId() {
         return outstockApplyId;
@@ -158,37 +134,6 @@ public class OutstockApply implements Serializable {
         this.applyState = applyState;
     }
 
-    public Long getNumber() {
-        return number;
-    }
-
-    public void setNumber(Long number) {
-        this.number = number;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
-    }
-
-    public Long getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
-    }
 
     @Override
     public String toString() {
@@ -201,10 +146,6 @@ public class OutstockApply implements Serializable {
         ", updateTime=" + updateTime +
         ", display=" + display +
         ", applyState=" + applyState +
-        ", number=" + number +
-        ", price=" + price +
-        ", brandId=" + brandId +
-        ", itemId=" + itemId +
         "}";
     }
 }
