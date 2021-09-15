@@ -144,12 +144,12 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
 
     @Override
-    public void update(OutstockOrderParam param) {
-
+    public OutstockOrder update(OutstockOrderParam param) {
         OutstockOrder oldEntity = getOldEntity(param);
         OutstockOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        return newEntity;
     }
 
     @Override

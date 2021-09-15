@@ -54,7 +54,6 @@ public class OutstockApplyController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody OutstockApplyParam outstockApplyParam) {
-
         this.outstockApplyService.update(outstockApplyParam);
         return ResponseData.success();
     }
@@ -81,11 +80,8 @@ public class OutstockApplyController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<OutstockApplyResult> detail(@RequestBody OutstockApplyParam outstockApplyParam) {
-        OutstockApply detail = this.outstockApplyService.getById(outstockApplyParam.getOutstockApplyId());
-        OutstockApplyResult result = new OutstockApplyResult();
-        ToolUtil.copyProperties(detail, result);
-
-        return ResponseData.success(result);
+        PageInfo<OutstockApplyResult> pageBySpec = this.outstockApplyService.findPageBySpec(outstockApplyParam);
+        return ResponseData.success(pageBySpec.getData().get(0));
     }
 
     /**

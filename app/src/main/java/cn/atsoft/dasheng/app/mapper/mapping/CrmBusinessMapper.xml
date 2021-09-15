@@ -40,9 +40,6 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business where display = 1
-        <if test="paramCondition.salesId != null">
-            and sales_id = #{paramCondition.salesId}
-        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmBusinessParam">

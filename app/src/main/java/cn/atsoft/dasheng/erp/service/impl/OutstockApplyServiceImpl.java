@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
 import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -71,6 +72,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
 
     @Override
     public void update(OutstockApplyParam param) {
+
         OutstockApply oldEntity = getOldEntity(param);
         OutstockApply newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -84,7 +86,6 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
             OutstockParam outstockParam = new OutstockParam();
             outstockParam.setOutstockApplyId(newEntity.getOutstockApplyId());
             outstockService.add(outstockParam);
-
         }
 
 
@@ -104,6 +105,15 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     public PageInfo<OutstockApplyResult> findPageBySpec(OutstockApplyParam param) {
         Page<OutstockApplyResult> pageContext = getPageContext();
         IPage<OutstockApplyResult> page = this.baseMapper.customPageList(pageContext, param);
+
+
+        for (OutstockApplyResult record : page.getRecords()) {
+            QueryWrapper<ApplyDetails> applyDetailsQueryWrapper = new QueryWrapper<>();
+            applyDetailsQueryWrapper.in("outstock_apply_id",record.getOutstockApplyId());
+            List<ApplyDetails> list = applyDetailsService.list(applyDetailsQueryWrapper);
+            record.setApplyDetails(list);
+        }
+
         return PageFactory.createPageInfo(page);
     }
 
