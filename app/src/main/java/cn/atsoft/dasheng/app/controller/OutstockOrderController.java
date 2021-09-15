@@ -57,9 +57,8 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody OutstockOrderParam outstockOrderParam) {
-
-        this.outstockOrderService.update(outstockOrderParam);
-        return ResponseData.success();
+        OutstockOrder update = this.outstockOrderService.update(outstockOrderParam);
+        return ResponseData.success(update);
     }
 
     /**

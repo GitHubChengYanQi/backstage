@@ -88,7 +88,7 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
         for (ErpPackageTable packageTable : list) {
             //绑定表数据逻辑删除赋值
             packageTable.setDisplay(0);
-           newEntity.add(packageTable);
+            newEntity.add(packageTable);
         }
         //绑定表更新逻辑删除
         erpPackageTableService.updateBatchById(newEntity);

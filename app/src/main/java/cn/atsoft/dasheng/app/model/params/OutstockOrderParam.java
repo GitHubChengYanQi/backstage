@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -28,6 +29,8 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("出库详细id")
     private Long outstockOrderId;
+
+    private List<ApplyDetails> applyDetails;
 
     private Long outstockApplyId;
 
