@@ -33,7 +33,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
         if (ToolUtil.isEmpty(stocks)) {
-            throw new ServiceException(500, "没有次仓库");
+            throw new ServiceException(500, "此仓库没有物品");
         }
         if (ToolUtil.isEmpty(outstockListings)) {
             throw new ServiceException(500, "没有此清单");
