@@ -38,11 +38,11 @@ public class OutBoundServiceImpl implements OutBoundService {
         if (ToolUtil.isEmpty(outstockListings)) {
             throw new ServiceException(500, "没有此清单");
         }
-        boolean f = false;
 
+        boolean f = false;
         for (OutstockListing outstockListing : outstockListings) {
             for (Stock stock : stocks) {
-
+                f = false;
                 if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
                     f = true;
                     Long number = outstockListing.getNumber();
@@ -50,15 +50,14 @@ public class OutBoundServiceImpl implements OutBoundService {
                     if (inventory < number) {
                         throw new ServiceException(500, "商品数量不足");
                     }
-                    inventory = inventory - number;
-                    if (!f) {
-                        throw new ServiceException(500, "没有此商品");
-                    }
+
                 }
 
             }
         }
-
+        if (!f) {
+            throw new ServiceException(500, "没有此商品");
+        }
         return "出库成功";
     }
 }
