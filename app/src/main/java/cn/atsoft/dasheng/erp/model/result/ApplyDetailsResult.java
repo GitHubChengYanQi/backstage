@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,13 +21,26 @@ import java.util.List;
 public class ApplyDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private BrandResult brandResult;
+    private ItemsResult itemsResult;
 
     /**
      * 发货申请详情id
      */
     @ApiModelProperty("发货申请详情id")
     private Long outstockApplyDetailsId;
+
+    @ApiModelProperty("收货地址id")
+    private Long adressId;
+
+    @ApiModelProperty("联系人id")
+    private Long contactsId;
+
+    @ApiModelProperty("电话id")
+    private Long phoneId;
+
+    @ApiModelProperty("预计到达时间")
+    private Date time;
 
     /**
      * 产品id

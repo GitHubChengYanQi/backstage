@@ -8,6 +8,10 @@
         <result column="item_id" property="itemId"/>
         <result column="brand_id" property="brandId"/>
         <result column="outstock_apply_id" property="outstockApplyId"/>
+        <result column="adress_id" property="adressId"/>
+        <result column="contacts_id" property="contactsId"/>
+        <result column="phone_id" property="phoneId"/>
+        <result column="time" property="time"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -18,6 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
+        adress_id AS "adressId",contacts_id AS "contactsId",phone_id AS "phoneId",time AS "time",
         outstock_apply_details_id
         AS "outstockApplyDetailsId", item_id AS "itemId", brand_id AS "brandId", outstock_apply_id AS "outstockApplyId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", number AS "number"
     </sql>
