@@ -85,15 +85,7 @@ public class OutBoundServiceImpl implements OutBoundService {
         StockDetails stockDetails = new StockDetails();
         for (Stock stock : sendOutstock) {
 
-            for (int i = 0; i < stock.getInventory(); i++) {
-                Outstock outstock = new Outstock();
-                outstock.setBrandId(stock.getBrandId());
-                outstock.setItemId(stock.getItemId());
-                outstock.setStockId(stock.getStockId());
-                outstock.setStorehouseId(stock.getStorehouseId());
-                outstock.setOutstockOrderId(outstockOrderId);
-                Outstocks.add(outstock);
-
+            for (int i = 0; i < stock.getInventory()-1; i++) {
                 stockDetails.setStage(2);
                 stockDetails.setStockId(stock.getStockId());
                 stockDetails.setItemId(stock.getItemId());
@@ -106,9 +98,19 @@ public class OutBoundServiceImpl implements OutBoundService {
                         .in(StockDetails::getStage, 1)
                         .list();
 
-                StockDetails details = list.get(0);
+                StockDetails details = list.get(i);
                 details.setStage(2);
                 stockDetailsList.add(details);
+                Outstock outstock = new Outstock();
+                outstock.setBrandId(details.getBrandId());
+                outstock.setItemId(details.getItemId());
+                outstock.setStockId(details.getStockId());
+                outstock.setStorehouseId(details.getStorehouseId());
+                outstock.setOutstockOrderId(outstockOrderId);
+                outstock.setStockItemId(details.getStockItemId());
+                Outstocks.add(outstock);
+
+
             }
         }
         outstockService.saveBatch(Outstocks);
