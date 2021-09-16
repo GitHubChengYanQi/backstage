@@ -61,6 +61,7 @@
         <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
+        order by create_time DESC
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
@@ -82,6 +83,8 @@
         <if test="paramCondition.customerName !=null  and paramCondition.customerName != '' ">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.CustomerResult"
@@ -122,6 +125,8 @@
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%', #{paramCondition.deptId},'%'))
         </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
@@ -138,6 +143,8 @@
         <if test="paramCondition.customerId !=null  and paramCondition.customerId != '' ">
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
+        order by create_time DESC
+
     </select>
 
 </mapper>

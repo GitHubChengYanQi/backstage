@@ -58,6 +58,8 @@
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.DeliveryParam">

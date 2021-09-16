@@ -34,6 +34,8 @@
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
             and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
         </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftParam">
@@ -46,6 +48,8 @@
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
             and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
         </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftResult"
@@ -60,6 +64,7 @@
         <if test="paramCondition.speechcraftType != null">
             and speechcraft_type = #{paramCondition.speechcraftType}
         </if>
+        order by create_time DESC
 
     </select>
 
@@ -73,6 +78,8 @@
         <if test="paramCondition.speechcraftKey != null and paramCondition.speechcraftKey != ''">
             and speechcraft_key like CONCAT('%',#{paramCondition.speechcraftKey},'%')
         </if>
+        order by create_time DESC
+
     </select>
 
 </mapper>

@@ -135,7 +135,8 @@ public class CrmBusiness implements Serializable {
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
-
+    @TableField(value = "deptId")
+    private Long deptId;
 
 
     /**
@@ -294,6 +295,13 @@ public class CrmBusiness implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     @Override

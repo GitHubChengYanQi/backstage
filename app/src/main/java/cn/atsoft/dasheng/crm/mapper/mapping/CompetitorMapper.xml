@@ -89,6 +89,7 @@
         <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
             and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
         </if>
+        order by create_time DESC
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
@@ -143,6 +144,7 @@
         <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
             and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
         </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorResult"
@@ -198,6 +200,7 @@
         <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
             and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
         </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
@@ -252,6 +255,7 @@
         <if test="paramCondition.takeCountermeasures != null and paramCondition.takeCountermeasures != ''">
             and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
         </if>
+        order by create_time DESC
     </select>
 
 </mapper>

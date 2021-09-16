@@ -249,7 +249,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return PageFactory.createPageInfo(page);
     }
 
-    public CustomerResult format(List<CustomerResult> data) {
+    public CustomerResult  format(List<CustomerResult> data) {
 
         List<Long> dycustomerIds = new ArrayList<>();
         List<Long> originIds = new ArrayList<>();
