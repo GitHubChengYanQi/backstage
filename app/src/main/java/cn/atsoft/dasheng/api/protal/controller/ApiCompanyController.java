@@ -46,7 +46,7 @@ public class ApiCompanyController {
             if (ToolUtil.isEmpty(customerParam)) {
                 customerParam = new CustomerParam();
             }
-            return ResponseData.success(customerService.findPageBySpec(customerParam));
+            return ResponseData.success(customerService.findPageBySpec(null,customerParam));
         }else{
             return  ResponseData.success();
         }

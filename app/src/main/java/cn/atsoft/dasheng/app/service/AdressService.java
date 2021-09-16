@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -67,6 +68,6 @@ public interface AdressService extends IService<Adress> {
      * @author 
      * @Date 2021-07-23
      */
-     PageInfo<AdressResult> findPageBySpec(AdressParam param);
+     PageInfo<AdressResult> findPageBySpec(DataScope dataScope , AdressParam param);
 
 }
