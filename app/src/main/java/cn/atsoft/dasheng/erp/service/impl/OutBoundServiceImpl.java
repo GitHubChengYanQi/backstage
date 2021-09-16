@@ -1,7 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
+import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.service.OutstockService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -11,9 +15,11 @@ import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +32,11 @@ public class OutBoundServiceImpl implements OutBoundService {
     private StorehouseService storehouseService;
     @Autowired
     private OutstockListingService outstockListingService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private OutstockService outstockService;
+    Long end = 0L;
 
     @Override
     public String judgeOutBound(Long outstockOrderId, Long stockHouseId) {
@@ -39,7 +50,8 @@ public class OutBoundServiceImpl implements OutBoundService {
             throw new ServiceException(500, "没有此清单");
         }
 
-
+        List<Stock> sendOutstock = new ArrayList<>();
+        List<Stock> stocksList = new ArrayList<>();
         for (OutstockListing outstockListing : outstockListings) {
             int i = 0;
             for (Stock stock : stocks) {
@@ -50,13 +62,66 @@ public class OutBoundServiceImpl implements OutBoundService {
                     if (inventory < number) {
                         throw new ServiceException(500, "商品数量不足");
                     }
+                    long l = number;
+                    stock.setInventory(l);
+                    sendOutstock.add(stock);
+                    Stock updateStock = new Stock();
+                    ToolUtil.copyProperties(stock, updateStock);
+                    end = inventory - number;
+                    updateStock.setInventory(end);
+
+                    stocksList.add(updateStock);
+
                     break;
-                }else {
-                    if (i == stocks.size() ){
+                } else {
+                    if (i == stocks.size()) {
                         throw new ServiceException(500, "没有这个商品");
                     }
                 }
             }
+        }
+        List<Outstock> Outstocks = new ArrayList<>();
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        StockDetails stockDetails = new StockDetails();
+        for (Stock stock : sendOutstock) {
+
+            for (int i = 0; i < stock.getInventory(); i++) {
+                Outstock outstock = new Outstock();
+                outstock.setBrandId(stock.getBrandId());
+                outstock.setItemId(stock.getItemId());
+                outstock.setStockId(stock.getStockId());
+                outstock.setStorehouseId(stock.getStorehouseId());
+                outstock.setOutstockOrderId(outstockOrderId);
+                Outstocks.add(outstock);
+
+                stockDetails.setStage(2);
+                stockDetails.setStockId(stock.getStockId());
+                stockDetails.setItemId(stock.getItemId());
+                stockDetails.setBrandId(stock.getBrandId());
+
+                List<StockDetails> list = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stockDetails.getStockId())
+                        .in(StockDetails::getBrandId, stockDetails.getBrandId())
+                        .in(StockDetails::getItemId, stockDetails.getItemId())
+                        .orderByAsc(StockDetails::getCreateTime)
+                        .in(StockDetails::getStage, 1)
+                        .list();
+
+                StockDetails details = list.get(0);
+                details.setStage(2);
+                stockDetailsList.add(details);
+            }
+        }
+        outstockService.saveBatch(Outstocks);
+        List<Stock> updateStocks = new ArrayList<>();
+        stockDetailsService.updateBatchById(stockDetailsList);
+
+        for (Stock stock : stocksList) {
+            updateStocks.add(stock);
+        }
+        stockService.updateBatchById(updateStocks);
+
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+
         }
 
         return "出库成功";
