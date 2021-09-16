@@ -40,6 +40,18 @@ public class OutBoundServiceImpl implements OutBoundService {
         Long end = 0L;
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
+
+
+//        for (OutstockListing outstockListing : outstockListings) {
+//
+//            boolean b = backItem(stockHouseId, outstockListing.getBrandId(), outstockListing.getItemId());
+//            if (!b) {
+//                System.out.println("outstockOrderId = " + outstockOrderId + ", stockHouseId = " + stockHouseId);
+//            }
+//        }
+
+
+
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
         if (ToolUtil.isEmpty(stocks)) {
             throw new ServiceException(500, "此仓库没有物品");
@@ -126,13 +138,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 //                        .and(j -> j.in(StockDetails::getItemId, stockDetails.getItemId()))
 //                        .and(z -> z.in(StockDetails::getStage, 1))).list();
 
-        List<OutstockListing> outstockListingList = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
-//        for (OutstockListing outstockListing : outstockListingList) {
-//
-//            boolean b = backItem(stockHouseId, outstockListing.getBrandId(), outstockListing.getItemId());
-//
-//        }
 
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
@@ -144,13 +150,17 @@ public class OutBoundServiceImpl implements OutBoundService {
         return "出库成功";
     }
 
-//    boolean backItem(Long id, Long brandId, Long itemId) {
-//        List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
-//        for (Stock stock : stocks) {
-//            if (stock.getItemId().equals(brandId) && stock.getItemId().equals(itemId)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    boolean backItem(Long id, Long brandId, Long itemId) {
+        List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
+        for (Stock stock : stocks) {
+
+            if (!stock.getItemId().equals(brandId) && !stock.getItemId().equals(itemId)) {
+                return false;
+            }
+        }
+        if (ToolUtil.isEmpty(stocks)) {
+            return false;
+        }
+        return true;
+    }
 }
