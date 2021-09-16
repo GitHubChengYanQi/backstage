@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
+import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
@@ -21,7 +22,7 @@ public class OutBoundController {
     @Autowired
     private OutBoundService outBoundService;
     @Autowired
-    private OutstockService outstockService;
+    private OutstockOrderService outstockOrderService;
 
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
@@ -29,10 +30,7 @@ public class OutBoundController {
     public ResponseData addItem(@RequestBody OutstockOrderParam outstockOrderParam) {
 
         String judgeOutBound = this.outBoundService.judgeOutBound(outstockOrderParam.getOutstockOrderId(), outstockOrderParam.getStorehouseId());
-        OutstockParam outstockParam = new OutstockParam();
-        outstockParam.setOutstockOrderId(outstockOrderParam.getOutstockOrderId());
-//        outstockParam.setu
-        outstockService.update();
+        outstockOrderService.update(outstockOrderParam);
         return ResponseData.success(judgeOutBound);
     }
 }
