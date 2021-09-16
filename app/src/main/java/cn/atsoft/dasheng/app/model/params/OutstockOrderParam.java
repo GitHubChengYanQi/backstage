@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -41,7 +42,17 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("出库状态")
     private Integer state;
-
+    /**
+     * 经手人
+     */
+    @ApiModelProperty("经手人")
+    private Long userId;
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String note;
+    /**
     /**
      * 计划出库时间
      */
