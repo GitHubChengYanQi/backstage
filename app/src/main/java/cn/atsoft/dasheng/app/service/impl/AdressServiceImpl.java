@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -112,7 +113,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     }
 
     @Override
-    public PageInfo<AdressResult> findPageBySpec(AdressParam param) {
+    public PageInfo<AdressResult> findPageBySpec(DataScope dataScope, AdressParam param) {
         Page<AdressResult> pageContext = getPageContext();
         IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param);
 

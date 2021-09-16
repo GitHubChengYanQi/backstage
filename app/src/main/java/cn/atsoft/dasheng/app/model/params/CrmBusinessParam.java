@@ -134,7 +134,8 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
-
+    @ApiModelProperty("部门id")
+    private Long deptId;
     /**
      * 状态
      */
