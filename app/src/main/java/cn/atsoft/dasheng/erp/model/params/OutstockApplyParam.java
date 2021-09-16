@@ -40,6 +40,16 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
     private Long userId;
 
     /**
+     * 客户id
+     */
+    @ApiModelProperty("客户id")
+    private Long customerId;
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

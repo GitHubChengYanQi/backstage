@@ -11,11 +11,15 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="remark" property="remark"/>
         <result column="apply_state" property="applyState"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
+        customer_id AS "customerId",
+        remark AS "remark",
         outstock_apply_id
         AS "outstockApplyId", user_id AS "userId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", apply_state AS "applyState"</sql>
 
@@ -24,7 +28,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.OutstockApplyParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_outstock_apply where 1 = 1
+        from daoxin_erp_outstock_apply where 1 = 1 and display = 1
         <if test="paramCondition.applyState != null">
             and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
         </if>
