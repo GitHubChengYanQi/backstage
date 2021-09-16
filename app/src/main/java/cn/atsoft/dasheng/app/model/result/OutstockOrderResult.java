@@ -38,6 +38,18 @@ public class OutstockOrderResult implements Serializable {
     private Integer state;
 
     /**
+     * 经手人
+     */
+    @ApiModelProperty("经手人")
+    private Long userId;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String note;
+
+    /**
      * 计划出库时间
      */
     @ApiModelProperty("计划出库时间")

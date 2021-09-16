@@ -51,7 +51,16 @@ public class OutstockOrder implements Serializable {
      */
     @TableField("state")
     private Integer state;
-
+    /**
+     * 经手人
+     */
+    @TableField("user_id")
+    private Long userId;
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
     /**
      * 计划出库时间
      */
