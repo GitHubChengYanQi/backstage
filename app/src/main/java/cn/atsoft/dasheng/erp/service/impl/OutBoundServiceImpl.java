@@ -1,13 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
-import cn.atsoft.dasheng.app.entity.Outstock;
-import cn.atsoft.dasheng.app.entity.Stock;
-import cn.atsoft.dasheng.app.entity.StockDetails;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.service.OutstockService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StockService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
@@ -36,10 +31,13 @@ public class OutBoundServiceImpl implements OutBoundService {
     private StockDetailsService stockDetailsService;
     @Autowired
     private OutstockService outstockService;
-    Long end = 0L;
+    @Autowired
+    private OutstockOrderService outstockOrderService;
+
 
     @Override
     public String judgeOutBound(Long outstockOrderId, Long stockHouseId) {
+        Long end = 0L;
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
@@ -85,7 +83,7 @@ public class OutBoundServiceImpl implements OutBoundService {
         StockDetails stockDetails = new StockDetails();
         for (Stock stock : sendOutstock) {
 
-            for (int i = 0; i < stock.getInventory()-1; i++) {
+            for (int i = 0; i < stock.getInventory(); i++) {
                 stockDetails.setStage(2);
                 stockDetails.setStockId(stock.getStockId());
                 stockDetails.setItemId(stock.getItemId());
@@ -126,6 +124,12 @@ public class OutBoundServiceImpl implements OutBoundService {
 
         }
 
+        OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
+        outstockOrder.setState(1);
+        outstockOrder.setStorehouseId(stockHouseId);
+        OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
+        ToolUtil.copyProperties(outstockOrder,outstockOrderParam);
+        outstockOrderService.update(outstockOrderParam);
         return "出库成功";
     }
 }

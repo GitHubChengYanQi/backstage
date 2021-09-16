@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OutBoundController {
     @Autowired
     private OutBoundService outBoundService;
+    @Autowired
+    private OutstockService outstockService;
 
 
     @RequestMapping(value = "/send", method = RequestMethod.POST)
@@ -26,6 +28,7 @@ public class OutBoundController {
     public ResponseData addItem(@RequestBody OutstockOrderParam outstockOrderParam) {
 
         String judgeOutBound = this.outBoundService.judgeOutBound(outstockOrderParam.getOutstockOrderId(), outstockOrderParam.getStorehouseId());
+        outstockService.update();
         return ResponseData.success(judgeOutBound);
     }
 }
