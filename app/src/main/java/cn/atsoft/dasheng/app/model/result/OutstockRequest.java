@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
+import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import lombok.Data;
 
@@ -12,5 +13,5 @@ public class OutstockRequest {
     private Long contactsId;
     private Long customerId;
     private Long phoneId;
-    private  List<StockDetailsParam> ids ;
+    private  List<OutstockParam> ids ;
 }
