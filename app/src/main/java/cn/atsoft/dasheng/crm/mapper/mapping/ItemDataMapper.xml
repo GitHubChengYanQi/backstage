@@ -30,6 +30,7 @@
             <if test="paramCondition.dataId != null">
                 and data_id like CONCAT('%',#{paramCondition.dataId},'%')
             </if>
+        order by create_time DESC
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.ItemDataParam">
@@ -42,6 +43,7 @@
                 <if test="paramCondition.dataId != null">
                         and data_id like CONCAT('%',#{paramCondition.dataId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.ItemDataResult" parameterType="cn.atsoft.dasheng.crm.model.params.ItemDataParam">
@@ -54,6 +56,7 @@
                 <if test="paramCondition.dataId != null">
                         and data_id like CONCAT('%',#{paramCondition.dataId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.ItemDataParam">
@@ -66,6 +69,7 @@
                 <if test="paramCondition.dataId != null">
                         and data_id like CONCAT('%',#{paramCondition.dataId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
 </mapper>

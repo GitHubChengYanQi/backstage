@@ -36,6 +36,7 @@
                 <if test="paramCondition.competitorId != null">
                         and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.BusinessCompetitionResult" parameterType="cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam">
@@ -48,6 +49,7 @@
                 <if test="paramCondition.competitorId != null">
                         and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam">
@@ -60,6 +62,7 @@
                 <if test="paramCondition.competitorId != null">
                         and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
 </mapper>

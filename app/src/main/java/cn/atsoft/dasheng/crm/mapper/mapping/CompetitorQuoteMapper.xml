@@ -33,6 +33,7 @@
             <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
                 and business_id like CONCAT('%',#{paramCondition.businessId},'%')
             </if>
+        order by create_time DESC
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
@@ -45,6 +46,7 @@
                 <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
                     and business_id like CONCAT('%',#{paramCondition.businessId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
@@ -66,6 +68,7 @@
                 <if test="paramCondition.quoteStatus != null">
                     and quote_status = #{paramCondition.quoteStatus}
                 </if>
+        order by create_time DESC
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam">
@@ -78,6 +81,7 @@
                 <if test="paramCondition.businessId != null and paramCondition.businessId != ''">
                     and business_id like CONCAT('%',#{paramCondition.businessId},'%')
                 </if>
+        order by create_time DESC
     </select>
 
 </mapper>

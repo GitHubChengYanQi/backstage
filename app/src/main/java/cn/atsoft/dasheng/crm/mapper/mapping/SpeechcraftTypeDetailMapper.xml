@@ -37,6 +37,8 @@
             <if test="paramCondition.sort != null">
                 and sort like CONCAT('%',#{paramCondition.sort},'%')
             </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeDetailParam">
@@ -55,6 +57,8 @@
                 <if test="paramCondition.sort != null">
                         and sort like CONCAT('%',#{paramCondition.sort},'%')
                 </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.crm.model.result.SpeechcraftTypeDetailResult" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeDetailParam">
@@ -73,6 +77,8 @@
                 <if test="paramCondition.sort != null">
                         and sort like CONCAT('%',#{paramCondition.sort},'%')
                 </if>
+        order by create_time DESC
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeDetailParam">
@@ -91,6 +97,8 @@
                 <if test="paramCondition.sort != null">
                         and sort like CONCAT('%',#{paramCondition.sort},'%')
                 </if>
+        order by create_time DESC
+
     </select>
 
 </mapper>
