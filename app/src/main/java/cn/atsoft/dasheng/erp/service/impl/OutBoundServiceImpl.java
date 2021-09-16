@@ -89,9 +89,9 @@ public class OutBoundServiceImpl implements OutBoundService {
                 stockDetails.setItemId(stock.getItemId());
                 stockDetails.setBrandId(stock.getBrandId());
 
-                List<StockDetails> list = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stockDetails.getStockId())
-                        .in(StockDetails::getBrandId, stockDetails.getBrandId())
-                        .in(StockDetails::getItemId, stockDetails.getItemId())
+                List<StockDetails> list = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
+                        .in(StockDetails::getBrandId, stock.getBrandId())
+                        .in(StockDetails::getItemId, stock.getItemId())
                         .orderByAsc(StockDetails::getCreateTime)
                         .in(StockDetails::getStage, 1)
                         .list();
@@ -120,16 +120,37 @@ public class OutBoundServiceImpl implements OutBoundService {
         }
         stockService.updateBatchById(updateStocks);
 
-        if (ToolUtil.isNotEmpty(stockDetails)) {
+//        List<StockDetails> details = stockDetailsService.lambdaQuery().
+//                in(StockDetails::getStockId, stockDetails.getStockId())
+//                .and(i -> i.in(StockDetails::getBrandId, stockDetails.getBrandId())
+//                        .and(j -> j.in(StockDetails::getItemId, stockDetails.getItemId()))
+//                        .and(z -> z.in(StockDetails::getStage, 1))).list();
 
-        }
+        List<OutstockListing> outstockListingList = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
+
+//        for (OutstockListing outstockListing : outstockListingList) {
+//
+//            boolean b = backItem(stockHouseId, outstockListing.getBrandId(), outstockListing.getItemId());
+//
+//        }
+
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
         outstockOrder.setState(1);
         outstockOrder.setStorehouseId(stockHouseId);
         OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
-        ToolUtil.copyProperties(outstockOrder,outstockOrderParam);
+        ToolUtil.copyProperties(outstockOrder, outstockOrderParam);
         outstockOrderService.update(outstockOrderParam);
         return "出库成功";
     }
+
+//    boolean backItem(Long id, Long brandId, Long itemId) {
+//        List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
+//        for (Stock stock : stocks) {
+//            if (stock.getItemId().equals(brandId) && stock.getItemId().equals(itemId)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }
