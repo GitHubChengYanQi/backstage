@@ -53,7 +53,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    @Permission
+
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Customer add = this.customerService.add(customerParam);
         return ResponseData.success(add);

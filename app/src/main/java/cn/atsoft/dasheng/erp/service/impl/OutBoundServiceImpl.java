@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
@@ -41,7 +42,6 @@ public class OutBoundServiceImpl implements OutBoundService {
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
 
 
-
 //        for (OutstockListing outstockListing : outstockListings) {
 //
 //            boolean b = backItem(stockHouseId, outstockListing.getBrandId(), outstockListing.getItemId());
@@ -49,7 +49,6 @@ public class OutBoundServiceImpl implements OutBoundService {
 //                System.out.println("outstockOrderId = " + outstockOrderId + ", stockHouseId = " + stockHouseId);
 //            }
 //        }
-
 
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
@@ -139,8 +138,6 @@ public class OutBoundServiceImpl implements OutBoundService {
 //                        .and(z -> z.in(StockDetails::getStage, 1))).list();
 
 
-
-
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
         outstockOrder.setState(1);
         outstockOrder.setStorehouseId(stockHouseId);
@@ -148,6 +145,24 @@ public class OutBoundServiceImpl implements OutBoundService {
         ToolUtil.copyProperties(outstockOrder, outstockOrderParam);
         outstockOrderService.update(outstockOrderParam);
         return "出库成功";
+    }
+
+    @Override
+    public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
+        List<ApplyDetails> applyDetails = applyDetailsService.lambdaQuery()
+                .in(ApplyDetails::getOutstockApplyId, outstockApplyParam.getOutstockApplyId())
+                .list();
+
+//        List<Stock> stockList = stockService.lambdaQuery()
+//                .in(Stock::getStockId, outstockApplyParam.getStockId())
+//                .list();
+        for (ApplyDetails applyDetail : applyDetails) {
+            boolean f = backItem(outstockApplyParam.getStockId(), applyDetail.getBrandId(), applyDetail.getItemId());
+            if (!f) {
+                throw new ServiceException(500, "库存没有此产品");
+            }
+        }
+        return null;
     }
 
     boolean backItem(Long id, Long brandId, Long itemId) {
