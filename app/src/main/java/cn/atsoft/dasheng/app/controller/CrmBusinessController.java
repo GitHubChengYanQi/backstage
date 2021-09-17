@@ -3,11 +3,13 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.model.result.BusinessRequest;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,11 +104,15 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
-//        crmBusinessParam.setSorter(crmBusinessParam.getSorter()==null ? new Sorter() : crmBusinessParam.getSorter());
         if (ToolUtil.isEmpty(crmBusinessParam)) {
             crmBusinessParam = new CrmBusinessParam();
         }
-        return this.crmBusinessService.findPageBySpec(crmBusinessParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmBusinessService.findPageBySpec(null,crmBusinessParam);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmBusinessService.findPageBySpec(dataScope,crmBusinessParam);
+        }
     }
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("列表")

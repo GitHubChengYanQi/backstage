@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.crm.service;
 
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
@@ -67,7 +68,7 @@ public interface CompetitorService extends IService<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-     PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param);
+     PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope, CompetitorParam param);
 
     CompetitorResult detail (Long id);
     void deleteByIds(CompetitorIdsRequest param);

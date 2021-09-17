@@ -240,7 +240,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
-        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);

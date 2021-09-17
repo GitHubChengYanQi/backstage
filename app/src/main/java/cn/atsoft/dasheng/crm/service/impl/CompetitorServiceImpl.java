@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
@@ -111,11 +112,11 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     }
 
     @Override
-    public PageInfo<CompetitorResult> findPageBySpec(CompetitorParam param) {
+    public PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope,CompetitorParam param) {
 
         Long businessId = param.getBusinessId();
         Page<CompetitorResult> pageContext = getPageContext();
-        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         if (ToolUtil.isNotEmpty(businessId)) {
             QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();

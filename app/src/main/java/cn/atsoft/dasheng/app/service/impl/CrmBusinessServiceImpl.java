@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -117,7 +118,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,null);
         List<Long> processIds = new ArrayList<>();
 
         for (CrmBusinessResult record : page.getRecords()) {
@@ -171,7 +172,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     public CrmBusinessResult findBySpec(CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,null);
         this.format(page.getRecords());
 
         return this.format(page.getRecords());
@@ -184,9 +185,9 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    public PageInfo<CrmBusinessResult> findPageBySpec(CrmBusinessParam param) {
+    public PageInfo<CrmBusinessResult> findPageBySpec(DataScope dataScope, CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
