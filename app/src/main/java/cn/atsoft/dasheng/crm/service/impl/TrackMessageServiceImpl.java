@@ -71,9 +71,22 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         competitorQuote.setCompetitorsQuote(param.getMoney());
         competitorQuote.setCampType(0);
         competitorQuoteService.addTrack(competitorQuote);
-        // 添加跟踪信息
+
+
         TrackMessage entity = getEntity(param);
         this.save(entity);
+        // 添加跟进内容
+        if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
+            List<BusinessTrack> businessTracks = new ArrayList<>();
+            for (BusinessTrackParam businessTrackParam : param.getBusinessTrackParams()) {
+                businessTrackParam.setTrackMessageId(entity.getTrackMessageId());
+                BusinessTrack businessTrack = new BusinessTrack();
+                ToolUtil.copyProperties(businessTrackParam, businessTrack);
+                businessTracks.add(businessTrack);
+            }
+            businessTrackService.saveBatch(businessTracks);
+        }
+
         return entity;
     }
 

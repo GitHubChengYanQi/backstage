@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -17,7 +19,7 @@ import java.util.List;
  * 商机跟踪内容
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-09-07
  */
 @Data
@@ -25,8 +27,9 @@ import java.util.List;
 public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private  Long businessId;
-//    private List<CompetitorParam>
+    private Long businessId;
+    //    private List<CompetitorParam>
+    private List<BusinessTrackParam> businessTrackParams;
     /**
      * 纬度
      */
@@ -40,7 +43,7 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private Long userId;
     private Long customerId;
-    private  String type;
+    private String type;
     /**
      * 经度
      */
