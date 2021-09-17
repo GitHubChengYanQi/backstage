@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
+import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -32,5 +33,13 @@ public class OutBoundController {
         String judgeOutBound = this.outBoundService.judgeOutBound(outstockOrderParam.getOutstockOrderId(), outstockOrderParam.getStorehouseId());
         outstockOrderService.update(outstockOrderParam);
         return ResponseData.success(judgeOutBound);
+    }
+
+    @RequestMapping(value = "/AKeyDelivery", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData AKeyDelivery(@RequestBody OutstockApplyParam outstockApplyParam) {
+
+        String aKeyDelivery = outBoundService.aKeyDelivery(outstockApplyParam);
+        return ResponseData.success(aKeyDelivery);
     }
 }
