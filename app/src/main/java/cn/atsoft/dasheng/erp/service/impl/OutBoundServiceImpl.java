@@ -39,17 +39,9 @@ public class OutBoundServiceImpl implements OutBoundService {
     @Override
     public String judgeOutBound(Long outstockOrderId, Long stockHouseId) {
         Long end = 0L;
-        List<OutstockListing> outstockListings = outstockListingService.lambdaQuery().in(OutstockListing::getOutstockOrderId, outstockOrderId).list();
-
-
-//        for (OutstockListing outstockListing : outstockListings) {
-//
-//            boolean b = backItem(stockHouseId, outstockListing.getBrandId(), outstockListing.getItemId());
-//            if (!b) {
-//                System.out.println("outstockOrderId = " + outstockOrderId + ", stockHouseId = " + stockHouseId);
-//            }
-//        }
-
+        List<OutstockListing> outstockListings = outstockListingService.lambdaQuery()
+                .in(OutstockListing::getOutstockOrderId, outstockOrderId)
+                .list();
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
         if (ToolUtil.isEmpty(stocks)) {
@@ -152,30 +144,68 @@ public class OutBoundServiceImpl implements OutBoundService {
         List<ApplyDetails> applyDetails = applyDetailsService.lambdaQuery()
                 .in(ApplyDetails::getOutstockApplyId, outstockApplyParam.getOutstockApplyId())
                 .list();
-
-//        List<Stock> stockList = stockService.lambdaQuery()
-//                .in(Stock::getStockId, outstockApplyParam.getStockId())
-//                .list();
-
+        if (ToolUtil.isEmpty(applyDetails)) {
+            throw  new ServiceException(500,"请确定发货申请明细");
+        }
         for (int i = 0; i < applyDetails.size(); i++) {
-            boolean f = backItem(outstockApplyParam.getStockId(), applyDetails.get(i).getBrandId(), applyDetails.get(i).getItemId());
+            boolean f = backItem(outstockApplyParam.getStockId(),
+                    applyDetails.get(i).getBrandId(),
+                    applyDetails.get(i).getItemId(),
+                    applyDetails.get(i).getNumber());
             if (!f) {
                 throw new ServiceException(500, "库存没有此产品");
             }
         }
+        long l = -1L;
+
         for (ApplyDetails applyDetail : applyDetails) {
+            List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, outstockApplyParam.getStockId())
+                    .and(i -> i.in(Stock::getBrandId, applyDetail.getBrandId()))
+                    .and(j -> j.in(Stock::getItemId, applyDetail.getItemId())).list();
+
+            List<Stock> stockList = new ArrayList<>();
+            if (ToolUtil.isEmpty(stocks)) {
+                throw  new ServiceException(500,"请检查库存是否有此物品");
+            }
+            for (Stock stock : stocks) {
+                l = stock.getInventory() - applyDetail.getNumber();
+                stock.setInventory(l);
+                stockList.add(stock);
+                List<StockDetails> details = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
+                        .and(i -> i.in(StockDetails::getBrandId, stock.getBrandId()))
+                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId())).list();
+
+                if (l >= 0) {
+                    for (int i = 0; i < l; i++) {
+                        StockDetails stockDetails = details.get(i);
+                        stockDetails.setStage(3);
+                    }
+                    stockDetailsService.updateBatchById(details);
+                }
+
+            }
+            stockService.updateBatchById(stockList);
 
         }
 
+        OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockApplyId, outstockApplyParam.getOutstockApplyId()).one();
+        outstockOrder.setState(2);
+        outstockOrder.setStorehouseId(outstockApplyParam.getStockId());
+        OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
+        ToolUtil.copyProperties(outstockOrder, outstockOrderParam);
+        outstockOrderService.update(outstockOrderParam);
         return null;
     }
 
-    boolean backItem(Long id, Long brandId, Long itemId) {
-        boolean f =true;
+    boolean backItem(Long id, Long brandId, Long itemId, Long number) {
+        boolean f = false;
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
         for (Stock stock : stocks) {
-            if (!stock.getItemId().equals(brandId) && !stock.getItemId().equals(itemId)) {
-                f = false;
+            if (stock.getBrandId().equals(brandId) && stock.getItemId().equals(itemId)) {
+                if (stock.getInventory() < number) {
+                    throw new ServiceException(500, "商品数量不足");
+                }
+                return true;
             }
         }
         if (ToolUtil.isEmpty(stocks)) {
