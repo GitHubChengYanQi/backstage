@@ -51,6 +51,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @Autowired
     private BusinessTrackService businessTrackService;
 
+
     @BussinessLog
     @Override
     public TrackMessage add(TrackMessageParam param) {
@@ -82,6 +83,8 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
                 businessTrackParam.setTrackMessageId(entity.getTrackMessageId());
                 BusinessTrack businessTrack = new BusinessTrack();
                 ToolUtil.copyProperties(businessTrackParam, businessTrack);
+                LoginUser loginUser = LoginContextHolder.getContext().getUser();
+                businessTrack.setUserId(loginUser.getId());
                 businessTracks.add(businessTrack);
             }
             businessTrackService.saveBatch(businessTracks);
