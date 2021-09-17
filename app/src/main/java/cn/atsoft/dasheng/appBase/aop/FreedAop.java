@@ -8,7 +8,6 @@ import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
 import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
@@ -248,21 +247,19 @@ public class FreedAop {
         }
         //跟踪动态
         if (target instanceof TrackMessageService) {
+
             FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
             TrackMessage trackMessageResult = (TrackMessage) result;
-            if (ToolUtil.isNotEmpty(trackMessageResult)) {
-                businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
-                String content = "";
-                switch (methodName) {
-                    case "add":
-                        content = trackMessage.getAdd().replace("[操作人]", user.getName());
-                        businessDynamicParam.setContent(content);
-                        break;
-                }
-                businessDynamicService.add(businessDynamicParam);
+            businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
+            String content = "";
+            switch (methodName) {
+                case "add":
+                    content = trackMessage.getAdd().replace("[操作人]", user.getName());
+                    businessDynamicParam.setContent(content);
+                    break;
             }
-            }
-
+            businessDynamicService.add(businessDynamicParam);
+        }
 
 
 /**

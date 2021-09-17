@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.app.entity.BusinessDynamic;
 import cn.atsoft.dasheng.app.mapper.BusinessDynamicMapper;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
-import  cn.atsoft.dasheng.app.service.BusinessDynamicService;
+import cn.atsoft.dasheng.app.service.BusinessDynamicService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -34,27 +34,28 @@ import java.util.List;
  */
 @Service
 public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMapper, BusinessDynamic> implements BusinessDynamicService {
-@Autowired
-private UserService userService;
+    @Autowired
+    private UserService userService;
+
     @Override
-    public void add(BusinessDynamicParam param){
+    public void add(BusinessDynamicParam param) {
         BusinessDynamic entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(BusinessDynamicParam param){
-      BusinessDynamic byId = this.getById(param.getDynamicId());
-      if (ToolUtil.isEmpty(byId)){
-        throw new ServiceException(500,"所删除目标不存在");
-      }else {
-        param.setDisplay(0);
-        this.update(param);
-      }
+    public void delete(BusinessDynamicParam param) {
+        BusinessDynamic byId = this.getById(param.getDynamicId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "所删除目标不存在");
+        } else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
-    public void update(BusinessDynamicParam param){
+    public void update(BusinessDynamicParam param) {
         BusinessDynamic oldEntity = getOldEntity(param);
         BusinessDynamic newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -62,24 +63,24 @@ private UserService userService;
     }
 
     @Override
-    public BusinessDynamicResult findBySpec(BusinessDynamicParam param){
+    public BusinessDynamicResult findBySpec(BusinessDynamicParam param) {
         return null;
     }
 
     @Override
-    public List<BusinessDynamicResult> findListBySpec(BusinessDynamicParam param){
+    public List<BusinessDynamicResult> findListBySpec(BusinessDynamicParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param){
+    public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param) {
         Page<BusinessDynamicResult> pageContext = getPageContext();
         IPage<BusinessDynamicResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(BusinessDynamicParam param){
+    private Serializable getKey(BusinessDynamicParam param) {
         return param.getDynamicId();
     }
 
@@ -96,24 +97,25 @@ private UserService userService;
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-  public void format (List<BusinessDynamicResult> data){
-        List<Long> Ids = new ArrayList<>();
-      for (BusinessDynamicResult datum : data) {
-          Ids.add(datum.getCreateUser());
-      }
-      QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-      userQueryWrapper.in("user_id",Ids);
-      List<User> userList = userService.list(userQueryWrapper);
 
-      for (BusinessDynamicResult datum : data) {
-          for (User user : userList) {
-              if (datum.getCreateUser().equals(user.getUserId())) {
-                  UserResult userResult = new UserResult();
-                  ToolUtil.copyProperties(user,userResult);
-                  datum.setUserResult(userResult);
-                  break;
-              }
-          }
-      }
-  }
+    public void format(List<BusinessDynamicResult> data) {
+        List<Long> Ids = new ArrayList<>();
+        for (BusinessDynamicResult datum : data) {
+            Ids.add(datum.getCreateUser());
+        }
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("user_id", Ids);
+        List<User> userList = Ids.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
+
+        for (BusinessDynamicResult datum : data) {
+            for (User user : userList) {
+                if (datum.getCreateUser().equals(user.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+    }
 }
