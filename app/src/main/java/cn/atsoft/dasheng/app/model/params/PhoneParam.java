@@ -2,15 +2,21 @@ package cn.atsoft.dasheng.app.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author cheng
@@ -26,6 +32,7 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
     /**
      * 电话id
      */
+
     @ApiModelProperty("电话id")
     private Long phoneId;
 
@@ -38,6 +45,9 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
     /**
      * 电话号码
      */
+    @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}")
+    @NotNull(message = "电话不能为空")
+    @Length(min = 11, message = "手机最少位数是{min}")
     @ApiModelProperty("电话号码")
     private Long phoneNumber;
 
@@ -74,6 +84,7 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

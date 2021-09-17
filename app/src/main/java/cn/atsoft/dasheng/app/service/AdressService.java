@@ -70,4 +70,6 @@ public interface AdressService extends IService<Adress> {
      */
      PageInfo<AdressResult> findPageBySpec(DataScope dataScope , AdressParam param);
 
+
+     List<AdressResult> listQuery(List<Long> ids);
 }

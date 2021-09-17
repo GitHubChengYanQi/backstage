@@ -30,6 +30,7 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
     private Long businessId;
     //    private List<CompetitorParam>
     private List<BusinessTrackParam> businessTrackParams;
+
     /**
      * 纬度
      */
@@ -38,6 +39,7 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
     private BigDecimal latitude;
 
     private List<CompetitorQuoteParam> competitorQuoteParam;
+
     private Integer quoteStatus;
 
 

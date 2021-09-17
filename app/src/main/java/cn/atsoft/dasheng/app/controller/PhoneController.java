@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class PhoneController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody PhoneParam phoneParam) {
+    public ResponseData addItem(@RequestBody @Valid  PhoneParam phoneParam) {
         this.phoneService.add(phoneParam);
         return ResponseData.success();
     }

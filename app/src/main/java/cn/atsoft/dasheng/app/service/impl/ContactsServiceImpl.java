@@ -67,10 +67,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
             // 添加电话号码
             List<PhoneParam> phoneList = param.getPhoneParams();
-            for(PhoneParam phone : phoneList){
-                phone.setContactsId(entity.getContactsId());
-                phoneService.add(phone);
+            if (ToolUtil.isNotEmpty(phoneList)) {
+                for (PhoneParam phone : phoneList) {
+                    phone.setContactsId(entity.getContactsId());
+                    phoneService.add(phone);
+                }
             }
+
             return entity;
         }
     }
@@ -102,34 +105,33 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             ToolUtil.copyProperties(newEntity, oldEntity);
 
 
-
             // 验证旧数据是否被删除
             QueryWrapper<Phone> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.lambda().eq(Phone::getContactsId,param.getContactsId());
+            queryWrapper1.lambda().eq(Phone::getContactsId, param.getContactsId());
             List<Phone> list1 = phoneService.list(queryWrapper1);
             List<Long> phoneIdAll = new ArrayList<>();
             List<Long> phoneIds = new ArrayList<>();
-            for(Phone phones : list1){
+            for (Phone phones : list1) {
                 phoneIdAll.add(phones.getPhoneId());
             }
             // 添加电话号码
             List<PhoneParam> phoneList = param.getPhoneParams();
-            for(PhoneParam phone : phoneList){
+            for (PhoneParam phone : phoneList) {
                 // 删除数据
                 phoneIds.add(phone.getPhoneId());
 
                 // 旧数据->改变手机号即可
-                if(ToolUtil.isNotEmpty(phone.getContactsId())){
+                if (ToolUtil.isNotEmpty(phone.getContactsId())) {
                     Phone entity = new Phone();
                     ToolUtil.copyProperties(phone, entity);
                     phoneService.updateById(entity);
-                }else{
+                } else {
                     //查询电话号码是否已存在
                     QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
-                    queryWrapper.lambda().eq(Phone::getPhoneNumber,phone.getPhoneNumber()).eq(Phone::getContactsId,param.getContactsId());
+                    queryWrapper.lambda().eq(Phone::getPhoneNumber, phone.getPhoneNumber()).eq(Phone::getContactsId, param.getContactsId());
                     List<Phone> list = phoneService.list(queryWrapper);
-                    if(ToolUtil.isNotEmpty(list)){
-                        throw new ServiceException(500,"此电话号码已存在");
+                    if (ToolUtil.isNotEmpty(list)) {
+                        throw new ServiceException(500, "此电话号码已存在");
                     }
                     // 新加数据->则新增手机号
                     phone.setContactsId(param.getContactsId());
@@ -139,7 +141,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
             // 删除数据
             phoneIdAll.removeAll(phoneIds);
-            for(Long phone : phoneIdAll){
+            for (Long phone : phoneIdAll) {
                 phoneService.removeById(phone);
             }
             this.updateById(oldEntity);

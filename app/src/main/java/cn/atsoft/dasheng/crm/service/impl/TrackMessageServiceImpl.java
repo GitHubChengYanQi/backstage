@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.mapper.TrackMessageMapper;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -51,27 +53,35 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @Autowired
     private BusinessTrackService businessTrackService;
 
-    @BussinessLog
+
+//
     @Override
     public TrackMessage add(TrackMessageParam param) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
-        // 添加对手报价
+        if (ToolUtil.isEmpty(competitorQuoteParams)) {
+            throw new ServiceException(500, "请选择当前流程");
+        }
+        // 添加对手/我放报价
+        List<CompetitorQuote> competitorQuotes = new ArrayList<>();
         for (CompetitorQuoteParam data : competitorQuoteParams) {
             data.setBusinessId(param.getBusinessId());
-            data.setCampType(1);
-            competitorQuoteService.addTrack(data);
+            CompetitorQuote competitorQuote = new CompetitorQuote();
+            ToolUtil.copyProperties(data, competitorQuote);
+            competitorQuotes.add(competitorQuote);
         }
-        // 添加我的报价
-        CompetitorQuoteParam competitorQuote = new CompetitorQuoteParam();
-//        competitorQuote.setCompetitorId(data.getCompetitorId());
-        competitorQuote.setBusinessId(param.getBusinessId());
-        competitorQuote.setQuoteStatus(param.getQuoteStatus());
-        competitorQuote.setCompetitorsQuote(param.getMoney());
-        competitorQuote.setCampType(0);
-        competitorQuoteService.addTrack(competitorQuote);
+        if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
+            for (BusinessTrackParam businessTrackParam : param.getBusinessTrackParams()) {
+                CompetitorQuote competitorQuote = new CompetitorQuote();
+                competitorQuote.setCompetitorsQuote(businessTrackParam.getMoney());
+                Integer classify = businessTrackParam.getClassify();
+                competitorQuote.setCampType(Long.valueOf(classify));
+                competitorQuotes.add(competitorQuote);
+            }
+        }
 
+        competitorQuoteService.saveBatch(competitorQuotes);
 
         TrackMessage entity = getEntity(param);
         this.save(entity);
@@ -82,32 +92,23 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
                 businessTrackParam.setTrackMessageId(entity.getTrackMessageId());
                 BusinessTrack businessTrack = new BusinessTrack();
                 ToolUtil.copyProperties(businessTrackParam, businessTrack);
+                LoginUser loginUser = LoginContextHolder.getContext().getUser();
+                businessTrack.setUserId(loginUser.getId());
                 businessTracks.add(businessTrack);
             }
-            businessTrackService.saveBatch(businessTracks);
+            if (ToolUtil.isNotEmpty(businessTracks)) {
+                businessTrackService.saveBatch(businessTracks);
+            }
+
         }
+
 
         return entity;
     }
 
-    @Override
-    public void byCompetitionAdd(TrackMessageParam param) {
-        TrackMessage entity = getEntity(param);
-        this.save(entity);
-    }
 
-//    @Override
-//    public void delete(TrackMessageParam param){
-//        this.removeById(getKey(param));
-//    }
-//
-//    @Override
-//    public void update(TrackMessageParam param){
-//        TrackMessage oldEntity = getOldEntity(param);
-//        TrackMessage newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
-//    }
+
+
 
     @Override
     public TrackMessageResult findBySpec(TrackMessageParam param) {
