@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
@@ -72,13 +74,17 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
         for (BusinessTrackResult record : page.getRecords()) {
             ids.add(record.getUserId());
         }
-        User user = userService.lambdaQuery().eq(User::getUserId, param.getUserId()).one();
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        List<User> users = userService.list();
         for (BusinessTrackResult record : page.getRecords()) {
-            if (record.getUserId().equals(user.getUserId())) {
-                UserResult userResult = new UserResult();
-                ToolUtil.copyProperties(user, userResult);
-                record.setUserResult(userResult);
+            for(User user: users){
+                if (record.getUserId().equals(user.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    record.setUserResult(userResult);
+                }
             }
+
         }
         return PageFactory.createPageInfo(page);
     }
