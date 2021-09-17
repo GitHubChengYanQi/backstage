@@ -71,4 +71,6 @@ public interface ContactsService extends IService<Contacts> {
 
      void batchDelete(List<Long> id);
 
+    void format(List<ContactsResult> result);
+
 }

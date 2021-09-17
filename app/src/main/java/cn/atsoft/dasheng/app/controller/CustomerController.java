@@ -121,12 +121,8 @@ public class CustomerController extends BaseController {
             customerParam = new CustomerParam();
         }
 
-//        return this.customerService.findPageBySpec(customerParam);
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<CustomerResult> customer= customerService.findPageBySpec(null,customerParam);
-//            return ResponseData.success(adress.getData().get(0));
             return this.customerService.findPageBySpec(null,customerParam);
-
         }else{
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
             PageInfo<CustomerResult> customer= customerService.findPageBySpec(dataScope,customerParam);
