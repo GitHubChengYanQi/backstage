@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.mapper.TrackMessageMapper;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
@@ -56,27 +57,31 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @BussinessLog
     @Override
     public TrackMessage add(TrackMessageParam param) {
-//        LoginUser user = LoginContextHolder.getContext().getUser();
-//        param.setUserId(user.getId());
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
         if (ToolUtil.isEmpty(competitorQuoteParams)) {
             throw new ServiceException(500, "请选择当前流程");
         }
-        // 添加对手报价
+        // 添加对手/我放报价
+        List<CompetitorQuote> competitorQuotes = new ArrayList<>();
         for (CompetitorQuoteParam data : competitorQuoteParams) {
             data.setBusinessId(param.getBusinessId());
-            data.setCampType(1);
-            competitorQuoteService.addTrack(data);
+            CompetitorQuote competitorQuote = new CompetitorQuote();
+            ToolUtil.copyProperties(data, competitorQuote);
+            competitorQuotes.add(competitorQuote);
         }
-        // 添加我的报价
-        CompetitorQuoteParam competitorQuote = new CompetitorQuoteParam();
-//        competitorQuote.setCompetitorId(data.getCompetitorId());
-        competitorQuote.setBusinessId(param.getBusinessId());
-        competitorQuote.setQuoteStatus(param.getQuoteStatus());
-        competitorQuote.setCompetitorsQuote(param.getMoney());
-        competitorQuote.setCampType(0);
-        competitorQuoteService.addTrack(competitorQuote);
+        if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
+            for (BusinessTrackParam businessTrackParam : param.getBusinessTrackParams()) {
+                CompetitorQuote competitorQuote = new CompetitorQuote();
+                competitorQuote.setCompetitorsQuote(businessTrackParam.getMoney());
+                Integer classify = businessTrackParam.getClassify();
+                competitorQuote.setCampType(Long.valueOf(classify));
+                competitorQuotes.add(competitorQuote);
+            }
+        }
 
+        competitorQuoteService.saveBatch(competitorQuotes);
 
         TrackMessage entity = getEntity(param);
         this.save(entity);
@@ -91,7 +96,10 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
                 businessTrack.setUserId(loginUser.getId());
                 businessTracks.add(businessTrack);
             }
-            businessTrackService.saveBatch(businessTracks);
+            if (ToolUtil.isNotEmpty(businessTracks)) {
+                businessTrackService.saveBatch(businessTracks);
+            }
+
         }
 
         return entity;
