@@ -34,7 +34,7 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
     public void add(PhoneParam param){
         //查询电话号码是否已存在
         QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber());
+        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber()).eq(Phone::getContactsId,param.getContactsId());
         List<Phone> list = baseMapper.selectList(queryWrapper);
         if(ToolUtil.isEmpty(list)){
             Phone entity = getEntity(param);
