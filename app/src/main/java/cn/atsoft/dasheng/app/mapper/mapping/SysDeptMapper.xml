@@ -67,6 +67,7 @@
                 <if test="paramCondition.fullName != null and paramCondition.fullName != ''">
                         and full_name like CONCAT('%',#{paramCondition.fullName},'%')
                 </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.SysDeptParam">

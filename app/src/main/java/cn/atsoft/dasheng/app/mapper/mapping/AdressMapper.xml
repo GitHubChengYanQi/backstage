@@ -20,7 +20,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        region AS "region" , adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
+        region
+        AS "region" , adress_id AS "adressId", location AS "location", longitude AS "longitude", latitude AS "latitude", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
     </sql>
 
 
@@ -54,6 +55,7 @@
         <if test="paramCondition.adressId != null">
             and adress_id = #{paramCondition.adressId}
         </if>
+        order by create_time desc
 
     </select>
 

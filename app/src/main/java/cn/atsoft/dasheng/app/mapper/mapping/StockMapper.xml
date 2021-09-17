@@ -103,6 +103,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.StockResult"

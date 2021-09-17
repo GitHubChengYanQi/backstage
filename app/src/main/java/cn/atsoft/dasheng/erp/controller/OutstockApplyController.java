@@ -2,18 +2,22 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.OutstockApply;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
 import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +45,16 @@ public class OutstockApplyController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OutstockApplyParam outstockApplyParam) {
+        Map<Object, Object> map = new HashMap<>();
+        long l = 0L;
+        for (ApplyDetailsParam applyDetail : outstockApplyParam.getApplyDetails()) {
+            l = applyDetail.getItemId() + applyDetail.getBrandId();
+            if (map.containsKey(applyDetail.getItemId() + applyDetail.getBrandId())) {
+                throw new ServiceException(500, "你他妈煞笔？存相同物品");
+            }
+            map.put(l, applyDetail.getNumber());
+        }
+
         this.outstockApplyService.add(outstockApplyParam);
         return ResponseData.success();
     }
@@ -66,7 +80,7 @@ public class OutstockApplyController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OutstockApplyParam outstockApplyParam)  {
+    public ResponseData delete(@RequestBody OutstockApplyParam outstockApplyParam) {
         this.outstockApplyService.delete(outstockApplyParam);
         return ResponseData.success();
     }
@@ -93,13 +107,11 @@ public class OutstockApplyController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OutstockApplyResult> list(@RequestBody(required = false) OutstockApplyParam outstockApplyParam) {
-        if(ToolUtil.isEmpty(outstockApplyParam)){
+        if (ToolUtil.isEmpty(outstockApplyParam)) {
             outstockApplyParam = new OutstockApplyParam();
         }
         return this.outstockApplyService.findPageBySpec(outstockApplyParam);
     }
-
-
 
 
 }
