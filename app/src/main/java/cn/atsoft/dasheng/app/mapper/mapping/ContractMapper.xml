@@ -90,6 +90,7 @@
         <if test="paramCondition.audit != null">
             and audit = #{paramCondition.audit}
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">

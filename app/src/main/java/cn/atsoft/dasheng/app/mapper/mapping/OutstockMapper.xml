@@ -93,6 +93,7 @@
         <if test="paramCondition.state!=null">
             and state = #{paramCondition.state}
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OutstockParam">

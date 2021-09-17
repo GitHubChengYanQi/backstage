@@ -64,6 +64,7 @@
                 <if test="paramCondition.parentId != null and paramCondition.parentId != ''">
                             and parent_id = #{paramCondition.parentId}
                 </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmIndustryParam">

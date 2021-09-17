@@ -84,6 +84,7 @@ longitude
         <if test="paramCondition.storehouseId != null and paramCondition.storehouseId != ''">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        order by create_time desc
 
     </select>
 

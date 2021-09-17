@@ -56,6 +56,7 @@
         <if test="paramCondition.storehouseId != null and paramCondition.storehouseId != ''">
             and storehouse_id like CONCAT('%',#{paramCondition.storehouseId},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map"

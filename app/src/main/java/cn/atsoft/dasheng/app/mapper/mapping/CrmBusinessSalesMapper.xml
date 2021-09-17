@@ -51,6 +51,7 @@
         <if test="paramCondition.salesId != null">
             and sales_id = #{paramCondition.salesId}
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map"

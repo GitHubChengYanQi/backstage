@@ -86,6 +86,7 @@ item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderT
         <if test="paramCondition.partyA != null">
             and party_a = #{paramCondition.partyA}
         </if>
+        order by create_time desc
 
     </select>
 

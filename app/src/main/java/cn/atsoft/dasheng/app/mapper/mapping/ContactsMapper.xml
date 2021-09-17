@@ -83,6 +83,7 @@
         <if test="paramCondition.contactsName !=null and paramCondition.contactsName != '' ">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">

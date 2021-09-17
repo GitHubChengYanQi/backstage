@@ -67,6 +67,7 @@
         <if test="paramCondition.materialId != null">
             and material_id = #{paramCondition.materialId}
         </if>
+        order by create_time desc
 
     </select>
 

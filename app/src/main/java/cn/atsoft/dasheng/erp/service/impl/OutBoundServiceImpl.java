@@ -56,6 +56,7 @@ public class OutBoundServiceImpl implements OutBoundService {
         for (OutstockListing outstockListing : outstockListings) {
             int i = 0;
             for (Stock stock : stocks) {
+
                 i++;
                 if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
                     Long number = outstockListing.getNumber();
