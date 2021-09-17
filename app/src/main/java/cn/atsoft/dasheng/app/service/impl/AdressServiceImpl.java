@@ -39,8 +39,7 @@ import java.util.List;
  */
 @Service
 public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> implements AdressService {
-    @Autowired
-    private CustomerService customerService;
+
     @Autowired
     private GetRegionService getRegionService;
     @Autowired
@@ -50,9 +49,9 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @Override
     public Adress add(AdressParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getMap())){
+        if (ToolUtil.isNotEmpty(param.getMap())) {
             param.setLocation(param.getMap().getAddress());
-            if (ToolUtil.isNotEmpty(param.getMap().getMap()) && param.getMap().getMap().size() > 0){
+            if (ToolUtil.isNotEmpty(param.getMap().getMap()) && param.getMap().getMap().size() > 0) {
                 param.setLongitude(param.getMap().getMap().get(0));
                 param.setLatitude(param.getMap().getMap().get(1));
             }
@@ -72,17 +71,17 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @BussinessLog
     @Override
     public Adress delete(AdressParam param) {
-            param.setDisplay(0);
-            this.update(param);
-            Adress entity = getEntity(param);
-            return entity;
+        param.setDisplay(0);
+        this.update(param);
+        Adress entity = getEntity(param);
+        return entity;
     }
 
     @BussinessLog
     @Override
     public Adress update(AdressParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getMap())){
+        if (ToolUtil.isNotEmpty(param.getMap())) {
             param.setLocation(param.getMap().getAddress());
             param.setLongitude(param.getMap().getMap().get(0));
             param.setLatitude(param.getMap().getMap().get(1));
@@ -140,6 +139,12 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
 
 
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<AdressResult> listQuery(List<Long> ids) {
+        List<AdressResult> results = this.baseMapper.testQuery(ids);
+        return results;
     }
 
     private Serializable getKey(AdressParam param) {

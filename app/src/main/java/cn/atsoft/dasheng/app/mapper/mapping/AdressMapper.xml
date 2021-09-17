@@ -68,4 +68,17 @@
         </if>
     </select>
 
+    <select id="testQuery" resultType="cn.atsoft.dasheng.app.model.result.AdressResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.AdressParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_crm_adress where display = 1
+        <if test="ids!= null">
+            and adress_id in
+            <foreach collection="ids" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+
+    </select>
 </mapper>

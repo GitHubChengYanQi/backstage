@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -58,6 +59,9 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
+        if (ToolUtil.isEmpty(competitorQuoteParams)) {
+            throw new ServiceException(500, "请选择当前流程");
+        }
         // 添加对手报价
         for (CompetitorQuoteParam data : competitorQuoteParams) {
             data.setBusinessId(param.getBusinessId());
