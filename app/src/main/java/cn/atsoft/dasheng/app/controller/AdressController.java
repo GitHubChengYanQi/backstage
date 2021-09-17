@@ -1,15 +1,21 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
 import cn.atsoft.dasheng.app.model.result.AdressResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.warpper.UserWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -81,10 +87,18 @@ public class AdressController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<AdressResult> detail(@RequestBody AdressParam adressParam) {
-
-        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
-        return ResponseData.success(pageBySpec.getData().get(0));
+//        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
+//        return ResponseData.success(pageBySpec.getData().get(0));
+        if (LoginContextHolder.getContext().isAdmin()) {
+            PageInfo<AdressResult> adress= adressService.findPageBySpec(null,adressParam);
+            return ResponseData.success(adress.getData().get(0));
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            PageInfo<AdressResult> adress= adressService.findPageBySpec(dataScope,adressParam);
+            return ResponseData.success(adress.getData().get(0));
+        }
     }
 
     /**
@@ -94,7 +108,7 @@ public class AdressController extends BaseController {
      * @Date 2021-07-23
      */
     Long clientId;
-
+    @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
@@ -102,7 +116,17 @@ public class AdressController extends BaseController {
         if (ToolUtil.isEmpty(adressParam)) {
             adressParam = new AdressParam();
         }
-        return this.adressService.findPageBySpec(adressParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            PageInfo<AdressResult> adress= adressService.findPageBySpec(null,adressParam);
+//            return ResponseData.success(adress.getData().get(0));
+            return this.adressService.findPageBySpec(null,adressParam);
+
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            PageInfo<AdressResult> adress= adressService.findPageBySpec(dataScope,adressParam);
+            return this.adressService.findPageBySpec(null,adressParam);
+        }
+//        return this.adressService.findPageBySpec(null,adressParam);
     }
 
 

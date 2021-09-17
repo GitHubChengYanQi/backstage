@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -237,10 +238,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    public PageInfo<CustomerResult> findPageBySpec(CustomerParam param) {
+    public PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
-
+        if (dataScope != null){
+            page = null;
+        }
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);

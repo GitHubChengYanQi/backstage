@@ -83,7 +83,7 @@
         <if test="paramCondition.businessName !=null and paramCondition.businessName!= ''">
             and business_name like CONCAT('%',#{paramCondition.businessName},'%')
         </if>
-        order by create_time DESC
+        order by create_time desc
 
 
     </select>

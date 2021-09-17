@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -69,7 +70,7 @@ public interface CustomerService extends IService<Customer>{
      * @author
      * @Date 2021-07-23
      */
-    PageInfo<CustomerResult> findPageBySpec(CustomerParam param);
+    PageInfo<CustomerResult> findPageBySpec(DataScope dataScope,CustomerParam param);
 
     /**
      * 批量删除
@@ -78,6 +79,7 @@ public interface CustomerService extends IService<Customer>{
     void batchDelete( List<Long> customerId);
 
     void updateStatus (CustomerParam customerParam);
+
 
     CustomerResult  detail (Long id);
 

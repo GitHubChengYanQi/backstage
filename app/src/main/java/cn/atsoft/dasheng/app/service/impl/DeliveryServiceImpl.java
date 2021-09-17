@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 
+import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -49,6 +50,8 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     private ContactsService contactsService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private OutstockService outStockService;
 
 
 
@@ -177,18 +180,19 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     @Override
     public void bulkShipment(OutstockRequest outstockRequest) {
         List<Delivery> deliveryList = new ArrayList<>();
-        List<StockDetailsParam> deliveryDetailsParams = outstockRequest.getIds();
+        List<OutstockParam> outstockParamList = outstockRequest.getIds();
         List<Long> ids = new ArrayList<>();
-        for (StockDetailsParam deliveryDetailsParam : deliveryDetailsParams) {
+
+        for (OutstockParam deliveryDetailsParam : outstockParamList) {
             ids.add(deliveryDetailsParam.getStockItemId());
         }
-        QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<Outstock> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("stock_item_id", ids);
         List<Long> itemIds = new ArrayList<>();
 
-        List<StockDetails> detailsList = stockDetailsService.list(queryWrapper);
+        List<Outstock> list = outStockService.list(queryWrapper);
 
-        for (StockDetails stockDetails : detailsList) {
+        for (Outstock stockDetails : list) {
             itemIds.add(stockDetails.getItemId());
         }
 
@@ -201,13 +205,12 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
         deliveryParam.setPhoneId(outstockRequest.getPhoneId());
         Long add = this.add(deliveryParam);
 
-        for (StockDetailsParam deliveryDetailsParam : outstockRequest.getIds()) {
-            QueryWrapper<StockDetails> stockDetailsQueryWrapper = new QueryWrapper<>();
-            stockDetailsQueryWrapper.in("stock_item_id", deliveryDetailsParam.getStockItemId()).orderByDesc("storage_time");
-            StockDetails stockDetails = new StockDetails();
-            stockDetails.setStage(3);
-            stockDetailsService.update(stockDetails, stockDetailsQueryWrapper);
-
+        for (OutstockParam deliveryDetailsParam : outstockRequest.getIds()) {
+            QueryWrapper<Outstock> stockDetailsQueryWrapper = new QueryWrapper<>();
+            stockDetailsQueryWrapper.in("stock_item_id", deliveryDetailsParam.getStockItemId());
+            Outstock stockDetails = new Outstock();
+            stockDetails.setState(1L);
+            outStockService.update(stockDetails, stockDetailsQueryWrapper);
         }
         this.saveBatch(deliveryList);
 
@@ -215,14 +218,13 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
         // 发表详情表添加发货id
 
-        for (StockDetailsParam deliveryDetailsParam : outstockRequest.getIds()) {
+        for (OutstockParam deliveryDetailsParam : outstockRequest.getIds()) {
             DeliveryDetails details = new DeliveryDetails();
             details.setDeliveryId(add);
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
             details.setItemId(deliveryDetailsParam.getItemId());
             details.setBrandId(deliveryDetailsParam.getBrandId());
             deliveryDetails.add(details);
-
 
         }
 
