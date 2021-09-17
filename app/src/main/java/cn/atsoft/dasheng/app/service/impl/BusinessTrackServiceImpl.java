@@ -74,7 +74,7 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
         for (BusinessTrackResult record : page.getRecords()) {
             ids.add(record.getUserId());
         }
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
         List<User> users = userService.list();
         for (BusinessTrackResult record : page.getRecords()) {
             for(User user: users){
