@@ -22,9 +22,8 @@ import java.util.List;
 @ApiModel
 public class ErpPackageTableParam implements Serializable, BaseValidatingParam {
 
-    private static final long serialVersionUID = 1L;
-  private List<Items> items;
-  private List<Brand> brand;
+  private static final long serialVersionUID = 1L;
+  private List<Long> itemIds;
     /**
      * id
      */
