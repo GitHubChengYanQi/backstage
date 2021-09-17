@@ -79,6 +79,19 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     }
 
+    @Override
+    public void batchAdd(ErpPackageTableParam param) {
+        List<ErpPackageTable> list= new ArrayList<>();
+        for (Long itemId : param.getItemIds()) {
+            ErpPackageTable newEntry = new ErpPackageTable();
+            newEntry.setPackageId(param.getPackageId());
+            newEntry.setItemId(itemId);
+            list.add(newEntry);
+
+        }
+            this.saveBatch(list);
+    }
+
     private Serializable getKey(ErpPackageTableParam param){
         return param.getId();
     }

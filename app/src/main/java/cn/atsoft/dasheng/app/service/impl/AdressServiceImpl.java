@@ -52,8 +52,10 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
 
         if (ToolUtil.isNotEmpty(param.getMap())){
             param.setLocation(param.getMap().getAddress());
-            param.setLongitude(param.getMap().getMap().get(0));
-            param.setLatitude(param.getMap().getMap().get(1));
+            if (ToolUtil.isNotEmpty(param.getMap().getMap()) && param.getMap().getMap().size() > 0){
+                param.setLongitude(param.getMap().getMap().get(0));
+                param.setLatitude(param.getMap().getMap().get(1));
+            }
         }
         List<CommonArea> commonAreas = commonAreaService.lambdaQuery().in(CommonArea::getParentid, param.getRegion()).list();
         if (commonAreas.size() > 0) {

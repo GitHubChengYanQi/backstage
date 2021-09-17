@@ -66,4 +66,6 @@ public interface ErpPackageTableService extends IService<ErpPackageTable> {
      */
      PageInfo<ErpPackageTableResult> findPageBySpec(ErpPackageTableParam param);
 
+     void batchAdd(ErpPackageTableParam param);
+
 }
