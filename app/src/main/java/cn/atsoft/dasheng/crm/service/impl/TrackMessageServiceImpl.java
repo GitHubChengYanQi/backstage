@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
+import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -44,6 +48,8 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     private CompetitorQuoteService competitorQuoteService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private BusinessTrackService businessTrackService;
 
     @BussinessLog
     @Override
@@ -105,17 +111,30 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         Page<TrackMessageResult> pageContext = getPageContext();
         IPage<TrackMessageResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> ids = new ArrayList<>();
+        List<Long> trackMessageIds = new ArrayList<>();
         for (TrackMessageResult record : page.getRecords()) {
             ids.add(record.getUserId());
+            trackMessageIds.add(record.getTrackMessageId());
         }
         if (ToolUtil.isNotEmpty(ids)) {
             List<User> users = userService.lambdaQuery().in(User::getUserId, ids).list();
+            List<BusinessTrack> businessTracks = trackMessageIds.size() == 0 ? new ArrayList<>()
+                    : businessTrackService.lambdaQuery()
+                    .in(BusinessTrack::getTrackMessageId, trackMessageIds)
+                    .list();
             if (ToolUtil.isNotEmpty(users)) {
                 for (TrackMessageResult record : page.getRecords()) {
                     for (User user : users) {
                         UserResult userResult = new UserResult();
                         ToolUtil.copyProperties(user, userResult);
                         record.setUserResult(userResult);
+                    }
+                    for (BusinessTrack businessTrack : businessTracks) {
+                        if (businessTrack.getTrackMessageId().equals(record.getTrackMessageId())) {
+                            BusinessTrackResult businessTrackResult = new BusinessTrackResult();
+                            ToolUtil.copyProperties(businessTrack, businessTrackResult);
+                            record.setBusinessTrackResult(businessTrackResult);
+                        }
                     }
 
                 }
