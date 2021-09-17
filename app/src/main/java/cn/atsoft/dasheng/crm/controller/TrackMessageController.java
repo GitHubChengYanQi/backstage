@@ -104,6 +104,15 @@ public class TrackMessageController extends BaseController {
         return this.trackMessageService.findPageBySpec(trackMessageParam);
     }
 
+    @RequestMapping(value = "/listAll", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<TrackMessageResult> listAll(@RequestBody(required = false) TrackMessageParam trackMessageParam) {
+        if(ToolUtil.isEmpty(trackMessageParam)){
+            trackMessageParam = new TrackMessageParam();
+        }
+        return this.trackMessageService.findListBySpec(trackMessageParam);
+    }
+
 
 
 

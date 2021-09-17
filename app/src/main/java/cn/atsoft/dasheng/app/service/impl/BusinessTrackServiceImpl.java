@@ -59,8 +59,15 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
 
     @Override
     public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param){
+
+        List<Long> trackMessageIds = param.getTrackMessageIds();
+
+
         Page<BusinessTrackResult> pageContext = getPageContext();
         IPage<BusinessTrackResult> page = this.baseMapper.customPageList(pageContext, param);
+
+
+
         return PageFactory.createPageInfo(page);
     }
 

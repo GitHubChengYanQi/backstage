@@ -116,7 +116,8 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 
     @Override
     public List<TrackMessageResult> findListBySpec(TrackMessageParam param) {
-        return null;
+        List<TrackMessageResult> trackMessageResults = this.baseMapper.customList(param);
+        return trackMessageResults;
     }
 
     @Override
