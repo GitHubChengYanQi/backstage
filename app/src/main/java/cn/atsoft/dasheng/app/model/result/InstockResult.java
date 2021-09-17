@@ -34,7 +34,7 @@ public class InstockResult implements Serializable {
     private Long instockId;
 
     @ApiModelProperty("地点id")
-    private Long storehouseId;
+    private Long storeHouseId;
 
     /**
      * 物品名称

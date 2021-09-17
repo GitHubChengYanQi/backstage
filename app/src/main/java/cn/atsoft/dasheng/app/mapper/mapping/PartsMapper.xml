@@ -55,7 +55,7 @@
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
-
+        order by create_time desc
 
     </select>
 

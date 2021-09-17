@@ -51,6 +51,7 @@
         <if test="paramCondition.originName != null and paramCondition.originName != ''">
             and origin_name like CONCAT('%',#{paramCondition.originName},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.OriginParam">

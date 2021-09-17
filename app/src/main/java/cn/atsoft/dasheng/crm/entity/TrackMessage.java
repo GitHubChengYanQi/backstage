@@ -56,6 +56,17 @@ public class TrackMessage implements Serializable {
     @TableField("user_id")
     private Long userId;
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    @TableField("customer_id")
+    private Long customerId;
+
     /**
      * 跟踪内容
      */

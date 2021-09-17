@@ -28,7 +28,7 @@ public class Instock implements Serializable {
     private Long instockId;
 
     @TableField("storehouse_id")
-    private Long storehouseId;
+    private Long storeHouseId;
 
 
     /**
@@ -111,12 +111,12 @@ public class Instock implements Serializable {
         this.instockId = instockId;
     }
 
-    public Long getStorehouseId() {
-        return storehouseId;
+    public Long getStoreHouseId() {
+        return storeHouseId;
     }
 
-    public void setStorehouseId(Long storehouseId) {
-        this.storehouseId = storehouseId;
+    public void setStoreHouseId(Long storeHouseId) {
+        this.storeHouseId = storeHouseId;
     }
 
     public Long getItemId() {

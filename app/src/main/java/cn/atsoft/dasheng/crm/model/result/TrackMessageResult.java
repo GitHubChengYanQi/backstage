@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -27,12 +28,12 @@ public class TrackMessageResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long businessId;
 
+    private BusinessTrackResult businessTrackResult;
     /**
      * 纬度
      */
     private UserResult userResult;
     private BigDecimal latitude;
-
 
 
     private String type;
@@ -43,6 +44,7 @@ public class TrackMessageResult implements Serializable {
 
     private BigDecimal longitude;
     private Long userId;
+    private Long customerId;
 
     /**
      * 商机跟踪内容id

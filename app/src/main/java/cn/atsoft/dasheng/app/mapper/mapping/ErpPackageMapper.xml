@@ -50,6 +50,7 @@
         <if test="paramCondition.productName != null and paramCondition.productName != ''">
             and product_name like CONCAT('%',#{paramCondition.productName},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpPackageParam">

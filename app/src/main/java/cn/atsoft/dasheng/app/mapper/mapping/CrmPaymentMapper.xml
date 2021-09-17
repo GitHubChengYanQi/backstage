@@ -60,6 +60,7 @@
                 <if test="paramCondition.payType != null and paramCondition.payType != ''">
                         and pay_type like CONCAT('%',#{paramCondition.payType},'%')
                 </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CrmPaymentParam">

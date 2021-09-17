@@ -55,6 +55,7 @@
                 <if test="paramCondition.phoneNumber != null">
                         and phone_number like CONCAT('%',#{paramCondition.phoneNumber},'%')
                 </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PhoneParam">
