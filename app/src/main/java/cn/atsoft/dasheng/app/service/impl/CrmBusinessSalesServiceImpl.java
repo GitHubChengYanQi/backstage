@@ -79,10 +79,10 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
 
     @Override
     public CrmBusinessSalesResult detail(Long id) {
-        CrmBusinessSales crmBusinessSales =this.getById(id);
-        CrmBusinessSalesResult  detail = new CrmBusinessSalesResult();
-        ToolUtil.copyProperties(detail,crmBusinessSales);
-        List<CrmBusinessSalesResult> crmBusinessSalesResultList = new ArrayList<CrmBusinessSalesResult>(){{
+        CrmBusinessSales crmBusinessSales = this.getById(id);
+        CrmBusinessSalesResult detail = new CrmBusinessSalesResult();
+        ToolUtil.copyProperties(detail, crmBusinessSales);
+        List<CrmBusinessSalesResult> crmBusinessSalesResultList = new ArrayList<CrmBusinessSalesResult>() {{
             add(detail);
         }};
         this.format(crmBusinessSalesResultList);
@@ -90,12 +90,12 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     }
 
     @Override
-    public List<CrmBusinessSalesResult> getByIds(List<Long> ids){
+    public List<CrmBusinessSalesResult> getByIds(List<Long> ids) {
         QueryWrapper<CrmBusinessSales> crmBusinessSalesQueryWrapper = new QueryWrapper();
         crmBusinessSalesQueryWrapper.in("sales_id", ids);
         List<CrmBusinessSales> result = this.list(crmBusinessSalesQueryWrapper);
-        List<CrmBusinessSalesResult> results  = new ArrayList<>();
-        for(CrmBusinessSales item:result){
+        List<CrmBusinessSalesResult> results = new ArrayList<>();
+        for (CrmBusinessSales item : result) {
             CrmBusinessSalesResult tmp = new CrmBusinessSalesResult();
             ToolUtil.copyProperties(item, tmp);
             results.add(tmp);
@@ -130,7 +130,7 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
         QueryWrapper<CrmBusinessSalesProcess> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("sales_id", salesIds);
         queryWrapper.orderByAsc("sort");
-        List<CrmBusinessSalesProcess> res = crmBusinessSalesProcessService.list(queryWrapper);
+        List<CrmBusinessSalesProcess> res = salesIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(queryWrapper);
 
         for (CrmBusinessSalesResult item : data) {
             List<CrmBusinessSalesProcessResult> results = new ArrayList<>();

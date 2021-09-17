@@ -310,9 +310,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 //            record.setRegionResult(region);
 
 
-            if (record.getClassification() == 1) {
+            if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
                 record.setClassificationName("终端用户");
-            } else if (record.getClassification() == 0) {
+            } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
             for (Origin origin : originList) {

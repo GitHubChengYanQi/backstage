@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,10 +88,15 @@ public class ContactsController extends BaseController {
     public ResponseData<ContactsResult> detail(@RequestBody ContactsParam contactsParam) {
         Contacts detail = this.contactsService.getById(contactsParam.getContactsId());
         ContactsResult result = new ContactsResult();
+        List<ContactsResult> results = new ArrayList<>();
         ToolUtil.copyProperties(detail, result);
-
+        results.add(result);
+        this.contactsService.format(results);
+        for(ContactsResult res : results){
+            return ResponseData.success(res);
+        }
 //        result.setValue(parentValue);
-        return ResponseData.success(result);
+        return ResponseData.success();
     }
 
     /**

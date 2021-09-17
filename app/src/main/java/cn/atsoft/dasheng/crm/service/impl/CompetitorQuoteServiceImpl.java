@@ -2,10 +2,8 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
-import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
-import cn.atsoft.dasheng.app.service.CrmBusinessTrackService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
@@ -14,24 +12,18 @@ import cn.atsoft.dasheng.crm.mapper.CompetitorQuoteMapper;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
-import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import  cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.bcel.internal.generic.ARETURN;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.websocket.OnError;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

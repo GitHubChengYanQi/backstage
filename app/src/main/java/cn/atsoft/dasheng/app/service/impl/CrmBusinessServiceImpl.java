@@ -52,8 +52,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private UserService userService;
     @Autowired
-    private CrmBusinessTrackService crmBusinessTrackService;
-    @Autowired
     private CrmBusinessSalesProcessService crmBusinessSalesProcessService;
     @Autowired
     private BusinessDynamicService businessDynamicService;
@@ -257,12 +255,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
 
 
-        /**
-         *货期商机详情id
-         */
-        QueryWrapper<CrmBusinessTrack> trackQueryWrapper = new QueryWrapper<>();
-        trackQueryWrapper.in("track_id", trackList);
-        List<CrmBusinessTrack> tracks = trackList.size() == 0 ? new ArrayList<>() : crmBusinessTrackService.list(trackQueryWrapper);
 
         /**
          *获取流程id
@@ -327,16 +319,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             for (CrmBusinessSalesResult crmBusinessSales : salesList) {
                 if (crmBusinessSales.getSalesId().equals(item.getSalesId())) {
                     item.setSales(crmBusinessSales);
-                    break;
-                }
-
-            }
-
-            for (CrmBusinessTrack track : tracks) {
-                if (track.getTrackId().equals(item.getTrackId())) {
-                    CrmBusinessTrackResult crmBusinessTrackResult = new CrmBusinessTrackResult();
-                    ToolUtil.copyProperties(track, crmBusinessTrackResult);
-                    item.setTrack(crmBusinessTrackResult);
                     break;
                 }
 
