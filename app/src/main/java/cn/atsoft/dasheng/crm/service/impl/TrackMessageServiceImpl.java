@@ -105,24 +105,9 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         return entity;
     }
 
-    @Override
-    public void byCompetitionAdd(TrackMessageParam param) {
-        TrackMessage entity = getEntity(param);
-        this.save(entity);
-    }
 
-//    @Override
-//    public void delete(TrackMessageParam param){
-//        this.removeById(getKey(param));
-//    }
-//
-//    @Override
-//    public void update(TrackMessageParam param){
-//        TrackMessage oldEntity = getOldEntity(param);
-//        TrackMessage newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
-//    }
+
+
 
     @Override
     public TrackMessageResult findBySpec(TrackMessageParam param) {
