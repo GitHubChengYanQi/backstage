@@ -94,4 +94,5 @@ public class SysDeptResult implements Serializable {
     private Long updateUser;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }

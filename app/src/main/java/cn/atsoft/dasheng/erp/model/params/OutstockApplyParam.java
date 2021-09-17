@@ -32,6 +32,7 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("出库申请")
     private Long outstockApplyId;
+    private  Long stockId;
 
     /**
      * 负责人
@@ -88,6 +89,11 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
 
     @Override
     public String checkParam() {

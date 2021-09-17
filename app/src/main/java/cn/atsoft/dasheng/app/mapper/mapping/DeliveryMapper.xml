@@ -17,12 +17,13 @@
         <result column="adress_id" property="adressId"/>
         <result column="contacts_id" property="contactsId"/>
         <result column="phone_id" property="phoneId"/>
+        <result column="deptId" property="deptId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">item_id
-    AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",
+    AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",deptId AS "deptId",
         delivery_id AS "deliveryId", outstock_order_id AS "outstockOrderId", out_time AS "outTime", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

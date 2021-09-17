@@ -31,6 +31,7 @@ public class WxuserInfoParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("用户和openid关联")
     private Long userInfoId;
 
+
     /**
      * 用户id
      */
@@ -75,7 +76,11 @@ public class WxuserInfoParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     @Override
     public String checkParam() {
         return null;

@@ -14,12 +14,13 @@
         <result column="update_time" property="updateTime"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
     items
-        AS "items",
+        AS "items",deptId AS "deptId",
     parts_id AS "partsId", item_id AS "itemId", brand_id AS "brandId", number AS "number", display AS "display", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser"
     </sql>
 

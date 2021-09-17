@@ -72,7 +72,19 @@ public class Remind implements Serializable {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+    /**
+     * 部门id
+     */
+    @TableField(value = "deptId")
+    private Long deptId;
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
     @Override
     public String toString() {
         return "Remind{" +

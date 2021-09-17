@@ -101,5 +101,5 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
     public String checkParam() {
         return null;
     }
-
+    private Long deptId;
 }

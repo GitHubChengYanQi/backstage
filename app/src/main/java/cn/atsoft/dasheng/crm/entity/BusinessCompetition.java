@@ -133,7 +133,19 @@ public class BusinessCompetition implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
+    /**
+     * 部门id
+     */
+    @TableField(value = "deptId")
+    private Long deptId;
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
     @Override
     public String toString() {
         return "BusinessCompetition{" +

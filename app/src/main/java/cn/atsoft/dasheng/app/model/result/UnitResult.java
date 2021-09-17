@@ -70,4 +70,5 @@ public class UnitResult implements Serializable {
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }

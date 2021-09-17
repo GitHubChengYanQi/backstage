@@ -135,6 +135,9 @@ public class CrmBusiness implements Serializable {
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
+    /**
+     * 部门id
+     */
     @TableField(value = "deptId")
     private Long deptId;
 

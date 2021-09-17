@@ -14,11 +14,14 @@
         <result column="customer_id" property="customerId"/>
         <result column="remark" property="remark"/>
         <result column="apply_state" property="applyState"/>
+        <result column="stock_id" property="stockId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        customer_id AS "customerId",
+    <sql id="Base_Column_List"> stock_id
+    AS "stockId",
+        customer_id
+        AS "customerId",
         remark AS "remark",
         outstock_apply_id
         AS "outstockApplyId", user_id AS "userId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", apply_state AS "applyState"</sql>

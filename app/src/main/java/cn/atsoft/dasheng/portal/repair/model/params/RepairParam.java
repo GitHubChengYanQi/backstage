@@ -188,6 +188,12 @@ public class RepairParam implements Serializable, BaseValidatingParam {
     private List<String> pidValue;
 
     private String page;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
+
 
     @Override
     public String checkParam() {

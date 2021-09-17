@@ -3,11 +3,15 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 出库申请
@@ -22,8 +26,7 @@ public class OutstockApplyResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-   private List<ApplyDetails> applyDetails;
-
+    private List<ApplyDetails> applyDetails;
 
 
     /**
@@ -31,6 +34,7 @@ public class OutstockApplyResult implements Serializable {
      */
     @ApiModelProperty("出库申请")
     private Long outstockApplyId;
+    private Long stockId;
 
     /**
      * 负责人
@@ -46,8 +50,8 @@ public class OutstockApplyResult implements Serializable {
     /**
      * 备注
      */
-     @ApiModelProperty("备注")
-     private String remark;
+    @ApiModelProperty("备注")
+    private String remark;
     /**
      * 创建者
      */
@@ -78,6 +82,11 @@ public class OutstockApplyResult implements Serializable {
     @ApiModelProperty("状态")
     private Integer display;
 
+ /**
+  * 部门id
+  */
+ @ApiModelProperty("部门Id")
+ private Long deptId;
     /**
      * 申请状态
      */

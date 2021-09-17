@@ -27,6 +27,16 @@ public class Outstock implements Serializable {
      */
       @TableId(value = "outstock_id", type = IdType.ID_WORKER)
     private Long outstockId;
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     /**
      * 仓库id

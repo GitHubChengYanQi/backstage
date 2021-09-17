@@ -94,4 +94,5 @@ public class MessageResult implements Serializable {
     private Long sort;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    private Long deptId;
 }

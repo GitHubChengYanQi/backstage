@@ -32,6 +32,17 @@ public class StockDetails implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
     /**
      * 明细id
      */

@@ -27,6 +27,8 @@ public class SysDept implements Serializable {
       @TableId(value = "dept_id", type = IdType.ID_WORKER)
     private Long deptId;
 
+
+
     /**
      * 父部门id
      */

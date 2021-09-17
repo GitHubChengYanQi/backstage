@@ -11,10 +11,11 @@
         <result column="update_time" property="updateTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">deptId AS "deptId",
         classification_id
         AS "classificationId", difference AS "difference", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>

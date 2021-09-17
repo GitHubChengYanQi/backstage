@@ -21,11 +21,11 @@
         <result column="update_time" property="updateTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">stock_item_id
-    AS "stockItemId",outstock_apply_id AS "outstockApplyId",
+    <sql id="Base_Column_List">stock_item_id AS "stockItemId",outstock_apply_id AS "outstockApplyId",deptId AS "deptId",
         stock_id As "stockId" ,outstock_order_id AS "outstockOrderId" , outstock_id AS "outstockId", storehouse_id AS "storehouseId", delivery_time AS "deliveryTime", number AS "number", price AS "price", brand_id AS "brandId",item_id AS "itemId",state AS "state", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
