@@ -79,7 +79,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             if (ToolUtil.isEmpty(Stock)) {
                 stockParam.setItemId(entity.getItemId());
                 stockParam.setBrandId(entity.getBrandId());
-                stockParam.setStorehouseId(entity.getStorehouseId());
+                stockParam.setStorehouseId(entity.getStoreHouseId());
                 stockParam.setInventory(entity.getNumber());
                 Long StockId = this.stockService.add(stockParam);
 
@@ -87,7 +87,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 stockDetails.setPrice(entity.getPrice());
                 stockDetails.setStorageTime(entity.getRegisterTime());
                 stockDetails.setItemId(entity.getItemId());
-                stockDetails.setStorehouseId(entity.getStorehouseId());
+                stockDetails.setStorehouseId(entity.getStoreHouseId());
                 stockDetails.setBrandId(entity.getBrandId());
                 stockDetails.setBarcode(entity.getBarcode());
 
@@ -104,12 +104,12 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 for (Stock StockList : Stock) {
                     if (StockList.getItemId().equals(entity.getItemId())
                             && StockList.getBrandId().equals(entity.getBrandId())
-                            && StockList.getStorehouseId().equals(entity.getStorehouseId())
+                            && StockList.getStorehouseId().equals(entity.getStoreHouseId())
                     ) {
                         stockParam.setStockId(StockList.getStockId());
                         stockParam.setItemId(entity.getItemId());
                         stockParam.setBrandId(entity.getBrandId());
-                        stockParam.setStorehouseId(entity.getStorehouseId());
+                        stockParam.setStorehouseId(entity.getStoreHouseId());
                         stockParam.setInventory(entity.getNumber() + StockList.getInventory());
                         this.stockService.update(stockParam);
 
@@ -117,7 +117,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         stockDetails.setPrice(entity.getPrice());
                         stockDetails.setStorageTime(entity.getRegisterTime());
                         stockDetails.setItemId(entity.getItemId());
-                        stockDetails.setStorehouseId(entity.getStorehouseId());
+                        stockDetails.setStorehouseId(entity.getStoreHouseId());
                         stockDetails.setBrandId(entity.getBrandId());
                         stockDetails.setBarcode(entity.getBarcode());
                         List<StockDetails> list = new ArrayList<>();
@@ -133,7 +133,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 if (!useFlag) {
                     stockParam.setItemId(entity.getItemId());
                     stockParam.setBrandId(entity.getBrandId());
-                    stockParam.setStorehouseId(entity.getStorehouseId());
+                    stockParam.setStorehouseId(entity.getStoreHouseId());
                     stockParam.setInventory(entity.getNumber());
                     Long StockId = this.stockService.add(stockParam);
 
@@ -141,7 +141,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     stockDetails.setPrice(entity.getPrice());
                     stockDetails.setStorageTime(entity.getRegisterTime());
                     stockDetails.setItemId(entity.getItemId());
-                    stockDetails.setStorehouseId(entity.getStorehouseId());
+                    stockDetails.setStorehouseId(entity.getStoreHouseId());
                     stockDetails.setBrandId(entity.getBrandId());
                     stockDetails.setBarcode(entity.getBarcode());
                     List<StockDetails> list = new ArrayList<>();
@@ -210,7 +210,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         for (InstockResult datum : data) {
             brandIds.add(datum.getBrandId());
             itemIds.add(datum.getItemId());
-            storeIds.add(datum.getStorehouseId());
+            storeIds.add(datum.getStoreHouseId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(brandIds)) {
@@ -252,7 +252,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             }
             if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
-                    if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                    if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
                         ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);

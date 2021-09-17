@@ -44,6 +44,7 @@ public class TrackMessageResult implements Serializable {
 
     private BigDecimal longitude;
     private Long userId;
+    private Long customerId;
 
     /**
      * 商机跟踪内容id

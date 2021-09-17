@@ -29,7 +29,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        deptId AS "deptId",
+        deptId
+        AS "deptId",
         process_id
         AS "processId",track_id
         AS "trackId",  business_id
@@ -79,6 +80,9 @@
         </if>
         <if test="paramCondition.person != null">
             and person =#{paramCondition.person}
+        </if>
+        <if test="paramCondition.state != null">
+            and state =#{paramCondition.state}
         </if>
         <if test="paramCondition.businessName !=null and paramCondition.businessName!= ''">
             and business_name like CONCAT('%',#{paramCondition.businessName},'%')
