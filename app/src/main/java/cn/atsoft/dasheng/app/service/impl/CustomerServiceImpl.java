@@ -241,9 +241,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
         IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param);
-        if (dataScope != null){
-            page = null;
-        }
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
