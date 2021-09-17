@@ -78,10 +78,13 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
         List<User> users = userService.list();
         for (BusinessTrackResult record : page.getRecords()) {
             for(User user: users){
-                if (record.getUserId().equals(user.getUserId())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    record.setUserResult(userResult);
+                if (ToolUtil.isNotEmpty(record.getUserId())){
+                    if (record.getUserId().equals(user.getUserId())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        record.setUserResult(userResult);
+                        break;
+                    }
                 }
             }
 
