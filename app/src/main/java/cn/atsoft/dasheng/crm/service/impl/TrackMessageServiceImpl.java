@@ -56,8 +56,8 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @BussinessLog
     @Override
     public TrackMessage add(TrackMessageParam param) {
-        LoginUser user = LoginContextHolder.getContext().getUser();
-        param.setUserId(user.getId());
+//        LoginUser user = LoginContextHolder.getContext().getUser();
+//        param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
         if (ToolUtil.isEmpty(competitorQuoteParams)) {
             throw new ServiceException(500, "请选择当前流程");
