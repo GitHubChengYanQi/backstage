@@ -4,49 +4,51 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Instock">
-        <id column="instock_id" property="instockId" />
-        <result column="item_id" property="itemId" />
-        <result column="Storehouse_id" property="StorehouseId" />
-        <result column="register_time" property="registerTime" />
-        <result column="number" property="number" />
-        <result column="price" property="price" />
-        <result column="brand_id" property="brandId" />
-        <result column="barcode" property="barcode" />
-        <result column="state" property="state" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
+        <id column="instock_id" property="instockId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="storehouse_id" property="storeHouseId"/>
+        <result column="register_time" property="registerTime"/>
+        <result column="number" property="number"/>
+        <result column="price" property="price"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="barcode" property="barcode"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        deptId AS "deptId",
-        Storehouse_id AS "StorehouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        deptId
+        AS "deptId",
+        storehouse_id AS "storeHouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.InstockResult" parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.InstockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock where display = 1
-            <if test="paramCondition.itemId != null">
-                    and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.StorehouseId != null">
-                and Storehouse_id = #{paramCondition.StorehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
-            <if test="paramCondition.barcode != null">
-                and barcode = #{paramCondition.barcode}
-            </if>
-            <if test="paramCondition.state != null">
-                and state = #{paramCondition.state}
-            </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.storeHouseId != null">
+            and storehouse_id = #{paramCondition.storeHouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.barcode != null">
+            and barcode = #{paramCondition.barcode}
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
         order by create_time DESC
 
     </select>
@@ -55,47 +57,48 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock where display = 1
-                <if test="paramCondition.itemId != null">
-                    and item_id = #{paramCondition.itemId}
-                </if>
-                <if test="paramCondition.StorehouseId != null">
-                    and Storehouse_id = #{paramCondition.StorehouseId}
-                </if>
-                <if test="paramCondition.brandId != null">
-                    and brand_id = #{paramCondition.brandId}
-                </if>
-                <if test="paramCondition.barcode != null">
-                    and barcode = #{paramCondition.barcode}
-                </if>
-                <if test="paramCondition.state != null">
-                    and state = #{paramCondition.state}
-                </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.StorehouseId != null">
+            and Storehouse_id = #{paramCondition.StorehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.barcode != null">
+            and barcode = #{paramCondition.barcode}
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
         order by create_time DESC
 
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.InstockResult" parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.InstockResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.InstockParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock where display = 1
-            <if test="paramCondition.itemId != null">
+        <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
-            </if>
-            <if test="paramCondition.registerTime!=null">
-                and register_time like CONCAT('%',#{paramCondition.registerTime},'%')
-            </if>
-            <if test="paramCondition.StorehouseId != null">
-                and Storehouse_id = #{paramCondition.StorehouseId}
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id = #{paramCondition.brandId}
-            </if>
-            <if test="paramCondition.barcode != null">
-                and barcode = #{paramCondition.barcode}
-            </if>
-            <if test="paramCondition.state != null">
-                and state = #{paramCondition.state}
-            </if>
+        </if>
+        <if test="paramCondition.registerTime!=null">
+            and register_time like CONCAT('%',#{paramCondition.registerTime},'%')
+        </if>
+        <if test="paramCondition.storeHouseId != null">
+            and storehouse_id = #{paramCondition.storeHouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.barcode != null">
+            and barcode = #{paramCondition.barcode}
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
         order by create_time DESC
 
     </select>
@@ -104,21 +107,21 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_instock where display = 1
-                <if test="paramCondition.itemId != null">
-                        and item_id = #{paramCondition.itemId}
-                </if>
-                <if test="paramCondition.StorehouseId != null">
-                    and Storehouse_id = #{paramCondition.StorehouseId}
-                </if>
-                <if test="paramCondition.brandId != null">
-                    and brand_id = #{paramCondition.brandId}
-                </if>
-                <if test="paramCondition.barcode != null">
-                    and barcode = #{paramCondition.barcode}
-                </if>
-                <if test="paramCondition.state != null">
-                    and state = #{paramCondition.state}
-                </if>
+        <if test="paramCondition.itemId != null">
+            and item_id = #{paramCondition.itemId}
+        </if>
+        <if test="paramCondition.StorehouseId != null">
+            and Storehouse_id = #{paramCondition.StorehouseId}
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id = #{paramCondition.brandId}
+        </if>
+        <if test="paramCondition.barcode != null">
+            and barcode = #{paramCondition.barcode}
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{paramCondition.state}
+        </if>
         order by create_time DESC
 
     </select>

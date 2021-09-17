@@ -39,6 +39,7 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
 
     private Long userId;
+    private Long customerId;
     private  String type;
     /**
      * 经度
