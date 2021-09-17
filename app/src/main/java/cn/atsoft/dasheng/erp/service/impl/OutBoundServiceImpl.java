@@ -168,7 +168,6 @@ public class OutBoundServiceImpl implements OutBoundService {
     boolean backItem(Long id, Long brandId, Long itemId) {
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
         for (Stock stock : stocks) {
-
             if (!stock.getItemId().equals(brandId) && !stock.getItemId().equals(itemId)) {
                 return false;
             }
