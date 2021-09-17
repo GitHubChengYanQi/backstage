@@ -156,25 +156,31 @@ public class OutBoundServiceImpl implements OutBoundService {
 //        List<Stock> stockList = stockService.lambdaQuery()
 //                .in(Stock::getStockId, outstockApplyParam.getStockId())
 //                .list();
-        for (ApplyDetails applyDetail : applyDetails) {
-            boolean f = backItem(outstockApplyParam.getStockId(), applyDetail.getBrandId(), applyDetail.getItemId());
+
+        for (int i = 0; i < applyDetails.size(); i++) {
+            boolean f = backItem(outstockApplyParam.getStockId(), applyDetails.get(i).getBrandId(), applyDetails.get(i).getItemId());
             if (!f) {
                 throw new ServiceException(500, "库存没有此产品");
             }
         }
+        for (ApplyDetails applyDetail : applyDetails) {
+
+        }
+
         return null;
     }
 
     boolean backItem(Long id, Long brandId, Long itemId) {
+        boolean f =true;
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
         for (Stock stock : stocks) {
             if (!stock.getItemId().equals(brandId) && !stock.getItemId().equals(itemId)) {
-                return false;
+                f = false;
             }
         }
         if (ToolUtil.isEmpty(stocks)) {
             return false;
         }
-        return true;
+        return f;
     }
 }

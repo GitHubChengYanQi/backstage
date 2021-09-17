@@ -10,6 +10,7 @@
         <result column="grade" property="grade"/>
         <result column="grade_code" property="gradeCode"/>
         <result column="region_code" property="regionCode"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->

@@ -87,7 +87,7 @@ public class AdressController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-//    @Permission
+
     public ResponseData<AdressResult> detail(@RequestBody AdressParam adressParam) {
 //        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
 //        return ResponseData.success(pageBySpec.getData().get(0));
@@ -108,7 +108,7 @@ public class AdressController extends BaseController {
      * @Date 2021-07-23
      */
     Long clientId;
-//    @Permission
+
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
