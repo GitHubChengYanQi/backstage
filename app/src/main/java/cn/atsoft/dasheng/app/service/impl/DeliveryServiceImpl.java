@@ -211,7 +211,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             Outstock stockDetails = new Outstock();
             stockDetails.setState(1L);
             outStockService.update(stockDetails, stockDetailsQueryWrapper);
-
         }
         this.saveBatch(deliveryList);
 
