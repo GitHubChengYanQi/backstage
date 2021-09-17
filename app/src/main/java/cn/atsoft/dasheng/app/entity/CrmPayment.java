@@ -69,6 +69,7 @@ public class CrmPayment implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
     /**
      * 创建者
      */

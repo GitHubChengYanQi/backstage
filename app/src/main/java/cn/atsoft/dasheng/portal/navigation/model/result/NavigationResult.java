@@ -72,6 +72,11 @@ public class NavigationResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

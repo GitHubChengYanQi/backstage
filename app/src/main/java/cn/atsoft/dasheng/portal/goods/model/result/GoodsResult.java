@@ -94,7 +94,11 @@ public class GoodsResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     /**
      * 状态
      */

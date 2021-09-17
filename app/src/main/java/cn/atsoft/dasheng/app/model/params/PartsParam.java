@@ -91,7 +91,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Map<Integer, String> value;
-
+    private Long deptId;
     @Override
     public String checkParam() {
         return null;

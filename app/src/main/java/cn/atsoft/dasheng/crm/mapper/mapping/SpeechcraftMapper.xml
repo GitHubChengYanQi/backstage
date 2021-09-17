@@ -13,12 +13,13 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="deptId" property="deptId"/>
         <result column="display" property="display"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">speechcraft_type
-    AS "speechcraftType",
+    AS "speechcraftType",deptId AS "deptId",
         speechcraft_id AS "speechcraftId", speechcraft_title AS "speechcraftTitle", speechcraft_details AS "speechcraftDetails", speechcraft_key AS "speechcraftKey", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

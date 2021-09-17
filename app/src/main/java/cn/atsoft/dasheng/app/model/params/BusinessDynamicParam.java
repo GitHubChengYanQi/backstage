@@ -78,5 +78,5 @@ public class BusinessDynamicParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
-
+    private Long deptId;
 }

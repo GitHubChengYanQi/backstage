@@ -72,5 +72,5 @@ public class BrandParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
-
+    private Long deptId;
 }

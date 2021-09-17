@@ -141,7 +141,11 @@ public class CrmBusinessResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
-
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     /**
      * 状态
      */
@@ -149,4 +153,5 @@ public class CrmBusinessResult implements Serializable {
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }

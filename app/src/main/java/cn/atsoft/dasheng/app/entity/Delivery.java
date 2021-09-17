@@ -102,6 +102,16 @@ public class Delivery implements Serializable {
     @TableField("display")
     private Integer display;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     public Long getDeliveryId() {
         return deliveryId;

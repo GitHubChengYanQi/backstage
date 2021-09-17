@@ -45,6 +45,9 @@ public class CrmBusinessDetailed implements Serializable {
     @TableField("quantity")
     private int quantity;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
     public Long getId() {
         return id;
     }
@@ -131,6 +134,14 @@ public class CrmBusinessDetailed implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     /**

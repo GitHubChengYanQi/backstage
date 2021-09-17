@@ -80,5 +80,10 @@ public class RemindUserParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
 
 }

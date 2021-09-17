@@ -33,6 +33,16 @@ public class Storehouse implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     /**
      * 经度

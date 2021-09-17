@@ -65,6 +65,11 @@ public class WxuserInfoResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
 
     /**
      * 状态

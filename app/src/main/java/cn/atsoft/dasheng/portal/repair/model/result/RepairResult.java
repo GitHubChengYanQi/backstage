@@ -184,6 +184,11 @@ public class RepairResult implements Serializable {
      */
     @ApiModelProperty("权限")
     private int power;
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
 
     /**
      * 合同类型

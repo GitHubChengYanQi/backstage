@@ -27,6 +27,17 @@ public class Stock implements Serializable {
       @TableId(value = "stock_id", type = IdType.ID_WORKER)
     private Long stockId;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
     /**
      * 地点id
      */

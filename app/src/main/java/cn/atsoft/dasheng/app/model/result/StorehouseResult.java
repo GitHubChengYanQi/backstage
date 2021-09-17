@@ -96,4 +96,5 @@ public class StorehouseResult implements Serializable {
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    private Long deptId;
 }

@@ -84,7 +84,7 @@ public class CrmBusinessDetailedResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
-
+    private Long deptId;
     /**
      * 状态
      */

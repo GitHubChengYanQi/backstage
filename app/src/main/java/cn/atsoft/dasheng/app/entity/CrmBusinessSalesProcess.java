@@ -84,12 +84,21 @@ public class CrmBusinessSalesProcess implements Serializable {
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
-
+    @TableField(value = "deptId")
+    private Long deptId;
     /**
      * 状态
      */
     @TableField("display")
     private Integer display;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     public Long getWinRate() {
         return winRate;
