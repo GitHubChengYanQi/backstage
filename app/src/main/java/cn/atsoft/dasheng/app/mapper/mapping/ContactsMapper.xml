@@ -34,8 +34,8 @@
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
-        <if test="paramCondition.job != null and paramCondition.job != ''">
-            and job like CONCAT('%',#{paramCondition.job},'%')
+        <if test="paramCondition.companyRole != null and paramCondition.companyRole != ''">
+            and company_role_id like CONCAT('%',#{paramCondition.companyRole},'%')
         </if>
         <if test="paramCondition.phone != null">
             and phone = #{paramCondition.phone}
@@ -52,8 +52,8 @@
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
-        <if test="paramCondition.job != null and paramCondition.job != ''">
-            and job like CONCAT('%',#{paramCondition.job},'%')
+        <if test="paramCondition.companyRole != null and paramCondition.companyRole != ''">
+            and company_role_id like CONCAT('%',#{paramCondition.companyRole},'%')
         </if>
         <if test="paramCondition.phone != null">
             and phone = #{paramCondition.phone}
@@ -71,8 +71,8 @@
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
-        <if test="paramCondition.job != null and paramCondition.job != ''">
-            and job like CONCAT('%',#{paramCondition.job},'%')
+        <if test="paramCondition.companyRole != null and paramCondition.companyRole != ''">
+            and company_role_id like CONCAT('%',#{paramCondition.companyRole},'%')
         </if>
         <if test="paramCondition.phone != null">
             and phone = #{paramCondition.phone}
@@ -92,8 +92,8 @@
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
-        <if test="paramCondition.job != null and paramCondition.job != ''">
-            and job like CONCAT('%',#{paramCondition.job},'%')
+        <if test="paramCondition.companyRole != null and paramCondition.companyRole != ''">
+            and company_role_id like CONCAT('%',#{paramCondition.companyRole},'%')
         </if>
         <if test="paramCondition.phone != null">
             and phone = #{paramCondition.phone}
