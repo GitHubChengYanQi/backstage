@@ -27,6 +27,17 @@ public class Template implements Serializable {
       @TableId(value = "template_id", type = IdType.ID_WORKER)
     private Long templateId;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
     /**
      * 合同姓名
      */

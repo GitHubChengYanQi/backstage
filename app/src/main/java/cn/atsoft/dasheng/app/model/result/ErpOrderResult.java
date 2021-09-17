@@ -168,4 +168,5 @@ public class ErpOrderResult implements Serializable {
     private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }

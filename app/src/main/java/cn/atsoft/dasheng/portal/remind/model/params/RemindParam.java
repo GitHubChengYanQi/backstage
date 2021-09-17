@@ -51,7 +51,11 @@ public class RemindParam implements Serializable, BaseValidatingParam {
     private List<String> pidValue;
 
     private WxTemplateData template;
-
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
 
     @Override
     public String checkParam() {

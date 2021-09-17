@@ -45,8 +45,34 @@ public class OutstockOrder implements Serializable {
      */
     @TableField("outstock_apply_id")
     private Long outstockApplyId;
+    @TableField(value = "deptId")
+    private Long deptId;
 
-     /**
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    /**
      * 出库状态
      */
     @TableField("state")

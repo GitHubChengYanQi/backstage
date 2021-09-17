@@ -88,6 +88,11 @@ public class RepairImageParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     @Override
     public String checkParam() {
         return null;

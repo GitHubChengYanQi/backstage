@@ -107,12 +107,25 @@ public class GoodsDetails implements Serializable {
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
+
     /**
      * 状态
      */
     @TableField("display")
     private Integer display;
+    /**
+     * 部门id
+     */
+    @TableField(value = "deptId")
+    private Long deptId;
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     public Long getGoodDetailsId() {
         return goodDetailsId;

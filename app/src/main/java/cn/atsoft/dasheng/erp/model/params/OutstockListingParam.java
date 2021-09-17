@@ -118,6 +118,7 @@ public class OutstockListingParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
+
     @Override
     public String checkParam() {
         return null;

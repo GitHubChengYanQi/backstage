@@ -111,7 +111,7 @@ public class InstockParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
+    private Long deptId;
     @Override
     public String checkParam() {
         return null;

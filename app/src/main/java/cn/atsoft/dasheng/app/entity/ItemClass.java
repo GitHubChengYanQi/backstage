@@ -33,6 +33,7 @@ public class ItemClass implements Serializable {
     @TableField("class_name")
     private String className;
 
+
     /**
      * 创建者
      */

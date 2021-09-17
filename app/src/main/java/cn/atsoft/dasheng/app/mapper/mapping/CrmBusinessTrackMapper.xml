@@ -20,10 +20,11 @@
         <result column="name" property="name"/>
         <result column="competitors_quote_id" property="competitorsQuoteId"/>
         <result column="competition_id" property="competitionId"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">deptId AS "deptId",
         money
         AS "money" ,type AS "type",note AS "note",name AS "name",competitors_quote_id AS "competitorsQuoteId",competition_id AS "competitionId",
         track_id AS "trackId", note_id AS "noteId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display",business_id AS "businessId"

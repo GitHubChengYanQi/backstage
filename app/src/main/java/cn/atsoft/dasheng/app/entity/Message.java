@@ -93,6 +93,16 @@ public class Message implements Serializable {
     @TableField("sort")
     private Long sort;
 
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     public Long getMessageId() {
         return messageId;

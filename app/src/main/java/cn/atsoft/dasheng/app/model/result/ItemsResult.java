@@ -122,4 +122,5 @@ public class ItemsResult implements Serializable {
     private Long updateUser;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    private Long deptId;
 }

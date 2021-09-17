@@ -71,6 +71,16 @@ public class Origin implements Serializable {
      */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
 
     /**
      * 修改时间

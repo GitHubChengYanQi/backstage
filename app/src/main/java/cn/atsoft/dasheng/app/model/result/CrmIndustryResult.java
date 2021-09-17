@@ -73,4 +73,5 @@ public class CrmIndustryResult implements Serializable {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    private Long deptId;
 }

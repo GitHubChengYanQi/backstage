@@ -16,10 +16,11 @@
         <result column="sale_price" property="salePrice"/>
       <result column="total_price" property="totalPrice"/>
         <result column="process_id" property="processId" />
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">   process_id AS "processId",
+    <sql id="Base_Column_List">   process_id AS "processId",deptId AS "deptId",
       total_price AS "totalPrice",sale_price AS "salePrice",id AS "id", business_id AS "businessId", item_id AS "itemId", quantity AS "quantity", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

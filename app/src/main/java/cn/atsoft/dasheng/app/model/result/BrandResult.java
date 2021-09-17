@@ -56,7 +56,7 @@ public class BrandResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
+    private Long deptId;
     /**
      * 状态
      */

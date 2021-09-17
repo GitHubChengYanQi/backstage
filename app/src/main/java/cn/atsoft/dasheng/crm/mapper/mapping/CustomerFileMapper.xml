@@ -14,11 +14,12 @@
         <result column="uid" property="uid"/>
         <result column="name" property="name"/>
         <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">uid
-    AS "uid",name AS "name",
+    AS "uid",name AS "name",deptId AS "deptId",
         file_id AS "fileId", customer_id AS "customerId", url AS "url", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 

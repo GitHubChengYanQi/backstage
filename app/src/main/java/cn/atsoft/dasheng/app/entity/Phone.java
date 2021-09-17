@@ -27,6 +27,18 @@ public class Phone implements Serializable {
       @TableId(value = "phone_id", type = IdType.ID_WORKER)
     private Long phoneId;
 
+
+    @TableField(value = "deptId")
+    private Long deptId;
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
     /**
      * 联系人id
      */

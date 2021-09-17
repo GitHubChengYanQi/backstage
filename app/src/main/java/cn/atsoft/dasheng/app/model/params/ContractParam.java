@@ -116,5 +116,5 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
-
+    private Long deptId;
 }

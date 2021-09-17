@@ -135,7 +135,11 @@ public class DispatchingParam implements Serializable, BaseValidatingParam {
     private List<String> pidValue;
 
     private RepairParam repair;
-
+    /**
+     * 部门id
+     */
+    @ApiModelProperty("部门Id")
+    private Long deptId;
     @Override
     public String checkParam() {
         return null;

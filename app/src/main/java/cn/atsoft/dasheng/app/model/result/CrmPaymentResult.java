@@ -109,4 +109,5 @@ public class CrmPaymentResult implements Serializable {
     private Long deliveryId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
 }
