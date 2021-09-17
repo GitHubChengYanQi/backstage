@@ -54,7 +54,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     private BusinessTrackService businessTrackService;
 
 
-    @BussinessLog
+
     @Override
     public TrackMessage add(TrackMessageParam param) {
         LoginUser user = LoginContextHolder.getContext().getUser();
