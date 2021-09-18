@@ -4,11 +4,13 @@ import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.ContractRequest;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +113,12 @@ public class ContractController extends BaseController {
         if (ToolUtil.isEmpty(contractParam)) {
             contractParam = new ContractParam();
         }
-        return this.contractService.findPageBySpec(contractParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.contractService.findPageBySpec(contractParam,null);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.contractService.findPageBySpec(contractParam,dataScope);
+        }
     }
 
     @RequestMapping(value = "/listCustomer", method = RequestMethod.POST)
@@ -121,7 +128,7 @@ public class ContractController extends BaseController {
         if (ToolUtil.isEmpty(contractParam)) {
             contractParam = new ContractParam();
         }
-        return this.contractService.findPageBySpec(contractParam);
+        return this.contractService.findPageBySpec(contractParam,null);
     }
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
@@ -65,7 +66,7 @@ public interface CompetitorQuoteService extends IService<CompetitorQuote> {
      * @author 
      * @Date 2021-09-07
      */
-     PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param);
+     PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param, DataScope dataScope);
 
 
 

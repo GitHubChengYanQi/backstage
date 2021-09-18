@@ -69,6 +69,9 @@
                 <if test="paramCondition.quoteStatus != null">
                     and quote_status = #{paramCondition.quoteStatus}
                 </if>
+                <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+                    and deptId = #{paramCondition.deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%', #{paramCondition.deptId},'%'))
+                </if>
         order by create_time DESC
     </select>
 

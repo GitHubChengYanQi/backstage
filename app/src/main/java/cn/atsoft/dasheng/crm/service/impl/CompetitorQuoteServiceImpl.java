@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.CrmBusinessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.mapper.CompetitorQuoteMapper;
@@ -82,10 +83,10 @@ public class CompetitorQuoteServiceImpl extends ServiceImpl<CompetitorQuoteMappe
     }
 
     @Override
-    public PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param) {
+    public PageInfo<CompetitorQuoteResult> findPageBySpec(CompetitorQuoteParam param, DataScope dataScopes) {
         Page<CompetitorQuoteResult> pageContext = getPageContext();
 
-        IPage<CompetitorQuoteResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CompetitorQuoteResult> page = this.baseMapper.customPageList(pageContext, param,dataScopes);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

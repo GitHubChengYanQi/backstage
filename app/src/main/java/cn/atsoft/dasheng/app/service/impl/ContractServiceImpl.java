@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -182,9 +183,9 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
     @Override
-    public PageInfo<ContractResult> findPageBySpec(ContractParam param) {
+    public PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope) {
         Page<ContractResult> pageContext = getPageContext();
-        IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

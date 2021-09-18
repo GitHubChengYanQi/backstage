@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.model.result.ContractResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public interface ContractService extends IService<Contract> {
      * @author 
      * @Date 2021-07-21
      */
-     PageInfo<ContractResult> findPageBySpec(ContractParam param);
+     PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope);
 
     void batchDelete( List<Long> id);
 
