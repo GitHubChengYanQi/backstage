@@ -63,7 +63,6 @@
         <if test="paramCondition.salesProcessId != null">
             and sales_process_id = #{paramCondition.salesProcessId}
         </if>
-        order by create_time desc
     </select>
 
 
