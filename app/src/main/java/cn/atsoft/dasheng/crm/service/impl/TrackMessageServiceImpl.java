@@ -69,6 +69,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
             data.setBusinessId(param.getBusinessId());
             CompetitorQuote competitorQuote = new CompetitorQuote();
             ToolUtil.copyProperties(data, competitorQuote);
+            competitorQuote.setCampType(1L);
             competitorQuotes.add(competitorQuote);
         }
         if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
@@ -76,7 +77,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
                 CompetitorQuote competitorQuote = new CompetitorQuote();
                 competitorQuote.setCompetitorsQuote(businessTrackParam.getMoney());
                 Integer classify = businessTrackParam.getClassify();
-                competitorQuote.setCampType(Long.valueOf(classify));
+                competitorQuote.setCampType(0l);
                 competitorQuotes.add(competitorQuote);
             }
         }
