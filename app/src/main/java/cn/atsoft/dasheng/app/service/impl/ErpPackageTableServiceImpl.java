@@ -80,23 +80,34 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     }
 
-    Map<Long, ErpPackageTable> map ;
+    Map<Long, ErpPackageTable> addMap;
+    Map<Long, ErpPackageTable> updateMap;
 
     @Override
     public void batchAdd(ErpPackageTableParam param) {
-        map = new HashMap<>();
+        addMap = new HashMap<>();
+        updateMap = new HashMap<>();
         List<ErpPackageTable> updateList = new ArrayList<>();
         List<ErpPackageTable> addList = new ArrayList<>();
+        Long l = null;
         Map<Long, ErpPackageTable> tableMap = new HashMap();
         for (Long itemId : param.getItemIds()) {
             ErpPackageTable erpPackageTable = this.lambdaQuery().eq(ErpPackageTable::getItemId, itemId).and(i -> i.eq(ErpPackageTable::getPackageId, param.getPackageId())).one();
             if (ToolUtil.isNotEmpty(erpPackageTable)) {
                 if (erpPackageTable.getPackageId().equals(param.getPackageId()) && erpPackageTable.getItemId().equals(itemId)) {
-                    long l = erpPackageTable.getQuantity()+1;
-                    erpPackageTable.setQuantity(l);
-                    ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
-                    ToolUtil.copyProperties(erpPackageTable,erpPackageTableParam);
-                    this.update(erpPackageTableParam);
+                    ErpPackageTable packageTable = updateMap.get(param.getPackageId() + itemId);
+                    if (ToolUtil.isEmpty(packageTable)) {
+                        l = erpPackageTable.getQuantity() + 1;
+                        erpPackageTable.setQuantity(l);
+                        updateMap.put(param.getPackageId() + itemId, erpPackageTable);
+                    } else {
+                        l = l + 1;
+                        erpPackageTable.setQuantity(l);
+                        updateMap.put(param.getPackageId() + itemId, erpPackageTable);
+                    }
+//                    ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
+//                    ToolUtil.copyProperties(erpPackageTable,erpPackageTableParam);
+//                    this.update(erpPackageTableParam);
 //                    updateList.add(erpPackageTable);
                 }
             }
@@ -105,32 +116,38 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
                 tableMap = superposition(param.getPackageId(), itemId);
             }
         }
-
+        //通过map取出相同数据批量修改
+        Set<Map.Entry<Long, ErpPackageTable>> entriesUpdate = updateMap.entrySet();
+        for (Map.Entry<Long, ErpPackageTable> longErpPackageTableEntry : entriesUpdate) {
+            ErpPackageTable value = longErpPackageTableEntry.getValue();
+            updateList.add(value);
+        }
+        //通过map取出相同数据批量增加
         Set<Map.Entry<Long, ErpPackageTable>> entries = tableMap.entrySet();
         for (Map.Entry<Long, ErpPackageTable> entry : entries) {
             ErpPackageTable entryValue = entry.getValue();
             addList.add(entryValue);
         }
-
+        this.updateBatchById(updateList);
         this.saveBatch(addList);
     }
 
 
     Map<Long, ErpPackageTable> superposition(Long packageId, Long itemId) {
-        ErpPackageTable packageTable = map.get(packageId + itemId);
-        if (map.containsKey(packageId + itemId)) {
+        ErpPackageTable packageTable = addMap.get(packageId + itemId);
+        if (addMap.containsKey(packageId + itemId)) {
             long l = packageTable.getQuantity() + 1;
             packageTable.setQuantity(l);
-            map.put(packageId + itemId, packageTable);
+            addMap.put(packageId + itemId, packageTable);
         }
         if (ToolUtil.isEmpty(packageTable)) {
             ErpPackageTable erpPackageTable = new ErpPackageTable();
             erpPackageTable.setPackageId(packageId);
             erpPackageTable.setItemId(itemId);
             erpPackageTable.setQuantity(1L);
-            map.put(packageId + itemId, erpPackageTable);
+            addMap.put(packageId + itemId, erpPackageTable);
         }
-        return map;
+        return addMap;
     }
 
 
@@ -148,7 +165,6 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
         }
         return a;
     }
-
 
 
     private Serializable getKey(ErpPackageTableParam param) {
