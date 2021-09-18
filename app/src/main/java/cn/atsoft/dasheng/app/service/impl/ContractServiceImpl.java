@@ -251,9 +251,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         for (ContractResult record : data) {
 
-
             for (Customer customer : partAList) {
-                if (record.getPartyA().equals(customer.getCustomerId())) {
+                if (customer.getCustomerId().equals(record.getPartyA())) {
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     record.setPartA(customerResult);
