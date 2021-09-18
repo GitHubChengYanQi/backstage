@@ -116,8 +116,8 @@ public class CrmBusinessController extends BaseController {
     }
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public List<CrmBusinessResult> listAll(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
-        return this.crmBusinessService.findListBySpec(crmBusinessParam);
+    public Integer listAll(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
+        return this.crmBusinessService.findListBySpec(crmBusinessParam).size();
     }
 
 
