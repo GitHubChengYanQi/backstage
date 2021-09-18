@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
@@ -99,7 +101,12 @@ public class CompetitorQuoteController extends BaseController {
         if(ToolUtil.isEmpty(competitorQuoteParam)){
             competitorQuoteParam = new CompetitorQuoteParam();
         }
-        return this.competitorQuoteService.findPageBySpec(competitorQuoteParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.competitorQuoteService.findPageBySpec(competitorQuoteParam,null);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.competitorQuoteService.findPageBySpec(competitorQuoteParam,dataScope);
+        }
     }
 
 

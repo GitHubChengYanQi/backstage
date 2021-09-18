@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
 import cn.atsoft.dasheng.crm.model.params.CompetitorQuoteParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorQuoteResult;
@@ -43,7 +44,7 @@ public interface CompetitorQuoteMapper extends BaseMapper<CompetitorQuote> {
      * @author 
      * @Date 2021-09-07
      */
-    Page<CompetitorQuoteResult> customPageList(@Param("page") Page page, @Param("paramCondition") CompetitorQuoteParam paramCondition);
+    Page<CompetitorQuoteResult> customPageList(@Param("page") Page page, @Param("paramCondition") CompetitorQuoteParam paramCondition, @Param("dataScope")DataScope dataScope);
 
     /**
      * 获取分页map列表
