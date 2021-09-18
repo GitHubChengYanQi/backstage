@@ -4,284 +4,288 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.BusinessTrack">
-        <id column="track_id" property="trackId" />
-        <result column="message" property="message" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="tixing" property="tixing" />
-        <result column="type" property="type" />
-        <result column="display" property="display" />
-        <result column="time" property="time" />
-        <result column="note" property="note" />
-        <result column="image" property="image" />
-        <result column="longitude" property="longitude" />
-        <result column="latitude" property="latitude" />
-        <result column="user_id" property="userId" />
-        <result column="deptId" property="deptId" />
-        <result column="classify" property="classify" />
-        <result column="classify_id" property="classifyId" />
-        <result column="track_message_id" property="trackMessageId" />
+        <id column="track_id" property="trackId"/>
+        <result column="message" property="message"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tixing" property="tixing"/>
+        <result column="type" property="type"/>
+        <result column="display" property="display"/>
+        <result column="time" property="time"/>
+        <result column="note" property="note"/>
+        <result column="image" property="image"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="user_id" property="userId"/>
+        <result column="deptId" property="deptId"/>
+        <result column="classify" property="classify"/>
+        <result column="classify_id" property="classifyId"/>
+        <result column="track_message_id" property="trackMessageId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        track_id AS "trackId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", tixing AS "tixing", type AS "type", display AS "display", time AS "time", note AS "note", image AS "image", longitude AS "longitude", latitude AS "latitude", user_id AS "userId", deptId AS "deptId", classify AS "classify", classify_id AS "classifyId", track_message_id AS "trackMessageId"
+        track_id
+        AS "trackId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", tixing AS "tixing", type AS "type", display AS "display", time AS "time", note AS "note", image AS "image", longitude AS "longitude", latitude AS "latitude", user_id AS "userId", deptId AS "deptId", classify AS "classify", classify_id AS "classifyId", track_message_id AS "trackMessageId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.BusinessTrackResult" parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.BusinessTrackResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track where 1 = 1
-            <if test="paramCondition.trackId != null">
-                and track_id like CONCAT('%',#{paramCondition.trackId},'%')
-            </if>
-            <if test="paramCondition.message != null and paramCondition.message != ''">
-                and message like CONCAT('%',#{paramCondition.message},'%')
-            </if>
-            <if test="paramCondition.createUser != null">
-                and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-            </if>
-            <if test="paramCondition.updateUser != null">
-                and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-            </if>
-            <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-            </if>
-            <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-            </if>
-            <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
-                and tixing like CONCAT('%',#{paramCondition.tixing},'%')
-            </if>
-            <if test="paramCondition.type != null and paramCondition.type != ''">
-                and type like CONCAT('%',#{paramCondition.type},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
-            </if>
-            <if test="paramCondition.time != null and paramCondition.time != ''">
-                and time like CONCAT('%',#{paramCondition.time},'%')
-            </if>
-            <if test="paramCondition.note != null and paramCondition.note != ''">
-                and note like CONCAT('%',#{paramCondition.note},'%')
-            </if>
-            <if test="paramCondition.image != null and paramCondition.image != ''">
-                and image like CONCAT('%',#{paramCondition.image},'%')
-            </if>
-            <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
-                and longitude like CONCAT('%',#{paramCondition.longitude},'%')
-            </if>
-            <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
-                and latitude like CONCAT('%',#{paramCondition.latitude},'%')
-            </if>
-            <if test="paramCondition.userId != null">
-                and user_id like CONCAT('%',#{paramCondition.userId},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
-            <if test="paramCondition.classify != null">
-                and classify like CONCAT('%',#{paramCondition.classify},'%')
-            </if>
-            <if test="paramCondition.classifyId != null">
-                and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
-            </if>
-            <if test="paramCondition.trackMessageId != null">
-                and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
-            </if>
+        <if test="paramCondition.trackId != null">
+            and track_id like CONCAT('%',#{paramCondition.trackId},'%')
+        </if>
+        <if test="paramCondition.message != null and paramCondition.message != ''">
+            and message like CONCAT('%',#{paramCondition.message},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
+            and tixing like CONCAT('%',#{paramCondition.tixing},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.note != null and paramCondition.note != ''">
+            and note like CONCAT('%',#{paramCondition.note},'%')
+        </if>
+        <if test="paramCondition.image != null and paramCondition.image != ''">
+            and image like CONCAT('%',#{paramCondition.image},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classify != null">
+            and classify like CONCAT('%',#{paramCondition.classify},'%')
+        </if>
+        <if test="paramCondition.classifyId != null">
+            and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
+        </if>
+        <if test="paramCondition.trackMessageId != null">
+            and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track where 1 = 1
-                <if test="paramCondition.trackId != null">
-                        and track_id like CONCAT('%',#{paramCondition.trackId},'%')
-                </if>
-                <if test="paramCondition.message != null and paramCondition.message != ''">
-                        and message like CONCAT('%',#{paramCondition.message},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
-                        and tixing like CONCAT('%',#{paramCondition.tixing},'%')
-                </if>
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.note != null and paramCondition.note != ''">
-                        and note like CONCAT('%',#{paramCondition.note},'%')
-                </if>
-                <if test="paramCondition.image != null and paramCondition.image != ''">
-                        and image like CONCAT('%',#{paramCondition.image},'%')
-                </if>
-                <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
-                        and longitude like CONCAT('%',#{paramCondition.longitude},'%')
-                </if>
-                <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
-                        and latitude like CONCAT('%',#{paramCondition.latitude},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.classify != null">
-                        and classify like CONCAT('%',#{paramCondition.classify},'%')
-                </if>
-                <if test="paramCondition.classifyId != null">
-                        and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
-                </if>
-                <if test="paramCondition.trackMessageId != null">
-                        and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
-                </if>
+        <if test="paramCondition.trackId != null">
+            and track_id like CONCAT('%',#{paramCondition.trackId},'%')
+        </if>
+        <if test="paramCondition.message != null and paramCondition.message != ''">
+            and message like CONCAT('%',#{paramCondition.message},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
+            and tixing like CONCAT('%',#{paramCondition.tixing},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.note != null and paramCondition.note != ''">
+            and note like CONCAT('%',#{paramCondition.note},'%')
+        </if>
+        <if test="paramCondition.image != null and paramCondition.image != ''">
+            and image like CONCAT('%',#{paramCondition.image},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classify != null">
+            and classify like CONCAT('%',#{paramCondition.classify},'%')
+        </if>
+        <if test="paramCondition.classifyId != null">
+            and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
+        </if>
+        <if test="paramCondition.trackMessageId != null">
+            and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.BusinessTrackResult" parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.BusinessTrackResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track where 1 = 1
-                <if test="paramCondition.trackId != null">
-                        and track_id like CONCAT('%',#{paramCondition.trackId},'%')
-                </if>
-                <if test="paramCondition.message != null and paramCondition.message != ''">
-                        and message like CONCAT('%',#{paramCondition.message},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
-                        and tixing like CONCAT('%',#{paramCondition.tixing},'%')
-                </if>
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.note != null and paramCondition.note != ''">
-                        and note like CONCAT('%',#{paramCondition.note},'%')
-                </if>
-                <if test="paramCondition.image != null and paramCondition.image != ''">
-                        and image like CONCAT('%',#{paramCondition.image},'%')
-                </if>
-                <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
-                        and longitude like CONCAT('%',#{paramCondition.longitude},'%')
-                </if>
-                <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
-                        and latitude like CONCAT('%',#{paramCondition.latitude},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.classify != null">
-                        and classify like CONCAT('%',#{paramCondition.classify},'%')
-                </if>
-                <if test="paramCondition.classifyId != null">
-                        and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
-                </if>
-                <if test="paramCondition.trackMessageId != null">
-                        and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
-                </if>
+        <if test="paramCondition.trackId != null">
+            and track_id like CONCAT('%',#{paramCondition.trackId},'%')
+        </if>
+        <if test="paramCondition.message != null and paramCondition.message != ''">
+            and message like CONCAT('%',#{paramCondition.message},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
+            and tixing like CONCAT('%',#{paramCondition.tixing},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.note != null and paramCondition.note != ''">
+            and note like CONCAT('%',#{paramCondition.note},'%')
+        </if>
+        <if test="paramCondition.image != null and paramCondition.image != ''">
+            and image like CONCAT('%',#{paramCondition.image},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classify != null">
+            and classify like CONCAT('%',#{paramCondition.classify},'%')
+        </if>
+        <if test="paramCondition.classifyId != null">
+            and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
+        </if>
+        <if test="paramCondition.trackMessageId != null">
+            and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
+        </if>
         order by create_time desc
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.BusinessTrackParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_crm_business_track where 1 = 1
-                <if test="paramCondition.trackId != null">
-                        and track_id like CONCAT('%',#{paramCondition.trackId},'%')
-                </if>
-                <if test="paramCondition.message != null and paramCondition.message != ''">
-                        and message like CONCAT('%',#{paramCondition.message},'%')
-                </if>
-                <if test="paramCondition.createUser != null">
-                        and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-                </if>
-                <if test="paramCondition.updateUser != null">
-                        and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-                </if>
-                <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-                        and create_time like CONCAT('%',#{paramCondition.createTime},'%')
-                </if>
-                <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
-                        and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
-                </if>
-                <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
-                        and tixing like CONCAT('%',#{paramCondition.tixing},'%')
-                </if>
-                <if test="paramCondition.type != null and paramCondition.type != ''">
-                        and type like CONCAT('%',#{paramCondition.type},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.note != null and paramCondition.note != ''">
-                        and note like CONCAT('%',#{paramCondition.note},'%')
-                </if>
-                <if test="paramCondition.image != null and paramCondition.image != ''">
-                        and image like CONCAT('%',#{paramCondition.image},'%')
-                </if>
-                <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
-                        and longitude like CONCAT('%',#{paramCondition.longitude},'%')
-                </if>
-                <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
-                        and latitude like CONCAT('%',#{paramCondition.latitude},'%')
-                </if>
-                <if test="paramCondition.userId != null">
-                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.classify != null">
-                        and classify like CONCAT('%',#{paramCondition.classify},'%')
-                </if>
-                <if test="paramCondition.classifyId != null">
-                        and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
-                </if>
-                <if test="paramCondition.trackMessageId != null">
-                        and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
-                </if>
+        <if test="paramCondition.trackId != null">
+            and track_id like CONCAT('%',#{paramCondition.trackId},'%')
+        </if>
+        <if test="paramCondition.message != null and paramCondition.message != ''">
+            and message like CONCAT('%',#{paramCondition.message},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.tixing != null and paramCondition.tixing != ''">
+            and tixing like CONCAT('%',#{paramCondition.tixing},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.note != null and paramCondition.note != ''">
+            and note like CONCAT('%',#{paramCondition.note},'%')
+        </if>
+        <if test="paramCondition.image != null and paramCondition.image != ''">
+            and image like CONCAT('%',#{paramCondition.image},'%')
+        </if>
+        <if test="paramCondition.longitude != null and paramCondition.longitude != ''">
+            and longitude like CONCAT('%',#{paramCondition.longitude},'%')
+        </if>
+        <if test="paramCondition.latitude != null and paramCondition.latitude != ''">
+            and latitude like CONCAT('%',#{paramCondition.latitude},'%')
+        </if>
+        <if test="paramCondition.userId != null">
+            and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.classify != null">
+            and classify like CONCAT('%',#{paramCondition.classify},'%')
+        </if>
+        <if test="paramCondition.classifyId != null">
+            and classify_id like CONCAT('%',#{paramCondition.classifyId},'%')
+        </if>
+        <if test="paramCondition.trackMessageId != null">
+            and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
+        </if>
     </select>
 
 </mapper>

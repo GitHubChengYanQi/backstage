@@ -1,13 +1,17 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 跟进内容
@@ -21,7 +25,7 @@ import java.util.List;
 public class BusinessTrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private UserResult userResult;
 
     /**
      * 跟进内容id

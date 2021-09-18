@@ -11,7 +11,6 @@ import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +23,6 @@ public class OutBoundServiceImpl implements OutBoundService {
     private ApplyDetailsService applyDetailsService;
     @Autowired
     private StockService stockService;
-    @Autowired
-    private StorehouseService storehouseService;
     @Autowired
     private OutstockListingService outstockListingService;
     @Autowired
@@ -45,7 +42,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, stockHouseId).list();
         if (ToolUtil.isEmpty(stocks)) {
-            throw new ServiceException(500, "此仓库没有物品");
+            throw new ServiceException(500, "此仓库没有物品，请确认库存！");
         }
         if (ToolUtil.isEmpty(outstockListings)) {
             throw new ServiceException(500, "没有此清单");
@@ -62,7 +59,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                     Long number = outstockListing.getNumber();
                     Long inventory = stock.getInventory();
                     if (inventory < number) {
-                        throw new ServiceException(500, "商品数量不足");
+                        throw new ServiceException(500, "产品数量不足，请确认数量！");
                     }
                     long l = number;
                     stock.setInventory(l);
@@ -146,7 +143,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                 .in(ApplyDetails::getOutstockApplyId, outstockApplyParam.getOutstockApplyId())
                 .list();
         if (ToolUtil.isEmpty(applyDetails)) {
-            throw  new ServiceException(500,"请确定发货申请明细");
+            throw new ServiceException(500, "请确定发货申请明细");
         }
         for (int i = 0; i < applyDetails.size(); i++) {
             boolean f = backItem(outstockApplyParam.getStockId(),
@@ -154,7 +151,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                     applyDetails.get(i).getItemId(),
                     applyDetails.get(i).getNumber());
             if (!f) {
-                throw new ServiceException(500, "库存没有此产品");
+                throw new ServiceException(500, "此仓库没有物品，请确认库存！");
             }
         }
         long l = -1L;
@@ -166,7 +163,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 
             List<Stock> stockList = new ArrayList<>();
             if (ToolUtil.isEmpty(stocks)) {
-                throw  new ServiceException(500,"请检查库存是否有此物品");
+                throw new ServiceException(500, "请检查库存是否有此物品");
             }
             for (Stock stock : stocks) {
                 l = stock.getInventory() - applyDetail.getNumber();
@@ -204,7 +201,7 @@ public class OutBoundServiceImpl implements OutBoundService {
         for (Stock stock : stocks) {
             if (stock.getBrandId().equals(brandId) && stock.getItemId().equals(itemId)) {
                 if (stock.getInventory() < number) {
-                    throw new ServiceException(500, "商品数量不足");
+                    throw new ServiceException(500, "产品数量不足，请确认数量！");
                 }
                 return true;
             }

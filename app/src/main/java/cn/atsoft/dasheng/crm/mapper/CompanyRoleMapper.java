@@ -53,4 +53,5 @@ public interface CompanyRoleMapper extends BaseMapper<CompanyRole> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") CompanyRoleParam paramCondition);
 
+
 }

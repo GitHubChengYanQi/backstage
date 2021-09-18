@@ -50,7 +50,7 @@ public class OutstockApplyController extends BaseController {
         for (ApplyDetailsParam applyDetail : outstockApplyParam.getApplyDetails()) {
             l = applyDetail.getItemId() + applyDetail.getBrandId();
             if (map.containsKey(applyDetail.getItemId() + applyDetail.getBrandId())) {
-                throw new ServiceException(500, "你他妈煞笔？存相同物品");
+                throw new ServiceException(500, "请不要填写相同产品");
             }
             map.put(l, applyDetail.getNumber());
         }

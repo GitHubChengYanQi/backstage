@@ -100,6 +100,15 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @BussinessLog
     public CrmBusiness update(CrmBusinessParam param) {
+        if (ToolUtil.isNotEmpty(param.getBusinessId())) {
+            CrmBusiness crmBusiness = this.lambdaQuery()
+                    .in(CrmBusiness::getBusinessId, param.getBusinessId())
+                    .one();
+            if (!crmBusiness.getCustomerId().equals(param.getCustomerId())) {
+                throw new ServiceException(500, "不可以修改客户");
+            }
+        }
+
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
@@ -118,7 +127,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         CrmBusiness oldEntity = getOldEntity(param);
         CrmBusiness newEntity = getEntity(param);
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,null);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param, null);
         List<Long> processIds = new ArrayList<>();
 
         for (CrmBusinessResult record : page.getRecords()) {
@@ -172,7 +181,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     public CrmBusinessResult findBySpec(CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,null);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param, null);
         this.format(page.getRecords());
 
         return this.format(page.getRecords());
@@ -187,7 +196,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     public PageInfo<CrmBusinessResult> findPageBySpec(DataScope dataScope, CrmBusinessParam param) {
         Page<CrmBusinessResult> pageContext = getPageContext();
-        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<CrmBusinessResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         this.format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
@@ -254,7 +263,6 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
         userQueryWrapper.in("user_id", userIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.list(userQueryWrapper);
-
 
 
         /**

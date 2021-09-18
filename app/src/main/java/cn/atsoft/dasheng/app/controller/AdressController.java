@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -92,11 +93,11 @@ public class AdressController extends BaseController {
 //        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
 //        return ResponseData.success(pageBySpec.getData().get(0));
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<AdressResult> adress= adressService.findPageBySpec(null,adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(null, adressParam);
             return ResponseData.success(adress.getData().get(0));
-        }else{
+        } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<AdressResult> adress= adressService.findPageBySpec(dataScope,adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(dataScope, adressParam);
             return ResponseData.success(adress.getData().get(0));
         }
     }
@@ -117,14 +118,14 @@ public class AdressController extends BaseController {
             adressParam = new AdressParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<AdressResult> adress= adressService.findPageBySpec(null,adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(null, adressParam);
 //            return ResponseData.success(adress.getData().get(0));
-            return this.adressService.findPageBySpec(null,adressParam);
+            return this.adressService.findPageBySpec(null, adressParam);
 
-        }else{
+        } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<AdressResult> adress= adressService.findPageBySpec(dataScope,adressParam);
-            return this.adressService.findPageBySpec(null,adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(dataScope, adressParam);
+            return this.adressService.findPageBySpec(null, adressParam);
         }
 //        return this.adressService.findPageBySpec(null,adressParam);
     }
@@ -134,13 +135,25 @@ public class AdressController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
-        adressQueryWrapper.in("display",1);
+        adressQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.adressService.listMaps(adressQueryWrapper);
         AdressSelectWrapper adressSelectWrapper = new AdressSelectWrapper(list);
         List<Map<String, Object>> result = adressSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData test(@RequestBody AdressParam adressParam) {
+        List<Long> ids = new ArrayList<>();
+        ids.add(1434831489561059329L);
+        ids.add(1434828867206701057L);
+        ids.add(1434828867303170049L);
+        ids.add(1434831489561059329l);
+        List<AdressResult> adressResults = this.adressService.listQuery(ids);
+        return ResponseData.success(adressResults);
+    }
 }
 
 
