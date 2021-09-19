@@ -2,9 +2,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
+import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
+import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -26,6 +29,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jhlabs.image.ErodeAlphaFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +55,9 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     private ApplyDetailsService applyDetailsService;
     @Autowired
     private OutstockListingService outstockListingService;
+    @Autowired
+    private DeliveryService deliveryService;
+
 
     @Override
     public void add(OutstockApplyParam param) {
@@ -76,9 +83,9 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     @Override
     public void delete(OutstockApplyParam param) {
         OutstockApply byId = this.getById(param.getOutstockApplyId());
-        if (ToolUtil.isEmpty(byId)){
-            throw new ServiceException(500,"所删除目标不存在");
-        }else {
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "所删除目标不存在");
+        } else {
             param.setDisplay(0);
             this.update(param);
         }
@@ -92,6 +99,14 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         if (newEntity.getApplyState().equals(2)) {
+            //添加发货单
+            DeliveryParam deliveryParam = new DeliveryParam();
+            deliveryParam.setCustomerId(param.getCustomerId());
+            deliveryParam.setPhoneId(param.getPhoneId());
+            deliveryParam.setAdressId(param.getAdressId());
+            deliveryParam.setContactsId(param.getContactsId());
+            Long add = deliveryService.add(deliveryParam);
+
             //添加出库单
             OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
             outstockOrderParam.setOutstockApplyId(newEntity.getOutstockApplyId());
@@ -103,7 +118,9 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
                 outstockListing.setItemId(applyDetail.getItemId());
                 outstockListing.setNumber(applyDetail.getNumber());
                 outstockListing.setOutstockOrderId(outstockOrder.getOutstockOrderId());
+                outstockListing.setDeliveryId(add);
                 outstockListings.add(outstockListing);
+
             }
             if (ToolUtil.isNotEmpty(outstockListings)) {
                 outstockListingService.saveBatch(outstockListings);

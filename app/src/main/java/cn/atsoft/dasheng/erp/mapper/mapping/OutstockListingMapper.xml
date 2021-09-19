@@ -4,171 +4,177 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.OutstockListing">
-        <id column="outstock_listing_id" property="outstockListingId" />
-        <result column="time" property="time" />
-        <result column="number" property="number" />
-        <result column="price" property="price" />
-        <result column="brand_id" property="brandId" />
-        <result column="deptId" property="deptId" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
-        <result column="item_id" property="itemId" />
-        <result column="state" property="state" />
-        <result column="outstock_order_id" property="outstockOrderId" />
-        <result column="outstock_apply_id" property="outstockApplyId" />
+        <id column="outstock_listing_id" property="outstockListingId"/>
+        <result column="time" property="time"/>
+        <result column="number" property="number"/>
+        <result column="price" property="price"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="deptId" property="deptId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="item_id" property="itemId"/>
+        <result column="state" property="state"/>
+        <result column="outstock_order_id" property="outstockOrderId"/>
+        <result column="outstock_apply_id" property="outstockApplyId"/>
+        <result column="delivery_id" property="deliveryId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        outstock_listing_id AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
+    <sql id="Base_Column_List">delivery_id
+    AS "deliveryId",
+        outstock_listing_id
+        AS "outstockListingId", time AS "time", number AS "number", price AS "price", brand_id AS "brandId", deptId AS "deptId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", item_id AS "itemId", state AS "state", outstock_order_id AS "outstockOrderId", outstock_apply_id AS "outstockApplyId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockListingResult" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockListingResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_listing where 1 = 1 and display = 1
-            <if test="paramCondition.outstockListingId != null">
-                and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
-            </if>
-            <if test="paramCondition.time != null and paramCondition.time != ''">
-                and time like CONCAT('%',#{paramCondition.time},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
-            </if>
-            <if test="paramCondition.price != null">
-                and price like CONCAT('%',#{paramCondition.price},'%')
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-            </if>
-            <if test="paramCondition.deptId != null">
-                and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-            </if>
-            <if test="paramCondition.itemId != null">
-                and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-            </if>
-            <if test="paramCondition.state != null and paramCondition.state != ''">
-                and state like CONCAT('%',#{paramCondition.state},'%')
-            </if>
-            <if test="paramCondition.outstockOrderId != null">
-                and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
-            </if>
-            <if test="paramCondition.outstockApplyId != null">
-                and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
-            </if>
+        <if test="paramCondition.outstockListingId != null">
+            and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.price != null">
+            and price like CONCAT('%',#{paramCondition.price},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
+        </if>
+        <if test="paramCondition.outstockApplyId != null">
+            and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_listing where 1 = 1 and display = 1
-                <if test="paramCondition.outstockListingId != null">
-                        and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.price != null">
-                        and price like CONCAT('%',#{paramCondition.price},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.state != null and paramCondition.state != ''">
-                        and state like CONCAT('%',#{paramCondition.state},'%')
-                </if>
-                <if test="paramCondition.outstockOrderId != null">
-                        and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
-                </if>
-                <if test="paramCondition.outstockApplyId != null">
-                        and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
-                </if>
+        <if test="paramCondition.outstockListingId != null">
+            and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.price != null">
+            and price like CONCAT('%',#{paramCondition.price},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
+        </if>
+        <if test="paramCondition.outstockApplyId != null">
+            and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockListingResult" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.OutstockListingResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_listing where 1 = 1 and display = 1
-                <if test="paramCondition.outstockListingId != null">
-                        and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.price != null">
-                        and price like CONCAT('%',#{paramCondition.price},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.state != null and paramCondition.state != ''">
-                        and state like CONCAT('%',#{paramCondition.state},'%')
-                </if>
-                <if test="paramCondition.outstockOrderId != null">
-                        and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
-                </if>
-                <if test="paramCondition.outstockApplyId != null">
-                        and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
-                </if>
+        <if test="paramCondition.outstockListingId != null">
+            and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.price != null">
+            and price like CONCAT('%',#{paramCondition.price},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
+        </if>
+        <if test="paramCondition.outstockApplyId != null">
+            and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.OutstockListingParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_outstock_listing where 1 = 1 and display = 1
-                <if test="paramCondition.outstockListingId != null">
-                        and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
-                </if>
-                <if test="paramCondition.time != null and paramCondition.time != ''">
-                        and time like CONCAT('%',#{paramCondition.time},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.price != null">
-                        and price like CONCAT('%',#{paramCondition.price},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
-                <if test="paramCondition.deptId != null">
-                        and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.state != null and paramCondition.state != ''">
-                        and state like CONCAT('%',#{paramCondition.state},'%')
-                </if>
-                <if test="paramCondition.outstockOrderId != null">
-                        and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
-                </if>
-                <if test="paramCondition.outstockApplyId != null">
-                        and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
-                </if>
+        <if test="paramCondition.outstockListingId != null">
+            and outstock_listing_id like CONCAT('%',#{paramCondition.outstockListingId},'%')
+        </if>
+        <if test="paramCondition.time != null and paramCondition.time != ''">
+            and time like CONCAT('%',#{paramCondition.time},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.price != null">
+            and price like CONCAT('%',#{paramCondition.price},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.state != null and paramCondition.state != ''">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
+        <if test="paramCondition.outstockOrderId != null">
+            and outstock_order_id like CONCAT('%',#{paramCondition.outstockOrderId},'%')
+        </if>
+        <if test="paramCondition.outstockApplyId != null">
+            and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
+        </if>
     </select>
 
 </mapper>

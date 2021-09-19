@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,9 +27,12 @@ public class OutstockListing implements Serializable {
     /**
      * 出库清单id
      */
-      @TableId(value = "outstock_listing_id", type = IdType.ID_WORKER)
+    @TableId(value = "outstock_listing_id", type = IdType.ID_WORKER)
     private Long outstockListingId;
 
+
+    @TableField("delivery_id")
+    private Long deliveryId;
     /**
      * 出库时间
      */
@@ -60,25 +66,25 @@ public class OutstockListing implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -111,6 +117,13 @@ public class OutstockListing implements Serializable {
     @TableField("outstock_apply_id")
     private Long outstockApplyId;
 
+    public Long getDeliveryId() {
+        return deliveryId;
+    }
+
+    public void setDeliveryId(Long deliveryId) {
+        this.deliveryId = deliveryId;
+    }
 
     public Long getOutstockListingId() {
         return outstockListingId;
@@ -235,21 +248,21 @@ public class OutstockListing implements Serializable {
     @Override
     public String toString() {
         return "OutstockListing{" +
-        "outstockListingId=" + outstockListingId +
-        ", time=" + time +
-        ", number=" + number +
-        ", price=" + price +
-        ", brandId=" + brandId +
-        ", deptId=" + deptId +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", itemId=" + itemId +
-        ", state=" + state +
-        ", outstockOrderId=" + outstockOrderId +
-        ", outstockApplyId=" + outstockApplyId +
-        "}";
+                "outstockListingId=" + outstockListingId +
+                ", time=" + time +
+                ", number=" + number +
+                ", price=" + price +
+                ", brandId=" + brandId +
+                ", deptId=" + deptId +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", itemId=" + itemId +
+                ", state=" + state +
+                ", outstockOrderId=" + outstockOrderId +
+                ", outstockApplyId=" + outstockApplyId +
+                "}";
     }
 }
