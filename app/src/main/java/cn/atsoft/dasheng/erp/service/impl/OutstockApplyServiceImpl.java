@@ -117,6 +117,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
                 outstockListing.setBrandId(applyDetail.getBrandId());
                 outstockListing.setItemId(applyDetail.getItemId());
                 outstockListing.setNumber(applyDetail.getNumber());
+                outstockListing.setOutstockApplyId(applyDetail.getOutstockApplyId());
                 outstockListing.setOutstockOrderId(outstockOrder.getOutstockOrderId());
                 outstockListing.setDeliveryId(add);
                 outstockListings.add(outstockListing);
