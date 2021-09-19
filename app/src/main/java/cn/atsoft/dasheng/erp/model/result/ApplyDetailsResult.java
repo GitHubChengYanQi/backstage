@@ -29,18 +29,7 @@ public class ApplyDetailsResult implements Serializable {
      */
     @ApiModelProperty("发货申请详情id")
     private Long outstockApplyDetailsId;
-
-    @ApiModelProperty("收货地址id")
-    private Long adressId;
-
-    @ApiModelProperty("联系人id")
-    private Long contactsId;
-
-    @ApiModelProperty("电话id")
-    private Long phoneId;
-
-    @ApiModelProperty("预计到达时间")
-    private Date time;
+    
 
     /**
      * 产品id

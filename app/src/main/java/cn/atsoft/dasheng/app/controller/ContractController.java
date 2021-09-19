@@ -1,9 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.ContractRequest;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.app.wrapper.ContractDetailSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.ContractMachineSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
@@ -13,10 +18,14 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -137,6 +146,19 @@ public class ContractController extends BaseController {
         contractService.batchDelete(contractIdRequest.getContractId());
         return ResponseData.success();
     }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+//    @Permission
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<Contract> queryWrapper = new QueryWrapper();
+        queryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.contractService.listMaps(queryWrapper);
+        ContractMachineSelectWrapper customerSelectWrapper = new ContractMachineSelectWrapper(list);
+        List<Map<String, Object>> result = customerSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 }

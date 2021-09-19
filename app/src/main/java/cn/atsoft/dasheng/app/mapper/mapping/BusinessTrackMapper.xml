@@ -221,6 +221,12 @@
         <if test="paramCondition.trackMessageId != null">
             and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
         </if>
+        <if test="paramCondition.trackMessageIds != null">
+           and track_message_id in
+            <foreach collection="trackMessageIds" item="trackMessageId" index="index" close=")" open="(" separator=",">
+                #{trackMessageId}
+            </foreach>
+        </if>
         order by create_time desc
     </select>
 

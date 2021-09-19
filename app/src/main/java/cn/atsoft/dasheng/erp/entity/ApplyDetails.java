@@ -33,18 +33,6 @@ public class ApplyDetails implements Serializable {
     @TableField("item_id")
     private Long itemId;
 
-    @TableField("adress_id")
-    private Long adressId;
-
-    @TableField("contacts_id")
-    private Long contactsId;
-
-    @TableField("phone_id")
-    private Long phoneId;
-
-    @TableField("adress_id")
-    private Date time;
-
 
 
     /**
@@ -175,37 +163,7 @@ public class ApplyDetails implements Serializable {
     public void setNumber(Long number) {
         this.number = number;
     }
-    public Long getAdressId() {
-        return adressId;
-    }
 
-    public void setAdressId(Long adressId) {
-        this.adressId = adressId;
-    }
-
-    public Long getContactsId() {
-        return contactsId;
-    }
-
-    public void setContactsId(Long contactsId) {
-        this.contactsId = contactsId;
-    }
-
-    public Long getPhoneId() {
-        return phoneId;
-    }
-
-    public void setPhoneId(Long phoneId) {
-        this.phoneId = phoneId;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
     /**
      * 部门id
      */
