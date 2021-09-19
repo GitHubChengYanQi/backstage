@@ -92,7 +92,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         if (newEntity.getApplyState().equals(2)) {
-            //添加发货单
+            //添加出库单
             OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
             outstockOrderParam.setOutstockApplyId(newEntity.getOutstockApplyId());
             OutstockOrder outstockOrder = outstockOrderService.add(outstockOrderParam);

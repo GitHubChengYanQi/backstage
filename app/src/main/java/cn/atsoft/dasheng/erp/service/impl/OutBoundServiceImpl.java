@@ -5,10 +5,12 @@ import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
+import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class OutBoundServiceImpl implements OutBoundService {
     private OutstockService outstockService;
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private OutstockApplyService outstockApplyService;
 
 
     @Override
@@ -157,6 +161,8 @@ public class OutBoundServiceImpl implements OutBoundService {
         long l = -1L;
 
         for (ApplyDetails applyDetail : applyDetails) {
+
+
             List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, outstockApplyParam.getStockId())
                     .and(i -> i.in(Stock::getBrandId, applyDetail.getBrandId()))
                     .and(j -> j.in(Stock::getItemId, applyDetail.getItemId())).list();
@@ -184,7 +190,16 @@ public class OutBoundServiceImpl implements OutBoundService {
             }
             stockService.updateBatchById(stockList);
 
+            OutstockApply outstockApply = outstockApplyService.lambdaQuery()
+                    .eq(OutstockApply::getOutstockApplyId, applyDetail.getOutstockApplyId())
+                    .one();
+
+            outstockApply.setApplyState(3);
+            OutstockApplyParam outstockApplyParamUpdate = new OutstockApplyParam();
+            ToolUtil.copyProperties(outstockApply, outstockApplyParamUpdate);
+            outstockApplyService.update(outstockApplyParamUpdate);
         }
+
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockApplyId, outstockApplyParam.getOutstockApplyId()).one();
         outstockOrder.setState(2);
