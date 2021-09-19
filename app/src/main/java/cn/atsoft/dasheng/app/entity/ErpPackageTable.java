@@ -24,7 +24,7 @@ public class ErpPackageTable implements Serializable {
     /**
      * id
      */
-      @TableId(value = "id", type = IdType.ID_WORKER)
+      @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
   /**
