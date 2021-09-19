@@ -11,6 +11,10 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
+        <result column="adress_id" property="adressId"/>
+        <result column="contacts_id" property="contactsId"/>
+        <result column="phone_id" property="phoneId"/>
+        <result column="time" property="time"/>
         <result column="customer_id" property="customerId"/>
         <result column="remark" property="remark"/>
         <result column="apply_state" property="applyState"/>
@@ -18,8 +22,10 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List"> stock_id
-    AS "stockId",
+    <sql id="Base_Column_List">
+        adress_id AS "adressId",contacts_id AS "contactsId",phone_id AS "phoneId",time AS "time",
+        stock_id
+        AS "stockId",
         customer_id
         AS "customerId",
         remark AS "remark",
