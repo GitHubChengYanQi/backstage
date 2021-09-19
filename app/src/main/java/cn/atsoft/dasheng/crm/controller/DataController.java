@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataRequest;
@@ -100,8 +102,13 @@ public class DataController extends BaseController {
         if (ToolUtil.isEmpty(dataParam)) {
             dataParam = new DataParam();
         }
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.dataService.findPageBySpec(null,dataParam);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.dataService.findPageBySpec(dataScope,dataParam);
+        }
 
-        return this.dataService.findPageBySpec(dataParam);
     }
 
 

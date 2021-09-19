@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.ContactsRequest;
 import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -112,7 +114,12 @@ public class ContactsController extends BaseController {
         if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
         }
-        return this.contactsService.findPageBySpec(contactsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.contactsService.findPageBySpec(null,contactsParam);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.contactsService.findPageBySpec(dataScope,contactsParam);
+        }
     }
 
 

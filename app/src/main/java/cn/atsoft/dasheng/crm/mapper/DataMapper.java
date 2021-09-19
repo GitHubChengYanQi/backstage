@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
@@ -43,7 +44,7 @@ public interface DataMapper extends BaseMapper<Data> {
      * @author song
      * @Date 2021-09-11
      */
-    Page<DataResult> customPageList(@Param("page") Page page, @Param("paramCondition") DataParam paramCondition);
+    Page<DataResult> customPageList(@Param("dataScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") DataParam paramCondition);
 
     /**
      * 获取分页map列表
