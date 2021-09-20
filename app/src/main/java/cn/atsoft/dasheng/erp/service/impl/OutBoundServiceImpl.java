@@ -194,7 +194,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                 if (l >= 0) {
                     List<Outstock> outstocks = new ArrayList<>();
                     List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
-                    for (int i = 0; i <= l; i++) {
+                    for (int i = 0; i <= l-1; i++) {
                         StockDetails stockDetails = details.get(i);
                         stockDetails.setStage(3);
 
