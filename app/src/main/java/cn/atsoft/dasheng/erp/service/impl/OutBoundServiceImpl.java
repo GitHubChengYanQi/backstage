@@ -148,7 +148,6 @@ public class OutBoundServiceImpl implements OutBoundService {
     public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
 
         Long outstockApplyId = outstockApplyParam.getOutstockApplyId();
-
         QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();
         listingQueryWrapper.in("outstock_apply_id", outstockApplyId);
         List<OutstockListing> list = outstockListingService.list(listingQueryWrapper);
@@ -189,12 +188,15 @@ public class OutBoundServiceImpl implements OutBoundService {
                 stockList.add(stock);
                 List<StockDetails> details = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
                         .and(i -> i.in(StockDetails::getBrandId, stock.getBrandId()))
-                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId())).list();
+                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId()))
+                        .and(i -> i.eq(StockDetails::getStage, 1))
+                        .and(i -> i.orderByAsc(StockDetails::getCreateTime))
+                        .list();
 
                 if (l >= 0) {
                     List<Outstock> outstocks = new ArrayList<>();
                     List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
-                    for (int i = 1; i <=applyDetail.getNumber(); i++) {
+                    for (int i = 1; i <= applyDetail.getNumber(); i++) {
                         StockDetails stockDetails = details.get(i);
                         stockDetails.setStage(3);
 
