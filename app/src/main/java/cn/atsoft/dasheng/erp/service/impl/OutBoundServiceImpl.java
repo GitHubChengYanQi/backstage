@@ -189,7 +189,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                 List<StockDetails> details = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
                         .and(i -> i.in(StockDetails::getBrandId, stock.getBrandId()))
                         .and(i -> i.in(StockDetails::getItemId, stock.getItemId()))
-                        .and(i -> i.eq(StockDetails::getStage, 1))
+                        .and(i -> i.in(StockDetails::getStage, 1))
                         .and(i -> i.orderByAsc(StockDetails::getCreateTime))
                         .list();
 
