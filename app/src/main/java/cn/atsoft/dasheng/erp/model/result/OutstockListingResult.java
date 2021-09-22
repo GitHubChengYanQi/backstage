@@ -23,7 +23,7 @@ public class OutstockListingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private ItemsResult itemsResult;
     private BrandResult brandResult;
-
+    private  Long deliveryId;
     /**
      * 出库清单id
      */

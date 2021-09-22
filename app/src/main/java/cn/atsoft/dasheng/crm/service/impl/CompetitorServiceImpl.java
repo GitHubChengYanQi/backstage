@@ -2,8 +2,6 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -14,26 +12,20 @@ import cn.atsoft.dasheng.crm.mapper.CompetitorMapper;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
 import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
-import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
-import cn.atsoft.dasheng.crm.service.CompetitorQuoteService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.tools.Tool;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,11 +104,11 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     }
 
     @Override
-    public PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope,CompetitorParam param) {
+    public PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope, CompetitorParam param) {
 
         Long businessId = param.getBusinessId();
         Page<CompetitorResult> pageContext = getPageContext();
-        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
 
         if (ToolUtil.isNotEmpty(businessId)) {
             QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
@@ -253,6 +245,13 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
             updateWrapper.in("competitor_id", param);
             this.update(competitor, updateWrapper);
         }
+    }
+
+    @Override
+    public Competitor byBusinessAdd(CompetitorParam param) {
+        Competitor entity = getEntity(param);
+        this.save(entity);
+        return entity;
     }
 
 

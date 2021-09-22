@@ -1,13 +1,11 @@
 package cn.atsoft.dasheng.crm.service;
 
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
-import com.alibaba.druid.sql.visitor.functions.Concat;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -72,4 +70,6 @@ public interface CompetitorService extends IService<Competitor> {
 
     CompetitorResult detail (Long id);
     void deleteByIds(CompetitorIdsRequest param);
+
+    Competitor byBusinessAdd(CompetitorParam param);
 }

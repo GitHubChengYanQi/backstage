@@ -5,12 +5,15 @@ import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.erp.service.OutBoundService;
+import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,10 @@ public class OutBoundServiceImpl implements OutBoundService {
     private OutstockService outstockService;
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private OutstockApplyService outstockApplyService;
+    @Autowired
+    private DeliveryDetailsService deliveryDetailsService;
 
 
     @Override
@@ -139,6 +146,13 @@ public class OutBoundServiceImpl implements OutBoundService {
 
     @Override
     public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
+
+        Long outstockApplyId = outstockApplyParam.getOutstockApplyId();
+        QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();
+        listingQueryWrapper.in("outstock_apply_id", outstockApplyId);
+        List<OutstockListing> list = outstockListingService.list(listingQueryWrapper);
+        Long deliveryId = list.get(0).getDeliveryId();
+
         List<ApplyDetails> applyDetails = applyDetailsService.lambdaQuery()
                 .in(ApplyDetails::getOutstockApplyId, outstockApplyParam.getOutstockApplyId())
                 .list();
@@ -157,6 +171,8 @@ public class OutBoundServiceImpl implements OutBoundService {
         long l = -1L;
 
         for (ApplyDetails applyDetail : applyDetails) {
+
+
             List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, outstockApplyParam.getStockId())
                     .and(i -> i.in(Stock::getBrandId, applyDetail.getBrandId()))
                     .and(j -> j.in(Stock::getItemId, applyDetail.getItemId())).list();
@@ -165,26 +181,59 @@ public class OutBoundServiceImpl implements OutBoundService {
             if (ToolUtil.isEmpty(stocks)) {
                 throw new ServiceException(500, "请检查库存是否有此物品");
             }
+
             for (Stock stock : stocks) {
                 l = stock.getInventory() - applyDetail.getNumber();
                 stock.setInventory(l);
                 stockList.add(stock);
                 List<StockDetails> details = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
                         .and(i -> i.in(StockDetails::getBrandId, stock.getBrandId()))
-                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId())).list();
+                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId()))
+                        .and(i -> i.in(StockDetails::getStage, 1))
+                        .list();
 
                 if (l >= 0) {
-                    for (int i = 0; i < l; i++) {
+                    List<Outstock> outstocks = new ArrayList<>();
+                    List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
+                    for (int i = 1; i <= applyDetail.getNumber(); i++) {
                         StockDetails stockDetails = details.get(i);
                         stockDetails.setStage(3);
+
+                        DeliveryDetails deliveryDetails = new DeliveryDetails();
+                        deliveryDetails.setStockItemId(stockDetails.getStockItemId());
+                        deliveryDetails.setItemId(stockDetails.getItemId());
+                        deliveryDetails.setBrandId(stockDetails.getBrandId());
+                        deliveryDetails.setDeliveryId(deliveryId);
+                        deliveryDetailsList.add(deliveryDetails);
+
+                        Outstock outstock = new Outstock();
+                        outstock.setBrandId(stockDetails.getBrandId());
+                        outstock.setItemId(stockDetails.getItemId());
+                        outstock.setStorehouseId(stockDetails.getStorehouseId());
+                        outstock.setOutstockOrderId(stockDetails.getStockId());
+                        outstock.setStockItemId(stockDetails.getStockItemId());
+                        outstocks.add(outstock);
                     }
+                    deliveryDetailsService.saveBatch(deliveryDetailsList);
                     stockDetailsService.updateBatchById(details);
+                    outstockService.saveBatch(outstocks);
                 }
 
+
             }
+
             stockService.updateBatchById(stockList);
 
+            OutstockApply outstockApply = outstockApplyService.lambdaQuery()
+                    .eq(OutstockApply::getOutstockApplyId, applyDetail.getOutstockApplyId())
+                    .one();
+
+            outstockApply.setApplyState(3);
+            OutstockApplyParam outstockApplyParamUpdate = new OutstockApplyParam();
+            ToolUtil.copyProperties(outstockApply, outstockApplyParamUpdate);
+            outstockApplyService.update(outstockApplyParamUpdate);
         }
+
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockApplyId, outstockApplyParam.getOutstockApplyId()).one();
         outstockOrder.setState(2);
