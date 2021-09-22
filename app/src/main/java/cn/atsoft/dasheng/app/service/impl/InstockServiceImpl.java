@@ -84,7 +84,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 Long StockId = this.stockService.add(stockParam);
 
                 stockDetails.setStockId(StockId);
-                stockDetails.setPrice(entity.getPrice());
+                stockDetails.setPrice(entity.getCostPrice());
                 stockDetails.setStorageTime(entity.getRegisterTime());
                 stockDetails.setItemId(entity.getItemId());
                 stockDetails.setStorehouseId(entity.getStoreHouseId());
@@ -114,7 +114,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         this.stockService.update(stockParam);
 
                         stockDetails.setStockId(StockList.getStockId());
-                        stockDetails.setPrice(entity.getPrice());
+                        stockDetails.setPrice(entity.getCostPrice());
                         stockDetails.setStorageTime(entity.getRegisterTime());
                         stockDetails.setItemId(entity.getItemId());
                         stockDetails.setStorehouseId(entity.getStoreHouseId());
@@ -138,7 +138,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                     Long StockId = this.stockService.add(stockParam);
 
                     stockDetails.setStockId(StockId);
-                    stockDetails.setPrice(entity.getPrice());
+                    stockDetails.setPrice(entity.getCostPrice());
                     stockDetails.setStorageTime(entity.getRegisterTime());
                     stockDetails.setItemId(entity.getItemId());
                     stockDetails.setStorehouseId(entity.getStoreHouseId());
