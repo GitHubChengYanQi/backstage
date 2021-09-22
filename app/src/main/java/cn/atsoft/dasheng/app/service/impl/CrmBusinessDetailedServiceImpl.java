@@ -131,16 +131,8 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     }
 
     ErpPackageTable judgeItem(List<Long> packageIds, Long item) {
-        for (Long packageId : packageIds) {
-            List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
-                    .eq(ErpPackageTable::getPackageId, packageId)
-                    .list();
-            for (ErpPackageTable erpPackageTable : erpPackageTables) {
-                if (erpPackageTable.getItemId().equals(item)) {
-                    return erpPackageTable;
-                }
-            }
-        }
+        List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
+                .in(ErpPackageTable::getPackageId, packageIds).list();
         return null;
     }
 

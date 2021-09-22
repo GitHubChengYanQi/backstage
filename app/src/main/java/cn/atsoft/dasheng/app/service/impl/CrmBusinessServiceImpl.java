@@ -81,19 +81,19 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
-        if (ToolUtil.isNotEmpty(param.getCompetitorParams())) {
-            List<BusinessCompetition> businessCompetitionList = new ArrayList<>();
-            for (CompetitorParam competitorParam : param.getCompetitorParams()) {
-                Competitor competitor = competitorService.byBusinessAdd(competitorParam);
-                BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
-                businessCompetitionParam.setBusinessId(entity.getBusinessId());
-                businessCompetitionParam.setCompetitorId(competitor.getCompetitorId());
-                BusinessCompetition businessCompetition = new BusinessCompetition();
-                ToolUtil.copyProperties(businessCompetitionParam, businessCompetition);
-                businessCompetitionList.add(businessCompetition);
-            }
-            businessCompetitionService.saveBatch(businessCompetitionList);
-        }
+//        if (ToolUtil.isNotEmpty(param.getCompetitorParams())) {
+//            List<BusinessCompetition> businessCompetitionList = new ArrayList<>();
+//            for (CompetitorParam competitorParam : param.getCompetitorParams()) {
+//                Competitor competitor = competitorService.byBusinessAdd(competitorParam);
+//                BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
+//                businessCompetitionParam.setBusinessId(entity.getBusinessId());
+//                businessCompetitionParam.setCompetitorId(competitor.getCompetitorId());
+//                BusinessCompetition businessCompetition = new BusinessCompetition();
+//                ToolUtil.copyProperties(businessCompetitionParam, businessCompetition);
+//                businessCompetitionList.add(businessCompetition);
+//            }
+//            businessCompetitionService.saveBatch(businessCompetitionList);
+//        }
 
         return entity;
 
