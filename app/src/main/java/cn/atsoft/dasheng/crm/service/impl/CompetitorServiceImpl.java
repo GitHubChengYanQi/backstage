@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -54,6 +55,10 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public Competitor add(CompetitorParam param) {
+        Competitor competitor = this.lambdaQuery().eq(Competitor::getName, param.getName()).one();
+        if (ToolUtil.isNotEmpty(competitor)) {
+            throw new ServiceException(500, "竞争对手已存在");
+        }
         Competitor entity = getEntity(param);
         this.save(entity);
 

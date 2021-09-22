@@ -92,10 +92,10 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
-        List<Brand> brandList = brandService.list(brandQueryWrapper);
+        List<Brand> brandList =brandIds.size()==0? new ArrayList<>():brandService.list(brandQueryWrapper);
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
         itemsQueryWrapper.lambda().in(Items::getItemId,itemIds);
-        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
+        List<Items> itemsList =itemIds.size()==0 ?new ArrayList<>() :  itemsService.list(itemsQueryWrapper);
 
         for (OutstockListingResult record : page.getRecords()) {
             for (Brand brand : brandList) {
