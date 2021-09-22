@@ -83,8 +83,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             List<PhoneParam> phoneList = param.getPhoneParams();
             if (ToolUtil.isNotEmpty(phoneList)) {
                 for (PhoneParam phone : phoneList) {
-                    phone.setContactsId(entity.getContactsId());
-                    phoneService.add(phone);
+                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())){
+                        phone.setContactsId(entity.getContactsId());
+                        phoneService.add(phone);
+
+                    }
                 }
             }
 

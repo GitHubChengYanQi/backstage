@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,30 +42,36 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     @Override
     public void add(CrmBusinessDetailedParam param) {
-        CrmBusinessDetailed entity = getEntity(param);
-        this.save(entity);
+        QueryWrapper<CrmBusinessDetailed> queryWrapper = new QueryWrapper<>();
+        CrmBusinessDetailed one = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, param.getBusinessId()).and(i -> i.in(CrmBusinessDetailed::getItemId, param.getItemId())).one();
+        List<CrmBusinessDetailed> list = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(one)) {
+            CrmBusinessDetailed update = new CrmBusinessDetailed();
+            update.setId(one.getId());
+            update.setBusinessId(one.getBusinessId());
+            update.setQuantity(one.getQuantity() + 1);
+            update.setItemId(one.getItemId());
+            this.updateById(update);
+        }else {
+
+            CrmBusinessDetailed save = new CrmBusinessDetailed();
+            save.setBusinessId(param.getBusinessId());
+            save.setQuantity(1);
+            save.setItemId(param.getItemId());
+            this.save(save);
+        }
+
     }
 
     Map<Long, CrmBusinessDetailed> addMap;
     Map<Long, CrmBusinessDetailed> updateMap;
     @Override
     public void addAll(CrmBusinessDetailedParam param) {
+        bachAdd(param);
+    }
 
 
-
-//        List<CrmBusinessDetailed> list = new ArrayList<>();
-//        for (Long itemId : param.getItemIds()) {
-//            CrmBusinessDetailed newEntity = new CrmBusinessDetailed();
-//            newEntity.setBusinessId(param.getBusinessId());
-//            newEntity.setItemId(itemId);
-//            newEntity.setSalePrice(0);
-//            newEntity.setQuantity(0);
-//            newEntity.setTotalPrice(0);
-//            list.add(newEntity);
-//        }
-//        this.saveBatch(list);
-
-
+    void bachAdd (CrmBusinessDetailedParam param){
         addMap = new HashMap<>();
         updateMap = new HashMap<>();
         List<CrmBusinessDetailed> updateList = new ArrayList<>();
@@ -107,11 +114,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         }
         this.updateBatchById(updateList);
         this.saveBatch(addList);
-
+        updateList = null;
+        addList = null;
     }
-
-
-
 
     Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {
         CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
@@ -146,9 +151,23 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         return a;
     }
 
+
     @Override
     public void addAllPackages(CrmBusinessDetailedParam param) {
+        List<Long> itemIds = new ArrayList<>();
 
+        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
+        List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
+
+//        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
+
+
+
+        for (ErpPackageTable erpPackageTable : list) {
+            itemIds.add(erpPackageTable.getItemId());
+        }
+        param.setItemIds(itemIds);
+        addAll(param);
     }
 
 
