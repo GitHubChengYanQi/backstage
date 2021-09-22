@@ -45,10 +45,10 @@ public class PhoneParam implements Serializable, BaseValidatingParam {
     /**
      * 电话号码
      */
-    @Pattern(regexp = "1[3|4|5|7|8][0-9]\\d{8}")
-    @NotNull(message = "电话不能为空")
-    @Length(min = 11, message = "手机最少位数是{min}")
-    @ApiModelProperty("电话号码")
+//    @Pattern(regexp = "^1\\d{10}", message = "手机号码格式错误")
+//    @NotNull(message = "电话不能为空")
+//    @Length(min = 11, message = "手机最少位数是{min}")
+//    @ApiModelProperty("电话号码")
     private Long phoneNumber;
 
     /**

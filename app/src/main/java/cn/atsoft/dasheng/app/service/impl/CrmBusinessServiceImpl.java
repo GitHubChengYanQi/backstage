@@ -119,14 +119,14 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @BussinessLog
     public CrmBusiness update(CrmBusinessParam param) {
-        if (ToolUtil.isNotEmpty(param.getBusinessId())) {
-            CrmBusiness crmBusiness = this.lambdaQuery()
-                    .in(CrmBusiness::getBusinessId, param.getBusinessId())
-                    .one();
-            if (!crmBusiness.getCustomerId().equals(param.getCustomerId())) {
-                throw new ServiceException(500, "不可以修改客户");
-            }
-        }
+//        if (ToolUtil.isNotEmpty(param.getBusinessId())) {
+//            CrmBusiness crmBusiness = this.lambdaQuery()
+//                    .in(CrmBusiness::getBusinessId, param.getBusinessId())
+//                    .one();
+//            if (!crmBusiness.getCustomerId().equals(param.getCustomerId())) {
+//                throw new ServiceException(500, "不可以修改客户");
+//            }
+//        }
 
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
