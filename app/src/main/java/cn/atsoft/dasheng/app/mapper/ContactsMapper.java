@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.Data;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +44,7 @@ public interface ContactsMapper extends BaseMapper<Contacts> {
      * @author 
      * @Date 2021-07-23
      */
-    Page<ContactsResult> customPageList(@Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
+    Page<ContactsResult> customPageList(@Param("dataScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition);
 
     /**
      * 获取分页map列表

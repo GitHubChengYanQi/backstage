@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.app.mapper.ContactsMapper;
 import cn.atsoft.dasheng.app.model.params.ContactsParam;
 import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.CompanyRole;
 import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
@@ -212,9 +213,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     }
 
     @Override
-    public PageInfo<ContactsResult> findPageBySpec(ContactsParam param) {
+    public PageInfo<ContactsResult> findPageBySpec(DataScope dataScope,ContactsParam param) {
         Page<ContactsResult> pageContext = getPageContext();
-        IPage<ContactsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ContactsResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
