@@ -1,15 +1,12 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Delivery;
-import cn.atsoft.dasheng.app.entity.OutstockOrder;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
-import cn.atsoft.dasheng.app.service.DeliveryService;
-import cn.atsoft.dasheng.app.service.OutstockOrderService;
-import cn.atsoft.dasheng.app.service.OutstockService;
+import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
@@ -25,6 +22,9 @@ import cn.atsoft.dasheng.erp.service.OutstockApplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -57,6 +57,18 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     private OutstockListingService outstockListingService;
     @Autowired
     private DeliveryService deliveryService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PhoneService phoneService;
 
 
     @Override
@@ -147,6 +159,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         Page<OutstockApplyResult> pageContext = getPageContext();
         IPage<OutstockApplyResult> page = this.baseMapper.customPageList(pageContext, param);
 
+        format(page.getRecords());
 
         for (OutstockApplyResult record : page.getRecords()) {
             QueryWrapper<ApplyDetails> applyDetailsQueryWrapper = new QueryWrapper<>();
@@ -176,4 +189,98 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         return entity;
     }
 
+    public void format(List<OutstockApplyResult> data) {
+        List<Long> customerIds = new ArrayList<>();
+        List<Long> adressIds = new ArrayList<>();
+        List<Long> contactsIds = new ArrayList<>();
+        List<Long> stockIds = new ArrayList<>();
+        List<Long> phoneIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
+        for (OutstockApplyResult datum : data) {
+            customerIds.add(datum.getCustomerId());
+            adressIds.add(datum.getAdressId());
+            contactsIds.add(datum.getContactsId());
+            stockIds.add(datum.getStockId());
+            phoneIds.add(datum.getPhoneId());
+            userIds.add(datum.getUserId());
+        }
+
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.lambdaQuery()
+                .in(Customer::getCustomerId, customerIds)
+                .list();
+
+        List<Contacts> contacts = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.lambdaQuery()
+                .in(Contacts::getContactsId, contactsIds)
+                .list();
+
+        List<Adress> adresses = adressIds.size() == 0 ? new ArrayList<>() : adressService.lambdaQuery()
+                .in(Adress::getAdressId, adressIds)
+                .list();
+
+        List<Stock> stocks = stockIds.size() == 0 ? new ArrayList<>() : stockService.lambdaQuery()
+                .in(Stock::getStockId, stockIds)
+                .list();
+
+        List<Phone> phones = phoneIds.size() == 0 ? new ArrayList<>() : phoneService.lambdaQuery()
+                .in(Phone::getPhoneId, phoneIds)
+                .list();
+
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery()
+                .in(User::getUserId, userIds)
+                .list();
+
+        for (OutstockApplyResult datum : data) {
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                    break;
+                }
+            }
+
+            for (Stock stock : stocks) {
+                if (datum.getStockId().equals(stock.getStockId())) {
+                    StockResult stockResult = new StockResult();
+                    ToolUtil.copyProperties(stock, stockResult);
+                    datum.setStockResult(stockResult);
+                    break;
+                }
+            }
+            for (Customer customer : customers) {
+                if (datum.getCustomerId().equals(customer.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    datum.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (Adress adress : adresses) {
+                if (datum.getAdressId().equals(adress.getAdressId())) {
+                    AdressResult adressResult = new AdressResult();
+                    ToolUtil.copyProperties(adress, adressResult);
+                    datum.setAdressResult(adressResult);
+                    break;
+                }
+            }
+            for (Contacts contact : contacts) {
+                if (datum.getContactsId().equals(contact.getContactsId())) {
+                    ContactsResult contactsResult = new ContactsResult();
+                    ToolUtil.copyProperties(contact, contactsResult);
+                    datum.setContactsResult(contactsResult);
+                    break;
+                }
+            }
+            for (Phone phone : phones) {
+                if (datum.getPhoneId().equals(phone.getPhoneId())) {
+                    PhoneResult phoneResult = new PhoneResult();
+                    ToolUtil.copyProperties(phone, phoneResult);
+                    datum.setPhoneResult(phoneResult);
+                    break;
+                }
+            }
+
+        }
+    }
 }

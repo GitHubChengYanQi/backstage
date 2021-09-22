@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.entity.ItemData;
 import cn.atsoft.dasheng.crm.mapper.DataMapper;
@@ -141,9 +142,9 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     }
 
     @Override
-    public PageInfo<DataResult> findPageBySpec(DataParam param) {
+    public PageInfo<DataResult> findPageBySpec(DataScope dataScope, DataParam param) {
         Page<DataResult> pageContext = getPageContext();
-        IPage<DataResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<DataResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

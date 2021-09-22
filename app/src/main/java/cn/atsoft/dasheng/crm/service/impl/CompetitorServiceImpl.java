@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -54,15 +55,26 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public Competitor add(CompetitorParam param) {
+        Competitor competitor = this.lambdaQuery().eq(Competitor::getName, param.getName()).one();
+        if (ToolUtil.isNotEmpty(competitor)) {
+            throw new ServiceException(500, "竞争对手已存在");
+        }
         Competitor entity = getEntity(param);
-        this.save(entity);
 
-        //竞争对手与商机绑定
-        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
-            BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
-            businessCompetitionParam.setBusinessId(param.getBusinessId());
-            businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
-            businessCompetitionService.add(businessCompetitionParam);
+        QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(Competitor::getName,param.getName());
+        List<Competitor> list = this.baseMapper.selectList(queryWrapper);
+        if(ToolUtil.isEmpty(list)){
+            //竞争对手与商机绑定
+            if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
+                BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
+                businessCompetitionParam.setBusinessId(param.getBusinessId());
+                businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
+                businessCompetitionService.add(businessCompetitionParam);
+                this.save(entity);
+            }
+        }else {
+            throw new ServiceException(500,"竞争对手名称已存在");
         }
 
         return entity;

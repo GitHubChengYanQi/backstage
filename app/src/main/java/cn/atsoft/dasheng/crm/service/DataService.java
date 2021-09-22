@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
@@ -64,7 +65,7 @@ public interface DataService extends IService<Data> {
      * @author song
      * @Date 2021-09-11
      */
-    PageInfo<DataResult> findPageBySpec(DataParam param);
+    PageInfo<DataResult> findPageBySpec(DataScope dataScope, DataParam param);
 
 
     DataResult detail(DataParam param);

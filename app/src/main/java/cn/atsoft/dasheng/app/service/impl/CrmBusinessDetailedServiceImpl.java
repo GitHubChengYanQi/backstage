@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,108 +42,120 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     @Override
     public void add(CrmBusinessDetailedParam param) {
-        CrmBusinessDetailed entity = getEntity(param);
-        this.save(entity);
+        List<Long> itemIds = new ArrayList<>();
+        itemIds.add(param.getItemId());
+        param.setItemIds(itemIds);
+        addAll(param);
     }
 
+    Map<Long, CrmBusinessDetailed> addMap;
+    Map<Long, CrmBusinessDetailed> updateMap;
     @Override
     public void addAll(CrmBusinessDetailedParam param) {
-        List<CrmBusinessDetailed> list = new ArrayList<>();
-        for (Long itemId : param.getItemIds()) {
-            CrmBusinessDetailed newEntity = new CrmBusinessDetailed();
-            newEntity.setBusinessId(param.getBusinessId());
-            newEntity.setItemId(itemId);
-            newEntity.setSalePrice(0);
-            newEntity.setQuantity(0);
-            newEntity.setTotalPrice(0);
-            list.add(newEntity);
-        }
-        this.saveBatch(list);
-
+        bachAdd(param);
     }
+
+
+    void bachAdd (CrmBusinessDetailedParam param){
+        addMap = new HashMap<>();
+        updateMap = new HashMap<>();
+        List<CrmBusinessDetailed> updateList = new ArrayList<>();
+        List<CrmBusinessDetailed> addList = new ArrayList<>();
+        int l = 0;
+        Map<Long, CrmBusinessDetailed> tableMap = new HashMap();
+        for (Long itemId : param.getItemIds()) {
+            CrmBusinessDetailed crmBusinessDetailed = this.lambdaQuery().eq(CrmBusinessDetailed::getItemId, itemId).and(i -> i.eq(CrmBusinessDetailed::getBusinessId, param.getBusinessId())).one();
+            if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
+                if (crmBusinessDetailed.getBusinessId().equals(param.getBusinessId()) && crmBusinessDetailed.getItemId().equals(itemId)) {
+                    CrmBusinessDetailed detailTable = updateMap.get(param.getBusinessId() + itemId);
+                    if (ToolUtil.isEmpty(detailTable)) {
+                        l = crmBusinessDetailed.getQuantity() + 1;
+                        crmBusinessDetailed.setQuantity(l);
+                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
+                    } else {
+                        l = l + 1;
+                        crmBusinessDetailed.setQuantity(l);
+                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
+                    }
+
+                }
+            }
+            Boolean table = addBusinessDetial(itemId, param.getBusinessId());
+            if (table) {
+                tableMap = superposition(param.getBusinessId(), itemId);
+            }
+        }
+        //通过map取出相同数据批量修改
+        Set<Map.Entry<Long, CrmBusinessDetailed>> entriesUpdate = updateMap.entrySet();
+        for (Map.Entry<Long, CrmBusinessDetailed> longErpPackageTableEntry : entriesUpdate) {
+            CrmBusinessDetailed value = longErpPackageTableEntry.getValue();
+            updateList.add(value);
+        }
+        //通过map取出相同数据批量增加
+        Set<Map.Entry<Long, CrmBusinessDetailed>> entries = tableMap.entrySet();
+        for (Map.Entry<Long, CrmBusinessDetailed> entry : entries) {
+            CrmBusinessDetailed entryValue = entry.getValue();
+            addList.add(entryValue);
+        }
+        this.updateBatchById(updateList);
+        this.saveBatch(addList);
+        updateList = null;
+        addList = null;
+    }
+
+    Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {
+        CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
+        if (addMap.containsKey(businessId + itemId)) {
+            int l = packageTable.getQuantity() + 1;
+            packageTable.setQuantity( l);
+            addMap.put(businessId + itemId, packageTable);
+        }
+        if (ToolUtil.isEmpty(packageTable)) {
+            CrmBusinessDetailed packageTable1 = new CrmBusinessDetailed();
+            packageTable1.setBusinessId(businessId);
+            packageTable1.setItemId(itemId);
+            packageTable1.setQuantity(1);
+            addMap.put(businessId + itemId, packageTable1);
+        }
+        return addMap;
+    }
+
+
+    Boolean addBusinessDetial(Long itemId, Long businessId) {
+        Boolean a = true;
+        List<CrmBusinessDetailed> list = this.lambdaQuery().list();
+        for (CrmBusinessDetailed crmBusinessDetailed : list) {
+            if (crmBusinessDetailed.getBusinessId().equals(businessId) && crmBusinessDetailed.getItemId().equals(itemId)) {
+                a = false;
+                break;
+            }
+        }
+        if (ToolUtil.isEmpty(list)) {
+            return true;
+        }
+        return a;
+    }
+
 
     @Override
     public void addAllPackages(CrmBusinessDetailedParam param) {
+        List<Long> itemIds = new ArrayList<>();
 
-        //newEntryList{CrmBusinessDerailed实体对象(多个)}
-        Map<Long, CrmBusinessDetailed> map = new HashMap<>();
-        List<CrmBusinessDetailed> crmBusinessDetailedList = new ArrayList<>();
-        //查出当前商机详情的物品
-        List<CrmBusinessDetailed> crmBusinessDetaileds = this.lambdaQuery()
-                .in(CrmBusinessDetailed::getBusinessId, param.getBusinessId())
-                .list();
-        //查询当前
-        if (ToolUtil.isNotEmpty(crmBusinessDetaileds)) {
-            List<CrmBusinessDetailed> updateDetailedList = new ArrayList<>();
-            List<CrmBusinessDetailed> detailedList = new ArrayList<>();
-            for (CrmBusinessDetailed crmBusinessDetailed : crmBusinessDetaileds) {
-                ErpPackageTable erpPackageTable = judgeItem(param.getPackagesIds(), crmBusinessDetailed.getItemId());
-            }
+        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
+        List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
+
+//        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
 
 
-            this.saveBatch(detailedList);
-            this.updateBatchById(updateDetailedList);
+
+        for (ErpPackageTable erpPackageTable : list) {
+            itemIds.add(erpPackageTable.getItemId());
         }
-//        if (ToolUtil.isNotEmpty(crmBusinessDetaileds)) {
-//            for (CrmBusinessDetailed crmBusinessDetailed : crmBusinessDetaileds) {
-//                Long detailedItemId = crmBusinessDetailed.getItemId();
-//                int detailedQuantity = crmBusinessDetailed.getQuantity();
-//                if (ToolUtil.isNotEmpty(param.getPackagesIds())) {
-//                    for (Long packagesId : param.getPackagesIds()) {
-//                        //通过packgeid查出套餐详细数据
-//                        List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
-//                                .in(ErpPackageTable::getPackageId, packagesId)
-//                                .list();
-//                        for (ErpPackageTable erpPackageTable : erpPackageTables) {
-//                            Long tableItemIds = erpPackageTable.getItemId();
-//                            Long taboeQuantity = erpPackageTable.getQuantity();
-//                            if (tableItemIds.equals(detailedItemId)) {
-//                                crmBusinessDetailed.setQuantity(Math.toIntExact(detailedQuantity + taboeQuantity));
-//                                CrmBusinessDetailedParam crmBusinessDetailedParam = new CrmBusinessDetailedParam();
-//                                ToolUtil.copyProperties(crmBusinessDetailed, crmBusinessDetailedParam);
-//                                this.update(crmBusinessDetailedParam);
-//                            } else {
-//                                CrmBusinessDetailed crmBusinessDetailed1 = new CrmBusinessDetailed();
-//                                crmBusinessDetailed1.setBusinessId(param.getBusinessId());
-//                                crmBusinessDetailed1.setItemId(tableItemIds);
-//                                crmBusinessDetailed1.setQuantity(Math.toIntExact(taboeQuantity));
-//                                this.save(crmBusinessDetailed1);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        if (ToolUtil.isEmpty(crmBusinessDetaileds)) {
-            List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
-                    .in(ErpPackageTable::getPackageId, param.getPackagesIds())
-                    .list();
-            for (ErpPackageTable erpPackageTable : erpPackageTables) {
-                CrmBusinessDetailed crmBusinessDetailed = new CrmBusinessDetailed();
-                crmBusinessDetailed.setItemId(erpPackageTable.getItemId());
-                crmBusinessDetailed.setQuantity(Math.toIntExact(erpPackageTable.getQuantity()));
-                crmBusinessDetailed.setBusinessId(param.getBusinessId());
-                crmBusinessDetailedList.add(crmBusinessDetailed);
-            }
-            this.saveBatch(crmBusinessDetailedList);
-        }
-
-
+        param.setItemIds(itemIds);
+        addAll(param);
     }
 
-    ErpPackageTable judgeItem(List<Long> packageIds, Long item) {
-        for (Long packageId : packageIds) {
-            List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
-                    .eq(ErpPackageTable::getPackageId, packageId)
-                    .list();
-            for (ErpPackageTable erpPackageTable : erpPackageTables) {
-                if (erpPackageTable.getItemId().equals(item)) {
-                    return erpPackageTable;
-                }
-            }
-        }
-        return null;
-    }
+
 
     @Override
     public void delete(CrmBusinessDetailedParam param) {

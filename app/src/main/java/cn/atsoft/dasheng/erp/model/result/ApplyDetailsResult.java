@@ -29,7 +29,7 @@ public class ApplyDetailsResult implements Serializable {
      */
     @ApiModelProperty("发货申请详情id")
     private Long outstockApplyDetailsId;
-    
+
 
     /**
      * 产品id
