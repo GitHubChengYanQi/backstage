@@ -122,6 +122,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param) {
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
+
         List<Long> detailIds = new ArrayList<>();
         for (CrmBusinessDetailedResult record : page.getRecords()) {
             detailIds.add(record.getItemId());
