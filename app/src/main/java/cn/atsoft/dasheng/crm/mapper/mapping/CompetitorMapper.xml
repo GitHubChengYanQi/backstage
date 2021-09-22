@@ -40,7 +40,7 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor where 1 = 1
+        from daoxin_crm_competitor where display = 1
         <if test="paramCondition.competitorId != null">
             and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
         </if>
@@ -95,7 +95,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor where 1 = 1
+        from daoxin_crm_competitor where display = 1
         <if test="paramCondition.competitorId != null">
             and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
         </if>
@@ -151,7 +151,7 @@
             parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor where 1 = 1
+        from daoxin_crm_competitor where display = 1
         <if test="paramCondition.competitorId != null">
             and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
         </if>
@@ -209,7 +209,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.CompetitorParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_competitor where 1 = 1
+        from daoxin_crm_competitor where display = 1
         <if test="paramCondition.competitorId != null">
             and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
         </if>

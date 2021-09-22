@@ -62,9 +62,9 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         Competitor entity = getEntity(param);
 
         QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(Competitor::getName,param.getName());
+        queryWrapper.lambda().in(Competitor::getName, param.getName());
         List<Competitor> list = this.baseMapper.selectList(queryWrapper);
-        if(ToolUtil.isEmpty(list)){
+        if (ToolUtil.isEmpty(list)) {
             //竞争对手与商机绑定
             if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
                 BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
@@ -73,8 +73,8 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
                 businessCompetitionService.add(businessCompetitionParam);
                 this.save(entity);
             }
-        }else {
-            throw new ServiceException(500,"竞争对手名称已存在");
+        } else {
+            throw new ServiceException(500, "竞争对手名称已存在");
         }
 
         return entity;
@@ -249,12 +249,12 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     }
 
     @Override
-    public void deleteByIds(CompetitorIdsRequest param) {
-        if (ToolUtil.isNotEmpty(param)) {
+    public void deleteByIds(List<Long> ids) {
+        if (ToolUtil.isNotEmpty(ids)) {
             Competitor competitor = new Competitor();
             competitor.setDisplay(0);
             UpdateWrapper<Competitor> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.in("competitor_id", param);
+            updateWrapper.in("competitor_id", ids);
             this.update(competitor, updateWrapper);
         }
     }

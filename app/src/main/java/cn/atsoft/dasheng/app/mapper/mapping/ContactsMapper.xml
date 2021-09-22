@@ -71,6 +71,7 @@
         <if test="paramCondition.contactsName != null and paramCondition.contactsName != ''">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
+
         <if test="paramCondition.companyRole != null and paramCondition.companyRole != ''">
             and company_role_id like CONCAT('%',#{paramCondition.companyRole},'%')
         </if>
@@ -84,9 +85,16 @@
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
-            and (deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+            and (deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-        order by create_time desc
+        <if test="ids.size()>0">
+            and contacts_id in
+            <foreach collection="ids" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+        </if>
+    order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ContactsParam">
@@ -105,6 +113,16 @@
         <if test="paramCondition.customerId != null">
             and customer_id = #{paramCondition.customerId}
         </if>
+    </select>
+
+    <select id="queryContactsId" resultType="Long" parameterType="Long">
+        select contacts_id
+        from daoxin_crm_contacts_bind
+        where display = 1
+        <if test="id !=null and  id != ''">
+            and customer_id =#{id}
+        </if>
+
     </select>
 
 </mapper>

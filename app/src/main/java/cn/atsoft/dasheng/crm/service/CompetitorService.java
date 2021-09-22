@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.omg.CORBA.LongHolder;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public interface CompetitorService extends IService<Competitor> {
      PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope, CompetitorParam param);
 
     CompetitorResult detail (Long id);
-    void deleteByIds(CompetitorIdsRequest param);
+    void deleteByIds(List<Long> ids);
 
     Competitor byBusinessAdd(CompetitorParam param);
 }
