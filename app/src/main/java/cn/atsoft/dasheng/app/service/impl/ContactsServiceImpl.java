@@ -64,13 +64,15 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         } else {
             Contacts entity = getEntity(param);
             this.save(entity);
-
             // 添加电话号码
             List<PhoneParam> phoneList = param.getPhoneParams();
             if (ToolUtil.isNotEmpty(phoneList)) {
                 for (PhoneParam phone : phoneList) {
-                    phone.setContactsId(entity.getContactsId());
-                    phoneService.add(phone);
+                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())){
+                        phone.setContactsId(entity.getContactsId());
+                        phoneService.add(phone);
+
+                    }
                 }
             }
 
