@@ -54,7 +54,7 @@ public class ContractDetailController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ContractDetailParam contractDetailParam) {
-
+        contractDetailParam.setTotalPrice(contractDetailParam.getSalePrice() * contractDetailParam.getQuantity());
         this.contractDetailService.update(contractDetailParam);
         return ResponseData.success();
     }

@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.BusinessCompetition;
 import cn.atsoft.dasheng.crm.entity.Competitor;
+import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.result.CompetitorResult;
 import cn.atsoft.dasheng.crm.service.BusinessCompetitionService;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
@@ -61,6 +63,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Autowired
     private BusinessCompetitionService businessCompetitionService;
 
+
     public CrmBusinessResult detail(Long id) {
 
         CrmBusiness crmBusiness = this.getById(id);
@@ -78,7 +81,22 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getCompetitorParams())) {
+            List<BusinessCompetition> businessCompetitionList = new ArrayList<>();
+            for (CompetitorParam competitorParam : param.getCompetitorParams()) {
+                Competitor competitor = competitorService.byBusinessAdd(competitorParam);
+                BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
+                businessCompetitionParam.setBusinessId(entity.getBusinessId());
+                businessCompetitionParam.setCompetitorId(competitor.getCompetitorId());
+                BusinessCompetition businessCompetition = new BusinessCompetition();
+                ToolUtil.copyProperties(businessCompetitionParam, businessCompetition);
+                businessCompetitionList.add(businessCompetition);
+            }
+            businessCompetitionService.saveBatch(businessCompetitionList);
+        }
+
         return entity;
+
 
     }
 
@@ -96,6 +114,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         }
 
     }
+
 
     @Override
     @BussinessLog

@@ -20,6 +20,8 @@ public class ContractDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ItemsResult itemsResult;
+
 
     /**
      * id

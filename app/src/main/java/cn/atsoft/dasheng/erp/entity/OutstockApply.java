@@ -42,7 +42,7 @@ public class OutstockApply implements Serializable {
     @TableField("phone_id")
     private Long phoneId;
 
-    @TableField("adress_id")
+    @TableField("time")
     private Date time;
 
 
