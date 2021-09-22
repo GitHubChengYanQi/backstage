@@ -20,8 +20,11 @@ import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.CompanyRole;
+import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
+import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,6 +53,8 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private CompanyRoleService companyRoleService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private ContactsBindService contactsBindService;
 
     @Override
     @BussinessLog
@@ -65,6 +70,14 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         } else {
             Contacts entity = getEntity(param);
             this.save(entity);
+
+            if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+                ContactsBindParam contactsBindParam = new ContactsBindParam();
+                contactsBindParam.setCustomerId(param.getCustomerId());
+                contactsBindParam.setContactsId(entity.getContactsId());
+                contactsBindService.add(contactsBindParam);
+            }
+
 
             // 添加电话号码
             List<PhoneParam> phoneList = param.getPhoneParams();
@@ -161,6 +174,61 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         return null;
     }
 
+
+    @Override
+    public PageInfo<ContactsResult> findPageBySpec(DataScope dataScope, ContactsParam param) {
+        Page<ContactsResult> pageContext = getPageContext();
+        List<Long> ids = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            List<Long> contactsIds = this.baseMapper.queryContactsId(param.getCustomerId());
+            if (ToolUtil.isNotEmpty(contactsIds)) {
+                for (Long id : contactsIds) {
+                    ids.add(id);
+                }
+            }
+        }
+
+//        ContactsBind contactsBind = contactsBindService.lambdaQuery()
+//                .in(ContactsBind::getCustomerId, param.getCustomerId())
+//                .one();
+//        if (ToolUtil.isNotEmpty(contactsBind)) {
+//            param.setCustomerId(contactsBind.getCustomerId());
+//            param.setContactsId(contactsBind.getContactsId());
+//        }
+
+        IPage<ContactsResult> page = this.baseMapper.customPageList(dataScope, pageContext, param, ids);
+        format(page.getRecords());
+
+        return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public void batchDelete(List<Long> id) {
+        Contacts contacts = new Contacts();
+        contacts.setDisplay(0);
+        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("contacts_id", id);
+        this.update(contacts, contactsQueryWrapper);
+    }
+
+    private Serializable getKey(ContactsParam param) {
+        return param.getContactsId();
+    }
+
+    private Page<ContactsResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private Contacts getOldEntity(ContactsParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private Contacts getEntity(ContactsParam param) {
+        Contacts entity = new Contacts();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
     @Override
     public void format(List<ContactsResult> data) {
         List<Long> cIds = new ArrayList<>();
@@ -211,41 +279,4 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         }
 
     }
-
-    @Override
-    public PageInfo<ContactsResult> findPageBySpec(DataScope dataScope,ContactsParam param) {
-        Page<ContactsResult> pageContext = getPageContext();
-        IPage<ContactsResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
-        format(page.getRecords());
-
-        return PageFactory.createPageInfo(page);
-    }
-
-    @Override
-    public void batchDelete(List<Long> id) {
-        Contacts contacts = new Contacts();
-        contacts.setDisplay(0);
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id", id);
-        this.update(contacts, contactsQueryWrapper);
-    }
-
-    private Serializable getKey(ContactsParam param) {
-        return param.getContactsId();
-    }
-
-    private Page<ContactsResult> getPageContext() {
-        return PageFactory.defaultPage();
-    }
-
-    private Contacts getOldEntity(ContactsParam param) {
-        return this.getById(getKey(param));
-    }
-
-    private Contacts getEntity(ContactsParam param) {
-        Contacts entity = new Contacts();
-        ToolUtil.copyProperties(param, entity);
-        return entity;
-    }
-
 }

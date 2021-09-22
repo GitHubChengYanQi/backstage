@@ -129,7 +129,8 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/deleteByIds", method = RequestMethod.POST)
     @ApiOperation("多选删除")
     public ResponseData deleteByIds(@RequestBody CompetitorIdsRequest competitorIdsRequest) {
-        this.competitorService.deleteByIds(competitorIdsRequest);
+        List<Long> ids = competitorIdsRequest.getCompetitorId();
+        this.competitorService.deleteByIds(ids);
         return ResponseData.success();
     }
 
