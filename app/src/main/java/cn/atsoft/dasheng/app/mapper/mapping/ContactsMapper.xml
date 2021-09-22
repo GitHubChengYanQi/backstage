@@ -94,6 +94,9 @@
                 #{state}
             </foreach>
         </if>
+        <if test="paramCondition.contactsId != null">
+            and contacts_id = #{paramCondition.contactsId}
+        </if>
     order by create_time desc
     </select>
 

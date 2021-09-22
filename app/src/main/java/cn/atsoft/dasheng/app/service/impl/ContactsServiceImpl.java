@@ -83,7 +83,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             List<PhoneParam> phoneList = param.getPhoneParams();
             if (ToolUtil.isNotEmpty(phoneList)) {
                 for (PhoneParam phone : phoneList) {
-                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())){
+                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
                         phone.setContactsId(entity.getContactsId());
                         phoneService.add(phone);
 
@@ -234,34 +234,59 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public void format(List<ContactsResult> data) {
-        List<Long> cIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         List<Long> roleIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         for (ContactsResult record : data) {
             contactsIds.add(record.getContactsId());
-            cIds.add(record.getCustomerId());
+            customerIds.add(record.getCustomerId());
             roleIds.add(record.getCompanyRole());
         }
         List<CompanyRole> companyRoleList = roleIds.size() == 0 ? new ArrayList<>() : companyRoleService.lambdaQuery().in(CompanyRole::getCompanyRoleId, roleIds).list();
+        List<Long> ids = new ArrayList<>();
+        List<ContactsBind> contactsBinds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(contactsIds)) {
+            contactsBinds = contactsBindService.lambdaQuery()
+                    .in(ContactsBind::getContactsId, contactsIds)
+                    .list();
+
+            for (ContactsBind contactsBind : contactsBinds) {
+                ids.add(contactsBind.getCustomerId());
+            }
+        }
+
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        customerQueryWrapper.in("customer_id", cIds);
-        List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
+        customerQueryWrapper.in("customer_id", ids);
+        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
 
         QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
         phoneQueryWrapper.in("contacts_id", contactsIds);
-        List<Phone> phoneList = cIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneQueryWrapper);
+        List<Phone> phoneList = customerIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneQueryWrapper);
 
 
         for (ContactsResult record : data) {
-            for (Customer customer : customerList) {
-                if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    record.setCustomerResult(customerResult);
-                    break;
+            List<CustomerResult> customerResults = new ArrayList<>();
+            for (ContactsBind contactsBind : contactsBinds) {
+                if (record.getContactsId().equals(contactsBind.getContactsId())) {
+                    for (Customer customer : customerList) {
+                        if (contactsBind.getCustomerId().equals(customer.getCustomerId())) {
+                            CustomerResult customerResult = new CustomerResult();
+                            ToolUtil.copyProperties(customer, customerResult);
+                            customerResults.add(customerResult);
+                        }
+                    }
+                    record.setCustomerResults(customerResults);
                 }
             }
+//            for (Customer customer : customerList) {
+//                if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
+//                    CustomerResult customerResult = new CustomerResult();
+//                    ToolUtil.copyProperties(customer, customerResult);
+//                    record.setCustomerResult(customerResult);
+//                    break;
+//                }
+//            }
             for (CompanyRole companyRole : companyRoleList) {
                 if (companyRole.getCompanyRoleId().equals(record.getCompanyRole())) {
                     CompanyRoleResult companyRoleResult = new CompanyRoleResult();

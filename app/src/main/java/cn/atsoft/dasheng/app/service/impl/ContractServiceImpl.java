@@ -106,10 +106,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(contract)) {
             throw new ServiceException(500, "数据不存在");
         } else {
-            Contract entity = getEntity(param);
-            param.setDisplay(0);
-            this.update(param);
-            return entity;
+            Contract contractById = getById(param.getContractId());
+            if (contractById.getAudit().equals(0)) {
+                Contract entity = getEntity(param);
+                param.setDisplay(0);
+                this.update(param);
+                return entity;
+            }else {
+                throw  new ServiceException(500,"当前合同不可删除");
+            }
+
         }
     }
 
@@ -121,11 +127,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
         }else {
+            Contract contract = this.contractService.getById(param.getContractId());
             Contract newEntity = getEntity(param);
-            if (newEntity.getAudit() == 1) {
-                Long contractId = newEntity.getContractId();
+            if (contract.getAudit() == 1) {
 
-                Contract contract = this.contractService.getById(contractId);
                 if (ToolUtil.isNotEmpty(contract)) {
                     ErpOrderParam orderParam = new ErpOrderParam();
                     orderParam.setContractId(contract.getContractId());
