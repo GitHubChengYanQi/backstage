@@ -43,6 +43,12 @@ public class CrmBusinessDetailedResult implements Serializable {
     private Long itemId;
 
     /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
      * 物品数量
      */
     @ApiModelProperty("物品数量")

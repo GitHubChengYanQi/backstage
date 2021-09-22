@@ -52,8 +52,11 @@ public class Instock implements Serializable {
     /**
      * 价格
      */
-    @TableField("price")
-    private Integer price;
+    @TableField("cost_price")
+    private Integer costPrice;
+
+    @TableField("selling_price")
+    private Integer sellingPrice;
 
 
     /**
@@ -143,13 +146,22 @@ public class Instock implements Serializable {
         this.number = number;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Integer getCostPrice() {
+        return costPrice;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setCostPrice(Integer costPrice) {
+        this.costPrice = costPrice;
     }
+
+    public Integer getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(Integer sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
 
     public long getBrandId() {
         return brandId;
@@ -223,7 +235,8 @@ public class Instock implements Serializable {
         ", itemId=" + itemId +
         ", registerTime=" + registerTime +
         ", number=" + number +
-        ", price=" + price +
+        ", costPrice=" + costPrice +
+        ", sellingPrice=" + sellingPrice +
         ", brandId=" + brandId +
         ", createTime=" + createTime +
         ", createUser=" + createUser +

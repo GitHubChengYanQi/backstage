@@ -9,7 +9,8 @@
         <result column="storehouse_id" property="storeHouseId"/>
         <result column="register_time" property="registerTime"/>
         <result column="number" property="number"/>
-        <result column="price" property="price"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="selling_price" property="sellingPrice"/>
         <result column="brand_id" property="brandId"/>
         <result column="barcode" property="barcode"/>
         <result column="state" property="state"/>
@@ -25,7 +26,7 @@
     <sql id="Base_Column_List">
         deptId
         AS "deptId",
-        storehouse_id AS "storeHouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", price AS "price", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        storehouse_id AS "storeHouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", selling_price AS "sellingPrice",cost_price AS "costPrice", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 

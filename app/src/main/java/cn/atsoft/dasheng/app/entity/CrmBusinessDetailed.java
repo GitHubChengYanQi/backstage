@@ -24,7 +24,7 @@ public class CrmBusinessDetailed implements Serializable {
     /**
      * id
      */
-      @TableId(value = "id", type = IdType.ID_WORKER)
+    @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
     /**
@@ -38,6 +38,13 @@ public class CrmBusinessDetailed implements Serializable {
      */
     @TableField("item_id")
     private Long itemId;
+    /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private int brandId;
+
+
 
     /**
      * 物品数量
@@ -142,6 +149,13 @@ public class CrmBusinessDetailed implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+    public int getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(int brandId) {
+        this.brandId = brandId;
     }
 
     /**

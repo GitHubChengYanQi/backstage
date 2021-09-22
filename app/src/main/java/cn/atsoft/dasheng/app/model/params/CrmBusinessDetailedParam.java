@@ -47,6 +47,12 @@ public class CrmBusinessDetailedParam implements Serializable, BaseValidatingPar
     private Long itemId;
 
     /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
      * 物品数量
      */
     @ApiModelProperty("物品数量")
