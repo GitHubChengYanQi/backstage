@@ -42,10 +42,25 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     @Override
     public void add(CrmBusinessDetailedParam param) {
-        List<Long> itemIds = new ArrayList<>();
-        itemIds.add(param.getItemId());
-        param.setItemIds(itemIds);
-        addAll(param);
+        QueryWrapper<CrmBusinessDetailed> queryWrapper = new QueryWrapper<>();
+        CrmBusinessDetailed one = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, param.getBusinessId()).and(i -> i.in(CrmBusinessDetailed::getItemId, param.getItemId())).one();
+        List<CrmBusinessDetailed> list = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(one)) {
+            CrmBusinessDetailed update = new CrmBusinessDetailed();
+            update.setId(one.getId());
+            update.setBusinessId(one.getBusinessId());
+            update.setQuantity(one.getQuantity() + 1);
+            update.setItemId(one.getItemId());
+            this.updateById(update);
+        }else {
+
+            CrmBusinessDetailed save = new CrmBusinessDetailed();
+            save.setBusinessId(param.getBusinessId());
+            save.setQuantity(1);
+            save.setItemId(param.getItemId());
+            this.save(save);
+        }
+
     }
 
     Map<Long, CrmBusinessDetailed> addMap;
