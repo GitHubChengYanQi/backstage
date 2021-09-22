@@ -24,7 +24,7 @@ import java.util.List;
 public class ContactsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<CustomerResult> customerResults;
     private CustomerResult customerResult;
     private CompanyRoleResult companyRoleResult;
     private List<PhoneResult> phoneParams;

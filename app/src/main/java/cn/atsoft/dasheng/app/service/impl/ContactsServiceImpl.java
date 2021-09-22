@@ -266,15 +266,17 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
 
         for (ContactsResult record : data) {
+            List<CustomerResult> customerResults = new ArrayList<>();
             for (ContactsBind contactsBind : contactsBinds) {
                 if (record.getContactsId().equals(contactsBind.getContactsId())) {
                     for (Customer customer : customerList) {
                         if (contactsBind.getCustomerId().equals(customer.getCustomerId())) {
                             CustomerResult customerResult = new CustomerResult();
                             ToolUtil.copyProperties(customer, customerResult);
-                            record.setCustomerResult(customerResult);
+                            customerResults.add(customerResult);
                         }
                     }
+                    record.setCustomerResults(customerResults);
                 }
             }
 //            for (Customer customer : customerList) {
