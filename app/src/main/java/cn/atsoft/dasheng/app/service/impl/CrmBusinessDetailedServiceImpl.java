@@ -48,16 +48,19 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         if (ToolUtil.isNotEmpty(one)) {
             CrmBusinessDetailed update = new CrmBusinessDetailed();
             update.setId(one.getId());
+            update.setBrandId(one.getBrandId());
             update.setBusinessId(one.getBusinessId());
             update.setQuantity(one.getQuantity() + 1);
             update.setItemId(one.getItemId());
             this.updateById(update);
         }else {
-
             CrmBusinessDetailed save = new CrmBusinessDetailed();
             save.setBusinessId(param.getBusinessId());
-            save.setQuantity(1);
+            save.setBrandId(param.getBrandId());
+            save.setQuantity(param.getQuantity());
             save.setItemId(param.getItemId());
+            save.setSalePrice(param.getSalePrice());
+            save.setTotalPrice(param.getTotalPrice());
             this.save(save);
         }
 
