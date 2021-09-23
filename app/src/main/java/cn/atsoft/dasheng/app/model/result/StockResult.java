@@ -29,7 +29,7 @@ public class StockResult implements Serializable {
     /**
      * 仓库id
      */
-    private Integer barcode;
+    private Integer salePrice;
 
     @ApiModelProperty("仓库id")
     private Long stockId;
