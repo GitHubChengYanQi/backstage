@@ -136,10 +136,10 @@ public class FreedAop {
             QueryWrapper<Contacts> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("contacts_id", contactsparam.getContactsId());
             List<Contacts> contactsList = contactsService.list(queryWrapper);
-            for (Contacts contacts1 : contactsList) {
-                contacts1.getCustomerId();
-                customerDynamicParam.setCustomerId(contacts1.getCustomerId());
-            }
+//            for (Contacts contacts1 : contactsList) {
+//                contacts1.getCustomerId();
+//                customerDynamicParam.setCustomerId(contacts1.getCustomerId());
+//            }
 
             switch (methodName) {
                 case "add":
