@@ -24,6 +24,8 @@ public class ContactsParam implements Serializable, BaseValidatingParam {
 
 
     private List<PhoneParam> phoneParams;
+
+
     /**
      * 联系人id
      */
