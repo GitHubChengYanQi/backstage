@@ -198,7 +198,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                             .equals(datum.getStockId()) && stockDetail.getBrandId()
                             .equals(datum.getBrandId()) && datum.getItemId()
                             .equals(stockDetail.getItemId())) {
-                        datum.setBarcode(Math.toIntExact(stockDetail.getBarcode()));
+                        datum.setSalePrice(Math.toIntExact(stockDetail.getPrice()));
                     }
                 }
             }
