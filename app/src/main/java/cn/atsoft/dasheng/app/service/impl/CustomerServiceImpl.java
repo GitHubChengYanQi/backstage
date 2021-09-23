@@ -11,8 +11,11 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
+import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -54,15 +57,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private ContactsBindService contactsBindService;
 
     @Override
     @BussinessLog
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
-        queryWrapper.in("display",1);
-        queryWrapper.lambda().eq(Customer ::getCustomerName,param.getCustomerName());
-        List<Customer> list =baseMapper.selectList(queryWrapper);
+        queryWrapper.in("display", 1);
+        queryWrapper.lambda().eq(Customer::getCustomerName, param.getCustomerName());
+        List<Customer> list = baseMapper.selectList(queryWrapper);
         //有同名客户 阻止添加
         if (ToolUtil.isEmpty(list)) {
             Customer entity = getEntity(param);
@@ -70,8 +75,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             if (param.getContactsParams() != null) {
                 for (ContactsParam contactsParam : param.getContactsParams()) {
                     if (ToolUtil.isNotEmpty(contactsParam.getContactsName())) {
-                        contactsParam.setCustomerId(entity.getCustomerId());
                         Contacts contacts = contactsService.add(contactsParam);
+                        ContactsBindParam contactsBindParam = new ContactsBindParam();
+                        contactsBindParam.setCustomerId(param.getCustomerId());
+                        contactsBindParam.setContactsId(contacts.getContactsId());
                         if (contactsParam.getPhoneParams() != null) {
                             for (PhoneParam phoneParam : contactsParam.getPhoneParams()) {
                                 if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())) {
@@ -100,8 +107,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             return entity;
 
-        }else {
-            throw new ServiceException(500,"已有当前客户");
+        } else {
+            throw new ServiceException(500, "已有当前客户");
         }
     }
 
@@ -241,13 +248,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param) {
         Page<CustomerResult> pageContext = getPageContext();
-        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<CustomerResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
 
-    public CustomerResult  format(List<CustomerResult> data) {
+    public CustomerResult format(List<CustomerResult> data) {
 
         List<Long> dycustomerIds = new ArrayList<>();
         List<Long> originIds = new ArrayList<>();
@@ -264,10 +271,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             industryIds.add(record.getIndustryId());
             dycustomerIds.add(record.getCustomerId());
-            contactsIds.add(record.getCustomerId());
+
             customerId = record.getCustomerId();
 
         }
+        List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery()
+                .in(ContactsBind::getCustomerId, customerId)
+                .list();
+
+        for (ContactsBind contactsBind : contactsBinds) {
+            contactsIds.add(contactsBind.getContactsId());
+        }
+
         /**
          * 获取联系人
          */
@@ -373,23 +388,29 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
             List<ContactsResult> contactsResults = new ArrayList<>();
 
-            for (Contacts contacts : contactsList) {
-//                if (record.getCustomerId().equals(contacts.getCustomerId())) {
-//                    List<PhoneResult> phoneResults = new ArrayList<>();
-//                    ContactsResult contactsResult = new ContactsResult();
-//                    ToolUtil.copyProperties(contacts, contactsResult);
-//                    contactsResults.add(contactsResult);
-//                    List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
-//                    for (Phone phone : phones) {
-//                        PhoneResult phoneResult = new PhoneResult();
-//                        ToolUtil.copyProperties(phone, phoneResult);
-//                        phoneResults.add(phoneResult);
-//                    }
-//
-//                    contactsResult.setPhoneParams(phoneResults);
-//                }
+            for (ContactsBind contactsBind : contactsBinds) {
+                if (record.getCustomerId().equals(contactsBind.getCustomerId())) {
+                    for (Contacts contacts : contactsList) {
+                        if (contacts.getContactsId().equals(contacts.getContactsId())) {
+                            List<PhoneResult> phoneResults = new ArrayList<>();
+                            ContactsResult contactsResult = new ContactsResult();
+                            ToolUtil.copyProperties(contacts, contactsResult);
+                            contactsResults.add(contactsResult);
+                            List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
+                            for (Phone phone : phones) {
+                                PhoneResult phoneResult = new PhoneResult();
+                                ToolUtil.copyProperties(phone, phoneResult);
+                                phoneResults.add(phoneResult);
+                            }
+
+                            contactsResult.setPhoneParams(phoneResults);
+                        }
+                        record.setContactsParams(contactsResults);
+                    }
+                }
             }
-            record.setContactsParams(contactsResults);
+
+
         }
         return data.size() == 0 ? null : data.get(0);
     }
