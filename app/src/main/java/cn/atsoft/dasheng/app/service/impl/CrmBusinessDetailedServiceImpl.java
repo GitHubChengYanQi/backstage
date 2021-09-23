@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
 import cn.atsoft.dasheng.app.service.ItemsService;
@@ -69,8 +70,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     Map<Long, CrmBusinessDetailed> addMap;
     Map<Long, CrmBusinessDetailed> updateMap;
     @Override
-    public void addAll(CrmBusinessDetailedParam param) {
-        bachAdd(param);
+    public void addAll(BusinessDetailedParam param) {
+
+//        bachAdd(param);
     }
 
 
@@ -170,7 +172,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             itemIds.add(erpPackageTable.getItemId());
         }
         param.setItemIds(itemIds);
-        addAll(param);
+//        addAll(param);
     }
 
 
