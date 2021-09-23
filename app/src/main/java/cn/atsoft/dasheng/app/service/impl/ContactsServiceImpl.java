@@ -180,6 +180,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public PageInfo<ContactsResult> findPageBySpec(DataScope dataScope, ContactsParam param) {
+
         Page<ContactsResult> pageContext = getPageContext();
         List<Long> ids = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {
