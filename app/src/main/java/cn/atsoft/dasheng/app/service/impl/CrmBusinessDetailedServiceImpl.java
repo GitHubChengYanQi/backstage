@@ -69,11 +69,67 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     Map<Long, CrmBusinessDetailed> addMap;
     Map<Long, CrmBusinessDetailed> updateMap;
+    Map<Long,CrmBusinessDetailed> map;
     @Override
     public void addAll(BusinessDetailedParam param) {
+  map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
+            List<CrmBusinessDetailed> updateOrAdd =new ArrayList<>();
 
-//        bachAdd(param);
+            for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
+                 map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(),detailedParam.getQuantity());
+
+
+            }
+            for (Map.Entry<Long, CrmBusinessDetailed> longCrmBusinessDetailedEntry : map.entrySet()) {
+                CrmBusinessDetailed value = longCrmBusinessDetailedEntry.getValue();
+                updateOrAdd.add(value);
+            }
+
+            this.saveOrUpdateBatch(updateOrAdd);
+//            this.updateBatchById(update);
+//            this.saveBatch(add);
+        }
+
     }
+
+    Map<Long,CrmBusinessDetailed> judge (Long businessIds,Long itemIds ,Long brandIds,int number){
+
+        List<CrmBusinessDetailed> businessDetaileds = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, businessIds)
+            .list();
+        if (ToolUtil.isEmpty(businessDetaileds)) {
+            CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
+            businessDetailedByMap.setBusinessId(businessIds);
+            businessDetailedByMap.setQuantity(number);
+            businessDetailedByMap.setBrandId(brandIds);
+            businessDetailedByMap.setItemId(itemIds);
+            map.put(itemIds+brandIds,businessDetailedByMap);
+            return  map;
+        }
+
+    for (CrmBusinessDetailed businessDetailed : businessDetaileds) {
+        if (businessDetailed.getItemId().equals(itemIds)&&businessDetailed.getBrandId().equals(brandIds)) {
+            int i = businessDetailed.getQuantity() + number;
+            businessDetailed.setQuantity(i);
+            map.put(businessDetailed.getItemId()+businessDetailed.getBrandId(),businessDetailed);
+            break;
+        }else {
+            CrmBusinessDetailed crmBusinessDetailed = map.get(businessDetailed.getItemId() + businessDetailed.getBrandId());
+            if (ToolUtil.isEmpty(crmBusinessDetailed)) {
+                CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
+                businessDetailedByMap.setBusinessId(businessIds);
+                businessDetailedByMap.setQuantity(number);
+                businessDetailedByMap.setBrandId(brandIds);
+                businessDetailedByMap.setItemId(itemIds);
+                map.put(businessDetailed.getItemId()+businessDetailed.getBrandId(),businessDetailedByMap);
+
+            }
+
+        }
+    }
+
+        return  map ;
+}
 
 
     void bachAdd (CrmBusinessDetailedParam param){
