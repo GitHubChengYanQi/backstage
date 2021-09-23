@@ -112,6 +112,25 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts update(ContactsParam param) {
+
+        Long customerId = param.getCustomerId();
+        QueryWrapper<ContactsBind> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("contacts_id",param.getContactsId());
+        List<ContactsBind> contactsBinds = contactsBindService.list(contactsQueryWrapper);
+
+        ContactsBindParam contactsBindParam = new ContactsBindParam();
+
+        if (contactsBinds.size() > 0){
+            contactsBindParam.setContactsBindId(contactsBinds.get(0).getContactsBindId());
+            contactsBindParam.setContactsId(contactsBinds.get(0).getContactsId());
+            contactsBindParam.setCustomerId(customerId);
+            contactsBindService.update(contactsBindParam);
+        }else {
+            contactsBindParam.setContactsId(param.getContactsId());
+            contactsBindParam.setCustomerId(customerId);
+            contactsBindService.add(contactsBindParam);
+        }
+
         Contacts oldEntity = getOldEntity(param);
         // 添加联系人
         if (ToolUtil.isEmpty(oldEntity)) {
