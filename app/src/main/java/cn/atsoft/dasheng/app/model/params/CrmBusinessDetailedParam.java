@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.entity.Outstock;
+import cn.atsoft.dasheng.app.entity.Stock;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -21,12 +23,14 @@ import java.util.List;
 @ApiModel
 public class CrmBusinessDetailedParam implements Serializable, BaseValidatingParam {
 
+
     private static final long serialVersionUID = 1L;
+
+    private  List<Stock> stocks;
 
     private List<Long> itemIds;
 
     private List<Long> packagesIds;
-
 
     /**
      * id
