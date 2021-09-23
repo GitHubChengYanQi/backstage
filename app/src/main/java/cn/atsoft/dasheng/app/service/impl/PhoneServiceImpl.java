@@ -40,7 +40,7 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
             Phone entity = getEntity(param);
             this.save(entity);
         }else {
-            throw new ServiceException(500,"此电话号码已存在");
+//            throw new ServiceException(500,"此电话号码已存在");
         }
 
     }
