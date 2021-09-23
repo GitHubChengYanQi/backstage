@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
@@ -43,8 +44,8 @@ public class CrmBusinessDetailedController extends BaseController {
 
     @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
     @ApiOperation("批量新增")
-    public ResponseData addAll(@RequestBody CrmBusinessDetailedParam crmBusinessDetailedParam) {
-        this.crmBusinessDetailedService.addAll(crmBusinessDetailedParam);
+    public ResponseData addAll(@RequestBody BusinessDetailedParam businessDetailedParam) {
+        this.crmBusinessDetailedService.addAll(businessDetailedParam);
         return ResponseData.success();
     }
 

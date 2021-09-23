@@ -99,14 +99,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("customer_id", customerId);
-        List<Contacts> list = contactsService.list(contactsQueryWrapper);
-        List<Long> contactsId = new ArrayList<>();
-        for (Contacts contacts : list) {
-            contactsId.add(contacts.getContactsId());
+        QueryWrapper<ContactsBind> contactsBindQueryWrapper = new QueryWrapper<>();
+        contactsBindQueryWrapper.in("customer_id", customerId);
+        List<ContactsBind> list = contactsBindService.list(contactsBindQueryWrapper);
+        List<Long> contactsBindId = new ArrayList<>();
+        for (ContactsBind contactsBind : list) {
+            contactsBindId.add(contactsBind.getContactsBindId());
             QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
-            phoneQueryWrapper.in("contacts_id", contacts.getContactsId());
+            phoneQueryWrapper.in("contacts_id", contactsBind.getContactsId());
             List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
             List<Long> phoneId = new ArrayList<>();
             for (Phone phone : phoneList) {
@@ -114,7 +114,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
             phoneService.removeByIds(phoneId);
         }
-        contactsService.removeByIds(contactsId);
+        contactsBindService.removeByIds(contactsBindId);
 
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
         adressQueryWrapper.in("customer_id", customerId);
@@ -143,14 +143,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Long customerId = param.getCustomerId();
 
 
-            QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-            contactsQueryWrapper.in("customer_id", customerId);
-            List<Contacts> list = contactsService.list(contactsQueryWrapper);
+            QueryWrapper<ContactsBind> contactsBindQueryWrapper = new QueryWrapper<>();
+            contactsBindQueryWrapper.in("customer_id", customerId);
+            List<ContactsBind> list = contactsBindService.list(contactsBindQueryWrapper);
             List<Long> contactsId = new ArrayList<>();
-            for (Contacts contacts : list) {
-                contactsId.add(contacts.getContactsId());
+            List<Long> contactsBindId = new ArrayList<>();
+            for (ContactsBind contactsBind : list) {
+                contactsId.add(contactsBind.getContactsId());
+                contactsBindId.add(contactsBind.getContactsBindId());
                 QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
-                phoneQueryWrapper.in("contacts_id", contacts.getContactsId());
+                phoneQueryWrapper.in("contacts_id", contactsBind.getContactsId());
                 List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
                 List<Long> phoneId = new ArrayList<>();
                 for (Phone phone : phoneList) {
@@ -158,6 +160,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
                 phoneService.removeByIds(phoneId);
             }
+            contactsBindService.removeByIds(contactsBindId);
             contactsService.removeByIds(contactsId);
 
             QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();

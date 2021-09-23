@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
@@ -29,7 +30,7 @@ public interface CrmBusinessDetailedService extends IService<CrmBusinessDetailed
     /**
      * 批量增加
      */
-    void addAll(CrmBusinessDetailedParam param);
+    void addAll(BusinessDetailedParam param);
     /**
      * 批量增加
      */
