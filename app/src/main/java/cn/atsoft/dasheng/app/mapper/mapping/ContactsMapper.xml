@@ -78,9 +78,6 @@
         <if test="paramCondition.phone != null">
             and phone = #{paramCondition.phone}
         </if>
-        <if test="paramCondition.customerId !=null and paramCondition.customerId != '' ">
-            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
-        </if>
         <if test="paramCondition.contactsName !=null and paramCondition.contactsName != '' ">
             and contacts_name like CONCAT('%',#{paramCondition.contactsName},'%')
         </if>
@@ -93,6 +90,9 @@
             <foreach collection="ids" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
+        </if>
+        <if test="paramCondition.customerId !=null and ids.size()==0 ">
+            and contacts_id = ' '
         </if>
         <if test="paramCondition.contactsId != null">
             and contacts_id = #{paramCondition.contactsId}
