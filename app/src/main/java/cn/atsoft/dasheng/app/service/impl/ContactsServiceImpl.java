@@ -118,7 +118,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             throw new ServiceException(500, "数据不存在");
         } else {
             Contacts newEntity = getEntity(param);
-            newEntity.setCustomerId(null);
+//            newEntity.setCustomerId(null);
             ToolUtil.copyProperties(newEntity, oldEntity);
 
 
@@ -180,6 +180,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public PageInfo<ContactsResult> findPageBySpec(DataScope dataScope, ContactsParam param) {
+
         Page<ContactsResult> pageContext = getPageContext();
         List<Long> ids = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {

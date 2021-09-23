@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 仓库总表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -21,10 +25,12 @@ public class StockResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private ItemsResult itemsResult;
     private StorehouseResult storehouseResult;
-    private  BrandResult brandResult;
+    private BrandResult brandResult;
     /**
      * 仓库id
      */
+    private Integer salePrice;
+
     @ApiModelProperty("仓库id")
     private Long stockId;
 
@@ -76,9 +82,9 @@ public class StockResult implements Serializable {
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
-    private String  iname;
-    private  String pname;
-    private  String bname;
+    private String iname;
+    private String pname;
+    private String bname;
     /**
      * 状态
      */

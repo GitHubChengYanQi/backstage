@@ -60,6 +60,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
+        queryWrapper.in("display",1);
         queryWrapper.lambda().eq(Customer ::getCustomerName,param.getCustomerName());
         List<Customer> list =baseMapper.selectList(queryWrapper);
         //有同名客户 阻止添加
@@ -373,20 +374,20 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             List<ContactsResult> contactsResults = new ArrayList<>();
 
             for (Contacts contacts : contactsList) {
-                if (record.getCustomerId().equals(contacts.getCustomerId())) {
-                    List<PhoneResult> phoneResults = new ArrayList<>();
-                    ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts, contactsResult);
-                    contactsResults.add(contactsResult);
-                    List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
-                    for (Phone phone : phones) {
-                        PhoneResult phoneResult = new PhoneResult();
-                        ToolUtil.copyProperties(phone, phoneResult);
-                        phoneResults.add(phoneResult);
-                    }
-
-                    contactsResult.setPhoneParams(phoneResults);
-                }
+//                if (record.getCustomerId().equals(contacts.getCustomerId())) {
+//                    List<PhoneResult> phoneResults = new ArrayList<>();
+//                    ContactsResult contactsResult = new ContactsResult();
+//                    ToolUtil.copyProperties(contacts, contactsResult);
+//                    contactsResults.add(contactsResult);
+//                    List<Phone> phones = phoneService.lambdaQuery().eq(Phone::getContactsId, contactsResult.getContactsId()).list();
+//                    for (Phone phone : phones) {
+//                        PhoneResult phoneResult = new PhoneResult();
+//                        ToolUtil.copyProperties(phone, phoneResult);
+//                        phoneResults.add(phoneResult);
+//                    }
+//
+//                    contactsResult.setPhoneParams(phoneResults);
+//                }
             }
             record.setContactsParams(contactsResults);
         }

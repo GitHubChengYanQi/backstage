@@ -88,11 +88,11 @@ public class Contacts implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-    /**
-     * 客户id
-     */
-    @TableField("customer_id")
-    private Long customerId;
+//    /**
+//     * 客户id
+//     */
+//    @TableField("customer_id")
+//    private Long customerId;
 
 
     public Long getContactsId() {
@@ -167,13 +167,13 @@ public class Contacts implements Serializable {
         this.display = display;
     }
 
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
+//    public Long getCustomerId() {
+//        return customerId;
+//    }
+//
+//    public void setCustomerId(Long customerId) {
+//        this.customerId = customerId;
+//    }
 
     public Long getDeptId() {
         return deptId;
@@ -204,7 +204,6 @@ public class Contacts implements Serializable {
                 ", updateTime=" + updateTime +
                 ", display=" + display +
                 ", deptId=" + deptId +
-                ", customerId=" + customerId +
                 '}';
     }
 }
