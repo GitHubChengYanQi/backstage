@@ -22,7 +22,7 @@
     <sql id="Base_Column_List">company_role_id
     AS "companyRole",
         contacts_id
-        AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", customer_id AS "customerId"
+        AS "contactsId", contacts_name AS "contactsName", job AS "job", phone AS "phone", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

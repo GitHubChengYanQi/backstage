@@ -258,7 +258,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", ids);
-        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
+        List<Customer> customerList = ids.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
 
         QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
         phoneQueryWrapper.in("contacts_id", contactsIds);
