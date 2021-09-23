@@ -287,7 +287,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
          * 获取联系人
          */
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("customer_id", contactsIds);
+        contactsQueryWrapper.in("contacts_id", contactsIds);
         List<Contacts> contactsList = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.list(contactsQueryWrapper);
 
         /**
@@ -391,7 +391,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             for (ContactsBind contactsBind : contactsBinds) {
                 if (record.getCustomerId().equals(contactsBind.getCustomerId())) {
                     for (Contacts contacts : contactsList) {
-                        if (contacts.getContactsId().equals(contacts.getContactsId())) {
+                        if (contactsBind.getContactsId().equals(contacts.getContactsId())) {
                             List<PhoneResult> phoneResults = new ArrayList<>();
                             ContactsResult contactsResult = new ContactsResult();
                             ToolUtil.copyProperties(contacts, contactsResult);
