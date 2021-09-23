@@ -77,7 +77,7 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     private Integer sellingPrice;
 
     @ApiModelProperty("出售价格")
-    private Integer cost_price;
+    private Integer costPrice;
 
     /**
      * 条形码
