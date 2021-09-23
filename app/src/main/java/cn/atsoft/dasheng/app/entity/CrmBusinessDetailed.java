@@ -42,8 +42,7 @@ public class CrmBusinessDetailed implements Serializable {
      * 品牌id
      */
     @TableField("brand_id")
-    private int brandId;
-
+    private Long brandId;
 
 
     /**
@@ -150,11 +149,11 @@ public class CrmBusinessDetailed implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
-    public int getBrandId() {
+    public Long getBrandId() {
         return brandId;
     }
 
-    public void setBrandId(int brandId) {
+    public void setBrandId(Long brandId) {
         this.brandId = brandId;
     }
 
