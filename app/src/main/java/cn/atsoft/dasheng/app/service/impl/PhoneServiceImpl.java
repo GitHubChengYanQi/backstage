@@ -32,10 +32,10 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
 
     @Override
     public void add(PhoneParam param){
-        //查询电话号码是否已存在
+    //    查询电话号码是否已存在
         QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber()).eq(Phone::getContactsId,param.getContactsId());
-        List<Phone> list = baseMapper.selectList(queryWrapper);
+        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber());
+        List<Phone> list = this.list(queryWrapper);
         if(ToolUtil.isEmpty(list)){
             Phone entity = getEntity(param);
             this.save(entity);

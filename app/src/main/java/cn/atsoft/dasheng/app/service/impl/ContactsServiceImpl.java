@@ -63,11 +63,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isNotEmpty(one)) {
             throw new ServiceException(500, "联系人已存在");
         }
-        Customer customer = customerService.getById(param.getCustomerId());
+
         // 添加联系人
-        if (ToolUtil.isEmpty(customer)) {
-            throw new ServiceException(500, "数据不存在");
-        } else {
+
             Contacts entity = getEntity(param);
             this.save(entity);
 
@@ -92,7 +90,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
 
             return entity;
-        }
+
     }
 
     @Override
