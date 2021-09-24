@@ -169,21 +169,21 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                     break;
                 }
             }
-            for (ItemBrandBind itemBrandBind : brandIdsList) {
-                if (itemBrandBind.getItemId().equals(datum.getItemId())){
-                    ItemBrandBindResult brandBind = new ItemBrandBindResult();
-                    ToolUtil.copyProperties(itemBrandBind,brandBind);
+            for (ItemBrandBind brandBind : brandIdsList) {
+                if (brandBind.getItemId().equals(datum.getItemId())) {
+                    ItemBrandBindResult brandBindResult = new ItemBrandBindResult();
+                    ToolUtil.copyProperties(brandBind,brandBindResult);
                     for (Brand brand : brandList) {
-                        if (itemBrandBind.getBrandId().equals(brand.getBrandId())) {
-                            brandBind.setBrandName(brand.getBrandName());
+                        if (brandBind.getBrandId().equals(brand.getBrandId())) {
+                            brandBindResult.setBrandName(brand.getBrandName());
                         }
                     }
-                    itemBrandBindResults.add(brandBind);
+                    itemBrandBindResults.add(brandBindResult);
                 }
-                datum.setBrandBindResults(itemBrandBindResults);
             }
-
+            datum.setBrandBindResults(itemBrandBindResults);
         }
+
 
     }
 }
