@@ -13,6 +13,9 @@ import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -41,9 +44,10 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private StockDetailsService stockDetailsService;
     @Autowired
     private OutstockService outstockService;
-
     @Autowired
-   private OutstockListingService outstockListingService;
+    private UserService userService;
+    @Autowired
+    private OutstockListingService outstockListingService;
 
 
     @Override
@@ -51,7 +55,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         OutstockOrder entity = getEntity(param);
         this.save(entity);
 
-        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0){
+        if (ToolUtil.isNotEmpty(param.getApplyDetails()) && param.getApplyDetails().size() > 0) {
             List<ApplyDetails> applyDetails = param.getApplyDetails();
 
             List<OutstockListing> outstockListings = new ArrayList<>();
@@ -185,6 +189,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param) {
         Page<OutstockOrderResult> pageContext = getPageContext();
         IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -206,4 +211,22 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         return entity;
     }
 
+    public void format(List<OutstockOrderResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (OutstockOrderResult datum : data) {
+            ids.add(datum.getUserId());
+        }
+        List<User> users = userService.lambdaQuery().in(User::getUserId, ids).list();
+
+        for (OutstockOrderResult datum : data) {
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                    break;
+                }
+            }
+        }
+    }
 }
