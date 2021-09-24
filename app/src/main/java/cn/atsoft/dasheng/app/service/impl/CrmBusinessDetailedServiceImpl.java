@@ -105,6 +105,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             businessDetailedByMap.setBrandId(brandIds);
             businessDetailedByMap.setItemId(itemIds);
             businessDetailedByMap.setSalePrice(money);
+            businessDetailedByMap.setTotalPrice(money * number);
             map.put(itemIds + brandIds, businessDetailedByMap);
             return map;
         }
@@ -122,9 +123,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         for (CrmBusinessDetailed businessDetailed : businessDetaileds) {
             if (businessDetailed.getItemId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {
                 int i = businessDetailed.getQuantity() + number;
-                int oldMoney = businessDetailed.getSalePrice();
-                int newMoney = number * money;
-                businessDetailed.setSalePrice(oldMoney + newMoney);
+                int newMoney = i * money;
+                businessDetailed.setSalePrice(money);
+                businessDetailed.setTotalPrice(newMoney);
                 businessDetailed.setQuantity(i);
                 map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
@@ -141,6 +142,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             businessDetailed.setBrandId(brandIds);
             businessDetailed.setItemId(itemIds);
             businessDetailed.setSalePrice(money);
+            businessDetailed.setTotalPrice(money * number);
             map.put(itemIds + brandIds, businessDetailed);
 
         }
