@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
@@ -109,14 +110,27 @@ public class CrmBusinessSalesController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        QueryWrapper<CrmBusinessSales>businessSalesQueryWrapper =new QueryWrapper<>();
-        businessSalesQueryWrapper.in("display",1);
+        QueryWrapper<CrmBusinessSales> businessSalesQueryWrapper = new QueryWrapper<>();
+        businessSalesQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmBusinessSalesService.listMaps(businessSalesQueryWrapper);
         CrmBusinessSalesSelectWrapper salesSelectWrapper = new CrmBusinessSalesSelectWrapper(list);
         List<Map<String, Object>> result = salesSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 批量删除
+     *
+     * @author
+     * @Date 2021-08-04
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData batchDelete(@RequestBody BatchDeleteRequest batchDeleteRequest) {
+        this.crmBusinessSalesService.batchDelete(batchDeleteRequest.getIds());
+        return ResponseData.success();
+    }
 }
 
 

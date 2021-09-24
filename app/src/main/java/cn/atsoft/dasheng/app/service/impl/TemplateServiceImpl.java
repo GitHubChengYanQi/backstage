@@ -7,8 +7,9 @@ import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.mapper.TemplateMapper;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
-import  cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,26 +23,26 @@ import java.util.List;
  * 合同模板 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @Service
 public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> implements TemplateService {
 
     @Override
-    public Long add(TemplateParam param){
+    public Long add(TemplateParam param) {
         Template entity = getEntity(param);
         this.save(entity);
         return entity.getTemplateId();
     }
 
     @Override
-    public void delete(TemplateParam param){
+    public void delete(TemplateParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(TemplateParam param){
+    public void update(TemplateParam param) {
         Template oldEntity = getOldEntity(param);
         Template newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -49,23 +50,32 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public TemplateResult findBySpec(TemplateParam param){
+    public TemplateResult findBySpec(TemplateParam param) {
         return null;
     }
 
     @Override
-    public List<TemplateResult> findListBySpec(TemplateParam param){
+    public List<TemplateResult> findListBySpec(TemplateParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<TemplateResult> findPageBySpec(TemplateParam param){
+    public PageInfo<TemplateResult> findPageBySpec(TemplateParam param) {
         Page<TemplateResult> pageContext = getPageContext();
         IPage<TemplateResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(TemplateParam param){
+    @Override
+    public void batchDelete(List<Long> ids) {
+        Template template = new Template();
+        template.setDisplay(0);
+        QueryWrapper<Template> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("template_id");
+        this.update(template, queryWrapper);
+    }
+
+    private Serializable getKey(TemplateParam param) {
         return param.getTemplateId();
     }
 

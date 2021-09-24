@@ -66,4 +66,6 @@ public interface OriginService extends IService<Origin> {
      */
      PageInfo<OriginResult> findPageBySpec(OriginParam param);
 
+     void batchDelete (List<Long> ids);
+
 }

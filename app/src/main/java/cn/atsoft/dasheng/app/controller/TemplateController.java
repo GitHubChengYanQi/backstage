@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.TemplateSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
@@ -22,7 +23,7 @@ import java.util.Map;
 /**
  * 合同模板控制器
  *
- * @author 
+ * @author
  * @Date 2021-07-21 08:22:02
  */
 @RestController
@@ -36,7 +37,7 @@ public class TemplateController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -49,7 +50,7 @@ public class TemplateController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -63,12 +64,12 @@ public class TemplateController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody TemplateParam templateParam)  {
+    public ResponseData delete(@RequestBody TemplateParam templateParam) {
         this.templateService.delete(templateParam);
         return ResponseData.success();
     }
@@ -76,7 +77,7 @@ public class TemplateController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -93,13 +94,13 @@ public class TemplateController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<TemplateResult> list(@RequestBody(required = false) TemplateParam templateParam) {
-        if(ToolUtil.isEmpty(templateParam)){
+        if (ToolUtil.isEmpty(templateParam)) {
             templateParam = new TemplateParam();
         }
         return this.templateService.findPageBySpec(templateParam);
@@ -110,13 +111,25 @@ public class TemplateController extends BaseController {
 
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Template> templateQueryWrapper = new QueryWrapper<>();
-        templateQueryWrapper.in("display",1);
+        templateQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.templateService.listMaps(templateQueryWrapper);
         TemplateSelectWrapper templateSelectWrapper = new TemplateSelectWrapper(list);
         List<Map<String, Object>> result = templateSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+    /**
+     * 批量删除
+     *
+     * @author
+     * @Date 2021-07-21
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData batchDelete(@RequestBody BatchDeleteRequest batchDeleteRequest) {
+        this.templateService.batchDelete(batchDeleteRequest.getIds());
+        return ResponseData.success();
+    }
 }
 
 
