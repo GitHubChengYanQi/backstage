@@ -99,7 +99,7 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
         //品牌id查询品牌名称
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
-        List<Brand> list = brandService.list(brandQueryWrapper);
+        List<Brand> list = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
         for (ItemBrandBindResult datum : data) {
             BrandResult brandResult = new BrandResult();
             for (Brand brand : list) {
