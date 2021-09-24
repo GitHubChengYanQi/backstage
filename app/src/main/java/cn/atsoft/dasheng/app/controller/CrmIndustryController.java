@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmIndustry;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
@@ -78,6 +79,13 @@ public class CrmIndustryController extends BaseController {
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody (required = false) CrmIndustryParam crmIndustryParam) {
         this.crmIndustryService.delete(crmIndustryParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
+        this.crmIndustryService.batchDelete(batchDeleteRequest.getIds());
         return ResponseData.success();
     }
 

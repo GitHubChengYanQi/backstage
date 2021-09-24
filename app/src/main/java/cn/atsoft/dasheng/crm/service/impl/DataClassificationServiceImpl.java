@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.crm.model.result.DataResult;
 import cn.atsoft.dasheng.crm.service.DataClassificationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.DataService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -44,6 +45,15 @@ public class DataClassificationServiceImpl extends ServiceImpl<DataClassificatio
     @Override
     public void delete(DataClassificationParam param) {
         this.removeById(getKey(param));
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        DataClassification dataClassification = new DataClassification();
+        dataClassification.setDisplay(0);
+        QueryWrapper<DataClassification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("data_classification_id");
+        this.update(dataClassification,queryWrapper);
     }
 
     @Override

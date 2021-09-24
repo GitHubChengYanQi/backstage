@@ -66,4 +66,7 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      */
      PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param);
 
+
+     void batchDelete(List<Long>ids);
+
 }
