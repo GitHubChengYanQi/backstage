@@ -69,58 +69,114 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     Map<Long, CrmBusinessDetailed> addMap;
     Map<Long, CrmBusinessDetailed> updateMap;
+    Map<Long,CrmBusinessDetailed> map;
     @Override
     public void addAll(BusinessDetailedParam param) {
+  map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
+            List<CrmBusinessDetailed> updateOrAdd =new ArrayList<>();
 
-//        bachAdd(param);
+            for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
+                 map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(),detailedParam.getQuantity());
+
+
+            }
+            for (Map.Entry<Long, CrmBusinessDetailed> longCrmBusinessDetailedEntry : map.entrySet()) {
+                CrmBusinessDetailed value = longCrmBusinessDetailedEntry.getValue();
+                updateOrAdd.add(value);
+            }
+
+            this.saveOrUpdateBatch(updateOrAdd);
+//            this.updateBatchById(update);
+//            this.saveBatch(add);
+        }
+
     }
+
+    Map<Long,CrmBusinessDetailed> judge (Long businessIds,Long itemIds ,Long brandIds,int number){
+
+        List<CrmBusinessDetailed> businessDetaileds = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, businessIds)
+            .list();
+        if (ToolUtil.isEmpty(businessDetaileds)) {
+            CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
+            businessDetailedByMap.setBusinessId(businessIds);
+            businessDetailedByMap.setQuantity(number);
+            businessDetailedByMap.setBrandId(brandIds);
+            businessDetailedByMap.setItemId(itemIds);
+            map.put(itemIds+brandIds,businessDetailedByMap);
+            return  map;
+        }
+
+    for (CrmBusinessDetailed businessDetailed : businessDetaileds) {
+        if (businessDetailed.getItemId().equals(itemIds)&&businessDetailed.getBrandId().equals(brandIds)) {
+            int i = businessDetailed.getQuantity() + number;
+            businessDetailed.setQuantity(i);
+            map.put(businessDetailed.getItemId()+businessDetailed.getBrandId(),businessDetailed);
+            break;
+        }else {
+            CrmBusinessDetailed crmBusinessDetailed = map.get(businessDetailed.getItemId() + businessDetailed.getBrandId());
+            if (ToolUtil.isEmpty(crmBusinessDetailed)) {
+                CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
+                businessDetailedByMap.setBusinessId(businessIds);
+                businessDetailedByMap.setQuantity(number);
+                businessDetailedByMap.setBrandId(brandIds);
+                businessDetailedByMap.setItemId(itemIds);
+                map.put(businessDetailed.getItemId()+businessDetailed.getBrandId(),businessDetailedByMap);
+
+            }
+
+        }
+    }
+
+        return  map ;
+}
 
 
     void bachAdd (CrmBusinessDetailedParam param){
-        addMap = new HashMap<>();
-        updateMap = new HashMap<>();
-        List<CrmBusinessDetailed> updateList = new ArrayList<>();
-        List<CrmBusinessDetailed> addList = new ArrayList<>();
-        int l = 0;
-        Map<Long, CrmBusinessDetailed> tableMap = new HashMap();
-        for (Long itemId : param.getItemIds()) {
-            CrmBusinessDetailed crmBusinessDetailed = this.lambdaQuery().eq(CrmBusinessDetailed::getItemId, itemId).and(i -> i.eq(CrmBusinessDetailed::getBusinessId, param.getBusinessId())).one();
-            if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
-                if (crmBusinessDetailed.getBusinessId().equals(param.getBusinessId()) && crmBusinessDetailed.getItemId().equals(itemId)) {
-                    CrmBusinessDetailed detailTable = updateMap.get(param.getBusinessId() + itemId);
-                    if (ToolUtil.isEmpty(detailTable)) {
-                        l = crmBusinessDetailed.getQuantity() + 1;
-                        crmBusinessDetailed.setQuantity(l);
-                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
-                    } else {
-                        l = l + 1;
-                        crmBusinessDetailed.setQuantity(l);
-                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
-                    }
-
-                }
-            }
-            Boolean table = addBusinessDetial(itemId, param.getBusinessId());
-            if (table) {
-                tableMap = superposition(param.getBusinessId(), itemId);
-            }
-        }
-        //通过map取出相同数据批量修改
-        Set<Map.Entry<Long, CrmBusinessDetailed>> entriesUpdate = updateMap.entrySet();
-        for (Map.Entry<Long, CrmBusinessDetailed> longErpPackageTableEntry : entriesUpdate) {
-            CrmBusinessDetailed value = longErpPackageTableEntry.getValue();
-            updateList.add(value);
-        }
-        //通过map取出相同数据批量增加
-        Set<Map.Entry<Long, CrmBusinessDetailed>> entries = tableMap.entrySet();
-        for (Map.Entry<Long, CrmBusinessDetailed> entry : entries) {
-            CrmBusinessDetailed entryValue = entry.getValue();
-            addList.add(entryValue);
-        }
-        this.updateBatchById(updateList);
-        this.saveBatch(addList);
-        updateList = null;
-        addList = null;
+//        addMap = new HashMap<>();
+//        updateMap = new HashMap<>();
+//        List<CrmBusinessDetailed> updateList = new ArrayList<>();
+//        List<CrmBusinessDetailed> addList = new ArrayList<>();
+//        int l = 0;
+//        Map<Long, CrmBusinessDetailed> tableMap = new HashMap();
+//        for (Long itemId : param.getItemIds()) {
+//            CrmBusinessDetailed crmBusinessDetailed = this.lambdaQuery().eq(CrmBusinessDetailed::getItemId, itemId).and(i -> i.eq(CrmBusinessDetailed::getBusinessId, param.getBusinessId())).one();
+//            if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
+//                if (crmBusinessDetailed.getBusinessId().equals(param.getBusinessId()) && crmBusinessDetailed.getItemId().equals(itemId)) {
+//                    CrmBusinessDetailed detailTable = updateMap.get(param.getBusinessId() + itemId);
+//                    if (ToolUtil.isEmpty(detailTable)) {
+//                        l = crmBusinessDetailed.getQuantity() + 1;
+//                        crmBusinessDetailed.setQuantity(l);
+//                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
+//                    } else {
+//                        l = l + 1;
+//                        crmBusinessDetailed.setQuantity(l);
+//                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
+//                    }
+//
+//                }
+//            }
+//            Boolean table = addBusinessDetial(itemId, param.getBusinessId());
+//            if (table) {
+//                tableMap = superposition(param.getBusinessId(), itemId);
+//            }
+//        }
+//        //通过map取出相同数据批量修改
+//        Set<Map.Entry<Long, CrmBusinessDetailed>> entriesUpdate = updateMap.entrySet();
+//        for (Map.Entry<Long, CrmBusinessDetailed> longErpPackageTableEntry : entriesUpdate) {
+//            CrmBusinessDetailed value = longErpPackageTableEntry.getValue();
+//            updateList.add(value);
+//        }
+//        //通过map取出相同数据批量增加
+//        Set<Map.Entry<Long, CrmBusinessDetailed>> entries = tableMap.entrySet();
+//        for (Map.Entry<Long, CrmBusinessDetailed> entry : entries) {
+//            CrmBusinessDetailed entryValue = entry.getValue();
+//            addList.add(entryValue);
+//        }
+//        this.updateBatchById(updateList);
+//        this.saveBatch(addList);
+//        updateList = null;
+//        addList = null;
     }
 
     Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {

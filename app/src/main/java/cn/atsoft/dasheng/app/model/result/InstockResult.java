@@ -61,7 +61,7 @@ public class InstockResult implements Serializable {
     private Integer sellingPrice;
 
     @ApiModelProperty("出售价格")
-    private Integer cost_price;
+    private Integer costPrice;
     /**
      * 品牌
      */
