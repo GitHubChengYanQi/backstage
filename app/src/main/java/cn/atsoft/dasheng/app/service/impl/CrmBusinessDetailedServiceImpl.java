@@ -77,7 +77,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
             List<CrmBusinessDetailed> updateOrAdd = new ArrayList<>();
             for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
-                map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity());
+                map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
 
 
             }
@@ -90,7 +90,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         }
     }
 
-    Map<Long, CrmBusinessDetailed> judge(Long businessIds, Long itemIds, Long brandIds, int number) {
+    Map<Long, CrmBusinessDetailed> judge(Long businessIds, Long itemIds, Long brandIds, int number, int money) {
         List<CrmBusinessDetailed> businessDetaileds = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, businessIds)
                 .list();
         //判断当前商机详情是否有这个商品  没有直接添加
@@ -100,6 +100,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             businessDetailedByMap.setQuantity(number);
             businessDetailedByMap.setBrandId(brandIds);
             businessDetailedByMap.setItemId(itemIds);
+            businessDetailedByMap.setSalePrice(money);
             map.put(itemIds + brandIds, businessDetailedByMap);
             return map;
         }
@@ -117,6 +118,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         for (CrmBusinessDetailed businessDetailed : businessDetaileds) {
             if (businessDetailed.getItemId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {
                 int i = businessDetailed.getQuantity() + number;
+                int oldMoney = businessDetailed.getSalePrice();
+                int newMoney = number * money;
+                businessDetailed.setSalePrice(oldMoney + newMoney);
                 businessDetailed.setQuantity(i);
                 map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
@@ -127,18 +131,18 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         //通过map判段这个商品是否存在  没有直接添加
         CrmBusinessDetailed BusinessDetailed = map.get(itemIds + brandIds);
         if (ToolUtil.isEmpty(BusinessDetailed)) {
-            CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
-            businessDetailedByMap.setBusinessId(businessIds);
-            businessDetailedByMap.setQuantity(number);
-            businessDetailedByMap.setBrandId(brandIds);
-            businessDetailedByMap.setItemId(itemIds);
-            map.put(itemIds + brandIds, businessDetailedByMap);
+            CrmBusinessDetailed businessDetailed = new CrmBusinessDetailed();
+            businessDetailed.setBusinessId(businessIds);
+            businessDetailed.setQuantity(number);
+            businessDetailed.setBrandId(brandIds);
+            businessDetailed.setItemId(itemIds);
+            businessDetailed.setSalePrice(money);
+            map.put(itemIds + brandIds, businessDetailed);
 
         }
 
         return map;
     }
-
 
 
     Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {
