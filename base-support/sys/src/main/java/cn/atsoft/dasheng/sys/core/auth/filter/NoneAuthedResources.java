@@ -2,9 +2,6 @@ package cn.atsoft.dasheng.sys.core.auth.filter;
 
 /**
  * 不需要身份验证的资源
- *
- * @author fengshuonan
- * @Date 2020/3/1 16:19
  */
 public class NoneAuthedResources {
 
@@ -69,7 +66,12 @@ public class NoneAuthedResources {
             "/tran/**",
 
             //获取租户列表的接口
-            "/tenantInfo/listTenants"
+            "/tenantInfo/listTenants",
+
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/swagger-resources/**",
+            "/v2/**"
 
     };
 

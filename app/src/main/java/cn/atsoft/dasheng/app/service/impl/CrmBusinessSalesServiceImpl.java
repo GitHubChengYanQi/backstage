@@ -104,6 +104,15 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
         return results;
     }
 
+    @Override
+    public void batchDelete(List<Long> ids) {
+        CrmBusinessSales crmBusinessSales = new CrmBusinessSales();
+        crmBusinessSales.setDisplay(0);
+        QueryWrapper<CrmBusinessSales> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("sales_id");
+        this.update(crmBusinessSales, queryWrapper);
+    }
+
     private Serializable getKey(CrmBusinessSalesParam param) {
         return param.getSalesId();
     }
