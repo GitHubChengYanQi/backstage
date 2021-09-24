@@ -177,7 +177,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                 itemBrandBindResults.add(brandBindResult);
             }
         }
-        data.setBrandBindResults(itemBrandBindResults);
+        data.setBrandResults(itemBrandBindResults);
 
     }
     public  void format(List<ItemsResult> data){
@@ -228,7 +228,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                     itemBrandBindResults.add(brandBindResult);
                 }
             }
-            datum.setBrandBindResults(itemBrandBindResults);
+            datum.setBrandResults(itemBrandBindResults);
         }
 
 
