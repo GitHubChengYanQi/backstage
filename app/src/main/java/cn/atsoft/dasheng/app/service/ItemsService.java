@@ -67,5 +67,6 @@ public interface ItemsService extends IService<Items> {
      */
      PageInfo<ItemsResult> findPageBySpec(ItemsParam param);
 
+    void formatResult(ItemsResult data);
     void batchDelete(List<Long> ids);
 }

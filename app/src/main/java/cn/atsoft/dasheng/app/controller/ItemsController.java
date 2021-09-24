@@ -89,7 +89,7 @@ public class ItemsController extends BaseController {
         Items detail = this.itemsService.getById(itemsParam.getItemId());
         ItemsResult result = new ItemsResult();
         ToolUtil.copyProperties(detail, result);
-
+        this.itemsService.formatResult(result);
 //        result.setValue(parentValue);
         return ResponseData.success(result);
     }
