@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.app.model.params;
 
 
-import java.util.List;
+import lombok.Data;
 
+import java.util.List;
+@Data
 public class BusinessDetailedParam {
 
     private List<CrmBusinessDetailedParam> businessDetailedParam;

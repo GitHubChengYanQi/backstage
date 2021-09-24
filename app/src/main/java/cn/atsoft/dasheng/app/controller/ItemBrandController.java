@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import java.util.Map;
 /**
  * 商品品牌绑定表控制器
  *
- * @author 
+ * @author
  * @Date 2021-09-23 12:01:01
  */
 @RestController
@@ -35,7 +36,7 @@ public class ItemBrandController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-23
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -48,7 +49,7 @@ public class ItemBrandController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +63,12 @@ public class ItemBrandController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ItemBrandParam itemBrandParam)  {
+    public ResponseData delete(@RequestBody ItemBrandParam itemBrandParam) {
         this.itemBrandService.delete(itemBrandParam);
         return ResponseData.success();
     }
@@ -75,7 +76,7 @@ public class ItemBrandController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-09-23
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -85,26 +86,24 @@ public class ItemBrandController extends BaseController {
         ItemBrandResult result = new ItemBrandResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-09-23
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ItemBrandResult> list(@RequestBody(required = false) ItemBrandParam itemBrandParam) {
-        if(ToolUtil.isEmpty(itemBrandParam)){
+        if (ToolUtil.isEmpty(itemBrandParam)) {
             itemBrandParam = new ItemBrandParam();
         }
         return this.itemBrandService.findPageBySpec(itemBrandParam);
     }
-
-
 
 
 }
