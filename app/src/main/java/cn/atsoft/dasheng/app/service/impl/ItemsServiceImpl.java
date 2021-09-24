@@ -1,12 +1,15 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.ItemBrandBindResult;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.ItemBrandBindService;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.mapper.ItemsMapper;
 import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
@@ -36,12 +39,27 @@ import java.util.List;
 public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements ItemsService {
     @Autowired
     private MaterialService materialService;
+    @Autowired
+    ItemBrandBindService itemBrandBindService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public Long add(ItemsParam param) {
-        Items entity = getEntity(param);
-        this.save(entity);
-        return entity.getItemId();
+        Items entry = getEntity(param);
+        this.save(entry);
+        List<ItemBrandBind> brandList = new ArrayList<>( );
+        for (Long brandResult : param.getBrandResults()) {
+            ItemBrandBind bind = new ItemBrandBind();
+            bind.setBrandId(brandResult);
+            bind.setItemId(entry.getItemId());
+            brandList.add(bind);
+        }
+        itemBrandBindService.saveBatch(brandList);
+
+//        Items entity = getEntity(param);
+//        this.save(entity);
+        return entry.getItemId();
     }
 
     @Override
