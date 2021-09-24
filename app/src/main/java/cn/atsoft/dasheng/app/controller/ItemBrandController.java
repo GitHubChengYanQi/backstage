@@ -85,7 +85,6 @@ public class ItemBrandController extends BaseController {
         ItemBrandResult result = new ItemBrandResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
