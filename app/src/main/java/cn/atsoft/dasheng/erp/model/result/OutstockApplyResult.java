@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
@@ -30,7 +31,7 @@ public class OutstockApplyResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UserResult userResult;
-    private StockResult stockResult;
+    private StorehouseResult stockResult;
     private CustomerResult customerResult;
     private AdressResult adressResult;
     private ContactsResult contactsResult;

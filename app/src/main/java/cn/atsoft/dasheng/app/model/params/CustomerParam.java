@@ -34,6 +34,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private Long originId;
     private Integer agent;
     private String note;
+    private String avatar;
     private Integer classification;
     private String classificationName;
     private String region;

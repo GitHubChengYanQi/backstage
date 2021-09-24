@@ -90,8 +90,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param) {
         Page<DeliveryResult> pageContext = getPageContext();
         IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param);
-
-
+        format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }

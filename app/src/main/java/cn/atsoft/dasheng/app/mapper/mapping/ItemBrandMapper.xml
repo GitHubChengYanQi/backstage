@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.ItemBrandMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ItemBrand">
+        <id column="item_id" property="itemId" />
+        <result column="brand_id" property="brandId" />
+        <result column="brand_name" property="brandName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        item_id AS "itemId", brand_id AS "brandId", brand_name AS "brandName"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_brand where 1 = 1
+            <if test="paramCondition.itemId != null">
+                and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+            </if>
+            <if test="paramCondition.brandId != null">
+                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+            </if>
+            <if test="paramCondition.brandName != null and paramCondition.brandName != ''">
+                and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_brand where 1 = 1
+                <if test="paramCondition.itemId != null">
+                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+                </if>
+                <if test="paramCondition.brandId != null">
+                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+                </if>
+                <if test="paramCondition.brandName != null and paramCondition.brandName != ''">
+                        and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_brand where 1 = 1
+                <if test="paramCondition.itemId != null">
+                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+                </if>
+                <if test="paramCondition.brandId != null">
+                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+                </if>
+                <if test="paramCondition.brandName != null and paramCondition.brandName != ''">
+                        and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_brand where 1 = 1
+                <if test="paramCondition.itemId != null">
+                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+                </if>
+                <if test="paramCondition.brandId != null">
+                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+                </if>
+                <if test="paramCondition.brandName != null and paramCondition.brandName != ''">
+                        and brand_name like CONCAT('%',#{paramCondition.brandName},'%')
+                </if>
+    </select>
+
+</mapper>

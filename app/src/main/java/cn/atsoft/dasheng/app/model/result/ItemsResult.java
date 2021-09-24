@@ -22,6 +22,8 @@ public class ItemsResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
      private  MaterialResult materialResult;
+
+     private List<ItemBrandBindResult> brandResults;
     /**
      * 物品Id
      */
