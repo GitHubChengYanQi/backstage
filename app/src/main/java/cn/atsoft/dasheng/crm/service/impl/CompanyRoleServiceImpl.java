@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.crm.model.params.CompanyRoleParam;
 import cn.atsoft.dasheng.crm.model.result.CompanyRoleResult;
 import  cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -63,6 +64,15 @@ public class CompanyRoleServiceImpl extends ServiceImpl<CompanyRoleMapper, Compa
         Page<CompanyRoleResult> pageContext = getPageContext();
         IPage<CompanyRoleResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        CompanyRole companyRole = new CompanyRole();
+        companyRole.setDisplay(0L);
+        QueryWrapper<CompanyRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("company_role_id");
+        this.update(companyRole,queryWrapper);
     }
 
     private Serializable getKey(CompanyRoleParam param){

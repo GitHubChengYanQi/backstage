@@ -35,6 +35,14 @@ public interface SpeechcraftTypeService extends IService<SpeechcraftType> {
     void delete(SpeechcraftTypeParam param);
 
     /**
+     * 批量删除
+     *
+     * @author
+     * @Date 2021-09-13
+     */
+    void batchDelete(List<Long> ids);
+
+    /**
      * 更新
      *
      * @author 

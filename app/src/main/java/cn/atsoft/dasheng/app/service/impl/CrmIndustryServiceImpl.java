@@ -105,5 +105,12 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
+    public void batchDelete(List<Long> ids){
+        CrmIndustry crmIndustry = new CrmIndustry();
+        crmIndustry.setDisplay(0);
+        QueryWrapper<CrmIndustry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("indusry_id");
+        this.update(crmIndustry,queryWrapper);
+    }
 }
