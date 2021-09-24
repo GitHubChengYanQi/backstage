@@ -8,11 +8,13 @@ import cn.atsoft.dasheng.appBase.config.FreedTemplateProperties;
 import cn.atsoft.dasheng.appBase.service.FreedTemplateService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.crm.service.CompetitorService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
@@ -247,9 +249,11 @@ public class FreedAop {
         }
         //跟踪动态
         if (target instanceof TrackMessageService) {
-
             FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
             TrackMessage trackMessageResult = (TrackMessage) result;
+            if (ToolUtil.isEmpty(trackMessageResult.getBusinessId())) {
+                throw new ServiceException(500, "请确认当前项目");
+            }
             businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
             String content = "";
             switch (methodName) {

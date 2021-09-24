@@ -92,7 +92,7 @@ freed-template:
     edit: "[操作人]修改了售后"
     delete: "[操作人]删除了售后"
   TrackMessage:
-    add: "[操作人]添加了跟踪"
+    add: "[操作人]添加了跟进"
 
 # 微信相关配置
 wx:
