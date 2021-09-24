@@ -81,6 +81,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
             List<CrmBusinessDetailed> updateOrAdd = new ArrayList<>();
             for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
+                if (detailedParam.getQuantity() == 0) {
+                    throw new ServiceException(500, "注意产品数量");
+                }
                 map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
 
 
@@ -106,6 +109,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             businessDetailedByMap.setItemId(itemIds);
             businessDetailedByMap.setSalePrice(money);
             businessDetailedByMap.setTotalPrice(money * number);
+            businessDetailedByMap.setDisplay(1);
             map.put(itemIds + brandIds, businessDetailedByMap);
             return map;
         }
@@ -127,6 +131,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
                 businessDetailed.setSalePrice(money);
                 businessDetailed.setTotalPrice(newMoney);
                 businessDetailed.setQuantity(i);
+                businessDetailed.setDisplay(1);
                 map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
             }
@@ -143,6 +148,7 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             businessDetailed.setItemId(itemIds);
             businessDetailed.setSalePrice(money);
             businessDetailed.setTotalPrice(money * number);
+            businessDetailed.setDisplay(1);
             map.put(itemIds + brandIds, businessDetailed);
 
         }
@@ -187,21 +193,73 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 
     @Override
     public void addAllPackages(CrmBusinessDetailedParam param) {
-        List<Long> itemIds = new ArrayList<>();
-
-        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
-        List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
-
-//        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
-
-
-        for (ErpPackageTable erpPackageTable : list) {
-            itemIds.add(erpPackageTable.getItemId());
+        Map<Long, ErpPackageTable> map = new HashMap<>();
+        List<ErpPackageTable> erpPackageTables = erpPackageTableService.lambdaQuery()
+                .in(ErpPackageTable::getPackageId, param.getPackagesIds())
+                .list();
+        //通过map去掉重复套餐数据
+        for (ErpPackageTable erpPackageTable : erpPackageTables) {
+            Long itemId = erpPackageTable.getItemId();
+            Long brandId = erpPackageTable.getBrandId();
+            ErpPackageTable packageTable = map.get(itemId + brandId);
+            if (map.containsKey(itemId + brandId)) {
+                packageTable.setQuantity(packageTable.getQuantity() + erpPackageTable.getQuantity());
+                map.put(itemId + brandId, packageTable);
+            } else {
+                map.put(itemId + brandId, erpPackageTable);
+            }
         }
-        param.setItemIds(itemIds);
-//        addAll(param);
+        //套餐数据
+        List<ErpPackageTable> packageTableList = new ArrayList<>();
+        for (Map.Entry<Long, ErpPackageTable> longErpPackageTableEntry : map.entrySet()) {
+            ErpPackageTable value = longErpPackageTableEntry.getValue();
+            packageTableList.add(value);
+        }
+
+
+        List<CrmBusinessDetailed> updataBusinessDetailed = new ArrayList<>();
+        List<CrmBusinessDetailed> addBusinessDetailed = new ArrayList<>();
+        //判断套餐数据是否与商机详情数据相同
+        for (ErpPackageTable erpPackageTable : packageTableList) {
+            CrmBusinessDetailed judge = judge(param.getBusinessId(), erpPackageTable.getItemId(), erpPackageTable.getBrandId());
+            // 如果相同 直接叠加
+            if (ToolUtil.isNotEmpty(judge)) {
+                judge.setQuantity(Math.toIntExact(judge.getQuantity() + erpPackageTable.getQuantity()));
+                int totalPrice = judge.getQuantity() * judge.getSalePrice();
+                judge.setTotalPrice(totalPrice);
+                judge.setDisplay(1);
+                updataBusinessDetailed.add(judge);
+            } else {
+                // 不同直接加一条数据
+                CrmBusinessDetailed crmBusinessDetailed = new CrmBusinessDetailed();
+                crmBusinessDetailed.setBusinessId(param.getBusinessId());
+                crmBusinessDetailed.setItemId(erpPackageTable.getItemId());
+                crmBusinessDetailed.setBrandId(erpPackageTable.getBrandId());
+                crmBusinessDetailed.setQuantity(Math.toIntExact(erpPackageTable.getQuantity()));
+                crmBusinessDetailed.setSalePrice(Math.toIntExact(erpPackageTable.getSalePrice()));
+                crmBusinessDetailed.setDisplay(1);
+                int totalPrice = Math.toIntExact(erpPackageTable.getQuantity() * erpPackageTable.getSalePrice());
+                crmBusinessDetailed.setTotalPrice(totalPrice);
+                addBusinessDetailed.add(crmBusinessDetailed);
+            }
+        }
+        this.saveBatch(addBusinessDetailed);
+        this.updateBatchById(updataBusinessDetailed);
     }
 
+    CrmBusinessDetailed judge(Long businessId, Long itemId, Long brandId) {
+        //查询当前商机详情
+        CrmBusinessDetailed crmBusinessDetaileds = this.lambdaQuery()
+                .in(CrmBusinessDetailed::getBusinessId, businessId)
+                .eq(CrmBusinessDetailed::getItemId, itemId)
+                .eq(CrmBusinessDetailed::getBrandId, brandId)
+                .one();
+        if (ToolUtil.isNotEmpty(crmBusinessDetaileds)) {
+            return crmBusinessDetaileds;
+        }
+
+        return null;
+    }
 
     @Override
     public void delete(CrmBusinessDetailedParam param) {
@@ -236,38 +294,38 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
 
-            List<Long> detailIds = new ArrayList<>();
-            List<Long> brandIds = new ArrayList<>();
-            for (CrmBusinessDetailedResult record : page.getRecords()) {
-                detailIds.add(record.getItemId());
-                brandIds.add(record.getBrandId());
-            }
-            QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("item_id", detailIds);
-            List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+        List<Long> detailIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
+            detailIds.add(record.getItemId());
+            brandIds.add(record.getBrandId());
+        }
+        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("item_id", detailIds);
+        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
 
-            QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-            brandQueryWrapper.in("brand_id", brandIds);
-            List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.in("brand_id", brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
 
-            for (CrmBusinessDetailedResult record : page.getRecords()) {
-                for (Items items : list) {
-                    if (items.getItemId().equals(record.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        record.setItemsResult(itemsResult);
-                        break;
-                    }
-                }
-                for (Brand brands : brandList) {
-                    if (brands.getBrandId().equals(record.getBrandId())) {
-                        BrandResult brandsResult = new BrandResult();
-                        ToolUtil.copyProperties(brands, brandsResult);
-                        record.setBrandResult(brandsResult);
-                        break;
-                    }
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
+            for (Items items : list) {
+                if (items.getItemId().equals(record.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(items, itemsResult);
+                    record.setItemsResult(itemsResult);
+                    break;
                 }
             }
+            for (Brand brands : brandList) {
+                if (brands.getBrandId().equals(record.getBrandId())) {
+                    BrandResult brandsResult = new BrandResult();
+                    ToolUtil.copyProperties(brands, brandsResult);
+                    record.setBrandResult(brandsResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
