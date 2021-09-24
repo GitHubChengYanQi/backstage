@@ -103,6 +103,17 @@ public class Customer implements Serializable {
     @TableField("introduction")
     private String introduction;
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    @TableField("avatar")
+    private String avatar;
+
     /**
      * 创建者
      */

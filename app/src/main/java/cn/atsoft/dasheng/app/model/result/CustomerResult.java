@@ -37,6 +37,7 @@ public class CustomerResult implements Serializable {
     private Long originId;
     private String note;
     private Long userId;
+    private String avatar;
     private String emall;
     private String url;
     private Long industryId;
