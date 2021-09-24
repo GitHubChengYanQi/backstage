@@ -64,7 +64,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     @Autowired
     private ContactsService contactsService;
     @Autowired
-    private StockService stockService;
+    private StorehouseService storehouseService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -218,8 +218,8 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
                 .in(Adress::getAdressId, adressIds)
                 .list();
 
-        List<Stock> stocks = stockIds.size() == 0 ? new ArrayList<>() : stockService.lambdaQuery()
-                .in(Stock::getStockId, stockIds)
+        List<Storehouse> stocks = stockIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery()
+                .in(Storehouse::getStorehouseId, stockIds)
                 .list();
 
         List<Phone> phones = phoneIds.size() == 0 ? new ArrayList<>() : phoneService.lambdaQuery()
@@ -240,11 +240,11 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
                 }
             }
 
-            for (Stock stock : stocks) {
-                if (datum.getStockId().equals(stock.getStockId())) {
-                    StockResult stockResult = new StockResult();
-                    ToolUtil.copyProperties(stock, stockResult);
-                    datum.setStockResult(stockResult);
+            for (Storehouse storehouse : stocks) {
+                if (datum.getStockId().equals(storehouse.getStorehouseId())) {
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+                    datum.setStockResult(storehouseResult);
                     break;
                 }
             }
