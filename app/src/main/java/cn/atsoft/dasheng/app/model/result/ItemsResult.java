@@ -23,7 +23,7 @@ public class ItemsResult implements Serializable {
 
      private  MaterialResult materialResult;
 
-     private List<ItemBrandBindResult> brandBindResults;
+     private List<ItemBrandBindResult> brandResults;
     /**
      * 物品Id
      */
