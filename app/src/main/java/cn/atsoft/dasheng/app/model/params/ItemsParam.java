@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.ItemBrandBind;
+import cn.atsoft.dasheng.app.entity.Items;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -22,7 +24,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<Long> brandResults;
 
 
     private  String materialName;

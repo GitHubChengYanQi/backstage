@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class ItemBrandBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String brandName;
 
     /**
      * 产品品牌绑定表

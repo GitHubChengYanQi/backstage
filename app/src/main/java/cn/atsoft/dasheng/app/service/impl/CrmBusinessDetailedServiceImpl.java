@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -39,6 +41,8 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     private ItemsService itemsService;
     @Autowired
     private ErpPackageTableService erpPackageTableService;
+    @Autowired
+    private BrandService brandService;
 
 
     @Override
@@ -232,23 +236,38 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
 
-        List<Long> detailIds = new ArrayList<>();
-        for (CrmBusinessDetailedResult record : page.getRecords()) {
-            detailIds.add(record.getItemId());
-        }
-        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("item_id", detailIds);
-        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
-        for (CrmBusinessDetailedResult record : page.getRecords()) {
-            for (Items items : list) {
-                if (items.getItemId().equals(record.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
+            List<Long> detailIds = new ArrayList<>();
+            List<Long> brandIds = new ArrayList<>();
+            for (CrmBusinessDetailedResult record : page.getRecords()) {
+                detailIds.add(record.getItemId());
+                brandIds.add(record.getBrandId());
+            }
+            QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("item_id", detailIds);
+            List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+
+            QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+            brandQueryWrapper.in("brand_id", brandIds);
+            List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
+            for (CrmBusinessDetailedResult record : page.getRecords()) {
+                for (Items items : list) {
+                    if (items.getItemId().equals(record.getItemId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        record.setItemsResult(itemsResult);
+                        break;
+                    }
+                }
+                for (Brand brands : brandList) {
+                    if (brands.getBrandId().equals(record.getBrandId())) {
+                        BrandResult brandsResult = new BrandResult();
+                        ToolUtil.copyProperties(brands, brandsResult);
+                        record.setBrandResult(brandsResult);
+                        break;
+                    }
                 }
             }
-        }
         return PageFactory.createPageInfo(page);
     }
 
