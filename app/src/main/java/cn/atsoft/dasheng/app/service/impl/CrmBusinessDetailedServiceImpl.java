@@ -236,38 +236,38 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
         IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
 
-            List<Long> detailIds = new ArrayList<>();
-            List<Long> brandIds = new ArrayList<>();
-            for (CrmBusinessDetailedResult record : page.getRecords()) {
-                detailIds.add(record.getItemId());
-                brandIds.add(record.getBrandId());
-            }
-            QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("item_id", detailIds);
-            List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+        List<Long> detailIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
+            detailIds.add(record.getItemId());
+            brandIds.add(record.getBrandId());
+        }
+        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("item_id", detailIds);
+        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
 
-            QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-            brandQueryWrapper.in("brand_id", brandIds);
-            List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.in("brand_id", brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
 
-            for (CrmBusinessDetailedResult record : page.getRecords()) {
-                for (Items items : list) {
-                    if (items.getItemId().equals(record.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        record.setItemsResult(itemsResult);
-                        break;
-                    }
-                }
-                for (Brand brands : brandList) {
-                    if (brands.getBrandId().equals(record.getBrandId())) {
-                        BrandResult brandsResult = new BrandResult();
-                        ToolUtil.copyProperties(brands, brandsResult);
-                        record.setBrandResult(brandsResult);
-                        break;
-                    }
+        for (CrmBusinessDetailedResult record : page.getRecords()) {
+            for (Items items : list) {
+                if (items.getItemId().equals(record.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(items, itemsResult);
+                    record.setItemsResult(itemsResult);
+                    break;
                 }
             }
+            for (Brand brands : brandList) {
+                if (brands.getBrandId().equals(record.getBrandId())) {
+                    BrandResult brandsResult = new BrandResult();
+                    ToolUtil.copyProperties(brands, brandsResult);
+                    record.setBrandResult(brandsResult);
+                    break;
+                }
+            }
+        }
         return PageFactory.createPageInfo(page);
     }
 
