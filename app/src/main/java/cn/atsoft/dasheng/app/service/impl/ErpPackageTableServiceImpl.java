@@ -2,7 +2,10 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
+import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
@@ -82,72 +85,64 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     Map<Long, ErpPackageTable> addMap;
     Map<Long, ErpPackageTable> updateMap;
-
+    private  Map<Long,ErpPackageTable> map;
     @Override
-    public void batchAdd(ErpPackageTableParam param) {
-        addMap = new HashMap<>();
-        updateMap = new HashMap<>();
-        List<ErpPackageTable> updateList = new ArrayList<>();
-        List<ErpPackageTable> addList = new ArrayList<>();
-        Long l = null;
-        Map<Long, ErpPackageTable> tableMap = new HashMap();
-        for (Long itemId : param.getItemIds()) {
-            ErpPackageTable erpPackageTable = this.lambdaQuery().eq(ErpPackageTable::getItemId, itemId).and(i -> i.eq(ErpPackageTable::getPackageId, param.getPackageId())).one();
-            if (ToolUtil.isNotEmpty(erpPackageTable)) {
-                if (erpPackageTable.getPackageId().equals(param.getPackageId()) && erpPackageTable.getItemId().equals(itemId)) {
-                    ErpPackageTable packageTable = updateMap.get(param.getPackageId() + itemId);
-                    if (ToolUtil.isEmpty(packageTable)) {
-                        l = erpPackageTable.getQuantity() + 1;
-                        erpPackageTable.setQuantity(l);
-                        updateMap.put(param.getPackageId() + itemId, erpPackageTable);
-                    } else {
-                        l = l + 1;
-                        erpPackageTable.setQuantity(l);
-                        updateMap.put(param.getPackageId() + itemId, erpPackageTable);
-                    }
-//                    ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
-//                    ToolUtil.copyProperties(erpPackageTable,erpPackageTableParam);
-//                    this.update(erpPackageTableParam);
-//                    updateList.add(erpPackageTable);
-                }
+    public void batchAdd(BusinessDetailedParam param) {
+        map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
+            List<ErpPackageTable> updateOrAdd = new ArrayList<>();
+            for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
+                map = judge(param.getPackageId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity());
+
+
             }
-            Boolean table = addPackgeTable(itemId, param.getPackageId());
-            if (table) {
-                tableMap = superposition(param.getPackageId(), itemId);
+            for (Map.Entry<Long, ErpPackageTable> longErpPackageTableEntry : map.entrySet()) {
+                ErpPackageTable value = longErpPackageTableEntry.getValue();
+                updateOrAdd.add(value);
+
             }
+            this.saveOrUpdateBatch(updateOrAdd);
         }
-        //通过map取出相同数据批量修改
-        Set<Map.Entry<Long, ErpPackageTable>> entriesUpdate = updateMap.entrySet();
-        for (Map.Entry<Long, ErpPackageTable> longErpPackageTableEntry : entriesUpdate) {
-            ErpPackageTable value = longErpPackageTableEntry.getValue();
-            updateList.add(value);
-        }
-        //通过map取出相同数据批量增加
-        Set<Map.Entry<Long, ErpPackageTable>> entries = tableMap.entrySet();
-        for (Map.Entry<Long, ErpPackageTable> entry : entries) {
-            ErpPackageTable entryValue = entry.getValue();
-            addList.add(entryValue);
-        }
-        this.updateBatchById(updateList);
-        this.saveBatch(addList);
     }
+    Map<Long, ErpPackageTable> judge(Long packageId, Long itemIds, Long brandIds, int number) {
+        List<ErpPackageTable> erpPackageTables = this.lambdaQuery().in(ErpPackageTable::getPackageId, packageId)
+                .list();
+        //判断当前商机详情是否有这个商品  没有直接添加
+        if (ToolUtil.isEmpty(erpPackageTables)) {
+            ErpPackageTable erpPackageTableByMap = new ErpPackageTable();
+            erpPackageTableByMap.setPackageId(packageId);
+            erpPackageTableByMap.setQuantity((long) number);
+            erpPackageTableByMap.setBrandId(brandIds);
+            erpPackageTableByMap.setItemId(itemIds);
+            map.put(itemIds + brandIds, erpPackageTableByMap);
+            return map;
+        }
 
 
-    Map<Long, ErpPackageTable> superposition(Long packageId, Long itemId) {
-        ErpPackageTable packageTable = addMap.get(packageId + itemId);
-        if (addMap.containsKey(packageId + itemId)) {
-            long l = packageTable.getQuantity() + 1;
-            packageTable.setQuantity(l);
-            addMap.put(packageId + itemId, packageTable);
+        for (ErpPackageTable erpPackageTable : erpPackageTables) {
+            if (erpPackageTable.getItemId().equals(itemIds) && erpPackageTable.getBrandId().equals(brandIds)){
+                Long i = erpPackageTable.getQuantity() + number;
+                erpPackageTable.setQuantity(i);
+                map.put(erpPackageTable.getItemId() + erpPackageTable.getBrandId(), erpPackageTable);
+                break;
+            }
         }
-        if (ToolUtil.isEmpty(packageTable)) {
-            ErpPackageTable erpPackageTable = new ErpPackageTable();
-            erpPackageTable.setPackageId(packageId);
-            erpPackageTable.setItemId(itemId);
-            erpPackageTable.setQuantity(1L);
-            addMap.put(packageId + itemId, erpPackageTable);
+
+
+
+        //通过map判段这个商品是否存在  没有直接添加
+        ErpPackageTable erpPackageTable = map.get(itemIds + brandIds);
+        if (ToolUtil.isEmpty(erpPackageTable)) {
+            ErpPackageTable erpPackageTableByMap = new ErpPackageTable();
+            erpPackageTableByMap.setPackageId(packageId);
+            erpPackageTableByMap.setQuantity((long) number);
+            erpPackageTableByMap.setBrandId(brandIds);
+            erpPackageTableByMap.setItemId(itemIds);
+            map.put(itemIds + brandIds,erpPackageTableByMap );
+
         }
-        return addMap;
+
+        return map;
     }
 
 

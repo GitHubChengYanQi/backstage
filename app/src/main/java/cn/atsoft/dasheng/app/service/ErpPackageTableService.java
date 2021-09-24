@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackageTable;
 import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
@@ -66,6 +67,6 @@ public interface ErpPackageTableService extends IService<ErpPackageTable> {
      */
      PageInfo<ErpPackageTableResult> findPageBySpec(ErpPackageTableParam param);
 
-     void batchAdd(ErpPackageTableParam param);
+     void batchAdd(BusinessDetailedParam param);
 
 }

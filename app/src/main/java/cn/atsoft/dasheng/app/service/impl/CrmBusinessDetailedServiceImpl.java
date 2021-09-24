@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -39,6 +41,8 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     private ItemsService itemsService;
     @Autowired
     private ErpPackageTableService erpPackageTableService;
+    @Autowired
+    private BrandService brandService;
 
 
     @Override
@@ -76,9 +80,8 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
         map = new HashMap<>();
         if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
             List<CrmBusinessDetailed> updateOrAdd = new ArrayList<>();
-
             for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
-                map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity());
+                map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
 
 
             }
@@ -88,186 +91,163 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             }
 
             this.saveOrUpdateBatch(updateOrAdd);
-            //        this.updateBatchById(update);
-            //        this.saveBatch(add);
         }
     }
 
-    Map<Long, CrmBusinessDetailed> judge(Long businessIds, Long itemIds, Long brandIds, int number) {
-
+    Map<Long, CrmBusinessDetailed> judge(Long businessIds, Long itemIds, Long brandIds, int number, int money) {
         List<CrmBusinessDetailed> businessDetaileds = this.lambdaQuery().in(CrmBusinessDetailed::getBusinessId, businessIds)
                 .list();
+        //判断当前商机详情是否有这个商品  没有直接添加
         if (ToolUtil.isEmpty(businessDetaileds)) {
             CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
             businessDetailedByMap.setBusinessId(businessIds);
             businessDetailedByMap.setQuantity(number);
             businessDetailedByMap.setBrandId(brandIds);
             businessDetailedByMap.setItemId(itemIds);
+            businessDetailedByMap.setSalePrice(money);
             map.put(itemIds + brandIds, businessDetailedByMap);
             return map;
         }
 
+        //是否存入相同物品 如果有直接获取之前的数据 进行累加
+//        CrmBusinessDetailed crmBusinessDetailed = map.get(itemIds + brandIds);
+//        if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
+//            int i = crmBusinessDetailed.getQuantity() + number;
+//            crmBusinessDetailed.setQuantity(i);
+//            map.put(itemIds + brandIds, crmBusinessDetailed);
+//        }
+
+
+        //判断商机详情是否有粗存在物品  有的直接叠加数量
         for (CrmBusinessDetailed businessDetailed : businessDetaileds) {
             if (businessDetailed.getItemId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {
                 int i = businessDetailed.getQuantity() + number;
+                int oldMoney = businessDetailed.getSalePrice();
+                int newMoney = number * money;
+                businessDetailed.setSalePrice(oldMoney + newMoney);
                 businessDetailed.setQuantity(i);
                 map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
             }
 
         }
-        CrmBusinessDetailed crmBusinessDetailed = map.get(itemIds + brandIds);
-        if (ToolUtil.isEmpty(crmBusinessDetailed)) {
-            CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
-            businessDetailedByMap.setBusinessId(businessIds);
-            businessDetailedByMap.setQuantity(number);
-            businessDetailedByMap.setBrandId(brandIds);
-            businessDetailedByMap.setItemId(itemIds);
-            map.put(itemIds + brandIds, businessDetailedByMap);
+
+        //通过map判段这个商品是否存在  没有直接添加
+        CrmBusinessDetailed BusinessDetailed = map.get(itemIds + brandIds);
+        if (ToolUtil.isEmpty(BusinessDetailed)) {
+            CrmBusinessDetailed businessDetailed = new CrmBusinessDetailed();
+            businessDetailed.setBusinessId(businessIds);
+            businessDetailed.setQuantity(number);
+            businessDetailed.setBrandId(brandIds);
+            businessDetailed.setItemId(itemIds);
+            businessDetailed.setSalePrice(money);
+            map.put(itemIds + brandIds, businessDetailed);
 
         }
 
         return map;
     }
-        void bachAdd (CrmBusinessDetailedParam param){
-//        addMap = new HashMap<>();
-//        updateMap = new HashMap<>();
-//        List<CrmBusinessDetailed> updateList = new ArrayList<>();
-//        List<CrmBusinessDetailed> addList = new ArrayList<>();
-//        int l = 0;
-//        Map<Long, CrmBusinessDetailed> tableMap = new HashMap();
-//        for (Long itemId : param.getItemIds()) {
-//            CrmBusinessDetailed crmBusinessDetailed = this.lambdaQuery().eq(CrmBusinessDetailed::getItemId, itemId).and(i -> i.eq(CrmBusinessDetailed::getBusinessId, param.getBusinessId())).one();
-//            if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
-//                if (crmBusinessDetailed.getBusinessId().equals(param.getBusinessId()) && crmBusinessDetailed.getItemId().equals(itemId)) {
-//                    CrmBusinessDetailed detailTable = updateMap.get(param.getBusinessId() + itemId);
-//                    if (ToolUtil.isEmpty(detailTable)) {
-//                        l = crmBusinessDetailed.getQuantity() + 1;
-//                        crmBusinessDetailed.setQuantity(l);
-//                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
-//                    } else {
-//                        l = l + 1;
-//                        crmBusinessDetailed.setQuantity(l);
-//                        updateMap.put(param.getBusinessId() + itemId, crmBusinessDetailed);
-//                    }
-//
-//                }
-//            }
-//            Boolean table = addBusinessDetial(itemId, param.getBusinessId());
-//            if (table) {
-//                tableMap = superposition(param.getBusinessId(), itemId);
-//            }
-//        }
-//        //通过map取出相同数据批量修改
-//        Set<Map.Entry<Long, CrmBusinessDetailed>> entriesUpdate = updateMap.entrySet();
-//        for (Map.Entry<Long, CrmBusinessDetailed> longErpPackageTableEntry : entriesUpdate) {
-//            CrmBusinessDetailed value = longErpPackageTableEntry.getValue();
-//            updateList.add(value);
-//        }
-//        //通过map取出相同数据批量增加
-//        Set<Map.Entry<Long, CrmBusinessDetailed>> entries = tableMap.entrySet();
-//        for (Map.Entry<Long, CrmBusinessDetailed> entry : entries) {
-//            CrmBusinessDetailed entryValue = entry.getValue();
-//            addList.add(entryValue);
-//        }
-//        this.updateBatchById(updateList);
-//        this.saveBatch(addList);
-//        updateList = null;
-//        addList = null;
+
+
+    Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {
+        CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
+        if (addMap.containsKey(businessId + itemId)) {
+            int l = packageTable.getQuantity() + 1;
+            packageTable.setQuantity(l);
+            addMap.put(businessId + itemId, packageTable);
         }
-
-        Map<Long, CrmBusinessDetailed> superposition (Long businessId, Long itemId){
-            CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
-            if (addMap.containsKey(businessId + itemId)) {
-                int l = packageTable.getQuantity() + 1;
-                packageTable.setQuantity(l);
-                addMap.put(businessId + itemId, packageTable);
-            }
-            if (ToolUtil.isEmpty(packageTable)) {
-                CrmBusinessDetailed packageTable1 = new CrmBusinessDetailed();
-                packageTable1.setBusinessId(businessId);
-                packageTable1.setItemId(itemId);
-                packageTable1.setQuantity(1);
-                addMap.put(businessId + itemId, packageTable1);
-            }
-            return addMap;
+        if (ToolUtil.isEmpty(packageTable)) {
+            CrmBusinessDetailed packageTable1 = new CrmBusinessDetailed();
+            packageTable1.setBusinessId(businessId);
+            packageTable1.setItemId(itemId);
+            packageTable1.setQuantity(1);
+            addMap.put(businessId + itemId, packageTable1);
         }
+        return addMap;
+    }
 
 
-        Boolean addBusinessDetial (Long itemId, Long businessId){
-            Boolean a = true;
-            List<CrmBusinessDetailed> list = this.lambdaQuery().list();
-            for (CrmBusinessDetailed crmBusinessDetailed : list) {
-                if (crmBusinessDetailed.getBusinessId().equals(businessId) && crmBusinessDetailed.getItemId().equals(itemId)) {
-                    a = false;
-                    break;
-                }
+    Boolean addBusinessDetial(Long itemId, Long businessId) {
+        Boolean a = true;
+        List<CrmBusinessDetailed> list = this.lambdaQuery().list();
+        for (CrmBusinessDetailed crmBusinessDetailed : list) {
+            if (crmBusinessDetailed.getBusinessId().equals(businessId) && crmBusinessDetailed.getItemId().equals(itemId)) {
+                a = false;
+                break;
             }
-            if (ToolUtil.isEmpty(list)) {
-                return true;
-            }
-            return a;
         }
+        if (ToolUtil.isEmpty(list)) {
+            return true;
+        }
+        return a;
+    }
 
 
-        @Override
-        public void addAllPackages (CrmBusinessDetailedParam param){
-            List<Long> itemIds = new ArrayList<>();
+    @Override
+    public void addAllPackages(CrmBusinessDetailedParam param) {
+        List<Long> itemIds = new ArrayList<>();
 
-            QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
-            List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
+        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
+        List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
 
 //        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
 
 
-            for (ErpPackageTable erpPackageTable : list) {
-                itemIds.add(erpPackageTable.getItemId());
-            }
-            param.setItemIds(itemIds);
+        for (ErpPackageTable erpPackageTable : list) {
+            itemIds.add(erpPackageTable.getItemId());
+        }
+        param.setItemIds(itemIds);
 //        addAll(param);
+    }
+
+
+    @Override
+    public void delete(CrmBusinessDetailedParam param) {
+        CrmBusinessDetailed byId = this.getById(param.getId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "删除目标不存在");
         }
+        param.setDisplay(0);
+        this.update(param);
+    }
 
+    @Override
+    public void update(CrmBusinessDetailedParam param) {
+        CrmBusinessDetailed oldEntity = getOldEntity(param);
+        CrmBusinessDetailed newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+    }
 
-        @Override
-        public void delete (CrmBusinessDetailedParam param){
-            CrmBusinessDetailed byId = this.getById(param.getId());
-            if (ToolUtil.isEmpty(byId)) {
-                throw new ServiceException(500, "删除目标不存在");
-            }
-            param.setDisplay(0);
-            this.update(param);
-        }
+    @Override
+    public CrmBusinessDetailedResult findBySpec(CrmBusinessDetailedParam param) {
+        return null;
+    }
 
-        @Override
-        public void update (CrmBusinessDetailedParam param){
-            CrmBusinessDetailed oldEntity = getOldEntity(param);
-            CrmBusinessDetailed newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(newEntity);
-        }
+    @Override
+    public List<CrmBusinessDetailedResult> findListBySpec(CrmBusinessDetailedParam param) {
+        return null;
+    }
 
-        @Override
-        public CrmBusinessDetailedResult findBySpec (CrmBusinessDetailedParam param){
-            return null;
-        }
-
-        @Override
-        public List<CrmBusinessDetailedResult> findListBySpec (CrmBusinessDetailedParam param){
-            return null;
-        }
-
-        @Override
-        public PageInfo<CrmBusinessDetailedResult> findPageBySpec (CrmBusinessDetailedParam param){
-            Page<CrmBusinessDetailedResult> pageContext = getPageContext();
-            IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
+    @Override
+    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param) {
+        Page<CrmBusinessDetailedResult> pageContext = getPageContext();
+        IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
 
             List<Long> detailIds = new ArrayList<>();
+            List<Long> brandIds = new ArrayList<>();
             for (CrmBusinessDetailedResult record : page.getRecords()) {
                 detailIds.add(record.getItemId());
+                brandIds.add(record.getBrandId());
             }
             QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("item_id", detailIds);
             List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+
+            QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+            brandQueryWrapper.in("brand_id", brandIds);
+            List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
             for (CrmBusinessDetailedResult record : page.getRecords()) {
                 for (Items items : list) {
                     if (items.getItemId().equals(record.getItemId())) {
@@ -277,26 +257,34 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
                         break;
                     }
                 }
+                for (Brand brands : brandList) {
+                    if (brands.getBrandId().equals(record.getBrandId())) {
+                        BrandResult brandsResult = new BrandResult();
+                        ToolUtil.copyProperties(brands, brandsResult);
+                        record.setBrandResult(brandsResult);
+                        break;
+                    }
+                }
             }
-            return PageFactory.createPageInfo(page);
-        }
-
-        private Serializable getKey (CrmBusinessDetailedParam param){
-            return param.getId();
-        }
-
-        private Page<CrmBusinessDetailedResult> getPageContext () {
-            return PageFactory.defaultPage();
-        }
-
-        private CrmBusinessDetailed getOldEntity (CrmBusinessDetailedParam param){
-            return this.getById(getKey(param));
-        }
-
-        private CrmBusinessDetailed getEntity (CrmBusinessDetailedParam param){
-            CrmBusinessDetailed entity = new CrmBusinessDetailed();
-            ToolUtil.copyProperties(param, entity);
-            return entity;
-        }
-
+        return PageFactory.createPageInfo(page);
     }
+
+    private Serializable getKey(CrmBusinessDetailedParam param) {
+        return param.getId();
+    }
+
+    private Page<CrmBusinessDetailedResult> getPageContext() {
+        return PageFactory.defaultPage();
+    }
+
+    private CrmBusinessDetailed getOldEntity(CrmBusinessDetailedParam param) {
+        return this.getById(getKey(param));
+    }
+
+    private CrmBusinessDetailed getEntity(CrmBusinessDetailedParam param) {
+        CrmBusinessDetailed entity = new CrmBusinessDetailed();
+        ToolUtil.copyProperties(param, entity);
+        return entity;
+    }
+
+}

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.wrapper.ErpPackageTableSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -124,8 +125,8 @@ public class ErpPackageTableController extends BaseController {
   }
   @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
   @ApiOperation("批量新增")
-  public ResponseData batchAdd(@RequestBody ErpPackageTableParam erpPackageTableParam) {
-      this.erpPackageTableService.batchAdd(erpPackageTableParam);
+  public ResponseData batchAdd(@RequestBody BusinessDetailedParam businessDetailedParam) {
+      this.erpPackageTableService.batchAdd(businessDetailedParam);
       return ResponseData.success();
     }
 
