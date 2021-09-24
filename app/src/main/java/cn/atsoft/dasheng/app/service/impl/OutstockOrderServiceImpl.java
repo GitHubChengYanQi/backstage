@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -48,6 +49,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private UserService userService;
     @Autowired
     private OutstockListingService outstockListingService;
+    @Autowired
+    private StorehouseService storehouseService;
 
 
     @Override
@@ -213,17 +216,28 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     public void format(List<OutstockOrderResult> data) {
         List<Long> ids = new ArrayList<>();
+        List<Long> stockHouseIds = new ArrayList<>();
         for (OutstockOrderResult datum : data) {
             ids.add(datum.getUserId());
+            stockHouseIds.add(datum.getStorehouseId());
         }
-        List<User> users = userService.lambdaQuery().in(User::getUserId, ids).list();
+        List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
 
+        List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
         for (OutstockOrderResult datum : data) {
             for (User user : users) {
                 if (user.getUserId().equals(datum.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
+                    break;
+                }
+            }
+            for (Storehouse storehouse : storehouses) {
+                if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse,storehouseResult);
+                    datum.setStorehouseResult(storehouseResult);
                     break;
                 }
             }

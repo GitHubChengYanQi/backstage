@@ -37,6 +37,8 @@ public class OutstockOrderResult implements Serializable {
     private Long storehouseId;
 
     private UserResult userResult;
+
+    private StorehouseResult storehouseResult;
     /**
      * 出库状态
      */
