@@ -72,14 +72,11 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     Map<Long,CrmBusinessDetailed> map;
     @Override
     public void addAll(BusinessDetailedParam param) {
-  map = new HashMap<>();
+        map = new HashMap<>();
         if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
             List<CrmBusinessDetailed> updateOrAdd =new ArrayList<>();
-
             for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
-                 map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(),detailedParam.getQuantity());
-
-
+                map = judge(param.getBusinessId(), detailedParam.getItemId(), detailedParam.getBrandId(),detailedParam.getQuantity());
             }
             for (Map.Entry<Long, CrmBusinessDetailed> longCrmBusinessDetailedEntry : map.entrySet()) {
                 CrmBusinessDetailed value = longCrmBusinessDetailedEntry.getValue();
@@ -87,10 +84,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             }
 
             this.saveOrUpdateBatch(updateOrAdd);
-//            this.updateBatchById(update);
-//            this.saveBatch(add);
+    //        this.updateBatchById(update);
+    //        this.saveBatch(add);
         }
-
     }
 
     Map<Long,CrmBusinessDetailed> judge (Long businessIds,Long itemIds ,Long brandIds,int number){
