@@ -4,10 +4,13 @@ import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -53,7 +56,7 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("备注")
     private String note;
     /**
-    /**
+     * /**
      * 计划出库时间
      */
     @ApiModelProperty("计划出库时间")
@@ -92,6 +95,7 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;
