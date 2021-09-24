@@ -9,5 +9,6 @@ public class BusinessDetailedParam {
 
     private List<CrmBusinessDetailedParam> businessDetailedParam;
     private Long businessId;
+    private Long packageId;
 
 }
