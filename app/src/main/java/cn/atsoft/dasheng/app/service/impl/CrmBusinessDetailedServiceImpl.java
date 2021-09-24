@@ -88,8 +88,8 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
             }
 
             this.saveOrUpdateBatch(updateOrAdd);
-    //        this.updateBatchById(update);
-    //        this.saveBatch(add);
+            //        this.updateBatchById(update);
+            //        this.saveBatch(add);
         }
     }
 
@@ -113,26 +113,23 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
                 businessDetailed.setQuantity(i);
                 map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
-            } else {
-                CrmBusinessDetailed crmBusinessDetailed = map.get(itemIds + brandIds);
-                if (ToolUtil.isEmpty(crmBusinessDetailed)) {
-                    CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
-                    businessDetailedByMap.setBusinessId(businessIds);
-                    businessDetailedByMap.setQuantity(number);
-                    businessDetailedByMap.setBrandId(brandIds);
-                    businessDetailedByMap.setItemId(itemIds);
-                    map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailedByMap);
-
-                }
-
             }
+
+        }
+        CrmBusinessDetailed crmBusinessDetailed = map.get(itemIds + brandIds);
+        if (ToolUtil.isEmpty(crmBusinessDetailed)) {
+            CrmBusinessDetailed businessDetailedByMap = new CrmBusinessDetailed();
+            businessDetailedByMap.setBusinessId(businessIds);
+            businessDetailedByMap.setQuantity(number);
+            businessDetailedByMap.setBrandId(brandIds);
+            businessDetailedByMap.setItemId(itemIds);
+            map.put(itemIds + brandIds, businessDetailedByMap);
+
         }
 
         return map;
     }
-
-
-    void bachAdd(CrmBusinessDetailedParam param) {
+        void bachAdd (CrmBusinessDetailedParam param){
 //        addMap = new HashMap<>();
 //        updateMap = new HashMap<>();
 //        List<CrmBusinessDetailed> updateList = new ArrayList<>();
@@ -177,129 +174,129 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
 //        this.saveBatch(addList);
 //        updateList = null;
 //        addList = null;
-    }
-
-    Map<Long, CrmBusinessDetailed> superposition(Long businessId, Long itemId) {
-        CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
-        if (addMap.containsKey(businessId + itemId)) {
-            int l = packageTable.getQuantity() + 1;
-            packageTable.setQuantity(l);
-            addMap.put(businessId + itemId, packageTable);
         }
-        if (ToolUtil.isEmpty(packageTable)) {
-            CrmBusinessDetailed packageTable1 = new CrmBusinessDetailed();
-            packageTable1.setBusinessId(businessId);
-            packageTable1.setItemId(itemId);
-            packageTable1.setQuantity(1);
-            addMap.put(businessId + itemId, packageTable1);
-        }
-        return addMap;
-    }
 
-
-    Boolean addBusinessDetial(Long itemId, Long businessId) {
-        Boolean a = true;
-        List<CrmBusinessDetailed> list = this.lambdaQuery().list();
-        for (CrmBusinessDetailed crmBusinessDetailed : list) {
-            if (crmBusinessDetailed.getBusinessId().equals(businessId) && crmBusinessDetailed.getItemId().equals(itemId)) {
-                a = false;
-                break;
+        Map<Long, CrmBusinessDetailed> superposition (Long businessId, Long itemId){
+            CrmBusinessDetailed packageTable = addMap.get(businessId + itemId);
+            if (addMap.containsKey(businessId + itemId)) {
+                int l = packageTable.getQuantity() + 1;
+                packageTable.setQuantity(l);
+                addMap.put(businessId + itemId, packageTable);
             }
+            if (ToolUtil.isEmpty(packageTable)) {
+                CrmBusinessDetailed packageTable1 = new CrmBusinessDetailed();
+                packageTable1.setBusinessId(businessId);
+                packageTable1.setItemId(itemId);
+                packageTable1.setQuantity(1);
+                addMap.put(businessId + itemId, packageTable1);
+            }
+            return addMap;
         }
-        if (ToolUtil.isEmpty(list)) {
-            return true;
+
+
+        Boolean addBusinessDetial (Long itemId, Long businessId){
+            Boolean a = true;
+            List<CrmBusinessDetailed> list = this.lambdaQuery().list();
+            for (CrmBusinessDetailed crmBusinessDetailed : list) {
+                if (crmBusinessDetailed.getBusinessId().equals(businessId) && crmBusinessDetailed.getItemId().equals(itemId)) {
+                    a = false;
+                    break;
+                }
+            }
+            if (ToolUtil.isEmpty(list)) {
+                return true;
+            }
+            return a;
         }
-        return a;
-    }
 
 
-    @Override
-    public void addAllPackages(CrmBusinessDetailedParam param) {
-        List<Long> itemIds = new ArrayList<>();
+        @Override
+        public void addAllPackages (CrmBusinessDetailedParam param){
+            List<Long> itemIds = new ArrayList<>();
 
-        QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
-        List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
+            QueryWrapper<ErpPackageTable> queryWrapper = new QueryWrapper<>();
+            List<ErpPackageTable> list = erpPackageTableService.lambdaQuery().in(ErpPackageTable::getPackageId, param.getPackagesIds()).list();
 
 //        List<ErpPackageTable> list = erpPackageTableService.list(queryWrapper);
 
 
-        for (ErpPackageTable erpPackageTable : list) {
-            itemIds.add(erpPackageTable.getItemId());
-        }
-        param.setItemIds(itemIds);
+            for (ErpPackageTable erpPackageTable : list) {
+                itemIds.add(erpPackageTable.getItemId());
+            }
+            param.setItemIds(itemIds);
 //        addAll(param);
-    }
-
-
-    @Override
-    public void delete(CrmBusinessDetailedParam param) {
-        CrmBusinessDetailed byId = this.getById(param.getId());
-        if (ToolUtil.isEmpty(byId)) {
-            throw new ServiceException(500, "删除目标不存在");
         }
-        param.setDisplay(0);
-        this.update(param);
-    }
 
-    @Override
-    public void update(CrmBusinessDetailedParam param) {
-        CrmBusinessDetailed oldEntity = getOldEntity(param);
-        CrmBusinessDetailed newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-    }
 
-    @Override
-    public CrmBusinessDetailedResult findBySpec(CrmBusinessDetailedParam param) {
-        return null;
-    }
-
-    @Override
-    public List<CrmBusinessDetailedResult> findListBySpec(CrmBusinessDetailedParam param) {
-        return null;
-    }
-
-    @Override
-    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param) {
-        Page<CrmBusinessDetailedResult> pageContext = getPageContext();
-        IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
-
-        List<Long> detailIds = new ArrayList<>();
-        for (CrmBusinessDetailedResult record : page.getRecords()) {
-            detailIds.add(record.getItemId());
+        @Override
+        public void delete (CrmBusinessDetailedParam param){
+            CrmBusinessDetailed byId = this.getById(param.getId());
+            if (ToolUtil.isEmpty(byId)) {
+                throw new ServiceException(500, "删除目标不存在");
+            }
+            param.setDisplay(0);
+            this.update(param);
         }
-        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("item_id", detailIds);
-        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
-        for (CrmBusinessDetailedResult record : page.getRecords()) {
-            for (Items items : list) {
-                if (items.getItemId().equals(record.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
+
+        @Override
+        public void update (CrmBusinessDetailedParam param){
+            CrmBusinessDetailed oldEntity = getOldEntity(param);
+            CrmBusinessDetailed newEntity = getEntity(param);
+            ToolUtil.copyProperties(newEntity, oldEntity);
+            this.updateById(newEntity);
+        }
+
+        @Override
+        public CrmBusinessDetailedResult findBySpec (CrmBusinessDetailedParam param){
+            return null;
+        }
+
+        @Override
+        public List<CrmBusinessDetailedResult> findListBySpec (CrmBusinessDetailedParam param){
+            return null;
+        }
+
+        @Override
+        public PageInfo<CrmBusinessDetailedResult> findPageBySpec (CrmBusinessDetailedParam param){
+            Page<CrmBusinessDetailedResult> pageContext = getPageContext();
+            IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
+
+            List<Long> detailIds = new ArrayList<>();
+            for (CrmBusinessDetailedResult record : page.getRecords()) {
+                detailIds.add(record.getItemId());
+            }
+            QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("item_id", detailIds);
+            List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
+            for (CrmBusinessDetailedResult record : page.getRecords()) {
+                for (Items items : list) {
+                    if (items.getItemId().equals(record.getItemId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        record.setItemsResult(itemsResult);
+                        break;
+                    }
                 }
             }
+            return PageFactory.createPageInfo(page);
         }
-        return PageFactory.createPageInfo(page);
-    }
 
-    private Serializable getKey(CrmBusinessDetailedParam param) {
-        return param.getId();
-    }
+        private Serializable getKey (CrmBusinessDetailedParam param){
+            return param.getId();
+        }
 
-    private Page<CrmBusinessDetailedResult> getPageContext() {
-        return PageFactory.defaultPage();
-    }
+        private Page<CrmBusinessDetailedResult> getPageContext () {
+            return PageFactory.defaultPage();
+        }
 
-    private CrmBusinessDetailed getOldEntity(CrmBusinessDetailedParam param) {
-        return this.getById(getKey(param));
-    }
+        private CrmBusinessDetailed getOldEntity (CrmBusinessDetailedParam param){
+            return this.getById(getKey(param));
+        }
 
-    private CrmBusinessDetailed getEntity(CrmBusinessDetailedParam param) {
-        CrmBusinessDetailed entity = new CrmBusinessDetailed();
-        ToolUtil.copyProperties(param, entity);
-        return entity;
-    }
+        private CrmBusinessDetailed getEntity (CrmBusinessDetailedParam param){
+            CrmBusinessDetailed entity = new CrmBusinessDetailed();
+            ToolUtil.copyProperties(param, entity);
+            return entity;
+        }
 
-}
+    }
