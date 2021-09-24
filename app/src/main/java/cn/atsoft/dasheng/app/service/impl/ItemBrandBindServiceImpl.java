@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ItemBrandBind;
@@ -9,12 +13,15 @@ import cn.atsoft.dasheng.app.model.params.ItemBrandBindParam;
 import cn.atsoft.dasheng.app.model.result.ItemBrandBindResult;
 import  cn.atsoft.dasheng.app.service.ItemBrandBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +34,8 @@ import java.util.List;
  */
 @Service
 public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, ItemBrandBind> implements ItemBrandBindService {
-
+    @Autowired
+    private BrandService brandService;
     @Override
     public void add(ItemBrandBindParam param){
         ItemBrandBind entity = getEntity(param);
@@ -61,6 +69,7 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
     public PageInfo<ItemBrandBindResult> findPageBySpec(ItemBrandBindParam param){
         Page<ItemBrandBindResult> pageContext = getPageContext();
         IPage<ItemBrandBindResult> page = this.baseMapper.customPageList(pageContext, param);
+        formatResult(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -80,6 +89,29 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
         ItemBrandBind entity = new ItemBrandBind();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    private void formatResult(List<ItemBrandBindResult> data){
+        List<Long> brandIds = new ArrayList<>();
+        for (ItemBrandBindResult datum : data) {
+            brandIds.add(datum.getBrandId());
+        }
+
+        //品牌id查询品牌名称
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
+        List<Brand> list = brandService.list(brandQueryWrapper);
+        for (ItemBrandBindResult datum : data) {
+            BrandResult brandResult = new BrandResult();
+            for (Brand brand : list) {
+                if (datum.getBrandId().equals(brand.getBrandId())) {
+                    ToolUtil.copyProperties(brand,brandResult);
+                }
+            }
+            datum.setBrandResult(brandResult);
+        }
+
+
+
     }
 
 }

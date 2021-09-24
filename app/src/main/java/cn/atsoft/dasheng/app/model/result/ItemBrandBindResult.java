@@ -20,7 +20,7 @@ import java.util.List;
 public class ItemBrandBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private BrandResult BrandResult;
     private String brandName;
 
     /**
