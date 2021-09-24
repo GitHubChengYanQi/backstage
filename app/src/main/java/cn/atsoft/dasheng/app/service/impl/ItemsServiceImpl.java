@@ -78,6 +78,22 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         Items newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+        QueryWrapper<ItemBrandBind> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("item_id",param.getItemId());
+
+        List<ItemBrandBind> brandList = new ArrayList<>( );
+        if(ToolUtil.isEmpty(param.getBrandResults())){
+            throw new ServiceException(500,"请选择品牌");
+        }
+        for (Long brandResult : param.getBrandResults()) {
+            ItemBrandBind bind = new ItemBrandBind();
+            bind.setBrandId(brandResult);
+            bind.setItemId(newEntity.getItemId());
+            brandList.add(bind);
+        }
+
+        itemBrandBindService.remove(queryWrapper);
+        itemBrandBindService.saveBatch(brandList);
     }
 
     @Override
@@ -132,6 +148,37 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         Items entity = new Items();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+    @Override
+    public  void formatResult(ItemsResult data){
+        List<Long> brandIds = new ArrayList<>();
+        List<ItemBrandBindResult> itemBrandBindResults = new ArrayList<>();
+        //物品id 查询 绑定关系 品牌id
+        QueryWrapper<ItemBrandBind> brandBindQueryWrapper = new QueryWrapper<>();
+        brandBindQueryWrapper.lambda().in(ItemBrandBind::getItemId,data.getItemId()).and(i->i.in(ItemBrandBind::getDisplay,1));
+        List<ItemBrandBind> brandIdsList = itemBrandBindService.list(brandBindQueryWrapper);
+        for (ItemBrandBind brandId : brandIdsList) {
+            brandIds.add(brandId.getBrandId());
+        }
+        //品牌id查询品牌名称
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
+        for (ItemBrandBind brandBind : brandIdsList) {
+            if (brandBind.getItemId().equals(data.getItemId())) {
+                ItemBrandBindResult brandBindResult = new ItemBrandBindResult();
+                ToolUtil.copyProperties(brandBind,brandBindResult);
+                for (Brand brand : brandList) {
+                    if (brandBind.getBrandId().equals(brand.getBrandId())) {
+                        brandBindResult.setBrandName(brand.getBrandName());
+                    }
+                }
+                itemBrandBindResults.add(brandBindResult);
+            }
+        }
+        data.setBrandBindResults(itemBrandBindResults);
+
     }
     public  void format(List<ItemsResult> data){
         List<Long> itemIds = new ArrayList<>();
