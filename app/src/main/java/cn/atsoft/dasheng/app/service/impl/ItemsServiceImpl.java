@@ -134,15 +134,33 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         return entity;
     }
     public  void format(List<ItemsResult> data){
+        List<Long> itemIds = new ArrayList<>();
         List<Long> materialIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (ItemsResult datum : data) {
             materialIds.add(datum.getMaterialId());
+            itemIds.add(datum.getItemId());
         }
+        //物品id 查询 绑定关系 品牌id
+        QueryWrapper<ItemBrandBind> brandBindQueryWrapper = new QueryWrapper<>();
+        brandBindQueryWrapper.lambda().in(ItemBrandBind::getItemId,itemIds);
+        List<ItemBrandBind> brandIdsList = itemBrandBindService.list(brandBindQueryWrapper);
+
+        for (ItemBrandBind brandId : brandIdsList) {
+            brandIds.add(brandId.getBrandId());
+        }
+        //品牌id查询品牌名称
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
+        //材料id查询材料名称
         QueryWrapper<Material> materialQueryWrapper =  new QueryWrapper<>();
         materialQueryWrapper.in("material_id" , materialIds);
         List<Material> materialList = materialIds.size() == 0 ? new ArrayList<>() :  materialService.list(materialQueryWrapper);
 
         for (ItemsResult datum : data) {
+            List<ItemBrandBindResult> itemBrandBindResults = new ArrayList<>();
             for (Material material : materialList) {
                 if (datum.getMaterialId().equals(material.getMaterialId())) {
                     MaterialResult materialResult =new MaterialResult();
@@ -151,6 +169,21 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                     break;
                 }
             }
+            for (ItemBrandBind itemBrandBind : brandIdsList) {
+                if (itemBrandBind.getItemId().equals(datum.getItemId())){
+                    ItemBrandBindResult brandBind = new ItemBrandBindResult();
+                    ToolUtil.copyProperties(itemBrandBind,brandBind);
+                    for (Brand brand : brandList) {
+                        if (itemBrandBind.getBrandId().equals(brand.getBrandId())) {
+                            brandBind.setBrandName(brand.getBrandName());
+                        }
+                    }
+                    itemBrandBindResults.add(brandBind);
+                }
+                datum.setBrandBindResults(itemBrandBindResults);
+            }
+
         }
+
     }
 }
