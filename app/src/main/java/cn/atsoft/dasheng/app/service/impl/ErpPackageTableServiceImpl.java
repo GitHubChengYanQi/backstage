@@ -85,14 +85,15 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     Map<Long, ErpPackageTable> addMap;
     Map<Long, ErpPackageTable> updateMap;
-    private  Map<Long,ErpPackageTable> map;
+    private Map<Long, ErpPackageTable> map;
+
     @Override
     public void batchAdd(BusinessDetailedParam param) {
         map = new HashMap<>();
         if (ToolUtil.isNotEmpty(param.getBusinessDetailedParam())) {
             List<ErpPackageTable> updateOrAdd = new ArrayList<>();
             for (CrmBusinessDetailedParam detailedParam : param.getBusinessDetailedParam()) {
-                map = judge(param.getPackageId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity());
+                map = judge(param.getPackageId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
 
 
             }
@@ -104,7 +105,8 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
             this.saveOrUpdateBatch(updateOrAdd);
         }
     }
-    Map<Long, ErpPackageTable> judge(Long packageId, Long itemIds, Long brandIds, int number) {
+
+    Map<Long, ErpPackageTable> judge(Long packageId, Long itemIds, Long brandIds, int number, int money) {
         List<ErpPackageTable> erpPackageTables = this.lambdaQuery().in(ErpPackageTable::getPackageId, packageId)
                 .list();
         //判断当前商机详情是否有这个商品  没有直接添加
@@ -114,20 +116,24 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
             erpPackageTableByMap.setQuantity((long) number);
             erpPackageTableByMap.setBrandId(brandIds);
             erpPackageTableByMap.setItemId(itemIds);
+            erpPackageTableByMap.setSalePrice(Long.valueOf(money));
+            erpPackageTableByMap.setTotalPrice(Long.valueOf(money*number));
             map.put(itemIds + brandIds, erpPackageTableByMap);
             return map;
         }
 
 
         for (ErpPackageTable erpPackageTable : erpPackageTables) {
-            if (erpPackageTable.getItemId().equals(itemIds) && erpPackageTable.getBrandId().equals(brandIds)){
+            if (erpPackageTable.getItemId().equals(itemIds) && erpPackageTable.getBrandId().equals(brandIds)) {
                 Long i = erpPackageTable.getQuantity() + number;
+                long l = erpPackageTable.getQuantity() + number;
+                int newMoney = Math.toIntExact(l * money);
+                erpPackageTable.setTotalPrice(Long.valueOf(newMoney));
                 erpPackageTable.setQuantity(i);
                 map.put(erpPackageTable.getItemId() + erpPackageTable.getBrandId(), erpPackageTable);
                 break;
             }
         }
-
 
 
         //通过map判段这个商品是否存在  没有直接添加
@@ -138,7 +144,9 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
             erpPackageTableByMap.setQuantity((long) number);
             erpPackageTableByMap.setBrandId(brandIds);
             erpPackageTableByMap.setItemId(itemIds);
-            map.put(itemIds + brandIds,erpPackageTableByMap );
+            erpPackageTableByMap.setSalePrice(Long.valueOf(money));
+            erpPackageTableByMap.setTotalPrice(Long.valueOf(money*number));
+            map.put(itemIds + brandIds, erpPackageTableByMap);
 
         }
 
