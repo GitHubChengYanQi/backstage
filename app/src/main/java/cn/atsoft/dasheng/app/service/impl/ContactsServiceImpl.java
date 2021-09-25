@@ -59,37 +59,46 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
-        Contacts one = this.query().eq("contacts_name", param.getContactsName()).and(i -> i.eq("customer_id", param.getCustomerId())).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            throw new ServiceException(500, "联系人已存在");
+        //通过绑定表查询判断联系人是否重复
+        List<Contacts> contacts = this.query().in("contacts_name", param.getContactsName()).list();
+        if (ToolUtil.isNotEmpty(contacts)) {
+            List<Long> contactIds = new ArrayList<>();
+            for (Contacts contact : contacts) {
+                contactIds.add(contact.getContactsId());
+            }
+            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
+                    .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
+            if (ToolUtil.isNotEmpty(contactsBind)) {
+                throw new ServiceException(500, "联系人已经在，请勿重复添加!");
+            }
         }
 
         // 添加联系人
 
-            Contacts entity = getEntity(param);
-            this.save(entity);
+        Contacts entity = getEntity(param);
+        this.save(entity);
 
-            if (ToolUtil.isNotEmpty(param.getCustomerId())) {
-                ContactsBindParam contactsBindParam = new ContactsBindParam();
-                contactsBindParam.setCustomerId(param.getCustomerId());
-                contactsBindParam.setContactsId(entity.getContactsId());
-                contactsBindService.add(contactsBindParam);
-            }
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            ContactsBindParam contactsBindParam = new ContactsBindParam();
+            contactsBindParam.setCustomerId(param.getCustomerId());
+            contactsBindParam.setContactsId(entity.getContactsId());
+            contactsBindService.add(contactsBindParam);
+        }
 
 
-            // 添加电话号码
-            List<PhoneParam> phoneList = param.getPhoneParams();
-            if (ToolUtil.isNotEmpty(phoneList)) {
-                for (PhoneParam phone : phoneList) {
-                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
-                        phone.setContactsId(entity.getContactsId());
-                        phoneService.add(phone);
+        // 添加电话号码
+        List<PhoneParam> phoneList = param.getPhoneParams();
+        if (ToolUtil.isNotEmpty(phoneList)) {
+            for (PhoneParam phone : phoneList) {
+                if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
+                    phone.setContactsId(entity.getContactsId());
+                    phoneService.add(phone);
 
-                    }
                 }
             }
+        }
 
-            return entity;
+        return entity;
 
     }
 
@@ -113,17 +122,17 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
         Long customerId = param.getCustomerId();
         QueryWrapper<ContactsBind> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id",param.getContactsId());
+        contactsQueryWrapper.in("contacts_id", param.getContactsId());
         List<ContactsBind> contactsBinds = contactsBindService.list(contactsQueryWrapper);
 
         ContactsBindParam contactsBindParam = new ContactsBindParam();
 
-        if (contactsBinds.size() > 0){
+        if (contactsBinds.size() > 0) {
             contactsBindParam.setContactsBindId(contactsBinds.get(0).getContactsBindId());
             contactsBindParam.setContactsId(contactsBinds.get(0).getContactsId());
             contactsBindParam.setCustomerId(customerId);
             contactsBindService.update(contactsBindParam);
-        }else {
+        } else {
             contactsBindParam.setContactsId(param.getContactsId());
             contactsBindParam.setCustomerId(customerId);
             contactsBindService.add(contactsBindParam);
