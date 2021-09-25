@@ -35,6 +35,11 @@ public class TrackMessage implements Serializable {
     @TableField("type")
     private String type;
     /**
+     * 动态分类
+     */
+    @TableField("state")
+    private Integer state;
+    /**
      * 经度
      */
     @TableField("longitude")
@@ -221,7 +226,6 @@ public class TrackMessage implements Serializable {
     }
 
 
-
     public String getType() {
         return type;
     }
@@ -236,6 +240,14 @@ public class TrackMessage implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     @Override

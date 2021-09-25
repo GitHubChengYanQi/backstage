@@ -55,31 +55,22 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public Competitor add(CompetitorParam param) {
-        Competitor competitor = this.lambdaQuery().eq(Competitor::getName, param.getName()).one();
-        if (ToolUtil.isNotEmpty(competitor)) {
+
+        Integer count = this.lambdaQuery().eq(Competitor::getName, param.getName()).count();
+        if (count>0) {
             throw new ServiceException(500, "竞争对手已存在");
         }
         Competitor entity = getEntity(param);
-
-        QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(Competitor::getName, param.getName());
-        List<Competitor> list = this.baseMapper.selectList(queryWrapper);
-        if (ToolUtil.isEmpty(list)) {
+        this.save(entity);
             //竞争对手与商机绑定
             if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
                 BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
                 businessCompetitionParam.setBusinessId(param.getBusinessId());
                 businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
                 businessCompetitionService.add(businessCompetitionParam);
-                this.save(entity);
+
             }
-        } else {
-            throw new ServiceException(500, "竞争对手名称已存在");
-        }
-
-        return entity;
-
-
+            return entity;
     }
 
     @Override

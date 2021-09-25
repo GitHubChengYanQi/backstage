@@ -302,7 +302,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             for (ContactsBind contactsBind : contactsBinds) {
                 if (record.getCustomerId().equals(contactsBind.getCustomerId())) {
                     for (Contacts contacts : contactsList) {
-                        if (contactsBind.getContactsId().equals(contacts.getContactsId())) {
+                        if (contactsBind.getContactsId() != null && contacts.getContactsId() != null && contactsBind.getContactsId().equals(contacts.getContactsId())) {
                             List<PhoneResult> phoneResults = new ArrayList<>();
                             ContactsResult contactsResult = new ContactsResult();
                             ToolUtil.copyProperties(contacts, contactsResult);

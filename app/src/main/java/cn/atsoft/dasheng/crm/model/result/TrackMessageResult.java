@@ -33,17 +33,19 @@ public class TrackMessageResult implements Serializable {
      * 纬度
      */
     private UserResult userResult;
+
     private BigDecimal latitude;
 
+    private Integer state;
 
     private String type;
-
     /**
      * 经度
      */
-
     private BigDecimal longitude;
+
     private Long userId;
+
     private Long customerId;
 
     /**
