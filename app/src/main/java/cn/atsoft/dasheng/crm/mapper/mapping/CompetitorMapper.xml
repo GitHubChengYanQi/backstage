@@ -203,6 +203,12 @@
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%', #{paramCondition.deptId},'%'))
         </if>
+        <if test="competitorId != null and competitorId.size()>0">
+            and competitor_id in
+            <foreach collection="competitorId" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+         </if>
         order by create_time DESC
     </select>
 
@@ -259,6 +265,15 @@
             and take_countermeasures like CONCAT('%',#{paramCondition.takeCountermeasures},'%')
         </if>
         order by create_time DESC
+    </select>
+    <select id="aboutBusiness" resultType="Long"  parameterType="java.lang.Long">
+        select
+        competitor_id
+        from daoxin_crm_competitor_quote where display = 1
+        <if test="businessId != null">
+            and business_id = #{businessId}
+        </if>
+
     </select>
 
 </mapper>

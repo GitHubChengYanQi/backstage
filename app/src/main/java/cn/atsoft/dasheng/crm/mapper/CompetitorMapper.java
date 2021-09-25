@@ -44,7 +44,7 @@ public interface CompetitorMapper extends BaseMapper<Competitor> {
      * @author 
      * @Date 2021-09-07
      */
-    Page<CompetitorResult> customPageList(@Param("page") Page page, @Param("paramCondition") CompetitorParam paramCondition, @Param("dataScope")DataScope dataScope);
+    Page<CompetitorResult> customPageList(@Param("page") Page page, @Param("paramCondition") CompetitorParam paramCondition, @Param("dataScope")DataScope dataScope,@Param("competitorId") List<Long> competitorId);
 
     /**
      * 获取分页map列表
@@ -53,5 +53,7 @@ public interface CompetitorMapper extends BaseMapper<Competitor> {
      * @Date 2021-09-07
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") CompetitorParam paramCondition);
+
+    List<Long> aboutBusiness(@Param("businessId")  Long businessId);
 
 }

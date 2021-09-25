@@ -109,9 +109,14 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     @Override
     public PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope, CompetitorParam param) {
 
+        List<Long> competitorId = this.baseMapper.aboutBusiness(param.getBusinessId());
+        if (ToolUtil.isEmpty(competitorId)) {
+            competitorId = new ArrayList<>();
+        }
+
         Long businessId = param.getBusinessId();
         Page<CompetitorResult> pageContext = getPageContext();
-        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope,competitorId);
 
         if (ToolUtil.isNotEmpty(businessId)) {
             QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
