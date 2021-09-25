@@ -57,20 +57,20 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
     public Competitor add(CompetitorParam param) {
 
         Integer count = this.lambdaQuery().eq(Competitor::getName, param.getName()).count();
-        if (count>0) {
+        if (count > 0) {
             throw new ServiceException(500, "竞争对手已存在");
         }
         Competitor entity = getEntity(param);
         this.save(entity);
-            //竞争对手与商机绑定
-            if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
-                BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
-                businessCompetitionParam.setBusinessId(param.getBusinessId());
-                businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
-                businessCompetitionService.add(businessCompetitionParam);
+        //竞争对手与商机绑定
+        if (param.getBusinessId() != null && entity.getCompetitorId() != null) {
+            BusinessCompetitionParam businessCompetitionParam = new BusinessCompetitionParam();
+            businessCompetitionParam.setBusinessId(param.getBusinessId());
+            businessCompetitionParam.setCompetitorId(entity.getCompetitorId());
+            businessCompetitionService.add(businessCompetitionParam);
 
-            }
-            return entity;
+        }
+        return entity;
     }
 
     @Override
@@ -108,16 +108,14 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
 
     @Override
     public PageInfo<CompetitorResult> findPageBySpec(DataScope dataScope, CompetitorParam param) {
+        //通过绑定表先查出当前商机的竞争对手
+        List<Long> competitorId = new ArrayList<>();
+        competitorId = this.baseMapper.aboutBusiness(param.getBusinessId());
 
-        List<Long> competitorId = this.baseMapper.aboutBusiness(param.getBusinessId());
-        if (ToolUtil.isEmpty(competitorId)) {
-            competitorId = new ArrayList<>();
-        }
+        Page<CompetitorResult> pageContext = getPageContext();
+        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope, competitorId);
 
         Long businessId = param.getBusinessId();
-        Page<CompetitorResult> pageContext = getPageContext();
-        IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope,competitorId);
-
         if (ToolUtil.isNotEmpty(businessId)) {
             QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
             businessCompetitionQueryWrapper.in("business_id", businessId);
