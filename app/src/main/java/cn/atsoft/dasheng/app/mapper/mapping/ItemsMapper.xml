@@ -59,10 +59,10 @@
             parameterType="cn.atsoft.dasheng.app.model.params.ItemsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_items where display = 1
+        from daoxin_erp_items where 1 = 1
 
         <if test="paramCondition.name != null and paramCondition.name != ''">
-            and name = #{paramCondition.name}
+            and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
         <if test="paramCondition.materialId != null">
             and material_id = #{paramCondition.materialId}
@@ -76,7 +76,7 @@
         <include refid="Base_Column_List"/>
         from daoxin_erp_items where display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
-            and name = #{paramCondition.name}
+            and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
         <if test="paramCondition.materialId != null">
             and material_id = #{paramCondition.materialId}

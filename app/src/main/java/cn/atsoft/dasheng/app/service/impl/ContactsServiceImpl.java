@@ -111,6 +111,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         } else {
             Contacts entity = getEntity(param);
             param.setDisplay(0);
+            QueryWrapper queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("contacts_id",param.getContactsId());
+            phoneService.remove(queryWrapper);
             this.update(param);
             return entity;
         }
