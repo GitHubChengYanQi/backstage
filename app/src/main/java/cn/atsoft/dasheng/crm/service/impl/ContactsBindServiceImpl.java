@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
@@ -9,9 +11,11 @@ import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.result.ContactsBindResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,7 +31,8 @@ import java.util.List;
  */
 @Service
 public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, ContactsBind> implements ContactsBindService {
-
+    @Autowired
+    private PhoneService phoneService;
     @Override
     public void add(ContactsBindParam param) {
         ContactsBind entity = getEntity(param);
@@ -40,6 +45,11 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
                 .and(i -> i.eq(ContactsBind::getContactsId, param.getContactsId()))
                 .one();
         ToolUtil.copyProperties(contactsBind, param);
+        Phone phone = new Phone();
+        phone.setDisplay(0);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("contacts_id",param.getContactsId());
+        phoneService.update(phone,queryWrapper);
         this.removeById(getKey(param));
     }
 
