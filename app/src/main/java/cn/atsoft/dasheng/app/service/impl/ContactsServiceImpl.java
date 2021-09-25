@@ -66,7 +66,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             for (Contacts contact : contacts) {
                 contactIds.add(contact.getContactsId());
             }
-            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
+            ContactsBind contactsBind =  contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
                     .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
             if (ToolUtil.isNotEmpty(contactsBind)) {
                 throw new ServiceException(500, "联系人已经在，请勿重复添加!");
