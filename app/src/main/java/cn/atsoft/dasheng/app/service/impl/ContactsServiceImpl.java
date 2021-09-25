@@ -59,6 +59,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
+        if (ToolUtil.isEmpty(param.getContactsName())) {
+            throw new ServiceException(500, "请不要输入空的名字");
+        }
         //通过绑定表查询判断联系人是否重复
         List<Contacts> contacts = this.query().in("contacts_name", param.getContactsName()).list();
         if (ToolUtil.isNotEmpty(contacts)) {
@@ -66,7 +69,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             for (Contacts contact : contacts) {
                 contactIds.add(contact.getContactsId());
             }
-            ContactsBind contactsBind =  contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
+            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
                     .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
             if (ToolUtil.isNotEmpty(contactsBind)) {
                 throw new ServiceException(500, "联系人已经在，请勿重复添加!");
@@ -109,6 +112,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isEmpty(contacts)) {
             throw new ServiceException(500, "数据不存在");
         } else {
+
             Contacts entity = getEntity(param);
             param.setDisplay(0);
             this.update(param);
@@ -239,6 +243,17 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("contacts_id", id);
         this.update(contacts, contactsQueryWrapper);
+        //删除联系人带着联系人电话直接删除
+        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
+        List<Phone> phoneList = new ArrayList<>();
+        for (Phone phone : phones) {
+            phoneList.add(phone);
+        }
+        if (ToolUtil.isNotEmpty(phoneList)) {
+            phoneService.removeByIds(phoneList);
+        }
+
+
     }
 
     private Serializable getKey(ContactsParam param) {
