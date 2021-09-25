@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
@@ -50,8 +52,6 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     @Autowired
     private OutstockOrderService outstockOrderService;
     @Autowired
-    private OutstockService outstockService;
-    @Autowired
     private ApplyDetailsService applyDetailsService;
     @Autowired
     private OutstockListingService outstockListingService;
@@ -69,12 +69,34 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     private UserService userService;
     @Autowired
     private PhoneService phoneService;
-
+    @Autowired
+    private ContactsBindService contactsBindService;
 
     @Override
     public void add(OutstockApplyParam param) {
+        if (ToolUtil.isEmpty(param.getCustomerId())) {
+            throw new ServiceException(500, "请填写客户，再进行操作");
+        }
+        if (ToolUtil.isEmpty(param.getContactsId())) {
+            throw new ServiceException(500, "请填写联系人，再进行操作");
+        }
+        //验证联系人与客户是否匹配
+        List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery().in(ContactsBind::getCustomerId, param.getCustomerId()).list();
+        boolean f = false;
+        for (ContactsBind contactsBind : contactsBinds) {
+            if (contactsBind.getContactsId()!=null && contactsBind.getContactsId().equals(param.getContactsId())) {
+                f = true;
+                break;
+            }
+        }
+        if (!f) {
+            throw new ServiceException(500, "联系人与客户不匹配");
+        }
+
+
         OutstockApply entity = getEntity(param);
         this.save(entity);
+        //添加发货申请详情数据
         List<ApplyDetails> applyDetailsList = new ArrayList<>();
         if (ToolUtil.isNotEmpty(param.getApplyDetails())) {
             for (ApplyDetailsParam applyDetailsParam : param.getApplyDetails()) {

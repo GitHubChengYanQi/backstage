@@ -28,14 +28,16 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private Long businessId;
-    //    private List<CompetitorParam>
+
     private List<BusinessTrackParam> businessTrackParams;
 
+    private Integer state;
     /**
      * 纬度
      */
 
     private Integer money;
+
     private BigDecimal latitude;
 
     private List<CompetitorQuoteParam> competitorQuoteParam;
@@ -44,7 +46,9 @@ public class TrackMessageParam implements Serializable, BaseValidatingParam {
 
 
     private Long userId;
+
     private Long customerId;
+
     private String type;
     /**
      * 经度
