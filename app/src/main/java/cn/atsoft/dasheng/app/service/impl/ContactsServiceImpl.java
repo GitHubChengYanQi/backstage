@@ -63,7 +63,10 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             throw new ServiceException(500, "请不要输入空的名字");
         }
         //通过绑定表查询判断联系人是否重复
-        List<Contacts> contacts = this.query().in("contacts_name", param.getContactsName()).list();
+        List<Contacts> contacts = this.query()
+                .in("contacts_name", param.getContactsName())
+                .and(i -> i.eq("display", 1))
+                .list();
         if (ToolUtil.isNotEmpty(contacts)) {
             List<Long> contactIds = new ArrayList<>();
             for (Contacts contact : contacts) {
@@ -247,10 +250,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
         List<Phone> phoneList = new ArrayList<>();
         for (Phone phone : phones) {
+            phone.setDisplay(0);
             phoneList.add(phone);
         }
         if (ToolUtil.isNotEmpty(phoneList)) {
-            phoneService.removeByIds(phoneList);
+            phoneService.updateBatchById(phoneList);
         }
 
 
