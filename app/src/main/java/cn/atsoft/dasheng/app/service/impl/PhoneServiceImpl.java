@@ -33,7 +33,7 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
     @Override
     public void add(PhoneParam param) {
         //防止添加重复电话号
-        Integer count = this.query().eq("phone_number", param.getPhoneNumber()).count();
+        Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i->i.eq("display",1)).count();
         if (count > 0) {
             throw new ServiceException(500, "不用重复添加手机号 或者  电话已经存在");
         }
