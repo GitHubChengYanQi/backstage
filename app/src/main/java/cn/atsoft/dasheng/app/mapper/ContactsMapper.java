@@ -53,7 +53,7 @@ public interface ContactsMapper extends BaseMapper<Contacts> {
      * @author
      * @Date 2021-07-23
      */
-    Page<ContactsResult> customPageList(@Param("dataScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition, List<Long> ids);
+    Page<ContactsResult> customPageList(@Param("dataScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") ContactsParam paramCondition, @Param("ids") List<Long> ids);
 
     /**
      * 获取分页map列表

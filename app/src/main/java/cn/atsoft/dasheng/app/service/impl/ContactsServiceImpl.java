@@ -59,8 +59,14 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @BussinessLog
     public Contacts add(ContactsParam param) {
+        if (ToolUtil.isEmpty(param.getContactsName())) {
+            throw new ServiceException(500, "请不要输入空的名字");
+        }
         //通过绑定表查询判断联系人是否重复
-        List<Contacts> contacts = this.query().in("contacts_name", param.getContactsName()).list();
+        List<Contacts> contacts = this.query()
+                .in("contacts_name", param.getContactsName())
+                .and(i -> i.eq("display", 1))
+                .list();
         if (ToolUtil.isNotEmpty(contacts)) {
             List<Long> contactIds = new ArrayList<>();
             for (Contacts contact : contacts) {
@@ -109,6 +115,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         if (ToolUtil.isEmpty(contacts)) {
             throw new ServiceException(500, "数据不存在");
         } else {
+
             Contacts entity = getEntity(param);
             param.setDisplay(0);
             QueryWrapper queryWrapper = new QueryWrapper<>();
@@ -242,6 +249,18 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("contacts_id", id);
         this.update(contacts, contactsQueryWrapper);
+        //删除联系人带着联系人电话直接删除
+        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
+        List<Phone> phoneList = new ArrayList<>();
+        for (Phone phone : phones) {
+            phone.setDisplay(0);
+            phoneList.add(phone);
+        }
+        if (ToolUtil.isNotEmpty(phoneList)) {
+            phoneService.updateBatchById(phoneList);
+        }
+
+
     }
 
     private Serializable getKey(ContactsParam param) {
