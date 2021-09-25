@@ -75,7 +75,10 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     @Override
     public void add(OutstockApplyParam param) {
         if (ToolUtil.isEmpty(param.getCustomerId())) {
-            throw new ServiceException(500, "请确定客户，再进行操作");
+            throw new ServiceException(500, "请填写客户，再进行操作");
+        }
+        if (ToolUtil.isEmpty(param.getContactsId())) {
+            throw new ServiceException(500, "请填写联系人，再进行操作");
         }
         //验证联系人与客户是否匹配
         List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery().in(ContactsBind::getCustomerId, param.getCustomerId()).list();

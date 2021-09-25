@@ -110,6 +110,7 @@ public class CrmCustomerLevelController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
         levelQueryWrapper.in("display",1);
+        levelQueryWrapper.orderByDesc("rank");
         List<Map<String, Object>> list = this.crmCustomerLevelService.listMaps(levelQueryWrapper);
         CrmCustomerLevelSelectWrapper crmCustomerLevelSelectWrapper = new CrmCustomerLevelSelectWrapper(list);
         List<Map<String, Object>> result = crmCustomerLevelSelectWrapper.wrap();
