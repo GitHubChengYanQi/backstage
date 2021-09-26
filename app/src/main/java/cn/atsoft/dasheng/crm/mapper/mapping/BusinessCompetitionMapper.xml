@@ -50,6 +50,10 @@
                 <if test="paramCondition.competitorId != null">
                         and competitor_id like CONCAT('%',#{paramCondition.competitorId},'%')
                 </if>
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
         order by create_time DESC
     </select>
 

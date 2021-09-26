@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +99,13 @@ public class StockDetailsController extends BaseController {
         if (ToolUtil.isEmpty(stockDetailsParam)) {
             stockDetailsParam = new StockDetailsParam();
         }
-        return this.stockDetailsService.findPageBySpec(stockDetailsParam);
+//        return this.stockDetailsService.findPageBySpec(stockDetailsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.stockDetailsService.findPageBySpec(stockDetailsParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.stockDetailsService.findPageBySpec(stockDetailsParam, dataScope);
+        }
     }
 
 

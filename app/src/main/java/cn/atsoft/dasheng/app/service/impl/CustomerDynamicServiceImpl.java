@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.CustomerDynamicMapper;
 import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
 import  cn.atsoft.dasheng.app.service.CustomerDynamicService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -66,9 +67,9 @@ public class CustomerDynamicServiceImpl extends ServiceImpl<CustomerDynamicMappe
     }
 
     @Override
-    public PageInfo<CustomerDynamicResult> findPageBySpec(CustomerDynamicParam param){
+    public PageInfo<CustomerDynamicResult> findPageBySpec(CustomerDynamicParam param, DataScope dataScope ){
         Page<CustomerDynamicResult> pageContext = getPageContext();
-        IPage<CustomerDynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CustomerDynamicResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

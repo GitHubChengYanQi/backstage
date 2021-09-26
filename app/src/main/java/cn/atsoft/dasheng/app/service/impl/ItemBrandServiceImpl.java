@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.ItemBrandMapper;
 import cn.atsoft.dasheng.app.model.params.ItemBrandParam;
 import cn.atsoft.dasheng.app.model.result.ItemBrandResult;
 import  cn.atsoft.dasheng.app.service.ItemBrandService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,9 +59,9 @@ public class ItemBrandServiceImpl extends ServiceImpl<ItemBrandMapper, ItemBrand
     }
 
     @Override
-    public PageInfo<ItemBrandResult> findPageBySpec(ItemBrandParam param){
+    public PageInfo<ItemBrandResult> findPageBySpec(ItemBrandParam param, DataScope dataScope){
         Page<ItemBrandResult> pageContext = getPageContext();
-        IPage<ItemBrandResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ItemBrandResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

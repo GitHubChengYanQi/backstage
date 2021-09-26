@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface BusinessTrackService extends IService<BusinessTrack> {
      * @author cheng
      * @Date 2021-09-17
      */
-     PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param);
+     PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope );
 
 }

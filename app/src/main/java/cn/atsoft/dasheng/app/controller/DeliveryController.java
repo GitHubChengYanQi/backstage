@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.OutstockRequest;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Delivery;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.result.DeliveryResult;
 import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -108,8 +110,15 @@ public class DeliveryController extends BaseController {
         if(ToolUtil.isEmpty(deliveryParam)){
             deliveryParam = new DeliveryParam();
         }
-        return this.deliveryService.findPageBySpec(deliveryParam);
+//        return this.deliveryService.findPageBySpec(deliveryParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.deliveryService.findPageBySpec(deliveryParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.deliveryService.findPageBySpec(deliveryParam, dataScope);
+        }
     }
+
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("所有列表")
     @Permission

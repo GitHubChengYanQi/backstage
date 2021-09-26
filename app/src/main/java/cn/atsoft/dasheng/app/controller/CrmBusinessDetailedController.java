@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessDetailedService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +126,13 @@ public class CrmBusinessDetailedController extends BaseController {
         if(ToolUtil.isEmpty(crmBusinessDetailedParam)){
             crmBusinessDetailedParam = new CrmBusinessDetailedParam();
         }
-        return this.crmBusinessDetailedService.findPageBySpec(crmBusinessDetailedParam);
+//        return this.crmBusinessDetailedService.findPageBySpec(crmBusinessDetailedParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmBusinessDetailedService.findPageBySpec(crmBusinessDetailedParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmBusinessDetailedService.findPageBySpec(crmBusinessDetailedParam, dataScope);
+        }
     }
 
 

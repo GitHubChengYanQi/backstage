@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.app.model.params.OriginParam;
 import cn.atsoft.dasheng.app.model.result.OriginResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface OriginMapper extends BaseMapper<Origin> {
      * @author 
      * @Date 2021-07-19
      */
-    Page<OriginResult> customPageList(@Param("page") Page page, @Param("paramCondition") OriginParam paramCondition);
+    Page<OriginResult> customPageList(@Param("page") Page page, @Param("paramCondition") OriginParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

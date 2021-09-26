@@ -114,9 +114,9 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     }
 
     @Override
-    public PageInfo<AdressResult> findPageBySpec(DataScope dataScope, AdressParam param) {
+    public PageInfo<AdressResult> findPageBySpec( AdressParam param,DataScope dataScope) {
         Page<AdressResult> pageContext = getPageContext();
-        IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<AdressResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         for (AdressResult record : page.getRecords()) {
             Double longitude = record.getLongitude();

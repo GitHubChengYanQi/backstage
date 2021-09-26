@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.PackageRequest;
 import cn.atsoft.dasheng.app.wrapper.ErpPackageSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackage;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageResult;
 import cn.atsoft.dasheng.app.service.ErpPackageService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -72,6 +74,7 @@ public class ErpPackageController extends BaseController {
         this.erpPackageService.delete(erpPackageParam);
         return ResponseData.success();
     }
+
     /**
      * 批量删除接口
      *
@@ -114,7 +117,13 @@ public class ErpPackageController extends BaseController {
         if (ToolUtil.isEmpty(erpPackageParam)) {
             erpPackageParam = new ErpPackageParam();
         }
-        return this.erpPackageService.findPageBySpec(erpPackageParam);
+//        return this.erpPackageService.findPageBySpec(erpPackageParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.erpPackageService.findPageBySpec(erpPackageParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.erpPackageService.findPageBySpec(erpPackageParam, dataScope);
+        }
     }
 
 
@@ -134,7 +143,6 @@ public class ErpPackageController extends BaseController {
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
 
 
 }

@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.app.mapper.CrmPaymentMapper;
 import cn.atsoft.dasheng.app.model.params.CrmPaymentParam;
 import cn.atsoft.dasheng.app.model.result.CrmPaymentResult;
 import cn.atsoft.dasheng.app.service.CrmPaymentService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -76,9 +77,9 @@ public class CrmPaymentServiceImpl extends ServiceImpl<CrmPaymentMapper, CrmPaym
     }
 
     @Override
-    public PageInfo<CrmPaymentResult> findPageBySpec(CrmPaymentParam param) {
+    public PageInfo<CrmPaymentResult> findPageBySpec(CrmPaymentParam param, DataScope dataScope ) {
         Page<CrmPaymentResult> pageContext = getPageContext();
-        IPage<CrmPaymentResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmPaymentResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

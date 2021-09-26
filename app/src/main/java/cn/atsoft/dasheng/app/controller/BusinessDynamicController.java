@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
 import cn.atsoft.dasheng.app.service.BusinessDynamicService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class BusinessDynamicController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BusinessDynamicParam businessDynamicParam)  {
+    public ResponseData delete(@RequestBody BusinessDynamicParam businessDynamicParam) {
         this.businessDynamicService.delete(businessDynamicParam);
         return ResponseData.success();
     }
@@ -96,14 +97,18 @@ public class BusinessDynamicController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BusinessDynamicResult> list(@RequestBody(required = false) BusinessDynamicParam businessDynamicParam) {
-        if(ToolUtil.isEmpty(businessDynamicParam)){
+        if (ToolUtil.isEmpty(businessDynamicParam)) {
             businessDynamicParam = new BusinessDynamicParam();
         }
-        return this.businessDynamicService.findPageBySpec(businessDynamicParam);
-//        LoginContextHolder.getContext().getUser().getDeptId();
+//        return this.businessDynamicService.findPageBySpec(businessDynamicParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.businessDynamicService.findPageBySpec(businessDynamicParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.businessDynamicService.findPageBySpec(businessDynamicParam, dataScope);
+        }
+
     }
-
-
 
 
 }

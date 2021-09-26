@@ -28,6 +28,10 @@ public class BusinessTrackResult implements Serializable {
     private UserResult userResult;
 
     /**
+     * 分类名称
+     */
+    private String categoryName;
+    /**
      * 跟进内容id
      */
     @ApiModelProperty("跟进内容id")

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.ErpPackageTable;
 import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface ErpPackageTableMapper extends BaseMapper<ErpPackageTable> {
      * @author qr
      * @Date 2021-08-04
      */
-    Page<ErpPackageTableResult> customPageList(@Param("page") Page page, @Param("paramCondition") ErpPackageTableParam paramCondition);
+    Page<ErpPackageTableResult> customPageList(@Param("page") Page page, @Param("paramCondition") ErpPackageTableParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.app.mapper.PartsMapper;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -68,9 +69,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     @Override
-    public PageInfo<PartsResult> findPageBySpec(PartsParam param) {
+    public PageInfo<PartsResult> findPageBySpec(PartsParam param, DataScope dataScope) {
         Page<PartsResult> pageContext = getPageContext();
-        IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PartsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

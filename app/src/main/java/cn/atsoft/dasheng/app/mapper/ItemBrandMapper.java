@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.ItemBrand;
 import cn.atsoft.dasheng.app.model.params.ItemBrandParam;
 import cn.atsoft.dasheng.app.model.result.ItemBrandResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,7 +44,7 @@ public interface ItemBrandMapper extends BaseMapper<ItemBrand> {
      * @author 
      * @Date 2021-09-23
      */
-    Page<ItemBrandResult> customPageList(@Param("page") Page page, @Param("paramCondition") ItemBrandParam paramCondition);
+    Page<ItemBrandResult> customPageList(@Param("page") Page page, @Param("paramCondition") ItemBrandParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -68,7 +71,7 @@ public class BrandController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BrandParam brandParam)  {
+    public ResponseData delete(@RequestBody BrandParam brandParam) {
         this.brandService.delete(brandParam);
         return ResponseData.success();
     }
@@ -99,29 +102,34 @@ public class BrandController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BrandResult> list(@RequestBody(required = false) BrandParam brandParam) {
-        if(ToolUtil.isEmpty(brandParam)){
+        if (ToolUtil.isEmpty(brandParam)) {
             brandParam = new BrandParam();
         }
-        return this.brandService.findPageBySpec(brandParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.brandService.findPageBySpec(brandParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            brandService.findPageBySpec(brandParam, dataScope);
+            return this.brandService.findPageBySpec(brandParam, dataScope);
+        }
     }
 
     /**
-    * 选择列表
-    *
-    * @author 1
-    * @Date 2021-07-14
-    */
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        brandQueryWrapper.in("display",1);
-        List<Map<String,Object>> list = this.brandService.listMaps(brandQueryWrapper);
+        brandQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.brandService.listMaps(brandQueryWrapper);
         BrandSelectWrapper factory = new BrandSelectWrapper(list);
-        List<Map<String,Object>> result = factory.wrap();
+        List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
 
 
 }

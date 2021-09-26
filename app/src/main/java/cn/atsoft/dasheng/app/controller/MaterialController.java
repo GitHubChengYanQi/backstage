@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.model.params.MaterialParam;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,7 +104,13 @@ public class MaterialController extends BaseController {
         if(ToolUtil.isEmpty(materialParam)){
             materialParam = new MaterialParam();
         }
-        return this.materialService.findPageBySpec(materialParam);
+//        return this.materialService.findPageBySpec(materialParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.materialService.findPageBySpec(materialParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.materialService.findPageBySpec(materialParam, dataScope);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.UnitParam;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface UnitService extends IService<Unit> {
      * @author cheng
      * @Date 2021-08-11
      */
-     PageInfo<UnitResult> findPageBySpec(UnitParam param);
+     PageInfo<UnitResult> findPageBySpec(UnitParam param, DataScope dataScope );
 
 }

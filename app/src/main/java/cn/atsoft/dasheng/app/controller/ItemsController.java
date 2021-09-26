@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.ItemsRequest;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Items;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -112,7 +114,13 @@ public class ItemsController extends BaseController {
         if (ToolUtil.isEmpty(itemsParam)) {
             itemsParam = new ItemsParam();
         }
-        return this.itemsService.findPageBySpec(itemsParam);
+//        return this.itemsService.findPageBySpec(itemsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.itemsService.findPageBySpec(itemsParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.itemsService.findPageBySpec(itemsParam, dataScope);
+        }
     }
 
     @Permission

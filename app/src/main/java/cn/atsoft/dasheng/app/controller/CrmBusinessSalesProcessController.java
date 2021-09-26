@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesProcessSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -83,8 +85,15 @@ public class CrmBusinessSalesProcessController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<CrmBusinessSalesProcessResult> detail(@RequestBody CrmBusinessSalesProcessParam crmBusinessSalesProcessParam) {
-        PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam);
-        return ResponseData.success(pageBySpec.getData().get(0));
+        if (LoginContextHolder.getContext().isAdmin()){
+            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
+            return ResponseData.success(pageBySpec.getData().get(0));
+        }else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            PageInfo<CrmBusinessSalesProcessResult> pageBySpec = crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
+            return ResponseData.success(pageBySpec.getData().get(0));
+        }
+
     }
 
     /**
@@ -102,7 +111,13 @@ public class CrmBusinessSalesProcessController extends BaseController {
         if (ToolUtil.isEmpty(crmBusinessSalesProcessParam)) {
             crmBusinessSalesProcessParam = new CrmBusinessSalesProcessParam();
         }
-        return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam);
+//        return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmBusinessSalesProcessService.findPageBySpec(crmBusinessSalesProcessParam, dataScope);
+        }
     }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)

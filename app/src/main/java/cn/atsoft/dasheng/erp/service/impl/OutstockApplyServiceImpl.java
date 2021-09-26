@@ -74,7 +74,8 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
 
     @Override
     public void add(OutstockApplyParam param) {
-        if (ToolUtil.isEmpty(param.getCustomerId())) {
+        Integer count = customerService.lambdaQuery().eq(Customer::getCustomerId, param.getCustomerId()).count();
+        if (count==0) {
             throw new ServiceException(500, "请填写客户，再进行操作");
         }
         if (ToolUtil.isEmpty(param.getContactsId())) {

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.OrderDetails;
 import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import cn.atsoft.dasheng.app.model.result.OrderDetailsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,7 +44,7 @@ public interface OrderDetailsMapper extends BaseMapper<OrderDetails> {
      * @author siqiang
      * @Date 2021-08-18
      */
-    Page<OrderDetailsResult> customPageList(@Param("page") Page page, @Param("paramCondition") OrderDetailsParam paramCondition);
+    Page<OrderDetailsResult> customPageList(@Param("page") Page page, @Param("paramCondition") OrderDetailsParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

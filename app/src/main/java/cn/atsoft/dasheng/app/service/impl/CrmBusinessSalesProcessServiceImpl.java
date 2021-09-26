@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.mapper.CrmBusinessSalesProcessMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesProcessService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -77,10 +78,10 @@ public class CrmBusinessSalesProcessServiceImpl extends ServiceImpl<CrmBusinessS
     }
 
     @Override
-    public PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param) {
+    public PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param, DataScope dataScope ) {
 
         Page<CrmBusinessSalesProcessResult> pageContext = getPageContext();
-        IPage<CrmBusinessSalesProcessResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessSalesProcessResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         for (CrmBusinessSalesProcessResult record : page.getRecords()) {
             if (ToolUtil.isNotEmpty(record.getPlan())){

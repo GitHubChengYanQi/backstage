@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.OriginMapper;
 import cn.atsoft.dasheng.app.model.params.OriginParam;
 import cn.atsoft.dasheng.app.model.result.OriginResult;
 import cn.atsoft.dasheng.app.service.OriginService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -60,9 +61,9 @@ public class OriginServiceImpl extends ServiceImpl<OriginMapper, Origin> impleme
     }
 
     @Override
-    public PageInfo<OriginResult> findPageBySpec(OriginParam param) {
+    public PageInfo<OriginResult> findPageBySpec(OriginParam param, DataScope dataScope) {
         Page<OriginResult> pageContext = getPageContext();
-        IPage<OriginResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<OriginResult> page = this.baseMapper.customPageList(pageContext, param ,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

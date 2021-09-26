@@ -192,13 +192,18 @@ public class OutBoundServiceImpl implements OutBoundService {
                         .and(i -> i.in(StockDetails::getStage, 1))
                         .list();
 
+                if (ToolUtil.isEmpty(details)) {
+                    throw new ServiceException(500, "请确认库存");
+                }
                 if (l >= 0) {
                     List<Outstock> outstocks = new ArrayList<>();
                     List<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
+                    if (applyDetail.getNumber() == 0) {
+                        throw new ServiceException(500, "出库数量不能为0");
+                    }
                     for (int i = 0; i < applyDetail.getNumber(); i++) {
                         StockDetails stockDetails = details.get(i);
                         stockDetails.setStage(3);
-
                         DeliveryDetails deliveryDetails = new DeliveryDetails();
                         deliveryDetails.setStockItemId(stockDetails.getStockItemId());
                         deliveryDetails.setItemId(stockDetails.getItemId());

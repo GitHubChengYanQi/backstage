@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Instock;
@@ -10,6 +11,7 @@ import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -118,7 +120,13 @@ public class InstockController extends BaseController {
         if(ToolUtil.isEmpty(instockParam)){
             instockParam = new InstockParam();
         }
-        return this.instockService.findPageBySpec(instockParam);
+//        return this.instockService.findPageBySpec(instockParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.instockService.findPageBySpec(instockParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.instockService.findPageBySpec(instockParam, dataScope);
+        }
     }
 
 

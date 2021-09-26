@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OrderDetails;
 import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import cn.atsoft.dasheng.app.model.result.OrderDetailsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface OrderDetailsService extends IService<OrderDetails> {
      * @author siqiang
      * @Date 2021-08-18
      */
-     PageInfo<OrderDetailsResult> findPageBySpec(OrderDetailsParam param);
+     PageInfo<OrderDetailsResult> findPageBySpec(OrderDetailsParam param, DataScope dataScope );
 
 }

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.TemplateMapper;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -60,9 +61,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public PageInfo<TemplateResult> findPageBySpec(TemplateParam param) {
+    public PageInfo<TemplateResult> findPageBySpec(TemplateParam param, DataScope dataScope) {
         Page<TemplateResult> pageContext = getPageContext();
-        IPage<TemplateResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<TemplateResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

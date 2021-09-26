@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessDynamic;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface BusinessDynamicService extends IService<BusinessDynamic> {
      * @author cheng
      * @Date 2021-08-10
      */
-     PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param);
+     PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param, DataScope dataScope );
 
 }

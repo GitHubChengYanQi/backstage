@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.SysDept;
 import cn.atsoft.dasheng.app.model.params.SysDeptParam;
 import cn.atsoft.dasheng.app.model.result.SysDeptResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
      * @author 
      * @Date 2020-12-22
      */
-    Page<SysDeptResult> customPageList(@Param("page") Page page, @Param("paramCondition") SysDeptParam paramCondition);
+    Page<SysDeptResult> customPageList(@Param("page") Page page, @Param("paramCondition") SysDeptParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

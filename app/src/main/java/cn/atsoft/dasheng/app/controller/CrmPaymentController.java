@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.CrmPaymentSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmPayment;
 import cn.atsoft.dasheng.app.model.params.CrmPaymentParam;
 import cn.atsoft.dasheng.app.model.result.CrmPaymentResult;
 import cn.atsoft.dasheng.app.service.CrmPaymentService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,7 +104,13 @@ public class CrmPaymentController extends BaseController {
         if(ToolUtil.isEmpty(crmPaymentParam)){
             crmPaymentParam = new CrmPaymentParam();
         }
-        return this.crmPaymentService.findPageBySpec(crmPaymentParam);
+//        return this.crmPaymentService.findPageBySpec(crmPaymentParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmPaymentService.findPageBySpec(crmPaymentParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmPaymentService.findPageBySpec(crmPaymentParam, dataScope);
+        }
     }
 
 

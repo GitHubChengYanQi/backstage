@@ -3,12 +3,14 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.wrapper.ErpPackageTableSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackageTable;
 import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -104,7 +106,13 @@ public class ErpPackageTableController extends BaseController {
         if(ToolUtil.isEmpty(erpPackageTableParam)){
             erpPackageTableParam = new ErpPackageTableParam();
         }
-        return this.erpPackageTableService.findPageBySpec(erpPackageTableParam);
+//        return this.erpPackageTableService.findPageBySpec(erpPackageTableParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.erpPackageTableService.findPageBySpec(erpPackageTableParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.erpPackageTableService.findPageBySpec(erpPackageTableParam, dataScope);
+        }
     }
 
 

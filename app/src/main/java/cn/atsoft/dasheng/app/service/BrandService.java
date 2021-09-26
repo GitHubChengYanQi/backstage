@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface BrandService extends IService<Brand> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<BrandResult> findPageBySpec(BrandParam param);
+     PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope );
 
 }

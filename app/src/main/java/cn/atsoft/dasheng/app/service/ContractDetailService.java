@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface ContractDetailService extends IService<ContractDetail> {
      * @author sb
      * @Date 2021-09-18
      */
-     PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param);
+     PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope );
 
 }

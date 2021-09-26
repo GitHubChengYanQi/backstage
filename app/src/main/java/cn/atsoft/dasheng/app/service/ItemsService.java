@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.params.ItemsParam;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public interface ItemsService extends IService<Items> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<ItemsResult> findPageBySpec(ItemsParam param);
+     PageInfo<ItemsResult> findPageBySpec(ItemsParam param, DataScope dataScope );
 
     void formatResult(ItemsResult data);
     void batchDelete(List<Long> ids);

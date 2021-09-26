@@ -4,81 +4,89 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ItemBrandBind">
-        <id column="item_brand_bind_id" property="itemBrandBindId" />
-        <result column="item_id" property="itemId" />
-        <result column="brand_id" property="brandId" />
-        <result column="create_time" property="createTime" />
-        <result column="create_user" property="createUser" />
-        <result column="update_time" property="updateTime" />
-        <result column="update_user" property="updateUser" />
-        <result column="display" property="display" />
-        <result column="deptId" property="deptId" />
+        <id column="item_brand_bind_id" property="itemBrandBindId"/>
+        <result column="item_id" property="itemId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        item_brand_bind_id AS "itemBrandBindId", item_id AS "itemId", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        item_brand_bind_id
+        AS "itemBrandBindId", item_id AS "itemId", brand_id AS "brandId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandBindResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandBindResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_item_brand_bind where 1 = 1
-            <if test="paramCondition.itemBrandBindId != null">
-                and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
-            </if>
-            <if test="paramCondition.itemId != null">
-                and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-            </if>
-            <if test="paramCondition.brandId != null">
-                and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-            </if>
+        <if test="paramCondition.itemBrandBindId != null">
+            and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_item_brand_bind where 1 = 1
-                <if test="paramCondition.itemBrandBindId != null">
-                        and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
+        <if test="paramCondition.itemBrandBindId != null">
+            and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandBindResult" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ItemBrandBindResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_item_brand_bind where 1 = 1
-                <if test="paramCondition.itemBrandBindId != null">
-                        and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
+        <if test="paramCondition.itemBrandBindId != null">
+            and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.ItemBrandBindParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_item_brand_bind where 1 = 1
-                <if test="paramCondition.itemBrandBindId != null">
-                        and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
-                </if>
-                <if test="paramCondition.itemId != null">
-                        and item_id like CONCAT('%',#{paramCondition.itemId},'%')
-                </if>
-                <if test="paramCondition.brandId != null">
-                        and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
-                </if>
+        <if test="paramCondition.itemBrandBindId != null">
+            and item_brand_bind_id like CONCAT('%',#{paramCondition.itemBrandBindId},'%')
+        </if>
+        <if test="paramCondition.itemId != null">
+            and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
     </select>
 
 </mapper>

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.PhoneMapper;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -67,9 +68,9 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
     }
 
     @Override
-    public PageInfo<PhoneResult> findPageBySpec(PhoneParam param) {
+    public PageInfo<PhoneResult> findPageBySpec(PhoneParam param, DataScope dataScope) {
         Page<PhoneResult> pageContext = getPageContext();
-        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

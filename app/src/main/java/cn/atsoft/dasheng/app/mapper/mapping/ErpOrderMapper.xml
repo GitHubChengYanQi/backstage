@@ -86,6 +86,10 @@ item_id AS "itemId", state AS "state", number AS "number", order_time AS "orderT
         <if test="paramCondition.partyA != null">
             and party_a = #{paramCondition.partyA}
         </if>
+        <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
+            and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
+            CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
         order by create_time desc
 
     </select>

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface CrmCustomerLevelMapper extends BaseMapper<CrmCustomerLevel> {
      * @author 
      * @Date 2021-07-30
      */
-    Page<CrmCustomerLevelResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmCustomerLevelParam paramCondition);
+    Page<CrmCustomerLevelResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmCustomerLevelParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

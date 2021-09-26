@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.UnitParam;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +99,13 @@ public class UnitController extends BaseController {
         if(ToolUtil.isEmpty(unitParam)){
             unitParam = new UnitParam();
         }
-        return this.unitService.findPageBySpec(unitParam);
+//        return this.unitService.findPageBySpec(unitParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.unitService.findPageBySpec(unitParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.unitService.findPageBySpec(unitParam, dataScope);
+        }
     }
 
 

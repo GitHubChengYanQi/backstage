@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -78,9 +79,9 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     @Override
-    public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param) {
+    public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
-        IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
