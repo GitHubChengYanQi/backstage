@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class TrackMessageParam implements Serializable, BaseValidatingParam {
+public class  TrackMessageParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private Long businessId;
