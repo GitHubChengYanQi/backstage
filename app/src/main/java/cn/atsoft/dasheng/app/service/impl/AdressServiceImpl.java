@@ -4,7 +4,8 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.params.CustomerMap;
 import cn.atsoft.dasheng.app.service.CustomerService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
@@ -45,7 +46,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     @Autowired
     private CommonAreaService commonAreaService;
 
-    @BussinessLog
+    @FreedLog
     @Override
     public Adress add(AdressParam param) {
 
@@ -68,7 +69,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
     }
 
 
-    @BussinessLog
+    @FreedLog
     @Override
     public Adress delete(AdressParam param) {
         param.setDisplay(0);
@@ -77,7 +78,7 @@ public class AdressServiceImpl extends ServiceImpl<AdressMapper, Adress> impleme
         return entity;
     }
 
-    @BussinessLog
+    @FreedLog
     @Override
     public Adress update(AdressParam param) {
 

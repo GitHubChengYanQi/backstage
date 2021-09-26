@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
@@ -56,7 +56,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 
     //
     @Override
-    @BussinessLog
+    @FreedLog
     public TrackMessage add(TrackMessageParam param) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());

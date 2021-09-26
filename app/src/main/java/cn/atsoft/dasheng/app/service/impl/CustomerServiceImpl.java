@@ -5,7 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
@@ -61,7 +61,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private ContactsBindService contactsBindService;
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
@@ -90,7 +90,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Customer delete(CustomerParam param) {
         param.setDisplay(0);
         Long customerId = param.getCustomerId();
@@ -129,7 +129,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Customer update(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {

@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.PhoneService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -57,7 +57,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private ContactsBindService contactsBindService;
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts add(ContactsParam param) {
         if (ToolUtil.isEmpty(param.getContactsName())) {
             throw new ServiceException(500, "请不要输入空的名字");
@@ -122,7 +122,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts delete(ContactsParam param) {
         Contacts contacts = this.getById(param.getContactsId());
         if (ToolUtil.isEmpty(contacts)) {
@@ -140,7 +140,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts update(ContactsParam param) {
 
         Long customerId = param.getCustomerId();

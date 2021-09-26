@@ -6,7 +6,7 @@ import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
 import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ContractMapper;
@@ -86,7 +86,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
 
-    @BussinessLog
+    @FreedLog
     public Contract add(ContractParam param) {
         Customer customer = customerService.getById(param.getPartyA());
         if (ToolUtil.isEmpty(customer)) {
@@ -100,7 +100,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contract delete(ContractParam param) {
         Contract contract = this.getById(param.getContractId());
         if (ToolUtil.isEmpty(contract)) {
@@ -121,7 +121,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contract update(ContractParam param) {
         Contract oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {

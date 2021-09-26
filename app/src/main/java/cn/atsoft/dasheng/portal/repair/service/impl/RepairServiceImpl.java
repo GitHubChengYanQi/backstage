@@ -6,7 +6,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
@@ -74,7 +74,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private RepairSendTemplate repairSendTemplate;
 
 
-    @BussinessLog
+    @FreedLog
     @Override
     public Repair add(RepairParam param) {
 
@@ -118,13 +118,13 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         return entity;
     }
 
-    @BussinessLog
+    @FreedLog
     @Override
     public void delete(RepairParam param) {
         this.removeById(getKey(param));
     }
 
-    @BussinessLog
+    @FreedLog
     @Override
     public Repair update(RepairParam param) {
 

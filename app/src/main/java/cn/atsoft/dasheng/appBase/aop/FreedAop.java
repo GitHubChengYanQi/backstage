@@ -64,7 +64,7 @@ public class FreedAop {
     @Autowired
     private TrackMessageService trackMessageService;
 
-    @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.BussinessLog)")
+    @Pointcut(value = "@annotation(cn.atsoft.dasheng.base.log.FreedLog)")
     public void cutService() {
     }
 
