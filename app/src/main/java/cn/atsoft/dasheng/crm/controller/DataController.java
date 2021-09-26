@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -43,6 +44,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody DataParam dataParam) {
@@ -56,6 +58,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody DataParam dataParam) {
@@ -70,6 +73,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody DataParam dataParam) {
@@ -83,6 +87,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
@@ -96,6 +101,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
@@ -118,6 +124,7 @@ public class DataController extends BaseController {
      * @author song
      * @Date 2021-09-11
      */
+    @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<DataResult> batchDelete(@RequestBody DataRequest dataRequest) {

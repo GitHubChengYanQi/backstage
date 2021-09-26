@@ -45,11 +45,6 @@ public class ContactsBindServiceImpl extends ServiceImpl<ContactsBindMapper, Con
                 .and(i -> i.eq(ContactsBind::getContactsId, param.getContactsId()))
                 .one();
         ToolUtil.copyProperties(contactsBind, param);
-        Phone phone = new Phone();
-        phone.setDisplay(0);
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("contacts_id",param.getContactsId());
-        phoneService.update(phone,queryWrapper);
         this.removeById(getKey(param));
     }
 

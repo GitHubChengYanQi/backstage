@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessDynamic;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
@@ -98,6 +100,7 @@ public class BusinessDynamicController extends BaseController {
             businessDynamicParam = new BusinessDynamicParam();
         }
         return this.businessDynamicService.findPageBySpec(businessDynamicParam);
+//        LoginContextHolder.getContext().getUser().getDeptId();
     }
 
 

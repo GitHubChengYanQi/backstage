@@ -15,12 +15,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jodd.cli.Param;
 import org.apache.ibatis.reflection.ReflectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,6 +48,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public Long add(InstockParam param) {
+        if (param.getNumber()>1000) {
+            throw new ServiceException(500,"一次性入库数量上限1000");
+        }
         Instock entity = getEntity(param);
         this.save(entity);
         return entity.getInstockId();
@@ -53,6 +58,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public void delete(InstockParam param) {
+        if (param.getNumber()>1000) {
+            throw new ServiceException(500,"一次性入库数量上限1000");
+        }
         Instock byId = this.getById(param.getInstockId());
         if (ToolUtil.isEmpty(byId)) {
             throw new ServiceException(500, "删除目标不存在");
@@ -101,6 +109,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             } else {
                 // 判断仓库是否有相同数据
                 // 有相同数据则增加数量和明细数据
+                List<StockParam> stockParamList = new ArrayList<>();
+                List<StockDetails> stockDetailsList = new ArrayList<>();
                 for (Stock StockList : Stock) {
                     if (StockList.getItemId().equals(entity.getItemId())
                             && StockList.getBrandId().equals(entity.getBrandId())
@@ -111,8 +121,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                         stockParam.setBrandId(entity.getBrandId());
                         stockParam.setStorehouseId(entity.getStoreHouseId());
                         stockParam.setInventory(entity.getNumber() + StockList.getInventory());
-                        this.stockService.update(stockParam);
-
+//                        this.stockService.update(stockParam);
+                        stockParamList.add(stockParam);
                         stockDetails.setStockId(StockList.getStockId());
                         stockDetails.setPrice(entity.getCostPrice());
                         stockDetails.setStorageTime(entity.getRegisterTime());
@@ -126,10 +136,18 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                                 list.add(stockDetails);
                             }
                             useFlag = true;
-                            this.stockDetailsService.saveBatch(list);
+//                            this.stockDetailsService.saveBatch(list);
+                            for (StockDetails details : list) {
+                                stockDetailsList.add(details);
+                            }
+
                         }
                     }
                 }
+                Collection<Stock> updateList = new ArrayList<>();
+                ToolUtil.copyProperties(stockParamList,updateList);
+                this.stockService.saveOrUpdateBatch(updateList);
+                this.stockDetailsService.saveBatch(stockDetailsList);
                 if (!useFlag) {
                     stockParam.setItemId(entity.getItemId());
                     stockParam.setBrandId(entity.getBrandId());

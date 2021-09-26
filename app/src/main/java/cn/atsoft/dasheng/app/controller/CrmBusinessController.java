@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
 import cn.atsoft.dasheng.app.model.result.BusinessRequest;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessParam;
@@ -49,6 +50,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody @Valid CrmBusinessParam crmBusinessParam) {
 
         CrmBusiness result = crmBusinessService.add(crmBusinessParam);
@@ -63,6 +65,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody CrmBusinessParam crmBusinessParam) {
 
         this.crmBusinessService.update(crmBusinessParam);
@@ -80,6 +83,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody CrmBusinessParam crmBusinessParam) {
         this.crmBusinessService.delete(crmBusinessParam);
         return ResponseData.success();
@@ -93,6 +97,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<CrmBusinessResult> detail(@RequestBody CrmBusinessParam crmBusinessParam) {
         CrmBusinessResult bySpec = crmBusinessService.detail(crmBusinessParam.getBusinessId());
         return ResponseData.success(bySpec);
@@ -106,6 +111,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<CrmBusinessResult> list(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         if (ToolUtil.isEmpty(crmBusinessParam)) {
             crmBusinessParam = new CrmBusinessParam();
@@ -120,6 +126,7 @@ public class CrmBusinessController extends BaseController {
 
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public Integer listAll(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         return this.crmBusinessService.findListBySpec(crmBusinessParam).size();
     }
@@ -133,6 +140,7 @@ public class CrmBusinessController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
         businessQueryWrapper.in("display", 1);
@@ -145,6 +153,7 @@ public class CrmBusinessController extends BaseController {
 
     @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
     @ApiOperation("更新状态")
+    @Permission
     public ResponseData UpdateStatus(@RequestBody CrmBusinessParam crmBusinessParam) {
         String s = crmBusinessService.UpdateStatus(crmBusinessParam);
         return ResponseData.success(s);
@@ -152,6 +161,7 @@ public class CrmBusinessController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
+    @Permission
     public ResponseData batchDelete(@RequestBody BusinessRequest businessRequest) {
         crmBusinessService.batchDelete(businessRequest.getBusinessId());
         return ResponseData.success();

@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.StockRequest;
 import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.StockParam;
@@ -42,6 +43,7 @@ public class StockController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody StockParam stockParam) {
         Long add = this.stockService.add(stockParam);
         return ResponseData.success(add);
@@ -56,6 +58,7 @@ public class StockController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody StockParam stockParam) {
 
         this.stockService.update(stockParam);
@@ -70,6 +73,7 @@ public class StockController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody StockParam stockParam) {
         this.stockService.delete(stockParam);
         return ResponseData.success();
@@ -83,6 +87,7 @@ public class StockController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<StockResult> detail(@RequestBody StockParam stockParam) {
         Stock detail = this.stockService.getById(stockParam.getStockId());
         StockResult result = new StockResult();
@@ -100,6 +105,7 @@ public class StockController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<StockResult> list(@RequestBody(required = false) StockParam stockParam) {
         if (ToolUtil.isEmpty(stockParam)) {
             stockParam = new StockParam();
@@ -108,6 +114,7 @@ public class StockController extends BaseController {
     }
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("所有列表")
+    @Permission
     public List<StockResult> listAll(@RequestBody(required = false) StockParam stockParam) {
         if (ToolUtil.isEmpty(stockParam)) {
             stockParam = new StockParam();
@@ -117,6 +124,7 @@ public class StockController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
         stockQueryWrapper.in("display", 1);
@@ -128,6 +136,7 @@ public class StockController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
+    @Permission
     public ResponseData batchDelete(@RequestBody StockRequest stockRequest) {
         stockService.batchDelete(stockRequest.getStockId());
         return ResponseData.success();

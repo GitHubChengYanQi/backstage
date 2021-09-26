@@ -53,7 +53,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-
+    @Permission
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Customer add = this.customerService.add(customerParam);
         return ResponseData.success(add);
@@ -70,7 +70,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-//    @Permission
+    @Permission
     public ResponseData update(@RequestBody CustomerParam customerParam) {
 
         Customer result = this.customerService.update(customerParam);
@@ -85,7 +85,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-//    @Permission
+    @Permission
     public ResponseData delete(@RequestBody CustomerParam customerParam) {
         this.customerService.delete(customerParam);
         return ResponseData.success();
@@ -99,7 +99,7 @@ public class CustomerController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-//    @Permission
+    @Permission
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
         Long customerId = customerParam.getCustomerId();
         CustomerResult detail = customerService.detail(customerId);
@@ -115,7 +115,7 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-//    @Permission
+    @Permission
     public PageInfo<CustomerResult> list(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isEmpty(customerParam)) {
             customerParam = new CustomerParam();
@@ -133,7 +133,7 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-//    @Permission
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
         queryWrapper.in("display", 1);
@@ -146,7 +146,7 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
-//    @Permission
+    @Permission
     public ResponseData batchDelete(@RequestBody CustomerIdRequest customerIdRequest) {
         customerService.batchDelete(customerIdRequest.getCustomerId());
         return ResponseData.success();
@@ -154,7 +154,7 @@ public class CustomerController extends BaseController {
 
     @RequestMapping(value = "/UpdateStatus", method = RequestMethod.POST)
     @ApiOperation("更新状态")
-//    @Permission
+    @Permission
     public ResponseData UpdateStatus(@RequestBody CustomerParam CustomerParam) {
         customerService.updateStatus(CustomerParam);
         return ResponseData.success();

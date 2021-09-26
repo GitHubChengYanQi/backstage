@@ -48,6 +48,7 @@ public class AdressController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
         this.adressService.add(adressParam);
         return ResponseData.success();
@@ -59,6 +60,7 @@ public class AdressController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
+    @Permission
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody AdressParam adressParam) {
@@ -73,6 +75,7 @@ public class AdressController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
+    @Permission
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody AdressParam adressParam) {
@@ -86,6 +89,7 @@ public class AdressController extends BaseController {
      * @author
      * @Date 2021-07-23
      */
+    @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
 
@@ -112,6 +116,7 @@ public class AdressController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
         clientId = adressParam.getCustomerId();
         if (ToolUtil.isEmpty(adressParam)) {
@@ -133,6 +138,7 @@ public class AdressController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
         adressQueryWrapper.in("display", 1);
@@ -143,17 +149,17 @@ public class AdressController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData test(@RequestBody AdressParam adressParam) {
-        List<Long> ids = new ArrayList<>();
-        ids.add(1434831489561059329L);
-        ids.add(1434828867206701057L);
-        ids.add(1434828867303170049L);
-        ids.add(1434831489561059329l);
-        List<AdressResult> adressResults = this.adressService.listQuery(ids);
-        return ResponseData.success(adressResults);
-    }
+//    @RequestMapping(value = "/test", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData test(@RequestBody AdressParam adressParam) {
+//        List<Long> ids = new ArrayList<>();
+//        ids.add(1434831489561059329L);
+//        ids.add(1434828867206701057L);
+//        ids.add(1434828867303170049L);
+//        ids.add(1434831489561059329l);
+//        List<AdressResult> adressResults = this.adressService.listQuery(ids);
+//        return ResponseData.success(adressResults);
+//    }
 }
 
 

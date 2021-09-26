@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.ItemsRequest;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.params.ItemsParam;
@@ -44,6 +45,7 @@ public class ItemsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ItemsParam itemsParam) {
 
         Long add = this.itemsService.add(itemsParam);
@@ -58,6 +60,7 @@ public class ItemsController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody ItemsParam itemsParam) {
 
         this.itemsService.update(itemsParam);
@@ -72,6 +75,7 @@ public class ItemsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody ItemsParam itemsParam) {
         this.itemsService.delete(itemsParam);
         return ResponseData.success();
@@ -85,6 +89,7 @@ public class ItemsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<ItemsResult> detail(@RequestBody ItemsParam itemsParam) {
         Items detail = this.itemsService.getById(itemsParam.getItemId());
         ItemsResult result = new ItemsResult();
@@ -102,6 +107,7 @@ public class ItemsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<ItemsResult> list(@RequestBody(required = false) ItemsParam itemsParam) {
         if (ToolUtil.isEmpty(itemsParam)) {
             itemsParam = new ItemsParam();
@@ -109,6 +115,7 @@ public class ItemsController extends BaseController {
         return this.itemsService.findPageBySpec(itemsParam);
     }
 
+    @Permission
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
@@ -119,6 +126,7 @@ public class ItemsController extends BaseController {
         return ResponseData.success(result);
     }
 
+    @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     public ResponseData batchDelete(@RequestBody ItemsRequest itemsRequest) {
         itemsService.batchDelete(itemsRequest.getItemId());

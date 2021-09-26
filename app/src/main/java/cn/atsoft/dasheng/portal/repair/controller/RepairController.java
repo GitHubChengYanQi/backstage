@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.repair.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -38,6 +39,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody RepairParam repairParam) throws WxErrorException {
         Repair add = this.repairService.add(repairParam);
         return ResponseData.success(add);
@@ -51,6 +53,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody RepairParam repairParam) throws WxErrorException {
         Repair update = this.repairService.update(repairParam);
         return ResponseData.success(update);
@@ -58,6 +61,7 @@ public class RepairController extends BaseController {
 
     @RequestMapping(value = "/editdy", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData updatedynamic(@RequestBody RepairParam repairParam) {
         String updatedynamic = repairService.updatedynamic(repairParam);
         return ResponseData.success(updatedynamic);
@@ -65,6 +69,7 @@ public class RepairController extends BaseController {
 
     @RequestMapping(value = "/addWx", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addWx(RepairParam repairParam) {
 
         return ResponseData.success();
@@ -78,6 +83,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody RepairParam repairParam) {
         this.repairService.delete(repairParam);
         return ResponseData.success();
@@ -91,6 +97,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<RepairResult> detail(@RequestBody RepairParam repairParam) {
         Long result = repairParam.getRepairId();
         RepairResult repairResult = repairService.detail(result);
@@ -105,6 +112,7 @@ public class RepairController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<RepairResult> list(@RequestBody(required = false) RepairParam repairParam) {
         if (ToolUtil.isEmpty(repairParam)) {
             repairParam = new RepairParam();

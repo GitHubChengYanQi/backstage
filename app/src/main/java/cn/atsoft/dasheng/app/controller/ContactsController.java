@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.ContactsRequest;
 import cn.atsoft.dasheng.app.wrapper.ContactsSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -46,6 +47,7 @@ public class ContactsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ContactsParam contactsParam) {
 
         Contacts contacts = contactsService.add(contactsParam);
@@ -60,6 +62,7 @@ public class ContactsController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody ContactsParam contactsParam) {
 
         this.contactsService.update(contactsParam);
@@ -74,6 +77,7 @@ public class ContactsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody ContactsParam contactsParam) {
         this.contactsService.delete(contactsParam);
         return ResponseData.success();
@@ -87,6 +91,7 @@ public class ContactsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<ContactsResult> detail(@RequestBody ContactsParam contactsParam) {
         Contacts detail = this.contactsService.getById(contactsParam.getContactsId());
         ContactsResult result = new ContactsResult();
@@ -110,6 +115,7 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<ContactsResult> list(@RequestBody(required = false) ContactsParam contactsParam) {
         if (ToolUtil.isEmpty(contactsParam)) {
             contactsParam = new ContactsParam();
@@ -125,6 +131,7 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("display", 1);
@@ -137,6 +144,7 @@ public class ContactsController extends BaseController {
 
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
+    @Permission
     public ResponseData batchDelete(@RequestBody ContactsRequest contactsRequest) {
         contactsService.batchDelete(contactsRequest.getContactsId());
         return ResponseData.success();

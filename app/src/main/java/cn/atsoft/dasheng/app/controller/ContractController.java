@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.app.wrapper.ContractDetailSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.ContractMachineSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.CustomerSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
@@ -51,6 +52,7 @@ public class ContractController extends BaseController {
      * @author
      * @Date 2021-07-21
      */
+    @Permission
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody ContractParam contractParam) {
@@ -70,6 +72,7 @@ public class ContractController extends BaseController {
      * @author
      * @Date 2021-07-21
      */
+    @Permission
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ContractParam contractParam) {
@@ -89,6 +92,7 @@ public class ContractController extends BaseController {
      * @author
      * @Date 2021-07-21
      */
+    @Permission
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ContractParam contractParam) {
@@ -102,6 +106,7 @@ public class ContractController extends BaseController {
      * @author
      * @Date 2021-07-21
      */
+    @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ContractResult> detail(@RequestBody ContractParam contractParam) {
@@ -116,6 +121,7 @@ public class ContractController extends BaseController {
      * @author
      * @Date 2021-07-21
      */
+    @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ContractResult> list(@RequestBody(required = false) ContractParam contractParam) {
@@ -129,17 +135,7 @@ public class ContractController extends BaseController {
             return this.contractService.findPageBySpec(contractParam,dataScope);
         }
     }
-
-    @RequestMapping(value = "/listCustomer", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<ContractResult> listCustomer(@RequestBody(required = false) ContractParam contractParam) {
-        customerId = contractParam.getPartyA();
-        if (ToolUtil.isEmpty(contractParam)) {
-            contractParam = new ContractParam();
-        }
-        return this.contractService.findPageBySpec(contractParam,null);
-    }
-
+    @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     @ApiOperation("批量删除")
     public ResponseData batchDelete(@RequestBody ContractRequest contractIdRequest) {
@@ -149,7 +145,7 @@ public class ContractController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-//    @Permission
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Contract> queryWrapper = new QueryWrapper();
         queryWrapper.in("display", 1);

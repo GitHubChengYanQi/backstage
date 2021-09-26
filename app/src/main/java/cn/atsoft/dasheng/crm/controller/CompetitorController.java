@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -44,8 +45,10 @@ public class CompetitorController extends BaseController {
      * @author
      * @Date 2021-09-07
      */
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody CompetitorParam competitorParam) {
         Competitor competitor = competitorService.add(competitorParam);
 
@@ -60,6 +63,7 @@ public class CompetitorController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody CompetitorParam competitorParam) {
 
         this.competitorService.update(competitorParam);
@@ -74,6 +78,7 @@ public class CompetitorController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody CompetitorParam competitorParam) {
         this.competitorService.delete(competitorParam);
         return ResponseData.success();
@@ -87,6 +92,7 @@ public class CompetitorController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<CompetitorResult> detail(@RequestBody CompetitorParam competitorParam) {
         Long competitorId = competitorParam.getCompetitorId();
         final CompetitorResult detail = competitorService.detail(competitorId);
@@ -101,6 +107,7 @@ public class CompetitorController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<CompetitorResult> list(@RequestBody(required = false) CompetitorParam competitorParam) {
         if (ToolUtil.isEmpty(competitorParam)) {
             competitorParam = new CompetitorParam();
@@ -116,6 +123,7 @@ public class CompetitorController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Competitor> competitorQueryWrapper = new QueryWrapper<>();
         competitorQueryWrapper.in("display", 1);
@@ -128,6 +136,7 @@ public class CompetitorController extends BaseController {
 
     @RequestMapping(value = "/deleteByIds", method = RequestMethod.POST)
     @ApiOperation("多选删除")
+    @Permission
     public ResponseData deleteByIds(@RequestBody CompetitorIdsRequest competitorIdsRequest) {
         List<Long> ids = competitorIdsRequest.getCompetitorId();
         this.competitorService.deleteByIds(ids);

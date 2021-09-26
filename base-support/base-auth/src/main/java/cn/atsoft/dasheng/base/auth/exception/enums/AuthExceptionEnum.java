@@ -25,7 +25,7 @@ public enum AuthExceptionEnum implements AbstractBaseExceptionEnum {
     VALID_CODE_ERROR(1406, "验证码错误"),
 
     //用在PermissonException
-    NO_PERMISSION(1500, "登录已过期，请重新登录"),
+    NO_PERMISSION(1500, "您没有操作权限"),
 
     NO_PAGE_ERROR(1502, "请求接口不存在或用户未登录"),
 

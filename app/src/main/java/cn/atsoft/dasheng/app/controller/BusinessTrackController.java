@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
@@ -38,6 +39,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -51,6 +53,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -65,6 +68,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody BusinessTrackParam businessTrackParam)  {
@@ -78,6 +82,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<BusinessTrackResult> detail(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -94,6 +99,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BusinessTrackResult> list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
