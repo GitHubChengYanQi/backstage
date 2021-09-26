@@ -122,6 +122,9 @@ public class CompetitorController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ListSelectRequest listSelectRequest) {
+        if (ToolUtil.isEmpty(listSelectRequest)) {
+            listSelectRequest = new ListSelectRequest();
+        }
         QueryWrapper<Competitor> competitorQueryWrapper = new QueryWrapper<>();
         competitorQueryWrapper.in("display", 1);
         //通过传入参数去找当前的下拉参数
