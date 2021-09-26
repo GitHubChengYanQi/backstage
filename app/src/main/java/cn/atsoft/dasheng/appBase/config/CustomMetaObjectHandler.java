@@ -1,40 +1,18 @@
-/**
- * Copyright 2018-2020 stylefeng & fengshuonan (sn93@qq.com)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package cn.atsoft.dasheng.core.metadata;
+package cn.atsoft.dasheng.appBase.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-/**
- * 自定义sql字段填充器,本类默认在default-config.properties中配置
- * <p>
- * 若实际项目中，字段名称不一样，可以新建一个此类，在yml配置中覆盖mybatis-plus.global-config.metaObject-handler配置即可
- * <p>
- * 注意默认获取的userId为空
- *
- * @author fengshuonan
- * @Date 2018/7/4 下午12:42
- */
+
+//@Component
 public class CustomMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
+
         Object delFlag = null;
         try {
             delFlag = getFieldValByName(getDeleteFlagFieldName(), metaObject);
@@ -109,20 +87,6 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      */
     protected String getCreateTimeFieldName() {
         return "createTime";
-    }
-
-    /**
-     * 获取部门
-     */
-    protected String getDeptIdFieldName() {
-        return "deptId";
-    }
-
-    /**
-     * 获取负责人
-     */
-    protected String getUserIdFieldName() {
-        return "userId";
     }
 
     /**

@@ -53,7 +53,7 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
      * 负责人
      */
     @ApiModelProperty("负责人")
-    private Long person;
+    private Long userId;
 
     /**
      * 客户id

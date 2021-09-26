@@ -6,7 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.CrmBusiness">
         <id column="business_id" property="businessId"/>
         <result column="business_name" property="businessName"/>
-        <result column="person" property="person"/>
+        <result column="user_id" property="userId"/>
         <result column="customer_id" property="customerId"/>
         <result column="statement_time" property="statementTime"/>
         <result column="change_time" property="changeTime"/>
@@ -34,7 +34,7 @@
         process_id
         AS "processId",track_id
         AS "trackId",  business_id
-        AS "businessId", business_name AS "businessName", person AS "person", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        AS "businessId", business_name AS "businessName", user_id AS "userId", customer_id AS "customerId", statement_time AS "statementTime", change_time AS "changeTime", opportunity_amount AS "opportunityAmount", state AS "state", sales_id AS "salesId", total_products AS "totalProducts", origin_id AS "originId", time AS "time", stage AS "stage", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -78,8 +78,8 @@
         <if test="paramCondition.trackId != null">
             and track_id = #{paramCondition.trackId}
         </if>
-        <if test="paramCondition.person != null">
-            and person =#{paramCondition.person}
+        <if test="paramCondition.userId != null">
+            and userId =#{paramCondition.userId}
         </if>
         <if test="paramCondition.state != null">
             and state =#{paramCondition.state}
