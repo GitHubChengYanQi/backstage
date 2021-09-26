@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
 import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
 import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
@@ -78,8 +79,9 @@ public class PluginsConfig {
                 try {
                     deptId = getFieldValByName(getDeptIdFieldName(), metaObject);
                     if (deptId == null){
-                        deptId =  LoginContextHolder.getContext().getUser().getDeptId();
-                        setFieldValByName(getDeptIdFieldName(),deptId,metaObject);
+                        LoginUser loginUser  =  LoginContextHolder.getContext().getUser();
+//                        deptId =  LoginContextHolder.getContext().getUser().getDeptId();
+//                        setFieldValByName(getDeptIdFieldName(),deptId,metaObject);
                     }
                 }catch (ReflectionException e) {
                     //没有此字段，则不处理
