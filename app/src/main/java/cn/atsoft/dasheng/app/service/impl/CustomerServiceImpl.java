@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     @BussinessLog
+    @Transactional
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();

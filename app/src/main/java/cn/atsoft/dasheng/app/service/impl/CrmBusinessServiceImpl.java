@@ -268,7 +268,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             cids.add(item.getCustomerId());
             OriginIds.add(item.getOriginId());
             salesIds.add(item.getSalesId());
-            userIds.add(item.getPerson());
+            userIds.add(item.getUserId());
             trackList.add(item.getTrackId());
             processIds.add(item.getProcessId());
             businessIds.add(item.getBusinessId());
@@ -353,7 +353,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             }
 
             for (User user1 : userList) {
-                if (user1.getUserId().equals(item.getPerson())) {
+                if (user1.getUserId().equals(item.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user1, userResult);
                     item.setUser(userResult);

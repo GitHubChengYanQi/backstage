@@ -1,10 +1,18 @@
 package cn.atsoft.dasheng.config.datasource;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.core.metadata.CustomMetaObjectHandler;
+import cn.atsoft.dasheng.sys.core.constant.factory.ConstantFactory;
+import cn.atsoft.dasheng.sys.core.constant.factory.IConstantFactory;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.ReflectionException;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Date;
 
 /**
  * mp的插件拓展和资源扫描
@@ -28,6 +36,97 @@ public class PluginsConfig {
 
                     //如果获取不到当前用户就存空id
                     return -100L;
+                }
+            }
+
+            @Override
+            public void insertFill(MetaObject metaObject) {
+                Object delFlag = null;
+                try {
+                    delFlag = getFieldValByName(getDeleteFlagFieldName(), metaObject);
+                    if (delFlag == null) {
+                        setFieldValByName(getDeleteFlagFieldName(), getDefaultDelFlagValue(), metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+
+                Object createTime = null;
+                try {
+                    createTime = getFieldValByName(getCreateTimeFieldName(), metaObject);
+                    if (createTime == null) {
+                        setFieldValByName(getCreateTimeFieldName(), new Date(), metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+
+                Object createUser = null;
+                try {
+                    createUser = getFieldValByName(getCreateUserFieldName(), metaObject);
+                    if (createUser == null) {
+
+                        //获取当前登录用户
+                        Object accountId = getUserUniqueId();
+
+                        setFieldValByName(getCreateUserFieldName(), accountId, metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+                Object deptId = null;
+                try {
+                    deptId = getFieldValByName(getDeptIdFieldName(), metaObject);
+                    if (deptId == null){
+                        deptId =  LoginContextHolder.getContext().getUser().getDeptId();
+                        setFieldValByName(getDeptIdFieldName(),deptId,metaObject);
+                    }
+                }catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+                Object userId = null;
+                try {
+                    userId = getFieldValByName(getUserIdFieldName(), metaObject);
+                    IConstantFactory iConstantFactory = new ConstantFactory();
+                    Long deptId1 = iConstantFactory.getDeptId((Long) userId);
+
+                    if (userId != null){
+                        setFieldValByName(getDeptIdFieldName(),deptId1,metaObject);
+                    }
+                }catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+
+            }
+            @Override
+            public void updateFill(MetaObject metaObject) {
+                try {
+                    setFieldValByName(getUpdateTimeFieldName(), new Date(), metaObject);
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+
+                Object updateUser = null;
+                try {
+                    updateUser = getFieldValByName(getUpdateUserFieldName(), metaObject);
+                    if (updateUser == null) {
+                        Object accountId = getUserUniqueId();
+                        setFieldValByName(getUpdateUserFieldName(), accountId, metaObject);
+                    }
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
+                Object userId = null;
+                try {
+                    userId = getFieldValByName(getUserIdFieldName(), metaObject);
+                    IConstantFactory iConstantFactory = new ConstantFactory();
+                    Long deptId1 = iConstantFactory.getDeptId((Long) userId);
+
+                    if (userId != null){
+                        setFieldValByName(getDeptIdFieldName(),deptId1,metaObject);
+                    }
+                }catch (ReflectionException e) {
+                    //没有此字段，则不处理
                 }
             }
         };

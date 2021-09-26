@@ -36,6 +36,7 @@ public interface IConstantFactory {
      */
     String getUserNameById(Long userId);
 
+    Long getDeptId(Long userId);
     /**
      * 根据用户id获取用户账号
      *
