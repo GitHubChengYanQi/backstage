@@ -113,7 +113,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                 if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
-
                 }
             }
         }
@@ -258,21 +257,22 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public void batchDelete(List<Long> id) {
-        Contacts contacts = new Contacts();
-        contacts.setDisplay(0);
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id", id);
-        this.update(contacts, contactsQueryWrapper);
-        //删除联系人带着联系人电话直接删除
-        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
-        List<Phone> phoneList = new ArrayList<>();
-        for (Phone phone : phones) {
-            phone.setDisplay(0);
-            phoneList.add(phone);
-        }
-        if (ToolUtil.isNotEmpty(phoneList)) {
-            phoneService.updateBatchById(phoneList);
-        }
+        throw  new ServiceException(500,"不可以删除联系人");
+//        Contacts contacts = new Contacts();
+//        contacts.setDisplay(0);
+//        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+//        contactsQueryWrapper.in("contacts_id", id);
+//        this.update(contacts, contactsQueryWrapper);
+//        //删除联系人带着联系人电话直接删除
+//        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
+//        List<Phone> phoneList = new ArrayList<>();
+//        for (Phone phone : phones) {
+//            phone.setDisplay(0);
+//            phoneList.add(phone);
+//        }
+//        if (ToolUtil.isNotEmpty(phoneList)) {
+//            phoneService.updateBatchById(phoneList);
+//        }
 
 
     }
