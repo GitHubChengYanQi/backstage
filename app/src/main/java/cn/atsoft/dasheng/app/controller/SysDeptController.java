@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.SysDept;
 import cn.atsoft.dasheng.app.model.params.SysDeptParam;
 import cn.atsoft.dasheng.app.model.result.SysDeptResult;
 import cn.atsoft.dasheng.app.service.SysDeptService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -114,7 +116,13 @@ public class SysDeptController extends BaseController {
             List<String>  pidValue = sysDeptParam.getPidValue();
             sysDeptParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         }
-        return this.sysDeptService.findPageBySpec(sysDeptParam);
+//        return this.sysDeptService.findPageBySpec(sysDeptParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.sysDeptService.findPageBySpec(sysDeptParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.sysDeptService.findPageBySpec(sysDeptParam, dataScope);
+        }
     }
 
     /**

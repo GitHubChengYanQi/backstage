@@ -57,10 +57,11 @@ public class ContractController extends BaseController {
         if (contractParam.getTemplateId() != null) {
             TemplateParam templateParam = new TemplateParam();
             templateParam.setTemplateId(contractParam.getTemplateId());
-            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam);
+            PageInfo<TemplateResult> pageBySpec = templateService.findPageBySpec(templateParam,null);
             contractParam.setContent(pageBySpec.getData().get(0).getContent());
         }
         ContractResult contractResult = this.contractService.addResult(contractParam);
+
         return ResponseData.success(contractResult);
     }
 

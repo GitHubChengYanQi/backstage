@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.ErpOrderMapper;
 import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -89,9 +90,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     }
 
     @Override
-    public PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param) {
+    public PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param, DataScope dataScope ) {
         Page<ErpOrderResult> pageContext = getPageContext();
-        IPage<ErpOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ErpOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

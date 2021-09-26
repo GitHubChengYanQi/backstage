@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface CrmBusinessDetailedMapper extends BaseMapper<CrmBusinessDetaile
      * @author qr
      * @Date 2021-08-04
      */
-    Page<CrmBusinessDetailedResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmBusinessDetailedParam paramCondition);
+    Page<CrmBusinessDetailedResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmBusinessDetailedParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

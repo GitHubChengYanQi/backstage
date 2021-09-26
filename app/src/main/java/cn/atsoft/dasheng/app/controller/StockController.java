@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.StockRequest;
 import cn.atsoft.dasheng.app.wrapper.StockSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -104,7 +106,13 @@ public class StockController extends BaseController {
         if (ToolUtil.isEmpty(stockParam)) {
             stockParam = new StockParam();
         }
-        return this.stockService.findPageBySpec(stockParam);
+//        return this.stockService.findPageBySpec(stockParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.stockService.findPageBySpec(stockParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.stockService.findPageBySpec(stockParam, dataScope);
+        }
     }
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("所有列表")

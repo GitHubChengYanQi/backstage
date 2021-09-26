@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.mapper.ContractDetailMapper;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import  cn.atsoft.dasheng.app.service.ContractDetailService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -69,9 +70,9 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
     }
 
     @Override
-    public PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param){
+    public PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope ){
         Page<ContractDetailResult> pageContext = getPageContext();
-        IPage<ContractDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ContractDetailResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
 
         List<Long> detailIds = new ArrayList<>();

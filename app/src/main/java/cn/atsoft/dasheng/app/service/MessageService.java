@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.model.result.MessageResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface MessageService extends IService<Message> {
      * @author 
      * @Date 2021-08-03
      */
-     PageInfo<MessageResult> findPageBySpec(MessageParam param);
+     PageInfo<MessageResult> findPageBySpec(MessageParam param, DataScope dataScope );
 
 }

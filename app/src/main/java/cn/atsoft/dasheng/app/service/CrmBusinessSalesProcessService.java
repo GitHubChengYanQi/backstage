@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSalesProcess;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesProcessParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesProcessResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface CrmBusinessSalesProcessService extends IService<CrmBusinessSale
      * @author 
      * @Date 2021-08-04
      */
-     PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param);
+     PageInfo<CrmBusinessSalesProcessResult> findPageBySpec(CrmBusinessSalesProcessParam param, DataScope dataScope );
 
 }

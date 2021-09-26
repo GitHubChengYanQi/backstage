@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -170,9 +171,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     @Override
-    public PageInfo<InstockResult> findPageBySpec(InstockParam param) {
+    public PageInfo<InstockResult> findPageBySpec(InstockParam param, DataScope dataScope) {
         Page<InstockResult> pageContext = getPageContext();
-        IPage<InstockResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<InstockResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

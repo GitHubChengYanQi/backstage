@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.CrmPayment;
 import cn.atsoft.dasheng.app.model.params.CrmPaymentParam;
 import cn.atsoft.dasheng.app.model.result.CrmPaymentResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface CrmPaymentMapper extends BaseMapper<CrmPayment> {
      * @author ta
      * @Date 2021-07-26
      */
-    Page<CrmPaymentResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmPaymentParam paramCondition);
+    Page<CrmPaymentResult> customPageList(@Param("page") Page page, @Param("paramCondition") CrmPaymentParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.params.StorehouseParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface StorehouseMapper extends BaseMapper<Storehouse> {
      * @author 
      * @Date 2021-07-15
      */
-    Page<StorehouseResult> customPageList(@Param("page") Page page, @Param("paramCondition") StorehouseParam paramCondition);
+    Page<StorehouseResult> customPageList(@Param("page") Page page, @Param("paramCondition") StorehouseParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

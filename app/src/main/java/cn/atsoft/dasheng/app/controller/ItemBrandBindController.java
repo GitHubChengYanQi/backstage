@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ItemBrandBind;
 import cn.atsoft.dasheng.app.model.params.ItemBrandBindParam;
 import cn.atsoft.dasheng.app.model.result.ItemBrandBindResult;
 import cn.atsoft.dasheng.app.service.ItemBrandBindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -99,7 +101,13 @@ public class ItemBrandBindController extends BaseController {
         if(ToolUtil.isEmpty(itemBrandBindParam)){
             itemBrandBindParam = new ItemBrandBindParam();
         }
-        return this.itemBrandBindService.findPageBySpec(itemBrandBindParam);
+//        return this.itemBrandBindService.findPageBySpec(itemBrandBindParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.itemBrandBindService.findPageBySpec(itemBrandBindParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.itemBrandBindService.findPageBySpec(itemBrandBindParam, dataScope);
+        }
     }
 
 

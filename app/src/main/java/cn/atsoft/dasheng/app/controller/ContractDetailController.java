@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
 import cn.atsoft.dasheng.app.service.ContractDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -101,7 +103,13 @@ public class ContractDetailController extends BaseController {
         if(ToolUtil.isEmpty(contractDetailParam)){
             contractDetailParam = new ContractDetailParam();
         }
-        return this.contractDetailService.findPageBySpec(contractDetailParam);
+//        return this.contractDetailService.findPageBySpec(contractDetailParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.contractDetailService.findPageBySpec(contractDetailParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.contractDetailService.findPageBySpec(contractDetailParam, dataScope);
+        }
     }
 
 

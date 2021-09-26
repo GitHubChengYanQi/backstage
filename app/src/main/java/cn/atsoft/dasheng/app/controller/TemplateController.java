@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.TemplateSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -103,7 +105,13 @@ public class TemplateController extends BaseController {
         if (ToolUtil.isEmpty(templateParam)) {
             templateParam = new TemplateParam();
         }
-        return this.templateService.findPageBySpec(templateParam);
+//        return this.templateService.findPageBySpec(templateParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.templateService.findPageBySpec(templateParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.templateService.findPageBySpec(templateParam, dataScope);
+        }
     }
 
 

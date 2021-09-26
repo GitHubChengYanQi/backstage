@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.PhoneSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -103,7 +105,13 @@ public class PhoneController extends BaseController {
         if(ToolUtil.isEmpty(phoneParam)){
             phoneParam = new PhoneParam();
         }
-        return this.phoneService.findPageBySpec(phoneParam);
+//        return this.phoneService.findPageBySpec(phoneParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.phoneService.findPageBySpec(phoneParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.phoneService.findPageBySpec(phoneParam, dataScope);
+        }
     }
 
 

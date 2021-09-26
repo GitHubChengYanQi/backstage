@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public interface CrmCustomerLevelService extends IService<CrmCustomerLevel> {
      * @author
      * @Date 2021-07-30
      */
-    PageInfo<CrmCustomerLevelResult> findPageBySpec(CrmCustomerLevelParam param);
+    PageInfo<CrmCustomerLevelResult> findPageBySpec(CrmCustomerLevelParam param, DataScope dataScope );
 
     void batchDelete(List<Long> ids);
 

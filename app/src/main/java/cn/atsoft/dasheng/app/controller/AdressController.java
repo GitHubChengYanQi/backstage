@@ -93,11 +93,11 @@ public class AdressController extends BaseController {
 //        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
 //        return ResponseData.success(pageBySpec.getData().get(0));
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<AdressResult> adress = adressService.findPageBySpec(null, adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam,null );
             return ResponseData.success(adress.getData().get(0));
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<AdressResult> adress = adressService.findPageBySpec(dataScope, adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, dataScope);
             return ResponseData.success(adress.getData().get(0));
         }
     }
@@ -118,14 +118,14 @@ public class AdressController extends BaseController {
             adressParam = new AdressParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<AdressResult> adress = adressService.findPageBySpec(null, adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, null);
 //            return ResponseData.success(adress.getData().get(0));
-            return this.adressService.findPageBySpec(null, adressParam);
+            return this.adressService.findPageBySpec(adressParam, null);
 
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<AdressResult> adress = adressService.findPageBySpec(dataScope, adressParam);
-            return this.adressService.findPageBySpec(null, adressParam);
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, dataScope);
+            return this.adressService.findPageBySpec(adressParam, null);
         }
 //        return this.adressService.findPageBySpec(null,adressParam);
     }

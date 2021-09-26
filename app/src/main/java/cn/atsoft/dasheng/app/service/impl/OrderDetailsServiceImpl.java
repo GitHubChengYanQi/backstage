@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OrderDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import  cn.atsoft.dasheng.app.service.OrderDetailsService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -64,9 +65,9 @@ public class OrderDetailsServiceImpl extends ServiceImpl<OrderDetailsMapper, Ord
     }
 
     @Override
-    public PageInfo<OrderDetailsResult> findPageBySpec(OrderDetailsParam param){
+    public PageInfo<OrderDetailsResult> findPageBySpec(OrderDetailsParam param, DataScope dataScope){
         Page<OrderDetailsResult> pageContext = getPageContext();
-        IPage<OrderDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<OrderDetailsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

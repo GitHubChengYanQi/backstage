@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.ItemClassMapper;
 import cn.atsoft.dasheng.app.model.params.ItemClassParam;
 import cn.atsoft.dasheng.app.model.result.ItemClassResult;
 import  cn.atsoft.dasheng.app.service.ItemClassService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -64,9 +65,9 @@ public class ItemClassServiceImpl extends ServiceImpl<ItemClassMapper, ItemClass
     }
 
     @Override
-    public PageInfo<ItemClassResult> findPageBySpec(ItemClassParam param){
+    public PageInfo<ItemClassResult> findPageBySpec(ItemClassParam param, DataScope dataScope){
         Page<ItemClassResult> pageContext = getPageContext();
-        IPage<ItemClassResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ItemClassResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

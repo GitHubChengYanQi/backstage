@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.CrmCustomerLevelMapper;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
 import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -65,9 +66,9 @@ public class CrmCustomerLevelServiceImpl extends ServiceImpl<CrmCustomerLevelMap
     }
 
     @Override
-    public PageInfo<CrmCustomerLevelResult> findPageBySpec(CrmCustomerLevelParam param) {
+    public PageInfo<CrmCustomerLevelResult> findPageBySpec(CrmCustomerLevelParam param, DataScope dataScope ) {
         Page<CrmCustomerLevelResult> pageContext = getPageContext();
-        IPage<CrmCustomerLevelResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmCustomerLevelResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface OutstockMapper extends BaseMapper<Outstock> {
      * @author song
      * @Date 2021-07-17
      */
-    Page<OutstockResult> customPageList(@Param("page") Page page, @Param("paramCondition") OutstockParam paramCondition);
+    Page<OutstockResult> customPageList(@Param("page") Page page, @Param("paramCondition") OutstockParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

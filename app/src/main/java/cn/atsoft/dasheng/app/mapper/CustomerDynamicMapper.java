@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.CustomerDynamic;
 import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface CustomerDynamicMapper extends BaseMapper<CustomerDynamic> {
      * @author cheng
      * @Date 2021-08-10
      */
-    Page<CustomerDynamicResult> customPageList(@Param("page") Page page, @Param("paramCondition") CustomerDynamicParam paramCondition);
+    Page<CustomerDynamicResult> customPageList(@Param("page") Page page, @Param("paramCondition") CustomerDynamicParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,7 +45,7 @@ public interface BusinessTrackMapper extends BaseMapper<BusinessTrack> {
      * @author cheng
      * @Date 2021-09-17
      */
-    Page<BusinessTrackResult> customPageList(List<Long> trackMessageIds,@Param("page") Page page, @Param("paramCondition") BusinessTrackParam paramCondition);
+    Page<BusinessTrackResult> customPageList(List<Long> trackMessageIds,@Param("page") Page page, @Param("paramCondition") BusinessTrackParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

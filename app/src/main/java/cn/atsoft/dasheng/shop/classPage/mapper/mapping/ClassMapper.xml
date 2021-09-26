@@ -76,7 +76,7 @@
     </select>
 
 
-    
+
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.shop.classPage.model.params.ClassParam">

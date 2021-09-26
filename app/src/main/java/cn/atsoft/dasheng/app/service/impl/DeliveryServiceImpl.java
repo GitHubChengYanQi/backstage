@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -87,9 +88,9 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     }
 
     @Override
-    public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param) {
+    public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param, DataScope dataScope ) {
         Page<DeliveryResult> pageContext = getPageContext();
-        IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);

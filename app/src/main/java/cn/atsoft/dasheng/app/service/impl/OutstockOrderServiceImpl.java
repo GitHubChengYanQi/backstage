@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
@@ -189,9 +190,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     }
 
     @Override
-    public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param) {
+    public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope) {
         Page<OutstockOrderResult> pageContext = getPageContext();
-        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

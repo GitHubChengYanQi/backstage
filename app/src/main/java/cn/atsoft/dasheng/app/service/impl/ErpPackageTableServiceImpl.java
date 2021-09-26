@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.app.mapper.ErpPackageTableMapper;
 import cn.atsoft.dasheng.app.model.params.ErpPackageTableParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageTableResult;
 import cn.atsoft.dasheng.app.service.ErpPackageTableService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -75,9 +76,9 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
     }
 
     @Override
-    public PageInfo<ErpPackageTableResult> findPageBySpec(ErpPackageTableParam param) {
+    public PageInfo<ErpPackageTableResult> findPageBySpec(ErpPackageTableParam param, DataScope dataScope) {
         Page<ErpPackageTableResult> pageContext = getPageContext();
-        IPage<ErpPackageTableResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ErpPackageTableResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
 

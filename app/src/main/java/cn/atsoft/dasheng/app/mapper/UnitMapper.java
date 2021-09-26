@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.UnitParam;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface UnitMapper extends BaseMapper<Unit> {
      * @author cheng
      * @Date 2021-08-11
      */
-    Page<UnitResult> customPageList(@Param("page") Page page, @Param("paramCondition") UnitParam paramCondition);
+    Page<UnitResult> customPageList(@Param("page") Page page, @Param("paramCondition") UnitParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

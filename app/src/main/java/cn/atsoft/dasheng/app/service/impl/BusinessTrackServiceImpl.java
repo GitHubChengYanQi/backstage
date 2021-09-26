@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.app.mapper.BusinessTrackMapper;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -77,12 +78,12 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
     }
 
     @Override
-    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param) {
+    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope ) {
 
         List<Long> trackMessageIds = param.getTrackMessageIds();
 
         Page<BusinessTrackResult> pageContext = getPageContext();
-        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param);
+        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param,dataScope);
         List<Long> ids = new ArrayList<>();
         for (BusinessTrackResult record : page.getRecords()) {
             ids.add(record.getUserId());

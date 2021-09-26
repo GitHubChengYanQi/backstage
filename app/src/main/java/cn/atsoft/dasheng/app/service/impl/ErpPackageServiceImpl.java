@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.mapper.ErpPackageMapper;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageResult;
 import  cn.atsoft.dasheng.app.service.ErpPackageService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -53,7 +54,8 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
 
         ErpPackageTableParam erpPackageTableParam = new ErpPackageTableParam();
         erpPackageTableParam.setPackageId(param.getPackageId());
-        PageInfo<ErpPackageTableResult> pageBySpec = erpPackageTableService.findPageBySpec(erpPackageTableParam);
+        DataScope dataScope = new DataScope();
+        PageInfo<ErpPackageTableResult> pageBySpec = erpPackageTableService.findPageBySpec(erpPackageTableParam,dataScope);
         for (int i =0 ; i < pageBySpec.getData().size(); i++){
             erpPackageTableParam.setId(pageBySpec.getData().get(i).getId());
             erpPackageTableService.delete(erpPackageTableParam);
@@ -103,9 +105,9 @@ public class ErpPackageServiceImpl extends ServiceImpl<ErpPackageMapper, ErpPack
     }
 
     @Override
-    public PageInfo<ErpPackageResult> findPageBySpec(ErpPackageParam param){
+    public PageInfo<ErpPackageResult> findPageBySpec(ErpPackageParam param, DataScope dataScope ){
         Page<ErpPackageResult> pageContext = getPageContext();
-        IPage<ErpPackageResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ErpPackageResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

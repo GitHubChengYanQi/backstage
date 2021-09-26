@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.model.params.MaterialParam;
 import cn.atsoft.dasheng.app.model.result.MaterialResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface MaterialService extends IService<Material> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<MaterialResult> findPageBySpec(MaterialParam param);
+     PageInfo<MaterialResult> findPageBySpec(MaterialParam param, DataScope dataScope );
 
 }

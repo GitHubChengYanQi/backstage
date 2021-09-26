@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public interface TemplateService extends IService<Template> {
      * @author
      * @Date 2021-07-21
      */
-    PageInfo<TemplateResult> findPageBySpec(TemplateParam param);
+    PageInfo<TemplateResult> findPageBySpec(TemplateParam param, DataScope dataScope );
 
     /**
      * 批量删除

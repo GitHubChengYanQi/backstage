@@ -68,7 +68,7 @@ public interface AdressService extends IService<Adress> {
      * @author 
      * @Date 2021-07-23
      */
-     PageInfo<AdressResult> findPageBySpec(DataScope dataScope , AdressParam param);
+     PageInfo<AdressResult> findPageBySpec(AdressParam param,DataScope dataScope );
 
 
      List<AdressResult> listQuery(List<Long> ids);

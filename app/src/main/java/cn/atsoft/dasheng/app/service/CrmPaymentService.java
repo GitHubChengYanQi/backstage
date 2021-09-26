@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmPayment;
 import cn.atsoft.dasheng.app.model.params.CrmPaymentParam;
 import cn.atsoft.dasheng.app.model.result.CrmPaymentResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface CrmPaymentService extends IService<CrmPayment> {
      * @author ta
      * @Date 2021-07-26
      */
-     PageInfo<CrmPaymentResult> findPageBySpec(CrmPaymentParam param);
+     PageInfo<CrmPaymentResult> findPageBySpec(CrmPaymentParam param, DataScope dataScope );
 
 }

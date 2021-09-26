@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.UnitMapper;
 import cn.atsoft.dasheng.app.model.params.UnitParam;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import  cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,9 +59,9 @@ public class UnitServiceImpl extends ServiceImpl<UnitMapper, Unit> implements Un
     }
 
     @Override
-    public PageInfo<UnitResult> findPageBySpec(UnitParam param){
+    public PageInfo<UnitResult> findPageBySpec(UnitParam param, DataScope dataScope){
         Page<UnitResult> pageContext = getPageContext();
-        IPage<UnitResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<UnitResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpPackage;
 import cn.atsoft.dasheng.app.model.params.ErpPackageParam;
 import cn.atsoft.dasheng.app.model.result.ErpPackageResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -67,6 +68,6 @@ public interface ErpPackageService extends IService<ErpPackage> {
      * @author qr
      * @Date 2021-08-04
      */
-     PageInfo<ErpPackageResult> findPageBySpec(ErpPackageParam param);
+     PageInfo<ErpPackageResult> findPageBySpec(ErpPackageParam param, DataScope dataScope );
 
 }

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpOrder;
 import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
 import cn.atsoft.dasheng.app.model.result.ErpOrderResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -67,6 +68,6 @@ public interface ErpOrderService extends IService<ErpOrder> {
      * @author ta
      * @Date 2021-07-26
      */
-     PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param);
+     PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param, DataScope dataScope );
 
 }

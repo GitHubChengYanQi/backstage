@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.DeliveryDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -78,9 +79,9 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     }
 
     @Override
-    public PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param) {
+    public PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param, DataScope dataScope ) {
         Page<DeliveryDetailsResult> pageContext = getPageContext();
-        IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<DeliveryDetailsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

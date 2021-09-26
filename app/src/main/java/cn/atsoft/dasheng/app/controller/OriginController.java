@@ -2,12 +2,14 @@ package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.OriginSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.app.model.params.OriginParam;
 import cn.atsoft.dasheng.app.model.result.OriginResult;
 import cn.atsoft.dasheng.app.service.OriginService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -103,7 +105,13 @@ public class OriginController extends BaseController {
         if (ToolUtil.isEmpty(originParam)) {
             originParam = new OriginParam();
         }
-        return this.originService.findPageBySpec(originParam);
+//        return this.originService.findPageBySpec(originParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.originService.findPageBySpec(originParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.originService.findPageBySpec(originParam, dataScope);
+        }
     }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)

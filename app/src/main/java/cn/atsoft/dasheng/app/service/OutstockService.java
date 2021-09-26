@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public interface OutstockService extends IService<Outstock> {
      * @author song
      * @Date 2021-07-17
      */
-     PageInfo<OutstockResult> findPageBySpec(OutstockParam param);
+     PageInfo<OutstockResult> findPageBySpec(OutstockParam param, DataScope dataScope );
 
     OutstockResult detail (Long id);
 

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.StorehouseMapper;
 import cn.atsoft.dasheng.app.model.params.StorehouseParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,9 +61,9 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
     }
 
     @Override
-    public PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param){
+    public PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope){
         Page<StorehouseResult> pageContext = getPageContext();
-        IPage<StorehouseResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<StorehouseResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 
