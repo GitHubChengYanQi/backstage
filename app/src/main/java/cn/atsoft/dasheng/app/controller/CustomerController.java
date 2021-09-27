@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.sys.modular.system.warpper.UserWrapper;
@@ -157,6 +158,18 @@ public class CustomerController extends BaseController {
     @Permission
     public ResponseData UpdateStatus(@RequestBody CustomerParam CustomerParam) {
         customerService.updateStatus(CustomerParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/updateChargePerson", method = RequestMethod.POST)
+    @ApiOperation("更新负责人")
+    @Permission
+    public ResponseData updateChargePerson(@RequestBody CustomerParam customerParam) {
+
+        if (customerParam.getCustomerId() == null) {
+            throw new ServiceException(500,"请选择你要的商机");
+        }
+        this.customerService.updateChargePerson(customerParam);
         return ResponseData.success();
     }
 }

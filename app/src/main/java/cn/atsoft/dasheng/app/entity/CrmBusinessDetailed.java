@@ -51,7 +51,7 @@ public class CrmBusinessDetailed implements Serializable {
     @TableField("quantity")
     private int quantity;
 
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getId() {

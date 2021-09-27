@@ -80,7 +80,7 @@ public class DeliveryDetails implements Serializable {
     @TableField("display")
     private Integer display;
 
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {

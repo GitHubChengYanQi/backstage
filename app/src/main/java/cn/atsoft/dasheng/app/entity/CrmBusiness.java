@@ -140,7 +140,7 @@ public class CrmBusiness implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+    @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getUserId() {
