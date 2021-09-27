@@ -249,20 +249,25 @@ public class FreedAop {
         }
         //跟踪动态
         if (target instanceof TrackMessageService) {
-            FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
-            TrackMessage trackMessageResult = (TrackMessage) result;
+            try {
+                FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
+                TrackMessage trackMessageResult = (TrackMessage) result;
 //            if (ToolUtil.isEmpty(trackMessageResult.getBusinessId())) {
 //                throw new ServiceException(500, "请确认当前项目");
 //            }
-            businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
-            String content = "";
-            switch (methodName) {
-                case "add":
-                    content = trackMessage.getAdd().replace("[操作人]", user.getName());
-                    businessDynamicParam.setContent(content);
-                    break;
+                businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
+                String content = "";
+                switch (methodName) {
+                    case "add":
+                        content = trackMessage.getAdd().replace("[操作人]", user.getName());
+                        businessDynamicParam.setContent(content);
+                        break;
+                }
+                businessDynamicService.add(businessDynamicParam);
+            }catch (Exception e){
+
             }
-            businessDynamicService.add(businessDynamicParam);
+
         }
 
 

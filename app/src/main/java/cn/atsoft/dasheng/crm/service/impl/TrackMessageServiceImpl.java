@@ -61,9 +61,9 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
-        if (ToolUtil.isEmpty(competitorQuoteParams)) {
-            throw new ServiceException(500, "请选择当前流程");
-        }
+//        if (ToolUtil.isEmpty(competitorQuoteParams)) {
+//            throw new ServiceException(500, "请选择当前流程");
+//        }
         // 添加对手/我放报价
         List<CompetitorQuote> competitorQuotes = new ArrayList<>();
         for (CompetitorQuoteParam data : competitorQuoteParams) {
