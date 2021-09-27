@@ -181,10 +181,10 @@ public class OutBoundServiceImpl implements OutBoundService {
         DeliveryParam deliveryParam = new DeliveryParam();
         ToolUtil.copyProperties(delivery, deliveryParam);
         deliveryParam.setDeliveryWay(outstockApplyParam.getDeliveryWay());
-        if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 1) {
+        if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 0) {
             deliveryParam.setLogisticsCompany(outstockApplyParam.getLogisticsCompany());
             deliveryParam.setLogisticsNumber(outstockApplyParam.getLogisticsNumber());
-        } else if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 0) {
+        } else if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 1) {
             deliveryParam.setDriverName(outstockApplyParam.getDriverName());
             deliveryParam.setDriverPhone(outstockApplyParam.getDriverPhone());
             deliveryParam.setLicensePlate(outstockApplyParam.getLicensePlate());
