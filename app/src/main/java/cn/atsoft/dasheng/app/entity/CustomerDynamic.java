@@ -68,7 +68,7 @@ public class CustomerDynamic implements Serializable {
      */
     @TableField("display")
     private Integer display;
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

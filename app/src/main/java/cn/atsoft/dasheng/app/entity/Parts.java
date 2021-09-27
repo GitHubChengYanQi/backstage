@@ -25,7 +25,7 @@ public class Parts implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

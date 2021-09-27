@@ -33,7 +33,7 @@ public class Storehouse implements Serializable {
     @TableField("latitude")
     private BigDecimal latitude;
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
