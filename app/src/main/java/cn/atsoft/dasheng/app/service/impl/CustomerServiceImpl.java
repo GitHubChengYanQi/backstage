@@ -88,14 +88,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 contactsBindParam.setCustomerId(entity.getCustomerId());
                 contactsBindParam.setContactsId(contacts.getContactsId());
                 contactsBindService.add(contactsBindParam);
-            }else {
-                throw  new ServiceException(500,"请填写正确联系人信息");
+            } else {
+                throw new ServiceException(500, "请填写正确联系人信息");
             }
         }
 
         //添加地址
+        for (AdressParam adressParam : param.getAdressParams()) {
+            if (adressParam.getLocation() != null && !adressParam.getLocation().equals("")) {
+                adressService.add(adressParam);
+            }
+        }
         if (ToolUtil.isNotEmpty(param.getAdressParams())) {
-            addAdress(entity.getCustomerId(), param.getAdressParams());
+
         }
 
 

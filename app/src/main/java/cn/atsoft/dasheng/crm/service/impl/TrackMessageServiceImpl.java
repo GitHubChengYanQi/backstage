@@ -58,6 +58,10 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @Override
     @FreedLog
     public TrackMessage add(TrackMessageParam param) {
+
+        TrackMessage entity = getEntity(param);
+        this.save(entity);
+
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
@@ -89,8 +93,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 
         competitorQuoteService.saveBatch(competitorQuotes);
 
-        TrackMessage entity = getEntity(param);
-        this.save(entity);
+
         // 添加跟进内容
         if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
             List<BusinessTrack> businessTracks = new ArrayList<>();
