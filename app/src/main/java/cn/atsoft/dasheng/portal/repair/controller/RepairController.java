@@ -67,13 +67,6 @@ public class RepairController extends BaseController {
         return ResponseData.success(updatedynamic);
     }
 
-    @RequestMapping(value = "/addWx", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    @Permission
-    public ResponseData addWx(RepairParam repairParam) {
-
-        return ResponseData.success();
-    }
 
     /**
      * 删除接口
