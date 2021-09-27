@@ -141,9 +141,12 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody CrmBusinessParam crmBusinessParam) {
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
         businessQueryWrapper.in("display", 1);
+        if (ToolUtil.isNotEmpty(crmBusinessParam.getBusinessId())){
+            businessQueryWrapper.in("business_id", crmBusinessParam.getBusinessId());
+        }
         List<Map<String, Object>> list = this.crmBusinessService.listMaps(businessQueryWrapper);
         CrmBusinessSelectWrapper factory = new CrmBusinessSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
