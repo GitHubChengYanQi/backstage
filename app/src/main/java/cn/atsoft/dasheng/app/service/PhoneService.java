@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface PhoneService extends IService<Phone> {
      * @author cheng
      * @Date 2021-08-12
      */
-     PageInfo<PhoneResult> findPageBySpec(PhoneParam param);
+     PageInfo<PhoneResult> findPageBySpec(PhoneParam param, DataScope dataScope );
 
 }

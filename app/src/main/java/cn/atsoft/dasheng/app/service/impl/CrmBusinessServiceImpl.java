@@ -6,7 +6,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CrmBusinessMapper;
@@ -77,7 +77,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public CrmBusiness add(CrmBusinessParam param) {
         CrmBusiness entity = getEntity(param);
         this.save(entity);
@@ -101,7 +101,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public CrmBusiness delete(CrmBusinessParam param) {
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {
@@ -117,7 +117,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
 
     @Override
-    @BussinessLog
+    @FreedLog
     public CrmBusiness update(CrmBusinessParam param) {
 //        if (ToolUtil.isNotEmpty(param.getBusinessId())) {
 //            CrmBusiness crmBusiness = this.lambdaQuery()
@@ -268,7 +268,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             cids.add(item.getCustomerId());
             OriginIds.add(item.getOriginId());
             salesIds.add(item.getSalesId());
-            userIds.add(item.getPerson());
+            userIds.add(item.getUserId());
             trackList.add(item.getTrackId());
             processIds.add(item.getProcessId());
             businessIds.add(item.getBusinessId());
@@ -353,7 +353,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             }
 
             for (User user1 : userList) {
-                if (user1.getUserId().equals(item.getPerson())) {
+                if (user1.getUserId().equals(item.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user1, userResult);
                     item.setUser(userResult);

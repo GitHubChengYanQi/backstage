@@ -41,8 +41,8 @@ public class CrmBusiness implements Serializable {
     /**
      * 负责人
      */
-    @TableField("person")
-    private Long person;
+    @TableField("user_id")
+    private Long userId;
 
     /**
      * 客户id
@@ -63,6 +63,8 @@ public class CrmBusiness implements Serializable {
      */
     @TableField("statement_time")
     private Date statementTime;
+
+
 
     /**
      * 阶段变更时间
@@ -138,10 +140,16 @@ public class CrmBusiness implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
+    public Long getUserId() {
+        return userId;
+    }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
     /**
      * 状态
      */
@@ -172,13 +180,7 @@ public class CrmBusiness implements Serializable {
         this.businessName = businessName;
     }
 
-    public Long getPerson() {
-        return person;
-    }
 
-    public void setPerson(Long person) {
-        this.person = person;
-    }
 
     public Long getCustomerId() {
         return customerId;
@@ -312,7 +314,7 @@ public class CrmBusiness implements Serializable {
         return "CrmBusiness{" +
                 "businessId=" + businessId +
                 ", businessName=" + businessName +
-                ", person=" + person +
+                ", userId=" + userId +
                 ", customerId=" + customerId +
                 ", statementTime=" + statementTime +
                 ", changeTime=" + changeTime +

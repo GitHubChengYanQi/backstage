@@ -5,7 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.CustomerMapper;
@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private ContactsBindService contactsBindService;
 
     @Override
-    @BussinessLog
+    @FreedLog
+    @Transactional
     public Customer add(CustomerParam param) {
         //查询数据库是否已有同名客户
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
@@ -90,7 +92,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Customer delete(CustomerParam param) {
         param.setDisplay(0);
         Long customerId = param.getCustomerId();
@@ -129,7 +131,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Customer update(CustomerParam param) {
         Customer oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
@@ -302,7 +304,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             for (ContactsBind contactsBind : contactsBinds) {
                 if (record.getCustomerId().equals(contactsBind.getCustomerId())) {
                     for (Contacts contacts : contactsList) {
-                        if (contactsBind.getContactsId().equals(contacts.getContactsId())) {
+                        if (contactsBind.getContactsId() != null && contacts.getContactsId() != null && contactsBind.getContactsId().equals(contacts.getContactsId())) {
                             List<PhoneResult> phoneResults = new ArrayList<>();
                             ContactsResult contactsResult = new ContactsResult();
                             ToolUtil.copyProperties(contacts, contactsResult);

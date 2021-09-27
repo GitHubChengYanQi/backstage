@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -112,16 +114,14 @@ public class PartsController extends BaseController {
         if (ToolUtil.isEmpty(partsParam)) {
             partsParam = new PartsParam();
         }
-//        int size = partsService.findPageBySpec(partsParam).getData().size();
-//        for (int i = 0; i < size; i++) {
-//            Long partsId = partsService.findPageBySpec(partsParam).getData().get(i).getPartsId();
-//            String iname = partsService.findPageBySpec(partsParam).getData().get(i).getName();
-//            System.err.println(partsId + "-----------------------------------------------------------------------------------------------------------------");
-//            System.err.println(partsService.findPageBySpec(partsParam));
-//            System.err.println("物品名称：+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + iname);
-//        }
 
-        return this.partsService.findPageBySpec(partsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.partsService.findPageBySpec(partsParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.partsService.findPageBySpec(partsParam, dataScope);
+        }
+//        return this.partsService.findPageBySpec(partsParam);
     }
 
     /**

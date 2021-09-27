@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.CrmIndustryMapper;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
 import cn.atsoft.dasheng.app.service.CrmIndustryService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -66,9 +67,9 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
     }
 
     @Override
-    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param) {
+    public PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param, DataScope dataScope ) {
         Page<CrmIndustryResult> pageContext = getPageContext();
-        IPage<CrmIndustryResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmIndustryResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         List<Long> pids = new ArrayList<>();
         for (CrmIndustryResult item : page.getRecords()) {
@@ -105,5 +106,12 @@ public class CrmIndustryServiceImpl extends ServiceImpl<CrmIndustryMapper, CrmIn
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
+    @Override
+    public void batchDelete(List<Long> ids){
+        CrmIndustry crmIndustry = new CrmIndustry();
+        crmIndustry.setDisplay(0);
+        QueryWrapper<CrmIndustry> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("indusry_id");
+        this.update(crmIndustry,queryWrapper);
+    }
 }

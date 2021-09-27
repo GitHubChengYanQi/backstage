@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.DataClassification;
 import cn.atsoft.dasheng.crm.entity.SpeechcraftType;
@@ -74,6 +75,18 @@ public class SpeechcraftTypeController extends BaseController {
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody SpeechcraftTypeParam speechcraftTypeParam)  {
         this.speechcraftTypeService.delete(speechcraftTypeParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 批量删除接口
+     * @param batchDeleteRequest
+     * @return
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
+        this.speechcraftTypeService.batchDelete(batchDeleteRequest.getIds());
         return ResponseData.success();
     }
 

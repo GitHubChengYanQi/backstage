@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.portal.goods.controller;
 
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.goods.entity.Goods;
@@ -43,6 +44,7 @@ public class GoodsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody GoodsParam goodsParam) {
         this.goodsService.add(goodsParam);
         return ResponseData.success();
@@ -56,6 +58,7 @@ public class GoodsController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody GoodsParam goodsParam) {
 
         this.goodsService.update(goodsParam);
@@ -70,6 +73,7 @@ public class GoodsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody GoodsParam goodsParam)  {
         this.goodsService.delete(goodsParam);
         return ResponseData.success();
@@ -83,6 +87,7 @@ public class GoodsController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<GoodsResult> detail(@RequestBody GoodsParam goodsParam) {
         Goods detail = this.goodsService.getById(goodsParam.getGoodId());
         GoodsResult result = new GoodsResult();
@@ -100,6 +105,7 @@ public class GoodsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<GoodsResult> list(@RequestBody(required = false) GoodsParam goodsParam) {
         if(ToolUtil.isEmpty(goodsParam)){
             goodsParam = new GoodsParam();
@@ -107,6 +113,7 @@ public class GoodsController extends BaseController {
         return this.goodsService.findPageBySpec(goodsParam);
     }
 
+    @Permission
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Goods> goodsQueryWrapper = new QueryWrapper<>();

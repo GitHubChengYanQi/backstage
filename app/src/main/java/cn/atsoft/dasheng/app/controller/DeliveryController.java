@@ -1,12 +1,15 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.model.result.OutstockRequest;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Delivery;
 import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.result.DeliveryResult;
 import cn.atsoft.dasheng.app.service.DeliveryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -42,6 +45,7 @@ public class DeliveryController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody DeliveryParam deliveryParam) {
         this.deliveryService.add(deliveryParam);
         return ResponseData.success();
@@ -55,6 +59,7 @@ public class DeliveryController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody DeliveryParam deliveryParam) {
 
         this.deliveryService.update(deliveryParam);
@@ -69,6 +74,7 @@ public class DeliveryController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody DeliveryParam deliveryParam)  {
         this.deliveryService.delete(deliveryParam);
         return ResponseData.success();
@@ -82,6 +88,7 @@ public class DeliveryController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<DeliveryResult> detail(@RequestBody DeliveryParam deliveryParam) {
         Delivery detail = this.deliveryService.getById(deliveryParam.getDeliveryId());
         DeliveryResult result = new DeliveryResult();
@@ -98,14 +105,23 @@ public class DeliveryController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<DeliveryResult> list(@RequestBody(required = false) DeliveryParam deliveryParam) {
         if(ToolUtil.isEmpty(deliveryParam)){
             deliveryParam = new DeliveryParam();
         }
-        return this.deliveryService.findPageBySpec(deliveryParam);
+//        return this.deliveryService.findPageBySpec(deliveryParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.deliveryService.findPageBySpec(deliveryParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.deliveryService.findPageBySpec(deliveryParam, dataScope);
+        }
     }
+
     @RequestMapping(value = "/listAll", method = RequestMethod.POST)
     @ApiOperation("所有列表")
+    @Permission
     public List<DeliveryResult> listAll(@RequestBody(required = false) DeliveryParam deliveryParam) {
         List<DeliveryResult> listBySpec = deliveryService.findListBySpec(deliveryParam);
         deliveryService.format(listBySpec);
@@ -114,6 +130,7 @@ public class DeliveryController extends BaseController {
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public ResponseData bulkShipment(@RequestBody OutstockRequest outstockRequest){
         deliveryService.bulkShipment(outstockRequest);
         return ResponseData.success();

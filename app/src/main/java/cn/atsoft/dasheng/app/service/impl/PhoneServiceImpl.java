@@ -7,7 +7,8 @@ import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.mapper.PhoneMapper;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
-import  cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,7 +22,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author cheng
@@ -31,27 +32,25 @@ import java.util.List;
 public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements PhoneService {
 
     @Override
-    public void add(PhoneParam param){
-    //    查询电话号码是否已存在
-        QueryWrapper<Phone> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(Phone::getPhoneNumber,param.getPhoneNumber());
-        List<Phone> list = this.list(queryWrapper);
-        if(ToolUtil.isEmpty(list)){
-            Phone entity = getEntity(param);
-            this.save(entity);
-        }else {
-//            throw new ServiceException(500,"此电话号码已存在");
+    public void add(PhoneParam param) {
+        //防止添加重复电话号
+        Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i->i.eq("display",1)).count();
+        if (count > 0) {
+            throw new ServiceException(500, "不用重复添加手机号 或者  电话已经存在");
         }
+        Phone entity = getEntity(param);
+        this.save(entity);
+
 
     }
 
     @Override
-    public void delete(PhoneParam param){
+    public void delete(PhoneParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(PhoneParam param){
+    public void update(PhoneParam param) {
         Phone oldEntity = getOldEntity(param);
         Phone newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -59,23 +58,23 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
     }
 
     @Override
-    public PhoneResult findBySpec(PhoneParam param){
+    public PhoneResult findBySpec(PhoneParam param) {
         return null;
     }
 
     @Override
-    public List<PhoneResult> findListBySpec(PhoneParam param){
+    public List<PhoneResult> findListBySpec(PhoneParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<PhoneResult> findPageBySpec(PhoneParam param){
+    public PageInfo<PhoneResult> findPageBySpec(PhoneParam param, DataScope dataScope) {
         Page<PhoneResult> pageContext = getPageContext();
-        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PhoneResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(PhoneParam param){
+    private Serializable getKey(PhoneParam param) {
         return param.getPhoneId();
     }
 

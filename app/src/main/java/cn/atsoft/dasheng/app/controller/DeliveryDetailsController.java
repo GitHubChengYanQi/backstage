@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
 import cn.atsoft.dasheng.app.service.DeliveryDetailsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -100,7 +102,13 @@ public class DeliveryDetailsController extends BaseController {
         if(ToolUtil.isEmpty(deliveryDetailsParam)){
             deliveryDetailsParam = new DeliveryDetailsParam();
         }
-        return this.deliveryDetailsService.findPageBySpec(deliveryDetailsParam);
+//        return this.deliveryDetailsService.findPageBySpec(deliveryDetailsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.deliveryDetailsService.findPageBySpec(deliveryDetailsParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.deliveryDetailsService.findPageBySpec(deliveryDetailsParam, dataScope);
+        }
     }
     /**
      * 查询所有列表

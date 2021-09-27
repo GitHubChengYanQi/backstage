@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.DeliveryDetails;
 import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.app.model.result.DeliveryDetailsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public interface DeliveryDetailsService extends IService<DeliveryDetails> {
      * @author  
      * @Date 2021-08-20
      */
-     PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param);
+     PageInfo<DeliveryDetailsResult> findPageBySpec(DeliveryDetailsParam param, DataScope dataScope );
 
     List<DeliveryDetailsResult> getByIds(List<Long> ids);
 

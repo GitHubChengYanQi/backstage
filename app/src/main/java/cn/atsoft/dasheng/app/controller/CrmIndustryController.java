@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmIndustry;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
 import cn.atsoft.dasheng.app.service.CrmIndustryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -81,6 +84,13 @@ public class CrmIndustryController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
+        this.crmIndustryService.batchDelete(batchDeleteRequest.getIds());
+        return ResponseData.success();
+    }
+
     /**
      * 查看详情接口
      *
@@ -114,9 +124,14 @@ public class CrmIndustryController extends BaseController {
         }
         if (ToolUtil.isNotEmpty(crmIndustryParam.getPidValue())) {
             List<String> pidValue = crmIndustryParam.getPidValue();
-//            crmIndustryParam.setParentId(pidValue.get(pidValue.size()-1));
         }
-        return this.crmIndustryService.findPageBySpec(crmIndustryParam);
+//        return this.crmIndustryService.findPageBySpec(crmIndustryParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmIndustryService.findPageBySpec(crmIndustryParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmIndustryService.findPageBySpec(crmIndustryParam, dataScope);
+        }
     }
 
     /**

@@ -3,12 +3,15 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.wrapper.InstockSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -47,6 +50,7 @@ public class InstockController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody InstockParam instockParam) {
 
         Long add = this.instockService.add(instockParam);
@@ -64,6 +68,7 @@ public class InstockController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody InstockParam instockParam) {
 
         this.instockService.update(instockParam);
@@ -78,6 +83,7 @@ public class InstockController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody InstockParam instockParam)  {
         this.instockService.delete(instockParam);
         return ResponseData.success();
@@ -91,6 +97,7 @@ public class InstockController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<InstockResult> detail(@RequestBody InstockParam instockParam) {
         Instock detail = this.instockService.getById(instockParam.getInstockId());
         InstockResult result = new InstockResult();
@@ -108,14 +115,22 @@ public class InstockController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<InstockResult> list(@RequestBody(required = false) InstockParam instockParam) {
         if(ToolUtil.isEmpty(instockParam)){
             instockParam = new InstockParam();
         }
-        return this.instockService.findPageBySpec(instockParam);
+//        return this.instockService.findPageBySpec(instockParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.instockService.findPageBySpec(instockParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.instockService.findPageBySpec(instockParam, dataScope);
+        }
     }
 
 
+    @Permission
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
     public ResponseData<List<Map<String, Object>>> listSelect() {

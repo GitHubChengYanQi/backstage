@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.navigation.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.navigation.entity.Navigation;
@@ -50,6 +51,7 @@ public class NavigationController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody NavigationParam navigationParam) {
 
         this.navigationService.update(navigationParam);
@@ -64,6 +66,7 @@ public class NavigationController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody NavigationParam navigationParam) {
         this.navigationService.delete(navigationParam);
         return ResponseData.success();
@@ -77,6 +80,7 @@ public class NavigationController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<NavigationResult> detail(@RequestBody NavigationParam navigationParam) {
         Navigation detail = this.navigationService.getById(navigationParam.getNavigationId());
         NavigationResult result = new NavigationResult();
@@ -93,6 +97,7 @@ public class NavigationController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<NavigationResult> list(@RequestBody(required = false) NavigationParam navigationParam) {
         if (ToolUtil.isEmpty(navigationParam)) {
             navigationParam = new NavigationParam();
@@ -100,6 +105,7 @@ public class NavigationController extends BaseController {
         return this.navigationService.findPageBySpec(navigationParam);
     }
 
+    @Permission
     @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
     public ResponseData batchDelete(@RequestBody NavigationRequest navigationRequest) {
         navigationService.batchDelete(navigationRequest.getNavigationId());

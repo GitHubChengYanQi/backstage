@@ -1,12 +1,15 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.CrmBusinessSalesSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmBusinessSales;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,21 +105,40 @@ public class CrmBusinessSalesController extends BaseController {
         if (ToolUtil.isEmpty(crmBusinessSalesParam)) {
             crmBusinessSalesParam = new CrmBusinessSalesParam();
         }
-        return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam);
+//        return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmBusinessSalesService.findPageBySpec(crmBusinessSalesParam, dataScope);
+        }
     }
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        QueryWrapper<CrmBusinessSales>businessSalesQueryWrapper =new QueryWrapper<>();
-        businessSalesQueryWrapper.in("display",1);
+        QueryWrapper<CrmBusinessSales> businessSalesQueryWrapper = new QueryWrapper<>();
+        businessSalesQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.crmBusinessSalesService.listMaps(businessSalesQueryWrapper);
         CrmBusinessSalesSelectWrapper salesSelectWrapper = new CrmBusinessSalesSelectWrapper(list);
         List<Map<String, Object>> result = salesSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 批量删除
+     *
+     * @author
+     * @Date 2021-08-04
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData batchDelete(@RequestBody BatchDeleteRequest batchDeleteRequest) {
+        this.crmBusinessSalesService.batchDelete(batchDeleteRequest.getIds());
+        return ResponseData.success();
+    }
 }
 
 

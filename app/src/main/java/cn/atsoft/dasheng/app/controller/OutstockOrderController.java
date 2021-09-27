@@ -3,12 +3,14 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.OutstockOrderSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.app.service.OutstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -103,7 +105,13 @@ public class OutstockOrderController extends BaseController {
         if(ToolUtil.isEmpty(outstockOrderParam)){
             outstockOrderParam = new OutstockOrderParam();
         }
-        return this.outstockOrderService.findPageBySpec(outstockOrderParam);
+//        return this.outstockOrderService.findPageBySpec(outstockOrderParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.outstockOrderService.findPageBySpec(outstockOrderParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.outstockOrderService.findPageBySpec(outstockOrderParam, dataScope);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.BusinessDynamic;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface BusinessDynamicMapper extends BaseMapper<BusinessDynamic> {
      * @author cheng
      * @Date 2021-08-10
      */
-    Page<BusinessDynamicResult> customPageList(@Param("page") Page page, @Param("paramCondition") BusinessDynamicParam paramCondition);
+    Page<BusinessDynamicResult> customPageList(@Param("page") Page page, @Param("paramCondition") BusinessDynamicParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

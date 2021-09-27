@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.SysDept;
 import cn.atsoft.dasheng.app.model.params.SysDeptParam;
 import cn.atsoft.dasheng.app.model.result.SysDeptResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface SysDeptService extends IService<SysDept> {
      * @author 
      * @Date 2020-12-22
      */
-     PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param);
+     PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param, DataScope dataScope );
 
 }

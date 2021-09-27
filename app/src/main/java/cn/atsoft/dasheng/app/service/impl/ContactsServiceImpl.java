@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.PhoneService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -57,73 +57,105 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     private ContactsBindService contactsBindService;
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts add(ContactsParam param) {
-        Contacts one = this.query().eq("contacts_name", param.getContactsName()).and(i -> i.eq("customer_id", param.getCustomerId())).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            throw new ServiceException(500, "联系人已存在");
+        if (ToolUtil.isEmpty(param.getContactsName())) {
+            throw new ServiceException(500, "请不要输入空的名字");
+        }
+        //先判断电话是否重复 如果过有重复 方式在添加联系人
+        List<Long> phoneNumber = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getPhoneParams())) {
+            throw new ServiceException(500, "请添加联系系人电话");
+        }
+        for (PhoneParam phoneParam : param.getPhoneParams()) {
+            phoneNumber.add(phoneParam.getPhoneNumber());
+        }
+
+        Integer count = phoneNumber.size() == 0 ? 0 : phoneService.lambdaQuery().in(Phone::getPhoneNumber, phoneNumber).count();
+        if (count > 0) {
+            throw new ServiceException(500, "电话已经重复");
+        }
+
+        //通过绑定表查询判断联系人是否重复
+        List<Contacts> contacts = this.query()
+                .in("contacts_name", param.getContactsName())
+                .and(i -> i.eq("display", 1))
+                .list();
+        if (ToolUtil.isNotEmpty(contacts)) {
+            List<Long> contactIds = new ArrayList<>();
+            for (Contacts contact : contacts) {
+                contactIds.add(contact.getContactsId());
+            }
+            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
+                    .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
+            if (ToolUtil.isNotEmpty(contactsBind)) {
+                throw new ServiceException(500, "联系人已经在，请勿重复添加!");
+            }
         }
 
         // 添加联系人
 
-            Contacts entity = getEntity(param);
-            this.save(entity);
+        Contacts entity = getEntity(param);
+        this.save(entity);
 
-            if (ToolUtil.isNotEmpty(param.getCustomerId())) {
-                ContactsBindParam contactsBindParam = new ContactsBindParam();
-                contactsBindParam.setCustomerId(param.getCustomerId());
-                contactsBindParam.setContactsId(entity.getContactsId());
-                contactsBindService.add(contactsBindParam);
-            }
+        if (ToolUtil.isNotEmpty(param.getCustomerId())) {
+            ContactsBindParam contactsBindParam = new ContactsBindParam();
+            contactsBindParam.setCustomerId(param.getCustomerId());
+            contactsBindParam.setContactsId(entity.getContactsId());
+            contactsBindService.add(contactsBindParam);
+        }
 
 
-            // 添加电话号码
-            List<PhoneParam> phoneList = param.getPhoneParams();
-            if (ToolUtil.isNotEmpty(phoneList)) {
-                for (PhoneParam phone : phoneList) {
-                    if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
-                        phone.setContactsId(entity.getContactsId());
-                        phoneService.add(phone);
-
-                    }
+        // 添加电话号码
+        List<PhoneParam> phoneList = param.getPhoneParams();
+        if (ToolUtil.isNotEmpty(phoneList)) {
+            for (PhoneParam phone : phoneList) {
+                if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
+                    phone.setContactsId(entity.getContactsId());
+                    phoneService.add(phone);
                 }
             }
+        }
 
-            return entity;
+        return entity;
 
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts delete(ContactsParam param) {
         Contacts contacts = this.getById(param.getContactsId());
         if (ToolUtil.isEmpty(contacts)) {
             throw new ServiceException(500, "数据不存在");
         } else {
+
             Contacts entity = getEntity(param);
             param.setDisplay(0);
+            QueryWrapper queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("contacts_id", param.getContactsId());
+            phoneService.remove(queryWrapper);
             this.update(param);
             return entity;
         }
     }
 
     @Override
-    @BussinessLog
+    @FreedLog
     public Contacts update(ContactsParam param) {
 
         Long customerId = param.getCustomerId();
         QueryWrapper<ContactsBind> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id",param.getContactsId());
+        contactsQueryWrapper.in("contacts_id", param.getContactsId());
         List<ContactsBind> contactsBinds = contactsBindService.list(contactsQueryWrapper);
 
         ContactsBindParam contactsBindParam = new ContactsBindParam();
 
-        if (contactsBinds.size() > 0){
+        if (contactsBinds.size() > 0) {
             contactsBindParam.setContactsBindId(contactsBinds.get(0).getContactsBindId());
             contactsBindParam.setContactsId(contactsBinds.get(0).getContactsId());
             contactsBindParam.setCustomerId(customerId);
             contactsBindService.update(contactsBindParam);
-        }else {
+        } else {
             contactsBindParam.setContactsId(param.getContactsId());
             contactsBindParam.setCustomerId(customerId);
             contactsBindService.add(contactsBindParam);
@@ -225,11 +257,24 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public void batchDelete(List<Long> id) {
-        Contacts contacts = new Contacts();
-        contacts.setDisplay(0);
-        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-        contactsQueryWrapper.in("contacts_id", id);
-        this.update(contacts, contactsQueryWrapper);
+        throw  new ServiceException(500,"不可以删除联系人");
+//        Contacts contacts = new Contacts();
+//        contacts.setDisplay(0);
+//        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
+//        contactsQueryWrapper.in("contacts_id", id);
+//        this.update(contacts, contactsQueryWrapper);
+//        //删除联系人带着联系人电话直接删除
+//        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
+//        List<Phone> phoneList = new ArrayList<>();
+//        for (Phone phone : phones) {
+//            phone.setDisplay(0);
+//            phoneList.add(phone);
+//        }
+//        if (ToolUtil.isNotEmpty(phoneList)) {
+//            phoneService.updateBatchById(phoneList);
+//        }
+
+
     }
 
     private Serializable getKey(ContactsParam param) {

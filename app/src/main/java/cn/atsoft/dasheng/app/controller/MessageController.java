@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.model.result.MessageResult;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +99,13 @@ public class MessageController extends BaseController {
         if(ToolUtil.isEmpty(messageParam)){
             messageParam = new MessageParam();
         }
-        return this.messageService.findPageBySpec(messageParam);
+//        return this.messageService.findPageBySpec(messageParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.messageService.findPageBySpec(messageParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.messageService.findPageBySpec(messageParam, dataScope);
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
@@ -42,6 +43,7 @@ public class CompetitorQuoteController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
         this.competitorQuoteService.add(competitorQuoteParam);
         return ResponseData.success();
@@ -55,6 +57,7 @@ public class CompetitorQuoteController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
 
         this.competitorQuoteService.update(competitorQuoteParam);
@@ -69,6 +72,7 @@ public class CompetitorQuoteController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody CompetitorQuoteParam competitorQuoteParam)  {
         this.competitorQuoteService.delete(competitorQuoteParam);
         return ResponseData.success();
@@ -82,6 +86,7 @@ public class CompetitorQuoteController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<CompetitorQuoteResult> detail(@RequestBody CompetitorQuoteParam competitorQuoteParam) {
         CompetitorQuote detail = this.competitorQuoteService.getById(competitorQuoteParam.getQuoteId());
         CompetitorQuoteResult result = new CompetitorQuoteResult();
@@ -97,6 +102,7 @@ public class CompetitorQuoteController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<CompetitorQuoteResult> list(@RequestBody(required = false) CompetitorQuoteParam competitorQuoteParam) {
         if(ToolUtil.isEmpty(competitorQuoteParam)){
             competitorQuoteParam = new CompetitorQuoteParam();

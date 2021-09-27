@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Origin;
 import cn.atsoft.dasheng.app.model.params.OriginParam;
 import cn.atsoft.dasheng.app.model.result.OriginResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,8 @@ public interface OriginService extends IService<Origin> {
      * @author 
      * @Date 2021-07-19
      */
-     PageInfo<OriginResult> findPageBySpec(OriginParam param);
+     PageInfo<OriginResult> findPageBySpec(OriginParam param, DataScope dataScope );
+
+     void batchDelete (List<Long> ids);
 
 }

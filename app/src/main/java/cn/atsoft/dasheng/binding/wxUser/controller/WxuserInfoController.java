@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.binding.wxUser.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
@@ -36,6 +37,7 @@ public class WxuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody WxuserInfoParam wxuserInfoParam) {
 //        this.wxuserInfoService.add(wxuserInfoParam);
         Boolean aBoolean = wxuserInfoService.sendPermissions(4L, 1430422569372217346L);
@@ -50,6 +52,7 @@ public class WxuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody WxuserInfoParam wxuserInfoParam) {
 
         this.wxuserInfoService.update(wxuserInfoParam);
@@ -64,6 +67,7 @@ public class WxuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody WxuserInfoParam wxuserInfoParam)  {
         this.wxuserInfoService.delete(wxuserInfoParam);
         return ResponseData.success();
@@ -77,6 +81,7 @@ public class WxuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<WxuserInfoResult> detail(@RequestBody WxuserInfoParam wxuserInfoParam) {
         WxuserInfo detail = this.wxuserInfoService.getById(wxuserInfoParam.getUserInfoId());
         WxuserInfoResult result = new WxuserInfoResult();
@@ -94,6 +99,7 @@ public class WxuserInfoController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<WxuserInfoResult> list(@RequestBody(required = false) WxuserInfoParam wxuserInfoParam) {
         if(ToolUtil.isEmpty(wxuserInfoParam)){
             wxuserInfoParam = new WxuserInfoParam();

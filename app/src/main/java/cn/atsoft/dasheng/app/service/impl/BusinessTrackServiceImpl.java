@@ -1,6 +1,11 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Contract;
+import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.app.service.ContractService;
+import cn.atsoft.dasheng.app.service.CrmBusinessService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -10,6 +15,7 @@ import cn.atsoft.dasheng.app.mapper.BusinessTrackMapper;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -17,6 +23,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.swagger.annotations.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +43,10 @@ import java.util.List;
 public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, BusinessTrack> implements BusinessTrackService {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CrmBusinessService crmBusinessService;
+    @Autowired
+    private ContractService contractService;
 
     @Override
     public void add(BusinessTrackParam param) {
@@ -67,12 +78,12 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
     }
 
     @Override
-    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param) {
+    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope ) {
 
         List<Long> trackMessageIds = param.getTrackMessageIds();
 
         Page<BusinessTrackResult> pageContext = getPageContext();
-        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds,pageContext, param);
+        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param,dataScope);
         List<Long> ids = new ArrayList<>();
         for (BusinessTrackResult record : page.getRecords()) {
             ids.add(record.getUserId());
@@ -80,8 +91,32 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
 
         List<User> users = userService.list();
         for (BusinessTrackResult record : page.getRecords()) {
-            for(User user: users){
-                if (ToolUtil.isNotEmpty(record.getUserId())){
+            switch (record.getClassify()) {
+                case 0:
+                    record.setCategoryName("日常");
+                    break;
+                case 1:
+                    CrmBusiness crmBusiness = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, record.getClassifyId()).one();
+                    if (ToolUtil.isNotEmpty(crmBusiness)) {
+                        record.setCategoryName(crmBusiness.getBusinessName());
+                    }
+                    break;
+                case 2:
+                    Contract contract = contractService.lambdaQuery().eq(Contract::getContractId, record.getClassifyId()).one();
+                    if (ToolUtil.isNotEmpty(contract)) {
+                        record.setCategoryName(contract.getName());
+                    }
+                    break;
+                case 3:
+                    record.setCategoryName("订单");
+                    break;
+                case 4:
+                    record.setCategoryName("回款");
+                    break;
+            }
+
+            for (User user : users) {
+                if (ToolUtil.isNotEmpty(record.getUserId())) {
                     if (record.getUserId().equals(user.getUserId())) {
                         UserResult userResult = new UserResult();
                         ToolUtil.copyProperties(user, userResult);

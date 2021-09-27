@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.BusinessDynamicMapper;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
 import cn.atsoft.dasheng.app.model.result.BusinessDynamicResult;
 import cn.atsoft.dasheng.app.service.BusinessDynamicService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -73,9 +74,9 @@ public class BusinessDynamicServiceImpl extends ServiceImpl<BusinessDynamicMappe
     }
 
     @Override
-    public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param) {
+    public PageInfo<BusinessDynamicResult> findPageBySpec(BusinessDynamicParam param, DataScope dataScope) {
         Page<BusinessDynamicResult> pageContext = getPageContext();
-        IPage<BusinessDynamicResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<BusinessDynamicResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

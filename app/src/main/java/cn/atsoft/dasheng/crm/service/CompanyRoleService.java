@@ -66,4 +66,6 @@ public interface CompanyRoleService extends IService<CompanyRole> {
      */
      PageInfo<CompanyRoleResult> findPageBySpec(CompanyRoleParam param);
 
+    void batchDelete(List<Long> ids);
+
 }

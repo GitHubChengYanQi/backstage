@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.SysDeptMapper;
 import cn.atsoft.dasheng.app.model.params.SysDeptParam;
 import cn.atsoft.dasheng.app.model.result.SysDeptResult;
 import  cn.atsoft.dasheng.app.service.SysDeptService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,9 +59,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
     }
 
     @Override
-    public PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param){
+    public PageInfo<SysDeptResult> findPageBySpec(SysDeptParam param, DataScope dataScope){
         Page<SysDeptResult> pageContext = getPageContext();
-        IPage<SysDeptResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<SysDeptResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

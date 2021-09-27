@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.app.mapper.ItemBrandBindMapper;
 import cn.atsoft.dasheng.app.model.params.ItemBrandBindParam;
 import cn.atsoft.dasheng.app.model.result.ItemBrandBindResult;
 import  cn.atsoft.dasheng.app.service.ItemBrandBindService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -66,9 +67,9 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
     }
 
     @Override
-    public PageInfo<ItemBrandBindResult> findPageBySpec(ItemBrandBindParam param){
+    public PageInfo<ItemBrandBindResult> findPageBySpec(ItemBrandBindParam param, DataScope dataScope){
         Page<ItemBrandBindResult> pageContext = getPageContext();
-        IPage<ItemBrandBindResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ItemBrandBindResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         formatResult(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -99,7 +100,7 @@ public class ItemBrandBindServiceImpl extends ServiceImpl<ItemBrandBindMapper, I
         //品牌id查询品牌名称
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
-        List<Brand> list = brandService.list(brandQueryWrapper);
+        List<Brand> list = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
         for (ItemBrandBindResult datum : data) {
             BrandResult brandResult = new BrandResult();
             for (Brand brand : list) {

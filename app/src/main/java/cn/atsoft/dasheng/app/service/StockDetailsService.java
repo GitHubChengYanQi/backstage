@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,6 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @author 
      * @Date 2021-07-15
      */
-     PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param);
+     PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope );
 
 }

@@ -35,6 +35,14 @@ public interface DataClassificationService extends IService<DataClassification> 
     void delete(DataClassificationParam param);
 
     /**
+     * 批量删除
+     *
+     * @author
+     * @Date 2021-09-13
+     */
+    void batchDelete(List<Long> ids);
+
+    /**
      * 更新
      *
      * @author 

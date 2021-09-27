@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Template;
 import cn.atsoft.dasheng.app.model.params.TemplateParam;
 import cn.atsoft.dasheng.app.model.result.TemplateResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * 合同模板 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 public interface TemplateService extends IService<Template> {
@@ -21,7 +22,7 @@ public interface TemplateService extends IService<Template> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     Long add(TemplateParam param);
@@ -29,7 +30,7 @@ public interface TemplateService extends IService<Template> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     void delete(TemplateParam param);
@@ -37,7 +38,7 @@ public interface TemplateService extends IService<Template> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     void update(TemplateParam param);
@@ -45,7 +46,7 @@ public interface TemplateService extends IService<Template> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     TemplateResult findBySpec(TemplateParam param);
@@ -53,7 +54,7 @@ public interface TemplateService extends IService<Template> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
     List<TemplateResult> findListBySpec(TemplateParam param);
@@ -61,9 +62,15 @@ public interface TemplateService extends IService<Template> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-21
      */
-     PageInfo<TemplateResult> findPageBySpec(TemplateParam param);
+    PageInfo<TemplateResult> findPageBySpec(TemplateParam param, DataScope dataScope );
+
+    /**
+     * 批量删除
+     * @param ids
+     */
+    void batchDelete(List<Long> ids);
 
 }

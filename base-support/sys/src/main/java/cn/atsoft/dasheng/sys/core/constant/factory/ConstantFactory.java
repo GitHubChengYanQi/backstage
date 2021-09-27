@@ -73,6 +73,16 @@ public class ConstantFactory implements IConstantFactory {
     }
 
     @Override
+    public Long getDeptId(Long userId) {
+        User user = userMapper.selectById(userId);
+        if (user != null) {
+            return user.getDeptId();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public String getUserAccountById(Long userId) {
         User user = userMapper.selectById(userId);
         if (user != null) {
@@ -98,6 +108,7 @@ public class ConstantFactory implements IConstantFactory {
         }
         return StrUtil.removeSuffix(sb.toString(), ",");
     }
+
 
     @Override
     @Cacheable(value = Cache.CONSTANT, key = "'" + CacheKey.SINGLE_ROLE_NAME + "'+#roleId")

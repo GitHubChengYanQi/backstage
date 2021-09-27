@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.crm.model.params.SpeechcraftTypeParam;
 import cn.atsoft.dasheng.crm.model.result.SpeechcraftTypeResult;
 import  cn.atsoft.dasheng.crm.service.SpeechcraftTypeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +38,15 @@ public class SpeechcraftTypeServiceImpl extends ServiceImpl<SpeechcraftTypeMappe
     @Override
     public void delete(SpeechcraftTypeParam param){
         this.removeById(getKey(param));
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        SpeechcraftType speechcraftType = new SpeechcraftType();
+        speechcraftType.setDisplay(0);
+        QueryWrapper<SpeechcraftType> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("speechcraft_type_id");
+        this.update(speechcraftType,queryWrapper);
     }
 
     @Override

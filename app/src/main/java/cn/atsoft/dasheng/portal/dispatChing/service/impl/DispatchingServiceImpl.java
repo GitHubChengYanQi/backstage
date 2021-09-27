@@ -3,7 +3,7 @@ package cn.atsoft.dasheng.portal.dispatChing.service.impl;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
-import cn.atsoft.dasheng.base.log.BussinessLog;
+import cn.atsoft.dasheng.base.log.FreedLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -99,7 +99,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
      * @param param
      */
     @Override
-    @BussinessLog
+    @FreedLog
     public void addwx(DispatchingParam param) {
         Dispatching entity = getEntity(param);
         LoginUser user = LoginContextHolder.getContext().getUser();

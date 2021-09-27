@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.mapper.CrmBusinessDetailedMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessDetailedService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -290,9 +291,9 @@ public class CrmBusinessDetailedServiceImpl extends ServiceImpl<CrmBusinessDetai
     }
 
     @Override
-    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param) {
+    public PageInfo<CrmBusinessDetailedResult> findPageBySpec(CrmBusinessDetailedParam param, DataScope dataScope ) {
         Page<CrmBusinessDetailedResult> pageContext = getPageContext();
-        IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessDetailedResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         List<Long> detailIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();

@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * SpringBoot方式启动类
  */
+@EnableTransactionManagement
 @SpringBootApplication(exclude = {MybatisDataSourceAutoConfiguration.class})
 public class Application {
 

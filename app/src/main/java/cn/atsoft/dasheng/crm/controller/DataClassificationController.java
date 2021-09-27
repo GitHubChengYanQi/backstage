@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.DataClassification;
@@ -73,6 +74,18 @@ public class DataClassificationController extends BaseController {
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody DataClassificationParam dataClassificationParam)  {
         this.dataClassificationService.delete(dataClassificationParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 批量删除接口
+     * @param batchDeleteRequest
+     * @return
+     */
+    @RequestMapping(value = "/batchDelete", method = RequestMethod.POST)
+    @ApiOperation("批量删除")
+    public ResponseData batchDelete(@RequestBody (required = false) BatchDeleteRequest batchDeleteRequest) {
+        this.dataClassificationService.batchDelete(batchDeleteRequest.getIds());
         return ResponseData.success();
     }
 

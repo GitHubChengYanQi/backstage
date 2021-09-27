@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.PhoneParam;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -42,7 +43,7 @@ public interface PhoneMapper extends BaseMapper<Phone> {
      * @author cheng
      * @Date 2021-08-12
      */
-    Page<PhoneResult> customPageList(@Param("page") Page page, @Param("paramCondition") PhoneParam paramCondition);
+    Page<PhoneResult> customPageList(@Param("page") Page page, @Param("paramCondition") PhoneParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

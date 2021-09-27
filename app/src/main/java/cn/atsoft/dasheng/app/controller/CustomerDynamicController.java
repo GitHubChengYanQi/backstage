@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CustomerDynamic;
 import cn.atsoft.dasheng.app.model.params.CustomerDynamicParam;
 import cn.atsoft.dasheng.app.model.result.CustomerDynamicResult;
 import cn.atsoft.dasheng.app.service.CustomerDynamicService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +98,13 @@ public class CustomerDynamicController extends BaseController {
         if(ToolUtil.isEmpty(customerDynamicParam)){
             customerDynamicParam = new CustomerDynamicParam();
         }
-        return this.customerDynamicService.findPageBySpec(customerDynamicParam);
+//        return this.customerDynamicService.findPageBySpec(customerDynamicParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.customerDynamicService.findPageBySpec(customerDynamicParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.customerDynamicService.findPageBySpec(customerDynamicParam, dataScope);
+        }
     }
 
 

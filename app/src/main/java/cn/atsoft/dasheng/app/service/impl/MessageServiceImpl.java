@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.mapper.MessageMapper;
 import cn.atsoft.dasheng.app.model.params.MessageParam;
 import cn.atsoft.dasheng.app.model.result.MessageResult;
 import  cn.atsoft.dasheng.app.service.MessageService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,9 +59,9 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     }
 
     @Override
-    public PageInfo<MessageResult> findPageBySpec(MessageParam param){
+    public PageInfo<MessageResult> findPageBySpec(MessageParam param, DataScope dataScope){
         Page<MessageResult> pageContext = getPageContext();
-        IPage<MessageResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<MessageResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         return PageFactory.createPageInfo(page);
     }
 

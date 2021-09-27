@@ -1,12 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.wrapper.CrmCustomerLevelSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.params.CrmCustomerLevelParam;
 import cn.atsoft.dasheng.app.model.result.CrmCustomerLevelResult;
 import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,7 +104,13 @@ public class CrmCustomerLevelController extends BaseController {
         if(ToolUtil.isEmpty(crmCustomerLevelParam)){
             crmCustomerLevelParam = new CrmCustomerLevelParam();
         }
-        return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam);
+//        return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.crmCustomerLevelService.findPageBySpec(crmCustomerLevelParam, dataScope);
+        }
     }
 
 
@@ -110,6 +118,7 @@ public class CrmCustomerLevelController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<CrmCustomerLevel> levelQueryWrapper = new QueryWrapper<>();
         levelQueryWrapper.in("display",1);
+        levelQueryWrapper.orderByDesc("rank");
         List<Map<String, Object>> list = this.crmCustomerLevelService.listMaps(levelQueryWrapper);
         CrmCustomerLevelSelectWrapper crmCustomerLevelSelectWrapper = new CrmCustomerLevelSelectWrapper(list);
         List<Map<String, Object>> result = crmCustomerLevelSelectWrapper.wrap();

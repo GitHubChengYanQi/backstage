@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 出库单
@@ -31,6 +36,9 @@ public class OutstockOrderResult implements Serializable {
 
     private Long storehouseId;
 
+    private UserResult userResult;
+
+    private StorehouseResult storehouseResult;
     /**
      * 出库状态
      */

@@ -18,9 +18,9 @@ package cn.atsoft.dasheng.core.metadata;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Date;
-
 /**
  * 自定义sql字段填充器,本类默认在default-config.properties中配置
  * <p>
@@ -109,6 +109,20 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
      */
     protected String getCreateTimeFieldName() {
         return "createTime";
+    }
+
+    /**
+     * 获取部门
+     */
+    protected String getDeptIdFieldName() {
+        return "deptId";
+    }
+
+    /**
+     * 获取负责人
+     */
+    protected String getUserIdFieldName() {
+        return "userId";
     }
 
     /**

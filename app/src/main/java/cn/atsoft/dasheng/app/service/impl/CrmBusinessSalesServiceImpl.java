@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.app.mapper.CrmBusinessSalesMapper;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessSalesParam;
 import cn.atsoft.dasheng.app.model.result.CrmBusinessSalesResult;
 import cn.atsoft.dasheng.app.service.CrmBusinessSalesService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -68,9 +69,9 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
     }
 
     @Override
-    public PageInfo<CrmBusinessSalesResult> findPageBySpec(CrmBusinessSalesParam param) {
+    public PageInfo<CrmBusinessSalesResult> findPageBySpec(CrmBusinessSalesParam param, DataScope dataScope ) {
         Page<CrmBusinessSalesResult> pageContext = getPageContext();
-        IPage<CrmBusinessSalesResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<CrmBusinessSalesResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
 
         this.format(page.getRecords());
 
@@ -102,6 +103,15 @@ public class CrmBusinessSalesServiceImpl extends ServiceImpl<CrmBusinessSalesMap
         }
         this.format(results);
         return results;
+    }
+
+    @Override
+    public void batchDelete(List<Long> ids) {
+        CrmBusinessSales crmBusinessSales = new CrmBusinessSales();
+        crmBusinessSales.setDisplay(0);
+        QueryWrapper<CrmBusinessSales> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("sales_id");
+        this.update(crmBusinessSales, queryWrapper);
     }
 
     private Serializable getKey(CrmBusinessSalesParam param) {

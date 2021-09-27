@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.BusinessTrackResult;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -51,6 +56,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -65,9 +71,10 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody BusinessTrackParam businessTrackParam)  {
+    public ResponseData delete(@RequestBody BusinessTrackParam businessTrackParam) {
         this.businessTrackService.delete(businessTrackParam);
         return ResponseData.success();
     }
@@ -78,6 +85,7 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<BusinessTrackResult> detail(@RequestBody BusinessTrackParam businessTrackParam) {
@@ -94,16 +102,21 @@ public class BusinessTrackController extends BaseController {
      * @author cheng
      * @Date 2021-09-17
      */
+    @Permission
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<BusinessTrackResult> list(@RequestBody(required = false) BusinessTrackParam businessTrackParam) {
-        if(ToolUtil.isEmpty(businessTrackParam)){
+        if (ToolUtil.isEmpty(businessTrackParam)) {
             businessTrackParam = new BusinessTrackParam();
         }
-        return this.businessTrackService.findPageBySpec(businessTrackParam);
+//        return this.businessTrackService.findPageBySpec(businessTrackParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.businessTrackService.findPageBySpec(businessTrackParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.businessTrackService.findPageBySpec(businessTrackParam, dataScope);
+        }
     }
-
-
 
 
 }

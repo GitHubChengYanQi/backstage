@@ -22,6 +22,7 @@ public class OpenUserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
       @TableId(value = "primary_key", type = IdType.ID_WORKER)
+
     private String primaryKey;
 
     /**

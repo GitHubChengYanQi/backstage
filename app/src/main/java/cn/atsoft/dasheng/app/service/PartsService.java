@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public interface PartsService extends IService<Parts> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<PartsResult> findPageBySpec(PartsParam param);
+     PageInfo<PartsResult> findPageBySpec(PartsParam param, DataScope dataScope );
 
      List<PartsResult> getByIds (List<Long> ids);
 

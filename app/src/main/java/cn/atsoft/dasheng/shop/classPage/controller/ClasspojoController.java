@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.shop.classPage.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.shop.classPage.entity.Classpojo;
 import cn.atsoft.dasheng.shop.classPage.model.params.ClassParam;
@@ -37,6 +38,7 @@ public class ClasspojoController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ClassParam classParam) {
         this.classService.add(classParam);
         return ResponseData.success();
@@ -50,6 +52,7 @@ public class ClasspojoController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody ClassParam classParam) {
 
         this.classService.update(classParam);
@@ -64,6 +67,7 @@ public class ClasspojoController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody ClassParam classParam) {
         this.classService.delete(classParam);
         return ResponseData.success();
@@ -77,6 +81,7 @@ public class ClasspojoController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<ClassResult> detail(@RequestBody ClassParam classParam) {
         Classpojo detail = this.classService.getById(classParam.getClassId());
         ClassResult result = new ClassResult();
@@ -94,6 +99,7 @@ public class ClasspojoController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<ClassResult> list(@RequestBody(required = false) ClassParam classParam) {
         if (ToolUtil.isEmpty(classParam)) {
             classParam = new ClassParam();

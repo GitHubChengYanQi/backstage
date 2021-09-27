@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.CrmIndustry;
 import cn.atsoft.dasheng.app.model.params.CrmIndustryParam;
 import cn.atsoft.dasheng.app.model.result.CrmIndustryResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,9 @@ public interface CrmIndustryService extends IService<CrmIndustry> {
      * @author 
      * @Date 2021-08-02
      */
-     PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param);
+     PageInfo<CrmIndustryResult> findPageBySpec(CrmIndustryParam param, DataScope dataScope );
+
+
+     void batchDelete(List<Long>ids);
 
 }

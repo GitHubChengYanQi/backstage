@@ -4,12 +4,15 @@ import cn.atsoft.dasheng.app.model.result.OutstockRequest;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.app.wrapper.OutstockSelectWrapper;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Outstock;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.OutstockResult;
 import cn.atsoft.dasheng.app.service.OutstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -51,6 +54,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody OutstockParam outstockParam) {
 
         outstockService.add(outstockParam);
@@ -65,6 +69,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody OutstockParam outstockParam) {
 
         this.outstockService.update(outstockParam);
@@ -79,6 +84,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody OutstockParam outstockParam) {
         this.outstockService.delete(outstockParam);
         return ResponseData.success();
@@ -92,6 +98,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<OutstockResult> detail(@RequestBody OutstockParam outstockParam) {
         Long outstockId = outstockParam.getOutstockId();
         OutstockResult detail = outstockService.detail(outstockId);
@@ -106,11 +113,18 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<OutstockResult> list(@RequestBody(required = false) OutstockParam outstockParam) {
         if (ToolUtil.isEmpty(outstockParam)) {
             outstockParam = new OutstockParam();
         }
-        return this.outstockService.findPageBySpec(outstockParam);
+//        return this.outstockService.findPageBySpec(outstockParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.outstockService.findPageBySpec(outstockParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.outstockService.findPageBySpec(outstockParam, dataScope);
+        }
     }
 
 
@@ -122,6 +136,7 @@ public class OutstockController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
+    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
         outstockQueryWrapper.in("display", 1);
@@ -133,6 +148,7 @@ public class OutstockController extends BaseController {
 
     @RequestMapping(value = "/bulkShipment", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public ResponseData bulkShipment(@RequestBody OutstockRequest outstockRequest) {
         System.err.println(outstockRequest);
 

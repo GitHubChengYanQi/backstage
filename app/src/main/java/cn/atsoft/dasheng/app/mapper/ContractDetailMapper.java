@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.mapper;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,7 +44,7 @@ public interface ContractDetailMapper extends BaseMapper<ContractDetail> {
      * @author sb
      * @Date 2021-09-18
      */
-    Page<ContractDetailResult> customPageList(@Param("page") Page page, @Param("paramCondition") ContractDetailParam paramCondition);
+    Page<ContractDetailResult> customPageList(@Param("page") Page page, @Param("paramCondition") ContractDetailParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表

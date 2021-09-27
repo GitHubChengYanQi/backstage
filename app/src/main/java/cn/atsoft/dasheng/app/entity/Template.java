@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 合同模板
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @TableName("daoxin_crm_template")
@@ -24,10 +27,10 @@ public class Template implements Serializable {
     /**
      * 合同模板id
      */
-      @TableId(value = "template_id", type = IdType.ID_WORKER)
+    @TableId(value = "template_id", type = IdType.ID_WORKER)
     private Long templateId;
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
@@ -53,32 +56,32 @@ public class Template implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 状态
      */
     @TableField("display")
-    private Boolean display;
+    private Integer display;
 
 
     public Long getTemplateId() {
@@ -137,25 +140,25 @@ public class Template implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Boolean getDisplay() {
+    public Integer getDisplay() {
         return display;
     }
 
-    public void setDisplay(Boolean display) {
+    public void setDisplay(Integer display) {
         this.display = display;
     }
 
     @Override
     public String toString() {
         return "Template{" +
-        "templateId=" + templateId +
-        ", name=" + name +
-        ", content=" + content +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "templateId=" + templateId +
+                ", name=" + name +
+                ", content=" + content +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

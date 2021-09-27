@@ -72,5 +72,6 @@ public interface CompetitorService extends IService<Competitor> {
     CompetitorResult detail (Long id);
     void deleteByIds(List<Long> ids);
 
+
     Competitor byBusinessAdd(CompetitorParam param);
 }
