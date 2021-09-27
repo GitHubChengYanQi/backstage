@@ -28,7 +28,16 @@ public class PluginsConfig {
     @Bean
     public CustomMetaObjectHandler gunsMpFieldHandler() {
         return new CustomMetaObjectHandler() {
+            @Override
+            protected Long getUserDeptId() {
+                try {
+                    return LoginContextHolder.getContext().getUser().getDeptId();
+                } catch (Exception e) {
 
+                    //如果获取不到当前用户就存空id
+                    return -100L;
+                }
+            }
             @Override
             protected Long getUserUniqueId() {
                 try {
@@ -79,9 +88,8 @@ public class PluginsConfig {
                 try {
                     deptId = getFieldValByName(getDeptIdFieldName(), metaObject);
                     if (deptId == null){
-                        LoginUser loginUser  =  LoginContextHolder.getContext().getUser();
-//                        deptId =  LoginContextHolder.getContext().getUser().getDeptId();
-//                        setFieldValByName(getDeptIdFieldName(),deptId,metaObject);
+                        Long userDeptId  = this.getUserDeptId();
+                        setFieldValByName(getDeptIdFieldName(),userDeptId,metaObject);
                     }
                 }catch (ReflectionException e) {
                     //没有此字段，则不处理

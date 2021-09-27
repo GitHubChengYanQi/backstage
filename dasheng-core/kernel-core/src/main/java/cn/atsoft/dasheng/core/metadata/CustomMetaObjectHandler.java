@@ -119,6 +119,10 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
     }
 
     /**
+     * 获取用户部门id（注意默认获取的用户部门id为空，如果想填写则需要继承本类）
+     */
+    protected Long getUserDeptId(){return null;}
+    /**
      * 获取负责人
      */
     protected String getUserIdFieldName() {
