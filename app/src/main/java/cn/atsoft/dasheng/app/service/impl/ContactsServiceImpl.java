@@ -59,14 +59,13 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     @FreedLog
     public Contacts add(ContactsParam param) {
-        if (ToolUtil.isEmpty(param.getContactsName())) {
-            throw new ServiceException(500, "请不要输入空的名字");
-        }
+        Contacts entity = getEntity(param);
+        this.save(entity);
+//        if (ToolUtil.isEmpty(param.getContactsName())) {
+//            throw new ServiceException(500, "请不要输入空的名字");
+//        }
         //先判断电话是否重复 如果过有重复 方式在添加联系人
         List<Long> phoneNumber = new ArrayList<>();
-        if (ToolUtil.isEmpty(param.getPhoneParams())) {
-            throw new ServiceException(500, "请添加联系系人电话");
-        }
         for (PhoneParam phoneParam : param.getPhoneParams()) {
             phoneNumber.add(phoneParam.getPhoneNumber());
         }
@@ -76,28 +75,21 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             throw new ServiceException(500, "电话已经重复");
         }
 
-        //通过绑定表查询判断联系人是否重复
-        List<Contacts> contacts = this.query()
-                .in("contacts_name", param.getContactsName())
-                .and(i -> i.eq("display", 1))
-                .list();
-        if (ToolUtil.isNotEmpty(contacts)) {
-            List<Long> contactIds = new ArrayList<>();
-            for (Contacts contact : contacts) {
-                contactIds.add(contact.getContactsId());
-            }
-            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
-                    .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
-            if (ToolUtil.isNotEmpty(contactsBind)) {
-                throw new ServiceException(500, "联系人已经在，请勿重复添加!");
-            }
-        }
-
-        // 添加联系人
-
-        Contacts entity = getEntity(param);
-        this.save(entity);
-
+//        //通过绑定表查询判断联系人是否重复
+//        List<Contacts> contacts = this.query()
+//                .in("contacts_name", param.getContactsName())
+//                .and(i -> i.eq("display", 1))
+//                .list();
+//        if (ToolUtil.isNotEmpty(contacts)) {
+//            List<Long> contactIds = new ArrayList<>();
+//            for (Contacts contact : contacts) {
+//                contactIds.add(contact.getContactsId());
+//            }
+//            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
+//                    .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
+//            if (ToolUtil.isNotEmpty(contactsBind)) {
+//                throw new ServiceException(500, "联系人已经在，请勿重复添加!");
+//
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {
             ContactsBindParam contactsBindParam = new ContactsBindParam();
             contactsBindParam.setCustomerId(param.getCustomerId());
@@ -105,17 +97,17 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             contactsBindService.add(contactsBindParam);
         }
 
-
         // 添加电话号码
-        List<PhoneParam> phoneList = param.getPhoneParams();
-        if (ToolUtil.isNotEmpty(phoneList)) {
-            for (PhoneParam phone : phoneList) {
-                if (ToolUtil.isNotEmpty(phone.getPhoneNumber())) {
+        for (PhoneParam phone : param.getPhoneParams()) {
+            if (ToolUtil.isNotEmpty(phone)) {
+                if (phone.getPhoneNumber()!=null&&!phone.getPhoneNumber().equals("")) {
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
                 }
             }
+
         }
+
 
         return entity;
 
@@ -257,7 +249,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
 
     @Override
     public void batchDelete(List<Long> id) {
-        throw  new ServiceException(500,"不可以删除联系人");
+        throw new ServiceException(500, "不可以删除联系人");
 //        Contacts contacts = new Contacts();
 //        contacts.setDisplay(0);
 //        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
