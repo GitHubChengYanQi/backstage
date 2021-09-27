@@ -190,7 +190,7 @@ public class Customer implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
 

@@ -30,6 +30,12 @@ public interface CrmBusinessService extends IService<CrmBusiness> {
     CrmBusiness add(CrmBusinessParam param);
 
     /**
+     * 更新负责人
+     * @param param
+     * @return
+     */
+    CrmBusiness updateChargePerson(CrmBusinessParam param);
+    /**
      * 删除
      *
      * @author 

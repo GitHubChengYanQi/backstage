@@ -27,7 +27,7 @@ public class Stock implements Serializable {
       @TableId(value = "stock_id", type = IdType.ID_WORKER)
     private Long stockId;
 
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {

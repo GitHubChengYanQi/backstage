@@ -49,6 +49,14 @@ public interface CustomerService extends IService<Customer>{
     Customer update(CustomerParam param);
 
     /**
+     * 更新负责人
+     * @param param
+     * @return
+     */
+
+    Customer updateChargePerson(CustomerParam param);
+
+    /**
      * 查询单条数据，Specification模式
      *
      * @author

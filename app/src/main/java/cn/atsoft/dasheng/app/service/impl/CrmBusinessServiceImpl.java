@@ -102,6 +102,16 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
 
     @Override
     @FreedLog
+    public CrmBusiness updateChargePerson(CrmBusinessParam param) {
+        CrmBusiness crmBusiness = new CrmBusiness();
+        crmBusiness.setBusinessId(param.getBusinessId());
+        crmBusiness.setUserId(param.getUserId());
+        this.updateById(crmBusiness);
+        return crmBusiness;
+    }
+
+    @Override
+    @FreedLog
     public CrmBusiness delete(CrmBusinessParam param) {
         CrmBusiness business = this.getById(param.getBusinessId());
         if (ToolUtil.isEmpty(business)) {

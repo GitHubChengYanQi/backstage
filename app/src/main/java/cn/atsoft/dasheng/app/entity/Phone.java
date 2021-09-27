@@ -28,7 +28,7 @@ public class Phone implements Serializable {
     private Long phoneId;
 
 
-    @TableField(value = "deptId",fill=FieldFill.INSERT)
+     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
