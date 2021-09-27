@@ -129,7 +129,7 @@ public class Contract implements Serializable {
      * 负责人id
      */
     @TableField("user_id")
-    private String userId;
+    private Long userId;
 
     /**
      * 备注
@@ -211,11 +211,11 @@ public class Contract implements Serializable {
         this.name = name;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
