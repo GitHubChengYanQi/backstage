@@ -30,6 +30,7 @@
         <if test="paramCondition.difference != null">
             and difference like CONCAT('%',#{paramCondition.difference},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customMapList" resultType="map"
@@ -40,6 +41,7 @@
         <if test="paramCondition.difference != null">
             and difference like CONCAT('%',#{paramCondition.difference},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageList"
@@ -58,6 +60,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -68,6 +71,7 @@
         <if test="paramCondition.difference != null">
             and difference like CONCAT('%',#{paramCondition.difference},'%')
         </if>
+        order by create_time desc
     </select>
 
 </mapper>
