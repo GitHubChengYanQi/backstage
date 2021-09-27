@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.entity.excel;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
