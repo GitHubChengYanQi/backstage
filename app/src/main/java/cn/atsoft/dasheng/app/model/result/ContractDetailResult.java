@@ -21,6 +21,7 @@ public class ContractDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ItemsResult itemsResult;
+    private BrandResult brandResult;
 
 
     /**
@@ -28,6 +29,8 @@ public class ContractDetailResult implements Serializable {
      */
     @ApiModelProperty("id")
     private Long id;
+
+    private Long brandId;
 
     /**
      * 合同id

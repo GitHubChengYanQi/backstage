@@ -38,6 +38,16 @@ public class ContractDetail implements Serializable {
      */
     @TableField("item_id")
     private Long itemId;
+    @TableField("brand_id")
+    private Long brandId;
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
 
     /**
      * 物品数量

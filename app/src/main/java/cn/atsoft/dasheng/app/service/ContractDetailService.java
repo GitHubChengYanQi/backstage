@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
@@ -26,6 +27,8 @@ public interface ContractDetailService extends IService<ContractDetail> {
      * @Date 2021-09-18
      */
     void add(ContractDetailParam param);
+
+    void addAll(BusinessDetailedParam param);
 
     /**
      * 删除
