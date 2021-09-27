@@ -39,6 +39,7 @@
             <if test="paramCondition.state != null">
                 and state like CONCAT('%',#{paramCondition.state},'%')
             </if>
+        order by create_time desc
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam">
@@ -57,6 +58,7 @@
                 <if test="paramCondition.state != null">
                         and state like CONCAT('%',#{paramCondition.state},'%')
                 </if>
+        order by create_time desc
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.repairImage.model.result.RepairImageResult" parameterType="cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam">
@@ -80,6 +82,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
+        order by create_time desc
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.repairImage.model.params.RepairImageParam">
@@ -99,6 +102,7 @@
                 <if test="paramCondition.state != null">
                         and state like CONCAT('%',#{paramCondition.state},'%')
                 </if>
+        order by create_time desc
     </select>
 
 </mapper>
