@@ -147,10 +147,10 @@ public class ContractController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody ContractParam contractParam) {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) ContractParam contractParam) {
         QueryWrapper<Contract> queryWrapper = new QueryWrapper();
         queryWrapper.in("display", 1);
-        if (ToolUtil.isNotEmpty(contractParam.getContractId())){
+        if (ToolUtil.isNotEmpty(contractParam) && ToolUtil.isNotEmpty(contractParam.getContractId())){
             queryWrapper.in("contract_id", contractParam.getContractId());
         }
         List<Map<String, Object>> list = this.contractService.listMaps(queryWrapper);
