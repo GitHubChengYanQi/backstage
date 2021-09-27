@@ -78,9 +78,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.save(entity);
 
         //添加联系人
-        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
-            addContacts(entity.getCustomerId(), param.getContactsParams());
+//        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
+//            addContacts(entity.getCustomerId(), param.getContactsParams());
+//        }
+        for (ContactsParam contactsParam : param.getContactsParams()) {
+            if (!contactsParam.getContactsName().equals("")) {
+                Contacts contacts = contactsService.add(contactsParam);
+                ContactsBindParam contactsBindParam = new ContactsBindParam();
+                contactsBindParam.setCustomerId(entity.getCustomerId());
+                contactsBindParam.setContactsId(contacts.getContactsId());
+                contactsBindService.add(contactsBindParam);
+            }
         }
+
         //添加地址
         if (ToolUtil.isNotEmpty(param.getAdressParams())) {
             addAdress(entity.getCustomerId(), param.getAdressParams());
