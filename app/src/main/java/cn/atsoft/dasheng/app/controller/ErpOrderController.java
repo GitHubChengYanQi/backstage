@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.entity.CrmPayment;
+import cn.atsoft.dasheng.app.wrapper.CrmPaymentSelectWrapper;
+import cn.atsoft.dasheng.app.wrapper.ErpOrderSelectWrapper;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ErpOrder;
@@ -10,10 +13,15 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.constant.state.Order;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -106,6 +114,17 @@ public class ErpOrderController extends BaseController {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
             return this.erpOrderService.findPageBySpec(erpOrderParam, dataScope);
         }
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String,Object>>> listSelect() {
+        QueryWrapper<ErpOrder> paymentQueryWrapper = new QueryWrapper<>();
+        paymentQueryWrapper.in("display",1);
+        List<Map<String,Object>> list = this.erpOrderService.listMaps(paymentQueryWrapper);
+        ErpOrderSelectWrapper factory = new ErpOrderSelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 
