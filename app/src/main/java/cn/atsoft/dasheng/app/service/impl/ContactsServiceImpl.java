@@ -100,9 +100,11 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         // 添加电话号码
         for (PhoneParam phone : param.getPhoneParams()) {
             if (ToolUtil.isNotEmpty(phone)) {
-                if (phone.getPhoneNumber()!=null&&!phone.getPhoneNumber().equals("")) {
+                if (phone.getPhoneNumber() != null && !phone.getPhoneNumber().equals("")) {
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
+                } else {
+                    throw new ServiceException(500, "请填写正确联系人电话");
                 }
             }
 

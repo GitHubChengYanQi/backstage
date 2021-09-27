@@ -251,9 +251,9 @@ public class FreedAop {
         if (target instanceof TrackMessageService) {
             FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
             TrackMessage trackMessageResult = (TrackMessage) result;
-            if (ToolUtil.isEmpty(trackMessageResult.getBusinessId())) {
-                throw new ServiceException(500, "请确认当前项目");
-            }
+//            if (ToolUtil.isEmpty(trackMessageResult.getBusinessId())) {
+//                throw new ServiceException(500, "请确认当前项目");
+//            }
             businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
             String content = "";
             switch (methodName) {
