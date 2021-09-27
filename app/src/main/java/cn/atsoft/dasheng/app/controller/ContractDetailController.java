@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
@@ -58,6 +59,13 @@ public class ContractDetailController extends BaseController {
     public ResponseData update(@RequestBody ContractDetailParam contractDetailParam) {
         contractDetailParam.setTotalPrice(contractDetailParam.getSalePrice() * contractDetailParam.getQuantity());
         this.contractDetailService.update(contractDetailParam);
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/addItems", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData addItems(@RequestBody BusinessDetailedParam businessDetailedParam) {
+        this.contractDetailService.addAll(businessDetailedParam);
         return ResponseData.success();
     }
 

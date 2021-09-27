@@ -17,11 +17,12 @@
         <result column="sale_price" property="salePrice" />
         <result column="total_price" property="totalPrice" />
         <result column="deptId" property="deptId" />
+        <result column="brandId" property="brandId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id AS "id", contract_id AS "contractId", item_id AS "itemId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice", deptId AS "deptId"
+        brand_id AS "brandId" ,id AS "id", contract_id AS "contractId", item_id AS "itemId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice", deptId AS "deptId"
     </sql>
 
 
