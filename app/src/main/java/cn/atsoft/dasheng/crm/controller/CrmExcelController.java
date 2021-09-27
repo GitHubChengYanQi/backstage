@@ -19,11 +19,10 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 
 import java.util.ArrayList;
@@ -77,7 +76,7 @@ public class CrmExcelController {
 
     @RequestMapping("/importAdress")
     @ResponseBody
-    public ResponseData adressExcel(@RequestPart("file") MultipartFile file) {
+    public ResponseData adressExcel(@RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
         try {
