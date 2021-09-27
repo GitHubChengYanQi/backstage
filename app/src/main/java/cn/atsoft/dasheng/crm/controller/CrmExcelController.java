@@ -3,8 +3,14 @@ package cn.atsoft.dasheng.crm.controller;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.excel.AdressExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -20,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,10 +36,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/crm/excel")
 @Slf4j
-public class ExcelController {
+public class CrmExcelController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private CustomerService customerService;
 
     /**
      * 上传excel填报
@@ -50,6 +61,44 @@ public class ExcelController {
                 params.setTitleRows(1);
                 params.setHeadRows(1);
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
+
+
+//                return returns;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            log.error("上传那文件出错！", e);
+            throw new ServiceException(BizExceptionEnum.UPLOAD_ERROR);
+        }
+        return null;
+    }
+
+    @RequestMapping("/importAdress")
+    @ResponseBody
+    public ResponseData adressExcel(@RequestPart("file") MultipartFile file) {
+        String name = file.getOriginalFilename();
+        String fileSavePath = ConstantsContext.getFileUploadPath();
+        try {
+            File excelFile = new File(fileSavePath + name);
+            file.transferTo(excelFile);
+            try {
+                ImportParams params = new ImportParams();
+                params.setTitleRows(1);
+                params.setHeadRows(1);
+                List<AdressExcelItem> result = ExcelImportUtil.importExcel(excelFile, AdressExcelItem.class, params);
+
+                List<Adress> adresses = new ArrayList<>();
+                for (AdressExcelItem adressExcelItem : result) {
+                    Adress adress = new Adress();
+                    Customer customer = customerService.lambdaQuery().eq(Customer::getCustomerName, adressExcelItem.getCustomerName()).one();
+                    if (ToolUtil.isNotEmpty(customer)) {
+                        adress.setCustomerId(customer.getCustomerId());
+                    }
+                    ToolUtil.copyProperties(adressExcelItem, adress);
+                }
+                adressService.saveBatch(adresses);
 
 
 //                return returns;
