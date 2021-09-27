@@ -104,7 +104,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                     phone.setContactsId(entity.getContactsId());
                     phoneService.add(phone);
                 } else {
-                    throw new ServiceException(500, "请填写联系人电话");
+                    throw new ServiceException(500, "请填写正确联系人电话");
                 }
             }
 
