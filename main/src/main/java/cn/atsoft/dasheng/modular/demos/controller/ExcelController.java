@@ -47,17 +47,6 @@ public class ExcelController {
     private UserService userService;
 
     /**
-     * excel导入页面
-     *
-     * @author fengshuonan
-     * @Date 2019/3/9 11:03
-     */
-    @RequestMapping("/import")
-    public String importIndex() {
-        return "/demos/excel_import.html";
-    }
-
-    /**
      * 上传excel填报
      */
     @RequestMapping("/uploadExcel")

@@ -45,7 +45,7 @@ public class OutstockOrder implements Serializable {
      */
     @TableField("outstock_apply_id")
     private Long outstockApplyId;
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getUserId() {

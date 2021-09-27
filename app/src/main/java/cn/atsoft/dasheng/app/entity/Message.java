@@ -93,7 +93,7 @@ public class Message implements Serializable {
     @TableField("sort")
     private Long sort;
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

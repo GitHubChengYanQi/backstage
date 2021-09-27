@@ -30,7 +30,7 @@ public class Template implements Serializable {
     @TableId(value = "template_id", type = IdType.ID_WORKER)
     private Long templateId;
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

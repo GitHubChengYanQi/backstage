@@ -110,7 +110,7 @@ public class Items implements Serializable {
      */
       @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

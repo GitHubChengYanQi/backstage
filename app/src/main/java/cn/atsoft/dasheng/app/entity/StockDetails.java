@@ -32,7 +32,7 @@ public class StockDetails implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill=FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
