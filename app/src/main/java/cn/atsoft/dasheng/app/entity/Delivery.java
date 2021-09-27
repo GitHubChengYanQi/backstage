@@ -23,6 +23,36 @@ import java.io.Serializable;
 public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 车牌号
+     */
+    @TableField("license_plate")
+    private String licensePlate;
+    /**
+     * 司机电话
+     */
+    @TableField("driver_phone")
+    private Integer driverPhone;
+    /**
+     * 司机姓名
+     */
+    @TableField("driver_name")
+    private String driverName;
+    /**
+     * 物流单号
+     */
+    @TableField("logistics_number")
+    private String logisticsNumber;
+    /**
+     * 物流公司
+     */
+    @TableField("logistics_company")
+    private String logisticsCompany;
+    /**
+     * 发货方式
+     */
+    @TableField("delivery_way")
+    private Integer deliveryWay;
 
     /**
      * 产品id
@@ -102,7 +132,7 @@ public class Delivery implements Serializable {
     @TableField("display")
     private Integer display;
 
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
@@ -217,7 +247,53 @@ public class Delivery implements Serializable {
         this.phoneId = phoneId;
     }
 
+    public String getLicensePlate() {
+        return licensePlate;
+    }
 
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public Integer getDriverPhone() {
+        return driverPhone;
+    }
+
+    public void setDriverPhone(Integer driverPhone) {
+        this.driverPhone = driverPhone;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
+    public String getLogisticsNumber() {
+        return logisticsNumber;
+    }
+
+    public void setLogisticsNumber(String logisticsNumber) {
+        this.logisticsNumber = logisticsNumber;
+    }
+
+    public String getLogisticsCompany() {
+        return logisticsCompany;
+    }
+
+    public void setLogisticsCompany(String logisticsCompany) {
+        this.logisticsCompany = logisticsCompany;
+    }
+
+    public Integer getDeliveryWay() {
+        return deliveryWay;
+    }
+
+    public void setDeliveryWay(Integer deliveryWay) {
+        this.deliveryWay = deliveryWay;
+    }
 
     @Override
     public String toString() {

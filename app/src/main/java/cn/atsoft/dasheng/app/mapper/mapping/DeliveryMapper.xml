@@ -18,11 +18,20 @@
         <result column="contacts_id" property="contactsId"/>
         <result column="phone_id" property="phoneId"/>
         <result column="deptId" property="deptId"/>
+        <result column="delivery_way" property="deliveryWay"/>
+        <result column="logistics_company" property="logisticsCompany"/>
+        <result column="logistics_number" property="logisticsNumber"/>
+        <result column="driver_name" property="driverName"/>
+        <result column="driver_phone" property="driverPhone"/>
+        <result column="license_plate" property="licensePlate"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">item_id
+    <sql id="Base_Column_List">delivery_way
+    AS "deliveryWay", logistics_company AS "logisticsCompany",logistics_number AS"logisticsNumber",
+driver_name AS "driverName", driver_phone AS "driverPhone" , license_plate AS "licensePlate",
+item_id
     AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",deptId AS "deptId",
         delivery_id AS "deliveryId", outstock_order_id AS "outstockOrderId", out_time AS "outTime", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>

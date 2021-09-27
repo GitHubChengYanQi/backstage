@@ -1,17 +1,21 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 发货表
  * </p>
  *
- * @author  
+ * @author
  * @since 2021-08-20
  */
 @Data
@@ -29,6 +33,31 @@ public class DeliveryResult implements Serializable {
 
     private PhoneResult phoneResult;
 
+
+    /**
+     * 车牌号
+     */
+    private String licensePlate;
+    /**
+     * 司机电话
+     */
+    private Integer driverPhone;
+    /**
+     * 司机姓名
+     */
+    private String driverName;
+    /**
+     * 物流单号
+     */
+    private String logisticsNumber;
+    /**
+     * 物流公司
+     */
+    private String logisticsCompany;
+    /**
+     * 发货方式
+     */
+    private Integer deliveryWay;
 
     /**
      * 产品id

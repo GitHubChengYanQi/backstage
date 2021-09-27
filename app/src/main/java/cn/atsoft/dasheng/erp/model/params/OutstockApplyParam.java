@@ -27,6 +27,32 @@ public class OutstockApplyParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<ApplyDetailsParam> applyDetails;
+
+    /**
+     * 车牌号
+     */
+    private String licensePlate;
+    /**
+     * 司机电话
+     */
+    private Integer driverPhone;
+    /**
+     * 司机姓名
+     */
+    private String driverName;
+    /**
+     * 物流单号
+     */
+    private String logisticsNumber;
+    /**
+     * 物流公司
+     */
+    private String logisticsCompany;
+    /**
+     * 发货方式
+     */
+    private Integer deliveryWay;
+    //------------------------------------------------------------------------------------------------------------
     /**
      * 出库申请
      */

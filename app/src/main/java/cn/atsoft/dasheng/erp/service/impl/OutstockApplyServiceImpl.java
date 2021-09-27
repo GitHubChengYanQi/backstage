@@ -75,7 +75,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     @Override
     public void add(OutstockApplyParam param) {
         Integer count = customerService.lambdaQuery().eq(Customer::getCustomerId, param.getCustomerId()).count();
-        if (count==0) {
+        if (count == 0) {
             throw new ServiceException(500, "请填写客户，再进行操作");
         }
         if (ToolUtil.isEmpty(param.getContactsId())) {
@@ -85,7 +85,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
         List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery().in(ContactsBind::getCustomerId, param.getCustomerId()).list();
         boolean f = false;
         for (ContactsBind contactsBind : contactsBinds) {
-            if (contactsBind.getContactsId()!=null && contactsBind.getContactsId().equals(param.getContactsId())) {
+            if (contactsBind.getContactsId() != null && contactsBind.getContactsId().equals(param.getContactsId())) {
                 f = true;
                 break;
             }
@@ -264,7 +264,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
             }
 
             for (Storehouse storehouse : stocks) {
-                if (datum.getStockId().equals(storehouse.getStorehouseId())) {
+                if (datum.getStockId() != null && datum.getStockId().equals(storehouse.getStorehouseId())) {
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStockResult(storehouseResult);
