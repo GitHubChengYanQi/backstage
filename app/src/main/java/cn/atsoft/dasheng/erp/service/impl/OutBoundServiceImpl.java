@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -38,6 +39,8 @@ public class OutBoundServiceImpl implements OutBoundService {
     private OutstockApplyService outstockApplyService;
     @Autowired
     private DeliveryDetailsService deliveryDetailsService;
+    @Autowired
+    private DeliveryService deliveryService;
 
 
     @Override
@@ -146,12 +149,47 @@ public class OutBoundServiceImpl implements OutBoundService {
 
     @Override
     public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
+//        //一件发货添加发货单
+//        DeliveryParam deliveryParam = new DeliveryParam();
+//        deliveryParam.setCustomerId(outstockApplyParam.getCustomerId());
+//        deliveryParam.setPhoneId(outstockApplyParam.getPhoneId());
+//        deliveryParam.setAdressId(outstockApplyParam.getAdressId());
+//        deliveryParam.setContactsId(outstockApplyParam.getContactsId());
+//        deliveryParam.setDeliveryWay(outstockApplyParam.getDeliveryWay());
+//
+//        if (outstockApplyParam.getDeliveryWay() == 1) {
+//            deliveryParam.setLogisticsCompany(outstockApplyParam.getLogisticsCompany());
+//            deliveryParam.setLogisticsNumber(outstockApplyParam.getLogisticsNumber());
+//        } else if (outstockApplyParam.getDeliveryWay() == 0) {
+//            deliveryParam.setDriverName(outstockApplyParam.getDriverName());
+//            deliveryParam.setDriverPhone(outstockApplyParam.getDriverPhone());
+//            deliveryParam.setLicensePlate(outstockApplyParam.getLicensePlate());
+//        }
+//        Long deliveryId = deliveryService.add(deliveryParam);
+//
+//        OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
+//        outstockOrderParam.setOutstockApplyId(outstockOrderParam.getOutstockApplyId());
+//        outstockOrderParam.setStorehouseId(outstockOrderParam.getStorehouseId());
 
         Long outstockApplyId = outstockApplyParam.getOutstockApplyId();
         QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();
         listingQueryWrapper.in("outstock_apply_id", outstockApplyId);
         List<OutstockListing> list = outstockListingService.list(listingQueryWrapper);
         Long deliveryId = list.get(0).getDeliveryId();
+
+        Delivery delivery = deliveryService.lambdaQuery().eq(Delivery::getDeliveryId, deliveryId).one();
+        DeliveryParam deliveryParam = new DeliveryParam();
+        ToolUtil.copyProperties(delivery, deliveryParam);
+        deliveryParam.setDeliveryWay(outstockApplyParam.getDeliveryWay());
+        if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 1) {
+            deliveryParam.setLogisticsCompany(outstockApplyParam.getLogisticsCompany());
+            deliveryParam.setLogisticsNumber(outstockApplyParam.getLogisticsNumber());
+        } else if (outstockApplyParam.getOutstockApplyId() != null && outstockApplyParam.getDeliveryWay() == 0) {
+            deliveryParam.setDriverName(outstockApplyParam.getDriverName());
+            deliveryParam.setDriverPhone(outstockApplyParam.getDriverPhone());
+            deliveryParam.setLicensePlate(outstockApplyParam.getLicensePlate());
+        }
+        deliveryService.update(deliveryParam);
 
         List<ApplyDetails> applyDetails = applyDetailsService.lambdaQuery()
                 .in(ApplyDetails::getOutstockApplyId, outstockApplyParam.getOutstockApplyId())
