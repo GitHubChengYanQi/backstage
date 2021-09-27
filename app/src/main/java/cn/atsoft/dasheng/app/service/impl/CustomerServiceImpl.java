@@ -103,6 +103,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     @FreedLog
+    public Customer updateChargePerson(CustomerParam param) {
+        Customer customer = new Customer();
+        customer.setCustomerId(param.getCustomerId());
+        customer.setUserId(param.getUserId());
+        this.updateById(customer);
+        return customer;
+    }
+
+
+    @Override
+    @FreedLog
     public Customer delete(CustomerParam param) {
         param.setDisplay(0);
         Long customerId = param.getCustomerId();

@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.model.params.BusinessCompetitionParam;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,24 @@ public class CrmBusinessController extends BaseController {
         if (crmBusinessParam.getBusinessId() == null) {
             return ResponseData.error("请选择你要的商机");
         }
+        return ResponseData.success();
+    }
+
+    /**
+     * 更新负责人
+     *
+     * @author
+     * @Date 2021-08-03
+     */
+    @RequestMapping(value = "/updateChargePerson", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    @Permission
+    public ResponseData updateChargePerson(@RequestBody CrmBusinessParam crmBusinessParam) {
+
+        if (crmBusinessParam.getBusinessId() == null) {
+            throw new ServiceException(500,"请选择你要的商机");
+        }
+        this.crmBusinessService.updateChargePerson(crmBusinessParam);
         return ResponseData.success();
     }
 
@@ -141,10 +160,10 @@ public class CrmBusinessController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody CrmBusinessParam crmBusinessParam) {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CrmBusinessParam crmBusinessParam) {
         QueryWrapper<CrmBusiness> businessQueryWrapper = new QueryWrapper<>();
         businessQueryWrapper.in("display", 1);
-        if (ToolUtil.isNotEmpty(crmBusinessParam.getBusinessId())){
+        if (ToolUtil.isNotEmpty(crmBusinessParam) && ToolUtil.isNotEmpty(crmBusinessParam.getBusinessId())){
             businessQueryWrapper.in("business_id", crmBusinessParam.getBusinessId());
         }
         List<Map<String, Object>> list = this.crmBusinessService.listMaps(businessQueryWrapper);
