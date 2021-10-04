@@ -58,12 +58,16 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
     @Override
     @FreedLog
     public TrackMessage add(TrackMessageParam param) {
+
+        TrackMessage entity = getEntity(param);
+        this.save(entity);
+
         LoginUser user = LoginContextHolder.getContext().getUser();
         param.setUserId(user.getId());
         List<CompetitorQuoteParam> competitorQuoteParams = param.getCompetitorQuoteParam();
-        if (ToolUtil.isEmpty(competitorQuoteParams)) {
-            throw new ServiceException(500, "请选择当前流程");
-        }
+//        if (ToolUtil.isEmpty(competitorQuoteParams)) {
+//            throw new ServiceException(500, "请选择当前流程");
+//        }
         // 添加对手/我放报价
         List<CompetitorQuote> competitorQuotes = new ArrayList<>();
         for (CompetitorQuoteParam data : competitorQuoteParams) {
@@ -89,8 +93,7 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 
         competitorQuoteService.saveBatch(competitorQuotes);
 
-        TrackMessage entity = getEntity(param);
-        this.save(entity);
+
         // 添加跟进内容
         if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
             List<BusinessTrack> businessTracks = new ArrayList<>();
