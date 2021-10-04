@@ -55,13 +55,13 @@ public class Items implements Serializable {
      * 重要程度
      */
     @TableField("important")
-    private Float important;
+    private Integer important;
 
     /**
      * 物品重量
      */
     @TableField("weight")
-    private Double weight;
+    private Integer weight;
 
     /**
      * 材质id
@@ -161,19 +161,19 @@ public class Items implements Serializable {
         this.productionTime = productionTime;
     }
 
-    public Float getImportant() {
+    public Integer getImportant() {
         return important;
     }
 
-    public void setImportant(Float important) {
+    public void setImportant(Integer important) {
         this.important = important;
     }
 
-    public Double getWeight() {
+    public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(Double weight) {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
 

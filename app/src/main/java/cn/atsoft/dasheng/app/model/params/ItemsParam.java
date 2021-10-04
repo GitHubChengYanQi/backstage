@@ -62,13 +62,13 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
      * 重要程度
      */
     @ApiModelProperty("重要程度")
-    private Float important;
+    private Integer important;
 
     /**
      * 物品重量
      */
     @ApiModelProperty("物品重量")
-    private Double weight;
+    private Integer weight;
 
     /**
      * 材质id
