@@ -59,6 +59,12 @@ public class RestUserFactory {
         if (newUser == null || oldUser == null) {
             return oldUser;
         } else {
+            if (ToolUtil.isNotEmpty(newUser.getUserId())){
+                oldUser.setUserId(newUser.getUserId());
+            }
+            if (ToolUtil.isNotEmpty(newUser.getAccount())){
+                oldUser.setAccount(newUser.getAccount());
+            }
             if (ToolUtil.isNotEmpty(newUser.getAvatar())) {
                 oldUser.setAvatar(newUser.getAvatar());
             }

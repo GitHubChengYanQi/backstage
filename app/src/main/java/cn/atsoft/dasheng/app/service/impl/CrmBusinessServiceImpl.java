@@ -62,6 +62,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private CompetitorService competitorService;
     @Autowired
     private BusinessCompetitionService businessCompetitionService;
+    @Autowired
+    private ContractService contractService;
 
 
     public CrmBusinessResult detail(Long id) {
@@ -274,6 +276,8 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         List<Long> processIds = new ArrayList<>();
         List<Long> businessIds = new ArrayList<>();
 
+        List<Long> contractIds = new ArrayList<>();
+
         for (CrmBusinessResult item : data) {
             cids.add(item.getCustomerId());
             OriginIds.add(item.getOriginId());
@@ -282,6 +286,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
             trackList.add(item.getTrackId());
             processIds.add(item.getProcessId());
             businessIds.add(item.getBusinessId());
+            contractIds.add(item.getContractId());
         }
 
 
@@ -316,6 +321,10 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
         processQueryWrapper.in("sales_process_id", processIds);
         List<CrmBusinessSalesProcess> processList = processIds.size() == 0 ? new ArrayList<>() : crmBusinessSalesProcessService.list(processQueryWrapper);
 
+        QueryWrapper<Contract> contractQueryWrapper = new QueryWrapper<>();
+        contractQueryWrapper.in("contract_id", contractIds);
+        List<Contract> contractList = contractIds.size() == 0 ? new ArrayList<>() : contractService.list(contractQueryWrapper);
+
 
         for (CrmBusinessResult item : data) {
             if (item.getBusinessId() != null) {
@@ -343,6 +352,14 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     item.setCustomer(customerResult);
+                    break;
+                }
+            }
+            for (Contract contract : contractList) {
+                if (item.getContractId() != null && item.getCustomerId().equals(contract.getContractId())) {
+                    ContractResult contractResult = new ContractResult();
+                    ToolUtil.copyProperties(contract, contractResult);
+                    item.setContractResult(contractResult);
                     break;
                 }
             }

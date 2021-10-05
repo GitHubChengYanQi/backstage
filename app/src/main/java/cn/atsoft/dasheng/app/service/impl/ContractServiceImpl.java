@@ -91,7 +91,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Customer customer = customerService.getById(param.getPartyA());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
-
         }else {
             Contract entity = getEntity(param);
             this.save(entity);

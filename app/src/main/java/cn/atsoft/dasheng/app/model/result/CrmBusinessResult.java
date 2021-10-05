@@ -28,6 +28,7 @@ public class CrmBusinessResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private CustomerResult customer;
+    private ContractResult contractResult;
     private OriginResult origin;
     private CrmBusinessSalesResult sales;
     private UserResult user;

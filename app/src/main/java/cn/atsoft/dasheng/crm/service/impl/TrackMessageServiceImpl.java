@@ -70,13 +70,15 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 //        }
         // 添加对手/我放报价
         List<CompetitorQuote> competitorQuotes = new ArrayList<>();
-        for (CompetitorQuoteParam data : competitorQuoteParams) {
-            if (ToolUtil.isNotEmpty(data.getCompetitorId())) {
-                data.setBusinessId(param.getBusinessId());
-                CompetitorQuote competitorQuote = new CompetitorQuote();
-                ToolUtil.copyProperties(data, competitorQuote);
-                competitorQuote.setCampType(1L);
-                competitorQuotes.add(competitorQuote);
+        if (ToolUtil.isNotEmpty(competitorQuoteParams)){
+            for (CompetitorQuoteParam data : competitorQuoteParams) {
+                if (ToolUtil.isNotEmpty(data.getCompetitorId())) {
+                    data.setBusinessId(param.getBusinessId());
+                    CompetitorQuote competitorQuote = new CompetitorQuote();
+                    ToolUtil.copyProperties(data, competitorQuote);
+                    competitorQuote.setCampType(1L);
+                    competitorQuotes.add(competitorQuote);
+                }
             }
         }
         if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
