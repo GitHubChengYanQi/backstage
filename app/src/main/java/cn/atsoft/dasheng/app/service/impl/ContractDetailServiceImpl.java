@@ -57,6 +57,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
         ContractDetail entity = getEntity(param);
         this.save(entity);
     }
+
     Map<Long, ContractDetail> map;
     @Override
     public void addAll(BusinessDetailedParam param) {

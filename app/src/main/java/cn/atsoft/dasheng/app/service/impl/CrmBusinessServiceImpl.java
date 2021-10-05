@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessDynamicParam;
+import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
@@ -64,6 +65,10 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     private BusinessCompetitionService businessCompetitionService;
     @Autowired
     private ContractService contractService;
+    @Autowired
+    private CrmBusinessDetailedService crmBusinessDetailedService;
+    @Autowired
+    private ContractDetailService contractDetailService;
 
 
     public CrmBusinessResult detail(Long id) {
@@ -131,14 +136,32 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
     @Override
     @FreedLog
     public CrmBusiness update(CrmBusinessParam param) {
-//        if (ToolUtil.isNotEmpty(param.getBusinessId())) {
-//            CrmBusiness crmBusiness = this.lambdaQuery()
-//                    .in(CrmBusiness::getBusinessId, param.getBusinessId())
-//                    .one();
-//            if (!crmBusiness.getCustomerId().equals(param.getCustomerId())) {
-//                throw new ServiceException(500, "不可以修改客户");
-//            }
-//        }
+        //获取合同id
+        Long contractId = param.getContractId();
+        //判断合同id是否为空
+        if (ToolUtil.isNotEmpty(contractId) && ToolUtil.isNotEmpty(param.getBusinessId())) {
+            //合同id不为空，查询商机明细
+            QueryWrapper<CrmBusinessDetailed> crmBusinessDetailedQueryWrapper = new QueryWrapper<>();
+            crmBusinessDetailedQueryWrapper.in("business_id",param.getBusinessId());
+            List<CrmBusinessDetailed> list = crmBusinessDetailedService.list(crmBusinessDetailedQueryWrapper);
+
+            //判断该商机明细是否为空
+            if (list.size() > 0){
+                //把商机明细添加到合同明细
+
+                for (CrmBusinessDetailed crmBusinessDetailed : list) {
+                    ContractDetailParam contractDetail = new ContractDetailParam();
+                    contractDetail.setContractId(contractId);
+                    contractDetail.setItemId(crmBusinessDetailed.getItemId());
+                    contractDetail.setBrandId(crmBusinessDetailed.getBrandId());
+                    contractDetail.setQuantity(crmBusinessDetailed.getQuantity());
+                    contractDetail.setSalePrice(crmBusinessDetailed.getSalePrice());
+                    contractDetail.setTotalPrice(crmBusinessDetailed.getTotalPrice());
+
+                    contractDetailService.add(contractDetail);
+                }
+            }
+        }
 
         CrmBusiness oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
@@ -356,7 +379,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 }
             }
             for (Contract contract : contractList) {
-                if (item.getContractId() != null && item.getCustomerId().equals(contract.getContractId())) {
+                if (item.getContractId() != null && item.getContractId().equals(contract.getContractId())) {
                     ContractResult contractResult = new ContractResult();
                     ToolUtil.copyProperties(contract, contractResult);
                     item.setContractResult(contractResult);

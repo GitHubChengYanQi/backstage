@@ -51,6 +51,9 @@
         <if test="paramCondition.parentid != null">
             and parentid = #{paramCondition.parentid}
         </if>
+        <if test="paramCondition.title != null">
+            and title = #{paramCondition.title}
+        </if>
         <if test="paramCondition.id != null">
             and id = #{paramCondition.id}
         </if>

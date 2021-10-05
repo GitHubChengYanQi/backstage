@@ -82,6 +82,11 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
 
         List<Long> trackMessageIds = param.getTrackMessageIds();
 
+        if (trackMessageIds == null || trackMessageIds.size() <= 0){
+            trackMessageIds = new ArrayList<>();
+            trackMessageIds.add(0L);
+        }
+
         Page<BusinessTrackResult> pageContext = getPageContext();
         IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param,dataScope);
         List<Long> ids = new ArrayList<>();
