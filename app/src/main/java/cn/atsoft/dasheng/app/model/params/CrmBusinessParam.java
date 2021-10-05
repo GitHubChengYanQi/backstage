@@ -42,6 +42,11 @@ public class CrmBusinessParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("商机id")
     private Long businessId;
+    /**
+     * 合同id
+     */
+    @ApiModelProperty("合同id")
+    private Long contractId;
 
     /**
      * 商机名称

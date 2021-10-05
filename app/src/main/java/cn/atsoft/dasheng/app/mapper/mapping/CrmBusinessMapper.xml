@@ -24,6 +24,7 @@
         <result column="display" property="display"/>
         <result column="track_id" property="trackId"/>
         <result column="process_id" property="processId"/>
+        <result column="contract_id" property="contractId"/>
         <result column="deptId" property="deptId"/>
     </resultMap>
 
@@ -79,10 +80,13 @@
             and track_id = #{paramCondition.trackId}
         </if>
         <if test="paramCondition.userId != null">
-            and userId =#{paramCondition.userId}
+            and userId = #{paramCondition.userId}
         </if>
         <if test="paramCondition.state != null">
-            and state =#{paramCondition.state}
+            and state = #{paramCondition.state}
+        </if>
+        <if test="paramCondition.contractId != null">
+            and contract_id = #{paramCondition.contractId}
         </if>
         <if test="paramCondition.businessName !=null and paramCondition.businessName!= ''">
             and business_name like CONCAT('%',#{paramCondition.businessName},'%')

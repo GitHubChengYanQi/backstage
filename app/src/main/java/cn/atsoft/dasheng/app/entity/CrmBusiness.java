@@ -32,6 +32,17 @@ public class CrmBusiness implements Serializable {
     private Long businessId;
     @TableField("process_id")
     private Long processId;
+
+    public Long getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(Long contractId) {
+        this.contractId = contractId;
+    }
+
+    @TableField("contract_id")
+    private Long contractId;
     /**
      * 商机名称
      */

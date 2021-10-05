@@ -59,9 +59,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public void delete(InstockParam param) {
-        if (param.getNumber()>1000) {
-            throw new ServiceException(500,"一次性入库数量上限1000");
-        }
         Instock byId = this.getById(param.getInstockId());
         if (ToolUtil.isEmpty(byId)) {
             throw new ServiceException(500, "删除目标不存在");

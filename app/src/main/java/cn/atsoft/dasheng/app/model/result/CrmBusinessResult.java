@@ -36,8 +36,8 @@ public class CrmBusinessResult implements Serializable {
     private Long trackId;
     private Long processId;
     private String personName;
-    private  List<CompetitorResult> competitorResults;
-   private  int sort;
+    private List<CompetitorResult> competitorResults;
+    private int sort;
 
 
     /**
@@ -45,6 +45,12 @@ public class CrmBusinessResult implements Serializable {
      */
     @ApiModelProperty("商机id")
     private Long businessId;
+
+    /**
+     * 合同id
+     */
+    @ApiModelProperty("合同id")
+    private Long contractId;
 
     /**
      * 商机名称

@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +149,7 @@ public class OutBoundServiceImpl implements OutBoundService {
     }
 
     @Override
+    @Transactional
     public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
 //        //一件发货添加发货单
 //        DeliveryParam deliveryParam = new DeliveryParam();
@@ -279,6 +281,9 @@ public class OutBoundServiceImpl implements OutBoundService {
 
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockApplyId, outstockApplyParam.getOutstockApplyId()).one();
+        if(ToolUtil.isEmpty(outstockOrder)){
+            throw new ServiceException(500,"产品不存在！");
+        }
         outstockOrder.setState(2);
         outstockOrder.setStorehouseId(outstockApplyParam.getStockId());
         OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
