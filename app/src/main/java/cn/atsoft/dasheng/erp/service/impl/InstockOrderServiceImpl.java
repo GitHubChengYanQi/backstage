@@ -2,7 +2,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Instock;
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.InstockService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -12,6 +15,9 @@ import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,6 +40,10 @@ import java.util.List;
 public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, InstockOrder> implements InstockOrderService {
     @Autowired
     private InstockService instockService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StorehouseService storehouseService;
 
     @Override
     public void add(InstockOrderParam param) {
@@ -54,6 +64,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                         instock.setInstockOrderId(entity.getInstockOrderId());
                         instock.setSellingPrice(instockRequest.getSellingPrice());
                         instock.setCostPrice(instockRequest.getSellingPrice());
+                        instock.setBarcode(instockRequest.getBarcode());
                         instocks.add(instock);
                     }
                 }
@@ -95,6 +106,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     public PageInfo<InstockOrderResult> findPageBySpec(InstockOrderParam param) {
         Page<InstockOrderResult> pageContext = getPageContext();
         IPage<InstockOrderResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -116,4 +128,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         return entity;
     }
 
+    private void format(List<InstockOrderResult> data) {
+        List<Long> userIds = new ArrayList<>();
+        List<Long> storeIds = new ArrayList<>();
+        for (InstockOrderResult datum : data) {
+            userIds.add(datum.getUserId());
+            storeIds.add(datum.getStoreHouseId());
+        }
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
+        List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
+
+        for (InstockOrderResult datum : data) {
+            for (User user : users) {
+                if (datum.getUserId().equals(user.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                }
+            }
+            for (Storehouse storehouse : storehouses) {
+                if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+                    datum.setStorehouseResult(storehouseResult);
+                }
+            }
+        }
+    }
 }

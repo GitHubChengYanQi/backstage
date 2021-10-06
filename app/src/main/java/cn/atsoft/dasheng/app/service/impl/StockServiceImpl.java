@@ -19,7 +19,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.util.resources.cldr.mg.LocaleNames_mg;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,11 +56,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
-    public void update(StockParam param) {
+    public Long update(StockParam param) {
         Stock oldEntity = getOldEntity(param);
         Stock newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        this.updateById(oldEntity);
+        return oldEntity.getStockId();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Override
     public PageInfo<StockResult> findPageBySpec(StockParam param, DataScope dataScope) {
         Page<StockResult> pageContext = getPageContext();
-        IPage<StockResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<StockResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }

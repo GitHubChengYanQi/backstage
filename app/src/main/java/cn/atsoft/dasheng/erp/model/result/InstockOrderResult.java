@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -23,6 +25,11 @@ import java.util.List;
 public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private UserResult userResult;
+
+    private StorehouseResult storehouseResult;
+
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
 

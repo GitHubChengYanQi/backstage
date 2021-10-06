@@ -98,12 +98,15 @@
         <if test="paramCondition.barcode != null">
             and barcode = #{paramCondition.barcode}
         </if>
-        <if test="paramCondition.state != null">
-            and state = #{paramCondition.state}
+       <if test="paramCondition.state != null">
+        and state = #{paramCondition.state}
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
+        </if>
+        <if test="paramCondition.instockOrderId != null">
+            and instock_order_id = #{paramCondition.instockOrderId}
         </if>
         order by create_time DESC
 
