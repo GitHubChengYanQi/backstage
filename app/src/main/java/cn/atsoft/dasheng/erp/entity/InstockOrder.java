@@ -26,7 +26,7 @@ public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @TableField("register_time")
-    private Data time;
+    private Date time;
     /**
      * 入库单
      */
@@ -70,11 +70,11 @@ public class InstockOrder implements Serializable {
     @TableField("state")
     private Boolean state;
 
-    public Data getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(Data time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
