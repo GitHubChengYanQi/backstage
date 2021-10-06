@@ -61,8 +61,7 @@ public class CrmExcelController {
                 params.setHeadRows(1);
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
 
-
-//                return returns;
+                return ResponseData.success();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -96,11 +95,10 @@ public class CrmExcelController {
                         adress.setCustomerId(customer.getCustomerId());
                     }
                     ToolUtil.copyProperties(adressExcelItem, adress);
+                    adresses.add(adress);
                 }
                 adressService.saveBatch(adresses);
-
-
-//                return returns;
+                return ResponseData.success();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -112,3 +110,4 @@ public class CrmExcelController {
         return null;
     }
 }
+
