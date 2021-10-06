@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @TableField("time")
+    @TableField("register_time")
     private Data time;
     /**
      * 入库单
