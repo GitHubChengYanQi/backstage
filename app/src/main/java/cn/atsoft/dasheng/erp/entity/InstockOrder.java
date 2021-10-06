@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.entity;
 
+import cn.atsoft.dasheng.crm.entity.Data;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
@@ -24,14 +25,16 @@ import java.io.Serializable;
 public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableField("time")
+    private Data time;
     /**
      * 入库单
      */
     @TableId(value = "instock_order_id", type = IdType.ID_WORKER)
     private Long instockOrderId;
-
-
+    /**
+     * 仓库id
+     */
     @TableField("storehouse_id")
     private Long storeHouseId;
     /**
@@ -66,6 +69,14 @@ public class InstockOrder implements Serializable {
      */
     @TableField("state")
     private Boolean state;
+
+    public Data getTime() {
+        return time;
+    }
+
+    public void setTime(Data time) {
+        this.time = time;
+    }
 
     public Long getStoreHouseId() {
         return storeHouseId;

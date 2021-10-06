@@ -26,6 +26,7 @@ public class InstockOrderResult implements Serializable {
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
 
+    private Date time;
     /**
      * 入库单
      */

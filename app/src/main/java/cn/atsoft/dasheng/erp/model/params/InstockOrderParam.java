@@ -28,6 +28,9 @@ public class InstockOrderParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private List<InstockRequest> instockRequest;
 
+
+    private Date time;
+
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
     /**
