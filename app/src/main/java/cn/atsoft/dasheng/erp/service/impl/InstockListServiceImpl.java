@@ -1,23 +1,27 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Instock;
-import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.params.StockParam;
-import cn.atsoft.dasheng.app.service.InstockService;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
-import cn.atsoft.dasheng.app.service.StockService;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
+import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +48,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ItemsService itemsService;
+    @Autowired
+    private BrandService brandService;
+
 
     @Override
     public void add(InstockListParam param) {
@@ -137,6 +149,37 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         InstockList entity = new InstockList();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    private void format(List<InstockListResult> data) {
+        List<Long> itemIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
+        for (InstockListResult datum : data) {
+            itemIds.add(datum.getItemId());
+            brandIds.add(datum.getBrandId());
+        }
+        List<Items> items = itemIds.size() == 0 ? new ArrayList<>() : itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
+
+        for (InstockListResult datum : data) {
+            for (Items item : items) {
+                if (item.getItemId().equals(datum.getItemId())) {
+                    ItemsResult itemsResult = new ItemsResult();
+                    ToolUtil.copyProperties(item, itemsResult);
+                    datum.setItemsResult(itemsResult);
+                    break;
+                }
+            }
+            for (Brand brand : brands) {
+                if (datum.getBrandId().equals(brand.getBrandId())) {
+                    BrandResult brandResult = new BrandResult();
+                    ToolUtil.copyProperties(brand, brandResult);
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
+        }
     }
 
 }

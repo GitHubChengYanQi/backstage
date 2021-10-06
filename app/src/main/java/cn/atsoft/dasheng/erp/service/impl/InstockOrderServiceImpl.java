@@ -160,6 +160,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
+                    break;
                 }
             }
             for (Storehouse storehouse : storehouses) {
@@ -167,6 +168,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStorehouseResult(storehouseResult);
+                    break;
                 }
             }
         }
