@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.entity.Instock;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -23,7 +24,9 @@ import java.util.List;
 @ApiModel
 public class InstockParam implements Serializable, BaseValidatingParam {
 
-    private static final long serialVersionUID = 1L;;
+    private static final long serialVersionUID = 1L;
+
+    private List<Instock> instocks;
 
     /**
      * 出库单
@@ -119,6 +122,7 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

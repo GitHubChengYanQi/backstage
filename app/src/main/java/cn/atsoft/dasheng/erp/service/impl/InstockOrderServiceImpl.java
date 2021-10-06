@@ -8,11 +8,13 @@ import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -44,6 +46,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private UserService userService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private InstockListService instockListService;
 
     @Override
     public void add(InstockOrderParam param) {
@@ -52,26 +56,38 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             List<Instock> instocks = new ArrayList<>();
+            List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
 
                 if (ToolUtil.isNotEmpty(instockRequest)) {
 
-                    for (Long i = 0L; i < instockRequest.getNumber(); i++) {
-                        Instock instock = new Instock();
-                        instock.setBrandId(instockRequest.getBrandId());
-                        instock.setItemId(instockRequest.getItemId());
-                        instock.setStoreHouseId(param.getStoreHouseId());
-                        instock.setInstockOrderId(entity.getInstockOrderId());
-                        instock.setSellingPrice(instockRequest.getSellingPrice());
-                        instock.setCostPrice(instockRequest.getSellingPrice());
-                        instock.setBarcode(instockRequest.getBarcode());
-                        instocks.add(instock);
-                    }
+                    InstockList instockList = new InstockList();
+                    instockList.setBrandId(instockRequest.getBrandId());
+                    instockList.setItemId(instockRequest.getItemId());
+                    instockList.setNumber(instockRequest.getNumber());
+                    instockList.setInstockOrderId(entity.getInstockOrderId());
+                    instockList.setStoreHouseId(param.getStoreHouseId());
+                    instockLists.add(instockList);
+
+//                    for (Long i = 0L; i < instockRequest.getNumber(); i++) {
+//                        Instock instock = new Instock();
+//                        instock.setBrandId(instockRequest.getBrandId());
+//                        instock.setItemId(instockRequest.getItemId());
+//                        instock.setStoreHouseId(param.getStoreHouseId());
+//                        instock.setInstockOrderId(entity.getInstockOrderId());
+//                        instock.setSellingPrice(instockRequest.getSellingPrice());
+//                        instock.setCostPrice(instockRequest.getSellingPrice());
+//                        instock.setBarcode(instockRequest.getBarcode());
+//                        instocks.add(instock);
+//                    }
                 }
 
             }
-            if (ToolUtil.isNotEmpty(instocks)) {
-                instockService.saveBatch(instocks);
+//            if (ToolUtil.isNotEmpty(instocks)) {
+//                instockService.saveBatch(instocks);
+//            }
+            if (ToolUtil.isNotEmpty(instockLists)) {
+                instockListService.saveBatch(instockLists);
             }
 
         }

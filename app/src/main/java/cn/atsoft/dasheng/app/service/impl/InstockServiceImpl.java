@@ -22,9 +22,11 @@ import org.apache.ibatis.reflection.ReflectionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,9 +52,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public Long add(InstockParam param) {
-        if (param.getNumber() > 1000) {
-            throw new ServiceException(500, "一次性入库数量上限1000");
-        }
+//        if (param.getNumber() > 1000) {
+//            throw new ServiceException(500, "一次性入库数量上限1000");
+//        }
         Instock entity = getEntity(param);
         this.save(entity);
         return entity.getInstockId();
@@ -73,12 +75,54 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     @Override
+    @Transactional
     public void update(InstockParam param) {
 
         Instock oldEntity = getOldEntity(param);
-        Instock newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+//        Instock newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+        List<StockDetails> stockDetails = new ArrayList<>();
+        List<Instock> instocks = new ArrayList<>();
+        for (Instock instock : param.getInstocks()) {
+            Long stockId = null;
+            Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, instock.getStoreHouseId())
+                    .and(i -> i.eq(Stock::getBrandId, instock.getBrandId()))
+                    .and(i -> i.eq(Stock::getItemId, instock.getItemId())).one();
+
+            StockParam stockParam = new StockParam();
+
+            if (ToolUtil.isNotEmpty(stock)) {
+                ToolUtil.copyProperties(stock, stockParam);
+                long l = stockParam.getInventory() + 1;
+                stockParam.setInventory(l);
+                stockId = stockService.update(stockParam);
+            } else {
+                stockParam.setStorehouseId(instock.getStoreHouseId());
+                stockParam.setItemId(instock.getItemId());
+                stockParam.setBrandId(instock.getBrandId());
+                stockParam.setInventory(1L);
+                stockId = stockService.add(stockParam);
+            }
+            instock.setState(1);
+            instocks.add(instock);
+
+            StockDetails stockDetail = new StockDetails();
+            stockDetail.setStockId(stockId);
+            stockDetail.setPrice(instock.getCostPrice());
+            stockDetail.setStorehouseId(instock.getStoreHouseId());
+            stockDetail.setItemId(instock.getItemId());
+            stockDetail.setBrandId(instock.getBrandId());
+            stockDetail.setBarcode(instock.getBarcode());
+            Date date = new Date();
+            stockDetail.setStorageTime(date);
+            stockDetail.setStorageTime(instock.getRegisterTime());
+            stockDetails.add(stockDetail);
+
+        }
+        stockDetailsService.saveBatch(stockDetails);
+        this.updateBatchById(instocks);
+//        newEntity.setState(1);
+//        this.updateById(newEntity);
 
 
 //        Instock oldEntity = getOldEntity(param);
