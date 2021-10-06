@@ -130,6 +130,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     public PageInfo<InstockListResult> findPageBySpec(InstockListParam param) {
         Page<InstockListResult> pageContext = getPageContext();
         IPage<InstockListResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
