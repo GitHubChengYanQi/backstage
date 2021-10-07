@@ -12,10 +12,12 @@ import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
+import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -66,6 +68,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private ContractService contractService;
     @Autowired
     private CustomerDynamicService customerDynamicService;
+    @Autowired
+    private TrackMessageService trackMessageService;
 
     @Override
     @FreedLog
@@ -225,9 +229,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
-
-
-
         List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery()
                 .in(ContactsBind::getCustomerId, customerId)
                 .and(i -> i.in(ContactsBind::getDisplay, 1))
@@ -275,7 +276,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
-
         for (CustomerResult record : data) {
 
             for (Long id : customerIds) {
@@ -284,12 +284,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     Integer businessCount = crmBusinessService.lambdaQuery().in(CrmBusiness::getCustomerId, id)
                             .and(i -> i.in(CrmBusiness::getDisplay, 1)).count();
 
-                    Integer contracrCount = contractService.lambdaQuery().in(Contract::getPartyB, id)
+                    Integer contracrCount = contractService.lambdaQuery().in(Contract::getPartyA, id)
                             .and(i -> i.in(Contract::getDisplay, 1))
                             .count();
 
-                    Integer dynamicCount = customerDynamicService.lambdaQuery().in(CustomerDynamic::getCustomerId, id)
-                            .and(i -> i.in(CustomerDynamic::getDisplay, 1))
+                    Integer dynamicCount = trackMessageService.lambdaQuery().in(TrackMessage::getCustomerId, id)
+                            .and(i -> i.in(TrackMessage::getDisplay, 1))
                             .count();
 
                     Integer contactsCount = contactsBindService.lambdaQuery()
