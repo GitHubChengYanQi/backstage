@@ -60,6 +60,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private PhoneService phoneService;
     @Autowired
     private ContactsBindService contactsBindService;
+    @Autowired
+    private CrmBusinessService crmBusinessService;
+    @Autowired
+    private ContractService contractService;
+    @Autowired
+    private CustomerDynamicService customerDynamicService;
 
     @Override
     @FreedLog
@@ -203,6 +209,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> userIds = new ArrayList<>();
         List<Long> industryIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         Long customerId = null;
 
 
@@ -212,12 +219,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             userIds.add(record.getUserId());
             industryIds.add(record.getIndustryId());
             dycustomerIds.add(record.getCustomerId());
-
+            customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
 
         }
+
+
+
+
+
         List<ContactsBind> contactsBinds = contactsBindService.lambdaQuery()
                 .in(ContactsBind::getCustomerId, customerId)
+                .and(i -> i.in(ContactsBind::getDisplay, 1))
                 .list();
 
         for (ContactsBind contactsBind : contactsBinds) {
@@ -262,9 +275,33 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
+
         for (CustomerResult record : data) {
-//            RegionResult region = getRegionService.getRegion(record.getRegion());
-//            record.setRegionResult(region);
+
+            for (Long id : customerIds) {
+                if (record.getCustomerId().equals(id)) {
+
+                    Integer businessCount = crmBusinessService.lambdaQuery().in(CrmBusiness::getCustomerId, id)
+                            .and(i -> i.in(CrmBusiness::getDisplay, 1)).count();
+
+                    Integer contracrCount = contractService.lambdaQuery().in(Contract::getPartyB, id)
+                            .and(i -> i.in(Contract::getDisplay, 1))
+                            .count();
+
+                    Integer dynamicCount = customerDynamicService.lambdaQuery().in(CustomerDynamic::getCustomerId, id)
+                            .and(i -> i.in(CustomerDynamic::getDisplay, 1))
+                            .count();
+
+                    Integer contactsCount = contactsBindService.lambdaQuery()
+                            .and(i -> i.in(ContactsBind::getDisplay, 1))
+                            .in(ContactsBind::getCustomerId, id).count();
+
+                    record.setBusinessCount(businessCount);
+                    record.setContactsCount(contactsCount);
+                    record.setDynamicCount(dynamicCount);
+                    record.setContracrCount(contracrCount);
+                }
+            }
 
 
             if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
