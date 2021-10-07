@@ -45,7 +45,7 @@
         <if test="paramCondition.customerId != null">
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -56,7 +56,7 @@
         <if test="paramCondition.businessId != null">
             and business_id like CONCAT('%',#{paramCondition.businessId},'%')
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -75,7 +75,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -87,7 +87,7 @@
         <if test="paramCondition.businessId != null">
             and business_id like CONCAT('%',#{paramCondition.businessId},'%')
         </if>
-        order by create_time DESC
+
 
     </select>
 
