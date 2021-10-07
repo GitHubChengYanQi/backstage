@@ -134,7 +134,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     private Page<InstockOrderResult> getPageContext() {
-        return PageFactory.defaultPage();
+        List<String> fields = new ArrayList<>();
+        fields.add("storeHouseId");
+        fields.add("createTime");
+        fields.add("userId");
+        return PageFactory.defaultPage(fields);
+
     }
 
     private InstockOrder getOldEntity(InstockOrderParam param) {
