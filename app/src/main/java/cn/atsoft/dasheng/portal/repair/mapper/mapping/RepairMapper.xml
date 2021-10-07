@@ -73,7 +73,7 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customMapList" resultType="map"
@@ -102,7 +102,7 @@
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name = #{paramCondition.name}
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
@@ -149,7 +149,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customMyPageList" resultType="cn.atsoft.dasheng.portal.repair.model.result.RepairResult"
@@ -189,7 +189,7 @@
                 </if>
             </otherwise>
         </choose>
-        order by create_time desc
+
     </select>
 
     <select id="customPageMapList" resultType="map"
@@ -215,7 +215,7 @@
         <if test="paramCondition.contractType != null and paramCondition.contractType != ''">
             and contract_type like CONCAT('%',#{paramCondition.contractType},'%')
         </if>
-        order by create_time desc
+
     </select>
 
 </mapper>

@@ -29,7 +29,7 @@
         <if test="paramCondition.goodDetailsId != null">
             and good_details_id = #{paramCondition.goodDetailsId}
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.goodsDetailsBanner.model.params.GoodsDetailsBannerParam">
@@ -39,7 +39,7 @@
         <if test="paramCondition.goodDetailsId != null">
             and good_details_id = #{paramCondition.goodDetailsId}
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.goodsDetailsBanner.model.result.GoodsDetailsBannerResult" parameterType="cn.atsoft.dasheng.portal.goodsDetailsBanner.model.params.GoodsDetailsBannerParam">
@@ -53,7 +53,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.goodsDetailsBanner.model.params.GoodsDetailsBannerParam">
@@ -63,7 +63,7 @@
         <if test="paramCondition.goodDetailsId != null">
             and good_details_id = #{paramCondition.goodDetailsId}
         </if>
-        order by create_time desc
+
     </select>
 
 </mapper>

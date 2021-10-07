@@ -34,7 +34,7 @@
             <if test="paramCondition.userId != null">
                 and user_id like CONCAT('%',#{paramCondition.userId},'%')
             </if>
-        order by create_time desc
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.remindUser.model.params.RemindUserParam">
@@ -50,7 +50,7 @@
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.remindUser.model.result.RemindUserResult" parameterType="cn.atsoft.dasheng.portal.remindUser.model.params.RemindUserParam">
@@ -70,7 +70,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.portal.remindUser.model.params.RemindUserParam">
@@ -86,7 +86,7 @@
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
                 </if>
-        order by create_time desc
+
     </select>
 
 </mapper>

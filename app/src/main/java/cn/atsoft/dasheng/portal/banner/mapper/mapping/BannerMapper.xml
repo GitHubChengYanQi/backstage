@@ -34,7 +34,7 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
-        order by create_time desc
+
 
     </select>
 
@@ -46,7 +46,7 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
-        order by create_time desc
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.portal.banner.model.result.BannerResult"
@@ -75,7 +75,7 @@
         <if test="paramCondition.title != null and paramCondition.title != ''">
             and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
-        order by create_time desc
+
     </select>
 
 </mapper>

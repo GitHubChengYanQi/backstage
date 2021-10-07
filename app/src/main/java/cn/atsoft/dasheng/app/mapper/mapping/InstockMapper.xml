@@ -51,7 +51,7 @@
         <if test="paramCondition.state != null">
             and state = #{paramCondition.state}
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -74,7 +74,7 @@
         <if test="paramCondition.state != null">
             and state = #{paramCondition.state}
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -108,7 +108,7 @@
         <if test="paramCondition.instockOrderId != null">
             and instock_order_id = #{paramCondition.instockOrderId}
         </if>
-        order by create_time DESC
+
 
     </select>
 
@@ -131,7 +131,7 @@
         <if test="paramCondition.state != null">
             and state = #{paramCondition.state}
         </if>
-        order by create_time DESC
+
 
     </select>
 
