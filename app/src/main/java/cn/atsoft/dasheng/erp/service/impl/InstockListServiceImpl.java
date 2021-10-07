@@ -54,6 +54,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private ItemsService itemsService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private StorehouseService storehouseService;
 
 
     @Override
@@ -107,6 +109,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setStockId(stockId);
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
             stockDetailsParam.setItemId(newEntity.getItemId());
+            stockDetailsParam.setPrice(newEntity.getCostPrice());
             stockDetailsParam.setBrandId(newEntity.getBrandId());
             stockDetailsService.add(stockDetailsParam);
 
@@ -155,14 +158,15 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private void format(List<InstockListResult> data) {
         List<Long> itemIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
-
+        List<Long> storeIds = new ArrayList<>();
         for (InstockListResult datum : data) {
             itemIds.add(datum.getItemId());
             brandIds.add(datum.getBrandId());
+            storeIds.add(datum.getStoreHouseId());
         }
         List<Items> items = itemIds.size() == 0 ? new ArrayList<>() : itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
-
+        List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         for (InstockListResult datum : data) {
             for (Items item : items) {
                 if (item.getItemId().equals(datum.getItemId())) {
@@ -178,6 +182,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                     ToolUtil.copyProperties(brand, brandResult);
                     datum.setBrandResult(brandResult);
                     break;
+                }
+            }
+            for (Storehouse storehouse : storehouses) {
+                if (datum.getStoreHouseId().equals(storehouse.getStorehouseId())) {
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+                    datum.setStorehouseResult(storehouseResult);
                 }
             }
         }

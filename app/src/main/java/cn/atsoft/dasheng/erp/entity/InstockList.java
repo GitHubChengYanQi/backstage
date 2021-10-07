@@ -28,6 +28,16 @@ public class InstockList implements Serializable {
     private Long instockListId;
 
     /**
+     * 价格
+     */
+    @TableField("cost_price")
+    private Integer costPrice;
+
+    @TableField("selling_price")
+    private Integer sellingPrice;
+
+
+    /**
      * 仓库id
      */
     @TableField("storehouse_id")
@@ -77,6 +87,21 @@ public class InstockList implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Integer getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(Integer costPrice) {
+        this.costPrice = costPrice;
+    }
+
+    public Integer getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(Integer sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
 
     public Long getInstockListId() {
         return instockListId;

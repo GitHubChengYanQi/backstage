@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -28,6 +30,11 @@ public class InstockListResult implements Serializable {
 
     private ItemsResult itemsResult;
     private BrandResult brandResult;
+    private StorehouseResult storehouseResult;
+
+    private Integer costPrice;
+
+    private Integer sellingPrice;
     /**
      * 入库清单
      */

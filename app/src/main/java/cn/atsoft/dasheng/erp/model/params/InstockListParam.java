@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -31,6 +32,10 @@ public class InstockListParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("入库清单")
     private Long instockListId;
 
+    private Integer costPrice;
+
+
+    private Integer sellingPrice;
 
     private Long storeHouseId;
 

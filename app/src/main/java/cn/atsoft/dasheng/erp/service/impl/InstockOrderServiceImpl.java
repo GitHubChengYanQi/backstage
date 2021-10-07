@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,6 +68,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockList.setNumber(instockRequest.getNumber());
                     instockList.setInstockOrderId(entity.getInstockOrderId());
                     instockList.setStoreHouseId(param.getStoreHouseId());
+                    instockList.setCostPrice(instockRequest.getCostprice());
+                    instockList.setSellingPrice(instockRequest.getSellingPrice());
                     instockLists.add(instockList);
 
 //                    for (Long i = 0L; i < instockRequest.getNumber(); i++) {

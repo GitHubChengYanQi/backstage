@@ -15,12 +15,14 @@
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="storehouse_id" property="storeHouseId"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="selling_price" property="sellingPrice"/>
         <result column="deptId" property="deptId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List"> storehouse_id
-    AS "storeHouseId",
+    AS "storeHouseId", selling_price AS "sellingPrice",cost_price AS "costPrice",
         instock_list_id AS "instockListId", brand_id AS "brandId", item_id AS "itemId", number AS "number", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
