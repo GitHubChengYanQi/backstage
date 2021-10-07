@@ -73,12 +73,11 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
 
     private Page<StorehouseResult> getPageContext() {
         List<String> fields = new ArrayList<String>(){{
-            add("capacity");
-            add("measure");
+            add("itemId");
+            add("brandId");
             add("name");
-            add("palce");
-            add("latitude");
-            add("longitude");
+            add("capacity");
+
         }};
         return PageFactory.defaultPage(fields);
     }

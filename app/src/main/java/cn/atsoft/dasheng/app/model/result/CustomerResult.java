@@ -45,6 +45,13 @@ public class CustomerResult implements Serializable {
     private Integer agent;
     private String region;
     private RegionResult regionResult;
+
+    private Integer businessCount;
+    private Integer contracrCount;
+    private Integer dynamicCount;
+    private Integer contactsCount;
+
+
     /**
      * 客户id
      */
