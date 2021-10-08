@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
 import com.baomidou.mybatisplus.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,11 +19,11 @@ import java.util.Date;
 @TableName("daoxin_crm_adress")
 public class AdressExcelItem implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
+    @NotNull(message = "客户不能为空")
     @Excel(name = "客户名称")
     private String customerName;
-
+    @NotNull(message = "地区不能为空")
     @Excel(name = "地区名称")
     private String regionName;
 

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.controller;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 
+import cn.atsoft.dasheng.Tool.VoUtilsTool;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.entity.Customer;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.File;
 
 import java.util.ArrayList;
@@ -94,12 +96,17 @@ public class CrmExcelController {
 
                 List<Adress> adresses = new ArrayList<>();
                 for (AdressExcelItem adressExcelItem : result) {
+                    boolean isNull = VoUtilsTool.checkObjFieldIsNull(adressExcelItem);
+                    if (isNull) {
+                        throw new ServiceException(500, "导入失败");
+                    }
+
                     Adress adress = new Adress();
                     Customer customer = customerService.lambdaQuery().eq(Customer::getCustomerName, adressExcelItem.getCustomerName()).one();
                     if (ToolUtil.isNotEmpty(customer)) {
                         adress.setCustomerId(customer.getCustomerId());
-                    }else{
-                        throw  new ServiceException(500,"没有此客户");
+                    } else {
+                        throw new ServiceException(500, "没有此客户");
                     }
                     ToolUtil.copyProperties(adressExcelItem, adress);
                     adresses.add(adress);
@@ -116,6 +123,7 @@ public class CrmExcelController {
         }
         return null;
     }
+
     @RequestMapping("/importContacts")
     @ResponseBody
     public ResponseData contactsExcel(@RequestParam("file") MultipartFile file) {
