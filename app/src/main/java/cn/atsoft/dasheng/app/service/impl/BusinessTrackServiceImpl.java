@@ -103,13 +103,15 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
                 case 1:
                     CrmBusiness crmBusiness = crmBusinessService.lambdaQuery().eq(CrmBusiness::getBusinessId, record.getClassifyId()).one();
                     if (ToolUtil.isNotEmpty(crmBusiness)) {
-                        record.setCategoryName(crmBusiness.getBusinessName());
+                        record.setCategoryName("项目");
+                        record.setName(crmBusiness.getBusinessName());
                     }
                     break;
                 case 2:
                     Contract contract = contractService.lambdaQuery().eq(Contract::getContractId, record.getClassifyId()).one();
                     if (ToolUtil.isNotEmpty(contract)) {
-                        record.setCategoryName(contract.getName());
+                        record.setCategoryName("合同");
+                        record.setName(contract.getName());
                     }
                     break;
                 case 3:
