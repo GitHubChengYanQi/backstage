@@ -30,7 +30,7 @@ public class AdressExcelItem implements Serializable {
     /**
      * 地址id
      */
-    @TableId(value = "adress_id", type = IdType.ID_WORKER)
+
     @Excel(name = "地址id")
     private Long adressId;
 

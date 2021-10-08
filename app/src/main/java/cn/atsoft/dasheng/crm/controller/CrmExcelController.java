@@ -104,7 +104,7 @@ public class CrmExcelController {
                     Adress adress = new Adress();
                     Customer customer = customerService.lambdaQuery().eq(Customer::getCustomerName, adressExcelItem.getCustomerName()).one();
                     if (ToolUtil.isNotEmpty(customer)) {
-                        adress.setCustomerId(customer.getCustomerId());
+                        adressExcelItem.setCustomerId(customer.getCustomerId());
                     } else {
                         throw new ServiceException(500, "没有此客户");
                     }
@@ -112,7 +112,7 @@ public class CrmExcelController {
                     adresses.add(adress);
                 }
                 adressService.saveBatch(adresses);
-                return ResponseData.success();
+                return ResponseData.success("导入成功");
             } catch (Exception e) {
                 e.printStackTrace();
             }
