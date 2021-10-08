@@ -91,27 +91,30 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 //        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
 //            addContacts(entity.getCustomerId(), param.getContactsParams());
 //        }
-        for (ContactsParam contactsParam : param.getContactsParams()) {
-            if (!contactsParam.getContactsName().equals("")) {
-                Contacts contacts = contactsService.add(contactsParam);
-                ContactsBindParam contactsBindParam = new ContactsBindParam();
-                contactsBindParam.setCustomerId(entity.getCustomerId());
-                contactsBindParam.setContactsId(contacts.getContactsId());
-                contactsBindService.add(contactsBindParam);
-            } else {
-                throw new ServiceException(500, "请填写正确联系人信息");
+        if(ToolUtil.isNotEmpty(param.getContactsParams())){
+            for (ContactsParam contactsParam : param.getContactsParams()) {
+                if (!contactsParam.getContactsName().equals("")) {
+                    Contacts contacts = contactsService.add(contactsParam);
+                    ContactsBindParam contactsBindParam = new ContactsBindParam();
+                    contactsBindParam.setCustomerId(entity.getCustomerId());
+                    contactsBindParam.setContactsId(contacts.getContactsId());
+                    contactsBindService.add(contactsBindParam);
+                } else {
+                    throw new ServiceException(500, "请填写正确联系人信息");
+                }
             }
         }
 
+
+        if (ToolUtil.isNotEmpty(param.getAdressParams())){
+            for (AdressParam adressParam : param.getAdressParams()) {
+                if (adressParam.getLocation() != null && !adressParam.getLocation().equals("")) {
+                    adressService.add(adressParam);
+                }
+            }
+        }
         //添加地址
-        for (AdressParam adressParam : param.getAdressParams()) {
-            if (adressParam.getLocation() != null && !adressParam.getLocation().equals("")) {
-                adressService.add(adressParam);
-            }
-        }
-        if (ToolUtil.isNotEmpty(param.getAdressParams())) {
 
-        }
 
 
         return entity;
