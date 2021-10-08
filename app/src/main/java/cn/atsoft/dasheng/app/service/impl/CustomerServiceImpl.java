@@ -93,7 +93,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 //        }
         if(ToolUtil.isNotEmpty(param.getContactsParams())){
             for (ContactsParam contactsParam : param.getContactsParams()) {
-                if (!contactsParam.getContactsName().equals("")) {
+                if (ToolUtil.isNotEmpty(contactsParam.getContactsName()) && !contactsParam.getContactsName().equals("")) {
                     Contacts contacts = contactsService.add(contactsParam);
                     ContactsBindParam contactsBindParam = new ContactsBindParam();
                     contactsBindParam.setCustomerId(entity.getCustomerId());

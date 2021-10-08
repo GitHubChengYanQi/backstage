@@ -67,7 +67,9 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
         //先判断电话是否重复 如果过有重复 方式在添加联系人
         List<Long> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
-            phoneNumber.add(phoneParam.getPhoneNumber());
+            if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())){
+                phoneNumber.add(phoneParam.getPhoneNumber());
+            }
         }
 
         Integer count = phoneNumber.size() == 0 ? 0 : phoneService.lambdaQuery().in(Phone::getPhoneNumber, phoneNumber).count();
