@@ -20,13 +20,11 @@ public class ContactsExcelItem implements Serializable{
         /**
          * 联系人id
          */
-        @TableId(value = "contacts_id", type = IdType.ID_WORKER)
         private Long contactsId;
         /**
          * 公司角色
          */
         @Excel(name = "公司角色")
-
         @TableField("company_role_id")
         private Long companyRole;
 
@@ -34,7 +32,6 @@ public class ContactsExcelItem implements Serializable{
          * 联系人姓名
          */
         @Excel(name = "联系人姓名")
-
         @TableField("contacts_name")
         private String contactsName;
 
@@ -55,27 +52,23 @@ public class ContactsExcelItem implements Serializable{
         /**
          * 创建者
          */
-        @TableField(value = "create_user", fill = FieldFill.INSERT)
         private Long createUser;
 
         /**
          * 修改者
          */
 
-        @TableField(value = "update_user", fill = FieldFill.UPDATE)
         private Long updateUser;
 
         /**
          * 创建时间
          */
-        @TableField(value = "create_time", fill = FieldFill.INSERT)
         private Date createTime;
 
         /**
          * 修改时间
          */
 
-        @TableField(value = "update_time", fill = FieldFill.UPDATE)
         private Date updateTime;
 
         /**
