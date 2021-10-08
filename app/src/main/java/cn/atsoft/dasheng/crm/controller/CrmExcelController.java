@@ -98,6 +98,8 @@ public class CrmExcelController {
                     Customer customer = customerService.lambdaQuery().eq(Customer::getCustomerName, adressExcelItem.getCustomerName()).one();
                     if (ToolUtil.isNotEmpty(customer)) {
                         adress.setCustomerId(customer.getCustomerId());
+                    }else{
+                        throw  new ServiceException(500,"没有此客户");
                     }
                     ToolUtil.copyProperties(adressExcelItem, adress);
                     adresses.add(adress);
@@ -130,7 +132,6 @@ public class CrmExcelController {
 
                 List<Contacts> contactsList = new ArrayList<>();
                 for (ContactsExcelItem contactsExcelItem : result) {
-                    Adress adress = new Adress();
                     Contacts contacts = new Contacts();
                     ToolUtil.copyProperties(contactsExcelItem, contacts);
                     contactsList.add(contacts);
