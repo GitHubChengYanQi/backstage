@@ -108,7 +108,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         if (ToolUtil.isNotEmpty(param.getAdressParams())){
             for (AdressParam adressParam : param.getAdressParams()) {
-                if (adressParam.getLocation() != null && !adressParam.getLocation().equals("")) {
+                if ( ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
+                    adressParam.setCustomerId(entity.getCustomerId());
                     adressService.add(adressParam);
                 }
             }
