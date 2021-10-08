@@ -22,7 +22,6 @@ public class CustomerExcelItem implements Serializable {
     /**
      * 客户id
      */
-    @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
 
 
@@ -126,25 +125,21 @@ public class CustomerExcelItem implements Serializable {
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 //    private String classificationName;

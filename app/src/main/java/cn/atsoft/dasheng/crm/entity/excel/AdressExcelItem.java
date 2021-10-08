@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
 import com.baomidou.mybatisplus.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,18 +19,18 @@ import java.util.Date;
 @TableName("daoxin_crm_adress")
 public class AdressExcelItem implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
+    @NotNull(message = "客户不能为空")
     @Excel(name = "客户名称")
     private String customerName;
-
+    @NotNull(message = "地区不能为空")
     @Excel(name = "地区名称")
     private String regionName;
 
     /**
      * 地址id
      */
-    @TableId(value = "adress_id", type = IdType.ID_WORKER)
+
     @Excel(name = "地址id")
     private Long adressId;
 
@@ -65,7 +66,6 @@ public class AdressExcelItem implements Serializable {
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
     @Excel(name = "创建者")
     private Long createUser;
 
@@ -73,21 +73,18 @@ public class AdressExcelItem implements Serializable {
      * 修改者
      */
     @Excel(name = "修改者")
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
     @Excel(name = "创建时间")
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @Excel(name = "修改时间")
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
