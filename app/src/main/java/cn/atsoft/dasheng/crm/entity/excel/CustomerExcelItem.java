@@ -22,7 +22,6 @@ public class CustomerExcelItem implements Serializable {
     /**
      * 客户id
      */
-    @TableId(value = "customer_id", type = IdType.AUTO)
     private Long customerId;
 
 

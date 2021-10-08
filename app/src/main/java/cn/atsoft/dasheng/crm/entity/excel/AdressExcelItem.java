@@ -30,7 +30,6 @@ public class AdressExcelItem implements Serializable {
     /**
      * 地址id
      */
-    @TableId(value = "adress_id", type = IdType.ID_WORKER)
     @Excel(name = "地址id")
     private Long adressId;
 
@@ -66,7 +65,6 @@ public class AdressExcelItem implements Serializable {
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
     @Excel(name = "创建者")
     private Long createUser;
 
@@ -74,21 +72,18 @@ public class AdressExcelItem implements Serializable {
      * 修改者
      */
     @Excel(name = "修改者")
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
     @Excel(name = "创建时间")
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
     @Excel(name = "修改时间")
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
