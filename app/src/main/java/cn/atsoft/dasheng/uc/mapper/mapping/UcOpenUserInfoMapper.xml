@@ -115,7 +115,7 @@
         <if test="paramCondition.mobile != null and paramCondition.mobile != ''">
             and mobile like CONCAT('%',#{paramCondition.mobile},'%')
         </if>
-         limit 1
+          limit 1
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.uc.model.params.UcOpenUserInfoParam">

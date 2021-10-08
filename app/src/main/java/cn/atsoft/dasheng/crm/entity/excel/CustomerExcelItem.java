@@ -70,12 +70,16 @@ public class CustomerExcelItem implements Serializable {
      * 法定代表人
      */
     @TableField("legal")
+    @Excel(name = "法定代表人")
+
     private String legal;
 
     /**
      * 统一社会信用代码
      */
     @TableField("utscc")
+    @Excel(name = "统一社会信用代码")
+
     private String utscc;
 
     /**
@@ -88,18 +92,24 @@ public class CustomerExcelItem implements Serializable {
      * 营业期限
      */
     @TableField("business_term")
+    @Excel(name = "营业期限")
+
     private Date businessTerm;
 
     /**
      * 注册地址
      */
     @TableField("sign_in")
+    @Excel(name = "注册地址")
+
     private String signIn;
 
     /**
      * 简介
      */
     @TableField("introduction")
+    @Excel(name = "简介")
+
     private String introduction;
 
     public String getAvatar() {
