@@ -58,8 +58,6 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
         }
         itemBrandBindService.saveBatch(brandList);
 
-//        Items entity = getEntity(param);
-//        this.save(entity);
         return entry.getItemId();
     }
 

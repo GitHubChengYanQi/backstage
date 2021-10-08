@@ -67,8 +67,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private ContractService contractService;
     @Autowired
-    private CustomerDynamicService customerDynamicService;
-    @Autowired
     private TrackMessageService trackMessageService;
 
     @Override
@@ -88,9 +86,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.save(entity);
 
         //添加联系人
-//        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
-//            addContacts(entity.getCustomerId(), param.getContactsParams());
-//        }
         if(ToolUtil.isNotEmpty(param.getContactsParams())){
             for (ContactsParam contactsParam : param.getContactsParams()) {
                 if (ToolUtil.isNotEmpty(contactsParam.getContactsName()) && !contactsParam.getContactsName().equals("")) {
