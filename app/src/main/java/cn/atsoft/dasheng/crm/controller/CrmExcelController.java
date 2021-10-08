@@ -49,7 +49,7 @@ public class CrmExcelController {
      */
     @RequestMapping("/importCustomer")
     @ResponseBody
-    public ResponseData uploadExcel(@RequestPart("file") MultipartFile file) {
+    public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
         try {
