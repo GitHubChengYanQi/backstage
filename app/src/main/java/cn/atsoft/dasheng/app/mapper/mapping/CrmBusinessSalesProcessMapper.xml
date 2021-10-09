@@ -23,7 +23,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        deptId AS "deptId",note
+        deptId
+        AS "deptId",note
     AS "note",win_rate AS "winRate", sales_process_plan_id AS "salesProcessPlanId",plan AS "plan",
         sales_process_id AS "salesProcessId", name AS "name", percentage AS "percentage", sales_id AS "salesId", sort AS "sort", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
@@ -67,6 +68,7 @@
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
+        order by sort
     </select>
 
 
