@@ -162,10 +162,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
                     OrderDetailsParam orderDetailsParam = new OrderDetailsParam();
                     orderDetailsParam.setOrderId(erpOrder.getOrderId());
-                    // 合同处理未添加
-//                    orderDetailsParam.setItemId();
-//                    orderDetailsParam.setNumber();
-//                    orderDetailsParam.setPrice();
                     this.orderDetailsService.add(orderDetailsParam);
                 }
             }

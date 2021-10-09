@@ -84,8 +84,7 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     }
 
-    Map<Long, ErpPackageTable> addMap;
-    Map<Long, ErpPackageTable> updateMap;
+
     private Map<Long, ErpPackageTable> map;
 
     @Override
@@ -155,20 +154,7 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
     }
 
 
-    Boolean addPackgeTable(Long itemId, Long packageId) {
-        Boolean a = true;
-        List<ErpPackageTable> list = this.lambdaQuery().list();
-        for (ErpPackageTable erpPackageTable : list) {
-            if (erpPackageTable.getPackageId().equals(packageId) && erpPackageTable.getItemId().equals(itemId)) {
-                a = false;
-                break;
-            }
-        }
-        if (ToolUtil.isEmpty(list)) {
-            return true;
-        }
-        return a;
-    }
+
 
 
     private Serializable getKey(ErpPackageTableParam param) {

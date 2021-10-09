@@ -78,7 +78,6 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     }
 
 
-
     @Override
     public ErpOrderResult findBySpec(ErpOrderParam param) {
         return null;
@@ -90,9 +89,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
     }
 
     @Override
-    public PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param, DataScope dataScope ) {
+    public PageInfo<ErpOrderResult> findPageBySpec(ErpOrderParam param, DataScope dataScope) {
         Page<ErpOrderResult> pageContext = getPageContext();
-        IPage<ErpOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<ErpOrderResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -140,53 +139,51 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
         }
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(partA)){
+        if (ToolUtil.isNotEmpty(partA)) {
             customerQueryWrapper.in("customer_id", partA);
         }
         List<Customer> partAList = customerService.list(customerQueryWrapper);
 
 
-
-
         QueryWrapper<Customer> customerQueryWrapperB = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(partB)){
+        if (ToolUtil.isNotEmpty(partB)) {
             customerQueryWrapperB.in("customer_id", partB);
         }
         List<Customer> partBList = customerService.list(customerQueryWrapperB);
 
         QueryWrapper<Contacts> contactsA = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(contactsIdsA)){
+        if (ToolUtil.isNotEmpty(contactsIdsA)) {
             contactsA.in("contacts_id", contactsIdsA);
         }
         List<Contacts> contactsAList = contactsService.list(contactsA);
 
         QueryWrapper<Contacts> contactsB = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(contactsIdsB)){
+        if (ToolUtil.isNotEmpty(contactsIdsB)) {
             contactsB.in("contacts_id", contactsIdsB);
         }
         List<Contacts> contactsBList = contactsService.list(contactsB);
 
         QueryWrapper<Adress> adressA = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(adressIdsA)){
+        if (ToolUtil.isNotEmpty(adressIdsA)) {
             adressA.in("adress_id", adressIdsA);
         }
         List<Adress> adressAList = adressService.list(adressA);
 
         QueryWrapper<Adress> adressB = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(adressIdsB)){
+        if (ToolUtil.isNotEmpty(adressIdsB)) {
             adressB.in("adress_id", adressIdsB);
         }
         List<Adress> adressBList = adressService.list(adressB);
 
         QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(phoneAIds)){
+        if (ToolUtil.isNotEmpty(phoneAIds)) {
             phoneAwapper.in("phone_id", phoneAIds);
         }
 
         List<Phone> phoneAlist = phoneService.list(phoneAwapper);
 
         QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
-        if(ToolUtil.isNotEmpty(phoneBIds)){
+        if (ToolUtil.isNotEmpty(phoneBIds)) {
             contactsA.in("contacts_id", phoneBIds);
         }
         List<Phone> phoneBlist = phoneService.list(phoneBwapper);
@@ -200,9 +197,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
 
 
         for (ErpOrderResult datum : data) {
-            if(ToolUtil.isNotEmpty(partAList)){
+            if (ToolUtil.isNotEmpty(partAList)) {
                 for (Customer customer : partAList) {
-                    if (datum.getPartyA().equals(customer.getCustomerId())) {
+                    if (datum.getPartyA() != null && customer.getCustomerId() != null && datum.getPartyA().equals(customer.getCustomerId())) {
                         CustomerResult customerResult = new CustomerResult();
                         ToolUtil.copyProperties(customer, customerResult);
                         datum.setPartA(customerResult);
@@ -210,18 +207,18 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
 
                 }
             }
-            if(ToolUtil.isNotEmpty(partBList)) {
+            if (ToolUtil.isNotEmpty(partBList)) {
                 for (Customer customer : partBList) {
-                    if (customer.getCustomerId().equals(datum.getPartyB())) {
+                    if (datum.getPartyB() != null && customer.getCustomerId() != null && customer.getCustomerId().equals(datum.getPartyB())) {
                         CustomerResult customerResult = new CustomerResult();
                         ToolUtil.copyProperties(customer, customerResult);
                         datum.setPartB(customerResult);
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(contactsAList)) {
+            if (ToolUtil.isNotEmpty(contactsAList)) {
                 for (Contacts contacts : contactsAList) {
-                    if (contacts.getContactsId().equals(datum.getPartyAContactsId())) {
+                    if (contacts.getContactsId() != null && datum.getPartyAContactsId() != null && contacts.getContactsId().equals(datum.getPartyAContactsId())) {
                         ContactsResult contactsResult = new ContactsResult();
                         ToolUtil.copyProperties(contacts, contactsResult);
                         datum.setPartyAContacts(contactsResult);
@@ -229,9 +226,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(contactsBList)) {
+            if (ToolUtil.isNotEmpty(contactsBList)) {
                 for (Contacts contacts : contactsBList) {
-                    if (contacts.getContactsId().equals(datum.getPartyBContactsId())) {
+                    if (contacts.getContactsId() != null && datum.getPartyBContactsId() != null && contacts.getContactsId().equals(datum.getPartyBContactsId())) {
                         ContactsResult contactsResult = new ContactsResult();
                         ToolUtil.copyProperties(contacts, contactsResult);
                         datum.setPartyBContacts(contactsResult);
@@ -239,9 +236,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(adressAList)) {
+            if (ToolUtil.isNotEmpty(adressAList)) {
                 for (Adress adress : adressAList) {
-                    if (adress.getAdressId().equals(datum.getPartyAAdressId())) {
+                    if (adress.getAdressId() != null && datum.getPartyAAdressId() != null && adress.getAdressId().equals(datum.getPartyAAdressId())) {
                         AdressResult adressResult = new AdressResult();
                         ToolUtil.copyProperties(adress, adressResult);
                         datum.setPartyAAdress(adressResult);
@@ -249,10 +246,10 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(adressBList)) {
+            if (ToolUtil.isNotEmpty(adressBList)) {
                 for (Adress adress : adressBList) {
 
-                    if (adress.getAdressId().equals(datum.getPartyBAdressId())) {
+                    if (adress.getAdressId() != null && datum.getPartyBAdressId() != null && adress.getAdressId().equals(datum.getPartyBAdressId())) {
                         adress.getCustomerId();
                         AdressResult adressResult = new AdressResult();
                         ToolUtil.copyProperties(adress, adressResult);
@@ -261,9 +258,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(phoneAlist)) {
+            if (ToolUtil.isNotEmpty(phoneAlist)) {
                 for (Phone phone : phoneAlist) {
-                    if (phone.getPhoneId().equals(datum.getPartyAPhone())) {
+                    if (phone.getPhoneId() != null && datum.getPartyAPhone() != null && phone.getPhoneId().equals(datum.getPartyAPhone())) {
                         PhoneResult phoneResult = new PhoneResult();
                         ToolUtil.copyProperties(phone, phoneResult);
                         datum.setPhoneA(phoneResult);
@@ -271,9 +268,9 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
                     }
                 }
             }
-            if(ToolUtil.isNotEmpty(phoneBlist)) {
+            if (ToolUtil.isNotEmpty(phoneBlist)) {
                 for (Phone phone : phoneBlist) {
-                    if (phone.getPhoneId().equals(datum.getPartyBPhone())) {
+                    if (phone.getPhoneId() != null && datum.getPartyBPhone() != null && phone.getPhoneId().equals(datum.getPartyBPhone())) {
                         PhoneResult phoneResult = new PhoneResult();
                         ToolUtil.copyProperties(phone, phoneResult);
                         datum.setPhoneB(phoneResult);
@@ -283,7 +280,7 @@ public class ErpOrderServiceImpl extends ServiceImpl<ErpOrderMapper, ErpOrder> i
             }
             if (ToolUtil.isNotEmpty(itemsList)) {
                 for (Items items : itemsList) {
-                    if (items.getItemId().equals(datum.getItemId())) {
+                    if (items.getItemId() != null && datum.getItemId() != null && items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
                         ToolUtil.copyProperties(items, itemsResult);
                         datum.setItemsResult(itemsResult);

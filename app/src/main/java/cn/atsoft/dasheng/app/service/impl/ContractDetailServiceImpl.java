@@ -98,15 +98,6 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
             return map;
         }
 
-        //是否存入相同物品 如果有直接获取之前的数据 进行累加
-//        CrmBusinessDetailed crmBusinessDetailed = map.get(itemIds + brandIds);
-//        if (ToolUtil.isNotEmpty(crmBusinessDetailed)) {
-//            int i = crmBusinessDetailed.getQuantity() + number;
-//            crmBusinessDetailed.setQuantity(i);
-//            map.put(itemIds + brandIds, crmBusinessDetailed);
-//        }
-
-
         //判断商机详情是否有粗存在物品  有的直接叠加数量
         for (ContractDetail businessDetailed : businessDetaileds) {
             if (businessDetailed.getItemId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {

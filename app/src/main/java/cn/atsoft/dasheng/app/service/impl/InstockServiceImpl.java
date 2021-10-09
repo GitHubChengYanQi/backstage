@@ -52,9 +52,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public Long add(InstockParam param) {
-//        if (param.getNumber() > 1000) {
-//            throw new ServiceException(500, "一次性入库数量上限1000");
-//        }
+
         Instock entity = getEntity(param);
         this.save(entity);
         return entity.getInstockId();

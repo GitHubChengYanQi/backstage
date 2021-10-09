@@ -61,10 +61,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     public Contacts add(ContactsParam param) {
         Contacts entity = getEntity(param);
         this.save(entity);
-//        if (ToolUtil.isEmpty(param.getContactsName())) {
-//            throw new ServiceException(500, "请不要输入空的名字");
-//        }
-        //先判断电话是否重复 如果过有重复 方式在添加联系人
+
         List<Long> phoneNumber = new ArrayList<>();
         for (PhoneParam phoneParam : param.getPhoneParams()) {
             if (ToolUtil.isNotEmpty(phoneParam.getPhoneNumber())){
@@ -77,21 +74,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             throw new ServiceException(500, "电话已经重复");
         }
 
-//        //通过绑定表查询判断联系人是否重复
-//        List<Contacts> contacts = this.query()
-//                .in("contacts_name", param.getContactsName())
-//                .and(i -> i.eq("display", 1))
-//                .list();
-//        if (ToolUtil.isNotEmpty(contacts)) {
-//            List<Long> contactIds = new ArrayList<>();
-//            for (Contacts contact : contacts) {
-//                contactIds.add(contact.getContactsId());
-//            }
-//            ContactsBind contactsBind = contactsBindService.lambdaQuery().in(ContactsBind::getContactsId, contactIds)
-//                    .and(i -> i.eq(ContactsBind::getCustomerId, param.getCustomerId())).one();
-//            if (ToolUtil.isNotEmpty(contactsBind)) {
-//                throw new ServiceException(500, "联系人已经在，请勿重复添加!");
-//
         if (ToolUtil.isNotEmpty(param.getCustomerId())) {
             ContactsBindParam contactsBindParam = new ContactsBindParam();
             contactsBindParam.setCustomerId(param.getCustomerId());
@@ -163,7 +145,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             throw new ServiceException(500, "数据不存在");
         } else {
             Contacts newEntity = getEntity(param);
-//            newEntity.setCustomerId(null);
             ToolUtil.copyProperties(newEntity, oldEntity);
 
 
@@ -237,14 +218,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
             }
         }
 
-//        ContactsBind contactsBind = contactsBindService.lambdaQuery()
-//                .in(ContactsBind::getCustomerId, param.getCustomerId())
-//                .one();
-//        if (ToolUtil.isNotEmpty(contactsBind)) {
-//            param.setCustomerId(contactsBind.getCustomerId());
-//            param.setContactsId(contactsBind.getContactsId());
-//        }
-
         IPage<ContactsResult> page = this.baseMapper.customPageList(dataScope, pageContext, param, ids);
         format(page.getRecords());
 
@@ -254,22 +227,6 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
     @Override
     public void batchDelete(List<Long> id) {
         throw new ServiceException(500, "不可以删除联系人");
-//        Contacts contacts = new Contacts();
-//        contacts.setDisplay(0);
-//        QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
-//        contactsQueryWrapper.in("contacts_id", id);
-//        this.update(contacts, contactsQueryWrapper);
-//        //删除联系人带着联系人电话直接删除
-//        List<Phone> phones = phoneService.lambdaQuery().in(Phone::getContactsId, id).list();
-//        List<Phone> phoneList = new ArrayList<>();
-//        for (Phone phone : phones) {
-//            phone.setDisplay(0);
-//            phoneList.add(phone);
-//        }
-//        if (ToolUtil.isNotEmpty(phoneList)) {
-//            phoneService.updateBatchById(phoneList);
-//        }
-
 
     }
 
@@ -338,14 +295,7 @@ public class ContactsServiceImpl extends ServiceImpl<ContactsMapper, Contacts> i
                     record.setCustomerResults(customerResults);
                 }
             }
-//            for (Customer customer : customerList) {
-//                if (record.getCustomerId() != null && record.getCustomerId().equals(customer.getCustomerId())) {
-//                    CustomerResult customerResult = new CustomerResult();
-//                    ToolUtil.copyProperties(customer, customerResult);
-//                    record.setCustomerResult(customerResult);
-//                    break;
-//                }
-//            }
+
             for (CompanyRole companyRole : companyRoleList) {
                 if (companyRole.getCompanyRoleId().equals(record.getCompanyRole())) {
                     CompanyRoleResult companyRoleResult = new CompanyRoleResult();
