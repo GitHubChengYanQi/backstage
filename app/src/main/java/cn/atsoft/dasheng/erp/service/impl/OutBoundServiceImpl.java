@@ -46,6 +46,12 @@ public class OutBoundServiceImpl implements OutBoundService {
 
     @Override
     public String judgeOutBound(Long outstockOrderId, Long stockHouseId) {
+
+        OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
+        if (outstockOrder.getState() != 0){
+            throw new ServiceException(500, "已出库！");
+        }
+
         Long end = 0L;
         List<OutstockListing> outstockListings = outstockListingService.lambdaQuery()
                 .in(OutstockListing::getOutstockOrderId, outstockOrderId)
@@ -151,7 +157,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 //                        .and(z -> z.in(StockDetails::getStage, 1))).list();
 
 
-        OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
+
         outstockOrder.setState(1);
         outstockOrder.setStorehouseId(stockHouseId);
         OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
