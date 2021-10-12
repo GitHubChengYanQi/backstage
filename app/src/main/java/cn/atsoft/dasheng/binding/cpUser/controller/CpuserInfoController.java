@@ -85,7 +85,6 @@ public class CpuserInfoController extends BaseController {
         CpuserInfoResult result = new CpuserInfoResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

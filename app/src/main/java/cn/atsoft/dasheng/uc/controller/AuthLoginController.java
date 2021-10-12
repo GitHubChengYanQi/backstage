@@ -240,8 +240,7 @@ public class AuthLoginController extends BaseController {
 
         //登录并创建token
         String token = authService.login(username, password);
-        ucMemberAuth.bind(token);
-        return ResponseData.success(ucMemberAuth.refreshToken());
+        return ResponseData.success(ucMemberAuth.bind(token));
     }
 
     @RequestMapping("/refreshToken")
