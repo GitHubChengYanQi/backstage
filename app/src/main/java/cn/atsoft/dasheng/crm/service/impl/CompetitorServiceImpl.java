@@ -127,7 +127,11 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
                 }
                 QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
                 queryWrapper.in("competitor_id", longs);
-                List<Competitor> competitorList = this.list(queryWrapper);
+                List<Competitor> competitorList = longs.size() > 0 ? this.list(queryWrapper) : new ArrayList<>();
+
+                if (ToolUtil.isNotEmpty(param.getBusinessId()) && competitorList.size() == 0){
+                    return null;
+                }
 
                 List<CompetitorResult> competitorResultList = new ArrayList<>();
                 for (Competitor competitor : competitorList) {
