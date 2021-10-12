@@ -82,9 +82,10 @@ public class UcMemberAuth {
     public String buildAuthorizationUrl(String url) {
         return wxMpService.getOAuth2Service().buildAuthorizationUrl(url, "snsapi_userinfo", "");
     }
+
     public String buildAuthori0zationUrlCp(String url) {
 
-        return  wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
+        return wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
     }
 
     public String mpLogin(String code) {
@@ -107,33 +108,33 @@ public class UcMemberAuth {
             return login(ucOpenUserInfo);
         } catch (WxErrorException e) {
             e.printStackTrace();
-            throw new ServiceException(500,e.getMessage());
+            throw new ServiceException(500, e.getMessage());
         }
     }
 
     public String cpLogin(String code) {
         WxCpServiceImpl cpService = wxCpService.getWxCpClient();
         try {
-            WxCpOauth2UserInfo wxCpOauth2UserInfo = cpService.getOauth2Service().getUserInfo(code);//.getOAuth2Service().getAccessToken(code);
-//            WxOAuth2UserInfo wxOAuth2UserInfo = wxCpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
+            WxCpOauth2UserInfo wxCpOauth2UserInfo = cpService.getOauth2Service().getUserInfo(code);
 
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
-            ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getUserId());
+            ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getOpenId());
             ucOpenUserInfo.setSource("wxCp");
-            WxCpUser wxCpUser = cpService.getUserService().getById(wxCpOauth2UserInfo.getUserId());
-            ucOpenUserInfo.setUsername(wxCpUser.getName());
-            ucOpenUserInfo.setNickname(wxCpUser.getName());
-            ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());
-            Gender fromCode = Gender.fromCode(code);
-            fromCode.getCode();
-            ucOpenUserInfo.setGender(Integer.valueOf(fromCode.getCode()));
-            String raw = JSON.toJSONString(wxCpOauth2UserInfo);// .toString();
-            ucOpenUserInfo.setRawUserInfo(raw);
-            ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+            if (ToolUtil.isNotEmpty(wxCpOauth2UserInfo.getUserId())) {
+                WxCpUser wxCpUser = cpService.getUserService().getById(wxCpOauth2UserInfo.getUserId());
+                ucOpenUserInfo.setUsername(wxCpUser.getName());
+                ucOpenUserInfo.setNickname(wxCpUser.getName());
+                ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());
+                ucOpenUserInfo.setGender(Integer.valueOf(wxCpUser.getGender().getCode()));
+                String raw = JSON.toJSONString(wxCpOauth2UserInfo);
+                ucOpenUserInfo.setRawUserInfo(raw);
+                ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+            }
+
             return login(ucOpenUserInfo);
         } catch (WxErrorException e) {
             e.printStackTrace();
-            throw new ServiceException(500,e.getMessage());
+            throw new ServiceException(500, e.getMessage());
         }
     }
 
