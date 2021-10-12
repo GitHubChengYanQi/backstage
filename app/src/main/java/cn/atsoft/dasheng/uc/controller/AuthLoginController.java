@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.uc.controller;
 
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
 import cn.atsoft.dasheng.uc.config.ShanyanConfiguration;
@@ -20,6 +23,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -52,7 +57,8 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
-
+    @Autowired
+    private AuthService authService;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -179,7 +185,9 @@ public class AuthLoginController extends BaseController {
     @RequestMapping("/cp/loginByCode")
     @ApiOperation(value = "企业微信通过Code登录", httpMethod = "GET")
     public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
+
         String token = ucMemberAuth.cpLogin(code);
+
         return ResponseData.success(token);
     }
 
@@ -216,6 +224,24 @@ public class AuthLoginController extends BaseController {
         }
         String token = ucMemberAuth.getUserProfile(miniAppUserProfileParam);
         return ResponseData.success(token);
+    }
+
+
+    /**
+     * 点击登录执行的动作
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation("登录接口")
+    public ResponseData restLogin(@RequestBody @Valid LoginParam loginParam) {
+
+        String username = loginParam.getUserName();
+        String password = loginParam.getPassword();
+
+        //登录并创建token
+        String token = authService.login(username, password);
+        ucMemberAuth.bind(token);
+        return ResponseData.success(ucMemberAuth.refreshToken());
     }
 
     @RequestMapping("/refreshToken")

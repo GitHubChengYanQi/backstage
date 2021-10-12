@@ -69,6 +69,9 @@ public class UcMemberAuth {
     private WxCpService wxCpService;
 
     @Autowired
+    private CpuserInfoService cpuserInfoService;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     final private String redisPreKey = "user-center-";
@@ -134,6 +137,22 @@ public class UcMemberAuth {
         } catch (WxErrorException e) {
             e.printStackTrace();
             throw new ServiceException(500,e.getMessage());
+        }
+    }
+
+    public void bind(String token){
+
+        String type = UserUtils.getType();
+        if (type.equals("wxCp")){
+            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+
+            CpuserInfo cpui = new CpuserInfo();
+            cpui.setMemberId(jwtPayLoad.getUserId());
+
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("member_id",jwtPayLoad.getUserId());
+
+
         }
     }
 
@@ -370,6 +389,15 @@ public class UcMemberAuth {
                 mobile = ucMember.getPhone();
             }
         }
+
+        QueryWrapper<CpuserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("member_id", memberId);
+        CpuserInfo cpuserInfo = cpuserInfoService.getOne(queryWrapper);
+
+
+
+
+
 
 //        JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
         UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
