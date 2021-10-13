@@ -8,11 +8,14 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.crm.entity.DataClassification;
 import cn.atsoft.dasheng.crm.entity.ItemData;
 import cn.atsoft.dasheng.crm.mapper.DataMapper;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.params.ItemDataParam;
+import cn.atsoft.dasheng.crm.model.result.DataClassificationResult;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
+import cn.atsoft.dasheng.crm.service.DataClassificationService;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.service.ItemDataService;
@@ -41,7 +44,8 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     private ItemDataService itemDataService;
     @Autowired
     private ItemsService itemsService;
-
+    @Autowired
+    private DataClassificationService dataClassificationService;
 
     @Override
     public void add(DataParam param) {
@@ -90,7 +94,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 ids.add(aLong);
             }
             if (ToolUtil.isNotEmpty(ids)) {
-                itemDataService.update().notIn("item_id",ids).and(i->i.eq("data_id",param.getDataId())).remove();
+                itemDataService.update().notIn("item_id", ids).and(i -> i.eq("data_id", param.getDataId())).remove();
 //                List<ItemData> itemDataList = itemDataService.lambdaQuery().notIn(ItemData::getItemId, ids).and(i -> i.eq(ItemData::getDataId, param.getDataId())).list();
 //                if (ToolUtil.isNotEmpty(itemDataList)) {
 //                    List<Long> itemDataIds = new ArrayList<>();
@@ -144,7 +148,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
     @Override
     public PageInfo<DataResult> findPageBySpec(DataScope dataScope, DataParam param) {
         Page<DataResult> pageContext = getPageContext();
-        IPage<DataResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
+        IPage<DataResult> page = this.baseMapper.customPageList(dataScope, pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -211,10 +215,13 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     public void format(List<DataResult> data) {
         List<Long> ids = new ArrayList<>();
-
+        List<Long> dataClassIds = new ArrayList<>();
         for (DataResult datum : data) {
             ids.add(datum.getDataId());
+            dataClassIds.add(datum.getDataClassificationId());
         }
+
+        List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery().in(DataClassification::getDataClassificationId, dataClassIds).list();
         if (ToolUtil.isNotEmpty(ids)) {
             for (Long id : ids) {
                 List<Long> itemIds = new ArrayList<>();
@@ -227,7 +234,9 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 if (ToolUtil.isNotEmpty(itemIds)) {
                     List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
                     if (ToolUtil.isNotEmpty(itemsList)) {
+                        Integer count = this.lambdaQuery().count();
                         for (DataResult datum : data) {
+                            datum.setCount(count);
                             if (datum.getDataId().equals(id)) {
                                 List<ItemsResult> itemsResults = new ArrayList<>();
                                 for (Items items : itemsList) {
@@ -236,6 +245,14 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                     itemsResults.add(itemsResult);
                                 }
                                 datum.setItemId(itemsResults);
+                            }
+                            for (DataClassification dataClassification : dataClassifications) {
+                                if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
+                                    DataClassificationResult dataClassificationResult = new DataClassificationResult();
+                                    ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+                                    datum.setDataClassificationResult(dataClassificationResult);
+                                    break;
+                                }
                             }
 
 
