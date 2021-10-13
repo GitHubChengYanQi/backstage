@@ -5,6 +5,9 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
@@ -88,7 +91,10 @@ public class ApiRepairController {
     public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            userId = LoginContextHolder.getContext().getUserId();
+            if (ToolUtil.isEmpty(userId)){
+                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            }
         }
 
         Boolean permission = false;
@@ -108,11 +114,16 @@ public class ApiRepairController {
     public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            userId = LoginContextHolder.getContext().getUserId();
+            if (ToolUtil.isEmpty(userId)){
+                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            }
         }
+
+
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
-        repairParam.setName(UserUtils.getUserId());
+        repairParam.setName(userId);
         PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
         return ResponseData.success(repairList);
     }
@@ -121,7 +132,10 @@ public class ApiRepairController {
     public ResponseData getRepairAll() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            userId = LoginContextHolder.getContext().getUserId();
+            if (ToolUtil.isEmpty(userId)){
+                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            }
         }
         Boolean permission = false;
         for (int i = 0; i < 5; i++) {
@@ -157,7 +171,10 @@ public class ApiRepairController {
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            userId = LoginContextHolder.getContext().getUserId();
+            if (ToolUtil.isEmpty(userId)){
+                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            }
         }
         repairParam.setName(UserUtils.getUserId());
         Repair entity = getEntity(repairParam);
@@ -191,7 +208,7 @@ public class ApiRepairController {
         ToolUtil.copyProperties(newEntity, oldEntity);
         Boolean permission = false;
         // 判断权限
-        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress()-1, userId);
+        permission = wxuserInfoService.sendPermissions((long) oldEntity.getProgress() - 1, userId);
         if (!permission) {
             throw new ServiceException(403, "当前用户没有此权限!");
         }
@@ -201,7 +218,7 @@ public class ApiRepairController {
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
         Param.setName(UserUtils.getUserId());
-        Param.setProgress(repairParam.getProgress()-1);
+        Param.setProgress(repairParam.getProgress() - 1);
         repairSendTemplate.setRepairParam(Param);
         repairSendTemplate.send();
         return ResponseData.success(newEntity);
@@ -219,7 +236,10 @@ public class ApiRepairController {
     public ResponseData getRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            userId = LoginContextHolder.getContext().getUserId();
+            if (ToolUtil.isEmpty(userId)) {
+                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
+            }
         }
         Boolean permission = false;
         permission = wxuserInfoService.sendPermissions(1L, userId);
