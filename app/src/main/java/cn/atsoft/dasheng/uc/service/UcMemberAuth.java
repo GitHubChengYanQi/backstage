@@ -154,42 +154,7 @@ public class UcMemberAuth {
         }
     }
 
-    public String bind(String token) {
 
-        String type = null;
-
-        try{
-            type = UserUtils.getType();
-        }catch (ServiceException e){
-
-        }
-        if (type.equals("wxCp")) {
-            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
-            QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper();
-            queryWrapper.eq("user_id", jwtPayLoad.getUserId());
-            WxuserInfo WxuserInfo = wxuserInfoService.getOne(queryWrapper);
-            if (ToolUtil.isNotEmpty(WxuserInfo)){
-                JwtPayLoad payLoad = new JwtPayLoad();
-                payLoad = jwtPayLoad;
-                String newToken = JwtTokenUtil.generateToken(payLoad);
-                addLoginCookie(newToken);
-                return newToken;
-            }else{
-
-                UcJwtPayLoad payLoad = new UcJwtPayLoad("wxCp",jwtPayLoad.getUserId(),jwtPayLoad.getUserId().toString(), "xxxx");
-                String newToken = JwtTokenUtil.generateToken(payLoad);
-                addLoginCookie(newToken);
-                return newToken;
-            }
-
-            // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
-
-            // 创建cookie
-
-        }
-
-    return "";
-    }
 
     /**
      * 根据手机验证码登录
@@ -424,35 +389,19 @@ public class UcMemberAuth {
                 mobile = ucMember.getPhone();
             }
         }
-        if (ToolUtil.isNotEmpty(account)) {
-            QueryWrapper<UcOpenUserInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("uuid", account);
-            UcOpenUserInfo openUserInfo = ucOpenUserInfoService.getOne(queryWrapper);
-            if (ToolUtil.isNotEmpty(openUserInfo.getMemberId())) {
-                UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
 
-//        payLoad.setType(userInfo.getSource());
-                payLoad.setMobile(mobile);
-                String token = JwtTokenUtil.generateToken(payLoad);
-                // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
+        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
 
-                // 创建cookie
-                addLoginCookie(token);
+        payLoad.setType(userInfo.getSource());
+        payLoad.setMobile(mobile);
+        String token = JwtTokenUtil.generateToken(payLoad);
+        // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
 
-                return token;
+        // 创建cookie
+        addLoginCookie(token);
 
-            }else {
-                JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
-                String token = JwtTokenUtil.generateToken(payLoad);
-                // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
+        return token;
 
-                // 创建cookie
-                addLoginCookie(token);
-
-                return token;
-            }
-        }
-        return null;
 
 
     }
