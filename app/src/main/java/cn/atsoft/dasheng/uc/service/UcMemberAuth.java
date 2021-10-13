@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.uc.service;
 
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
+import cn.atsoft.dasheng.binding.cpUser.entity.CpuserInfo;
+import cn.atsoft.dasheng.binding.cpUser.model.params.CpuserInfoParam;
+import cn.atsoft.dasheng.binding.cpUser.service.CpuserInfoService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.entity.UcSmsCode;
@@ -69,6 +73,9 @@ public class UcMemberAuth {
     private WxCpService wxCpService;
 
     @Autowired
+    private CpuserInfoService cpuserInfoService;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     final private String redisPreKey = "user-center-";
@@ -82,17 +89,20 @@ public class UcMemberAuth {
     public String buildAuthorizationUrl(String url) {
         return wxMpService.getOAuth2Service().buildAuthorizationUrl(url, "snsapi_userinfo", "");
     }
+
     public String buildAuthori0zationUrlCp(String url) {
 
-        return  wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
+        return wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
     }
+
+    public static String openId;
 
     public String mpLogin(String code) {
 
         try {
             WxOAuth2AccessToken wxOAuth2AccessToken = wxMpService.getOAuth2Service().getAccessToken(code);
             WxOAuth2UserInfo wxOAuth2UserInfo = wxMpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
-
+            openId = wxOAuth2UserInfo.getOpenid();
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
             ucOpenUserInfo.setUuid(wxOAuth2UserInfo.getOpenid());
             ucOpenUserInfo.setSource("wxMp");
@@ -107,34 +117,64 @@ public class UcMemberAuth {
             return login(ucOpenUserInfo);
         } catch (WxErrorException e) {
             e.printStackTrace();
-            throw new ServiceException(500,e.getMessage());
+            throw new ServiceException(500, e.getMessage());
         }
     }
 
     public String cpLogin(String code) {
         WxCpServiceImpl cpService = wxCpService.getWxCpClient();
         try {
-            WxCpOauth2UserInfo wxCpOauth2UserInfo = cpService.getOauth2Service().getUserInfo(code);//.getOAuth2Service().getAccessToken(code);
-//            WxOAuth2UserInfo wxOAuth2UserInfo = wxCpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
+            WxCpOauth2UserInfo wxCpOauth2UserInfo = cpService.getOauth2Service().getUserInfo(code);
 
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
-            ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getUserId());
+            ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getOpenId());
             ucOpenUserInfo.setSource("wxCp");
-            WxCpUser wxCpUser = cpService.getUserService().getById(wxCpOauth2UserInfo.getUserId());
-            ucOpenUserInfo.setUsername(wxCpUser.getName());
-            ucOpenUserInfo.setNickname(wxCpUser.getName());
-            ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());
-            Gender fromCode = Gender.fromCode(code);
-            fromCode.getCode();
-            ucOpenUserInfo.setGender(Integer.valueOf(fromCode.getCode()));
-            String raw = JSON.toJSONString(wxCpOauth2UserInfo);// .toString();
-            ucOpenUserInfo.setRawUserInfo(raw);
-            ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+            if (ToolUtil.isNotEmpty(wxCpOauth2UserInfo.getUserId())) {
+                WxCpUser wxCpUser = cpService.getUserService().getById(wxCpOauth2UserInfo.getUserId());
+                ucOpenUserInfo.setUsername(wxCpUser.getName());
+                ucOpenUserInfo.setNickname(wxCpUser.getName());
+                ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());
+                ucOpenUserInfo.setGender(Integer.valueOf(wxCpUser.getGender().getCode()));
+                String raw = JSON.toJSONString(wxCpOauth2UserInfo);
+                ucOpenUserInfo.setRawUserInfo(raw);
+                ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+            }
+
             return login(ucOpenUserInfo);
         } catch (WxErrorException e) {
             e.printStackTrace();
-            throw new ServiceException(500,e.getMessage());
+            throw new ServiceException(500, e.getMessage());
         }
+    }
+
+    public String bind(String token) {
+
+        String type = UserUtils.getType();
+        if (type.equals("wxCp")) {
+            JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+            QueryWrapper<CpuserInfo> queryWrapper = new QueryWrapper();
+            queryWrapper.eq("member_id", jwtPayLoad.getUserId());
+            cpuserInfoService.update(new CpuserInfo() {{
+                setDisplay(0);
+            }}, queryWrapper);
+
+            CpuserInfo cpui = new CpuserInfo();
+            cpui.setUserId(jwtPayLoad.getUserId());
+            cpui.setUuid(openId);
+            cpuserInfoService.save(cpui);
+            jwtPayLoad.setUserId(cpui.getUserId());
+             token  = JwtTokenUtil.generateToken(jwtPayLoad);
+            UcJwtPayLoad payLoad = new UcJwtPayLoad("wxCp", cpui.getUserId(), openId, "xxxx");
+            String newToken = JwtTokenUtil.generateToken(payLoad);
+            // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
+
+            // 创建cookie
+            addLoginCookie(newToken);
+
+            return newToken;
+        }
+
+    return "";
     }
 
     /**
@@ -371,8 +411,13 @@ public class UcMemberAuth {
             }
         }
 
+        QueryWrapper<CpuserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("member_id", memberId).and(i->i.eq("display",1));
+        CpuserInfo cpuserInfo = cpuserInfoService.getOne(queryWrapper);
+        memberId= cpuserInfo.getMemberId();
 //        JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
         UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
+
 //        payLoad.setType(userInfo.getSource());
         payLoad.setMobile(mobile);
         String token = JwtTokenUtil.generateToken(payLoad);

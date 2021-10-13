@@ -63,7 +63,7 @@
             and apply_state like CONCAT('%',#{paramCondition.applyState},'%')
         </if>
         <if test="paramCondition.outstockApplyId != null">
-            and outstock_apply_id = #{paramCondition.outstockApplyId}
+            and outstock_apply_id like CONCAT('%',#{paramCondition.outstockApplyId},'%')
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like

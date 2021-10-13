@@ -115,68 +115,75 @@ public class CompetitorServiceImpl extends ServiceImpl<CompetitorMapper, Competi
         Page<CompetitorResult> pageContext = getPageContext();
         IPage<CompetitorResult> page = this.baseMapper.customPageList(pageContext, param, dataScope, competitorId);
 
-        Long businessId = param.getBusinessId();
-        if (ToolUtil.isNotEmpty(businessId)) {
-            QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
-            businessCompetitionQueryWrapper.in("business_id", businessId);
-            List<BusinessCompetition> list = businessCompetitionService.list(businessCompetitionQueryWrapper);
-            List<Long> longs = new ArrayList<>();
-            for (BusinessCompetition businessCompetition : list) {
-                longs.add(businessCompetition.getCompetitorId());
-            }
-            QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in("competitor_id", longs);
-            List<Competitor> competitorList = this.list(queryWrapper);
+        if (page.getRecords().size() > 0){
+            Long businessId = param.getBusinessId();
+            if (ToolUtil.isNotEmpty(businessId)) {
+                QueryWrapper<BusinessCompetition> businessCompetitionQueryWrapper = new QueryWrapper<>();
+                businessCompetitionQueryWrapper.in("business_id", businessId);
+                List<BusinessCompetition> list = businessCompetitionService.list(businessCompetitionQueryWrapper);
+                List<Long> longs = new ArrayList<>();
+                for (BusinessCompetition businessCompetition : list) {
+                    longs.add(businessCompetition.getCompetitorId());
+                }
+                QueryWrapper<Competitor> queryWrapper = new QueryWrapper<>();
+                queryWrapper.in("competitor_id", longs);
+                List<Competitor> competitorList = longs.size() > 0 ? this.list(queryWrapper) : new ArrayList<>();
 
-            List<CompetitorResult> competitorResultList = new ArrayList<>();
-            for (Competitor competitor : competitorList) {
-                CompetitorResult competitorResult = new CompetitorResult();
-                ToolUtil.copyProperties(competitor, competitorResult);
-                competitorResultList.add(competitorResult);
-            }
+                if (ToolUtil.isNotEmpty(param.getBusinessId()) && competitorList.size() == 0){
+                    return null;
+                }
 
-            if (competitorResultList.size() > 0) {
-                page.setRecords(competitorResultList);
-            }
-        }
+                List<CompetitorResult> competitorResultList = new ArrayList<>();
+                for (Competitor competitor : competitorList) {
+                    CompetitorResult competitorResult = new CompetitorResult();
+                    ToolUtil.copyProperties(competitor, competitorResult);
+                    competitorResultList.add(competitorResult);
+                }
 
-
-        for (CompetitorResult record : page.getRecords()) {
-            if (record.getCompetitionLevel() != null) {
-                switch (record.getCompetitionLevel()) {
-                    case 1:
-                        record.setLevel("低");
-                        break;
-                    case 2:
-                        record.setLevel("中");
-                        break;
-                    case 3:
-                        record.setLevel("高");
-                        break;
-                    default:
-                        break;
+                if (competitorResultList.size() > 0) {
+                    page.setRecords(competitorResultList);
                 }
             }
 
-            QueryWrapper<BusinessCompetition> crmBusinessQueryWrapper = new QueryWrapper<>();
-            crmBusinessQueryWrapper.in("competitor_id", record.getCompetitorId());
-            List<BusinessCompetition> list = businessCompetitionService.list(crmBusinessQueryWrapper);
-            List<Long> bussinessId = new ArrayList<>();
-            for (BusinessCompetition businessCompetition : list) {
-                bussinessId.add(businessCompetition.getBusinessId());
+
+            for (CompetitorResult record : page.getRecords()) {
+                if (record.getCompetitionLevel() != null) {
+                    switch (record.getCompetitionLevel()) {
+                        case 1:
+                            record.setLevel("低");
+                            break;
+                        case 2:
+                            record.setLevel("中");
+                            break;
+                        case 3:
+                            record.setLevel("高");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                QueryWrapper<BusinessCompetition> crmBusinessQueryWrapper = new QueryWrapper<>();
+                crmBusinessQueryWrapper.in("competitor_id", record.getCompetitorId());
+                List<BusinessCompetition> list = businessCompetitionService.list(crmBusinessQueryWrapper);
+                List<Long> bussinessId = new ArrayList<>();
+                for (BusinessCompetition businessCompetition : list) {
+                    bussinessId.add(businessCompetition.getBusinessId());
+                }
+                QueryWrapper<CrmBusiness> crmBusinessQueryWrapper1 = new QueryWrapper<>();
+                crmBusinessQueryWrapper1.in("business_id", bussinessId);
+                List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : businessService.list(crmBusinessQueryWrapper1);
+                record.setCrmBusinessList(list1);
+
+                if (ToolUtil.isNotEmpty(record.getRegion())) {
+                    RegionResult region = getRegionService.getRegion(record.getRegion());
+                    record.setRegionResult(region);
+                }
+
+
             }
-            QueryWrapper<CrmBusiness> crmBusinessQueryWrapper1 = new QueryWrapper<>();
-            crmBusinessQueryWrapper1.in("business_id", bussinessId);
-            List<CrmBusiness> list1 = bussinessId.size() == 0 ? new ArrayList<>() : businessService.list(crmBusinessQueryWrapper1);
-            record.setCrmBusinessList(list1);
-
-            if (ToolUtil.isNotEmpty(record.getRegion())) {
-                RegionResult region = getRegionService.getRegion(record.getRegion());
-                record.setRegionResult(region);
-            }
-
-
         }
+
 
         return PageFactory.createPageInfo(page);
     }

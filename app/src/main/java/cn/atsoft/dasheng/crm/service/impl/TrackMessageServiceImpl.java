@@ -70,10 +70,10 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
 //        }
         // 添加对手/我放报价
         List<CompetitorQuote> competitorQuotes = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(competitorQuoteParams)){
+        if (ToolUtil.isNotEmpty(competitorQuoteParams) && param.getBusinessTrackParams().size() > 0 ){
             for (CompetitorQuoteParam data : competitorQuoteParams) {
-                if (ToolUtil.isNotEmpty(data.getCompetitorId())) {
-                    data.setBusinessId(param.getBusinessId());
+                if (ToolUtil.isNotEmpty(data.getCompetitorId()) && param.getBusinessTrackParams().get(0).getClassify() == 1) {
+                    data.setBusinessId(param.getBusinessTrackParams().get(0).getClassifyId());
                     CompetitorQuote competitorQuote = new CompetitorQuote();
                     ToolUtil.copyProperties(data, competitorQuote);
                     competitorQuote.setCampType(1L);
@@ -83,9 +83,10 @@ public class TrackMessageServiceImpl extends ServiceImpl<TrackMessageMapper, Tra
         }
         if (ToolUtil.isNotEmpty(param.getBusinessTrackParams())) {
             for (BusinessTrackParam businessTrackParam : param.getBusinessTrackParams()) {
-                if (ToolUtil.isNotEmpty(businessTrackParam.getMoney())) {
+                if (ToolUtil.isNotEmpty(businessTrackParam.getMoney()) && businessTrackParam.getClassify() == 1) {
                     CompetitorQuote competitorQuote = new CompetitorQuote();
                     competitorQuote.setCompetitorsQuote(businessTrackParam.getMoney());
+                    competitorQuote.setBusinessId(businessTrackParam.getClassifyId());
 //                    Integer classify = businessTrackParam.getClassify();
                     competitorQuote.setCampType(0l);
                     competitorQuotes.add(competitorQuote);
