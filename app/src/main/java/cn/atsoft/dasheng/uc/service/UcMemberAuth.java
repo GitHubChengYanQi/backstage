@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.uc.service;
 
+import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.binding.cpUser.entity.CpuserInfo;
 import cn.atsoft.dasheng.binding.cpUser.model.params.CpuserInfoParam;
 import cn.atsoft.dasheng.binding.cpUser.service.CpuserInfoService;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.entity.UcSmsCode;
@@ -44,6 +47,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.List;
+
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getJwtSecretExpireSec;
 import static cn.atsoft.dasheng.base.consts.ConstantsContext.getTokenHeaderName;
 import static cn.atsoft.dasheng.core.util.HttpContext.getIp;
@@ -73,6 +78,9 @@ public class UcMemberAuth {
     private WxCpService wxCpService;
 
     @Autowired
+    private WxuserInfoService wxuserInfoService;
+
+    @Autowired
     private CpuserInfoService cpuserInfoService;
 
     @Autowired
@@ -95,14 +103,13 @@ public class UcMemberAuth {
         return wxCpService.getWxCpClient().getOauth2Service().buildAuthorizationUrl(url, "snsapi_base", "a-zA-Z0-9");
     }
 
-    public static String openId;
 
     public String mpLogin(String code) {
 
         try {
             WxOAuth2AccessToken wxOAuth2AccessToken = wxMpService.getOAuth2Service().getAccessToken(code);
             WxOAuth2UserInfo wxOAuth2UserInfo = wxMpService.getOAuth2Service().getUserInfo(wxOAuth2AccessToken, null);
-            openId = wxOAuth2UserInfo.getOpenid();
+
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
             ucOpenUserInfo.setUuid(wxOAuth2UserInfo.getOpenid());
             ucOpenUserInfo.setSource("wxMp");
@@ -149,29 +156,36 @@ public class UcMemberAuth {
 
     public String bind(String token) {
 
-        String type = UserUtils.getType();
+        String type = null;
+
+        try{
+            type = UserUtils.getType();
+        }catch (ServiceException e){
+
+        }
         if (type.equals("wxCp")) {
             JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
-            QueryWrapper<CpuserInfo> queryWrapper = new QueryWrapper();
-            queryWrapper.eq("member_id", jwtPayLoad.getUserId());
-            cpuserInfoService.update(new CpuserInfo() {{
-                setDisplay(0);
-            }}, queryWrapper);
+            QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper();
+            queryWrapper.eq("user_id", jwtPayLoad.getUserId());
+            WxuserInfo WxuserInfo = wxuserInfoService.getOne(queryWrapper);
+            if (ToolUtil.isNotEmpty(WxuserInfo)){
+                JwtPayLoad payLoad = new JwtPayLoad();
+                payLoad = jwtPayLoad;
+                String newToken = JwtTokenUtil.generateToken(payLoad);
+                addLoginCookie(newToken);
+                return newToken;
+            }else{
 
-            CpuserInfo cpui = new CpuserInfo();
-            cpui.setUserId(jwtPayLoad.getUserId());
-            cpui.setUuid(openId);
-            cpuserInfoService.save(cpui);
-            jwtPayLoad.setUserId(cpui.getUserId());
-             token  = JwtTokenUtil.generateToken(jwtPayLoad);
-            UcJwtPayLoad payLoad = new UcJwtPayLoad("wxCp", cpui.getUserId(), openId, "xxxx");
-            String newToken = JwtTokenUtil.generateToken(payLoad);
+                UcJwtPayLoad payLoad = new UcJwtPayLoad("wxCp",jwtPayLoad.getUserId(),jwtPayLoad.getUserId().toString(), "xxxx");
+                String newToken = JwtTokenUtil.generateToken(payLoad);
+                addLoginCookie(newToken);
+                return newToken;
+            }
+
             // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
 
             // 创建cookie
-            addLoginCookie(newToken);
 
-            return newToken;
         }
 
     return "";
@@ -410,23 +424,37 @@ public class UcMemberAuth {
                 mobile = ucMember.getPhone();
             }
         }
-
-        QueryWrapper<CpuserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("member_id", memberId).and(i->i.eq("display",1));
-        CpuserInfo cpuserInfo = cpuserInfoService.getOne(queryWrapper);
-        memberId= cpuserInfo.getMemberId();
-//        JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
-        UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
+        if (ToolUtil.isNotEmpty(account)) {
+            QueryWrapper<UcOpenUserInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("uuid", account);
+            UcOpenUserInfo openUserInfo = ucOpenUserInfoService.getOne(queryWrapper);
+            if (ToolUtil.isNotEmpty(openUserInfo.getMemberId())) {
+                UcJwtPayLoad payLoad = new UcJwtPayLoad(userInfo.getSource(), memberId, account, "xxxx");
 
 //        payLoad.setType(userInfo.getSource());
-        payLoad.setMobile(mobile);
-        String token = JwtTokenUtil.generateToken(payLoad);
-        // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
+                payLoad.setMobile(mobile);
+                String token = JwtTokenUtil.generateToken(payLoad);
+                // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
 
-        // 创建cookie
-        addLoginCookie(token);
+                // 创建cookie
+                addLoginCookie(token);
 
-        return token;
+                return token;
+
+            }else {
+                JwtPayLoad payLoad = new JwtPayLoad(memberId, account, "xxxx");
+                String token = JwtTokenUtil.generateToken(payLoad);
+                // TODO 可以用 sessionManage缓存用户信息，暂时先不加了
+
+                // 创建cookie
+                addLoginCookie(token);
+
+                return token;
+            }
+        }
+        return null;
+
+
     }
 
 
