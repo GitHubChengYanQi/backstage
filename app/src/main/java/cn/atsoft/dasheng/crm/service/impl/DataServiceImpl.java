@@ -49,6 +49,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     @Override
     public void add(DataParam param) {
+        param.setDataClassificationId(param.getDataclassId().get(0));
         Data entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getItemId())) {
