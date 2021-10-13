@@ -1,8 +1,13 @@
 package cn.atsoft.dasheng.uc.controller;
 
 import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.base.auth.jwt.JwtTokenUtil;
+import cn.atsoft.dasheng.base.auth.jwt.payload.JwtPayLoad;
 import cn.atsoft.dasheng.base.auth.service.AuthService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
@@ -12,6 +17,8 @@ import cn.atsoft.dasheng.uc.config.Shanyanproperties;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.httpRequest.request.AppleRequest;
 import cn.atsoft.dasheng.uc.httpRequest.request.ShanyanRequest;
+import cn.atsoft.dasheng.uc.jwt.UcJwtPayLoad;
+import cn.atsoft.dasheng.uc.jwt.UcJwtTokenUtil;
 import cn.atsoft.dasheng.uc.model.params.MiniAppLoginParam;
 import cn.atsoft.dasheng.uc.model.params.MiniAppUserProfileParam;
 import cn.atsoft.dasheng.uc.model.params.SmsCodeParam;
@@ -28,6 +35,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
+import me.chanjar.weixin.cp.bean.WxCpOauth2UserInfo;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
@@ -59,6 +68,12 @@ public class AuthLoginController extends BaseController {
     private ShanyanConfiguration shanyanConfiguration;
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private WxuserInfoService wxuserInfoService;
+
+    @Autowired
+    private UcOpenUserInfoService ucOpenUserInfoService;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -185,8 +200,20 @@ public class AuthLoginController extends BaseController {
     @RequestMapping("/cp/loginByCode")
     @ApiOperation(value = "企业微信通过Code登录", httpMethod = "GET")
     public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
-
         String token = ucMemberAuth.cpLogin(code);
+        UcJwtPayLoad jwtPayLoad = UcJwtTokenUtil.getJwtPayLoad(token);
+        String account = jwtPayLoad.getAccount();
+
+        if (ToolUtil.isNotEmpty(account)) {
+            QueryWrapper<UcOpenUserInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("uuid", account);
+            UcOpenUserInfo openUserInfo = ucOpenUserInfoService.getOne(queryWrapper);
+            if (ToolUtil.isNotEmpty(openUserInfo.getMemberId())) {
+                JwtPayLoad payLoad = new JwtPayLoad(jwtPayLoad.getUserId(), jwtPayLoad.getAccount(), "xxxx");
+                token = JwtTokenUtil.generateToken(payLoad);
+            }
+        }
+
 
         return ResponseData.success(token);
     }
@@ -238,9 +265,20 @@ public class AuthLoginController extends BaseController {
         String username = loginParam.getUserName();
         String password = loginParam.getPassword();
 
+
         //登录并创建token
         String token = authService.login(username, password);
-        return ResponseData.success(ucMemberAuth.bind(token));
+        JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
+        Long userId = jwtPayLoad.getUserId();//userId
+        Long memberId = UserUtils.getUserId();//memberId
+        WxuserInfo wxuserInfo = new WxuserInfo();
+        wxuserInfo.setMemberId(memberId);
+        wxuserInfo.setUserId(userId);
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+        wxuserInfoQueryWrapper.eq("user_id", userId);
+        wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
+
+        return ResponseData.success(token);
     }
 
     @RequestMapping("/refreshToken")
