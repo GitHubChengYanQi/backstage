@@ -9,13 +9,19 @@
         <result column="user_id" property="userId"/>
         <result column="deptId" property="deptId"/>
         <result column="template_type" property="templateType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId AS "deptId",
         template_type
         AS "templateType", remind_id
-        AS "remindId", type AS "type", user_id AS "userId"
+        AS "remindId", type AS "type", user_id AS "userId" ,create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
