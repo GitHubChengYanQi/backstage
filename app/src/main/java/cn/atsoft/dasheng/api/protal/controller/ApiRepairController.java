@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
@@ -81,7 +82,7 @@ public class ApiRepairController {
     public Long getWxUser(Long memberId) {
 
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
-        String type =  ucJwtPayLoad.getType();
+        String type = ucJwtPayLoad.getType();
 
         if (ToolUtil.isEmpty(type)) {
             Long userId = LoginContextHolder.getContext().getUserId();
@@ -196,6 +197,7 @@ public class ApiRepairController {
     }
 
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
+    @Transactional
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {

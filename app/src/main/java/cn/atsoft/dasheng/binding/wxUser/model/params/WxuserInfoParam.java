@@ -25,6 +25,7 @@ public class WxuserInfoParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private Long memberId;
 
+    private String source;
     /**
      * 用户和openid关联
      */

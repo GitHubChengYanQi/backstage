@@ -45,6 +45,11 @@ public class WxuserInfo implements Serializable {
     private String uuid;
 
     /**
+     * 用户来源
+     */
+    @TableField("source")
+    private String source;
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -158,6 +163,14 @@ public class WxuserInfo implements Serializable {
 
     public void setMemberId(Long memberId) {
         this.memberId = memberId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override
