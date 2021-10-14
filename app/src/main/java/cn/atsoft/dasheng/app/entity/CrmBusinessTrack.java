@@ -23,6 +23,8 @@ import java.io.Serializable;
 public class CrmBusinessTrack implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("state")
+    private Integer state;
     @TableField("name")
     private String name;
     @TableField("competition_id")
@@ -90,8 +92,16 @@ public class CrmBusinessTrack implements Serializable {
      */
     @TableField("display")
     private Integer display;
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
     public Long getDeptId() {
         return deptId;

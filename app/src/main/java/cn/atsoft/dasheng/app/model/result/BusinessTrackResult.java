@@ -31,7 +31,7 @@ public class BusinessTrackResult implements Serializable {
      */
     private String name;
 
-
+    private Integer state;
     /**
      * 分类名称
      */

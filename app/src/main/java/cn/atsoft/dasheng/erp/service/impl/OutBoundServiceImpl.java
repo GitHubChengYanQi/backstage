@@ -181,27 +181,6 @@ public class OutBoundServiceImpl implements OutBoundService {
     @Override
     @Transactional
     public String aKeyDelivery(OutstockApplyParam outstockApplyParam) {
-//        //一件发货添加发货单
-//        DeliveryParam deliveryParam = new DeliveryParam();
-//        deliveryParam.setCustomerId(outstockApplyParam.getCustomerId());
-//        deliveryParam.setPhoneId(outstockApplyParam.getPhoneId());
-//        deliveryParam.setAdressId(outstockApplyParam.getAdressId());
-//        deliveryParam.setContactsId(outstockApplyParam.getContactsId());
-//        deliveryParam.setDeliveryWay(outstockApplyParam.getDeliveryWay());
-//
-//        if (outstockApplyParam.getDeliveryWay() == 1) {
-//            deliveryParam.setLogisticsCompany(outstockApplyParam.getLogisticsCompany());
-//            deliveryParam.setLogisticsNumber(outstockApplyParam.getLogisticsNumber());
-//        } else if (outstockApplyParam.getDeliveryWay() == 0) {
-//            deliveryParam.setDriverName(outstockApplyParam.getDriverName());
-//            deliveryParam.setDriverPhone(outstockApplyParam.getDriverPhone());
-//            deliveryParam.setLicensePlate(outstockApplyParam.getLicensePlate());
-//        }
-//        Long deliveryId = deliveryService.add(deliveryParam);
-//
-//        OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
-//        outstockOrderParam.setOutstockApplyId(outstockOrderParam.getOutstockApplyId());
-//        outstockOrderParam.setStorehouseId(outstockOrderParam.getStorehouseId());
 
         Long outstockApplyId = outstockApplyParam.getOutstockApplyId();
         QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();

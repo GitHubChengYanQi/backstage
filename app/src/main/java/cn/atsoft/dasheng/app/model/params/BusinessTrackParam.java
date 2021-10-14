@@ -28,6 +28,7 @@ public class BusinessTrackParam implements Serializable, BaseValidatingParam {
 
     private List<Long> trackMessageIds;
 
+    private Integer state;
 
     private Integer money;
 
