@@ -202,14 +202,14 @@ public class AuthLoginController extends BaseController {
     public ResponseData<String> cpLoginByCode(@RequestParam("code") String code) {
         String token = ucMemberAuth.cpLogin(code);
         UcJwtPayLoad jwtPayLoad = UcJwtTokenUtil.getJwtPayLoad(token);
-        String account = jwtPayLoad.getAccount();
+        Long memberId = jwtPayLoad.getUserId();
 
-        if (ToolUtil.isNotEmpty(account)) {
-            QueryWrapper<UcOpenUserInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("uuid", account);
-            UcOpenUserInfo openUserInfo = ucOpenUserInfoService.getOne(queryWrapper);
-            if (ToolUtil.isNotEmpty(openUserInfo.getMemberId())) {
-                JwtPayLoad payLoad = new JwtPayLoad(jwtPayLoad.getUserId(), jwtPayLoad.getAccount(), "xxxx");
+        if (ToolUtil.isNotEmpty(memberId)) {
+            QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("member_id", memberId);
+            WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
+            if (ToolUtil.isNotEmpty(wxuserInfo)) {
+                JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), jwtPayLoad.getAccount(), "xxxx");
                 token = JwtTokenUtil.generateToken(payLoad);
             }
         }
