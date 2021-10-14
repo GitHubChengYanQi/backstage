@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.jwt.UcJwtPayLoad;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
@@ -78,12 +79,22 @@ public class ApiRepairController {
 
 
     public Long getWxUser(Long memberId) {
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.in("member_id", memberId);
-        List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        for (WxuserInfo data : userList) {
-            return data.getUserId();
+
+        UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
+        String type =  ucJwtPayLoad.getType();
+
+        if (ToolUtil.isEmpty(type)) {
+            Long userId = LoginContextHolder.getContext().getUserId();
+            return userId;
+        } else {
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("member_id", memberId);
+            List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            for (WxuserInfo data : userList) {
+                return data.getUserId();
+            }
         }
+
         return null;
     }
 
@@ -91,10 +102,7 @@ public class ApiRepairController {
     public ResponseData getRepairOrder() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)){
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
 
         Boolean permission = false;
@@ -114,10 +122,7 @@ public class ApiRepairController {
     public ResponseData getMyRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)){
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
 
 
@@ -132,10 +137,7 @@ public class ApiRepairController {
     public ResponseData getRepairAll() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)){
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
         for (int i = 0; i < 5; i++) {
@@ -171,10 +173,7 @@ public class ApiRepairController {
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)){
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         repairParam.setName(UserUtils.getUserId());
         Repair entity = getEntity(repairParam);
@@ -200,10 +199,7 @@ public class ApiRepairController {
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)){
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
 
         Repair oldEntity = getOldEntity(repairParam);
@@ -239,10 +235,7 @@ public class ApiRepairController {
     public ResponseData getRepair() {
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
-            userId = LoginContextHolder.getContext().getUserId();
-            if (ToolUtil.isEmpty(userId)) {
-                throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-            }
+            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
         }
         Boolean permission = false;
         permission = wxuserInfoService.sendPermissions(1L, userId);
@@ -405,7 +398,7 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/getRepairById", method = RequestMethod.POST)
     public ResponseData getRepairById(@RequestBody(required = false) RepairParam repairParam) {
-        if (ToolUtil.isEmpty(repairParam.getRepairId())) {
+        if (ToolUtil.isEmpty(repairParam) || ToolUtil.isEmpty(repairParam.getRepairId())) {
             throw new ServiceException(500, "未选择报修数据");
         }
         Repair repair = this.repairService.getById(repairParam.getRepairId());
