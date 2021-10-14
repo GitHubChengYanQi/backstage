@@ -24,6 +24,8 @@ public class WxuserInfoResult implements Serializable {
     private UserResult userResult;
 
     private Long memberId;
+
+    private String source;
     /**
      * 用户和openid关联
      */

@@ -32,7 +32,7 @@ public class Delivery implements Serializable {
      * 司机电话
      */
     @TableField("driver_phone")
-    private Integer driverPhone;
+    private Long driverPhone;
     /**
      * 司机姓名
      */
@@ -255,11 +255,11 @@ public class Delivery implements Serializable {
         this.licensePlate = licensePlate;
     }
 
-    public Integer getDriverPhone() {
+    public Long getDriverPhone() {
         return driverPhone;
     }
 
-    public void setDriverPhone(Integer driverPhone) {
+    public void setDriverPhone(Long driverPhone) {
         this.driverPhone = driverPhone;
     }
 

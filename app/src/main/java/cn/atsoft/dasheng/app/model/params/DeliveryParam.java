@@ -33,7 +33,7 @@ public class DeliveryParam implements Serializable, BaseValidatingParam {
     /**
      * 司机电话
      */
-    private Integer driverPhone;
+    private Long driverPhone;
     /**
      * 司机姓名
      */

@@ -273,8 +273,10 @@ public class AuthLoginController extends BaseController {
         WxuserInfo wxuserInfo = new WxuserInfo();
         wxuserInfo.setMemberId(memberId);
         wxuserInfo.setUserId(userId);
+        wxuserInfo.setSource("wxCp");
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
         wxuserInfoQueryWrapper.eq("user_id", userId);
+        wxuserInfoQueryWrapper.eq("source", "wxCp");
         wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
 
         return ResponseData.success(token);

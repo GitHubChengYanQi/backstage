@@ -115,7 +115,7 @@ public class BusinessTrack implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId",fill = FieldFill.INSERT)
     private Long deptId;
 
     /**

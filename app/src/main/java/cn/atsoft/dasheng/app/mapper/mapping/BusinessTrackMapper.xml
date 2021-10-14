@@ -23,10 +23,12 @@
         <result column="classify" property="classify"/>
         <result column="classify_id" property="classifyId"/>
         <result column="track_message_id" property="trackMessageId"/>
+        <result column="state" property="state"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">state
+    AS "state",
         track_id
         AS "trackId", message AS "message", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", tixing AS "tixing", type AS "type", display AS "display", time AS "time", note AS "note", image AS "image", longitude AS "longitude", latitude AS "latitude", user_id AS "userId", deptId AS "deptId", classify AS "classify", classify_id AS "classifyId", track_message_id AS "trackMessageId"
     </sql>
@@ -221,8 +223,11 @@
         <if test="paramCondition.trackMessageId != null">
             and track_message_id like CONCAT('%',#{paramCondition.trackMessageId},'%')
         </if>
+        <if test ="paramCondition.state != null">
+            and state like CONCAT('%',#{paramCondition.state},'%')
+        </if>
         <if test="paramCondition.trackMessageIds != null">
-           and track_message_id in
+            and track_message_id in
             <foreach collection="trackMessageIds" item="trackMessageId" index="index" close=")" open="(" separator=",">
                 #{trackMessageId}
             </foreach>
