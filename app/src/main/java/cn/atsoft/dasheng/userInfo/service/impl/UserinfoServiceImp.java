@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.userInfo.service.impl;
 
-import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import  cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.atsoft.dasheng.userInfo.model.BackUser;
@@ -16,7 +16,6 @@ import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.binarywang.wx.miniapp.api.WxMaService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,7 +29,6 @@ public class UserinfoServiceImp implements UserInfoService {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -193,10 +191,10 @@ public class UserinfoServiceImp implements UserInfoService {
                     wxuserInfoParam.setUuid(UserUtils.getUserAccount());
                     wxuserInfoService.add(wxuserInfoParam);
                 }
-            } else {
+            }else{
                 throw new ServiceException(505, "账户已经绑定");
             }
-        } else {
+        }else{
             throw new ServiceException(500, "绑定失败,请确认用户存在");
         }
 
