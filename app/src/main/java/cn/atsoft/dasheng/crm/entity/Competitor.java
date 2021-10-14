@@ -148,6 +148,12 @@ public class Competitor implements Serializable {
     private Date updateTime;
 
     /**
+     * 部门编号
+     */
+    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    private Long deptId;
+    
+    /**
      * 状态
      */
     @TableField("display")
@@ -328,11 +334,6 @@ public class Competitor implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
-    /**
-     * 部门id
-     */
-    @TableField(value = "deptId")
-    private Long deptId;
 
     public Long getDeptId() {
         return deptId;

@@ -71,7 +71,7 @@ public class RepairDynamic implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill =FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {

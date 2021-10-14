@@ -90,9 +90,25 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     public PageInfo<DispatchingResult> findPageBySpec(DispatchingParam param) {
         Page<DispatchingResult> pageContext = getPageContext();
         IPage<DispatchingResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
+    private void format(List<DispatchingResult> param){
+        List<Long> ids  = new ArrayList<>();
+        for (DispatchingResult dispatchingResult : param) {
+            ids.add(dispatchingResult.getName());
+        }
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(User::getUserId,ids);
+        List<User> userList= userService.list(queryWrapper);
+        for (DispatchingResult dispatchingResult : param) {
+            for (User user : userList) {
+                if (user.getUserId().equals(dispatchingResult.getName())){
+                    dispatchingResult.setUserName(user.getName());
+                }
+            }
+        }
+    }
     /**
      * 发送订阅消息
      *
