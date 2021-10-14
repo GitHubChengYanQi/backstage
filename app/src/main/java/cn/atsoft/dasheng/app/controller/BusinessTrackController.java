@@ -110,12 +110,9 @@ public class BusinessTrackController extends BaseController {
             businessTrackParam = new BusinessTrackParam();
         }
 //        return this.businessTrackService.findPageBySpec(businessTrackParam);
-        if (LoginContextHolder.getContext().isAdmin()) {
+       
             return this.businessTrackService.findPageBySpec(businessTrackParam, null);
-        } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.businessTrackService.findPageBySpec(businessTrackParam, dataScope);
-        }
+
     }
 
 
