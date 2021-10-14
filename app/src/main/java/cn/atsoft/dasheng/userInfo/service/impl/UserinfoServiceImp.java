@@ -170,49 +170,49 @@ public class UserinfoServiceImp implements UserInfoService {
             String userId = wx.substring(8, wx.length());
             Long ids = Long.valueOf(userId);
 
-
-            /**
-             * 通过userId 绑定
-             */
-            WxuserInfo wxuserInfo = new WxuserInfo();
-            wxuserInfo.setUserId(ids);
-            wxuserInfo.setMemberId(UserUtils.getUserId());
-            wxuserInfo.setSource("wxMp");
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.eq("user_id", ids);
-            wxuserInfoQueryWrapper.eq("source", "wxMp");
-            wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
+//
+//            /**
+//             * 通过userId 绑定
+//             */
+//            WxuserInfo wxuserInfo = new WxuserInfo();
+//            wxuserInfo.setUserId(ids);
+//            wxuserInfo.setMemberId(UserUtils.getUserId());
+//            wxuserInfo.setSource("wxMp");
+//            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+//            wxuserInfoQueryWrapper.eq("user_id", ids);
+//            wxuserInfoQueryWrapper.eq("source", "wxMp");
+//            wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
 
 
             /**
              * 通过userid查询是否绑定
              */
-//
-//            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-//            wxuserInfoQueryWrapper.in("user_id", ids);
-//            wxuserInfoQueryWrapper.eq("source", "wxMp");
-//            List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
-//            for (WxuserInfo wxuserInfo : list) {
-//                if (wxuserInfo.getMemberId().equals(UserUtils.getUserId())) {
-//                    throw new ServiceException(500, "该用户已被绑定");
-//                }
-//            }
-//            /**
-//             * 绑定
-//             */
-//            if (list.size() <= 0) {
-//                if (UserUtils.getUserId() != null) {
-//                    WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
-//                    wxuserInfoParam.setUserId(ids);
-//                    wxuserInfoParam.setMemberId(UserUtils.getUserId());
-//                    wxuserInfoParam.setSource("wxMp");
-//                    wxuserInfoService.add(wxuserInfoParam);
-//                }
-//            } else {
-//                throw new ServiceException(505, "账户已经绑定");
-//            }
-//        } else {
-//            throw new ServiceException(500, "绑定失败,请确认用户存在");
+
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("user_id", ids);
+            wxuserInfoQueryWrapper.eq("source", "wxMp");
+            List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
+            for (WxuserInfo wxuserInfo : list) {
+                if (wxuserInfo.getMemberId().equals(UserUtils.getUserId())) {
+                    throw new ServiceException(500, "该用户已被绑定");
+                }
+            }
+            /**
+             * 绑定
+             */
+            if (list.size() <= 0) {
+                if (UserUtils.getUserId() != null) {
+                    WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
+                    wxuserInfoParam.setUserId(ids);
+                    wxuserInfoParam.setMemberId(UserUtils.getUserId());
+                    wxuserInfoParam.setSource("wxMp");
+                    wxuserInfoService.add(wxuserInfoParam);
+                }
+            } else {
+                throw new ServiceException(505, "账户已经绑定");
+            }
+        } else {
+            throw new ServiceException(500, "绑定失败,请确认用户在存");
         }
 
 
