@@ -142,14 +142,14 @@ public class RepairSendTemplate extends sendTemplae {
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
+                userQueryWrapper.in("user_id", wxuserInfo.getMemberId());
                 User user = userService.getOne(userQueryWrapper);
                 if (user != null) {
                     if (backTemplat.contains("{{name}}")) {
                         if (user != null) {
                             backTemplat = backTemplat.replace("{{name}}", user.getName());
                         } else {
-                            backTemplat = backTemplat.replace("{{name}}", ":系统");
+                            backTemplat = backTemplat.replace("{{name}}", "系统");
                         }
                     }
                 }
@@ -157,7 +157,7 @@ public class RepairSendTemplate extends sendTemplae {
 
         } else {
             if (backTemplat.contains("{{name}}")) {
-                backTemplat = backTemplat.replace("{{name}}", ":系统");
+                backTemplat = backTemplat.replace("{{name}}", "系统");
             }
         }
 
@@ -169,7 +169,7 @@ public class RepairSendTemplate extends sendTemplae {
                 DateTime parse = DateUtil.parse(reateTime);
                 String time = String.valueOf(parse);
                 if (reminds.getTemplateType() != null) {
-                    backTemplat = backTemplat.replace("{{time}}", ":" + time);
+                    backTemplat = backTemplat.replace("{{time}}", time);
                 }
 
             }
@@ -240,7 +240,6 @@ public class RepairSendTemplate extends sendTemplae {
     private Dispatching getDispatching(Long id) {
         QueryWrapper<Dispatching> dispatchingQueryWrapper = new QueryWrapper<>();
         dispatchingQueryWrapper.in("repair_id", id);
-
         Dispatching dispatchingServiceOne = dispatchingService.getOne(dispatchingQueryWrapper);
         if (ToolUtil.isEmpty(dispatchingServiceOne)) {
             Dispatching dispatching = new Dispatching();

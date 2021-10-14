@@ -218,6 +218,7 @@ public class ApiRepairController {
         Param.setProgress(repairParam.getProgress());
         Repair data = this.repairService.getById(repairParam.getRepairId());
         ToolUtil.copyProperties(Param, data);
+        Param.setArea(data.getArea());
         Param.setName(UserUtils.getUserId());
         Param.setProgress(repairParam.getProgress() - 1);
         repairSendTemplate.setRepairParam(Param);
