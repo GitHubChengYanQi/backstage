@@ -130,6 +130,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             ToolUtil.copyProperties(repair, repairParam);
             repairParam.setProgress(1L);
             repairParam.setCreateTime(entity.getCreateTime());
+            repairParam.setName(param.getName());
             repairSendTemplate.setRepairParam(repairParam);
             try {
                 repairSendTemplate.send();
