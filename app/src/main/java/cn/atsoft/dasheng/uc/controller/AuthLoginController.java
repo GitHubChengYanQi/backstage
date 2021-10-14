@@ -9,7 +9,11 @@ import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.model.params.WxuserInfoParam;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import cn.atsoft.dasheng.sys.core.auth.AuthServiceImpl;
+import cn.atsoft.dasheng.sys.core.auth.cache.SessionManager;
 import cn.atsoft.dasheng.sys.modular.rest.model.params.LoginParam;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.atsoft.dasheng.uc.config.AppWxConfiguration;
 import cn.atsoft.dasheng.uc.config.AppWxProperties;
 import cn.atsoft.dasheng.uc.config.ShanyanConfiguration;
@@ -66,14 +70,23 @@ public class AuthLoginController extends BaseController {
 
     @Autowired
     private ShanyanConfiguration shanyanConfiguration;
+
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private WxuserInfoService wxuserInfoService;
 
     @Autowired
     private UcOpenUserInfoService ucOpenUserInfoService;
+
+
+
+    @Autowired
+    private SessionManager sessionManager;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
     @RequestMapping("/phone")
@@ -211,6 +224,11 @@ public class AuthLoginController extends BaseController {
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
                 JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), jwtPayLoad.getAccount(), "xxxx");
                 token = JwtTokenUtil.generateToken(payLoad);
+
+                User byId = userService.getById(wxuserInfo.getUserId());
+
+                //创建登录会话
+                sessionManager.createSession(token, authService.user(byId.getAccount()));
             }
         }
 
