@@ -265,12 +265,11 @@ public class AuthLoginController extends BaseController {
         String username = loginParam.getUserName();
         String password = loginParam.getPassword();
 
-
+        Long memberId = UserUtils.getUserId();//memberId
         //登录并创建token
         String token = authService.login(username, password);
         JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
         Long userId = jwtPayLoad.getUserId();//userId
-        Long memberId = UserUtils.getUserId();//memberId
         WxuserInfo wxuserInfo = new WxuserInfo();
         wxuserInfo.setMemberId(memberId);
         wxuserInfo.setUserId(userId);
