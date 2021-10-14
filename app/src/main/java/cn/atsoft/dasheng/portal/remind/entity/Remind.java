@@ -1,9 +1,7 @@
 package cn.atsoft.dasheng.portal.remind.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 
 /**
@@ -75,7 +73,7 @@ public class Remind implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId")
+    @TableField(value = "deptId",fill = FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
