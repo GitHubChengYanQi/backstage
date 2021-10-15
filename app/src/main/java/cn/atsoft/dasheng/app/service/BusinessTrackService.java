@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.result.TrackNumberResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
@@ -65,6 +66,12 @@ public interface BusinessTrackService extends IService<BusinessTrack> {
      * @author cheng
      * @Date 2021-09-17
      */
-     PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope );
+    PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope);
+
+    /**
+     *查找分类数量
+     * @return
+     */
+    TrackNumberResult findNumber();
 
 }

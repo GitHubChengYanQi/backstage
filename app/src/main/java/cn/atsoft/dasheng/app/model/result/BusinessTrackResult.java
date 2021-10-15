@@ -26,6 +26,9 @@ public class BusinessTrackResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private UserResult userResult;
+
+
+
     /**
      * 名称
      */

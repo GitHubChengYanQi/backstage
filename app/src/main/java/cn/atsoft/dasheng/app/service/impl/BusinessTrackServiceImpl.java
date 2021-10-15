@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.CrmBusiness;
+import cn.atsoft.dasheng.app.model.result.TrackNumberResult;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.service.CrmBusinessService;
@@ -78,23 +79,25 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
     }
 
     @Override
-    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope ) {
+    public PageInfo<BusinessTrackResult> findPageBySpec(BusinessTrackParam param, DataScope dataScope) {
 
         List<Long> trackMessageIds = param.getTrackMessageIds();
 
-        if (trackMessageIds == null || trackMessageIds.size() <= 0){
+        if (trackMessageIds == null || trackMessageIds.size() <= 0) {
             trackMessageIds = new ArrayList<>();
             trackMessageIds.add(0L);
         }
 
         Page<BusinessTrackResult> pageContext = getPageContext();
-        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param,dataScope);
+        IPage<BusinessTrackResult> page = this.baseMapper.customPageList(trackMessageIds, pageContext, param, dataScope);
         List<Long> ids = new ArrayList<>();
         for (BusinessTrackResult record : page.getRecords()) {
             ids.add(record.getUserId());
         }
 
         List<User> users = userService.list();
+
+
         for (BusinessTrackResult record : page.getRecords()) {
             switch (record.getClassify()) {
                 case 0:
@@ -122,6 +125,7 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
                     break;
             }
 
+
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(record.getUserId())) {
                     if (record.getUserId().equals(user.getUserId())) {
@@ -135,6 +139,18 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
 
         }
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public TrackNumberResult findNumber() {
+        Integer dailyNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "0").count();
+        Integer businessNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "1").count();
+        Integer contractNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "2").count();
+        TrackNumberResult trackNumberResult = new TrackNumberResult();
+        trackNumberResult.setBusinessNumber(businessNumber);
+        trackNumberResult.setDailyNumber(dailyNumber);
+        trackNumberResult.setContractNumber(contractNumber);
+        return trackNumberResult;
     }
 
     private Serializable getKey(BusinessTrackParam param) {
