@@ -1,9 +1,13 @@
 package cn.atsoft.dasheng.portal.repair.service;
 
+import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.appBase.service.sendTemplae;
+import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
+import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
@@ -13,19 +17,19 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.portal.remindUser.entity.RemindUser;
 import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
-import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.portal.repair.model.result.RepairResult;
-import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
-import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
+import cn.atsoft.dasheng.uc.service.UcMemberService;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
+import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,9 +64,13 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Autowired
     private CommonAreaService commonAreaService;
-
+    @Autowired
+    private UcMemberService ucMemberService;
+    @Autowired
+    private WxCpService wxCpService;
 
     private RepairParam repairParam;
+
 
     RepairResult remindResult = new RepairResult();
 
@@ -127,7 +135,7 @@ public class RepairSendTemplate extends sendTemplae {
 
         Dispatching dispatching = getDispatching(repairParam.getRepairId());
         String note = "";
-        note=repairParam.getComment();
+        note = repairParam.getComment();
 //        if (dispatching != null) {
 //            note = dispatching.getNote();
 //        }
@@ -273,4 +281,61 @@ public class RepairSendTemplate extends sendTemplae {
         regionResult.setProvince(province.getTitle());
         return regionResult;
     }
+
+    /**
+     * 企业微信推送消息
+     *
+     * @return
+     */
+    @Override
+    public List<String> userIds() {
+        if (repairParam.getProgress() == null) {
+            throw new ServiceException(500, "请确定步骤流程");
+        }
+        Remind reminds = getReminds(0L);
+        List<Long> memberIds = new ArrayList<>();
+        List<String> uuIds = new ArrayList<>();
+        List<Long> getremindUserids = getremindUserids(reminds.getRemindId());
+
+        if (ToolUtil.isNotEmpty(getremindUserids)) {
+            List<WxuserInfo> wxuserInfos = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, getremindUserids)
+                    .and(i -> i.in(WxuserInfo::getSource, "wxCp"))
+                    .list();
+
+            if (ToolUtil.isNotEmpty(wxuserInfos)) {
+                for (WxuserInfo wxuserInfo : wxuserInfos) {
+                    memberIds.add(wxuserInfo.getMemberId());
+                }
+            }
+//            if (ToolUtil.isNotEmpty(memberIds)) {
+//                List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.lambdaQuery().in(UcOpenUserInfo::getMemberId, memberIds)
+//                        .and(i -> i.in(UcOpenUserInfo::getSource, "wxCp"))
+//                        .list();
+//                if (ToolUtil.isNotEmpty(ucOpenUserInfos)) {
+//                    for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+//                        uuIds.add(ucOpenUserInfo.getUuid());
+//                    }
+//                }
+//            }
+
+            if (ToolUtil.isNotEmpty(memberIds)) {
+                List<UcMember> ucMembers = ucMemberService.lambdaQuery().in(UcMember::getMemberId, memberIds).list();
+                if (ToolUtil.isNotEmpty(ucMembers)) {
+                    for (UcMember ucMember : ucMembers) {
+                        try {
+                            String userId = wxCpService.getWxCpClient().getUserService().getUserId(ucMember.getPhone());
+                            uuIds.add(userId);
+                        } catch (WxErrorException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return uuIds;
+    }
+
+
 }

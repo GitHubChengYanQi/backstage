@@ -100,14 +100,17 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(User::getUserId,ids);
-        List<User> userList= userService.list(queryWrapper);
-        for (DispatchingResult dispatchingResult : param) {
-            for (User user : userList) {
-                if (user.getUserId().equals(dispatchingResult.getName())){
-                    dispatchingResult.setUserName(user.getName());
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<User> userList= userService.list(queryWrapper);
+            for (DispatchingResult dispatchingResult : param) {
+                for (User user : userList) {
+                    if (user.getUserId().equals(dispatchingResult.getName())){
+                        dispatchingResult.setUserName(user.getName());
+                    }
                 }
             }
         }
+
     }
     /**
      * 发送订阅消息

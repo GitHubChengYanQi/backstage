@@ -79,8 +79,6 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Override
     @Transactional
     public Repair add(RepairParam param) {
-
-
         if (param.getArea() == null) {
             throw new ServiceException(500, "请选择地区");
         }else{
@@ -99,10 +97,10 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         repairSendTemplate.setRepairParam(param);
         try{
             repairSendTemplate.send();
+            repairSendTemplate.wxCpSend();
         }catch(WxErrorException e) {
             e.printStackTrace();
         }
-
 
         List<RepairImage> repairImages = param.getItemImgUrlList();
         for (RepairImage data : repairImages){
