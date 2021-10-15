@@ -193,8 +193,8 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
-        <if test="paramCondition.time != null and paramCondition.time != ''">
-            and time like CONCAT('%',#{paramCondition.time},'%')
+        <if test="paramCondition.timeLike != null">
+            and time like CONCAT('%',#{paramCondition.timeLike},'%')
         </if>
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')

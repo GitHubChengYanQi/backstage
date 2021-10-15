@@ -92,6 +92,8 @@ public class BusinessTrackParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("提醒时间")
     private Date time;
 
+    private String timeLike;
+
     /**
      * 提醒内容
      */
