@@ -127,9 +127,10 @@ public class RepairSendTemplate extends sendTemplae {
 
         Dispatching dispatching = getDispatching(repairParam.getRepairId());
         String note = "";
-        if (dispatching != null) {
-            note = dispatching.getNote();
-        }
+        note=repairParam.getComment();
+//        if (dispatching != null) {
+//            note = dispatching.getNote();
+//        }
 
 
 /**
@@ -196,7 +197,7 @@ public class RepairSendTemplate extends sendTemplae {
             if (remindResult.getComment() != null && backTemplat != "") {
 
             } else {
-                backTemplat = backTemplat.replace("{{details}}", "无");
+                backTemplat = backTemplat.replace("{{details}}", " 祝你每天都有好心情! ");
             }
         }
 

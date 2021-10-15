@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.result.TrackNumberResult;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -110,12 +111,23 @@ public class BusinessTrackController extends BaseController {
             businessTrackParam = new BusinessTrackParam();
         }
 //        return this.businessTrackService.findPageBySpec(businessTrackParam);
-       
-            return this.businessTrackService.findPageBySpec(businessTrackParam, null);
+        return this.businessTrackService.findPageBySpec(businessTrackParam, null);
 
     }
 
-
+    /**
+     * 查询分类数量
+     *
+     * @author cheng
+     * @Date 2021-09-17
+     */
+    @Permission
+    @RequestMapping(value = "/listNumber", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData<TrackNumberResult> listNumber() {
+        TrackNumberResult trackServiceNumber = businessTrackService.findNumber();
+        return ResponseData.success(trackServiceNumber);
+    }
 }
 
 
