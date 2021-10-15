@@ -146,9 +146,13 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
 
     @Override
     public TrackNumberResult findNumber() {
+        //查询日常数量
         Integer dailyNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "0").count();
+        //查询项目数量
         Integer businessNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "1").count();
+        //查询合同数量
         Integer contractNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "2").count();
+        //查询已超时数量
         List<BusinessTrack> businessTracks = this.list();
         int i = 0;
         for (BusinessTrack businessTrack : businessTracks) {

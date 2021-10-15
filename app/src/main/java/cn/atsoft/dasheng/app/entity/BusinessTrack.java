@@ -1,12 +1,16 @@
 package cn.atsoft.dasheng.app.entity;
 
 import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -25,7 +29,7 @@ public class BusinessTrack implements Serializable {
     /**
      * 跟进内容id
      */
-      @TableId(value = "track_id", type = IdType.ID_WORKER)
+    @TableId(value = "track_id", type = IdType.ID_WORKER)
     private Long trackId;
 
     /**
@@ -37,25 +41,27 @@ public class BusinessTrack implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
+    @TableField("state")
+    private Integer state;
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -115,7 +121,7 @@ public class BusinessTrack implements Serializable {
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill = FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -289,28 +295,36 @@ public class BusinessTrack implements Serializable {
         this.trackMessageId = trackMessageId;
     }
 
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "BusinessTrack{" +
-        "trackId=" + trackId +
-        ", message=" + message +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", tixing=" + tixing +
-        ", type=" + type +
-        ", display=" + display +
-        ", time=" + time +
-        ", note=" + note +
-        ", image=" + image +
-        ", longitude=" + longitude +
-        ", latitude=" + latitude +
-        ", userId=" + userId +
-        ", deptId=" + deptId +
-        ", classify=" + classify +
-        ", classifyId=" + classifyId +
-        ", trackMessageId=" + trackMessageId +
-        "}";
+                "trackId=" + trackId +
+                ", message=" + message +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", tixing=" + tixing +
+                ", type=" + type +
+                ", display=" + display +
+                ", time=" + time +
+                ", note=" + note +
+                ", image=" + image +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                ", userId=" + userId +
+                ", deptId=" + deptId +
+                ", classify=" + classify +
+                ", classifyId=" + classifyId +
+                ", trackMessageId=" + trackMessageId +
+                "}";
     }
 }
