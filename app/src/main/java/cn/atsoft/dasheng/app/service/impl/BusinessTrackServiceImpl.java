@@ -21,15 +21,18 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.Hutool;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xkcoding.http.support.hutool.HutoolImpl;
 import io.swagger.annotations.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -146,10 +149,25 @@ public class BusinessTrackServiceImpl extends ServiceImpl<BusinessTrackMapper, B
         Integer dailyNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "0").count();
         Integer businessNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "1").count();
         Integer contractNumber = this.lambdaQuery().in(BusinessTrack::getClassify, "2").count();
+        List<BusinessTrack> businessTracks = this.list();
+        int i = 0;
+        for (BusinessTrack businessTrack : businessTracks) {
+            if (ToolUtil.isNotEmpty(businessTrack)) {
+                if (ToolUtil.isNotEmpty(businessTrack.getTime())) {
+                    Date date = new Date();
+                    boolean after = date.after(businessTrack.getTime());
+                    if (after) {
+                        ++i;
+                    }
+                }
+            }
+        }
+
         TrackNumberResult trackNumberResult = new TrackNumberResult();
         trackNumberResult.setBusinessNumber(businessNumber);
         trackNumberResult.setDailyNumber(dailyNumber);
         trackNumberResult.setContractNumber(contractNumber);
+        trackNumberResult.setTimeout(i);
         return trackNumberResult;
     }
 
