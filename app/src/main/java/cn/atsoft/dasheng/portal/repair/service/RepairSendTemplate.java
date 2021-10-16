@@ -100,7 +100,7 @@ public class RepairSendTemplate extends sendTemplae {
         }
 
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
-                and(i->i.in(WxuserInfo::getSource,"WXMINIAPP")).
+                and(i->i.in(WxuserInfo::getSource,"wxMp")).
                 list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -109,7 +109,7 @@ public class RepairSendTemplate extends sendTemplae {
         List<String> openids = new ArrayList<>();
         if (wxuserInfoList.size() != 0) {
             QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-            infoQueryWrapper.in("member_id", memberIds).eq("source", "WXMINIAPP");
+            infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
 
             if (memberIds.size() != 0) {
                 List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
