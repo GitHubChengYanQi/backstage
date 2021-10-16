@@ -168,6 +168,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
 
+        repairParam.setName(UserUtils.getUserId());
 
         Repair entity = getEntity(repairParam);
         this.repairService.save(entity);
@@ -179,7 +180,7 @@ public class ApiRepairController {
             repairImageParam.setTitle(data.getTitle());
             this.repairImageService.add(repairImageParam);
         }
-        repairParam.setName(UserUtils.getUserId());
+
         repairParam.setRepairId(entity.getRepairId());
         repairParam.setCreateTime(entity.getCreateTime());
         repairParam.setProgress(0L);
