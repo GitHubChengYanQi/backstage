@@ -65,10 +65,7 @@ public class ApiRepairController {
     private UserService userService;
     @Autowired
     private CommonAreaService commonAreaService;
-    @Autowired
-    private RemindUserService remindUserService;
-    @Autowired
-    private RemindService remindService;
+
     @Autowired
     private MediaService mediaService;
     @Autowired
