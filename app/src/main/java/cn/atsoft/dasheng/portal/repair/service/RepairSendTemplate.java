@@ -329,17 +329,37 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getTitle() {
-        return null;
+        return "保修推送";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        String time = null;
+        String note = null;
+        String thing = null;
+        String name = null;
+        List<String> userIds = this.userIds();
+        List<WxMpTemplateData> data = this.getTemplateData();
+        for (WxMpTemplateData datum : data) {
+            if (datum.getName().equals("time2")) {
+                time = datum.getValue();
+
+            }else if (datum.getName().equals("name1")){
+                name = datum.getValue();
+            }else if (datum.getName().equals("thing4")){
+                thing = datum.getValue();
+            }else if (datum.getName().equals("thing5")){
+                note = datum.getValue();
+            }
+        }
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("名字："+"\n \t"+name+"时间"+"\n \t"+time+"事项"+"\n \t"+thing+"\n \t"+"备注"+"\n \t"+note);
+        return stringBuffer.toString();
     }
 
     @Override
     public String getUrl() {
-        return null;
+        return "test";
     }
 
 
