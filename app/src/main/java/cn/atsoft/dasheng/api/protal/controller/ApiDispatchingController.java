@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.api.protal.controller;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.portal.dispatChing.entity.Dispatching;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,10 @@ public class ApiDispatchingController {
 
     @RequestMapping(value = "/saveDispatching", method = RequestMethod.POST)
     public ResponseData saveDispatching(@RequestBody DispatchingParam dispatchingParam) {
+        Dispatching dispatching = dispatchingService.lambdaQuery().eq(Dispatching::getRepairId, dispatchingParam.getRepairId()).one();
+        if (ToolUtil.isNotEmpty(dispatching)) {
+            throw new ServiceException(500, "已派工");
+        }
         this.dispatchingService.add(dispatchingParam);
         return ResponseData.success();
     }

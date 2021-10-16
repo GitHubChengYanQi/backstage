@@ -79,16 +79,17 @@ public class ApiRepairController {
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
         String type = ucJwtPayLoad.getType();
 
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+
         if (ToolUtil.isEmpty(type)) {
-            Long userId = LoginContextHolder.getContext().getUserId();
-            return userId;
+            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id",memberId);
         } else {
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
-            List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            for (WxuserInfo data : userList) {
-                return data.getUserId();
-            }
+        }
+
+        List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        for (WxuserInfo data : userList) {
+            return data.getUserId();
         }
 
         return null;
@@ -192,6 +193,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
     @Transactional
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
+
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");

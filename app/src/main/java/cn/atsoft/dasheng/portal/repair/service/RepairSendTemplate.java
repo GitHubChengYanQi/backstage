@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcMemberService;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
@@ -100,7 +101,7 @@ public class RepairSendTemplate extends sendTemplae {
         }
 
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
-                and(i->i.in(WxuserInfo::getSource,"wxMp")).
+                and(i -> i.in(WxuserInfo::getSource, "wxMp")).
                 list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -137,10 +138,9 @@ public class RepairSendTemplate extends sendTemplae {
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
 
-     //获取模板推送数据
+        //获取模板推送数据
         String note = "";
         note = repairParam.getComment();
-
 
 
 /**
@@ -152,17 +152,20 @@ public class RepairSendTemplate extends sendTemplae {
             wxuserInfoQueryWrapper.in("source", "wxMp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
+                //公众号查询派工人
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
                 userQueryWrapper.in("user_id", wxuserInfo.getUserId());
                 User user = userService.getOne(userQueryWrapper);
                 if (user != null) {
                     if (backTemplat.contains("{{name}}")) {
-                        if (user != null) {
-                            backTemplat = backTemplat.replace("{{name}}", user.getName());
-                        } else {
-                            backTemplat = backTemplat.replace("{{name}}", "系统");
-                        }
+                        backTemplat = backTemplat.replace("{{name}}", user.getName());
                     }
+                }
+            } else {
+                //企业微信查询派工人
+                User user = userService.lambdaQuery().eq(User::getUserId, UserUtils.getUserId()).one();
+                if (backTemplat.contains("{{name}}")) {
+                    backTemplat = backTemplat.replace("{{name}}", user.getName());
                 }
             }
 
@@ -365,7 +368,6 @@ public class RepairSendTemplate extends sendTemplae {
         String note = null;
         String thing = null;
         String name = null;
-        List<String> userIds = this.userIds();
         List<WxMpTemplateData> data = this.getTemplateData();
         for (WxMpTemplateData datum : data) {
             if (datum.getName().equals("time2")) {
