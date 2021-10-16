@@ -190,7 +190,7 @@ public class UserinfoServiceImp implements UserInfoService {
 
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("user_id", ids);
-            wxuserInfoQueryWrapper.eq("source", "wxMp");
+            wxuserInfoQueryWrapper.eq("source", "WXMINIAPP");
             List<WxuserInfo> list = wxuserInfoService.list(wxuserInfoQueryWrapper);
             for (WxuserInfo wxuserInfo : list) {
                 if (wxuserInfo.getMemberId().equals(UserUtils.getUserId())) {
@@ -205,7 +205,7 @@ public class UserinfoServiceImp implements UserInfoService {
                     WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
                     wxuserInfoParam.setUserId(ids);
                     wxuserInfoParam.setMemberId(UserUtils.getUserId());
-                    wxuserInfoParam.setSource("wxMp");
+                    wxuserInfoParam.setSource("WXMINIAPP");
                     wxuserInfoService.add(wxuserInfoParam);
                 }
             } else {

@@ -100,7 +100,7 @@ public class RepairSendTemplate extends sendTemplae {
         }
 
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
-                and(i->i.in(WxuserInfo::getSource,"wxMp")).
+                and(i->i.in(WxuserInfo::getSource,"WXMINIAPP")).
                 list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -109,7 +109,7 @@ public class RepairSendTemplate extends sendTemplae {
         List<String> openids = new ArrayList<>();
         if (wxuserInfoList.size() != 0) {
             QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-            infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
+            infoQueryWrapper.in("member_id", memberIds).eq("source", "WXMINIAPP");
 
             if (memberIds.size() != 0) {
                 List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
@@ -149,7 +149,7 @@ public class RepairSendTemplate extends sendTemplae {
         if (ToolUtil.isNotEmpty(repairParam.getName())) {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
-            wxuserInfoQueryWrapper.in("source", "wxMp");
+            wxuserInfoQueryWrapper.in("source", "WXMINIAPP");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
