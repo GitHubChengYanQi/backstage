@@ -97,7 +97,8 @@ public class RepairSendTemplate extends sendTemplae {
             userIds.add(getremindUserid);
         }
 
-        List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).list();
+        List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
+                list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
             memberIds.add(wxuserInfo.getMemberId());
@@ -233,7 +234,10 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getPage() {
-        return repairParam.getPage();
+        Remind reminds = getReminds(repairParam.getProgress());
+        WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
+        String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
+        return  url;
     }
 
 
@@ -307,30 +311,30 @@ public class RepairSendTemplate extends sendTemplae {
                     memberIds.add(wxuserInfo.getMemberId());
                 }
             }
-//            if (ToolUtil.isNotEmpty(memberIds)) {
-//                List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.lambdaQuery().in(UcOpenUserInfo::getMemberId, memberIds)
-//                        .and(i -> i.in(UcOpenUserInfo::getSource, "wxCp"))
-//                        .list();
-//                if (ToolUtil.isNotEmpty(ucOpenUserInfos)) {
-//                    for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
-//                        uuIds.add(ucOpenUserInfo.getUuid());
-//                    }
-//                }
-//            }
-
             if (ToolUtil.isNotEmpty(memberIds)) {
-                List<UcMember> ucMembers = ucMemberService.lambdaQuery().in(UcMember::getMemberId, memberIds).list();
-                if (ToolUtil.isNotEmpty(ucMembers)) {
-                    for (UcMember ucMember : ucMembers) {
-                        try {
-                            String userId = wxCpService.getWxCpClient().getUserService().getUserId(ucMember.getPhone());
-                            uuIds.add(userId);
-                        } catch (WxErrorException e) {
-                            e.printStackTrace();
-                        }
+                List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.lambdaQuery().in(UcOpenUserInfo::getMemberId, memberIds)
+                        .and(i -> i.in(UcOpenUserInfo::getSource, "wxCp"))
+                        .list();
+                if (ToolUtil.isNotEmpty(ucOpenUserInfos)) {
+                    for (UcOpenUserInfo ucOpenUserInfo : ucOpenUserInfos) {
+                        uuIds.add(ucOpenUserInfo.getUuid());
                     }
                 }
             }
+
+//            if (ToolUtil.isNotEmpty(memberIds)) {
+//                List<UcMember> ucMembers = ucMemberService.lambdaQuery().in(UcMember::getMemberId, memberIds).list();
+//                if (ToolUtil.isNotEmpty(ucMembers)) {
+//                    for (UcMember ucMember : ucMembers) {
+//                        try {
+//                            String userId = wxCpService.getWxCpClient().getUserService().getUserId(ucMember.getPhone());
+//                            uuIds.add(userId);
+//                        } catch (WxErrorException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
 
         }
 

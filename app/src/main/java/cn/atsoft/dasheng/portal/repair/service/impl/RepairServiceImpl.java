@@ -94,6 +94,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         param.setProgress(0L);
         param.setRepairId(entity.getRepairId());
         param.setCreateTime(entity.getCreateTime());
+        param.setRepairId(entity.getRepairId());
         repairSendTemplate.setRepairParam(param);
         try{
             repairSendTemplate.send();
