@@ -46,8 +46,6 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
     @Autowired
     private RemindService remindService;
 
-    @Autowired
-    private WxuserInfoService wxuserInfoService;
 
 
     @Override

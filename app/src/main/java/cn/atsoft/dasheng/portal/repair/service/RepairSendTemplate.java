@@ -100,6 +100,7 @@ public class RepairSendTemplate extends sendTemplae {
         }
 
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
+                and(i->i.in(WxuserInfo::getSource,"wxMp")).
                 list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -136,37 +137,27 @@ public class RepairSendTemplate extends sendTemplae {
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
 
-        Dispatching dispatching = getDispatching(repairParam.getRepairId());
+        //获取模板推送数据
         String note = "";
         note = repairParam.getComment();
-//        if (dispatching != null) {
-//            note = dispatching.getNote();
-//        }
 
 
 /**
  * 判断登录是否小程序
  */
         if (ToolUtil.isNotEmpty(repairParam.getName())) {
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
-            wxuserInfoQueryWrapper.in("source", "wxMp");
-            WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
-            if (wxuserInfo != null) {
-                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
-                User user = userService.getOne(userQueryWrapper);
-                if (user != null) {
-                    if (backTemplat.contains("{{name}}")) {
-                        if (user != null) {
-                            backTemplat = backTemplat.replace("{{name}}", user.getName());
-                        } else {
-                            backTemplat = backTemplat.replace("{{name}}", "系统");
-                        }
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.in("user_id", repairParam.getName());
+            User user = userService.getOne(userQueryWrapper);
+            if (user != null) {
+                if (backTemplat.contains("{{name}}")) {
+                    if (user != null) {
+                        backTemplat = backTemplat.replace("{{name}}", user.getName());
+                    } else {
+                        backTemplat = backTemplat.replace("{{name}}", "系统");
                     }
                 }
             }
-
         } else {
             if (backTemplat.contains("{{name}}")) {
                 LoginUser user = LoginContextHolder.getContext().getUser();
