@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.uc.entity.UcMember;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcMemberService;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.atsoft.dasheng.uc.utils.UserUtils;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
@@ -162,14 +163,7 @@ public class RepairSendTemplate extends sendTemplae {
                 }
             } else {
                 //企业微信查询派工人
-                List<WxuserInfo> wxuserInfos = wxuserInfoService.lambdaQuery().in(WxuserInfo::getMemberId, repairParam.getName()).list();
-                Long userId = null;
-                for (WxuserInfo info : wxuserInfos) {
-                    if (!info.getSource().equals("wxMp")) {
-                        userId = info.getUserId();
-                    }
-                }
-                User user = userService.lambdaQuery().eq(User::getUserId, userId).one();
+                User user = userService.lambdaQuery().eq(User::getUserId, UserUtils.getUserId()).one();
                 if (backTemplat.contains("{{name}}")) {
                     backTemplat = backTemplat.replace("{{name}}", user.getName());
                 }
