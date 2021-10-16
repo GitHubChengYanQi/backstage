@@ -221,8 +221,14 @@ public class ApiRepairController {
         Param.setArea(data.getArea());
         Param.setName(UserUtils.getUserId());
         Param.setProgress(repairParam.getProgress() - 1);
-        repairSendTemplate.setRepairParam(Param);
-        repairSendTemplate.send();
+        try {
+            repairSendTemplate.setRepairParam(Param);
+            repairSendTemplate.send();
+            repairSendTemplate.wxCpSend();
+        } catch (Exception e) {
+
+        }
+
         return ResponseData.success(newEntity);
     }
 

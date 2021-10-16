@@ -334,6 +334,7 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getDescription() {
+        repairParam.getProgress();
         String time = null;
         String note = null;
         String thing = null;

@@ -137,6 +137,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             repairSendTemplate.setRepairParam(repairParam);
             try {
                 repairSendTemplate.send();
+                repairSendTemplate.wxCpSend();
             } catch (WxErrorException e) {
                 e.printStackTrace();
             }
