@@ -193,6 +193,7 @@ public class ApiRepairController {
     @RequestMapping(value = "/updateRepair", method = RequestMethod.POST)
     @Transactional
     public ResponseData updateRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
+
         Long userId = getWxUser(UserUtils.getUserId());
         if (ToolUtil.isEmpty(userId)) {
             throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
