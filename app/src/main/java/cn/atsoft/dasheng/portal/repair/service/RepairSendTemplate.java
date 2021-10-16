@@ -164,9 +164,12 @@ public class RepairSendTemplate extends sendTemplae {
             } else {
                 //企业微信查询派工人
                 User user = userService.lambdaQuery().eq(User::getUserId, UserUtils.getUserId()).one();
-                if (backTemplat.contains("{{name}}")) {
-                    backTemplat = backTemplat.replace("{{name}}", user.getName());
+                if (ToolUtil.isNotEmpty(user)){
+                    if (backTemplat.contains("{{name}}")) {
+                        backTemplat = backTemplat.replace("{{name}}", user.getName());
+                    }
                 }
+
             }
 
         } else {
@@ -411,8 +414,10 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getUrl() {
-        repairParam.getProgress();
-        return "test";
+        Remind reminds = getReminds(repairParam.getProgress());
+        WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
+        String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
+        return url;
     }
 
 
