@@ -50,20 +50,39 @@ abstract public class sendTemplae implements sendTemplateInterface {
      */
     @Override
     public void wxCpSend() {
-        List<String> userIds = this.userIds();
-        if (ToolUtil.isNotEmpty(userIds)) {
-            WxCpMessage wxCpMessage = new WxCpMessage();
-            wxCpMessage.setMsgType("text");
-            wxCpMessage.setContent("测试测试测试测试测试测试");
-            for (String userId : userIds) {
-                wxCpMessage.setToUser(userId);
-                try {
-                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        String time = null;
+//        String note = null;
+//        String thing = null;
+//        String name = null;
+//        List<String> userIds = this.userIds();
+//        List<WxMpTemplateData> data = this.getTemplateData();
+//        for (WxMpTemplateData datum : data) {
+//            if (datum.getName().equals("time2")) {
+//                time = datum.getValue();
+//
+//            }else if (datum.getName().equals("name1")){
+//                name = datum.getValue();
+//            }else if (datum.getName().equals("thing4")){
+//                thing = datum.getValue();
+//            }else if (datum.getName().equals("thing5")){
+//                note = datum.getValue();
+//            }
+//        }
+//        StringBuffer stringBuffer = new StringBuffer();
+//        stringBuffer.append("名字："+"\n \t"+name+"时间"+"\n \t"+time+"事项"+"\n \t"+thing+"\n \t"+"备注"+"\n \t"+note);
+//        if (ToolUtil.isNotEmpty(userIds)) {
+//            WxCpMessage wxCpMessage = new WxCpMessage();
+//            wxCpMessage.setMsgType("text");
+//            wxCpMessage.setContent(stringBuffer.toString());
+//            for (String userId : userIds) {
+//                wxCpMessage.setToUser(userId);
+//                try {
+//                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
 
     }
 }
