@@ -368,31 +368,36 @@ public class RepairSendTemplate extends sendTemplae {
         String note = null;
         String thing = null;
         String name = null;
+        StringBuffer stringBuffer = new StringBuffer();
         List<WxMpTemplateData> data = this.getTemplateData();
         for (WxMpTemplateData datum : data) {
             if (datum.getName().equals("time2")) {
                 time = datum.getValue();
-
+                stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
             } else if (datum.getName().equals("name1")) {
                 name = datum.getValue();
+                stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
             } else if (datum.getName().equals("thing4")) {
                 thing = datum.getValue();
+                stringBuffer.append("事项"+"\n"+"\t"+thing+"\n");
+
             } else if (datum.getName().equals("thing5")) {
                 note = datum.getValue();
+                stringBuffer.append("备注"+"\n"+"\t"+note+"\n");
             }
         }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
-        stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
-        stringBuffer.append("事项"+"\n"+"\t"+thing+"\n");
-        stringBuffer.append("备注"+"\n"+"\t"+note+"\n");
+
+
+
         return stringBuffer.toString();
     }
 
     @Override
     public String getUrl() {
-        repairParam.getProgress();
-        return "test";
+        Remind reminds = getReminds(repairParam.getProgress());
+        WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
+        String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
+        return url;
     }
 
 
