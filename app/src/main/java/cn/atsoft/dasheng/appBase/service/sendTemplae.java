@@ -19,6 +19,7 @@ abstract public class sendTemplae implements sendTemplateInterface {
     @Autowired
     private WxCpService wxCpService;
 
+
     @Override
     public void send() throws WxErrorException {
         List<WxMpTemplateData> data = this.getTemplateData();
@@ -53,8 +54,10 @@ abstract public class sendTemplae implements sendTemplateInterface {
         List<String> userIds = this.userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();
-            wxCpMessage.setMsgType("text");
-            wxCpMessage.setContent("测试测试测试测试测试测试");
+            wxCpMessage.setMsgType("textcard");
+            wxCpMessage.setTitle("新建保修");
+            wxCpMessage.setDescription("<div class=\\\"gray\\\">2016年9月26日</div> <div class=\\\"normal\\\">恭喜你抽中iPhone 13一台，领奖码：xxxx</div><div class=\\\"highlight\\\">请于2021年11月11日前联系行政同事领取</div>\",");
+            wxCpMessage.setUrl("http://192.168.1.228/pages/engineerOrder/index?id={{user}}");
             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
                 try {
