@@ -84,7 +84,7 @@ public class ApiRepairController {
             return userId;
         } else {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("source", "WXMINIAPP").in("member_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
             List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
             for (WxuserInfo data : userList) {
                 return data.getUserId();
@@ -213,14 +213,18 @@ public class ApiRepairController {
         ToolUtil.copyProperties(Param, data);
         Param.setArea(data.getArea());
         Param.setName(UserUtils.getUserId());
-        Param.setProgress(repairParam.getProgress() - 1);
-        try {
-            repairSendTemplate.setRepairParam(Param);
-            repairSendTemplate.send();
-            repairSendTemplate.wxCpSend();
-        } catch (Exception e) {
-
+        Param.setRepairId(repairParam.getRepairId());
+        Param.setProgress(repairParam.getType());
+        if (repairParam.getType()!=null) {
+            try {
+                repairSendTemplate.setRepairParam(Param);
+                repairSendTemplate.send();
+                repairSendTemplate.wxCpSend();
+            } catch (Exception e) {
+                throw e;
+            }
         }
+
 
         return ResponseData.success(newEntity);
     }

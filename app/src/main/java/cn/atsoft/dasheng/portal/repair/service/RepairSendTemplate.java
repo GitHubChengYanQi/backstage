@@ -149,7 +149,7 @@ public class RepairSendTemplate extends sendTemplae {
         if (ToolUtil.isNotEmpty(repairParam.getName())) {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
-            wxuserInfoQueryWrapper.in("source", "WXMINIAPP");
+            wxuserInfoQueryWrapper.in("source", "wxMp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
