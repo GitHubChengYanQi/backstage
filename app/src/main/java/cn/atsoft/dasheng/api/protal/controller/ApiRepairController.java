@@ -84,7 +84,7 @@ public class ApiRepairController {
             return userId;
         } else {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "WXMINIAPP").in("member_id",memberId);
             List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
             for (WxuserInfo data : userList) {
                 return data.getUserId();
