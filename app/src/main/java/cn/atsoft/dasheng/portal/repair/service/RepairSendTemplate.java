@@ -364,28 +364,48 @@ public class RepairSendTemplate extends sendTemplae {
     @Override
     public String getDescription() {
         repairParam.getProgress();
-        String time = null;
-        String note = null;
-        String thing = null;
-        String name = null;
         List<WxMpTemplateData> data = this.getTemplateData();
+        StringBuffer stringBuffer = new StringBuffer();
         for (WxMpTemplateData datum : data) {
-            if (datum.getName().equals("time2")) {
-                time = datum.getValue();
 
-            } else if (datum.getName().equals("name1")) {
-                name = datum.getValue();
-            } else if (datum.getName().equals("thing4")) {
-                thing = datum.getValue();
-            } else if (datum.getName().equals("thing5")) {
-                note = datum.getValue();
+            switch (datum.getName()){
+                case "name1":
+                    String name1 = datum.getValue();
+                    stringBuffer.append("名字"+"\n"+"\t"+name1+"\n");
+                    break;
+                case "time2":
+                    String time2 = datum.getValue();
+                    stringBuffer.append("时间"+"\n"+"\t"+time2+"\n");
+                    break;
+                case "thing4":
+                    String thing4 = datum.getValue();
+                    stringBuffer.append("事项"+"\n"+"\t"+thing4+"\n");
+                    break;
+                case "thing5":
+                    String thing5 = datum.getValue();
+                    stringBuffer.append("事项"+"\n"+"\t"+thing5+"\n");
+                    break;
+                case "time":
+                    String time = datum.getValue();
+                    stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
+                    break;
+                case "area":
+                    String area = datum.getValue();
+                    stringBuffer.append("地区"+"\n"+"\t"+area+"\n");
+                    break;
+                case "name":
+                    String name = datum.getValue();
+                    stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
+                    break;
+                case "money":
+                    String money = datum.getValue();
+                    stringBuffer.append("维修费用"+"\n"+"\t"+money+"\n");
+                    break;
+
             }
         }
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
-        stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
-        stringBuffer.append("事项"+"\n"+"\t"+thing+"\n");
-        stringBuffer.append("备注"+"\n"+"\t"+note+"\n");
+
+        
         return stringBuffer.toString();
     }
 
