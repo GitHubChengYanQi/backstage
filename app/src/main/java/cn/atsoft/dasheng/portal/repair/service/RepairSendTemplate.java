@@ -328,13 +328,31 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getTitle() {
-        repairParam.getProgress();
-        return "保修推送";
+        switch (repairParam.getProgress().toString()){
+            case "0" :
+                return "报修提醒";
+
+            case "1":
+                return "派工提醒";
+            case "2" :
+                return "派工接单提醒";
+
+            case "3" :
+                return "维修人员到达现场提醒";
+
+            case "4" :
+                return "维修完成提醒";
+            case "5" :
+                return "评价保修申请提醒";
+            default:
+                return "保修提醒";
+        }
+
     }
 
     @Override
     public String getDescription() {
-        repairParam.getProgress();
+
         String time = null;
         String note = null;
         String thing = null;
@@ -354,7 +372,10 @@ public class RepairSendTemplate extends sendTemplae {
             }
         }
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("名字：" + "\n \t" + name + "时间" + "\n \t" + time + "事项" + "\n \t" + thing + "\n \t" + "备注" + "\n \t" + note);
+        stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
+        stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
+        stringBuffer.append("事项"+"\n"+"\t"+thing+"\n");
+        stringBuffer.append("备注"+"\n"+"\t"+note+"\n");
         return stringBuffer.toString();
     }
 
