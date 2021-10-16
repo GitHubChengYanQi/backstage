@@ -8,7 +8,6 @@ import cn.atsoft.dasheng.portal.remind.service.RemindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.userInfo.controller.WxTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;

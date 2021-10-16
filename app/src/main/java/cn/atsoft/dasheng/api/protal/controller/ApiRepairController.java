@@ -18,8 +18,6 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
 import cn.atsoft.dasheng.portal.dispatChing.model.result.DispatchingResult;
 import cn.atsoft.dasheng.portal.dispatChing.service.DispatchingService;
-import cn.atsoft.dasheng.portal.remind.service.RemindService;
-import cn.atsoft.dasheng.portal.remindUser.service.RemindUserService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
 import cn.atsoft.dasheng.crm.region.RegionResult;
