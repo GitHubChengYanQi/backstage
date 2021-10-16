@@ -93,18 +93,19 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<DispatchingResult> param){
-        List<Long> ids  = new ArrayList<>();
+
+    private void format(List<DispatchingResult> param) {
+        List<Long> ids = new ArrayList<>();
         for (DispatchingResult dispatchingResult : param) {
             ids.add(dispatchingResult.getName());
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(User::getUserId,ids);
+        queryWrapper.lambda().in(User::getUserId, ids);
         if (ToolUtil.isNotEmpty(ids)) {
-            List<User> userList= userService.list(queryWrapper);
+            List<User> userList = userService.list(queryWrapper);
             for (DispatchingResult dispatchingResult : param) {
                 for (User user : userList) {
-                    if (user.getUserId().equals(dispatchingResult.getName())){
+                    if (user.getUserId().equals(dispatchingResult.getName())) {
                         dispatchingResult.setUserName(user.getName());
                     }
                 }
@@ -112,6 +113,7 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
         }
 
     }
+
     /**
      * 发送订阅消息
      *
@@ -120,11 +122,15 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
     @Override
     @FreedLog
     public void addwx(DispatchingParam param) {
+        Dispatching dispatching = this.lambdaQuery().eq(Dispatching::getRepairId, param.getRepairId()).one();
+        if (ToolUtil.isNotEmpty(dispatching)) {
+            throw new ServiceException(500, "已派工");
+        }
         Dispatching entity = getEntity(param);
         LoginUser user = LoginContextHolder.getContext().getUser();
         //判断权限
         Boolean aBoolean = wxuserInfoService.sendPermissions(1L, user.getId());
-        if (aBoolean == true) {
+        if (aBoolean) {
             this.save(entity);
             QueryWrapper<Repair> repairQueryWrapper = new QueryWrapper<>();
             repairQueryWrapper.in("repair_id", param.getRepairId());
@@ -133,7 +139,6 @@ public class DispatchingServiceImpl extends ServiceImpl<DispatchingMapper, Dispa
             ToolUtil.copyProperties(repair, repairParam);
             repairParam.setProgress(1L);
             repairParam.setCreateTime(entity.getCreateTime());
-            repairParam.setName(param.getName());
             repairSendTemplate.setRepairParam(repairParam);
             try {
                 repairSendTemplate.send();

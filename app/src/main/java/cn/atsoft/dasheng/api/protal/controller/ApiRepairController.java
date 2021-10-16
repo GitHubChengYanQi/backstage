@@ -65,10 +65,7 @@ public class ApiRepairController {
     private UserService userService;
     @Autowired
     private CommonAreaService commonAreaService;
-    @Autowired
-    private RemindUserService remindUserService;
-    @Autowired
-    private RemindService remindService;
+
     @Autowired
     private MediaService mediaService;
     @Autowired
@@ -89,7 +86,7 @@ public class ApiRepairController {
             return userId;
         } else {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-            wxuserInfoQueryWrapper.in("member_id", memberId);
+            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
             List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
             for (WxuserInfo data : userList) {
                 return data.getUserId();
@@ -129,7 +126,7 @@ public class ApiRepairController {
 
         RepairParam repairParam = new RepairParam();
         repairParam.setCreateUser(userId);
-        repairParam.setName(userId);
+        repairParam.setName(UserUtils.getUserId());
         PageInfo<RepairResult> repairList = repairService.findPageBySpec(repairParam);
         return ResponseData.success(repairList);
     }
@@ -172,11 +169,8 @@ public class ApiRepairController {
 
     @RequestMapping(value = "/saveRepair", method = RequestMethod.POST)
     public ResponseData saveRepair(@RequestBody RepairParam repairParam) throws WxErrorException {
-        Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-        }
-        repairParam.setName(UserUtils.getUserId());
+
+
         Repair entity = getEntity(repairParam);
         this.repairService.save(entity);
         List<RepairImage> repairImages = repairParam.getItemImgUrlList();
@@ -187,7 +181,7 @@ public class ApiRepairController {
             repairImageParam.setTitle(data.getTitle());
             this.repairImageService.add(repairImageParam);
         }
-
+        repairParam.setName(UserUtils.getUserId());
         repairParam.setRepairId(entity.getRepairId());
         repairParam.setCreateTime(entity.getCreateTime());
         repairParam.setProgress(0L);

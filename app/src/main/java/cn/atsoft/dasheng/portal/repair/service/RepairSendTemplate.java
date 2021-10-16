@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.portal.repair.service;
 
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.appBase.service.sendTemplae;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
@@ -145,14 +147,14 @@ public class RepairSendTemplate extends sendTemplae {
 /**
  * 判断登录是否小程序
  */
-        if (repairParam.getName() != null) {
+        if (ToolUtil.isNotEmpty(repairParam.getName())) {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
             wxuserInfoQueryWrapper.in("source", "wxMp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-                userQueryWrapper.in("user_id", wxuserInfo.getMemberId());
+                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
                 User user = userService.getOne(userQueryWrapper);
                 if (user != null) {
                     if (backTemplat.contains("{{name}}")) {
@@ -167,7 +169,9 @@ public class RepairSendTemplate extends sendTemplae {
 
         } else {
             if (backTemplat.contains("{{name}}")) {
-                backTemplat = backTemplat.replace("{{name}}", "系统");
+                LoginUser user = LoginContextHolder.getContext().getUser();
+                User one = userService.lambdaQuery().eq(User::getUserId, user.getId()).one();
+                backTemplat = backTemplat.replace("{{name}}", one.getName());
             }
         }
 
@@ -300,6 +304,10 @@ public class RepairSendTemplate extends sendTemplae {
         List<Long> memberIds = new ArrayList<>();
         List<String> uuIds = new ArrayList<>();
         List<Long> getremindUserids = getremindUserids(reminds.getRemindId());
+        //添加派工人到集合 去绑定表里查
+        if (ToolUtil.isNotEmpty(repairParam.getName())) {
+            getremindUserids.add(repairParam.getName());
+        }
 
         if (ToolUtil.isNotEmpty(getremindUserids)) {
             List<WxuserInfo> wxuserInfos = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, getremindUserids)
@@ -364,11 +372,11 @@ public class RepairSendTemplate extends sendTemplae {
             if (datum.getName().equals("time2")) {
                 time = datum.getValue();
 
-            }else if (datum.getName().equals("name1")){
+            } else if (datum.getName().equals("name1")) {
                 name = datum.getValue();
-            }else if (datum.getName().equals("thing4")){
+            } else if (datum.getName().equals("thing4")) {
                 thing = datum.getValue();
-            }else if (datum.getName().equals("thing5")){
+            } else if (datum.getName().equals("thing5")) {
                 note = datum.getValue();
             }
         }
@@ -382,6 +390,7 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getUrl() {
+        repairParam.getProgress();
         return "test";
     }
 

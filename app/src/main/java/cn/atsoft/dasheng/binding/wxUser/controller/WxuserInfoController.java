@@ -125,14 +125,7 @@ public class WxuserInfoController extends BaseController {
     @ApiOperation("Select数据接口")
     @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<WxuserInfo> wxuserInfos = wxuserInfoService.lambdaQuery().in(WxuserInfo::getSource, "wxMp").list();
-        List<Long> ids = new ArrayList<>();
-        for (WxuserInfo wxuserInfo : wxuserInfos) {
-            ids.add(wxuserInfo.getMemberId());
-        }
-        QueryWrapper<User> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.in("user_id", ids);
-        List<Map<String, Object>> list = this.userService.listMaps(QueryWrapper);
+        List<Map<String, Object>> list = this.userService.listMaps();
         WxuserInfoSelectWrapper wxuserInfoSelectWrapper = new WxuserInfoSelectWrapper(list);
         List<Map<String, Object>> result = wxuserInfoSelectWrapper.wrap();
         return ResponseData.success(result);

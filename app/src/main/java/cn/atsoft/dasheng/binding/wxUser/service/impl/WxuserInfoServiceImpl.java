@@ -110,39 +110,25 @@ public class WxuserInfoServiceImpl extends ServiceImpl<WxuserInfoMapper, WxuserI
         return PageFactory.createPageInfo(page);
     }
 
-    //    @Override
-//    public Boolean sendPermissions(Long type, Long userid) {
-//        //获取权限拥有者
-//        Remind remind = remindService.lambdaQuery().eq(Remind::getType, type).one();
-//        RemindUser remindUser = remindUserService.lambdaQuery().eq(RemindUser::getUserId, userid).and(i -> i.eq(RemindUser::getRemindId, remind.getRemindId())).one();
-//        if (remindUser != null) {
-//            return true;
-//        }
-//        return false;
-//    }
+
     @Override
     public Boolean sendPermissions(Long type, Long userId) {
-        Map<Long, List> map = new HashMap<>();
 
+        //先查提醒表 查出当前流程的remindId  再找对应的权限
+        Remind remind = remindService.lambdaQuery()
+                .and(i -> i.eq(Remind::getType, type))
+                .one();
 
-        List<Remind> remindList = remindService.lambdaQuery().list();
-
-        for (Remind remind : remindList) {
-            List<RemindUser> remindUserList = remindUserService.lambdaQuery().in(RemindUser::getRemindId, remind.getRemindId()).list();
-            List<Long> list = new ArrayList<>();
-            for (RemindUser remindUser : remindUserList) {
-                list.add(remindUser.getUserId());
-            }
-            map.put(remind.getType(), list);
-        }
-
-        List<Long> useridsList = map.get(type);
-        for (Long aLong : useridsList) {
-            if (aLong.equals(userId)) {
+        List<RemindUser> remindUserList = remindUserService.lambdaQuery().in(RemindUser::getRemindId, remind.getRemindId()).list();
+        for (RemindUser remindUser : remindUserList) {
+            if (remindUser.getUserId().equals(userId)) {
                 return true;
             }
         }
+
         return false;
+
+
     }
 
     private Serializable getKey(WxuserInfoParam param) {
