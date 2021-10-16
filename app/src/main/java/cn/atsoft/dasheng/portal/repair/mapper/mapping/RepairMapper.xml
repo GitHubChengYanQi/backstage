@@ -156,7 +156,7 @@
             parameterType="cn.atsoft.dasheng.portal.repair.model.params.RepairParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_portal_repair where display = 1 and progress in(0, 1)
+        from daoxin_portal_repair where display = 1 and progress in(0)
         <if test="paramCondition.companyId != null">
             and company_id = #{paramCondition.companyId}
         </if>
