@@ -134,14 +134,14 @@
         <choose>
             <when test="paramCondition.name != null and paramCondition.name != '' and paramCondition.createUser != null and paramCondition.createUser != ''">
                 and name = #{paramCondition.name}
-                or create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                or create_user = #{paramCondition.createUser}
             </when>
             <when test="paramCondition.name != null and paramCondition.name != ''">
                 and name = #{paramCondition.name}
             </when>
             <otherwise >
                 <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
-                    and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                    and create_user = #{paramCondition.createUser}
                 </if>
             </otherwise>
         </choose>
@@ -178,14 +178,14 @@
         <choose>
             <when test="paramCondition.name != null and paramCondition.name != '' and paramCondition.createUser != null and paramCondition.createUser != ''">
                 and name = #{paramCondition.name}
-                or create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                or create_user = #{paramCondition.createUser}
             </when>
             <when test="paramCondition.name != null and paramCondition.name != ''">
                 and name = #{paramCondition.name}
             </when>
             <otherwise >
                 <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
-                    and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+                    and create_user = #{paramCondition.createUser}
                 </if>
             </otherwise>
         </choose>
