@@ -237,7 +237,7 @@ public class RepairSendTemplate extends sendTemplae {
         Remind reminds = getReminds(repairParam.getProgress());
         WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
         String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
-        return  url;
+        return url;
     }
 
 
@@ -322,23 +322,24 @@ public class RepairSendTemplate extends sendTemplae {
                 }
             }
 
-//            if (ToolUtil.isNotEmpty(memberIds)) {
-//                List<UcMember> ucMembers = ucMemberService.lambdaQuery().in(UcMember::getMemberId, memberIds).list();
-//                if (ToolUtil.isNotEmpty(ucMembers)) {
-//                    for (UcMember ucMember : ucMembers) {
-//                        try {
-//                            String userId = wxCpService.getWxCpClient().getUserService().getUserId(ucMember.getPhone());
-//                            uuIds.add(userId);
-//                        } catch (WxErrorException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-
         }
 
         return uuIds;
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
+    public String getUrl() {
+        return null;
     }
 
 

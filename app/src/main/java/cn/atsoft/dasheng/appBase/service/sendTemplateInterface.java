@@ -25,4 +25,11 @@ public interface sendTemplateInterface {
     List<String> userIds();
 
     void wxCpSend() throws WxErrorException;
+
+    String getTitle();
+
+    String getDescription();
+
+    String getUrl();
+
 }
