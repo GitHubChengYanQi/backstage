@@ -145,6 +145,15 @@ public class UcMemberAuth {
                 String raw = JSON.toJSONString(wxCpOauth2UserInfo);
                 ucOpenUserInfo.setRawUserInfo(raw);
                 ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+            }else{
+                String s = wxCpService.getWxCpClient().getUserService().openid2UserId(wxCpOauth2UserInfo.getOpenId());
+                WxCpUser wxCpUser = wxCpService.getWxCpClient().getUserService().getById(s);
+                ucOpenUserInfo.setUuid(s);
+                ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());
+                ucOpenUserInfo.setUsername(wxCpUser.getName());
+                ucOpenUserInfo.setNickname(wxCpUser.getAlias());
+                ucOpenUserInfo.setLocation(wxCpUser.getAddress());
+                ucOpenUserInfo.setMobile(wxCpUser.getMobile());
             }
 
             return login(ucOpenUserInfo);
