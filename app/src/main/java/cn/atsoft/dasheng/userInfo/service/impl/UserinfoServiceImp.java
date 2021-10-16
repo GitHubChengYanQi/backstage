@@ -200,7 +200,7 @@ public class UserinfoServiceImp implements UserInfoService {
             /**
              * 绑定
              */
-            if (list.size() <= 0) {
+            if (ToolUtil.isEmpty(list)) {
                 if (UserUtils.getUserId() != null) {
                     WxuserInfoParam wxuserInfoParam = new WxuserInfoParam();
                     wxuserInfoParam.setUserId(ids);
