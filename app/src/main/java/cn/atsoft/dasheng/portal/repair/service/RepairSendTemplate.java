@@ -147,14 +147,14 @@ public class RepairSendTemplate extends sendTemplae {
 /**
  * 判断登录是否小程序
  */
-        if (repairParam.getName() != null) {
+        if (ToolUtil.isNotEmpty(repairParam.getName())) {
             QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
             wxuserInfoQueryWrapper.in("source", "wxMp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
             if (wxuserInfo != null) {
                 QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-                userQueryWrapper.in("user_id",wxuserInfo.getUserId() );
+                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
                 User user = userService.getOne(userQueryWrapper);
                 if (user != null) {
                     if (backTemplat.contains("{{name}}")) {
