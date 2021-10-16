@@ -79,16 +79,17 @@ public class ApiRepairController {
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
         String type = ucJwtPayLoad.getType();
 
+        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+
         if (ToolUtil.isEmpty(type)) {
-            Long userId = LoginContextHolder.getContext().getUserId();
-            return userId;
+            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id",memberId);
         } else {
-            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
             wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
-            List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-            for (WxuserInfo data : userList) {
-                return data.getUserId();
-            }
+        }
+
+        List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
+        for (WxuserInfo data : userList) {
+            return data.getUserId();
         }
 
         return null;
