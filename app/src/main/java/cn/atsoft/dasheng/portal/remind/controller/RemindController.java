@@ -27,8 +27,7 @@ public class RemindController extends BaseController {
 
     @Autowired
     private RemindService remindService;
-    @Autowired
-    private WxTemplate wxTemplate;
+
 
     /**
      * 新增接口

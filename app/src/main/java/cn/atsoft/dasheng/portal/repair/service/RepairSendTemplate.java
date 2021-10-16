@@ -100,7 +100,7 @@ public class RepairSendTemplate extends sendTemplae {
         }
 
         List<WxuserInfo> wxuserInfoList = wxuserInfoService.lambdaQuery().in(WxuserInfo::getUserId, userIds).
-                and(i->i.in(WxuserInfo::getSource,"wxMp")).
+                and(i->i.in(WxuserInfo::getSource,"WXMINIAPP")).
                 list();
         List<Long> memberIds = new ArrayList<>();
         for (WxuserInfo wxuserInfo : wxuserInfoList) {
@@ -109,7 +109,7 @@ public class RepairSendTemplate extends sendTemplae {
         List<String> openids = new ArrayList<>();
         if (wxuserInfoList.size() != 0) {
             QueryWrapper<UcOpenUserInfo> infoQueryWrapper = new QueryWrapper<>();
-            infoQueryWrapper.in("member_id", memberIds).eq("source", "wxMp");
+            infoQueryWrapper.in("member_id", memberIds).eq("source", "WXMINIAPP");
 
             if (memberIds.size() != 0) {
                 List<UcOpenUserInfo> ucOpenUserInfos = userInfoService.list(infoQueryWrapper);
@@ -137,27 +137,35 @@ public class RepairSendTemplate extends sendTemplae {
         Remind reminds = getReminds(repairParam.getProgress());
         backTemplat = reminds.getTemplateType();
 
-        //获取模板推送数据
+     //获取模板推送数据
         String note = "";
         note = repairParam.getComment();
+
 
 
 /**
  * 判断登录是否小程序
  */
         if (ToolUtil.isNotEmpty(repairParam.getName())) {
-            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
-            userQueryWrapper.in("user_id", repairParam.getName());
-            User user = userService.getOne(userQueryWrapper);
-            if (user != null) {
-                if (backTemplat.contains("{{name}}")) {
-                    if (user != null) {
-                        backTemplat = backTemplat.replace("{{name}}", user.getName());
-                    } else {
-                        backTemplat = backTemplat.replace("{{name}}", "系统");
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.in("member_id", repairParam.getName());
+            wxuserInfoQueryWrapper.in("source", "WXMINIAPP");
+            WxuserInfo wxuserInfo = wxuserInfoService.getOne(wxuserInfoQueryWrapper);
+            if (wxuserInfo != null) {
+                QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+                userQueryWrapper.in("user_id", wxuserInfo.getUserId());
+                User user = userService.getOne(userQueryWrapper);
+                if (user != null) {
+                    if (backTemplat.contains("{{name}}")) {
+                        if (user != null) {
+                            backTemplat = backTemplat.replace("{{name}}", user.getName());
+                        } else {
+                            backTemplat = backTemplat.replace("{{name}}", "系统");
+                        }
                     }
                 }
             }
+
         } else {
             if (backTemplat.contains("{{name}}")) {
                 LoginUser user = LoginContextHolder.getContext().getUser();
@@ -328,31 +336,13 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getTitle() {
-        switch (repairParam.getProgress().toString()){
-            case "0" :
-                return "报修提醒";
-
-            case "1":
-                return "派工提醒";
-            case "2" :
-                return "派工接单提醒";
-
-            case "3" :
-                return "维修人员到达现场提醒";
-
-            case "4" :
-                return "维修完成提醒";
-            case "5" :
-                return "评价保修申请提醒";
-            default:
-                return "保修提醒";
-        }
-
+        repairParam.getProgress();
+        return "保修推送";
     }
 
     @Override
     public String getDescription() {
-
+        repairParam.getProgress();
         String time = null;
         String note = null;
         String thing = null;
@@ -372,10 +362,7 @@ public class RepairSendTemplate extends sendTemplae {
             }
         }
         StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
-        stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
-        stringBuffer.append("事项"+"\n"+"\t"+thing+"\n");
-        stringBuffer.append("备注"+"\n"+"\t"+note+"\n");
+        stringBuffer.append("名字：" + "\n \t" + name + "时间" + "\n \t" + time + "事项" + "\n \t" + thing + "\n \t" + "备注" + "\n \t" + note);
         return stringBuffer.toString();
     }
 

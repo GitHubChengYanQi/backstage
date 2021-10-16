@@ -42,8 +42,7 @@ public class RemindServiceImpl extends ServiceImpl<RemindMapper, Remind> impleme
 
     @Autowired
     private RemindUserService remindUserService;
-    @Autowired
-    private WxTemplate wxTemplate;
+
 
     @Override
     public void add(RemindParam param) {

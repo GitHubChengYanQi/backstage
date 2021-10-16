@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiDispatchingController {
     @Autowired
     private DispatchingService dispatchingService;
-    @Autowired
-    private WxTemplate wxTemplate;
+
 
     @RequestMapping(value = "/saveDispatching", method = RequestMethod.POST)
     public ResponseData saveDispatching(@RequestBody DispatchingParam dispatchingParam) {
