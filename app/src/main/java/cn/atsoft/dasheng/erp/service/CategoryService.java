@@ -13,7 +13,7 @@ import java.util.List;
  * 物品分类表 服务类
  * </p>
  *
- * @author 
+ * @author jazz
  * @since 2021-10-18
  */
 public interface CategoryService extends IService<Category> {
@@ -21,7 +21,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 新增
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
     void add(CategoryParam param);
@@ -29,7 +29,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 删除
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
     void delete(CategoryParam param);
@@ -37,7 +37,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 更新
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
     void update(CategoryParam param);
@@ -45,7 +45,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
     CategoryResult findBySpec(CategoryParam param);
@@ -53,7 +53,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
     List<CategoryResult> findListBySpec(CategoryParam param);
@@ -61,7 +61,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author jazz
      * @Date 2021-10-18
      */
      PageInfo<CategoryResult> findPageBySpec(CategoryParam param);

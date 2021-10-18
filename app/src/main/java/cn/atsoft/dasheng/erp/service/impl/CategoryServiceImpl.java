@@ -22,7 +22,7 @@ import java.util.List;
  * 物品分类表 服务实现类
  * </p>
  *
- * @author 
+ * @author jazz
  * @since 2021-10-18
  */
 @Service
