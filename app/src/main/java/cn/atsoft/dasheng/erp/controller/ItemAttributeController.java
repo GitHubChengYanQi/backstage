@@ -71,7 +71,7 @@ public class ItemAttributeController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ItemAttributeParam itemAttributeParam)  {
+    public ResponseData delete(@RequestBody ItemAttributeParam itemAttributeParam) {
         this.itemAttributeService.delete(itemAttributeParam);
         return ResponseData.success();
     }
@@ -102,20 +102,20 @@ public class ItemAttributeController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ItemAttributeResult> list(@RequestBody(required = false) ItemAttributeParam itemAttributeParam) {
-        if(ToolUtil.isEmpty(itemAttributeParam)){
+        if (ToolUtil.isEmpty(itemAttributeParam)) {
             itemAttributeParam = new ItemAttributeParam();
         }
         return this.itemAttributeService.findPageBySpec(itemAttributeParam);
     }
 
 
-
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
-
-        List<Map<String, Object>> list = this.itemAttributeService.listMaps();
+        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
+        itemAttributeQueryWrapper.isNull("item_id");
+        List<Map<String, Object>> list = this.itemAttributeService.listMaps(itemAttributeQueryWrapper);
         ItemAttributeSelectWrapper itemAttributeSelectWrapper = new ItemAttributeSelectWrapper(list);
         List<Map<String, Object>> result = itemAttributeSelectWrapper.wrap();
         return ResponseData.success(result);
