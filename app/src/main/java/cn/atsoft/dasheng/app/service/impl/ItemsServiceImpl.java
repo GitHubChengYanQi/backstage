@@ -190,13 +190,16 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
             itemIds.add(datum.getItemId());
         }
         //物品id 查询 绑定关系 品牌id
+        List<ItemBrandBind> brandIdsList =null;
         QueryWrapper<ItemBrandBind> brandBindQueryWrapper = new QueryWrapper<>();
-        brandBindQueryWrapper.lambda().in(ItemBrandBind::getItemId, itemIds);
-        List<ItemBrandBind> brandIdsList = itemBrandBindService.list(brandBindQueryWrapper);
-
-        for (ItemBrandBind brandId : brandIdsList) {
-            brandIds.add(brandId.getBrandId());
+        if (ToolUtil.isNotEmpty(itemIds)) {
+            brandBindQueryWrapper.lambda().in(ItemBrandBind::getItemId, itemIds);
+            brandIdsList = itemBrandBindService.list(brandBindQueryWrapper);
+            for (ItemBrandBind brandId : brandIdsList) {
+                brandIds.add(brandId.getBrandId());
+            }
         }
+
         //品牌id查询品牌名称
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
@@ -217,19 +220,22 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                     break;
                 }
             }
-            for (ItemBrandBind brandBind : brandIdsList) {
-                if (brandBind.getItemId().equals(datum.getItemId())) {
-                    ItemBrandBindResult brandBindResult = new ItemBrandBindResult();
-                    ToolUtil.copyProperties(brandBind, brandBindResult);
-                    for (Brand brand : brandList) {
-                        if (brandBind.getBrandId().equals(brand.getBrandId())) {
-                            brandBindResult.setBrandName(brand.getBrandName());
+            if (ToolUtil.isNotEmpty(brandIdsList)) {
+                for (ItemBrandBind brandBind : brandIdsList) {
+                    if (brandBind.getItemId().equals(datum.getItemId())) {
+                        ItemBrandBindResult brandBindResult = new ItemBrandBindResult();
+                        ToolUtil.copyProperties(brandBind, brandBindResult);
+                        for (Brand brand : brandList) {
+                            if (brandBind.getBrandId().equals(brand.getBrandId())) {
+                                brandBindResult.setBrandName(brand.getBrandName());
+                            }
                         }
+                        itemBrandBindResults.add(brandBindResult);
                     }
-                    itemBrandBindResults.add(brandBindResult);
                 }
+                datum.setBrandResults(itemBrandBindResults);
             }
-            datum.setBrandResults(itemBrandBindResults);
+
         }
 
 

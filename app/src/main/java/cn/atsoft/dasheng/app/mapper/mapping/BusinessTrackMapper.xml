@@ -226,12 +226,7 @@
         <if test ="paramCondition.state != null">
             and state like CONCAT('%',#{paramCondition.state},'%')
         </if>
-        <if test="paramCondition.trackMessageIds != null">
-            and track_message_id in
-            <foreach collection="trackMessageIds" item="trackMessageId" index="index" close=")" open="(" separator=",">
-                #{trackMessageId}
-            </foreach>
-        </if>
+
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))

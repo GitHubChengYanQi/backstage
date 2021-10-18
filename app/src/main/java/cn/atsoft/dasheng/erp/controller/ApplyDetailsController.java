@@ -85,7 +85,6 @@ public class ApplyDetailsController extends BaseController {
         ApplyDetailsResult result = new ApplyDetailsResult();
         ToolUtil.copyProperties(detail, result);
 
-
         return ResponseData.success(result);
     }
 
@@ -103,9 +102,6 @@ public class ApplyDetailsController extends BaseController {
         }
         return this.applyDetailsService.findPageBySpec(applyDetailsParam);
     }
-
-
-
 
 }
 
