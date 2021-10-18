@@ -10,13 +10,17 @@
         <result column="grade" property="grade"/>
         <result column="grade_code" property="gradeCode"/>
         <result column="region_code" property="regionCode"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        AS "id", parentid AS "parentid", title AS "title", grade AS "grade", grade_code AS "gradeCode", region_code AS "regionCode"
+        AS "id",create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", parentid AS "parentid", title AS "title", grade AS "grade", grade_code AS "gradeCode", region_code AS "regionCode"
     </sql>
 
 
@@ -52,7 +56,7 @@
             and parentid = #{paramCondition.parentid}
         </if>
         <if test="paramCondition.title != null">
-            and title = #{paramCondition.title}
+            and title like CONCAT('%',#{paramCondition.title},'%')
         </if>
         <if test="paramCondition.id != null">
             and id = #{paramCondition.id}

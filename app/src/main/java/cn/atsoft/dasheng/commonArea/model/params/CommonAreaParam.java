@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.commonArea.model.params;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +53,31 @@ public class CommonAreaParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    /**
+     * 创建者
+     */
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    private Integer display;
 
 
 

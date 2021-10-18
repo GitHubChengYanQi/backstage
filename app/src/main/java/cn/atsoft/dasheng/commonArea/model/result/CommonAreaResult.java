@@ -5,6 +5,8 @@ import lombok.Data;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
 /**
  * <p>
@@ -32,6 +34,31 @@ public class CommonAreaResult implements Serializable {
 
     @ApiModelProperty("")
     private Integer grade;
+
+    /**
+     * 创建者
+     */
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    private Integer display;
 
     /**
      * （字符型级别）
