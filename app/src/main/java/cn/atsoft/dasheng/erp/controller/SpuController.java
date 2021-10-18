@@ -106,14 +106,14 @@ public class SpuController extends BaseController {
             if (ToolUtil.isNotEmpty(ids)) {
                 List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, ids).list();
                 for (ItemAttribute itemAttribute : itemAttributes) {
-                    List<String> values = new ArrayList<>();
+                    List<AttributeValues> values = new ArrayList<>();
                     SkuRequest skuRequest = new SkuRequest();
                     skuRequest.setAttribute(itemAttribute.getAttribute());
+
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                            values.add(attributeValue.getAttributeValues());
+                            values.add(attributeValue);
                             skuRequest.setValue(values);
-//                            skuRequest.setValue(attributeValue.getAttributeValues());
                         }
                     }
                     skuRequests.add(skuRequest);
@@ -151,11 +151,11 @@ public class SpuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.spuService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.spuService.listMaps();
 
         SpuSelectWrapper factory = new SpuSelectWrapper(list);
-        List<Map<String,Object>> result = factory.wrap();
+        List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
 
