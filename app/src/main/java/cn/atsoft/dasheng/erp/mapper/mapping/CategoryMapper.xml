@@ -28,7 +28,7 @@
                 and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
             </if>
             <if test="paramCondition.pid != null">
-                and pid like CONCAT('%',#{paramCondition.pid},'%')
+                    and pid = #{paramCondition.pid}
             </if>
             <if test="paramCondition.categoryName != null and paramCondition.categoryName != ''">
                 and category_name like CONCAT('%',#{paramCondition.categoryName},'%')
@@ -58,7 +58,7 @@
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
                 <if test="paramCondition.pid != null">
-                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                            and pid = #{paramCondition.pid}
                 </if>
                 <if test="paramCondition.categoryName != null and paramCondition.categoryName != ''">
                         and category_name like CONCAT('%',#{paramCondition.categoryName},'%')
@@ -88,7 +88,7 @@
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
                 <if test="paramCondition.pid != null">
-                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                            and pid = #{paramCondition.pid}
                 </if>
                 <if test="paramCondition.categoryName != null and paramCondition.categoryName != ''">
                         and category_name like CONCAT('%',#{paramCondition.categoryName},'%')
@@ -118,7 +118,7 @@
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
                 <if test="paramCondition.pid != null">
-                        and pid like CONCAT('%',#{paramCondition.pid},'%')
+                        and pid = #{paramCondition.pid}
                 </if>
                 <if test="paramCondition.categoryName != null and paramCondition.categoryName != ''">
                         and category_name like CONCAT('%',#{paramCondition.categoryName},'%')

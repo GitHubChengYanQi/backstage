@@ -12,10 +12,12 @@ import cn.atsoft.dasheng.erp.wrapper.AttributeValuesSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.ItemAttributeSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +72,7 @@ public class AttributeValuesController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody AttributeValuesParam attributeValuesParam)  {
+    public ResponseData delete(@RequestBody AttributeValuesParam attributeValuesParam) {
         this.attributeValuesService.delete(attributeValuesParam);
         return ResponseData.success();
     }
@@ -101,18 +103,20 @@ public class AttributeValuesController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<AttributeValuesResult> list(@RequestBody(required = false) AttributeValuesParam attributeValuesParam) {
-        if(ToolUtil.isEmpty(attributeValuesParam)){
+        if (ToolUtil.isEmpty(attributeValuesParam)) {
             attributeValuesParam = new AttributeValuesParam();
         }
         return this.attributeValuesService.findPageBySpec(attributeValuesParam);
     }
 
 
-    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.attributeValuesService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect(Long attributeId) {
+        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
+        attributeValuesQueryWrapper.in("attribute_id", attributeId);
+        List<Map<String, Object>> list = this.attributeValuesService.listMaps(attributeValuesQueryWrapper);
         AttributeValuesSelectWrapper attributeValuesSelectWrapper = new AttributeValuesSelectWrapper(list);
         List<Map<String, Object>> result = attributeValuesSelectWrapper.wrap();
         return ResponseData.success(result);

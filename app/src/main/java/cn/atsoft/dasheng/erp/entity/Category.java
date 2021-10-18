@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 物品分类表
  * </p>
  *
- * @author 
+ * @author jazz
  * @since 2021-10-18
  */
 @TableName("daoxin_erp_category")
