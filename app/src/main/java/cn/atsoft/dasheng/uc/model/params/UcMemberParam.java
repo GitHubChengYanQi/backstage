@@ -23,7 +23,6 @@ public class UcMemberParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
     @ApiModelProperty("")
     private Long memberId;
 

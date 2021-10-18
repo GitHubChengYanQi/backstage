@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.uc.model.result;
 
+import cn.atsoft.dasheng.api.uc.entity.OpenUserInfo;
+import cn.atsoft.dasheng.api.uc.model.result.OpenUserInfoResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,6 +24,8 @@ public class UcMemberResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    private OpenUserInfo openUserInfo;
 
     @ApiModelProperty("")
     private Long memberId;
