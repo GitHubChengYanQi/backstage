@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
@@ -7,6 +8,8 @@ import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.AttributeValuesSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.ItemAttributeSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +88,7 @@ public class AttributeValuesController extends BaseController {
         AttributeValuesResult result = new AttributeValuesResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
@@ -105,7 +108,15 @@ public class AttributeValuesController extends BaseController {
     }
 
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    @Permission
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.attributeValuesService.listMaps();
+        AttributeValuesSelectWrapper attributeValuesSelectWrapper = new AttributeValuesSelectWrapper(list);
+        List<Map<String, Object>> result = attributeValuesSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

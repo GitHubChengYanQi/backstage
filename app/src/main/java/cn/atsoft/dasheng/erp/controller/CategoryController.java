@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
@@ -7,6 +8,8 @@ import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.AttributeValuesSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.CategorySelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +106,15 @@ public class CategoryController extends BaseController {
         return this.categoryService.findPageBySpec(categoryParam);
     }
 
-
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    @Permission
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.categoryService.listMaps();
+        CategorySelectWrapper categorySelectWrapper =new CategorySelectWrapper(list);
+        List<Map<String, Object>> result = categorySelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 
 }

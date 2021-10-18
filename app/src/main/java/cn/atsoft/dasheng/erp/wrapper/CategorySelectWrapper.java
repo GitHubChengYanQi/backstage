@@ -15,5 +15,10 @@ public class CategorySelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("category_id"));
+        String value = Convert.toStr(map.get("category_name"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }

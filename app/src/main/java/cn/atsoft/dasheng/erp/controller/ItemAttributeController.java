@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
@@ -7,13 +10,14 @@ import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.ItemAttributeSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +89,7 @@ public class ItemAttributeController extends BaseController {
         ItemAttributeResult result = new ItemAttributeResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
@@ -106,7 +110,16 @@ public class ItemAttributeController extends BaseController {
 
 
 
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    @Permission
+    public ResponseData<List<Map<String, Object>>> listSelect() {
 
+        List<Map<String, Object>> list = this.itemAttributeService.listMaps();
+        ItemAttributeSelectWrapper itemAttributeSelectWrapper = new ItemAttributeSelectWrapper(list);
+        List<Map<String, Object>> result = itemAttributeSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 }
 
 

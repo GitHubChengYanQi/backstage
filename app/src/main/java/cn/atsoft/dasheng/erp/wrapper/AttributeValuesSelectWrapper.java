@@ -15,5 +15,10 @@ public class AttributeValuesSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
+        String label = Convert.toStr(map.get("attribute_values_id"));
+        String value = Convert.toStr(map.get("values"));
+        map.clear();
+        map.put("label",label);
+        map.put("value",value);
     }
 }
