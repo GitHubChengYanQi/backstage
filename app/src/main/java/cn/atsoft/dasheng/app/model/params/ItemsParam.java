@@ -2,12 +2,16 @@ package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.entity.ItemBrandBind;
 import cn.atsoft.dasheng.app.entity.Items;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -27,7 +31,16 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
     private List<Long> brandResults;
 
 
-    private  String materialName;
+    /**
+     * 类目Id
+     */
+    private Integer categoryId;
+    /**
+     * 属性Id
+     */
+    private Integer attributeId;
+
+    private String materialName;
     /**
      * 物品Id
      */
@@ -121,6 +134,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

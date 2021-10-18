@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.ItemAttributeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.ItemAttribute">
+        <id column="attribute_id" property="attributeId"/>
+        <result column="version" property="version"/>
+        <result column="color" property="color"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List"> sort
+    AS "sort",
+        attribute_id
+        AS "attributeId", version AS "version", color AS "color", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.ItemAttributeResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_attribute where 1 = 1
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
+        <if test="paramCondition.version != null">
+            and version like CONCAT('%',#{paramCondition.version},'%')
+        </if>
+        <if test="paramCondition.color != null">
+            and color like CONCAT('%',#{paramCondition.color},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_attribute where 1 = 1
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
+        <if test="paramCondition.version != null">
+            and version like CONCAT('%',#{paramCondition.version},'%')
+        </if>
+        <if test="paramCondition.color != null">
+            and color like CONCAT('%',#{paramCondition.color},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.ItemAttributeResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_attribute where 1 = 1
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
+        <if test="paramCondition.version != null">
+            and version like CONCAT('%',#{paramCondition.version},'%')
+        </if>
+        <if test="paramCondition.color != null">
+            and color like CONCAT('%',#{paramCondition.color},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_item_attribute where 1 = 1
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
+        <if test="paramCondition.version != null">
+            and version like CONCAT('%',#{paramCondition.version},'%')
+        </if>
+        <if test="paramCondition.color != null">
+            and color like CONCAT('%',#{paramCondition.color},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+</mapper>

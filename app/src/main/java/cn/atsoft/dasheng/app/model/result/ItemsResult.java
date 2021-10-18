@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -24,6 +25,16 @@ public class ItemsResult implements Serializable {
      private  MaterialResult materialResult;
 
      private List<ItemBrandBindResult> brandResults;
+    /**
+     * 类目Id
+     */
+    private Integer categoryId;
+    /**
+     * 属性Id
+     */
+    private Integer attributeId;
+
+
     /**
      * 物品Id
      */

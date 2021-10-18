@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +23,20 @@ import java.io.Serializable;
 public class Items implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 类目Id
+     */
+    @TableField("category_id")
+    private Integer categoryId;
+    /**
+     * 属性Id
+     */
+    @TableField("attribute_id")
+    private Integer attributeId;
     /**
      * 物品Id
      */
-      @TableId(value = "item_id", type = IdType.ID_WORKER)
+    @TableId(value = "item_id", type = IdType.ID_WORKER)
     private Long itemId;
 
     /**
@@ -90,27 +102,27 @@ public class Items implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
@@ -241,24 +253,40 @@ public class Items implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getAttributeId() {
+        return attributeId;
+    }
+
+    public void setAttributeId(Integer attributeId) {
+        this.attributeId = attributeId;
+    }
+
     @Override
     public String toString() {
         return "Items{" +
-        "itemId=" + itemId +
-        ", name=" + name +
-        ", shelfLife=" + shelfLife +
-        ", inventory=" + inventory +
-        ", productionTime=" + productionTime +
-        ", important=" + important +
-        ", weight=" + weight +
-        ", materialId=" + materialId +
-        ", cost=" + cost +
-        ", vulnerability=" + vulnerability +
-        ", display=" + display +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        "}";
+                "itemId=" + itemId +
+                ", name=" + name +
+                ", shelfLife=" + shelfLife +
+                ", inventory=" + inventory +
+                ", productionTime=" + productionTime +
+                ", important=" + important +
+                ", weight=" + weight +
+                ", materialId=" + materialId +
+                ", cost=" + cost +
+                ", vulnerability=" + vulnerability +
+                ", display=" + display +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                "}";
     }
 }

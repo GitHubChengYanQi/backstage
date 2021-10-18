@@ -164,7 +164,7 @@ public class RepairSendTemplate extends sendTemplae {
             } else {
                 //企业微信查询派工人
                 User user = userService.lambdaQuery().eq(User::getUserId, UserUtils.getUserId()).one();
-                if (ToolUtil.isNotEmpty(user)){
+                if (ToolUtil.isNotEmpty(user)) {
                     if (backTemplat.contains("{{name}}")) {
                         backTemplat = backTemplat.replace("{{name}}", user.getName());
                     }
@@ -243,10 +243,13 @@ public class RepairSendTemplate extends sendTemplae {
 
     @Override
     public String getPage() {
-        Remind reminds = getReminds(repairParam.getProgress());
-        WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
-        String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
-        return url;
+        if (repairParam.getProgress().equals("4")) {
+            Remind reminds = getReminds(repairParam.getProgress());
+            WxTemplateData wxTemplateData = JSON.parseObject(reminds.getTemplateType(), WxTemplateData.class);
+            String url = wxTemplateData.getUrl().replace("{{user}}", repairParam.getRepairId().toString());
+            return url;
+        }
+        return null;
     }
 
 
@@ -343,21 +346,21 @@ public class RepairSendTemplate extends sendTemplae {
     @Override
     public String getTitle() {
         repairParam.getProgress();
-        switch (repairParam.getProgress().toString()){
-            case "0" :
+        switch (repairParam.getProgress().toString()) {
+            case "0":
                 return "报修提醒";
 
             case "1":
                 return "派工提醒";
-            case "2" :
+            case "2":
                 return "派工接单提醒";
 
-            case "3" :
+            case "3":
                 return "维修人员到达现场提醒";
 
-            case "4" :
+            case "4":
                 return "维修完成提醒";
-            case "5" :
+            case "5":
                 return "评价保修申请提醒";
             default:
                 return "保修提醒";
@@ -371,44 +374,44 @@ public class RepairSendTemplate extends sendTemplae {
         StringBuffer stringBuffer = new StringBuffer();
         for (WxMpTemplateData datum : data) {
 
-            switch (datum.getName()){
+            switch (datum.getName()) {
                 case "name1":
                     String name1 = datum.getValue();
-                    stringBuffer.append("名字"+"\n"+"\t"+name1+"\n");
+                    stringBuffer.append("名字" + "\n" + "\t" + name1 + "\n");
                     break;
                 case "time2":
                     String time2 = datum.getValue();
-                    stringBuffer.append("时间"+"\n"+"\t"+time2+"\n");
+                    stringBuffer.append("时间" + "\n" + "\t" + time2 + "\n");
                     break;
                 case "thing4":
                     String thing4 = datum.getValue();
-                    stringBuffer.append("事项"+"\n"+"\t"+thing4+"\n");
+                    stringBuffer.append("事项" + "\n" + "\t" + thing4 + "\n");
                     break;
                 case "thing5":
                     String thing5 = datum.getValue();
-                    stringBuffer.append("事项"+"\n"+"\t"+thing5+"\n");
+                    stringBuffer.append("事项" + "\n" + "\t" + thing5 + "\n");
                     break;
                 case "time":
                     String time = datum.getValue();
-                    stringBuffer.append("时间"+"\n"+"\t"+time+"\n");
+                    stringBuffer.append("时间" + "\n" + "\t" + time + "\n");
                     break;
                 case "area":
                     String area = datum.getValue();
-                    stringBuffer.append("地区"+"\n"+"\t"+area+"\n");
+                    stringBuffer.append("地区" + "\n" + "\t" + area + "\n");
                     break;
                 case "name":
                     String name = datum.getValue();
-                    stringBuffer.append("名字"+"\n"+"\t"+name+"\n");
+                    stringBuffer.append("名字" + "\n" + "\t" + name + "\n");
                     break;
                 case "money":
                     String money = datum.getValue();
-                    stringBuffer.append("维修费用"+"\n"+"\t"+money+"\n");
+                    stringBuffer.append("维修费用" + "\n" + "\t" + money + "\n");
                     break;
 
             }
         }
 
-        
+
         return stringBuffer.toString();
     }
 
