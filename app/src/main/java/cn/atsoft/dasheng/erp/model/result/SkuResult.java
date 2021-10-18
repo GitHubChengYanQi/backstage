@@ -19,8 +19,10 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    List<SkuValuesResult> skuValuesResults;
 
 
+    String spuName;
     @ApiModelProperty("")
     private Long skuId;
 
