@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 产品属性数据表
@@ -20,7 +25,11 @@ public class AttributeValuesResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 属性Id
+     */
 
+    private Long attributeId;
     /**
      * 属性值id
      */
