@@ -85,7 +85,7 @@ public class SkuController extends BaseController {
         SkuResult result = new SkuResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
