@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.CategorySelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,14 +106,17 @@ public class SpuController extends BaseController {
             if (ToolUtil.isNotEmpty(ids)) {
                 List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, ids).list();
                 for (ItemAttribute itemAttribute : itemAttributes) {
+                    List<String> values = new ArrayList<>();
+                    SkuRequest skuRequest = new SkuRequest();
+                    skuRequest.setAttribute(itemAttribute.getAttribute());
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                            SkuRequest skuRequest = new SkuRequest();
-                            skuRequest.setAttribute(itemAttribute.getAttribute());
-                            skuRequest.setValue(attributeValue.getValues());
-                            skuRequests.add(skuRequest);
+                            values.add(attributeValue.getAttributeValues());
+                            skuRequest.setValue(values);
+//                            skuRequest.setValue(attributeValue.getAttributeValues());
                         }
                     }
+                    skuRequests.add(skuRequest);
                 }
             }
 
@@ -136,6 +141,22 @@ public class SpuController extends BaseController {
             spuParam = new SpuParam();
         }
         return this.spuService.findPageBySpec(spuParam);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String,Object>>> listSelect() {
+        List<Map<String,Object>> list = this.spuService.listMaps();
+
+        SpuSelectWrapper factory = new SpuSelectWrapper(list);
+        List<Map<String,Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 

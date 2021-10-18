@@ -40,7 +40,7 @@ public class AttributeValuesResult implements Serializable {
      * 属性值
      */
     @ApiModelProperty("属性值")
-    private String values;
+    private String attributeValues;
 
     /**
      * 创建者

@@ -35,11 +35,19 @@ public class AttributeValues implements Serializable {
     @TableId(value = "attribute_values_id", type = IdType.ID_WORKER)
     private Long attributeValuesId;
 
+    public String getAttributeValues() {
+        return attributeValues;
+    }
+
+    public void setAttributeValues(String attributeValues) {
+        this.attributeValues = attributeValues;
+    }
+
     /**
      * 属性值
      */
-    @TableField("values")
-    private String values;
+    @TableField("attribute_values")
+    private String attributeValues;
 
     /**
      * 创建者
@@ -80,13 +88,6 @@ public class AttributeValues implements Serializable {
         this.attributeValuesId = attributeValuesId;
     }
 
-    public String getValues() {
-        return values;
-    }
-
-    public void setValues(String values) {
-        this.values = values;
-    }
 
     public Long getCreateUser() {
         return createUser;
@@ -140,7 +141,6 @@ public class AttributeValues implements Serializable {
     public String toString() {
         return "AttributeValues{" +
                 "attributeValuesId=" + attributeValuesId +
-                ", values=" + values +
                 ", createUser=" + createUser +
                 ", updateUser=" + updateUser +
                 ", createTime=" + createTime +

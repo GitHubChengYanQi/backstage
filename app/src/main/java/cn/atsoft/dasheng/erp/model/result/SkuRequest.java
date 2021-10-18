@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class SkuRequest {
     private String attribute;
-    private String value;
+    private List<String> value;
 }
