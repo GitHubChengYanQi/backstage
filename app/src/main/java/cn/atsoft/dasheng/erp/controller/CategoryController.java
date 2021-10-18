@@ -85,7 +85,6 @@ public class CategoryController extends BaseController {
         CategoryResult result = new CategoryResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

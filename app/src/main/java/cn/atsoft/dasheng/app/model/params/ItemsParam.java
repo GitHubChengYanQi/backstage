@@ -35,10 +35,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
      * 类目Id
      */
     private Integer categoryId;
-    /**
-     * 属性Id
-     */
-    private Integer attributeId;
+
 
     private String materialName;
     /**

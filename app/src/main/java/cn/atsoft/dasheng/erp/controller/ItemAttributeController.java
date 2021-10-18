@@ -22,7 +22,7 @@ import java.util.Map;
  * 产品属性表控制器
  *
  * @author song
- * @Date 2021-10-18 11:28:39
+ * @Date 2021-10-18 12:00:02
  */
 @RestController
 @RequestMapping("/itemAttribute")
@@ -84,6 +84,8 @@ public class ItemAttributeController extends BaseController {
         ItemAttribute detail = this.itemAttributeService.getById(itemAttributeParam.getAttributeId());
         ItemAttributeResult result = new ItemAttributeResult();
         ToolUtil.copyProperties(detail, result);
+
+        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

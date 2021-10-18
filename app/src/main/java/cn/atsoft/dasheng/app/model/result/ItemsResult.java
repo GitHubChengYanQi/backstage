@@ -29,10 +29,7 @@ public class ItemsResult implements Serializable {
      * 类目Id
      */
     private Integer categoryId;
-    /**
-     * 属性Id
-     */
-    private Integer attributeId;
+
 
 
     /**

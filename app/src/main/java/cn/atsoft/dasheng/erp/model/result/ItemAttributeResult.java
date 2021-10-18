@@ -1,15 +1,11 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
  * 产品属性表
@@ -24,7 +20,7 @@ public class ItemAttributeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long sort;
+
     /**
      * 属性id
      */
@@ -32,16 +28,16 @@ public class ItemAttributeResult implements Serializable {
     private Long attributeId;
 
     /**
-     * 版本属性
+     * 属性名
      */
-    @ApiModelProperty(hidden = true)
-    private Long version;
+    @ApiModelProperty("属性名")
+    private String attribute;
 
     /**
-     * 颜色属性
+     * 产品id
      */
-    @ApiModelProperty("颜色属性")
-    private Long color;
+    @ApiModelProperty("产品id")
+    private Long itemId;
 
     /**
      * 创建者
@@ -72,6 +68,18 @@ public class ItemAttributeResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Long sort;
+
+    /**
+     * 属性值id
+     */
+    @ApiModelProperty("属性值id")
+    private Long attributeValuesId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

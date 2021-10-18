@@ -26,28 +26,16 @@ public class AttributeValuesParam implements Serializable, BaseValidatingParam {
 
 
     /**
-     * 属性值
+     * 属性值id
      */
-    @ApiModelProperty("属性值")
+    @ApiModelProperty("属性值id")
     private Long attributeValuesId;
 
     /**
-     * 类型
+     * 属性值
      */
-    @ApiModelProperty("类型")
-    private Integer difference;
-
-    /**
-     * 数字类型
-     */
-    @ApiModelProperty("数字类型")
-    private Long number;
-
-    /**
-     * 文字类型
-     */
-    @ApiModelProperty("文字类型")
-    private String text;
+    @ApiModelProperty("属性值")
+    private String values;
 
     /**
      * 创建者

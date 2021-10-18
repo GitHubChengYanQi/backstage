@@ -28,11 +28,7 @@ public class Items implements Serializable {
      */
     @TableField("category_id")
     private Integer categoryId;
-    /**
-     * 属性Id
-     */
-    @TableField("attribute_id")
-    private Integer attributeId;
+
     /**
      * 物品Id
      */
@@ -261,13 +257,7 @@ public class Items implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public Integer getAttributeId() {
-        return attributeId;
-    }
 
-    public void setAttributeId(Integer attributeId) {
-        this.attributeId = attributeId;
-    }
 
     @Override
     public String toString() {

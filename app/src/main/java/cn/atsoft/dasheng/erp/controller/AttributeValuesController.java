@@ -22,7 +22,7 @@ import java.util.Map;
  * 产品属性数据表控制器
  *
  * @author song
- * @Date 2021-10-18 11:18:37
+ * @Date 2021-10-18 12:00:02
  */
 @RestController
 @RequestMapping("/attributeValues")
@@ -84,6 +84,8 @@ public class AttributeValuesController extends BaseController {
         AttributeValues detail = this.attributeValuesService.getById(attributeValuesParam.getAttributeValuesId());
         AttributeValuesResult result = new AttributeValuesResult();
         ToolUtil.copyProperties(detail, result);
+
+        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

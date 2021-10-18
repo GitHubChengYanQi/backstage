@@ -2,13 +2,10 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-
 import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-
 import java.io.Serializable;
 
 /**
@@ -23,49 +20,47 @@ import java.io.Serializable;
 public class ItemAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @TableField("sort")
-    private Long sort;
 
     /**
      * 属性id
      */
-    @TableId(value = "attribute_id", type = IdType.ID_WORKER)
+      @TableId(value = "attribute_id", type = IdType.ID_WORKER)
     private Long attributeId;
 
     /**
-     * 版本属性
+     * 属性名
      */
-    @TableField("version")
-    private Long version;
+    @TableField("attribute")
+    private String attribute;
 
     /**
-     * 颜色属性
+     * 产品id
      */
-    @TableField("color")
-    private Long color;
+    @TableField("item_id")
+    private Long itemId;
 
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -74,13 +69,18 @@ public class ItemAttribute implements Serializable {
     @TableField("display")
     private Integer display;
 
-    public Long getSort() {
-        return sort;
-    }
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Long sort;
 
-    public void setSort(Long sort) {
-        this.sort = sort;
-    }
+    /**
+     * 属性值id
+     */
+    @TableField("attribute_values_id")
+    private Long attributeValuesId;
+
 
     public Long getAttributeId() {
         return attributeId;
@@ -90,20 +90,20 @@ public class ItemAttribute implements Serializable {
         this.attributeId = attributeId;
     }
 
-    public Long getVersion() {
-        return version;
+    public String getAttribute() {
+        return attribute;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
     }
 
-    public Long getColor() {
-        return color;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setColor(Long color) {
-        this.color = color;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
     public Long getCreateUser() {
@@ -146,17 +146,35 @@ public class ItemAttribute implements Serializable {
         this.display = display;
     }
 
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
+    public Long getAttributeValuesId() {
+        return attributeValuesId;
+    }
+
+    public void setAttributeValuesId(Long attributeValuesId) {
+        this.attributeValuesId = attributeValuesId;
+    }
+
     @Override
     public String toString() {
         return "ItemAttribute{" +
-                "attributeId=" + attributeId +
-                ", version=" + version +
-                ", color=" + color +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", display=" + display +
-                "}";
+        "attributeId=" + attributeId +
+        ", attribute=" + attribute +
+        ", itemId=" + itemId +
+        ", createUser=" + createUser +
+        ", updateUser=" + updateUser +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
+        ", display=" + display +
+        ", sort=" + sort +
+        ", attributeValuesId=" + attributeValuesId +
+        "}";
     }
 }

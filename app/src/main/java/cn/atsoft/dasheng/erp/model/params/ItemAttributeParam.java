@@ -23,7 +23,7 @@ import java.util.List;
 public class ItemAttributeParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long sort;
+
 
     /**
      * 属性id
@@ -32,16 +32,16 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
     private Long attributeId;
 
     /**
-     * 版本属性
+     * 属性名
      */
-    @ApiModelProperty(hidden = true)
-    private Long version;
+    @ApiModelProperty("属性名")
+    private String attribute;
 
     /**
-     * 颜色属性
+     * 产品id
      */
-    @ApiModelProperty("颜色属性")
-    private Long color;
+    @ApiModelProperty("产品id")
+    private Long itemId;
 
     /**
      * 创建者
@@ -72,6 +72,18 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Long sort;
+
+    /**
+     * 属性值id
+     */
+    @ApiModelProperty("属性值id")
+    private Long attributeValuesId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

@@ -22,28 +22,16 @@ public class AttributeValues implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 属性值
+     * 属性值id
      */
       @TableId(value = "attribute_values_id", type = IdType.ID_WORKER)
     private Long attributeValuesId;
 
     /**
-     * 类型
+     * 属性值
      */
-    @TableField("difference")
-    private Integer difference;
-
-    /**
-     * 数字类型
-     */
-    @TableField("number")
-    private Long number;
-
-    /**
-     * 文字类型
-     */
-    @TableField("text")
-    private String text;
+    @TableField("values")
+    private String values;
 
     /**
      * 创建者
@@ -84,28 +72,12 @@ public class AttributeValues implements Serializable {
         this.attributeValuesId = attributeValuesId;
     }
 
-    public Integer getDifference() {
-        return difference;
+    public String getValues() {
+        return values;
     }
 
-    public void setDifference(Integer difference) {
-        this.difference = difference;
-    }
-
-    public Long getNumber() {
-        return number;
-    }
-
-    public void setNumber(Long number) {
-        this.number = number;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public void setValues(String values) {
+        this.values = values;
     }
 
     public Long getCreateUser() {
@@ -152,9 +124,7 @@ public class AttributeValues implements Serializable {
     public String toString() {
         return "AttributeValues{" +
         "attributeValuesId=" + attributeValuesId +
-        ", difference=" + difference +
-        ", number=" + number +
-        ", text=" + text +
+        ", values=" + values +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

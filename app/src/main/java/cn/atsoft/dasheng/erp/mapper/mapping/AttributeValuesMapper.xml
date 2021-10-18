@@ -5,9 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.AttributeValues">
         <id column="attribute_values_id" property="attributeValuesId" />
-        <result column="difference" property="difference" />
-        <result column="number" property="number" />
-        <result column="text" property="text" />
+        <result column="values" property="values" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -17,7 +15,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        attribute_values_id AS "attributeValuesId", difference AS "difference", number AS "number", text AS "text", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        attribute_values_id AS "attributeValuesId", values AS "values", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -28,14 +26,8 @@
             <if test="paramCondition.attributeValuesId != null">
                 and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
             </if>
-            <if test="paramCondition.difference != null">
-                and difference like CONCAT('%',#{paramCondition.difference},'%')
-            </if>
-            <if test="paramCondition.number != null">
-                and number like CONCAT('%',#{paramCondition.number},'%')
-            </if>
-            <if test="paramCondition.text != null and paramCondition.text != ''">
-                and text like CONCAT('%',#{paramCondition.text},'%')
+            <if test="paramCondition.values != null and paramCondition.values != ''">
+                and values like CONCAT('%',#{paramCondition.values},'%')
             </if>
             <if test="paramCondition.createUser != null">
                 and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -61,14 +53,8 @@
                 <if test="paramCondition.attributeValuesId != null">
                         and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
                 </if>
-                <if test="paramCondition.difference != null">
-                        and difference like CONCAT('%',#{paramCondition.difference},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.text != null and paramCondition.text != ''">
-                        and text like CONCAT('%',#{paramCondition.text},'%')
+                <if test="paramCondition.values != null and paramCondition.values != ''">
+                        and values like CONCAT('%',#{paramCondition.values},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -94,14 +80,8 @@
                 <if test="paramCondition.attributeValuesId != null">
                         and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
                 </if>
-                <if test="paramCondition.difference != null">
-                        and difference like CONCAT('%',#{paramCondition.difference},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.text != null and paramCondition.text != ''">
-                        and text like CONCAT('%',#{paramCondition.text},'%')
+                <if test="paramCondition.values != null and paramCondition.values != ''">
+                        and values like CONCAT('%',#{paramCondition.values},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -127,14 +107,8 @@
                 <if test="paramCondition.attributeValuesId != null">
                         and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
                 </if>
-                <if test="paramCondition.difference != null">
-                        and difference like CONCAT('%',#{paramCondition.difference},'%')
-                </if>
-                <if test="paramCondition.number != null">
-                        and number like CONCAT('%',#{paramCondition.number},'%')
-                </if>
-                <if test="paramCondition.text != null and paramCondition.text != ''">
-                        and text like CONCAT('%',#{paramCondition.text},'%')
+                <if test="paramCondition.values != null and paramCondition.values != ''">
+                        and values like CONCAT('%',#{paramCondition.values},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
