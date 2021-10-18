@@ -108,7 +108,6 @@ public class CategoryController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         List<Map<String, Object>> list = this.categoryService.listMaps();
         CategorySelectWrapper categorySelectWrapper =new CategorySelectWrapper(list);

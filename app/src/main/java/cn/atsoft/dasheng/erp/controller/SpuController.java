@@ -85,7 +85,7 @@ public class SpuController extends BaseController {
         SpuResult result = new SpuResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
