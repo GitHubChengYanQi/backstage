@@ -40,7 +40,7 @@ public class AttributeValuesParam implements Serializable, BaseValidatingParam {
      * 属性值
      */
     @ApiModelProperty("属性值")
-    private String values;
+    private String attributeValues;
 
     /**
      * 创建者

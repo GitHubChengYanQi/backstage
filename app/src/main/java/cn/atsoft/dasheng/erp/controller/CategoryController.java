@@ -60,8 +60,6 @@ public class CategoryController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CategoryParam categoryParam) {
 
-        List<String>  pidValue = categoryParam.getPidValue();
-        categoryParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.categoryService.update(categoryParam);
         return ResponseData.success();
     }
@@ -143,9 +141,6 @@ public class CategoryController extends BaseController {
     public ResponseData<List<TreeNode>> treeView() {
         List<Map<String,Object>> list = this.categoryService.listMaps();
 
-        if(ToolUtil.isEmpty(list)){
-            return ResponseData.success();
-        }
         List<TreeNode>  treeViewNodes = new ArrayList<>();
 
         TreeNode rootTreeNode = new TreeNode();
@@ -161,8 +156,8 @@ public class CategoryController extends BaseController {
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("category_id")));
             treeNode.setValue(Convert.toStr(item.get("category_id")));
-            treeNode.setTitle(Convert.toStr(item.get("category_id")));
-            treeNode.setLabel(Convert.toStr(item.get("category_id")));
+            treeNode.setTitle(Convert.toStr(item.get("category_name")));
+            treeNode.setLabel(Convert.toStr(item.get("category_name")));
             treeViewNodes.add(treeNode);
         }
         //构建树
