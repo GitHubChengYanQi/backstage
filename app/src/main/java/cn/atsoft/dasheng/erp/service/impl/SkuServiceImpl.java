@@ -48,12 +48,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Transactional
     @Override
     public void add(SkuParam param){
-        Sku entity = getEntity(param);
-        this.save(entity);
+        List<Long> ids = new ArrayList<>();
+
+        StringBuffer stringBuffer = new StringBuffer();
         for (SkuValues skuValue : param.getSkuValues()) {
-            skuValue.setSkuId(entity.getSkuId());
+            ids.add(skuValue.getAttributeValuesId());
         }
-        skuValuesService.saveBatch(param.getSkuValues());
+        ids.toArray();
+        for (SkuValues skuValue : param.getSkuValues()) {
+           stringBuffer.append(skuValue.getAttributeValuesId()+",");
+
+        }
+        if (stringBuffer.length()>1) {
+            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+        }
+        Sku entity = getEntity(param);
+        entity.setSkuName(stringBuffer.toString());
+        this.save(entity);
     }
 
     @Override
