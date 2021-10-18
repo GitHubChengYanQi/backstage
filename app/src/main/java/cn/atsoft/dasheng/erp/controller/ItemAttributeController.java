@@ -109,12 +109,12 @@ public class ItemAttributeController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(Long itemId) {
         QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
-        itemAttributeQueryWrapper.isNull("item_id");
+        itemAttributeQueryWrapper.in("item_id", itemId);
         List<Map<String, Object>> list = this.itemAttributeService.listMaps(itemAttributeQueryWrapper);
         ItemAttributeSelectWrapper itemAttributeSelectWrapper = new ItemAttributeSelectWrapper(list);
         List<Map<String, Object>> result = itemAttributeSelectWrapper.wrap();
