@@ -70,7 +70,7 @@ public class PageFactory {
                 }
             }
         } else {
-            orderItemList = OrderItem.descs("createTime");
+            orderItemList = OrderItem.descs("create_time");
         }
         pageObj.setOrders(orderItemList);
         return pageObj;

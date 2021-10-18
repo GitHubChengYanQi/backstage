@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.AttributeValues">
         <id column="attribute_values_id" property="attributeValuesId"/>
-        <result column="values" property="values"/>
+        <result column="attribute_values" property="attributeValues"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -17,7 +17,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">  attribute_id
     AS "attributeId",
-        attribute_values_id AS "attributeValuesId", values AS "values", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        attribute_values_id AS "attributeValuesId", attribute_values AS "attributeValues", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 
@@ -29,9 +29,7 @@
         <if test="paramCondition.attributeValuesId != null">
             and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
         </if>
-        <if test="paramCondition.values != null and paramCondition.values != ''">
-            and values like CONCAT('%',#{paramCondition.values},'%')
-        </if>
+
         <if test="paramCondition.createUser != null">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
         </if>
@@ -55,9 +53,6 @@
         from daoxin_erp_attribute_values where 1 = 1
         <if test="paramCondition.attributeValuesId != null">
             and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
-        </if>
-        <if test="paramCondition.values != null and paramCondition.values != ''">
-            and values like CONCAT('%',#{paramCondition.values},'%')
         </if>
         <if test="paramCondition.createUser != null">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -84,17 +79,14 @@
         <if test="paramCondition.attributeValuesId != null">
             and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
         </if>
-        <if test="paramCondition.values != null and paramCondition.values != ''">
-            and values like CONCAT('%',#{paramCondition.values},'%')
+        <if test="paramCondition.attributeValues != null and paramCondition.attributeValues != ''">
+            and attribute_values like CONCAT('%',#{paramCondition.attributeValues},'%')
         </if>
         <if test="paramCondition.createUser != null">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
-            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
         <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
             and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
@@ -111,9 +103,6 @@
         from daoxin_erp_attribute_values where 1 = 1
         <if test="paramCondition.attributeValuesId != null">
             and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
-        </if>
-        <if test="paramCondition.values != null and paramCondition.values != ''">
-            and values like CONCAT('%',#{paramCondition.values},'%')
         </if>
         <if test="paramCondition.createUser != null">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')

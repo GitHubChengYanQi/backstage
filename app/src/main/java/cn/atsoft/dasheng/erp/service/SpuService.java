@@ -10,10 +10,10 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 public interface SpuService extends IService<Spu> {
@@ -21,7 +21,7 @@ public interface SpuService extends IService<Spu> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void add(SpuParam param);
@@ -29,7 +29,7 @@ public interface SpuService extends IService<Spu> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void delete(SpuParam param);
@@ -37,7 +37,7 @@ public interface SpuService extends IService<Spu> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void update(SpuParam param);
@@ -45,7 +45,7 @@ public interface SpuService extends IService<Spu> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     SpuResult findBySpec(SpuParam param);
@@ -53,7 +53,7 @@ public interface SpuService extends IService<Spu> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     List<SpuResult> findListBySpec(SpuParam param);
@@ -61,9 +61,10 @@ public interface SpuService extends IService<Spu> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
-     PageInfo<SpuResult> findPageBySpec(SpuParam param);
+    PageInfo<SpuResult> findPageBySpec(SpuParam param);
+
 
 }
