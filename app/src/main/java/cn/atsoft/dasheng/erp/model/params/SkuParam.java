@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.SkuValues;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,7 +26,7 @@ public class SkuParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    List<SkuValues> SkuValues;
     @ApiModelProperty("")
     private Long skuId;
 

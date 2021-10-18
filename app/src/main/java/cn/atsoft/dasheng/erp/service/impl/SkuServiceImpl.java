@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
+import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -17,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.AttributeException;
 import java.io.Serializable;
@@ -43,10 +45,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private AttributeValuesService attributeValuesService;
 
+    @Transactional
     @Override
     public void add(SkuParam param){
         Sku entity = getEntity(param);
         this.save(entity);
+        for (SkuValues skuValue : param.getSkuValues()) {
+            skuValue.setSkuId(entity.getSkuId());
+        }
+        skuValuesService.saveBatch(param.getSkuValues());
     }
 
     @Override
