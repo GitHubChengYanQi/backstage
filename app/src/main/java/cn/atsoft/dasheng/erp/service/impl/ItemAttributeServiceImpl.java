@@ -4,17 +4,23 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
+import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.mapper.ItemAttributeMapper;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
-import  cn.atsoft.dasheng.erp.service.ItemAttributeService;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.ws.Action;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,19 +34,22 @@ import java.util.List;
 @Service
 public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, ItemAttribute> implements ItemAttributeService {
 
+    @Autowired
+    private SpuService spuService;
+
     @Override
-    public void add(ItemAttributeParam param){
+    public void add(ItemAttributeParam param) {
         ItemAttribute entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(ItemAttributeParam param){
+    public void delete(ItemAttributeParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ItemAttributeParam param){
+    public void update(ItemAttributeParam param) {
         ItemAttribute oldEntity = getOldEntity(param);
         ItemAttribute newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +57,24 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     }
 
     @Override
-    public ItemAttributeResult findBySpec(ItemAttributeParam param){
+    public ItemAttributeResult findBySpec(ItemAttributeParam param) {
         return null;
     }
 
     @Override
-    public List<ItemAttributeResult> findListBySpec(ItemAttributeParam param){
+    public List<ItemAttributeResult> findListBySpec(ItemAttributeParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ItemAttributeResult> findPageBySpec(ItemAttributeParam param){
+    public PageInfo<ItemAttributeResult> findPageBySpec(ItemAttributeParam param) {
         Page<ItemAttributeResult> pageContext = getPageContext();
         IPage<ItemAttributeResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ItemAttributeParam param){
+    private Serializable getKey(ItemAttributeParam param) {
         return param.getAttributeId();
     }
 
@@ -82,4 +92,24 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
         return entity;
     }
 
+    public void format(List<ItemAttributeResult> data) {
+        List<Long> itemIds = new ArrayList<>();
+        for (ItemAttributeResult datum : data) {
+            itemIds.add(datum.getItemId());
+        }
+        if (ToolUtil.isNotEmpty(itemIds)) {
+            List<Spu> spus = spuService.lambdaQuery().in(Spu::getSpuId, itemIds).list();
+            for (ItemAttributeResult datum : data) {
+                for (Spu spu : spus) {
+                    if (datum.getItemId().equals(spu.getSpuId())) {
+                        SpuResult spuResult = new SpuResult();
+                        ToolUtil.copyProperties(spu, spuResult);
+                        datum.setSpuResult(spuResult);
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
 }

@@ -25,6 +25,7 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+
     /**
      * 属性id
      */
@@ -79,11 +80,7 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("排序")
     private Long sort;
 
-    /**
-     * 属性值id
-     */
-    @ApiModelProperty("属性值id")
-    private Long attributeValuesId;
+
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

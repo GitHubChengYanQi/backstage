@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 产品属性表
@@ -21,6 +26,10 @@ public class ItemAttributeResult implements Serializable {
     private static final long serialVersionUID = 1L;
     List<AttributeValuesResult> attributeValuesResults;
 
+
+
+
+    private SpuResult spuResult;
     /**
      * 属性id
      */
@@ -75,11 +84,7 @@ public class ItemAttributeResult implements Serializable {
     @ApiModelProperty("排序")
     private Long sort;
 
-    /**
-     * 属性值id
-     */
-    @ApiModelProperty("属性值id")
-    private Long attributeValuesId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

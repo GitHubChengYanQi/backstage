@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,10 +24,11 @@ public class ItemAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 属性id
      */
-      @TableId(value = "attribute_id", type = IdType.ID_WORKER)
+    @TableId(value = "attribute_id", type = IdType.ID_WORKER)
     private Long attributeId;
 
     /**
@@ -42,25 +46,25 @@ public class ItemAttribute implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -75,11 +79,9 @@ public class ItemAttribute implements Serializable {
     @TableField("sort")
     private Long sort;
 
-    /**
-     * 属性值id
-     */
-    @TableField("attribute_values_id")
-    private Long attributeValuesId;
+
+
+
 
 
     public Long getAttributeId() {
@@ -154,27 +156,20 @@ public class ItemAttribute implements Serializable {
         this.sort = sort;
     }
 
-    public Long getAttributeValuesId() {
-        return attributeValuesId;
-    }
 
-    public void setAttributeValuesId(Long attributeValuesId) {
-        this.attributeValuesId = attributeValuesId;
-    }
 
     @Override
     public String toString() {
         return "ItemAttribute{" +
-        "attributeId=" + attributeId +
-        ", attribute=" + attribute +
-        ", itemId=" + itemId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", sort=" + sort +
-        ", attributeValuesId=" + attributeValuesId +
-        "}";
+                "attributeId=" + attributeId +
+                ", attribute=" + attribute +
+                ", itemId=" + itemId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", sort=" + sort +
+                "}";
     }
 }

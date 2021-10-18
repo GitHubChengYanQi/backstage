@@ -4,17 +4,22 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.mapper.AttributeValuesMapper;
 import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
-import  cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
+import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,20 +32,22 @@ import java.util.List;
  */
 @Service
 public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMapper, AttributeValues> implements AttributeValuesService {
+    @Autowired
+    private ItemAttributeService itemAttributeService;
 
     @Override
-    public void add(AttributeValuesParam param){
+    public void add(AttributeValuesParam param) {
         AttributeValues entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(AttributeValuesParam param){
+    public void delete(AttributeValuesParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(AttributeValuesParam param){
+    public void update(AttributeValuesParam param) {
         AttributeValues oldEntity = getOldEntity(param);
         AttributeValues newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +55,24 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
     }
 
     @Override
-    public AttributeValuesResult findBySpec(AttributeValuesParam param){
+    public AttributeValuesResult findBySpec(AttributeValuesParam param) {
         return null;
     }
 
     @Override
-    public List<AttributeValuesResult> findListBySpec(AttributeValuesParam param){
+    public List<AttributeValuesResult> findListBySpec(AttributeValuesParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<AttributeValuesResult> findPageBySpec(AttributeValuesParam param){
+    public PageInfo<AttributeValuesResult> findPageBySpec(AttributeValuesParam param) {
         Page<AttributeValuesResult> pageContext = getPageContext();
         IPage<AttributeValuesResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(AttributeValuesParam param){
+    private Serializable getKey(AttributeValuesParam param) {
         return param.getAttributeValuesId();
     }
 
@@ -82,4 +90,26 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         return entity;
     }
 
+    public void format(List<AttributeValuesResult> data) {
+        List<Long> ids = new ArrayList<>();
+        for (AttributeValuesResult datum : data) {
+            ids.add(datum.getAttributeId());
+        }
+
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, ids).list();
+            if (ToolUtil.isNotEmpty(itemAttributes)) {
+                for (ItemAttribute itemAttribute : itemAttributes) {
+                    for (AttributeValuesResult datum : data) {
+                        if (datum.getAttributeId().equals(itemAttribute.getAttributeId())) {
+                            ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
+                            ToolUtil.copyProperties(itemAttribute, itemAttributeResult);
+                            datum.setItemAttributeResult(itemAttributeResult);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
