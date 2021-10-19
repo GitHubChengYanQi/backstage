@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,10 +40,11 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private CategoryService categoryService;
     @Autowired
     private SkuService skuService;
+    @Transactional
     @Override
     public void add(SpuParam param){
-//        Spu entity = getEntity(param);
-//        this.save(entity);
+        Spu entity = getEntity(param);
+        this.save(entity);
         List<List<AttributeValues>> result = new ArrayList<List<AttributeValues>>();
 
         descartes(param.getAttributeValuesList(),result,0,new ArrayList<AttributeValues>());
