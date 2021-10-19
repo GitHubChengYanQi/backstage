@@ -108,7 +108,7 @@ public class SpuController extends BaseController {
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     List<AttributeValues> values = new ArrayList<>();
                     SkuRequest skuRequest = new SkuRequest();
-                    skuRequest.setAttribute(itemAttribute.getAttribute());
+                    skuRequest.setAttribute(itemAttribute);
 
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {

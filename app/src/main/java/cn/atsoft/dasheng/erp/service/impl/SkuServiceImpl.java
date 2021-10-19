@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.print.AttributeException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,11 +55,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuValues skuValue : param.getSkuValues()) {
             ids.add(skuValue.getAttributeValuesId());
         }
-        ids.toArray();
-        for (SkuValues skuValue : param.getSkuValues()) {
-           stringBuffer.append(skuValue.getAttributeValuesId()+",");
-
+        ids.sort(null);
+        Collections.sort(ids);
+        for (Long id : ids) {
+            stringBuffer.append(id+",");
         }
+
         if (stringBuffer.length()>1) {
             stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         }
