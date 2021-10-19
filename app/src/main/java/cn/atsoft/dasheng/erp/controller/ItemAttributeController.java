@@ -98,13 +98,11 @@ public class ItemAttributeController extends BaseController {
                     .in(AttributeValues::getAttributeId, detail.getAttributeId())
                     .list();
             if (ToolUtil.isNotEmpty(attributeValues)) {
-
                 for (AttributeValues attributeValue : attributeValues) {
                     AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
                     ToolUtil.copyProperties(attributeValue, attributeValuesResult);
                     attributeValuesResults.add(attributeValuesResult);
                 }
-
             }
         }
         ItemAttributeResult result = new ItemAttributeResult();

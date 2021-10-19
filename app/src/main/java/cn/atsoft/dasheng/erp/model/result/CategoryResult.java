@@ -24,6 +24,7 @@ public class CategoryResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private CategoryResult pidCategoryResult;
+    private List<CategoryRequest> categoryRequests;
 
     /**
      * 物品类目Id

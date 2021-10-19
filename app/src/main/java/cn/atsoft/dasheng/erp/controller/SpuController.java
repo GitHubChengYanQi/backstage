@@ -1,27 +1,19 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
-import cn.atsoft.dasheng.erp.model.result.SkuRequest;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
-import cn.atsoft.dasheng.erp.service.AttributeValuesService;
-import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.wrapper.CategorySelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,10 +30,7 @@ import java.util.Map;
 public class SpuController extends BaseController {
     @Autowired
     private SpuService spuService;
-    @Autowired
-    private ItemAttributeService itemAttributeService;
-    @Autowired
-    private AttributeValuesService attributeValuesService;
+
 
     /**
      * 新增接口

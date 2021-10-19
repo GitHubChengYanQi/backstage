@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SkuRequest {
+public class CategoryRequest {
     private ItemAttribute attribute;
     private List<AttributeValues> value;
 }

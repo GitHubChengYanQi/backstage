@@ -26,7 +26,8 @@ public class SpuResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Category category;
-    private List<SkuRequest> skuRequests;
+
+    private List<CategoryRequest> categoryRequests;
     /**
      * 物品Id
      */
