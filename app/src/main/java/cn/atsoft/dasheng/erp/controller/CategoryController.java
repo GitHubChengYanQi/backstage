@@ -112,8 +112,6 @@ public class CategoryController extends BaseController {
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
 
-
-
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
                     categoryRequest.setAttribute(itemAttribute);

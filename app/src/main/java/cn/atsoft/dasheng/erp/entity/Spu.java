@@ -24,6 +24,7 @@ public class Spu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 物品Id
      */
@@ -147,7 +148,7 @@ public class Spu implements Serializable {
     /**
      * 养护周期值
      */
-    @TableField(" curing_cycle")
+    @TableField("curing_cycle")
     private Long curingCycle;
 
     /**

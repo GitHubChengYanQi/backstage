@@ -55,7 +55,6 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     private OutstockService outStockService;
 
 
-
     @Override
     public Long add(DeliveryParam param) {
         Delivery entity = getEntity(param);
@@ -88,16 +87,16 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     }
 
     @Override
-    public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param, DataScope dataScope ) {
+    public PageInfo<DeliveryResult> findPageBySpec(DeliveryParam param, DataScope dataScope) {
         Page<DeliveryResult> pageContext = getPageContext();
-        IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<DeliveryResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
 
     @Override
-    public void format(List<DeliveryResult> data){
+    public void format(List<DeliveryResult> data) {
 
         List<Long> Iids = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
@@ -117,60 +116,72 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);
-        List<Customer> customerList = customerService.list(customerQueryWrapper);
+        List<Customer> customerList = cIds.size() == 0 ? new ArrayList<>() : customerService.list(customerQueryWrapper);
 
         QueryWrapper<Adress> adressQueryWrapper = new QueryWrapper<>();
         adressQueryWrapper.in("adress_id", aIds);
-        List<Adress> adressList = adressService.list(adressQueryWrapper);
+        List<Adress> adressList = aIds.size() == 0 ? new ArrayList<>() : adressService.list(adressQueryWrapper);
 
         QueryWrapper<Contacts> contactsQueryWrapper = new QueryWrapper<>();
         contactsQueryWrapper.in("contacts_id", contactsIds);
-        List<Contacts> contactsList = contactsService.list(contactsQueryWrapper);
+        List<Contacts> contactsList = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.list(contactsQueryWrapper);
 
         QueryWrapper<Phone> phoneQueryWrapper = new QueryWrapper<>();
         phoneQueryWrapper.in("phone_id", pIds);
-        List<Phone> phoneList = phoneService.list(phoneQueryWrapper);
+        List<Phone> phoneList = pIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneQueryWrapper);
 
 
         for (DeliveryResult record : data) {
-            for (Items items : itemsList) {
-                if (items.getItemId().equals(record.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
+            if (ToolUtil.isNotEmpty(itemsList)) {
+                for (Items items : itemsList) {
+                    if (items.getItemId().equals(record.getItemId())) {
+                        ItemsResult itemsResult = new ItemsResult();
+                        ToolUtil.copyProperties(items, itemsResult);
+                        record.setItemsResult(itemsResult);
+                        break;
+                    }
                 }
             }
-            for (Customer customer : customerList) {
-                if (customer.getCustomerId().equals(record.getCustomerId())) {
-                    CustomerResult customerResult = new CustomerResult();
-                    ToolUtil.copyProperties(customer, customerResult);
-                    record.setCustomerResult(customerResult);
-                    break;
+            if (ToolUtil.isNotEmpty(customerList)) {
+                for (Customer customer : customerList) {
+                    if (customer.getCustomerId().equals(record.getCustomerId())) {
+                        CustomerResult customerResult = new CustomerResult();
+                        ToolUtil.copyProperties(customer, customerResult);
+                        record.setCustomerResult(customerResult);
+                        break;
+                    }
                 }
             }
-            for (Adress adress : adressList) {
-                if (adress.getAdressId().equals(record.getAdressId())) {
-                    AdressResult adressResult = new AdressResult();
-                    ToolUtil.copyProperties(adress, adressResult);
-                    record.setAdressResult(adressResult);
-                    break;
+
+            if (ToolUtil.isNotEmpty(adressList)) {
+                for (Adress adress : adressList) {
+                    if (adress.getAdressId().equals(record.getAdressId())) {
+                        AdressResult adressResult = new AdressResult();
+                        ToolUtil.copyProperties(adress, adressResult);
+                        record.setAdressResult(adressResult);
+                        break;
+                    }
                 }
             }
-            for (Contacts contacts : contactsList) {
-                if (contacts.getContactsId().equals(record.getContactsId())) {
-                    ContactsResult contactsResult = new ContactsResult();
-                    ToolUtil.copyProperties(contacts, contactsResult);
-                    record.setContactsResult(contactsResult);
-                    break;
+            if (ToolUtil.isNotEmpty(contactsList)) {
+                for (Contacts contacts : contactsList) {
+                    if (contacts.getContactsId().equals(record.getContactsId())) {
+                        ContactsResult contactsResult = new ContactsResult();
+                        ToolUtil.copyProperties(contacts, contactsResult);
+                        record.setContactsResult(contactsResult);
+                        break;
+                    }
                 }
             }
-            for (Phone phone : phoneList) {
-                if (phone.getPhoneId().equals(record.getPhoneId())) {
-                    PhoneResult phoneResult = new PhoneResult();
-                    ToolUtil.copyProperties(phone, phoneResult);
-                    record.setPhoneResult(phoneResult);
-                    break;
+
+            if (ToolUtil.isNotEmpty(phoneList)) {
+                for (Phone phone : phoneList) {
+                    if (phone.getPhoneId().equals(record.getPhoneId())) {
+                        PhoneResult phoneResult = new PhoneResult();
+                        ToolUtil.copyProperties(phone, phoneResult);
+                        record.setPhoneResult(phoneResult);
+                        break;
+                    }
                 }
             }
         }

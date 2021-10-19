@@ -25,10 +25,7 @@ public class ItemsResult implements Serializable {
      private  MaterialResult materialResult;
 
      private List<ItemBrandBindResult> brandResults;
-    /**
-     * 类目Id
-     */
-    private Integer categoryId;
+
 
 
 
