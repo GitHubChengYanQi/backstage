@@ -55,11 +55,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuValues skuValue : param.getSkuValues()) {
             ids.add(skuValue.getAttributeValuesId());
         }
+        ids.sort(null);
         Collections.sort(ids);
-        for (SkuValues skuValue : param.getSkuValues()) {
-           stringBuffer.append(skuValue.getAttributeValuesId()+",");
-
+        for (Long id : ids) {
+            stringBuffer.append(id+",");
         }
+
         if (stringBuffer.length()>1) {
             stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         }
