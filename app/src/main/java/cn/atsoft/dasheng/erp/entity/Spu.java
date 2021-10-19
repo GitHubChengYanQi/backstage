@@ -2,18 +2,21 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @TableName("daoxin_erp_spu")
@@ -24,7 +27,7 @@ public class Spu implements Serializable {
     /**
      * 物品Id
      */
-      @TableId(value = "spu_id", type = IdType.ID_WORKER)
+    @TableId(value = "spu_id", type = IdType.ID_WORKER)
     private Long spuId;
 
     /**
@@ -84,25 +87,25 @@ public class Spu implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -140,6 +143,24 @@ public class Spu implements Serializable {
      */
     @TableField("attribute_id")
     private Long attributeId;
+
+    /**
+     * 养护周期值
+     */
+    @TableField(" curing_cycle")
+    private Long curingCycle;
+
+    /**
+     * 养护周期类型（年|月|日）
+     */
+    @TableField("cycle_type")
+    private Integer cycleType;
+
+    /**
+     * 生产类型（自制|委外|外采购）
+     */
+    @TableField("production_type")
+    private Integer productionType;
 
 
     public Long getSpuId() {
@@ -302,29 +323,53 @@ public class Spu implements Serializable {
         this.attributeId = attributeId;
     }
 
+    public Long getcuringCycle() {
+        return curingCycle;
+    }
+
+    public void setcuringCycle(Long curingCycle) {
+        this.curingCycle = curingCycle;
+    }
+
+    public Integer getCycleType() {
+        return cycleType;
+    }
+
+    public void setCycleType(Integer cycleType) {
+        this.cycleType = cycleType;
+    }
+
+    public Integer getProductionType() {
+        return productionType;
+    }
+
+    public void setProductionType(Integer productionType) {
+        this.productionType = productionType;
+    }
+
     @Override
     public String toString() {
         return "Spu{" +
-        "spuId=" + spuId +
-        ", name=" + name +
-        ", shelfLife=" + shelfLife +
-        ", inventory=" + inventory +
-        ", productionTime=" + productionTime +
-        ", important=" + important +
-        ", weight=" + weight +
-        ", materialId=" + materialId +
-        ", cost=" + cost +
-        ", vulnerability=" + vulnerability +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        ", classId=" + classId +
-        ", unitId=" + unitId +
-        ", categoryId=" + categoryId +
-        ", attributeId=" + attributeId +
-        "}";
+                "spuId=" + spuId +
+                ", name=" + name +
+                ", shelfLife=" + shelfLife +
+                ", inventory=" + inventory +
+                ", productionTime=" + productionTime +
+                ", important=" + important +
+                ", weight=" + weight +
+                ", materialId=" + materialId +
+                ", cost=" + cost +
+                ", vulnerability=" + vulnerability +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", classId=" + classId +
+                ", unitId=" + unitId +
+                ", categoryId=" + categoryId +
+                ", attributeId=" + attributeId +
+                "}";
     }
 }

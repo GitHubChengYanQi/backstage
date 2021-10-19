@@ -146,6 +146,25 @@ public class SpuResult implements Serializable {
      */
     @ApiModelProperty("属性id")
     private Long attributeId;
+
+    /**
+     * 养护周期值
+     */
+    @ApiModelProperty("养护周期值")
+    private Long curingCycle;
+
+    /**
+     * 养护周期类型（年|月|日）
+     */
+    @ApiModelProperty("养护周期类型（年|月|日）")
+    private Integer cycleType;
+
+    /**
+     * 生产类型（自制|委外|外采购）
+     */
+    @ApiModelProperty("生产类型（自制|委外|外采购）")
+    private Integer productionType;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
