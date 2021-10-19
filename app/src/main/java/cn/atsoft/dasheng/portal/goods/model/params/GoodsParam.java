@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.goods.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,7 +26,11 @@ public class GoodsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 详情
+     */
 
+    private String text;
     /**
      * 商品id
      */
