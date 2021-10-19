@@ -39,10 +39,8 @@ public class ApiDataController {
     @RequestMapping(value = "/listData", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
-        Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-        }
+        UserUtils.getUserId();
+
         if (ToolUtil.isEmpty(dataParam)) {
             dataParam = new DataParam();
         }
@@ -58,13 +56,11 @@ public class ApiDataController {
     @RequestMapping(value = "/detailData", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
-        Long userId = getWxUser(UserUtils.getUserId());
-        if (ToolUtil.isEmpty(userId)) {
-            throw new ServiceException(403, "此账户未绑定，请先进行绑定!");
-        }
+        UserUtils.getUserId();
         DataResult detail = dataService.detail(dataParam);
         return ResponseData.success(detail);
     }
+
     public Long getWxUser(Long memberId) {
 
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
