@@ -39,7 +39,6 @@ public class ApiDataController {
     @ApiOperation("列表")
     public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
         UserUtils.getUserId();
-
         if (ToolUtil.isEmpty(dataParam)) {
             dataParam = new DataParam();
         }
