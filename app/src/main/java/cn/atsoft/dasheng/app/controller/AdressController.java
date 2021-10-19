@@ -94,8 +94,6 @@ public class AdressController extends BaseController {
     @ApiOperation("详情")
 
     public ResponseData<AdressResult> detail(@RequestBody AdressParam adressParam) {
-//        PageInfo<AdressResult> pageBySpec = this.adressService.findPageBySpec(adressParam);
-//        return ResponseData.success(pageBySpec.getData().get(0));
         if (LoginContextHolder.getContext().isAdmin()) {
             PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam,null );
             return ResponseData.success(adress.getData().get(0));

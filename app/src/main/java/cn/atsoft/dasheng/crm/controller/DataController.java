@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -12,8 +14,10 @@ import cn.atsoft.dasheng.crm.model.result.ItemDataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.DataSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -109,10 +113,10 @@ public class DataController extends BaseController {
             dataParam = new DataParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
-            return this.dataService.findPageBySpec(null,dataParam);
-        }else{
+            return this.dataService.findPageBySpec(null, dataParam);
+        } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.dataService.findPageBySpec(dataScope,dataParam);
+            return this.dataService.findPageBySpec(dataScope, dataParam);
         }
 
     }
@@ -131,6 +135,7 @@ public class DataController extends BaseController {
         dataService.batchDelete(dataRequest.getIds());
         return ResponseData.success();
     }
+
 
 }
 

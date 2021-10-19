@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.portal.goods.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,7 +27,24 @@ public class GoodsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 库存
+     */
+    private Long inventoryNumber;
 
+    /**
+     * 销量
+     */
+    private Long sales;
+    /**
+     * 品牌
+     */
+    private String brand;
+    /**
+     * 详情
+     */
+    private List<String> details;
+    private String text;
     /**
      * 商品id
      */

@@ -180,20 +180,20 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 }
             }
         }
-
+        DataClassification dataClassification = dataClassificationService.lambdaQuery().eq(DataClassification::getDataClassificationId, param.getDataClassificationId()).one();
+        DataClassificationResult dataClassificationResult = new DataClassificationResult();
+        ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+        dataResult.setDataClassificationResult(dataClassificationResult);
         return dataResult;
     }
 
     @Override
     public void batchDelete(List<Long> ids) {
-        List<Data> data = this.lambdaQuery().in(Data::getDataId, ids).list();
-        for (Data datum : data) {
-            datum.setDisplay(0);
-//            List<Data> dataId = this.list(new QueryWrapper<Data>().in("data_id", ids));
-            this.updateById(datum);
-            update();
-        }
-
+        Data data = new Data();
+        data.setDisplay(0);
+        QueryWrapper<Data> dataQueryWrapper = new QueryWrapper<>();
+        dataQueryWrapper.in("data_id", ids);
+        this.update(data, dataQueryWrapper);
     }
 
     private Serializable getKey(DataParam param) {
@@ -221,8 +221,10 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
             ids.add(datum.getDataId());
             dataClassIds.add(datum.getDataClassificationId());
         }
+        List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery()
+                .in(DataClassification::getDataClassificationId, dataClassIds)
+                .list();
 
-        List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery().in(DataClassification::getDataClassificationId, dataClassIds).list();
         if (ToolUtil.isNotEmpty(ids)) {
             for (Long id : ids) {
                 List<Long> itemIds = new ArrayList<>();
@@ -232,11 +234,20 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                         itemIds.add(itemData.getItemId());
                     }
                 }
-                if (ToolUtil.isNotEmpty(itemIds)) {
-                    List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
-                    if (ToolUtil.isNotEmpty(itemsList)) {
-                        Integer count = this.lambdaQuery().count();
-                        for (DataResult datum : data) {
+
+                for (DataResult datum : data) {
+                    for (DataClassification dataClassification : dataClassifications) {
+                        if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
+                            DataClassificationResult dataClassificationResult = new DataClassificationResult();
+                            ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+                            datum.setDataClassificationResult(dataClassificationResult);
+                            break;
+                        }
+                    }
+                    if (ToolUtil.isNotEmpty(itemIds)) {
+                        List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+                        if (ToolUtil.isNotEmpty(itemsList)) {
+                            Integer count = this.lambdaQuery().count();
                             datum.setCount(count);
                             if (datum.getDataId().equals(id)) {
                                 List<ItemsResult> itemsResults = new ArrayList<>();
@@ -247,24 +258,11 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                 }
                                 datum.setItemId(itemsResults);
                             }
-                            for (DataClassification dataClassification : dataClassifications) {
-                                if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
-                                    DataClassificationResult dataClassificationResult = new DataClassificationResult();
-                                    ToolUtil.copyProperties(dataClassification, dataClassificationResult);
-                                    datum.setDataClassificationResult(dataClassificationResult);
-                                    break;
-                                }
-                            }
-
 
                         }
                     }
                 }
-
             }
-
-
         }
-
     }
 }

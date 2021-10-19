@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -12,7 +13,15 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.DataClassification;
+import cn.atsoft.dasheng.crm.model.params.DataClassificationParam;
+import cn.atsoft.dasheng.crm.model.params.DataParam;
+import cn.atsoft.dasheng.crm.model.result.DataClassificationResult;
+import cn.atsoft.dasheng.crm.model.result.DataResult;
+import cn.atsoft.dasheng.crm.service.DataClassificationService;
+import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
@@ -39,6 +48,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
+import org.jacoco.agent.rt.internal_035b120.core.internal.flow.IProbeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,6 +84,7 @@ public class ApiRepairController {
     private RepairSendTemplate repairSendTemplate;
 
 
+
     public Long getWxUser(Long memberId) {
 
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
@@ -82,9 +93,9 @@ public class ApiRepairController {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
 
         if (ToolUtil.isEmpty(type)) {
-            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id", memberId);
         } else {
-            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id", memberId);
         }
 
         List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
@@ -217,7 +228,7 @@ public class ApiRepairController {
         Param.setName(UserUtils.getUserId());
         Param.setRepairId(repairParam.getRepairId());
         Param.setProgress(repairParam.getType());
-        if (repairParam.getType()!=null) {
+        if (repairParam.getType() != null) {
             try {
                 repairSendTemplate.setRepairParam(Param);
                 repairSendTemplate.send();

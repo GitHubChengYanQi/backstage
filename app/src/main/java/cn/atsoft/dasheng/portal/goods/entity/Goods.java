@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.portal.goods.entity;
 
 import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -23,11 +26,31 @@ import java.io.Serializable;
 public class Goods implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 库存
+     */
+    @TableField("inventory_number")
+    private Long inventoryNumber;
 
+    /**
+     * 销量
+     */
+    @TableField("sales")
+    private Long sales;
+    /**
+     * 品牌
+     */
+    @TableField("brand")
+    private String brand;
+    /**
+     * 详情
+     */
+    @TableField("text")
+    private String text;
     /**
      * 商品id
      */
-      @TableId(value = "good_id", type = IdType.ID_WORKER)
+    @TableId(value = "good_id", type = IdType.ID_WORKER)
     private Long goodId;
 
     /**
@@ -75,25 +98,25 @@ public class Goods implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -101,10 +124,21 @@ public class Goods implements Serializable {
      */
     @TableField("display")
     private Integer display;
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+
+
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
@@ -219,22 +253,46 @@ public class Goods implements Serializable {
         this.display = display;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public Long getInventoryNumber() {
+        return inventoryNumber;
+    }
+
+    public void setInventoryNumber(Long inventoryNumber) {
+        this.inventoryNumber = inventoryNumber;
+    }
+
+    public Long getSales() {
+        return sales;
+    }
+
+    public void setSales(Long sales) {
+        this.sales = sales;
+    }
+
     @Override
     public String toString() {
         return "Goods{" +
-        "goodId=" + goodId +
-        ", goodName=" + goodName +
-        ", title=" + title +
-        ", imgUrl=" + imgUrl +
-        ", price=" + price +
-        ", lastPrice=" + lastPrice +
-        ", comment=" + comment +
-        ", sort=" + sort +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "goodId=" + goodId +
+                ", goodName=" + goodName +
+                ", title=" + title +
+                ", imgUrl=" + imgUrl +
+                ", price=" + price +
+                ", lastPrice=" + lastPrice +
+                ", comment=" + comment +
+                ", sort=" + sort +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }
