@@ -109,7 +109,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
-        attributeValuesQueryWrapper.lambda().in(AttributeValues::getAttributeId,inSkuNameList);
+        attributeValuesQueryWrapper.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
         List<AttributeValues> attributeValuesList = inSkuNameList.size() == 0 ? new ArrayList<>(): attributeValuesService.list(attributeValuesQueryWrapper);
         //查询商品名称
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
@@ -139,8 +139,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<String> resultSkuName = Arrays.asList(skuResult.getSkuName().split(","));
             for (String s : resultSkuName) {
                 for (AttributeValues attributeValues : attributeValuesList) {
-                    if (s.equals(attributeValues.getAttributeValuesId())) {
-                        stringBuffer.append(s+",");
+                    if (s.equals(attributeValues.getAttributeValuesId().toString())) {
+                        stringBuffer.append(attributeValues.getAttributeValues()+",");
                     }
                 }
             }
