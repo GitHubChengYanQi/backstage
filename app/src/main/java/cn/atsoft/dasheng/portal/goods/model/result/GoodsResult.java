@@ -22,7 +22,19 @@ import java.util.List;
 public class GoodsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 库存
+     */
+    private Long inventoryNumber;
 
+    /**
+     * 销量
+     */
+    private Long sales;
+    /**
+     * 品牌
+     */
+    private String brand;
     /**
      * 详情
      */

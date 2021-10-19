@@ -8,7 +8,7 @@ import cn.atsoft.dasheng.portal.goods.entity.Goods;
 import cn.atsoft.dasheng.portal.goods.mapper.GoodsMapper;
 import cn.atsoft.dasheng.portal.goods.model.params.GoodsParam;
 import cn.atsoft.dasheng.portal.goods.model.result.GoodsResult;
-import  cn.atsoft.dasheng.portal.goods.service.GoodsService;
+import cn.atsoft.dasheng.portal.goods.service.GoodsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.portal.goodsDetails.entity.GoodsDetails;
 import cn.atsoft.dasheng.portal.goodsDetails.model.params.GoodsDetailsParam;
@@ -19,9 +19,11 @@ import cn.atsoft.dasheng.portal.goodsDetailsBanner.service.GoodsDetailsBannerSer
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +45,20 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private GoodsDetailsBannerService goodsDetailsBannerService;
 
     @Override
-    public void add(GoodsParam param){
+    @Transactional
+    public void add(GoodsParam param) {
+        String textJson = "";
+        List<String> paramText = param.getDetails();
+        for (int i = 0; i < paramText.size(); i++) {
+            if (i == paramText.size() - 1) {
+                textJson = textJson + paramText.get(i);
+                break;
+            }
+            textJson = textJson + paramText.get(i) + ",";
+        }
+
+        param.setText(textJson);
+
         Goods entity = getEntity(param);
         this.save(entity);
         // 加入内容到商品详细表
@@ -62,21 +77,21 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public void delete(GoodsParam param){
+    public void delete(GoodsParam param) {
         Goods goodId = this.getById(param.getGoodId());
-        if (ToolUtil.isEmpty(goodId)){
-            throw new ServiceException(500,"删除目标不存在");
+        if (ToolUtil.isEmpty(goodId)) {
+            throw new ServiceException(500, "删除目标不存在");
         }
         List<GoodsDetails> goodsDetails = this.goodsDetailsService.list();
         List detailBannerIds = new ArrayList<>();
         // 删除商品详细
-        for(GoodsDetails data : goodsDetails){
-            if(data.getGoodId() == param.getGoodId()) {
+        for (GoodsDetails data : goodsDetails) {
+            if (data.getGoodId() == param.getGoodId()) {
                 this.goodsDetailsService.removeById(data.getGoodDetailsId());
                 // 删除商品轮播图
                 List<GoodsDetailsBanner> goodsDetailsBanner = this.goodsDetailsBannerService.list();
-                for(GoodsDetailsBanner bannerData : goodsDetailsBanner) {
-                    if(bannerData.getGoodDetailsId() == data.getGoodDetailsId()){
+                for (GoodsDetailsBanner bannerData : goodsDetailsBanner) {
+                    if (bannerData.getGoodDetailsId() == data.getGoodDetailsId()) {
                         detailBannerIds.add(bannerData.getDetailBannerId());
                     }
                 }
@@ -88,15 +103,25 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public void update(GoodsParam param){
+    public void update(GoodsParam param) {
+        String textJson = "";
+        List<String> paramText = param.getDetails();
+        for (int i = 0; i < paramText.size(); i++) {
+            if (i == paramText.size() - 1) {
+                textJson = textJson + paramText.get(i);
+                break;
+            }
+            textJson = textJson + paramText.get(i) + ",";
+        }
+        param.setText(textJson);
         Goods oldEntity = getOldEntity(param);
         Goods newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         // 更新商品明细信息
         List<GoodsDetails> goodsDetails = this.goodsDetailsService.list();
-        for(GoodsDetails data : goodsDetails){
-            if(data.getGoodId() == param.getGoodId()){
+        for (GoodsDetails data : goodsDetails) {
+            if (data.getGoodId() == param.getGoodId()) {
                 GoodsDetailsParam goodsDetail = new GoodsDetailsParam();
                 goodsDetail.setGoodId(data.getGoodId());
                 goodsDetail.setTitle(data.getTitle());
@@ -114,23 +139,23 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public GoodsResult findBySpec(GoodsParam param){
+    public GoodsResult findBySpec(GoodsParam param) {
         return null;
     }
 
     @Override
-    public List<GoodsResult> findListBySpec(GoodsParam param){
+    public List<GoodsResult> findListBySpec(GoodsParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<GoodsResult> findPageBySpec(GoodsParam param){
+    public PageInfo<GoodsResult> findPageBySpec(GoodsParam param) {
         Page<GoodsResult> pageContext = getPageContext();
         IPage<GoodsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(GoodsParam param){
+    private Serializable getKey(GoodsParam param) {
         return param.getGoodId();
     }
 

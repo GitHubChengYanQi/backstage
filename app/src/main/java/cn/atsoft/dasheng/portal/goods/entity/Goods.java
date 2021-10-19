@@ -26,7 +26,22 @@ import java.io.Serializable;
 public class Goods implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 库存
+     */
+    @TableField("inventory_number")
+    private Long inventoryNumber;
 
+    /**
+     * 销量
+     */
+    @TableField("sales")
+    private Long sales;
+    /**
+     * 品牌
+     */
+    @TableField("brand")
+    private String brand;
     /**
      * 详情
      */
@@ -236,6 +251,30 @@ public class Goods implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public Long getInventoryNumber() {
+        return inventoryNumber;
+    }
+
+    public void setInventoryNumber(Long inventoryNumber) {
+        this.inventoryNumber = inventoryNumber;
+    }
+
+    public Long getSales() {
+        return sales;
+    }
+
+    public void setSales(Long sales) {
+        this.sales = sales;
     }
 
     @Override

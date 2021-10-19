@@ -19,11 +19,14 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="text" property="text"/>
+        <result column="brand" property="brand"/>
+        <result column="sales" property="sales"/>
+        <result column="inventory_number" property="inventoryNumber"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
-    AS "deptId",text AS "text",
+    AS "deptId",text AS "text",brand AS "brand",sales AS "sales",inventory_number AS "inventoryNumber",
         good_id AS "goodId", good_name AS "goodName", title AS "title", img_url AS "imgUrl", price AS "price", last_price AS "lastPrice", comment AS "comment", sort AS "sort", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
