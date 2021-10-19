@@ -39,12 +39,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Autowired
     private SpuService spuService;
     @Autowired
-    private SkuValuesService skuValuesService;
-    @Autowired
-    private ItemAttributeService itemAttributeService;
-
-    @Autowired
-    private AttributeValuesService attributeValuesService;
+    private CategoryService categoryService;
 
     @Transactional
     @Override
@@ -103,7 +98,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void format(List<SkuResult> param){
         List<Long> spuId = new ArrayList<>();
         List<Long> skuId = new ArrayList<>();
-        List<Long> skuValueId = new ArrayList<>();
+        List<Long> categoryIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
             skuId.add(skuResult.getSkuId());
@@ -113,29 +108,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         spuQueryWrapper.lambda().in(Spu::getSpuId,spuId);
         List<Spu> spuList =  spuId.size() == 0 ? new ArrayList<>() :spuService.list(spuQueryWrapper);
 
-
-        //查询sku明细表
-        QueryWrapper<SkuValues> skuValuesQueryWrapper = new QueryWrapper<>();
-        spuQueryWrapper.lambda().in(Spu::getSpuId,spuId);
-        List<SkuValues> skuValuesList =spuId.size() == 0 ? new ArrayList<>() :  skuValuesService.list(skuValuesQueryWrapper);
-        List<Long> skuValuesIds = new ArrayList<>();
-        for (SkuValues skuValues : skuValuesList) {
-            skuValuesIds.add(skuValues.getAttributeValuesId());
+        for (Spu spu : spuList) {
+            categoryIds.add(spu.getCategoryId());
         }
-        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
-        spuQueryWrapper.lambda().in(Spu::getSpuId,spuId);
-        List<AttributeValues> attributeValuesList =spuId.size() == 0 ? new ArrayList<>() : attributeValuesService.list(attributeValuesQueryWrapper);
+
+        QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(Category::getCategoryId,categoryIds);
+        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(queryWrapper);
 
 
 
-        List<Long> atteibuteIds = new ArrayList<>();
-        for (SkuValues skuValues : skuValuesList) {
-            atteibuteIds.add(skuValues.getAttributeId());
-        }
-        //查询属性名称
-        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
-        itemAttributeQueryWrapper.lambda().in(ItemAttribute::getAttributeId,atteibuteIds);
-        List<ItemAttribute> attributelist =atteibuteIds.size() == 0 ? new ArrayList<>() :  itemAttributeService.list(itemAttributeQueryWrapper);
 
 
 
@@ -145,27 +127,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             for (Spu spu : spuList) {
                 if (skuResult.getSpuId().equals(spu.getSpuId())) {
                     skuResult.setSpuName(spu.getName());
-                }
-            }
-            for (ItemAttribute itemAttribute : attributelist) {
-            }
-            List<SkuValuesResult> skuValuesResults = new ArrayList<>();
-            for (SkuValues skuValues : skuValuesList) {
-                if (skuResult.getSkuId().equals(skuValues.getSkuId())) {
-                    SkuValuesResult skuValuesResult = new SkuValuesResult();
-                    ToolUtil.copyProperties(skuValues,skuValuesResult);
-                    for (AttributeValues attributeValues : attributeValuesList) {
-                        if (attributeValues.getAttributeId().equals(skuValues.getAttributeId())) {
-                            AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
-                            ToolUtil.copyProperties(attributeValues,attributeValuesResult);
-                            skuValuesResult.setAttributeValuesResult(attributeValuesResult);
+                    for (Category category : categoryList) {
+                        if (spu.getCategoryId().equals(category.getCategoryId())){
+                            skuResult.setCategoryName(category.getCategoryName());
                         }
                     }
-                    skuValuesResults.add(skuValuesResult);
                 }
             }
-            skuResult.setSkuValuesResults(skuValuesResults);
-
         }
 
 
