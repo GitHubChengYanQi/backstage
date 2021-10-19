@@ -111,12 +111,13 @@ public class CategoryController extends BaseController {
                 List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
-                List<AttributeValues> attributeValuesResults = new ArrayList<>();
-                CategoryRequest categoryRequest = new CategoryRequest();
+
+
 
                 for (ItemAttribute itemAttribute : itemAttributes) {
-
+                    CategoryRequest categoryRequest = new CategoryRequest();
                     categoryRequest.setAttribute(itemAttribute);
+                    List<AttributeValues> attributeValuesResults = new ArrayList<>();
 
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
