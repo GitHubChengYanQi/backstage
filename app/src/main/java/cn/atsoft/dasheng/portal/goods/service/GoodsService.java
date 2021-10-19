@@ -64,6 +64,8 @@ public interface GoodsService extends IService<Goods> {
      * @author siqiang
      * @Date 2021-08-19
      */
-     PageInfo<GoodsResult> findPageBySpec(GoodsParam param);
+    PageInfo<GoodsResult> findPageBySpec(GoodsParam param);
+
+
 
 }
