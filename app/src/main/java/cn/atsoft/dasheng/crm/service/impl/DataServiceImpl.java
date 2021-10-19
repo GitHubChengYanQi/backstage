@@ -180,7 +180,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 }
             }
         }
-        DataClassification dataClassification = dataClassificationService.lambdaQuery().eq(DataClassification::getDataClassificationId, param.getDataClassificationId()).one();
+        DataClassification dataClassification = dataClassificationService.lambdaQuery().eq(DataClassification::getDataClassificationId, data.getDataClassificationId()).one();
         DataClassificationResult dataClassificationResult = new DataClassificationResult();
         ToolUtil.copyProperties(dataClassification, dataClassificationResult);
         dataResult.setDataClassificationResult(dataClassificationResult);
