@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.print.AttributeException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,12 +51,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuValues skuValue : param.getSkuValues()) {
             ids.add(skuValue.getAttributeValuesId());
         }
-        ids.sort(null);
         Collections.sort(ids);
         for (Long id : ids) {
             stringBuffer.append(id+",");
         }
-
         if (stringBuffer.length()>1) {
             stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         }
@@ -98,10 +97,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void format(List<SkuResult> param){
         List<Long> spuId = new ArrayList<>();
         List<Long> skuId = new ArrayList<>();
+        List
         List<Long> categoryIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
             skuId.add(skuResult.getSkuId());
+            List<String> SkuName = Arrays.asList(skuResult.getSkuName().split(","));
         }
         //查询商品名称
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
@@ -116,13 +117,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         queryWrapper.lambda().in(Category::getCategoryId,categoryIds);
         List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(queryWrapper);
 
-
-
-
-
-
-
-
         for (SkuResult skuResult : param) {
             for (Spu spu : spuList) {
                 if (skuResult.getSpuId().equals(spu.getSpuId())) {
@@ -134,6 +128,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     }
                 }
             }
+
+
         }
 
 
