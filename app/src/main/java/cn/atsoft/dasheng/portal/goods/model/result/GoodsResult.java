@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.portal.goods.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -22,7 +23,10 @@ public class GoodsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 详情
+     */
+    private String text;
     /**
      * 商品id
      */

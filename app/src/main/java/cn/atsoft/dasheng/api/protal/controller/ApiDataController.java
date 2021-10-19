@@ -27,8 +27,7 @@ import java.util.List;
 public class ApiDataController {
     @Autowired
     private DataService dataService;
-    @Autowired
-    private WxuserInfoService wxuserInfoService;
+
 
     /**
      * 查询列表
@@ -66,19 +65,4 @@ public class ApiDataController {
         UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
         String type = ucJwtPayLoad.getType();
 
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-
-        if (ToolUtil.isEmpty(type)) {
-            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id", memberId);
-        } else {
-            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id", memberId);
-        }
-
-        List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
-        for (WxuserInfo data : userList) {
-            return data.getUserId();
-        }
-
-        return null;
-    }
 }
