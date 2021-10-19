@@ -82,38 +82,7 @@ public class ApiRepairController {
     private RepairImageService repairImageService;
     @Autowired
     private RepairSendTemplate repairSendTemplate;
-    @Autowired
-    private DataClassificationService dataClassificationService;
-    @Autowired
-    private DataService dataService;
 
-    /**
-     * 查询列表
-     *
-     * @author song
-     * @Date 2021-09-11
-     */
-    @RequestMapping(value = "/listData", method = RequestMethod.POST)
-    @ApiOperation("列表")
-    public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
-        if (ToolUtil.isEmpty(dataParam)) {
-            dataParam = new DataParam();
-        }
-        return this.dataService.findPageBySpec(null, dataParam);
-    }
-
-    /**
-     * 查看详情接口
-     *
-     * @author song
-     * @Date 2021-09-11
-     */
-    @RequestMapping(value = "/detailData", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
-        DataResult detail = dataService.detail(dataParam);
-        return ResponseData.success(detail);
-    }
 
 
     public Long getWxUser(Long memberId) {
