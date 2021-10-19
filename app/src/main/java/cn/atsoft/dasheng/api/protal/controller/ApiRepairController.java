@@ -13,6 +13,10 @@ import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.DataClassification;
+import cn.atsoft.dasheng.crm.model.params.DataClassificationParam;
+import cn.atsoft.dasheng.crm.model.result.DataClassificationResult;
+import cn.atsoft.dasheng.crm.service.DataClassificationService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
@@ -39,6 +43,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.ApiOperation;
 import me.chanjar.weixin.common.error.WxErrorException;
 import org.apache.ibatis.annotations.Param;
+import org.jacoco.agent.rt.internal_035b120.core.internal.flow.IProbeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +77,38 @@ public class ApiRepairController {
     private RepairImageService repairImageService;
     @Autowired
     private RepairSendTemplate repairSendTemplate;
+    @Autowired
+    private DataClassificationService dataClassificationService;
+
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-09-13
+     */
+    @RequestMapping(value = "/listDataClassification", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<DataClassificationResult> list(@RequestBody(required = false) DataClassificationParam dataClassificationParam) {
+        if (ToolUtil.isEmpty(dataClassificationParam)) {
+            dataClassificationParam = new DataClassificationParam();
+        }
+        return this.dataClassificationService.findPageBySpec(dataClassificationParam);
+    }
+
+    /**
+     * 查看详情接口
+     *
+     * @author
+     * @Date 2021-09-13
+     */
+    @RequestMapping(value = "/detailDataClassification", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<DataClassificationResult> detail(@RequestBody DataClassificationParam dataClassificationParam) {
+        DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
+        DataClassificationResult result = new DataClassificationResult();
+        ToolUtil.copyProperties(detail, result);
+        return ResponseData.success(result);
+    }
 
 
     public Long getWxUser(Long memberId) {
@@ -82,9 +119,9 @@ public class ApiRepairController {
         QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
 
         if (ToolUtil.isEmpty(type)) {
-            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "wxCp").in("user_id", memberId);
         } else {
-            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id",memberId);
+            wxuserInfoQueryWrapper.in("source", "wxMp").in("member_id", memberId);
         }
 
         List<WxuserInfo> userList = wxuserInfoService.list(wxuserInfoQueryWrapper);
@@ -217,7 +254,7 @@ public class ApiRepairController {
         Param.setName(UserUtils.getUserId());
         Param.setRepairId(repairParam.getRepairId());
         Param.setProgress(repairParam.getType());
-        if (repairParam.getType()!=null) {
+        if (repairParam.getType() != null) {
             try {
                 repairSendTemplate.setRepairParam(Param);
                 repairSendTemplate.send();
