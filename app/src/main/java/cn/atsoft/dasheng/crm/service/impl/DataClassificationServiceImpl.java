@@ -105,18 +105,20 @@ public class DataClassificationServiceImpl extends ServiceImpl<DataClassificatio
         for (DataClassificationResult datum : data) {
             ids.add(datum.getDataClassificationId());
         }
-        List<Data> dataList = dataService.lambdaQuery().in(Data::getDataClassificationId, ids).list();
-
-        for (DataClassificationResult datum : data) {
-            List<DataResult> dataResults = new ArrayList<>();
-            for (Data data1 : dataList) {
-                if (data1.getDataClassificationId().equals(datum.getDataClassificationId())) {
-                    DataResult dataResult = new DataResult();
-                    ToolUtil.copyProperties(data1, dataResult);
-                    dataResults.add(dataResult);
+        if (ToolUtil.isNotEmpty(ids)) {
+            List<Data> dataList = dataService.lambdaQuery().in(Data::getDataClassificationId, ids).list();
+            for (DataClassificationResult datum : data) {
+                List<DataResult> dataResults = new ArrayList<>();
+                for (Data data1 : dataList) {
+                    if (data1.getDataClassificationId().equals(datum.getDataClassificationId())) {
+                        DataResult dataResult = new DataResult();
+                        ToolUtil.copyProperties(data1, dataResult);
+                        dataResults.add(dataResult);
+                    }
                 }
+                datum.setDataResults(dataResults);
             }
-            datum.setDataResults(dataResults);
         }
+
     }
 }
