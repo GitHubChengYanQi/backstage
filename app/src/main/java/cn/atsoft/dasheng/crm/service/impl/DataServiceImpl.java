@@ -218,8 +218,19 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
             ids.add(datum.getDataId());
             dataClassIds.add(datum.getDataClassificationId());
         }
-
         List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery().in(DataClassification::getDataClassificationId, dataClassIds).list();
+        for (DataResult datum : data) {
+            for (DataClassification dataClassification : dataClassifications) {
+                if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
+                    DataClassificationResult dataClassificationResult = new DataClassificationResult();
+                    ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+                    datum.setDataClassificationResult(dataClassificationResult);
+                    break;
+                }
+            }
+
+        }
+
         if (ToolUtil.isNotEmpty(ids)) {
             for (Long id : ids) {
                 List<Long> itemIds = new ArrayList<>();
@@ -244,24 +255,10 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                 }
                                 datum.setItemId(itemsResults);
                             }
-                            for (DataClassification dataClassification : dataClassifications) {
-                                if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
-                                    DataClassificationResult dataClassificationResult = new DataClassificationResult();
-                                    ToolUtil.copyProperties(dataClassification, dataClassificationResult);
-                                    datum.setDataClassificationResult(dataClassificationResult);
-                                    break;
-                                }
-                            }
-
-
                         }
                     }
                 }
-
             }
-
-
         }
-
     }
 }
