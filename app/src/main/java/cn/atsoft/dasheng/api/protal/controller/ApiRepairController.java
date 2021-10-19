@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -12,11 +13,15 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.commonArea.entity.CommonArea;
 import cn.atsoft.dasheng.commonArea.model.result.CommonAreaResult;
 import cn.atsoft.dasheng.commonArea.service.CommonAreaService;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.DataClassification;
 import cn.atsoft.dasheng.crm.model.params.DataClassificationParam;
+import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataClassificationResult;
+import cn.atsoft.dasheng.crm.model.result.DataResult;
 import cn.atsoft.dasheng.crm.service.DataClassificationService;
+import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.portal.dispatChing.model.params.DispatchingParam;
@@ -79,35 +84,35 @@ public class ApiRepairController {
     private RepairSendTemplate repairSendTemplate;
     @Autowired
     private DataClassificationService dataClassificationService;
+    @Autowired
+    private DataService dataService;
 
     /**
      * 查询列表
      *
-     * @author
-     * @Date 2021-09-13
+     * @author song
+     * @Date 2021-09-11
      */
-    @RequestMapping(value = "/listDataClassification", method = RequestMethod.POST)
+    @RequestMapping(value = "/listData", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DataClassificationResult> list(@RequestBody(required = false) DataClassificationParam dataClassificationParam) {
-        if (ToolUtil.isEmpty(dataClassificationParam)) {
-            dataClassificationParam = new DataClassificationParam();
+    public PageInfo<DataResult> list(@RequestBody(required = false) DataParam dataParam) {
+        if (ToolUtil.isEmpty(dataParam)) {
+            dataParam = new DataParam();
         }
-        return this.dataClassificationService.findPageBySpec(dataClassificationParam);
+        return this.dataService.findPageBySpec(null, dataParam);
     }
 
     /**
      * 查看详情接口
      *
-     * @author
-     * @Date 2021-09-13
+     * @author song
+     * @Date 2021-09-11
      */
-    @RequestMapping(value = "/detailDataClassification", method = RequestMethod.POST)
+    @RequestMapping(value = "/detailData", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DataClassificationResult> detail(@RequestBody DataClassificationParam dataClassificationParam) {
-        DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
-        DataClassificationResult result = new DataClassificationResult();
-        ToolUtil.copyProperties(detail, result);
-        return ResponseData.success(result);
+    public ResponseData<DataResult> detail(@RequestBody DataParam dataParam) {
+        DataResult detail = dataService.detail(dataParam);
+        return ResponseData.success(detail);
     }
 
 
