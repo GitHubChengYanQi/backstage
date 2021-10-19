@@ -23,11 +23,7 @@ import java.io.Serializable;
 public class Items implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * 类目Id
-     */
-    @TableField("category_id")
-    private Integer categoryId;
+
 
     /**
      * 物品Id
@@ -249,13 +245,8 @@ public class Items implements Serializable {
         this.updateUser = updateUser;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
-    }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
+
 
 
 

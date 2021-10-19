@@ -20,14 +20,14 @@
         <result column="update_time" property="updateTime"/>
         <result column="deptId" property="deptId"/>
         <result column="update_user" property="updateUser"/>
-        <result column="category_id" property="categoryId"/>
+
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         deptId
-        AS "deptId",category_id AS "categoryId",
+        AS "deptId",
         item_id
         AS "itemId", name AS "name",shelf_life AS "shelfLife", inventory AS "inventory",material_id AS "materialId", production_time AS "productionTime", important AS "important", weight AS "weight",  cost AS "cost", vulnerability AS "vulnerability", display AS "display", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser"
     </sql>

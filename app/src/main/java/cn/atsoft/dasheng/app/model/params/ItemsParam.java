@@ -31,10 +31,7 @@ public class ItemsParam implements Serializable, BaseValidatingParam {
     private List<Long> brandResults;
 
 
-    /**
-     * 类目Id
-     */
-    private Integer categoryId;
+
 
 
     private String materialName;
