@@ -59,10 +59,5 @@ public class ApiDataController {
         DataResult detail = dataService.detail(dataParam);
         return ResponseData.success(detail);
     }
-
-    public Long getWxUser(Long memberId) {
-
-        UcJwtPayLoad ucJwtPayLoad = UserUtils.getPayLoad();
-        String type = ucJwtPayLoad.getType();
-
 }
+
