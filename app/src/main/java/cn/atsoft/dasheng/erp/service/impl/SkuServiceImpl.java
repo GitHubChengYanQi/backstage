@@ -41,7 +41,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SpuService spuService;
     @Autowired
     private CategoryService categoryService;
-
+    @Autowired
+    private AttributeValuesService attributeValuesService;
     @Transactional
     @Override
     public void add(SkuParam param){
@@ -97,13 +98,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void format(List<SkuResult> param){
         List<Long> spuId = new ArrayList<>();
         List<Long> skuId = new ArrayList<>();
-    
         List<Long> categoryIds = new ArrayList<>();
+        List<Long> inSkuNameList = new ArrayList<>();
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
             skuId.add(skuResult.getSkuId());
-            List<String> SkuName = Arrays.asList(skuResult.getSkuName().split(","));
+            List<String> skuName = Arrays.asList(skuResult.getSkuName().split(","));
+            for (String s : skuName) {
+                inSkuNameList.add(Long.valueOf(s));
+            }
         }
+        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
+        attributeValuesQueryWrapper.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
+        List<AttributeValues> attributeValuesList = inSkuNameList.size() == 0 ? new ArrayList<>(): attributeValuesService.list(attributeValuesQueryWrapper);
         //查询商品名称
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
         spuQueryWrapper.lambda().in(Spu::getSpuId,spuId);
@@ -128,7 +135,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     }
                 }
             }
-
+            StringBuffer stringBuffer = new StringBuffer();
+            List<String> resultSkuName = Arrays.asList(skuResult.getSkuName().split(","));
+            for (String s : resultSkuName) {
+                for (AttributeValues attributeValues : attributeValuesList) {
+                    if (s.equals(attributeValues.getAttributeValuesId().toString())) {
+                        stringBuffer.append(attributeValues.getAttributeValues()+",");
+                    }
+                }
+            }
+            if (stringBuffer.length()>1) {
+                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+            }
+            skuResult.setCategoryName(stringBuffer.toString());
 
         }
 
