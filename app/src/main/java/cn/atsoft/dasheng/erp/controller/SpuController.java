@@ -94,38 +94,9 @@ public class SpuController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
-        List<SkuRequest> skuRequests = new ArrayList<>();
-        //通过spuId 去查对应的属性
-        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getItemId, detail.getSpuId()).list();
-        if (ToolUtil.isNotEmpty(itemAttributes)) {
-            List<Long> ids = new ArrayList<>();
-            for (ItemAttribute itemAttribute : itemAttributes) {
-                ids.add(itemAttribute.getAttributeId());
-            }
-            //通过属性id 去查对应的属性值
-            if (ToolUtil.isNotEmpty(ids)) {
-                List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, ids).list();
-                for (ItemAttribute itemAttribute : itemAttributes) {
-                    List<AttributeValues> values = new ArrayList<>();
-                    SkuRequest skuRequest = new SkuRequest();
-                    skuRequest.setAttribute(itemAttribute);
-
-                    for (AttributeValues attributeValue : attributeValues) {
-                        if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                            values.add(attributeValue);
-                            skuRequest.setValue(values);
-                        }
-                    }
-                    skuRequests.add(skuRequest);
-                }
-            }
-
-
-        }
-        SpuResult result = new SpuResult();
-        ToolUtil.copyProperties(detail, result);
-        result.setSkuRequests(skuRequests);
-        return ResponseData.success(result);
+        SpuResult spuResult = new SpuResult();
+        ToolUtil.copyProperties(detail, spuResult);
+        return ResponseData.success(spuResult);
     }
 
     /**

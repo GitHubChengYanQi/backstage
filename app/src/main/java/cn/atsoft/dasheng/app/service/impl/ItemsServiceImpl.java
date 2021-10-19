@@ -225,7 +225,7 @@ public class ItemsServiceImpl extends ServiceImpl<ItemsMapper, Items> implements
                     if (brandBind.getItemId().equals(datum.getItemId())) {
                         ItemBrandBindResult brandBindResult = new ItemBrandBindResult();
                         ToolUtil.copyProperties(brandBind, brandBindResult);
-                        for (Brand brand : brandList) {
+                         for (Brand brand : brandList) {
                             if (brandBind.getBrandId().equals(brand.getBrandId())) {
                                 brandBindResult.setBrandName(brand.getBrandName());
                             }

@@ -4,9 +4,12 @@ import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
+import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
+import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +39,8 @@ public class ItemAttributeController extends BaseController {
 
     @Autowired
     private ItemAttributeService itemAttributeService;
+    @Autowired
+    private AttributeValuesService attributeValuesService;
 
     /**
      * 新增接口
@@ -86,9 +92,24 @@ public class ItemAttributeController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<ItemAttributeResult> detail(@RequestBody ItemAttributeParam itemAttributeParam) {
         ItemAttribute detail = this.itemAttributeService.getById(itemAttributeParam.getAttributeId());
+        List<AttributeValuesResult> attributeValuesResults = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(detail)) {
+            List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+                    .in(AttributeValues::getAttributeId, detail.getAttributeId())
+                    .list();
+            if (ToolUtil.isNotEmpty(attributeValues)) {
+
+                for (AttributeValues attributeValue : attributeValues) {
+                    AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
+                    ToolUtil.copyProperties(attributeValue, attributeValuesResult);
+                    attributeValuesResults.add(attributeValuesResult);
+                }
+
+            }
+        }
         ItemAttributeResult result = new ItemAttributeResult();
         ToolUtil.copyProperties(detail, result);
-
+        result.setAttributeValuesResults(attributeValuesResults);
 
         return ResponseData.success(result);
     }
@@ -113,8 +134,8 @@ public class ItemAttributeController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(Long itemId) {
         QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(itemId)){
-            itemAttributeQueryWrapper.in("category_id", itemId);
+        if (ToolUtil.isNotEmpty(itemId)) {
+            itemAttributeQueryWrapper.in("item_id", itemId);
         }
         List<Map<String, Object>> list = this.itemAttributeService.listMaps(itemAttributeQueryWrapper);
         ItemAttributeSelectWrapper itemAttributeSelectWrapper = new ItemAttributeSelectWrapper(list);
