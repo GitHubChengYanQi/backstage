@@ -28,6 +28,19 @@ public class GoodsParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 库存
+     */
+    private Long inventoryNumber;
+
+    /**
+     * 销量
+     */
+    private Long sales;
+    /**
+     * 品牌
+     */
+    private String brand;
+    /**
      * 详情
      */
     private List<String> details;
