@@ -77,12 +77,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.lambda().in(Category::getCategoryId,categoryIds);
-        List<Category> categoryList = categoryIds.size()>0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
+        List<Category> categoryList = categoryIds.size()==0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
 
         for (SpuResult spuResult : param) {
             for (Category category : categoryList) {
                 if (spuResult.getCategoryId().equals(category.getCategoryId())) {
-                    spuResult.setCategoryName(category.getCategoryName());
+                    spuResult.setCategory(category);
                 }
             }
         }

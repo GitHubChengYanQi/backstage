@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.Category;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,7 +25,7 @@ public class SpuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String categoryName;
+    private Category category;
     private List<SkuRequest> skuRequests;
     /**
      * 物品Id
