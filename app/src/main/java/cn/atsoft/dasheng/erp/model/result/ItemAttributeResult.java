@@ -24,9 +24,7 @@ import java.util.List;
 public class ItemAttributeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<AttributeValuesResult> attributeValuesResults;
-
-
+    private List<AttributeValuesResult> attributeValuesResults;
 
 
     private SpuResult spuResult;

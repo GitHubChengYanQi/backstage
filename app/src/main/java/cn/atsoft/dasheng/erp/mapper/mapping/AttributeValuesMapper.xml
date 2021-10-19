@@ -94,6 +94,9 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        <if test="paramCondition.attributeId != null">
+            and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map"
