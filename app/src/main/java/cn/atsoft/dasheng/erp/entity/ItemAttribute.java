@@ -37,6 +37,17 @@ public class ItemAttribute implements Serializable {
     @TableField("attribute")
     private String attribute;
 
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    @TableField("category_id")
+    private String categoryId;
+
     /**
      * 产品id
      */

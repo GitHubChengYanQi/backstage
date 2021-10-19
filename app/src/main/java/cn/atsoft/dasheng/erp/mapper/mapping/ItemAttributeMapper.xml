@@ -7,6 +7,7 @@
         <id column="attribute_id" property="attributeId"/>
         <result column="attribute" property="attribute"/>
         <result column="item_id" property="itemId"/>
+        <result column="category_id" property="categoryId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -20,7 +21,7 @@
     <sql id="Base_Column_List">
 
         attribute_id
-        AS "attributeId", attribute AS "attribute", item_id AS "itemId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
+        AS "attributeId", attribute AS "attribute", item_id AS "itemId", create_user AS "createUser",category_id AS "categoryId",update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
     </sql>
 
 
@@ -37,6 +38,9 @@
         </if>
         <if test="paramCondition.itemId != null">
             and item_id like CONCAT('%',#{paramCondition.itemId},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
         </if>
         <if test="paramCondition.createUser != null">
             and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -104,6 +108,9 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.categoryId != null">
+            and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')

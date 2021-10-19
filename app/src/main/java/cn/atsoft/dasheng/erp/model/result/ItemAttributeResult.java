@@ -35,6 +35,7 @@ public class ItemAttributeResult implements Serializable {
      */
     @ApiModelProperty("属性id")
     private Long attributeId;
+    private Long categoryId;
 
     /**
      * 属性名

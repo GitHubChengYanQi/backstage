@@ -31,6 +31,7 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("属性id")
     private Long attributeId;
+    private Long categoryId;
 
     /**
      * 属性名
