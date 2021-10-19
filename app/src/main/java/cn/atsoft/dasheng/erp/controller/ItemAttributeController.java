@@ -114,7 +114,7 @@ public class ItemAttributeController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(Long itemId) {
         QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(itemId)){
-            itemAttributeQueryWrapper.in("item_id", itemId);
+            itemAttributeQueryWrapper.in("category_id", itemId);
         }
         List<Map<String, Object>> list = this.itemAttributeService.listMaps(itemAttributeQueryWrapper);
         ItemAttributeSelectWrapper itemAttributeSelectWrapper = new ItemAttributeSelectWrapper(list);

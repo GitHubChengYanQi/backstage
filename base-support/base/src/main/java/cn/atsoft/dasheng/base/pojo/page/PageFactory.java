@@ -69,9 +69,10 @@ public class PageFactory {
                     orderItemList = OrderItem.ascs(sorter.getField());
                 }
             }
-        } else {
-            orderItemList = OrderItem.descs("create_time");
         }
+//        else {
+//            orderItemList = OrderItem.descs("create_time");
+//        }
         pageObj.setOrders(orderItemList);
         return pageObj;
     }

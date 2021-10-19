@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.SkuValues;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * sku表	
+ * sku表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Data
@@ -19,8 +24,11 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    List<SkuValuesResult> skuValuesResults;
 
 
+
+    String spuName;
     @ApiModelProperty("")
     private Long skuId;
 
