@@ -186,14 +186,11 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
     @Override
     public void batchDelete(List<Long> ids) {
-        List<Data> data = this.lambdaQuery().in(Data::getDataId, ids).list();
-        for (Data datum : data) {
-            datum.setDisplay(0);
-//            List<Data> dataId = this.list(new QueryWrapper<Data>().in("data_id", ids));
-            this.updateById(datum);
-            update();
-        }
-
+        Data data = new Data();
+        data.setDisplay(0);
+        QueryWrapper<Data> dataQueryWrapper = new QueryWrapper<>();
+        dataQueryWrapper.in("data_id", ids);
+        this.update(data, dataQueryWrapper);
     }
 
     private Serializable getKey(DataParam param) {
