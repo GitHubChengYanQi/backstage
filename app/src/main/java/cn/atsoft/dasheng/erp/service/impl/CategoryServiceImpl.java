@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.mapper.CategoryMapper;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
-import  cn.atsoft.dasheng.erp.service.CategoryService;
+import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,18 +30,18 @@ import java.util.List;
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
 
     @Override
-    public void add(CategoryParam param){
+    public void add(CategoryParam param) {
         Category entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(CategoryParam param){
+    public void delete(CategoryParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(CategoryParam param){
+    public void update(CategoryParam param) {
         Category oldEntity = getOldEntity(param);
         Category newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +49,24 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    public CategoryResult findBySpec(CategoryParam param){
+    public CategoryResult findBySpec(CategoryParam param) {
         return null;
     }
 
     @Override
-    public List<CategoryResult> findListBySpec(CategoryParam param){
+    public List<CategoryResult> findListBySpec(CategoryParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<CategoryResult> findPageBySpec(CategoryParam param){
+    public PageInfo<CategoryResult> findPageBySpec(CategoryParam param) {
         Page<CategoryResult> pageContext = getPageContext();
         IPage<CategoryResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(CategoryParam param){
+    private Serializable getKey(CategoryParam param) {
         return param.getCategoryId();
     }
 
@@ -82,4 +84,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return entity;
     }
 
+    public void format(List<CategoryResult> data) {
+        List<Long> pids = new ArrayList<>();
+        for (CategoryResult datum : data) {
+            pids.add(datum.getPid());
+        }
+        List<Category> categories = this.lambdaQuery().in(Category::getCategoryId, pids).list();
+        for (CategoryResult datum : data) {
+            for (Category category : categories) {
+                if (datum.getPid().equals(category.getCategoryId())) {
+                    CategoryResult categoryResult = new CategoryResult();
+                    ToolUtil.copyProperties(category, categoryResult);
+                    datum.setPidCategoryResult(categoryResult);
+                    break;
+                }
+            }
+        }
+    }
 }
