@@ -44,8 +44,6 @@ public class CategoryController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody CategoryParam categoryParam) {
-        List<String>  pidValue = categoryParam.getPidValue();
-        categoryParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.categoryService.add(categoryParam);
         return ResponseData.success();
     }
