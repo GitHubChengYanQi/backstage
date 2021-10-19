@@ -97,7 +97,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private void format(List<SkuResult> param){
         List<Long> spuId = new ArrayList<>();
         List<Long> skuId = new ArrayList<>();
-        List
+    
         List<Long> categoryIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
