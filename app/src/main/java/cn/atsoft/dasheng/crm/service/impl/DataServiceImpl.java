@@ -180,7 +180,10 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                 }
             }
         }
-
+        DataClassification dataClassification = dataClassificationService.lambdaQuery().eq(DataClassification::getDataClassificationId, param.getDataClassificationId()).one();
+        DataClassificationResult dataClassificationResult = new DataClassificationResult();
+        ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+        dataResult.setDataClassificationResult(dataClassificationResult);
         return dataResult;
     }
 
@@ -218,18 +221,9 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
             ids.add(datum.getDataId());
             dataClassIds.add(datum.getDataClassificationId());
         }
-        List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery().in(DataClassification::getDataClassificationId, dataClassIds).list();
-        for (DataResult datum : data) {
-            for (DataClassification dataClassification : dataClassifications) {
-                if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
-                    DataClassificationResult dataClassificationResult = new DataClassificationResult();
-                    ToolUtil.copyProperties(dataClassification, dataClassificationResult);
-                    datum.setDataClassificationResult(dataClassificationResult);
-                    break;
-                }
-            }
-
-        }
+        List<DataClassification> dataClassifications = dataClassIds.size() == 0 ? new ArrayList<>() : dataClassificationService.lambdaQuery()
+                .in(DataClassification::getDataClassificationId, dataClassIds)
+                .list();
 
         if (ToolUtil.isNotEmpty(ids)) {
             for (Long id : ids) {
@@ -240,11 +234,20 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                         itemIds.add(itemData.getItemId());
                     }
                 }
-                if (ToolUtil.isNotEmpty(itemIds)) {
-                    List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
-                    if (ToolUtil.isNotEmpty(itemsList)) {
-                        Integer count = this.lambdaQuery().count();
-                        for (DataResult datum : data) {
+
+                for (DataResult datum : data) {
+                    for (DataClassification dataClassification : dataClassifications) {
+                        if (dataClassification.getDataClassificationId().equals(datum.getDataClassificationId())) {
+                            DataClassificationResult dataClassificationResult = new DataClassificationResult();
+                            ToolUtil.copyProperties(dataClassification, dataClassificationResult);
+                            datum.setDataClassificationResult(dataClassificationResult);
+                            break;
+                        }
+                    }
+                    if (ToolUtil.isNotEmpty(itemIds)) {
+                        List<Items> itemsList = itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+                        if (ToolUtil.isNotEmpty(itemsList)) {
+                            Integer count = this.lambdaQuery().count();
                             datum.setCount(count);
                             if (datum.getDataId().equals(id)) {
                                 List<ItemsResult> itemsResults = new ArrayList<>();
@@ -255,6 +258,7 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
                                 }
                                 datum.setItemId(itemsResults);
                             }
+
                         }
                     }
                 }
