@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.sys.modular.system.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
 import cn.atsoft.dasheng.sys.modular.system.entity.DictType;
 import cn.atsoft.dasheng.sys.modular.system.model.params.DictTypeParam;
 import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
@@ -8,12 +10,15 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -144,7 +149,6 @@ public class DictTypeController extends BaseController {
         List<DictType> list = this.dictTypeService.list(objectQueryWrapper);
         return new SuccessResponseData(list);
     }
-
 }
 
 

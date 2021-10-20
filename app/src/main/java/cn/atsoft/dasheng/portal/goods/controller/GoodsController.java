@@ -92,6 +92,8 @@ public class GoodsController extends BaseController {
         Goods detail = this.goodsService.getById(goodsParam.getGoodId());
         GoodsResult result = new GoodsResult();
         ToolUtil.copyProperties(detail, result);
+        result.setDetails(detail.getText());
+
 
 //        result.setValue(parentValue);
         return ResponseData.success(result);

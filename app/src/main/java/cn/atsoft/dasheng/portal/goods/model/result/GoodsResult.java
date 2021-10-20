@@ -43,7 +43,7 @@ public class GoodsResult implements Serializable {
     /**
      * 详情
      */
-    private String text;
+    private String details;
     /**
      * 商品id
      */
