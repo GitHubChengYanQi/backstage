@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.CompanyRole;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
 import cn.atsoft.dasheng.crm.model.result.DataRequest;
@@ -14,6 +15,7 @@ import cn.atsoft.dasheng.crm.model.result.ItemDataResult;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.CompanyRoleSelectWrapper;
 import cn.atsoft.dasheng.crm.wrapper.DataSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
@@ -136,6 +138,22 @@ public class DataController extends BaseController {
         return ResponseData.success();
     }
 
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.GET)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(String name, String content) {
+        QueryWrapper<Data> dataQueryWrapper = new QueryWrapper<>();
+        dataQueryWrapper.like("name", name).or().like("content", content);
+        List<Map<String, Object>> list = this.dataService.listMaps(dataQueryWrapper);
+        DataSelectWrapper dataSelectWrapper = new DataSelectWrapper(list);
+        List<Map<String, Object>> result = dataSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
 
 }
 

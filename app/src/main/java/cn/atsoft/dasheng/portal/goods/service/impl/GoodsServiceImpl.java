@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.portal.goodsDetails.service.GoodsDetailsService;
 import cn.atsoft.dasheng.portal.goodsDetailsBanner.entity.GoodsDetailsBanner;
 import cn.atsoft.dasheng.portal.goodsDetailsBanner.model.params.GoodsDetailsBannerParam;
 import cn.atsoft.dasheng.portal.goodsDetailsBanner.service.GoodsDetailsBannerService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -154,6 +155,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         IPage<GoodsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
+
 
     private Serializable getKey(GoodsParam param) {
         return param.getGoodId();
