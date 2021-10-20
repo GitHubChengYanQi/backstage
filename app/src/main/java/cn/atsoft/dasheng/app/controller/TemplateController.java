@@ -116,7 +116,6 @@ public class TemplateController extends BaseController {
 
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Template> templateQueryWrapper = new QueryWrapper<>();
         templateQueryWrapper.in("display", 1);
