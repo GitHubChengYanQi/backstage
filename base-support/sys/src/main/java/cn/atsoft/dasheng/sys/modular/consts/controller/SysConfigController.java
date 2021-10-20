@@ -7,11 +7,15 @@ import cn.atsoft.dasheng.sys.modular.consts.service.SysConfigService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
+import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -28,6 +32,7 @@ public class SysConfigController extends BaseController {
 
     @Autowired
     private SysConfigService sysConfigService;
+
 
     /**
      * 跳转到主页面
@@ -70,7 +75,7 @@ public class SysConfigController extends BaseController {
      */
     @RequestMapping("/addItem")
     @ResponseBody
-    public ResponseData addItem(SysConfigParam sysConfigParam) {
+    public ResponseData addItem(@RequestBody SysConfigParam sysConfigParam) {
         this.sysConfigService.add(sysConfigParam);
         return ResponseData.success();
     }
@@ -83,7 +88,7 @@ public class SysConfigController extends BaseController {
      */
     @RequestMapping("/editItem")
     @ResponseBody
-    public ResponseData editItem(SysConfigParam sysConfigParam) {
+    public ResponseData editItem(@RequestBody SysConfigParam sysConfigParam) {
         this.sysConfigService.update(sysConfigParam);
         return ResponseData.success();
     }
@@ -96,7 +101,7 @@ public class SysConfigController extends BaseController {
      */
     @RequestMapping("/delete")
     @ResponseBody
-    public ResponseData delete(SysConfigParam sysConfigParam) {
+    public ResponseData delete(@RequestBody SysConfigParam sysConfigParam) {
         this.sysConfigService.delete(sysConfigParam);
         return ResponseData.success();
     }
@@ -109,7 +114,7 @@ public class SysConfigController extends BaseController {
      */
     @RequestMapping("/detail")
     @ResponseBody
-    public ResponseData detail(SysConfigParam sysConfigParam) {
+    public ResponseData detail(@RequestBody SysConfigParam sysConfigParam) {
         SysConfig detail = this.sysConfigService.getById(sysConfigParam.getId());
         return ResponseData.success(detail);
     }
@@ -135,6 +140,7 @@ public class SysConfigController extends BaseController {
 
         return this.sysConfigService.findPageBySpec(sysConfigParam);
     }
+
 
 }
 

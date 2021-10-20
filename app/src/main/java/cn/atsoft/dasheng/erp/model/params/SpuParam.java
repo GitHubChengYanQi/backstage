@@ -7,6 +7,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,10 +16,10 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Data
@@ -29,6 +30,8 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     private CategoryRequest spuAttributes;
 //    private List<ItemAttributeParam> spuAttributes;
 
+
+    private List<SpuRequest> spuRequests;
     /**
      * 物品Id
      */

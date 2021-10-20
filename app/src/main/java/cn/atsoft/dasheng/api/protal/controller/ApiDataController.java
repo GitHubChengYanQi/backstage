@@ -4,8 +4,12 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.DataClassification;
+import cn.atsoft.dasheng.crm.model.params.DataClassificationParam;
 import cn.atsoft.dasheng.crm.model.params.DataParam;
+import cn.atsoft.dasheng.crm.model.result.DataClassificationResult;
 import cn.atsoft.dasheng.crm.model.result.DataResult;
+import cn.atsoft.dasheng.crm.service.DataClassificationService;
 import cn.atsoft.dasheng.crm.service.DataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -27,6 +31,8 @@ import java.util.List;
 public class ApiDataController {
     @Autowired
     private DataService dataService;
+    @Autowired
+    private DataClassificationService dataClassificationService;
 
 
     /**
@@ -57,6 +63,23 @@ public class ApiDataController {
         UserUtils.getUserId();
         DataResult detail = dataService.detail(dataParam);
         return ResponseData.success(detail);
+    }
+
+    /**
+     * 查看详情接口
+     *
+     * @author
+     * @Date 2021-09-13
+     */
+    @RequestMapping(value = "/dataClassDetail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<DataClassificationResult> detail(@RequestBody DataClassificationParam dataClassificationParam) {
+        DataClassification detail = this.dataClassificationService.getById(dataClassificationParam.getDataClassificationId());
+        DataClassificationResult result = new DataClassificationResult();
+        ToolUtil.copyProperties(detail, result);
+
+
+        return ResponseData.success(result);
     }
 }
 

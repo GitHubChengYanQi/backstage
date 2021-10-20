@@ -10,6 +10,8 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.DictTypeWrapper;
+import cn.atsoft.dasheng.sys.modular.system.service.DictTypeService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -182,6 +184,19 @@ public class SysDeptController extends BaseController {
         //DeptTreeWrapper.clearNull(results);
 
         return ResponseData.success(results);
+    }
+
+
+    @Autowired
+    private DictTypeService dictTypeService;
+
+    @RequestMapping(value = "/dictTypeListSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> dictTypeListSelect() {
+        List<Map<String, Object>> list = this.dictTypeService.listMaps();
+        DictTypeWrapper dictTypeWrapper = new DictTypeWrapper(list);
+        List<Map<String, Object>> result = dictTypeWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 
