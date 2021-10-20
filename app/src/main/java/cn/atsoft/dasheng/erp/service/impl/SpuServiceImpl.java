@@ -49,14 +49,26 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         List<List<String>> result = new ArrayList<List<String>>();
 
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
-        for (List<String> strings : result) {
-            StringBuffer stringBuffer = new StringBuffer();
-            for (String string : strings) {
 
-            }
-        }
         List<String> nameIdsList = new ArrayList<>();
-
+        for (List<String> attributeValues : result) {
+            StringBuffer stringBuffer = new StringBuffer();
+            for (String attributeValue : attributeValues) {
+                stringBuffer.append(attributeValue + ",");
+            }
+            if (stringBuffer.length() > 1) {
+                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+            }
+            nameIdsList.add(stringBuffer.toString());
+        }
+        List<Sku> skuList = new ArrayList<>();
+        for (String s : nameIdsList) {
+            Sku sku = new Sku();
+            sku.setSkuName(s);
+            sku.setSpuId(param.getSpuId());
+            skuList.add(sku);
+        }
+        skuService.saveBatch(skuList);
 
 //        skuService.saveBatch(skuList);
         System.out.println(result.toString());
