@@ -8,6 +8,6 @@ import java.util.List;
 
 @Data
 public class CategoryRequest {
-    private ItemAttribute attribute;
+    private Long attributeId;
     private List<AttributeValues> value;
 }
