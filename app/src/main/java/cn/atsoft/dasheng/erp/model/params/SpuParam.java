@@ -27,7 +27,7 @@ import java.util.List;
 public class SpuParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private CategoryRequest spuAttributes;
+    private SpuRequest spuAttributes;
 //    private List<ItemAttributeParam> spuAttributes;
 
 

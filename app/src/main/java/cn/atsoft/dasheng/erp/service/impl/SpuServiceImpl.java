@@ -5,11 +5,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SpuMapper;
-import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
-import cn.atsoft.dasheng.erp.model.params.SpuRequest;
-
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -51,7 +48,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
 
-        descartes1(param.getSpuAttributes().getSpuRequests(),result,0,new ArrayList<String>());
+        descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
         for (List<String> strings : result) {
             StringBuffer stringBuffer = new StringBuffer();
             for (String string : strings) {
@@ -65,6 +62,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         System.out.println(result.toString());
 
     }
+
     static void descartes1(List<ItemAttributeParam> dimvalue, List<List<String>> result, int layer, List<String> curList) {
         if (layer < dimvalue.size() - 1) {
             if (dimvalue.get(layer).getAttributeValuesParams().size() == 0) {
@@ -156,48 +154,5 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         return entity;
     }
 
-    public void addTest(SpuParam param) {
-        //获取属性和多个属性值
-        Map<Integer, List<AttributeValuesParam>> map = new HashMap<>();
 
-        for (int i = 0; i < param.getSpuRequests().size(); i++) {
-
-            SpuRequest spuRequest = param.getSpuRequests().get(i);
-            List<AttributeValuesParam> list = new ArrayList<>();
-
-            for (int j = 0; j < spuRequest.getAttributeValuesParams().size(); j++) {
-                AttributeValuesParam valuesParam = spuRequest.getAttributeValuesParams().get(j);
-                list.add(valuesParam);
-            }
-            map.put(spuRequest.getAttributeId(), list);
-        }
-        //处理属性值
-
-        for (Map.Entry<Integer, List<AttributeValuesParam>> integerListEntry : map.entrySet()) {
-            Integer key = integerListEntry.getKey();
-            List<AttributeValuesParam> valuesParams = map.get(key);
-            for (AttributeValuesParam valuesParam : valuesParams) {
-
-            }
-        }
-
-
-    }
-
-//    public List<CategoryRequest> getChildren(Long id, List<AttributeValues> values) {
-//        List<CategoryRequest> categoryRequests = new ArrayList<>();
-//
-//        for (AttributeValues value : values) {
-//            if (value.getAttributeId().equals(id)) {
-//                CategoryRequest categoryRequest = new CategoryRequest();
-//                categoryRequest.setAttributeId(id);
-//                categoryRequest.setValue(values);
-//            }
-//        }
-//        for (CategoryRequest categoryRequest : categoryRequests) {
-//            List<AttributeValues> value = categoryRequest.getValue();
-//            categoryRequest.setValue(getChildren(categoryRequest.getAttributeId(),categoryRequest.getValue()));
-//        }
-//        return categoryRequests;
-//    }
 }

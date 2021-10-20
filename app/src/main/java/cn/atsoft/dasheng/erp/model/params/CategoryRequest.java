@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class CategoryRequest {
-    private List<ItemAttributeParam>  spuRequests;
+
     private List<AttributeValues> value;
-    private Long attributeId;
+    private ItemAttribute attribute;
 }
