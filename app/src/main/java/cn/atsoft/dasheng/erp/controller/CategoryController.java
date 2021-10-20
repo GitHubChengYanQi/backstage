@@ -114,7 +114,7 @@ public class CategoryController extends BaseController {
 
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
-                    categoryRequest.setAttribute(itemAttribute);
+                    categoryRequest.setAttributeId(itemAttribute.getAttributeId());
                     List<AttributeValues> attributeValuesResults = new ArrayList<>();
 
                     for (AttributeValues attributeValue : attributeValues) {
