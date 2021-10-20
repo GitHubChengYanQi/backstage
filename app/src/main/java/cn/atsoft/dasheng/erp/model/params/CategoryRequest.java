@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.erp.model.result;
+package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class CategoryRequest {
-    private ItemAttribute attribute;
+    private List<ItemAttributeParam>  spuRequests;
     private List<AttributeValues> value;
+    private Long attributeId;
 }

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -25,7 +26,8 @@ import java.util.List;
 public class SpuParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    List<List<AttributeValues>> attributeValuesList;
+    private CategoryRequest spuAttributes;
+//    private List<ItemAttributeParam> spuAttributes;
 
     /**
      * 物品Id

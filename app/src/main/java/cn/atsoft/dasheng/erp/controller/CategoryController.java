@@ -5,9 +5,8 @@ import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
-import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
-import cn.atsoft.dasheng.erp.model.result.CategoryRequest;
-import cn.atsoft.dasheng.erp.model.result.CategoryResult;
+import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
+import cn.atsoft.dasheng.erp.model.params.CategoryResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -114,7 +113,7 @@ public class CategoryController extends BaseController {
 
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
-                    categoryRequest.setAttribute(itemAttribute);
+                    categoryRequest.setAttributeId(itemAttribute.getAttributeId());
                     List<AttributeValues> attributeValuesResults = new ArrayList<>();
 
                     for (AttributeValues attributeValue : attributeValues) {
