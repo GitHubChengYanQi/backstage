@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class SpuResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Category category;
+
+    private UnitResult unitResult;
 
     /**
      * 物品Id
