@@ -26,6 +26,11 @@ import java.util.List;
 public class GoodsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    /***
+     * 副标题
+     */
+
+    private String subtitle;
 
     /**
      * 库存
@@ -125,6 +130,7 @@ public class GoodsParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
     /**
      * 部门id
      */

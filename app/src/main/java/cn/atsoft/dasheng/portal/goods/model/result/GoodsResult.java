@@ -22,6 +22,11 @@ import java.util.List;
 public class GoodsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /***
+     * 副标题
+     */
+
+    private String subtitle;
     /**
      * 库存
      */

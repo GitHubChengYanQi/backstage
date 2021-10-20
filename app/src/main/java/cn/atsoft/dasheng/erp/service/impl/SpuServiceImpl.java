@@ -8,11 +8,13 @@ import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.mapper.SpuMapper;
+import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import  cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -28,10 +30,10 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Service
@@ -40,21 +42,22 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private CategoryService categoryService;
     @Autowired
     private SkuService skuService;
+
     @Transactional
     @Override
-    public void add(SpuParam param){
+    public void add(SpuParam param) {
         Spu entity = getEntity(param);
         this.save(entity);
         List<List<AttributeValues>> result = new ArrayList<List<AttributeValues>>();
 
-        descartes(param.getAttributeValuesList(),result,0,new ArrayList<AttributeValues>());
+        descartes(param.getAttributeValuesList(), result, 0, new ArrayList<AttributeValues>());
         List<String> nameIdsList = new ArrayList<>();
         for (List<AttributeValues> attributeValues : result) {
             StringBuffer stringBuffer = new StringBuffer();
             for (AttributeValues attributeValue : attributeValues) {
-                stringBuffer.append(attributeValue.getAttributeValuesId()+",");
+                stringBuffer.append(attributeValue.getAttributeValuesId() + ",");
             }
-            if (stringBuffer.length()>1) {
+            if (stringBuffer.length() > 1) {
                 stringBuffer.deleteCharAt(stringBuffer.length() - 1);
             }
             nameIdsList.add(stringBuffer.toString());
@@ -69,10 +72,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         skuService.saveBatch(skuList);
 
 
-
-
-
     }
+
     private static void descartes(List<List<AttributeValues>> dimvalue, List<List<AttributeValues>> result, int layer, List<AttributeValues> curList) {
         if (layer < dimvalue.size() - 1) {
             if (dimvalue.get(layer).size() == 0) {
@@ -98,12 +99,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
-    public void delete(SpuParam param){
+    public void delete(SpuParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(SpuParam param){
+    public void update(SpuParam param) {
         Spu oldEntity = getOldEntity(param);
         Spu newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -111,30 +112,31 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
-    public SpuResult findBySpec(SpuParam param){
+    public SpuResult findBySpec(SpuParam param) {
         return null;
     }
 
     @Override
-    public List<SpuResult> findListBySpec(SpuParam param){
+    public List<SpuResult> findListBySpec(SpuParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<SpuResult> findPageBySpec(SpuParam param){
+    public PageInfo<SpuResult> findPageBySpec(SpuParam param) {
         Page<SpuResult> pageContext = getPageContext();
         IPage<SpuResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<SpuResult> param){
+
+    private void format(List<SpuResult> param) {
         List<Long> categoryIds = new ArrayList<>();
         for (SpuResult spuResult : param) {
             categoryIds.add(spuResult.getCategoryId());
         }
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
-        categoryQueryWrapper.lambda().in(Category::getCategoryId,categoryIds);
-        List<Category> categoryList = categoryIds.size()==0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
+        categoryQueryWrapper.lambda().in(Category::getCategoryId, categoryIds);
+        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
 
         for (SpuResult spuResult : param) {
             for (Category category : categoryList) {
@@ -145,7 +147,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
     }
 
-    private Serializable getKey(SpuParam param){
+    private Serializable getKey(SpuParam param) {
         return param.getSpuId();
     }
 
@@ -163,4 +165,16 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         return entity;
     }
 
+    public void addTest(SpuParam param) {
+
+        for (int i = 0; i < param.getSpuRequests().size(); i++) {
+
+            SpuRequest spuRequest = param.getSpuRequests().get(i);
+
+            for (int j = 0; j < spuRequest.getAttributeValuesParams().size(); j++) {
+
+                AttributeValuesParam valuesParam = spuRequest.getAttributeValuesParams().get(j);
+            }
+        }
+    }
 }

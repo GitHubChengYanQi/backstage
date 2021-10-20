@@ -6,6 +6,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -14,10 +15,10 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Data
@@ -27,6 +28,8 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     List<List<AttributeValues>> attributeValuesList;
 
+
+    private List<SpuRequest> spuRequests;
     /**
      * 物品Id
      */

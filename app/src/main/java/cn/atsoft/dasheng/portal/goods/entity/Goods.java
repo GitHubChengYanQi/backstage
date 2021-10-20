@@ -26,6 +26,12 @@ import java.io.Serializable;
 public class Goods implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /***
+     * 副标题
+     */
+    @TableField("subtitle")
+    private String subtitle;
+
     /**
      * 库存
      */
@@ -275,6 +281,14 @@ public class Goods implements Serializable {
 
     public void setSales(Long sales) {
         this.sales = sales;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     @Override
