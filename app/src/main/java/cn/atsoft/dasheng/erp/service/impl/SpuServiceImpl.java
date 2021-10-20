@@ -9,7 +9,7 @@ import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuRequest;
-import cn.atsoft.dasheng.erp.model.result.CategoryRequest;
+
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;

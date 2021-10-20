@@ -3,7 +3,8 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
-import cn.atsoft.dasheng.erp.model.params.CategoryResult;
+
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

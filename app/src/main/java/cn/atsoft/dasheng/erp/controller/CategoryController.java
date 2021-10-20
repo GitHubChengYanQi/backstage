@@ -6,7 +6,8 @@ import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
-import cn.atsoft.dasheng.erp.model.params.CategoryResult;
+
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
