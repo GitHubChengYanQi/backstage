@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -40,6 +43,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private CategoryService categoryService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private UnitService unitService;
 
     @Transactional
     @Override
@@ -132,17 +137,28 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     private void format(List<SpuResult> param) {
         List<Long> categoryIds = new ArrayList<>();
+        List<Long> unitIds = new ArrayList<>();
         for (SpuResult spuResult : param) {
             categoryIds.add(spuResult.getCategoryId());
+            unitIds.add(spuResult.getUnitId());
         }
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.lambda().in(Category::getCategoryId, categoryIds);
         List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
 
+        List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.lambdaQuery().in(Unit::getUnitId, unitIds).list();
+
         for (SpuResult spuResult : param) {
             for (Category category : categoryList) {
                 if (spuResult.getCategoryId().equals(category.getCategoryId())) {
                     spuResult.setCategory(category);
+                }
+            }
+            for (Unit unit : units) {
+                if (spuResult.getUnitId()!= null && spuResult.getUnitId().equals(unit.getUnitId())) {
+                    UnitResult unitResult = new UnitResult();
+                    ToolUtil.copyProperties(unit, unitResult);
+                    spuResult.setUnitResult(unitResult);
                 }
             }
         }
