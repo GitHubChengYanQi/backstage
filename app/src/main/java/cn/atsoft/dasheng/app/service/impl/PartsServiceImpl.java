@@ -11,6 +11,9 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -19,6 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.JsonArray;
 import org.beetl.ext.fn.Json;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -35,6 +39,9 @@ import java.util.List;
  */
 @Service
 public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements PartsService {
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(PartRequest partRequest) {
@@ -105,10 +112,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     public void format(List<PartsResult> data) {
         List<Long> pids = new ArrayList<>();
+        List<Long> userIds = new ArrayList();
         for (PartsResult datum : data) {
             pids.add(datum.getPartsId());
+            userIds.add(datum.getCreateUser());
         }
         List<Parts> parts = this.lambdaQuery().in(Parts::getPartsId, pids).list();
+        List<User> users = userService.query().in("user_id", userIds).list();
+
         for (PartsResult datum : data) {
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {
@@ -119,6 +130,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
             datum.setPartsResults(partsResults);
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    datum.setUserResult(userResult);
+                    break;
+                }
+            }
         }
     }
 }

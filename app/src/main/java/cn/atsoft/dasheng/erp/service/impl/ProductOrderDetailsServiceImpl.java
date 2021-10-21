@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderDetailsMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderDetailsResult;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
@@ -16,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.alibaba.fastjson.JSON;
 
 import java.io.Serializable;
 import java.util.*;
@@ -117,31 +120,16 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
 
         List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds)
                 .list();
-
-
-        List<String> list = new ArrayList<>();
-        for (Sku sku : skus) {
-            List<String> asList = Arrays.asList(sku.getSkuName().split(","));
-            for (String s : asList) {
-                list.add(s);
+        //通过map取出对用的sku  获取json数据
+        Map<Long, String> map = new HashMap<>();
+        for (ProductOrderDetailsResult datum : data) {
+            for (Sku sku : skus) {
+                if (datum.getSpuId().equals(sku.getSkuId())) {
+                    map.put(datum.getSkuId(), sku.getSkuName());
+                }
             }
         }
-        //通过set去重
-        List<Long> pastLeep = pastLeep(list);
 
-        List<AttributeValues> attributeValues = attributeValuesService.query()
-                .in("attribute_values_id", pastLeep)
-                .list();
-        
-        List<Long> attributeIds = new ArrayList<>();
-        for (AttributeValues attributeValue : attributeValues) {
-            attributeIds.add(attributeValue.getAttributeId());
-        }
-        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attributeIds).list();
-        for (ItemAttribute itemAttribute : itemAttributes) {
-            
-        }
-    
 
         for (ProductOrderDetailsResult datum : data) {
             //返回产品订单
@@ -162,6 +150,14 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                     break;
                 }
             }
+
+            String s = map.get(datum.getSkuId());
+            SkuJson skuJson = JSON.parseObject(s, SkuJson.class);
+            List<SkuValuesRequest> list = new ArrayList<>();
+            for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
+                list.add(skuValuesRequest);
+            }
+            datum.setSkuValuesRequests(list);
         }
     }
 
