@@ -41,8 +41,6 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
     @Override
     public void add(ProductOrderParam param) {
-        long newMoney = param.getNumber() * param.getMoney();
-        param.setMoney((int) newMoney);
         ProductOrder entity = getEntity(param);
         this.save(entity);
     }

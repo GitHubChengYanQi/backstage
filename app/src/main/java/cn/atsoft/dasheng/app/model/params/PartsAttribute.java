@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class PartsAttribute {
 
-    private Long attribute;
-    private Long values;
+    private String attribute;
+    private String values;
 }
