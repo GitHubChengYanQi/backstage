@@ -46,12 +46,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void add(PartRequest partRequest) {
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.in("spu_id", partRequest.getSpuId());
+        partsQueryWrapper.in("pid", partRequest.getPid());
         this.remove(partsQueryWrapper);
         List<Parts> partsList = new ArrayList<>();
         for (PartsParam part : partRequest.getParts()) {
             Parts parts = new Parts();
-            parts.setSpuId(partRequest.getSpuId());
+            parts.setPid(partRequest.getPid());
+            parts.setSpuId(part.getSpuId());
             parts.setNote(part.getNote());
             parts.setNumber(part.getNumber());
             String toJsonStr = JSONUtil.toJsonStr(part.getPartsAttributes());
@@ -117,13 +118,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             pids.add(datum.getPartsId());
             userIds.add(datum.getCreateUser());
         }
-        List<Parts> parts = this.lambdaQuery().in(Parts::getPartsId, pids).list();
-        List<User> users = userService.query().in("user_id", userIds).list();
+        List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).list();
+        List<User> users =userIds.size()==0? new ArrayList<>(): userService.query().in("user_id", userIds).list();
 
         for (PartsResult datum : data) {
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {
-                if (part.getPartsId() != null && datum.getPartsId().equals(part.getPid())) {
+                if (datum.getPartsId() != null && datum.getPartsId().equals(part.getPid())) {
                     PartsResult partsResult = new PartsResult();
                     ToolUtil.copyProperties(part, partsResult);
                     partsResults.add(partsResult);

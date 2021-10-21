@@ -1,7 +1,11 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -12,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
@@ -50,6 +55,11 @@ public class SpuController extends BaseController {
 
     @Autowired
     private AttributeValuesService attributeValuesService;
+
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UnitService unitService;
 
 
     /**
@@ -158,6 +168,15 @@ public class SpuController extends BaseController {
                 }
             }
         }
+
+        Category category = categoryService.getById(detail.getCategoryId());
+        spuResult.setCategory(category);
+
+        Unit unit = unitService.getById(detail.getUnitId());
+        UnitResult unitResult = new UnitResult();
+        ToolUtil.copyProperties(unit, unitResult);
+        spuResult.setUnitResult(unitResult);
+
         ToolUtil.copyProperties(detail, spuResult);
 
         spuResult.setCategoryRequests(categoryRequests);

@@ -70,9 +70,11 @@ public class PageFactory {
                 }
             }
         }
-//        else {
-//            orderItemList = OrderItem.descs("create_time");
-//        }
+        else {
+            try {
+                orderItemList = OrderItem.descs("create_time");
+            }catch (Exception e){}
+        }
         pageObj.setOrders(orderItemList);
         return pageObj;
     }
