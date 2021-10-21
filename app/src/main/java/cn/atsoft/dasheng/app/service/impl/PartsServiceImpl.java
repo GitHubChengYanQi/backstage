@@ -39,7 +39,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void add(PartRequest partRequest) {
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.in("display", 1);
+        partsQueryWrapper.in("spu_id", partRequest.getSpuId());
         this.remove(partsQueryWrapper);
         List<Parts> partsList = new ArrayList<>();
         for (PartsParam part : partRequest.getParts()) {
