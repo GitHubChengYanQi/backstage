@@ -119,6 +119,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
             datum.setPartsResults(partsResults);
+            if (ToolUtil.isNotEmpty(datum.getAttribute())){
+                datum.setPartsAttributes(datum.getAttribute());
+            }
         }
     }
 }

@@ -31,6 +31,8 @@ public class PartsResult implements Serializable {
     @ApiModelProperty("清单id")
     private Long partsId;
 
+    private String partsAttributes;
+
     /**
      * 物料名称
      */
