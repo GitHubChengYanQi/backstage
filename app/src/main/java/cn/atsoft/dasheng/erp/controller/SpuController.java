@@ -1,9 +1,15 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +37,12 @@ import java.util.Map;
 public class SpuController extends BaseController {
     @Autowired
     private SpuService spuService;
+
+    @Autowired
+    private ItemAttributeService itemAttributeService;
+
+    @Autowired
+    private AttributeValuesService attributeValuesService;
 
 
     /**
@@ -84,7 +97,42 @@ public class SpuController extends BaseController {
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SpuResult spuResult = new SpuResult();
+
+        List<CategoryRequest> categoryRequests = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
+
+            List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
+                    .in(ItemAttribute::getCategoryId, detail.getCategoryId())
+                    .list();
+
+            if (ToolUtil.isNotEmpty(itemAttributes)) {
+                List<Long> attId = new ArrayList<>();
+                for (ItemAttribute itemAttribute : itemAttributes) {
+                    attId.add(itemAttribute.getAttributeId());
+                }
+                List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+                        .in(AttributeValues::getAttributeId, attId)
+                        .list();
+
+                for (ItemAttribute itemAttribute : itemAttributes) {
+                    CategoryRequest categoryRequest = new CategoryRequest();
+                    categoryRequest.setAttribute(itemAttribute);
+                    List<AttributeValues> attributeValuesResults = new ArrayList<>();
+
+                    for (AttributeValues attributeValue : attributeValues) {
+                        if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
+                            attributeValuesResults.add(attributeValue);
+                        }
+                    }
+                    categoryRequest.setValue(attributeValuesResults);
+                    categoryRequests.add(categoryRequest);
+                }
+            }
+        }
         ToolUtil.copyProperties(detail, spuResult);
+
+        spuResult.setCategoryRequests(categoryRequests);
+
         return ResponseData.success(spuResult);
     }
 
