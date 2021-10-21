@@ -26,6 +26,8 @@ public class SkuResult implements Serializable {
     private static final long serialVersionUID = 1L;
     List<SkuValuesResult> skuValuesResults;
     List<ItemAttributeValueResult> itemAttributeValueResults;
+
+
     private String categoryName;
 
     private String spuName;
@@ -37,6 +39,9 @@ public class SkuResult implements Serializable {
      */
     @ApiModelProperty("sku名字")
     private String skuName;
+
+    @ApiModelProperty("sku唯一标识")
+    private String skuValue;
 
     /**
      * spu id
