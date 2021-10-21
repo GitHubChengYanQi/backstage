@@ -130,8 +130,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
             }
             datum.setPartsResults(partsResults);
-            if (ToolUtil.isNotEmpty(datum.getAttribute())){
+            if (ToolUtil.isNotEmpty(datum.getAttribute())) {
                 datum.setPartsAttributes(datum.getAttribute());
+            }
             for (User user : users) {
                 if (user.getUserId().equals(datum.getCreateUser())) {
                     UserResult userResult = new UserResult();
