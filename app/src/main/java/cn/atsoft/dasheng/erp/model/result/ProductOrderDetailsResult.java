@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import lombok.Data;
 
@@ -25,7 +26,10 @@ public class ProductOrderDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private ProductOrderResult productOrderResult;
+
+    private List<AttributeValuesResult> attributeValuesResults;
 
     private SpuResult spuResult;
 

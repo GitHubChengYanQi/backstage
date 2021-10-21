@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.entity;
 
+import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
@@ -26,6 +27,7 @@ public class AttributeValues implements Serializable {
      */
     @TableField("attribute_id")
     private Long attributeId;
+
 
     private static final long serialVersionUID = 1L;
 
@@ -136,6 +138,8 @@ public class AttributeValues implements Serializable {
     public void setAttributeId(Long attributeId) {
         this.attributeId = attributeId;
     }
+
+
 
     @Override
     public String toString() {

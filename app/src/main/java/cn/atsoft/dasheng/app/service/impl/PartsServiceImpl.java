@@ -43,6 +43,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private UserService userService;
 
+
     @Override
     public void add(PartRequest partRequest) {
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();

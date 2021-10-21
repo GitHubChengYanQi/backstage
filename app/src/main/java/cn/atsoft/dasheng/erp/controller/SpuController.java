@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
@@ -10,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -43,6 +45,8 @@ public class SpuController extends BaseController {
 
     @Autowired
     private AttributeValuesService attributeValuesService;
+    @Autowired
+    private SkuService skuService;
 
 
     /**
@@ -97,6 +101,9 @@ public class SpuController extends BaseController {
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SpuResult spuResult = new SpuResult();
+//        List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
+//        for (Sku sku : skus) {
+//        }
 
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
