@@ -3,9 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.ProductOrder;
-import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
-import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderDetailsMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderDetailsResult;
@@ -14,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,6 +39,10 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     private ProductOrderService productOrderService;
     @Autowired
     private SpuService spuService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private AttributeValuesServiceImpl attributeValuesService;
 
     @Override
     public void add(ProductOrderDetailsParam param) {
@@ -99,16 +102,39 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     public void format(List<ProductOrderDetailsResult> data) {
         List<Long> orderIds = new ArrayList<>();
         List<Long> spuIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (ProductOrderDetailsResult datum : data) {
             orderIds.add(datum.getProductOrderId());
             spuIds.add(datum.getSpuId());
+            skuIds.add(datum.getSkuId());
         }
 
         List<ProductOrder> productOrders = orderIds.size() == 0 ? new ArrayList<>() : productOrderService.lambdaQuery()
                 .in(ProductOrder::getProductOrderId, orderIds)
                 .list();
 
-        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuId, spuIds).list();
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery()
+                .in(Spu::getSpuId, spuIds)
+                .list();
+
+//        List<Sku> skus = skuService.lambdaQuery().in(Sku::getSpuId, skuIds)
+//                .list();
+
+
+//        for (Sku sku : skus) {
+//            String[] split = sku.getSkuName().split(",");
+//            List<Long> skuNames = new ArrayList<>();
+//            for (String s : split) {
+//                skuNames.add(Long.valueOf(s));
+//            }
+//            List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+//                    .in(AttributeValues::getAttributeValuesId, skuNames)
+//                    .list();
+//
+//            for (AttributeValues attributeValue : attributeValues) {
+//
+//            }
+//        }
 
         for (ProductOrderDetailsResult datum : data) {
             //返回产品订单

@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.entity.ProductOrder;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
+import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -35,9 +36,13 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private ProductOrderDetailsService productOrderDetailsService;
 
     @Override
     public void add(ProductOrderParam param) {
+        long newMoney = param.getNumber() * param.getMoney();
+        param.setMoney((int) newMoney);
         ProductOrder entity = getEntity(param);
         this.save(entity);
     }
