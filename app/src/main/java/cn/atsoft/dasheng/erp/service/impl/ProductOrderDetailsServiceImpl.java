@@ -150,40 +150,40 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                     break;
                 }
             }
-            String s = map.get(datum.getSkuId());
-//            SkuJson skuJson = JSON.parseObject(s, SkuJson.class);
-            JSONArray jsonArray = JSONUtil.parseArray(s);
-            List<SkuValuesRequest> valuesRequests = JSONUtil.toList(jsonArray, SkuValuesRequest.class);
-            List<Long> attributeValueIds = new ArrayList<>();
-            for (SkuValuesRequest valuesRequest : valuesRequests) {
-                attributeValueIds.add(valuesRequest.getAttributeValueId());
-            }
-            List<AttributeValues> valuesList = attributeValueIds.size() == 0 ? new ArrayList<>() :
-                    attributeValuesService.query().in("attribute_values_id", attributeValueIds).list();
-            List<Long> attributeId = new ArrayList<>();
-            for (AttributeValues attributeValues : valuesList) {
-                attributeId.add(attributeValues.getAttributeId());
-            }
-            List<ItemAttribute> itemAttributes = attributeId.size() == 0 ? new ArrayList<>() :
-                    itemAttributeService.query().in("attribute_id", attributeId).list();
+//            String s = map.get(datum.getSkuId());
+////            SkuJson skuJson = JSON.parseObject(s, SkuJson.class);
+//            JSONArray jsonArray = JSONUtil.parseArray(s);
+//            List<SkuValuesRequest> valuesRequests = JSONUtil.toList(jsonArray, SkuValuesRequest.class);
+//            List<Long> attributeValueIds = new ArrayList<>();
+//            for (SkuValuesRequest valuesRequest : valuesRequests) {
+//                attributeValueIds.add(valuesRequest.getAttributeValueId());
+//            }
+//            List<AttributeValues> valuesList = attributeValueIds.size() == 0 ? new ArrayList<>() :
+//                    attributeValuesService.query().in("attribute_values_id", attributeValueIds).list();
+//            List<Long> attributeId = new ArrayList<>();
+//            for (AttributeValues attributeValues : valuesList) {
+//                attributeId.add(attributeValues.getAttributeId());
+//            }
+//            List<ItemAttribute> itemAttributes = attributeId.size() == 0 ? new ArrayList<>() :
+//                    itemAttributeService.query().in("attribute_id", attributeId).list();
 
-            List<AttributeValuesResult> attributeValuesResults = new ArrayList<>();
-            for (AttributeValues attributeValues : valuesList) {
-                AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
-                ToolUtil.copyProperties(attributeValues, attributeValuesResult);
-                attributeValuesResults.add(attributeValuesResult);
-            }
-            for (AttributeValuesResult attributeValuesResult : attributeValuesResults) {
-                for (ItemAttribute itemAttribute : itemAttributes) {
-                    if (attributeValuesResult.getAttributeId().equals(itemAttribute.getAttributeId())) {
-                        ItemAttributeResult attributeResult = new ItemAttributeResult();
-                        ToolUtil.copyProperties(itemAttribute, attributeResult);
-                        attributeValuesResult.setItemAttributeResult(attributeResult);
-                    }
-                }
-            }
+//            List<AttributeValuesResult> attributeValuesResults = new ArrayList<>();
+//            for (AttributeValues attributeValues : valuesList) {
+//                AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
+//                ToolUtil.copyProperties(attributeValues, attributeValuesResult);
+//                attributeValuesResults.add(attributeValuesResult);
+//            }
+//            for (AttributeValuesResult attributeValuesResult : attributeValuesResults) {
+//                for (ItemAttribute itemAttribute : itemAttributes) {
+//                    if (attributeValuesResult.getAttributeId().equals(itemAttribute.getAttributeId())) {
+//                        ItemAttributeResult attributeResult = new ItemAttributeResult();
+//                        ToolUtil.copyProperties(itemAttribute, attributeResult);
+//                        attributeValuesResult.setItemAttributeResult(attributeResult);
+//                    }
+//                }
+//            }
 
-            datum.setAttributeValuesResults(attributeValuesResults);
+//            datum.setAttributeValuesResults(attributeValuesResults);
 
             List<SkuValuesRequest> list = new ArrayList<>();
             datum.setSkuValuesRequests(list);

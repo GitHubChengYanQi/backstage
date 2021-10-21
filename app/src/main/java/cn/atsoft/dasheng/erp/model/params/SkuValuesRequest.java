@@ -6,7 +6,6 @@ import lombok.Data;
 public class SkuValuesRequest {
     private Long attributeId;
     private String valueName;
-
     private String attributeName;
     private Long attributeValueId;
 }

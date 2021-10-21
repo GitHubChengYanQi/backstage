@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
+import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
@@ -25,6 +27,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.alibaba.fastjson.JSON;
+import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -55,8 +58,6 @@ public class SpuController extends BaseController {
 
     @Autowired
     private AttributeValuesService attributeValuesService;
-    @Autowired
-    private SkuService skuService;
 
     @Autowired
     private CategoryService categoryService;
@@ -116,18 +117,49 @@ public class SpuController extends BaseController {
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SpuResult spuResult = new SpuResult();
-//        List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
-//        for (Sku sku : skus) {
-//        }
+        List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
+        List<SkuJson> skuJsons = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuJson skuJson = JSON.parseObject(sku.getSkuValue(), SkuJson.class);
+            skuJsons.add(skuJson);
+        }
+        List<Long> valueIds = new ArrayList<>();
+        for (SkuJson skuJson : skuJsons) {
+            for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
+                valueIds.add(skuValuesRequest.getAttributeValueId());
 
+            }
+        }
+        List<AttributeValues> attributeValuesList = attributeValuesService.query().in("attribute_values_id", valueIds).list();
+        List<Long> attributeIds = new ArrayList<>();
+
+        List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
+
+        for (AttributeValues attributeValues : attributeValuesList) {
+            AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
+            ToolUtil.copyProperties(attributeValues, attributeValuesResult);
+            attributeValuesResultList.add(attributeValuesResult);
+            attributeIds.add(attributeValues.getAttributeId());
+
+        }
+        List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", attributeIds).list();
+        for (AttributeValuesResult attributeValuesResult : attributeValuesResultList) {
+            for (ItemAttribute attribute : attributes) {
+                if (attributeValuesResult.getAttributeId().equals(attribute.getAttributeId())) {
+                    ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
+                    ToolUtil.copyProperties(attribute, itemAttributeResult);
+                    attributeValuesResult.setItemAttributeResult(itemAttributeResult);
+                }
+            }
+        }
+        //---------------------------------------------------------------------------------------------------------
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
-            List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSpuId).list();
+
             List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
                     .in(ItemAttribute::getCategoryId, detail.getCategoryId())
                     .list();
-            
-            List<List<SkuValuesRequest>> skuDetailList = new ArrayList<>();
+
 
             if (ToolUtil.isNotEmpty(itemAttributes)) {
                 List<Long> attId = new ArrayList<>();
@@ -141,34 +173,14 @@ public class SpuController extends BaseController {
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
                     categoryRequest.setAttribute(itemAttribute);
-                    List<AttributeValues> attributeValuesResults = new ArrayList<>();
-                    for (AttributeValues attributeValue : attributeValues) {
-                        for (Sku sku : skuList) {
-                            SkuJson skuJson= JSON.parseObject(sku.getSkuName(), SkuJson.class);
-
-
-
-                            SkuValuesRequest valueResult = new SkuValuesRequest();
-                            for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
-                                if (itemAttribute.getAttributeId().equals(valueResult.getAttributeId())){
-                                    valueResult.setAttributeName(itemAttribute.getAttribute());
-                                    if (valueResult.getAttributeValueId().equals(attributeValue.getAttributeValuesId())){
-                                        valueResult.setAttributeName(valueResult.getValueName());
-                                    }
-                                }
-                            }
-
-                            skuDetail.add(valueResult);
-                        }
-                    }
-                    skuDetailList.add(skuDetail);
+                    List<AttributeValues> attributeValuesResult = new ArrayList<>();
 
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                            attributeValuesResults.add(attributeValue);
+                            attributeValuesResult.add(attributeValue);
                         }
                     }
-                    categoryRequest.setValue(attributeValuesResults);
+                    categoryRequest.setValue(attributeValuesResult);
                     categoryRequests.add(categoryRequest);
                 }
             }
@@ -185,7 +197,7 @@ public class SpuController extends BaseController {
         ToolUtil.copyProperties(detail, spuResult);
 
         spuResult.setCategoryRequests(categoryRequests);
-
+        spuResult.setItemAttributeResults(attributeValuesResultList);
         return ResponseData.success(spuResult);
     }
 
