@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.params.PartRequest;
+import cn.atsoft.dasheng.app.model.params.PartsAttribute;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -9,9 +11,14 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.JsonArray;
+import org.beetl.ext.fn.Json;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -30,9 +37,21 @@ import java.util.List;
 public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements PartsService {
 
     @Override
-    public void add(PartsParam param) {
-        Parts entity = getEntity(param);
-        this.save(entity);
+    public void add(PartRequest partRequest) {
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.in("display", 1);
+        this.remove(partsQueryWrapper);
+        List<Parts> partsList = new ArrayList<>();
+        for (PartsParam part : partRequest.getParts()) {
+            Parts parts = new Parts();
+            parts.setSpuId(partRequest.getSpuId());
+            parts.setNote(part.getNote());
+            parts.setNumber(part.getNumber());
+            String toJsonStr = JSONUtil.toJsonStr(part.getPartsAttributes());
+            parts.setAttribute(toJsonStr);
+            partsList.add(parts);
+        }
+        this.saveBatch(partsList);
     }
 
     @Override

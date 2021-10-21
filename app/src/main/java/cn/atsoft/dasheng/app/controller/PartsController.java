@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -43,10 +44,9 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody PartsParam partsParam) {
-        List<String>  pidValue = partsParam.getPidValue();
-        partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
-        this.partsService.add(partsParam);
+    public ResponseData addItem(@RequestBody PartRequest partRequest) {
+
+        this.partsService.add(partRequest);
         return ResponseData.success();
     }
 

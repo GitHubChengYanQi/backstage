@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -24,7 +25,7 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-    void add(PartsParam param);
+    void add(PartRequest partRequest);
 
     /**
      * 删除
@@ -64,6 +65,6 @@ public interface PartsService extends IService<Parts> {
      * @author song
      * @Date 2021-10-21
      */
-     PageInfo<PartsResult> findPageBySpec(PartsParam param);
+    PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
 }
