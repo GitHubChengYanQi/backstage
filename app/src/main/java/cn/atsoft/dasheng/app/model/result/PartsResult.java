@@ -1,32 +1,26 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
  * 清单
  * </p>
  *
- * @author 1
- * @since 2021-07-14
+ * @author song
+ * @since 2021-10-21
  */
 @Data
 @ApiModel
 public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long items;
-    private  ItemsResult itemsResult;
-    private  ItemsResult item;
-    private String name;
+
+
     /**
      * 清单id
      */
@@ -37,29 +31,25 @@ public class PartsResult implements Serializable {
      * 物品id
      */
     @ApiModelProperty("物品id")
-    private Long itemId;
+    private Long spuId;
 
-  private String itemName;
-
-    private String brandName;
     /**
-     * 品牌id
+     * 规格描述
      */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
+    @ApiModelProperty("规格描述")
+    private String attribute;
+
+    /**
+     * 组成物品id
+     */
+    @ApiModelProperty("组成物品id")
+    private Long pid;
 
     /**
      * 零件数量
      */
     @ApiModelProperty("零件数量")
     private Integer number;
-
-    /**
-     * 状态
-     */
-
-    @ApiModelProperty("状态")
-    private Integer display;
 
     /**
      * 创建时间
@@ -84,7 +74,30 @@ public class PartsResult implements Serializable {
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
+
+    /**
+     * 零件名称
+     */
+    @ApiModelProperty("零件名称")
+    private String partName;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String note;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-    private Long deptId;
 }

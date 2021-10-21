@@ -104,24 +104,24 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     public void format(List<BrandResult> data) {
-        List<Long> brandIs = new ArrayList<>();
-        for (BrandResult datum : data) {
-            brandIs.add(datum.getBrandId());
-        }
-        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.in("brand_id", brandIs);
-        List<Parts> list = partsService.list(partsQueryWrapper);
-        partsService.getByIds(brandIs);
-
-        for (BrandResult datum : data) {
-            for (Parts parts : list) {
-                if (datum.getBrandId().equals(parts.getBrandId())) {
-                    PartsResult partsResult =new PartsResult();
-                    ToolUtil.copyProperties(parts,partsResult);
-                     datum.setPartsResult(partsResult);
-                     break;
-                }
-            }
-        }
+//        List<Long> brandIs = new ArrayList<>();
+//        for (BrandResult datum : data) {
+//            brandIs.add(datum.getBrandId());
+//        }
+//        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+//        partsQueryWrapper.in("brand_id", brandIs);
+//        List<Parts> list = partsService.list(partsQueryWrapper);
+//        partsService.getByIds(brandIs);
+//
+//        for (BrandResult datum : data) {
+//            for (Parts parts : list) {
+//                if (datum.getBrandId().equals(parts.getBrandId())) {
+//                    PartsResult partsResult =new PartsResult();
+//                    ToolUtil.copyProperties(parts,partsResult);
+//                     datum.setPartsResult(partsResult);
+//                     break;
+//                }
+//            }
+//        }
     }
 }
