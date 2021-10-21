@@ -31,6 +31,8 @@ public class SpuResult implements Serializable {
 
     private UnitResult unitResult;
 
+    private List<CategoryRequest> categoryRequests;
+
     /**
      * 物品Id
      */

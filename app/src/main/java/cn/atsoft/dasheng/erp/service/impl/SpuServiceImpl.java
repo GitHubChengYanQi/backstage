@@ -155,7 +155,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 }
             }
             for (Unit unit : units) {
-                if (spuResult.getUnitId().equals(unit.getUnitId())) {
+                if (spuResult.getUnitId() !=null && spuResult.getUnitId().equals(unit.getUnitId())) {
                     UnitResult unitResult = new UnitResult();
                     ToolUtil.copyProperties(unit, unitResult);
                     spuResult.setUnitResult(unitResult);
