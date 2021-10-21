@@ -35,6 +35,8 @@ public class SkuParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("sku名字")
     private String skuName;
+    @ApiModelProperty("sku唯一标识")
+    private String skuValue;
 
     /**
      * spu id

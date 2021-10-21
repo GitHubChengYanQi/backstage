@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class PartRequest {
     private List<PartsParam> parts;
-    private Long spuId;
+    private Long pid;
 }

@@ -9,12 +9,16 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SpuMapper;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -56,23 +57,26 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
 
         List<String> nameIdsList = new ArrayList<>();
-        for (List<String> attributeValues : result) {
-            StringBuffer stringBuffer = new StringBuffer();
-            for (String attributeValue : attributeValues) {
-                stringBuffer.append(attributeValue + ",");
-            }
-            if (stringBuffer.length() > 1) {
-                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-            }
-            nameIdsList.add(stringBuffer.toString());
-        }
         List<Sku> skuList = new ArrayList<>();
-        for (String s : nameIdsList) {
+        SkuJson skuJson = new SkuJson();
+        for (List<String> attributeValues : result) {
+            List<SkuValuesRequest> skuValuesRequests = new ArrayList<>();
+
+            for (String attributeValue : attributeValues) {
+                List<String> skuName = Arrays.asList(attributeValue.split(":"));
+                SkuValuesRequest valuesResult = new SkuValuesRequest();
+                valuesResult.setAttributeId(Long.valueOf(skuName.get(0)));
+                valuesResult.setAttributeValueId(Long.valueOf(skuName.get(1)));
+                skuValuesRequests.add(valuesResult);
+            }
+            skuJson.setSkuValuesRequests(skuValuesRequests);
             Sku sku = new Sku();
-            sku.setSkuName(s);
+            sku.setSkuName(JSON.toJSONString(skuJson));
             sku.setSpuId(param.getSpuId());
             skuList.add(sku);
         }
+
+
         skuService.saveBatch(skuList);
 
 //        skuService.saveBatch(skuList);
@@ -87,7 +91,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             } else {
                 for (int i = 0; i < dimvalue.get(layer).getAttributeValuesParams().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
+                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeId().toString()+":"+dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
                     descartes1(dimvalue, result, layer + 1, list);
                 }
             }
@@ -97,7 +101,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             } else {
                 for (int i = 0; i < dimvalue.get(layer).getAttributeValuesParams().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
+                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeId().toString()+":"+dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
                     result.add(list);
                 }
             }

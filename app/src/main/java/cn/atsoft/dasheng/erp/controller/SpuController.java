@@ -1,15 +1,22 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
-import cn.atsoft.dasheng.erp.model.result.CategoryResult;
+import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
@@ -17,6 +24,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -41,12 +49,19 @@ public class SpuController extends BaseController {
     private SpuService spuService;
 
     @Autowired
+    private SkuService skuService;
+    @Autowired
     private ItemAttributeService itemAttributeService;
 
     @Autowired
     private AttributeValuesService attributeValuesService;
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private UnitService unitService;
 
 
     /**
@@ -107,10 +122,12 @@ public class SpuController extends BaseController {
 
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
-
+            List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSpuId).list();
             List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
                     .in(ItemAttribute::getCategoryId, detail.getCategoryId())
                     .list();
+            
+            List<List<SkuValuesRequest>> skuDetailList = new ArrayList<>();
 
             if (ToolUtil.isNotEmpty(itemAttributes)) {
                 List<Long> attId = new ArrayList<>();
@@ -120,11 +137,31 @@ public class SpuController extends BaseController {
                 List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
-
+                List<SkuValuesRequest> skuDetail = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
                     categoryRequest.setAttribute(itemAttribute);
                     List<AttributeValues> attributeValuesResults = new ArrayList<>();
+                    for (AttributeValues attributeValue : attributeValues) {
+                        for (Sku sku : skuList) {
+                            SkuJson skuJson= JSON.parseObject(sku.getSkuName(), SkuJson.class);
+
+
+
+                            SkuValuesRequest valueResult = new SkuValuesRequest();
+                            for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
+                                if (itemAttribute.getAttributeId().equals(valueResult.getAttributeId())){
+                                    valueResult.setAttributeName(itemAttribute.getAttribute());
+                                    if (valueResult.getAttributeValueId().equals(attributeValue.getAttributeValuesId())){
+                                        valueResult.setAttributeName(valueResult.getValueName());
+                                    }
+                                }
+                            }
+
+                            skuDetail.add(valueResult);
+                        }
+                    }
+                    skuDetailList.add(skuDetail);
 
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
@@ -136,6 +173,15 @@ public class SpuController extends BaseController {
                 }
             }
         }
+
+        Category category = categoryService.getById(detail.getCategoryId());
+        spuResult.setCategory(category);
+
+        Unit unit = unitService.getById(detail.getUnitId());
+        UnitResult unitResult = new UnitResult();
+        ToolUtil.copyProperties(unit, unitResult);
+        spuResult.setUnitResult(unitResult);
+
         ToolUtil.copyProperties(detail, spuResult);
 
         spuResult.setCategoryRequests(categoryRequests);
