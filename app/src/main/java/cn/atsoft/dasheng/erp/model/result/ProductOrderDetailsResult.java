@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +28,8 @@ public class ProductOrderDetailsResult implements Serializable {
     private ProductOrderResult productOrderResult;
 
     private SpuResult spuResult;
+
+    private List<SkuValuesRequest> skuValuesRequests;
 
     /**
      * 产品订单详情id
