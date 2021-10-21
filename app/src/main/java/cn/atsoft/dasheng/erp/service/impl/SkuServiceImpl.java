@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
+import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuValuesResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -16,6 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.jsonwebtoken.lang.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -43,6 +46,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private CategoryService categoryService;
     @Autowired
     private AttributeValuesService attributeValuesService;
+    @Autowired
+    private ItemAttributeService itemAttributeService;
     @Transactional
     @Override
     public void add(SkuParam param){
@@ -100,6 +105,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> skuId = new ArrayList<>();
         List<Long> categoryIds = new ArrayList<>();
         List<Long> inSkuNameList = new ArrayList<>();
+        List<List<String>> skuNameByList = new ArrayList<>();
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
             skuId.add(skuResult.getSkuId());
@@ -108,6 +114,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 inSkuNameList.add(Long.valueOf(s));
             }
         }
+        inSkuNameList.stream().distinct().collect(Collectors.toList());
+
+        List<Long> attributeIds = new ArrayList<>();
+        QueryWrapper<AttributeValues>  queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
+        List<AttributeValues> list = inSkuNameList.size()==0?new ArrayList<>() : attributeValuesService.list(queryWrapper1);
+        for (AttributeValues attributeValues : list) {
+            attributeIds.add( attributeValues.getAttributeId());
+        }
+        attributeIds.stream().distinct().collect(Collectors.toList());
+
+        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
+        itemAttributeQueryWrapper.lambda().in(ItemAttribute::getAttributeId,attributeIds);
+        List<ItemAttribute> itemAttributes = inSkuNameList.size() == 0?new ArrayList<>() : itemAttributeService.list(itemAttributeQueryWrapper);
+
+
         QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
         attributeValuesQueryWrapper.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
         List<AttributeValues> attributeValuesList = inSkuNameList.size() == 0 ? new ArrayList<>(): attributeValuesService.list(attributeValuesQueryWrapper);
@@ -135,19 +157,28 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     }
                 }
             }
-            StringBuffer stringBuffer = new StringBuffer();
+            List<ItemAttributeValueResult> wc = new ArrayList<>();
             List<String> resultSkuName = Arrays.asList(skuResult.getSkuName().split(","));
             for (String s : resultSkuName) {
+                ItemAttributeValueResult valueResult = new ItemAttributeValueResult();
                 for (AttributeValues attributeValues : attributeValuesList) {
-                    if (s.equals(attributeValues.getAttributeValuesId().toString())) {
-                        stringBuffer.append(attributeValues.getAttributeValues()+",");
+                    if (Long.valueOf(s).equals(attributeValues.getAttributeValuesId())){
+                        valueResult.setValueId(attributeValues.getAttributeValuesId());
+                        valueResult.setValueName(attributeValues.getAttributeValues());
+                        for (ItemAttribute itemAttribute : itemAttributes) {
+                            if (attributeValues.getAttributeId().equals(itemAttribute.getAttributeId())) {
+                                valueResult.setAttributeName(itemAttribute.getAttribute());
+                                valueResult.setAttributeId(itemAttribute.getAttributeId());
+                            }
+                        }
                     }
                 }
+                wc.add(valueResult);
             }
-            if (stringBuffer.length()>1) {
-                stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-            }
-            skuResult.setCategoryName(stringBuffer.toString());
+            skuResult.setItemAttributeValueResults(wc);
+
+
+
 
         }
 

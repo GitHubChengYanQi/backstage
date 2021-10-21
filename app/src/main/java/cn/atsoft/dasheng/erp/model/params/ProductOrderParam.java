@@ -1,48 +1,53 @@
-package cn.atsoft.dasheng.erp.model.result;
+package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.erp.entity.SkuValues;
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * sku表
+ * 产品订单
  * </p>
  *
- * @author
- * @since 2021-10-18
+ * @author song
+ * @since 2021-10-20
  */
 @Data
 @ApiModel
-public class SkuResult implements Serializable {
+public class ProductOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    List<SkuValuesResult> skuValuesResults;
-    List<ItemAttributeValueResult> itemAttributeValueResults;
-    private String categoryName;
 
-    private String spuName;
-    @ApiModelProperty("")
-    private Long skuId;
 
     /**
-     * sku名字
+     * 产品订单id
      */
-    @ApiModelProperty("sku名字")
-    private String skuName;
+    @ApiModelProperty("产品订单id")
+    private Long productOrderId;
 
     /**
-     * spu id
+     * 数量
      */
-    @ApiModelProperty("spu id")
-    private Long spuId;
+    @ApiModelProperty("数量")
+    private Long number;
+
+    /**
+     * 总金额
+     */
+    @ApiModelProperty("总金额")
+    private Integer money;
+
+    /**
+     * 订购客户Id
+     */
+    @ApiModelProperty("订购客户Id")
+    private Long customerId;
 
     /**
      * 创建时间
@@ -73,6 +78,19 @@ public class SkuResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

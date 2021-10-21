@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.erp.entity.SkuValues;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,36 +14,43 @@ import java.util.List;
 
 /**
  * <p>
- * sku表
+ * 产品订单
  * </p>
  *
- * @author
- * @since 2021-10-18
+ * @author song
+ * @since 2021-10-20
  */
 @Data
 @ApiModel
-public class SkuResult implements Serializable {
+public class ProductOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<SkuValuesResult> skuValuesResults;
-    List<ItemAttributeValueResult> itemAttributeValueResults;
-    private String categoryName;
 
-    private String spuName;
-    @ApiModelProperty("")
-    private Long skuId;
+    private List<ProductOrderDetails> productOrderDetails;
+    private CustomerResult customerResult;
+    /**
+     * 产品订单id
+     */
+    @ApiModelProperty("产品订单id")
+    private Long productOrderId;
 
     /**
-     * sku名字
+     * 数量
      */
-    @ApiModelProperty("sku名字")
-    private String skuName;
+    @ApiModelProperty("数量")
+    private Long number;
 
     /**
-     * spu id
+     * 总金额
      */
-    @ApiModelProperty("spu id")
-    private Long spuId;
+    @ApiModelProperty("总金额")
+    private Integer money;
+
+    /**
+     * 订购客户Id
+     */
+    @ApiModelProperty("订购客户Id")
+    private Long customerId;
 
     /**
      * 创建时间
@@ -73,6 +81,12 @@ public class SkuResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
