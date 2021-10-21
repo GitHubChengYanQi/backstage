@@ -9,11 +9,8 @@ import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderDetailsResult;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
-import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.ProductOrderService;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SpuService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,8 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -43,6 +39,8 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     private SkuService skuService;
     @Autowired
     private AttributeValuesServiceImpl attributeValuesService;
+    @Autowired
+    private ItemAttributeService itemAttributeService;
 
     @Override
     public void add(ProductOrderDetailsParam param) {
@@ -117,24 +115,33 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                 .in(Spu::getSpuId, spuIds)
                 .list();
 
-//        List<Sku> skus = skuService.lambdaQuery().in(Sku::getSpuId, skuIds)
-//                .list();
+        List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds)
+                .list();
 
 
-//        for (Sku sku : skus) {
-//            String[] split = sku.getSkuName().split(",");
-//            List<Long> skuNames = new ArrayList<>();
-//            for (String s : split) {
-//                skuNames.add(Long.valueOf(s));
-//            }
-//            List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
-//                    .in(AttributeValues::getAttributeValuesId, skuNames)
-//                    .list();
-//
-//            for (AttributeValues attributeValue : attributeValues) {
-//
-//            }
-//        }
+        List<String> list = new ArrayList<>();
+        for (Sku sku : skus) {
+            List<String> asList = Arrays.asList(sku.getSkuName().split(","));
+            for (String s : asList) {
+                list.add(s);
+            }
+        }
+        //通过set去重
+        List<Long> pastLeep = pastLeep(list);
+
+        List<AttributeValues> attributeValues = attributeValuesService.query()
+                .in("attribute_values_id", pastLeep)
+                .list();
+        
+        List<Long> attributeIds = new ArrayList<>();
+        for (AttributeValues attributeValue : attributeValues) {
+            attributeIds.add(attributeValue.getAttributeId());
+        }
+        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attributeIds).list();
+        for (ItemAttribute itemAttribute : itemAttributes) {
+            
+        }
+    
 
         for (ProductOrderDetailsResult datum : data) {
             //返回产品订单
@@ -156,5 +163,16 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                 }
             }
         }
+    }
+
+    public static List<Long> pastLeep(List<String> list) {
+        List<Long> newList = new ArrayList<>();
+        Set set = new HashSet();
+        for (String str : list) {
+            if (set.add(str)) {
+                newList.add(Long.valueOf(str));
+            }
+        }
+        return newList;
     }
 }

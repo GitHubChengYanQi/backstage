@@ -90,7 +90,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             pids.add(datum.getPartsId());
         }
         List<Parts> parts = this.lambdaQuery().in(Parts::getPartsId, pids).list();
-
         for (PartsResult datum : data) {
             List<PartsResult> partsResults = new ArrayList<>();
             for (Parts part : parts) {

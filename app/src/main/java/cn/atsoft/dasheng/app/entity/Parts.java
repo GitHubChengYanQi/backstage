@@ -28,7 +28,7 @@ public class Parts implements Serializable {
     private Long partsId;
 
     /**
-     * 物品id
+     * 物料名称
      */
     @TableField("spu_id")
     private Long spuId;
