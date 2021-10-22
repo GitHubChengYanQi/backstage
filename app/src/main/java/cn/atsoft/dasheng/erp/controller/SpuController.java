@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -117,8 +119,8 @@ public class SpuController extends BaseController {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
-        List<SpuRequest> spuRequestList = new ArrayList<>();
-        List<SpuRequest> requests = new ArrayList<>();
+        List<List<SkuJson>> requests = new ArrayList<>();
+
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
 
@@ -145,29 +147,32 @@ public class SpuController extends BaseController {
 
                     JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-                    List<ItemAttributeParam> list = new ArrayList<>();
+                    List<SkuJson> list = new ArrayList<>();
                     for (AttributeValues valuesRequest : valuesRequests) {
                         valuesRequest.getAttributeValuesId();
                         valuesRequest.getAttributeId();
-                        ItemAttributeParam itemAttributeParam = new ItemAttributeParam();
+                        SkuJson skuJson = new SkuJson();
                         for (ItemAttribute itemAttribute : itemAttributes) {
                             if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-                                itemAttributeParam.setAttributeId(itemAttribute.getAttributeId());
-                                itemAttributeParam.setAttribute(itemAttribute.getAttribute());
+                                Attribute attribute = new Attribute();
+                                attribute.setAttributeId(itemAttribute.getAttributeId().toString());
+                                attribute.setAttribute(itemAttribute.getAttribute());
+                                skuJson.setAttribute(attribute);
                             }
                         }
                         for (AttributeValues attributeValue : attributeValues) {
                             if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())){
                                 AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
-                                attributeValuesParam.setAttributeValuesId(valuesRequest.getAttributeValuesId());
-                                attributeValuesParam.setAttributeValues(attributeValue.getAttributeValues());
-                                itemAttributeParam.setAttributeValuesParam(attributeValuesParam);
+                                Values values = new Values();
+                                values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
+                                values.setAttributeValues(attributeValue.getAttributeValues());
+                                skuJson.setValues(values);
                             }
                         }
-                        list.add(itemAttributeParam);
+                        list.add(skuJson);
                     }
-                    spuRequest.setSpuRequests(list);
-                    requests.add(spuRequest);
+
+                    requests.add(list);
                 }
 
                 List<SkuValuesRequest> skuDetail = new ArrayList<>();

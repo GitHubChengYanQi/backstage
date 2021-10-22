@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.app.model.params.Values;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class SkuJson {
-    private List<SkuValuesRequest> skuValuesRequests;
+    private Attribute attribute;
+    private Values values;
 }
