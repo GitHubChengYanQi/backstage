@@ -1,18 +1,21 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
-import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
-import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SkuValuesResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -101,86 +104,58 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     private void format(List<SkuResult> param){
-        List<Long> spuId = new ArrayList<>();
-        List<Long> skuId = new ArrayList<>();
-        List<Long> categoryIds = new ArrayList<>();
-        List<Long> inSkuNameList = new ArrayList<>();
-        List<List<String>> skuNameByList = new ArrayList<>();
-        for (SkuResult skuResult : param) {
-            spuId.add(skuResult.getSpuId());
-            skuId.add(skuResult.getSkuId());
-            List<String> skuName = skuResult.getSkuName() != null ? Arrays.asList(skuResult.getSkuName().split(",")) : new ArrayList<>();
-            for (String s : skuName) {
-//                inSkuNameList.add(Long.valueOf(s));
-            }
-        }
-        inSkuNameList.stream().distinct().collect(Collectors.toList());
 
+        List<Long> spuIds = new ArrayList<>();
+        List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
-        QueryWrapper<AttributeValues>  queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
-        List<AttributeValues> list = inSkuNameList.size()==0?new ArrayList<>() : attributeValuesService.list(queryWrapper1);
-        for (AttributeValues attributeValues : list) {
-            attributeIds.add( attributeValues.getAttributeId());
+        for (SkuResult skuResult : param) {
+            JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            for (AttributeValues valuesRequest : valuesRequests) {
+                valuesIds.add(valuesRequest.getAttributeValuesId());
+                attributeIds.add(valuesRequest.getAttributeId());
+            }
         }
-        attributeIds.stream().distinct().collect(Collectors.toList());
+        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
 
-        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
-        itemAttributeQueryWrapper.lambda().in(ItemAttribute::getAttributeId,attributeIds);
-        List<ItemAttribute> itemAttributes = inSkuNameList.size() == 0?new ArrayList<>() : itemAttributeService.list(itemAttributeQueryWrapper);
-
-
-        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
-        attributeValuesQueryWrapper.lambda().in(AttributeValues::getAttributeValuesId,inSkuNameList);
-        List<AttributeValues> attributeValuesList = inSkuNameList.size() == 0 ? new ArrayList<>(): attributeValuesService.list(attributeValuesQueryWrapper);
-        //查询商品名称
-        QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
-        spuQueryWrapper.lambda().in(Spu::getSpuId,spuId);
-        List<Spu> spuList =  spuId.size() == 0 ? new ArrayList<>() :spuService.list(spuQueryWrapper);
-
-        for (Spu spu : spuList) {
-            categoryIds.add(spu.getCategoryId());
-        }
-
-        QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().in(Category::getCategoryId,categoryIds);
-        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(queryWrapper);
+        List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+                .in(AttributeValues::getAttributeId, attributeIds)
+                .list();
 
         for (SkuResult skuResult : param) {
-            for (Spu spu : spuList) {
-                if (skuResult.getSpuId().equals(spu.getSpuId())) {
-                    skuResult.setSpuName(spu.getName());
-                    for (Category category : categoryList) {
-                        if (spu.getCategoryId().equals(category.getCategoryId())){
-                            skuResult.setCategoryName(category.getCategoryName());
-                        }
+            JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            SpuRequest spuRequest = new SpuRequest();
+            List<SkuJson> list = new ArrayList<>();
+            for (AttributeValues valuesRequest : valuesRequests) {
+                valuesRequest.getAttributeValuesId();
+                valuesRequest.getAttributeId();
+                SkuJson skuJson = new SkuJson();
+                for (ItemAttribute itemAttribute : itemAttributes) {
+                    if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                        Attribute attribute = new Attribute();
+                        attribute.setAttributeId(itemAttribute.getAttributeId().toString());
+                        attribute.setAttribute(itemAttribute.getAttribute());
+                        skuJson.setAttribute(attribute);
                     }
                 }
-            }
-            List<ItemAttributeValueResult> wc = new ArrayList<>();
-            List<String> resultSkuName = skuResult.getSkuName() != null ? Arrays.asList(skuResult.getSkuName().split(",")) : new ArrayList<>();
-            for (String s : resultSkuName) {
-                ItemAttributeValueResult valueResult = new ItemAttributeValueResult();
-                for (AttributeValues attributeValues : attributeValuesList) {
-                    if (Long.valueOf(s).equals(attributeValues.getAttributeValuesId())){
-                        valueResult.setValueId(attributeValues.getAttributeValuesId());
-                        valueResult.setValueName(attributeValues.getAttributeValues());
-                        for (ItemAttribute itemAttribute : itemAttributes) {
-                            if (attributeValues.getAttributeId().equals(itemAttribute.getAttributeId())) {
-                                valueResult.setAttributeName(itemAttribute.getAttribute());
-                                valueResult.setAttributeId(itemAttribute.getAttributeId());
-                            }
-                        }
+                for (AttributeValues attributeValue : attributeValues) {
+                    if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+                        AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
+                        Values values = new Values();
+                        values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
+                        values.setAttributeValues(attributeValue.getAttributeValues());
+                        skuJson.setValues(values);
                     }
                 }
-                wc.add(valueResult);
+                list.add(skuJson);
             }
-            skuResult.setItemAttributeValueResults(wc);
-
-
-
+            skuResult.setSkuJsons(list);
 
         }
+
+
+
 
 
     }

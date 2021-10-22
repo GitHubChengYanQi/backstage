@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.SkuValues;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +27,7 @@ public class SkuResult implements Serializable {
     private static final long serialVersionUID = 1L;
     List<SkuValuesResult> skuValuesResults;
     List<ItemAttributeValueResult> itemAttributeValueResults;
+    List<SkuJson> skuJsons;
 
 
     private String categoryName;
