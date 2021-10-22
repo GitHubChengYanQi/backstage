@@ -130,7 +130,7 @@ public class SpuController extends BaseController {
 
             }
         }
-        List<AttributeValues> attributeValuesList = attributeValuesService.query().in("attribute_values_id", valueIds).list();
+        List<AttributeValues> attributeValuesList = valueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", valueIds).list();
         List<Long> attributeIds = new ArrayList<>();
 
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
@@ -142,7 +142,7 @@ public class SpuController extends BaseController {
             attributeIds.add(attributeValues.getAttributeId());
 
         }
-        List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", attributeIds).list();
+        List<ItemAttribute> attributes = attributeIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attributeIds).list();
         for (AttributeValuesResult attributeValuesResult : attributeValuesResultList) {
             for (ItemAttribute attribute : attributes) {
                 if (attributeValuesResult.getAttributeId().equals(attribute.getAttributeId())) {
