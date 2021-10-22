@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -37,6 +38,10 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     private String skuName;
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
+
+    @ApiModelProperty("sku加密")
+    private String skuValueMd5;
+
 
     /**
      * spu id

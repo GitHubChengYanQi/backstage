@@ -33,6 +33,17 @@ public class Sku implements Serializable {
     @TableField("sku_value")
     private String skuValue;
 
+    @TableField("sku_value_md5")
+    private String skuValueMd5;
+
+    public String getSkuValueMd5() {
+        return skuValueMd5;
+    }
+
+    public void setSkuValueMd5(String skuValueMd5) {
+        this.skuValueMd5 = skuValueMd5;
+    }
+
     public String getSkuValue() {
         return skuValue;
     }
