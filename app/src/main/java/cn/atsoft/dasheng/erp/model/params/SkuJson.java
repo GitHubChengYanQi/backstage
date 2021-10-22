@@ -4,8 +4,6 @@ import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class SkuJson {
     private Attribute attribute;

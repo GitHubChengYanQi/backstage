@@ -1,7 +1,5 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import lombok.Data;
 

@@ -11,16 +11,11 @@ import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.hutool.crypto.digest.DigestAlgorithm;
-import cn.hutool.crypto.digest.Digester;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.alibaba.fastjson.JSON;
 
 import java.io.Serializable;
 import java.util.*;
