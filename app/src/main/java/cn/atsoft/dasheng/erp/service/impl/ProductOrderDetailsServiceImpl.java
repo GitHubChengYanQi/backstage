@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.mapper.ProductOrderDetailsMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
+import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -118,15 +119,20 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                 .in(Spu::getSpuId, spuIds)
                 .list();
 
-        List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds)
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSpuId, spuIds)
                 .list();
         //通过map取出对用的sku  获取json数据
-        Map<Long, String> map = new HashMap<>();
+        Map<Long, List<String>> map = new HashMap<>();
         for (ProductOrderDetailsResult datum : data) {
-            for (Sku sku : skus) {
-                if (datum.getSkuId() != null && datum.getSkuId().equals(sku.getSkuId())) {
-                    map.put(datum.getSkuId(), sku.getSkuName());
+            List<String> skuValues = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (datum.getSpuId().equals(sku.getSpuId())) {
+                        skuValues.add(sku.getSkuValue());
+                    }
+
                 }
+                map.put(datum.getSpuId(), skuValues);
             }
         }
 
@@ -150,46 +156,20 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                     break;
                 }
             }
-//            String s = map.get(datum.getSkuId());
-////            SkuJson skuJson = JSON.parseObject(s, SkuJson.class);
-//            JSONArray jsonArray = JSONUtil.parseArray(s);
-//            List<SkuValuesRequest> valuesRequests = JSONUtil.toList(jsonArray, SkuValuesRequest.class);
-//            List<Long> attributeValueIds = new ArrayList<>();
-//            for (SkuValuesRequest valuesRequest : valuesRequests) {
-//                attributeValueIds.add(valuesRequest.getAttributeValueId());
-//            }
-//            List<AttributeValues> valuesList = attributeValueIds.size() == 0 ? new ArrayList<>() :
-//                    attributeValuesService.query().in("attribute_values_id", attributeValueIds).list();
-//            List<Long> attributeId = new ArrayList<>();
-//            for (AttributeValues attributeValues : valuesList) {
-//                attributeId.add(attributeValues.getAttributeId());
-//            }
-//            List<ItemAttribute> itemAttributes = attributeId.size() == 0 ? new ArrayList<>() :
-//                    itemAttributeService.query().in("attribute_id", attributeId).list();
-
-//            List<AttributeValuesResult> attributeValuesResults = new ArrayList<>();
-//            for (AttributeValues attributeValues : valuesList) {
-//                AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
-//                ToolUtil.copyProperties(attributeValues, attributeValuesResult);
-//                attributeValuesResults.add(attributeValuesResult);
-//            }
-//            for (AttributeValuesResult attributeValuesResult : attributeValuesResults) {
-//                for (ItemAttribute itemAttribute : itemAttributes) {
-//                    if (attributeValuesResult.getAttributeId().equals(itemAttribute.getAttributeId())) {
-//                        ItemAttributeResult attributeResult = new ItemAttributeResult();
-//                        ToolUtil.copyProperties(itemAttribute, attributeResult);
-//                        attributeValuesResult.setItemAttributeResult(attributeResult);
-//                    }
-//                }
-//            }
-
-//            datum.setAttributeValuesResults(attributeValuesResults);
-
-            List<SkuValuesRequest> list = new ArrayList<>();
-            datum.setSkuValuesRequests(list);
+            //通过map获取skuvalues 集合  便利集合 解析json 并返回
+            List<String> values = map.get(datum.getSpuId());
+            if (ToolUtil.isNotEmpty(values)) {
+                List<SpuRequest> spuRequests = new ArrayList<>();
+                for (String value : values) {
+                    SpuRequest spuRequest = JSON.parseObject(value, SpuRequest.class);
+                    spuRequests.add(spuRequest);
+                }
+                datum.setSpuRequests(spuRequests);
+            }
         }
     }
 
+    //通过set去重
     public static List<Long> pastLeep(List<String> list) {
         List<Long> newList = new ArrayList<>();
         Set set = new HashSet();
