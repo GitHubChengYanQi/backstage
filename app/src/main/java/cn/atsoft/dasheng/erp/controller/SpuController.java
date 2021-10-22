@@ -120,10 +120,6 @@ public class SpuController extends BaseController {
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
 
-
-        List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
-
-        //---------------------------------------------------------------------------------------------------------
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
 
@@ -141,24 +137,24 @@ public class SpuController extends BaseController {
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
 
-                for (Sku sku : skus) {
-                    SpuRequest spuRequest = JSON.parseObject(sku.getSkuValue(), SpuRequest.class);
-                    for (ItemAttributeParam request : spuRequest.getSpuRequests()) {
-                        for (ItemAttribute itemAttribute : itemAttributes) {
-                            if (itemAttribute.getAttributeId().equals(request.getAttributeId())) {
-                                request.setAttribute(itemAttribute.getAttribute());
-                            }
-                        }
-                        for (AttributeValues attributeValue : attributeValues) {
-                            if (request.getAttributeValuesParam().getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                request.getAttributeValuesParam().setAttributeValues(attributeValue.getAttributeValues());
-                            }
-                        }
-
-                    }
-                    spuRequestList.add(spuRequest);
-
-                }
+//                for (Sku sku : skus) {
+//                    SpuRequest spuRequest = JSON.parseObject(sku.getSkuValue(), SpuRequest.class);
+//                    for (ItemAttributeParam request : spuRequest.getSpuRequests()) {
+//                        for (ItemAttribute itemAttribute : itemAttributes) {
+//                            if (itemAttribute.getAttributeId().equals(request.getAttributeId())) {
+//                                request.setAttribute(itemAttribute.getAttribute());
+//                            }
+//                        }
+//                        for (AttributeValues attributeValue : attributeValues) {
+//                            if (request.getAttributeValuesParam().getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+//                                request.getAttributeValuesParam().setAttributeValues(attributeValue.getAttributeValues());
+//                            }
+//                        }
+//
+//                    }
+//                    spuRequestList.add(spuRequest);
+//
+//                }
 
                 List<SkuValuesRequest> skuDetail = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
