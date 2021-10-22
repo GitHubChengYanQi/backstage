@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.crypto.digest.DigestAlgorithm;
+import cn.hutool.crypto.digest.Digester;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -180,4 +182,6 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
         }
         return newList;
     }
+
+
 }

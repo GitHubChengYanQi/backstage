@@ -121,7 +121,7 @@ public class SpuController extends BaseController {
         List<SpuRequest> requests = new ArrayList<>();
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
-        //---------------------------------------------------------------------------------------------------------
+
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
 
