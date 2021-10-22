@@ -109,9 +109,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuResult skuResult : param) {
             spuId.add(skuResult.getSpuId());
             skuId.add(skuResult.getSkuId());
-            List<String> skuName = Arrays.asList(skuResult.getSkuName().split(","));
+            List<String> skuName = skuResult.getSkuName() != null ? Arrays.asList(skuResult.getSkuName().split(",")) : new ArrayList<>();
             for (String s : skuName) {
-                inSkuNameList.add(Long.valueOf(s));
+//                inSkuNameList.add(Long.valueOf(s));
             }
         }
         inSkuNameList.stream().distinct().collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
             }
             List<ItemAttributeValueResult> wc = new ArrayList<>();
-            List<String> resultSkuName = Arrays.asList(skuResult.getSkuName().split(","));
+            List<String> resultSkuName = skuResult.getSkuName() != null ? Arrays.asList(skuResult.getSkuName().split(",")) : new ArrayList<>();
             for (String s : resultSkuName) {
                 ItemAttributeValueResult valueResult = new ItemAttributeValueResult();
                 for (AttributeValues attributeValues : attributeValuesList) {
