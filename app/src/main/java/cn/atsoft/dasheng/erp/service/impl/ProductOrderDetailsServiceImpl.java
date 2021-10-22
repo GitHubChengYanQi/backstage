@@ -158,16 +158,16 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
                     break;
                 }
             }
-            //通过map获取skuvalues 集合  便利集合 解析json 并返回
-            List<String> values = map.get(datum.getSpuId());
-            if (ToolUtil.isNotEmpty(values)) {
-                List<SpuRequest> spuRequests = new ArrayList<>();
-                for (String value : values) {
-                    SpuRequest spuRequest = JSON.parseObject(value, SpuRequest.class);
-                    spuRequests.add(spuRequest);
-                }
-                datum.setSpuRequests(spuRequests);
-            }
+//            //通过map获取skuvalues 集合  便利集合 解析json 并返回
+//            List<String> values = map.get(datum.getSpuId());
+//            if (ToolUtil.isNotEmpty(values)) {
+//                List<SpuRequest> spuRequests = new ArrayList<>();
+//                for (String value : values) {
+//                    SpuRequest spuRequest = JSON.parseObject(value, SpuRequest.class);
+//                    spuRequests.add(spuRequest);
+//                }
+//                datum.setSpuRequests(spuRequests);
+//            }
         }
     }
 

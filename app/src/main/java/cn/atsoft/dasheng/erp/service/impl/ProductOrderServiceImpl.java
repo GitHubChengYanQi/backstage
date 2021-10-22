@@ -7,18 +7,22 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ProductOrder;
+import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderMapper;
+import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +44,37 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     private ProductOrderDetailsService productOrderDetailsService;
 
     @Override
+    @Transactional
     public void add(ProductOrderParam param) {
         ProductOrder entity = getEntity(param);
         this.save(entity);
+        Integer newMoney = 0;
+        Long newNumber = 0L;
+        List<ProductOrderDetails> productOrderDetailsList = new ArrayList<>();
+        for (ProductOrderDetailsParam productOrderDetailsParam : param.getOrderDetail()) {
+
+            ProductOrderDetails productOrderDetails = new ProductOrderDetails();
+            productOrderDetails.setProductOrderId(entity.getProductOrderId());
+            productOrderDetails.setMoney(productOrderDetailsParam.getMoney());
+            productOrderDetails.setNumber(productOrderDetailsParam.getNumber());
+            productOrderDetails.setSkuId(productOrderDetailsParam.getSkuId());
+            productOrderDetails.setSpuId(productOrderDetailsParam.getSpuId());
+            productOrderDetailsList.add(productOrderDetails);
+
+            //计算总金额
+            Integer money = productOrderDetailsParam.getMoney();
+            Long number = productOrderDetailsParam.getNumber();
+            newMoney = newMoney + Math.toIntExact(money * number);
+            //计算数量
+            newNumber = newNumber + productOrderDetailsParam.getNumber();
+        }
+        productOrderDetailsService.saveBatch(productOrderDetailsList);
+        ProductOrder productOrder = new ProductOrder();
+        productOrder.setMoney(newMoney);
+        productOrder.setNumber(newNumber);
+        QueryWrapper<ProductOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("product_order_id", entity.getProductOrderId());
+        this.update(productOrder, queryWrapper);
     }
 
     @Override
