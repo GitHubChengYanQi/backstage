@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import lombok.Data;
 
@@ -36,7 +37,7 @@ public class SpuResult implements Serializable {
     private List<CategoryRequest> categoryRequests;
 
     private List<AttributeValuesResult> itemAttributeResults;
-    private List<List<SkuJson>> spuRequests;
+    private SkuRequest spuAttributes;
 
     /**
      * 物品Id

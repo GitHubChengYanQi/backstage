@@ -120,6 +120,7 @@ public class SpuController extends BaseController {
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
         List<List<SkuJson>> requests = new ArrayList<>();
+        SkuRequest skuRequests = new SkuRequest();
 
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
@@ -174,6 +175,7 @@ public class SpuController extends BaseController {
 
                     requests.add(list);
                 }
+                skuRequests.setSpuRequests(requests);
 
                 List<SkuValuesRequest> skuDetail = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
@@ -204,7 +206,7 @@ public class SpuController extends BaseController {
 
         spuResult.setCategoryRequests(categoryRequests);
         spuResult.setItemAttributeResults(attributeValuesResultList);
-        spuResult.setSpuRequests(requests);
+        spuResult.setSpuAttributes(skuRequests);
         return ResponseData.success(spuResult);
     }
 
