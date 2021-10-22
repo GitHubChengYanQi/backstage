@@ -8,11 +8,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SpuMapper;
-import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
-import cn.atsoft.dasheng.erp.model.params.SkuJson;
-import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
-import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -53,7 +51,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu entity = getEntity(param);
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
-
+        Collections.sort(param.getSpuAttributes().getSpuRequests());
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
 
         List<String> nameIdsList = new ArrayList<>();
@@ -61,18 +59,24 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         SkuJson skuJson = new SkuJson();
         for (List<String> attributeValues : result) {
             List<SkuValuesRequest> skuValuesRequests = new ArrayList<>();
-
+            SkuResult skuResult = new SkuResult();
+            List<ItemAttributeParam> itemAttributeParams =new ArrayList<>();
             for (String attributeValue : attributeValues) {
+                SkuValuesRequest skuValuesRequest = new SkuValuesRequest();
                 List<String> skuName = Arrays.asList(attributeValue.split(":"));
-                SkuValuesRequest valuesResult = new SkuValuesRequest();
-                valuesResult.setAttributeId(Long.valueOf(skuName.get(0)));
-                valuesResult.setAttributeValueId(Long.valueOf(skuName.get(1)));
-                skuValuesRequests.add(valuesResult);
+                ItemAttributeParam itemAttributeParam = new ItemAttributeParam();
+                itemAttributeParam.setAttributeId(Long.valueOf(skuName.get(0)));
+                AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
+                attributeValuesParam.setAttributeId(Long.valueOf(skuName.get(0)));
+                attributeValuesParam.setAttributeValuesId(Long.valueOf(skuName.get(1)));
+                itemAttributeParam.setAttributeValuesParam(attributeValuesParam);
+                itemAttributeParams.add(itemAttributeParam);
             }
-            skuJson.setSkuValuesRequests(skuValuesRequests);
+            SpuRequest spuRequest = new SpuRequest();
+            spuRequest.setSpuRequests(itemAttributeParams);
             Sku sku = new Sku();
-            sku.setSkuName(JSON.toJSONString(skuJson));
-            sku.setSpuId(param.getSpuId());
+            sku.setSkuValue(JSON.toJSONString(spuRequest));
+            sku.setSpuId(entity.getSpuId());
             skuList.add(sku);
         }
 

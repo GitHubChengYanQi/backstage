@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
+import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +27,7 @@ public class ProductOrderDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+     private List<SpuRequest> spuRequests;
 
     private ProductOrderResult productOrderResult;
 
@@ -33,7 +35,7 @@ public class ProductOrderDetailsResult implements Serializable {
 
     private SpuResult spuResult;
 
-    private List<SkuValuesRequest> skuValuesRequests;
+
 
     /**
      * 产品订单详情id

@@ -2,10 +2,9 @@ package cn.atsoft.dasheng.erp.model.params;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class SkuValuesRequest {
-    private Long attributeId;
-    private String valueName;
-    private String attributeName;
-    private Long attributeValueId;
+    List<ItemAttributeParam> attributeParams;
 }
