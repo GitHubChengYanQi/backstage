@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderDetailsMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
+import cn.atsoft.dasheng.erp.model.params.SkuValuesRequest;
+import cn.atsoft.dasheng.erp.model.params.SpuRequest;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
