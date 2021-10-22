@@ -23,6 +23,8 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,10 +118,7 @@ public class SpuController extends BaseController {
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
         List<SpuRequest> spuRequestList = new ArrayList<>();
-
-
-
-
+        List<SpuRequest> requests = new ArrayList<>();
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
         //---------------------------------------------------------------------------------------------------------
@@ -140,23 +139,35 @@ public class SpuController extends BaseController {
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
 
+
                 for (Sku sku : skus) {
-                    SpuRequest spuRequest = JSON.parseObject(sku.getSkuValue(), SpuRequest.class);
-                    for (ItemAttributeParam request : spuRequest.getSpuRequests()) {
+                    SpuRequest spuRequest = new SpuRequest();
+
+                    JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                    List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                    List<ItemAttributeParam> list = new ArrayList<>();
+                    for (AttributeValues valuesRequest : valuesRequests) {
+                        valuesRequest.getAttributeValuesId();
+                        valuesRequest.getAttributeId();
+                        ItemAttributeParam itemAttributeParam = new ItemAttributeParam();
                         for (ItemAttribute itemAttribute : itemAttributes) {
-                            if (itemAttribute.getAttributeId().equals(request.getAttributeId())) {
-                                request.setAttribute(itemAttribute.getAttribute());
+                            if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                                itemAttributeParam.setAttributeId(itemAttribute.getAttributeId());
+                                itemAttributeParam.setAttribute(itemAttribute.getAttribute());
                             }
                         }
                         for (AttributeValues attributeValue : attributeValues) {
-                            if (request.getAttributeValuesParam().getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                request.getAttributeValuesParam().setAttributeValues(attributeValue.getAttributeValues());
+                            if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())){
+                                AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
+                                attributeValuesParam.setAttributeValuesId(valuesRequest.getAttributeValuesId());
+                                attributeValuesParam.setAttributeValues(attributeValue.getAttributeValues());
+                                itemAttributeParam.setAttributeValuesParam(attributeValuesParam);
                             }
                         }
-
+                        list.add(itemAttributeParam);
                     }
-                    spuRequestList.add(spuRequest);
-
+                    spuRequest.setSpuRequests(list);
+                    requests.add(spuRequest);
                 }
 
                 List<SkuValuesRequest> skuDetail = new ArrayList<>();
@@ -187,7 +198,8 @@ public class SpuController extends BaseController {
         ToolUtil.copyProperties(detail, spuResult);
 
         spuResult.setCategoryRequests(categoryRequests);
-        spuResult.setSpuRequests(spuRequestList);
+        spuResult.setItemAttributeResults(attributeValuesResultList);
+        spuResult.setSpuRequests(requests);
         return ResponseData.success(spuResult);
     }
 

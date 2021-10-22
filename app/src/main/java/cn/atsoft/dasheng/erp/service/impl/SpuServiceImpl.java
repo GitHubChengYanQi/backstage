@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -16,11 +17,13 @@ import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import net.sf.jsqlparser.statement.select.ValuesList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,28 +57,21 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Collections.sort(param.getSpuAttributes().getSpuRequests());
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
 
-        List<String> nameIdsList = new ArrayList<>();
         List<Sku> skuList = new ArrayList<>();
         SkuJson skuJson = new SkuJson();
         for (List<String> attributeValues : result) {
-            List<SkuValuesRequest> skuValuesRequests = new ArrayList<>();
-            SkuResult skuResult = new SkuResult();
-            List<ItemAttributeParam> itemAttributeParams =new ArrayList<>();
+            List<AttributeValues> valuesList = new ArrayList<>();
             for (String attributeValue : attributeValues) {
-                SkuValuesRequest skuValuesRequest = new SkuValuesRequest();
                 List<String> skuName = Arrays.asList(attributeValue.split(":"));
-                ItemAttributeParam itemAttributeParam = new ItemAttributeParam();
-                itemAttributeParam.setAttributeId(Long.valueOf(skuName.get(0)));
-                AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
-                attributeValuesParam.setAttributeId(Long.valueOf(skuName.get(0)));
-                attributeValuesParam.setAttributeValuesId(Long.valueOf(skuName.get(1)));
-                itemAttributeParam.setAttributeValuesParam(attributeValuesParam);
-                itemAttributeParams.add(itemAttributeParam);
+                AttributeValues values = new AttributeValues();
+                values.setAttributeId(Long.valueOf(skuName.get(0)));
+                values.setAttributeValuesId(Long.valueOf(skuName.get(1)));
+                valuesList.add(values);
             }
-            SpuRequest spuRequest = new SpuRequest();
-            spuRequest.setSpuRequests(itemAttributeParams);
             Sku sku = new Sku();
-            sku.setSkuValue(JSON.toJSONString(spuRequest));
+            sku.setSkuValue(JSON.toJSONString(valuesList));
+            sku.setSkuName(SecureUtil.md5(sku.getSkuValue()));
+
             sku.setSpuId(entity.getSpuId());
             skuList.add(sku);
         }
