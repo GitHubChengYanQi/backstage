@@ -126,7 +126,7 @@ public class SpuController extends BaseController {
         List<Long> valueIds = new ArrayList<>();
         for (SkuJson skuJson : skuJsons) {
             for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
-                valueIds.add(skuValuesRequest.getAttributeValueId());
+//                valueIds.add(skuValuesRequest.getAttributeValueId());
 
             }
         }

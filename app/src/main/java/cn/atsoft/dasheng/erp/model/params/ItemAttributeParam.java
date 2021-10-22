@@ -20,10 +20,11 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ItemAttributeParam implements Serializable, BaseValidatingParam {
+public class ItemAttributeParam implements Serializable , Comparable<ItemAttributeParam>, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValuesParams;
+    private AttributeValuesParam attributeValuesParam;
 
 
 
@@ -92,4 +93,8 @@ public class ItemAttributeParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public int compareTo(ItemAttributeParam o) {
+        return (int) (o.getAttributeId() - this.getAttributeId());
+    }
 }
