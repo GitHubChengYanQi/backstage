@@ -125,9 +125,10 @@ public class SpuController extends BaseController {
         }
         List<Long> valueIds = new ArrayList<>();
         for (SkuJson skuJson : skuJsons) {
-            for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
-                valueIds.add(skuValuesRequest.getAttributeValueId());
-
+            if (ToolUtil.isNotEmpty(skuJson)){
+                for (SkuValuesRequest skuValuesRequest : skuJson.getSkuValuesRequests()) {
+                    valueIds.add(skuValuesRequest.getAttributeValueId());
+                }
             }
         }
         List<AttributeValues> attributeValuesList = valueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", valueIds).list();
