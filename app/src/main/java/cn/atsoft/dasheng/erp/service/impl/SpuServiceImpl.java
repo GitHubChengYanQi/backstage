@@ -58,7 +58,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
 
         List<Sku> skuList = new ArrayList<>();
-        SkuJson skuJson = new SkuJson();
+       
         for (List<String> attributeValues : result) {
             List<AttributeValues> valuesList = new ArrayList<>();
             for (String attributeValue : attributeValues) {
