@@ -37,6 +37,7 @@ public class SpuResult implements Serializable {
     private List<CategoryRequest> categoryRequests;
 
     private List<AttributeValuesResult> itemAttributeResults;
+
     private SkuRequest spuAttributes;
 
     /**
