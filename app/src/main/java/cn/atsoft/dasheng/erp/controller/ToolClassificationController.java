@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.erp.model.result.ToolClassificationResult;
 import cn.atsoft.dasheng.erp.service.ToolClassificationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.CodingRulesClassificationSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.ToolClassificationSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +104,14 @@ public class ToolClassificationController extends BaseController {
             toolClassificationParam = new ToolClassificationParam();
         }
         return this.toolClassificationService.findPageBySpec(toolClassificationParam);
+    }
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("编码规则下拉列表")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.toolClassificationService.listMaps();
+        ToolClassificationSelectWrapper toolClassificationSelectWrapper = new ToolClassificationSelectWrapper(list);
+        List<Map<String, Object>> result = toolClassificationSelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 
