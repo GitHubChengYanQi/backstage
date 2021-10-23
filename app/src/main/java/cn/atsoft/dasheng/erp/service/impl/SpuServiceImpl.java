@@ -124,6 +124,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     @Override
     public void update(SpuParam param) {
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
+            String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+            param.setAttribute(toJSONString);
+        }
         Spu oldEntity = getOldEntity(param);
         Spu newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
