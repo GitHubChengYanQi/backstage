@@ -130,12 +130,14 @@ public class ProductOrderController extends BaseController {
             AdressResult adressResult = new AdressResult();
             ToolUtil.copyProperties(adress, adressResult);
             result.setAdressResult(adressResult);
+            result.setAdressId(adressResult.getAdressId());
         }
         Contacts contacts = contactsService.query().eq("contacts_id", productOrderRequest.getContactsId()).one();
         if (ToolUtil.isNotEmpty(contacts)) {
             ContactsResult contactsResult = new ContactsResult();
             ToolUtil.copyProperties(contacts, contactsResult);
             result.setContactsResult(contactsResult);
+            result.setContactsId(contactsResult.getContactsId());
         }
 
         Phone phone = phoneService.query().eq("phone_id", productOrderRequest.getPhoneId()).one();
@@ -143,6 +145,7 @@ public class ProductOrderController extends BaseController {
             PhoneResult phoneResult = new PhoneResult();
             ToolUtil.copyProperties(phone, phoneResult);
             result.setPhoneResult(phoneResult);
+            result.setPhoneId(phoneResult.getPhoneId());
 
         }
         result.setOrderDetail(productOrderDetailsList);

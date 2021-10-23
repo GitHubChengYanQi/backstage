@@ -133,6 +133,15 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
     @Override
     public void update(ProductOrderParam param) {
+
+        ProductOrderRequest productOrderRequest = new ProductOrderRequest();
+        productOrderRequest.setAdressId(param.getAdressId());
+        productOrderRequest.setContactsId(param.getContactsId());
+        productOrderRequest.setPhoneId(param.getPhoneId());
+        productOrderRequest.setCustomerId(param.getCustomerId());
+        String toJsonStr = JSONUtil.toJsonStr(productOrderRequest);
+        param.setCustomer(toJsonStr);
+
         ProductOrder oldEntity = getOldEntity(param);
         ProductOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
