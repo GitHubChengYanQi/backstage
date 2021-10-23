@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
 import lombok.Data;
 
@@ -25,6 +28,12 @@ import java.util.List;
 public class ProductOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private AdressResult adressResult;
+
+    private PhoneResult phoneResult;
+
+    private ContactsResult contactsResult;
 
     /**
      * 客户信息
