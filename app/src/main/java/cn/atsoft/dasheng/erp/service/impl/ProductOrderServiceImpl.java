@@ -25,6 +25,8 @@ import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
@@ -183,10 +185,12 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     public void format(List<ProductOrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         Map<Long, ProductOrderRequest> map = new HashMap<>();
+        List<Long> userIds = new ArrayList<>();
         for (ProductOrderResult datum : data) {
             customerIds.add(datum.getCustomerId());
             ProductOrderRequest productOrderRequest = JSONUtil.toBean(datum.getCustomer(), ProductOrderRequest.class);
             map.put(datum.getProductOrderId(), productOrderRequest);
+            userIds.add(datum.getCreateUser());
         }
 
         List<Long> adressIds = new ArrayList<>();
@@ -210,10 +214,15 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
                 .in(Customer::getCustomerId, customerIds)
                 .list();
 
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.query().in("user_id", userIds).list();
 
         for (ProductOrderResult datum : data) {
-
-
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
 
             for (Customer customer : customers) {
                 if (datum.getCustomerId() != null && datum.getCustomerId().equals(customer.getCustomerId())) {
