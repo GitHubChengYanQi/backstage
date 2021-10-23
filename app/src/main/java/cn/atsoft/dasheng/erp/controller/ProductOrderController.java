@@ -139,7 +139,8 @@ public class ProductOrderController extends BaseController {
             PhoneResult phoneResult = new PhoneResult();
             ToolUtil.copyProperties(phone, phoneResult);
             result.setPhoneResult(phoneResult);
-  
+
+        }
         result.setOrderDetail(productOrderDetailsList);
 
         return ResponseData.success(result);
