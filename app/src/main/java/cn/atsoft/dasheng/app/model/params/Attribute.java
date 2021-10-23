@@ -9,5 +9,6 @@ import java.util.List;
 public class Attribute {
     private String attributeId;
     private String attribute;
+    private Long id;
     private List<Values> attributeValues;
 }
