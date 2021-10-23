@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.UnitService;
@@ -54,7 +55,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu entity = getEntity(param);
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
-        Collections.sort(param.getSpuAttributes().getSpuRequests());
+//        Collections.sort(param.getSpuAttributes().getSpuRequests());
         descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
 
         List<Sku> skuList = new ArrayList<>();
@@ -83,24 +84,24 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     }
 
-    static void descartes1(List<ItemAttributeParam> dimvalue, List<List<String>> result, int layer, List<String> curList) {
+    static void descartes1(List<Attribute> dimvalue, List<List<String>> result, int layer, List<String> curList) {
         if (layer < dimvalue.size() - 1) {
-            if (dimvalue.get(layer).getAttributeValuesParams().size() == 0) {
+            if (dimvalue.get(layer).getAttributeValues().size() == 0) {
                 descartes1(dimvalue, result, layer + 1, curList);
             } else {
-                for (int i = 0; i < dimvalue.get(layer).getAttributeValuesParams().size(); i++) {
+                for (int i = 0; i < dimvalue.get(layer).getAttributeValues().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeId().toString()+":"+dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
+                    list.add(dimvalue.get(layer).getAttributeId()+":"+dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
                     descartes1(dimvalue, result, layer + 1, list);
                 }
             }
         } else if (layer == dimvalue.size() - 1) {
-            if (dimvalue.get(layer).getAttributeValuesParams().size() == 0) {
+            if (dimvalue.get(layer).getAttributeValues().size() == 0) {
                 result.add(curList);
             } else {
-                for (int i = 0; i < dimvalue.get(layer).getAttributeValuesParams().size(); i++) {
+                for (int i = 0; i < dimvalue.get(layer).getAttributeValues().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeId().toString()+":"+dimvalue.get(layer).getAttributeValuesParams().get(i).getAttributeValuesId().toString());
+                    list.add(dimvalue.get(layer).getAttributeId()+":"+dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
                     result.add(list);
                 }
             }

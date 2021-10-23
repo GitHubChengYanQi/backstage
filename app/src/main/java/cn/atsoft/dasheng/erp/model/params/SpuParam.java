@@ -149,8 +149,8 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     /**
      * 属性id
      */
-    @ApiModelProperty("属性id")
-    private Long attributeId;
+    @ApiModelProperty("属性")
+    private String attribute;
 
     /**
      * 养护周期值
