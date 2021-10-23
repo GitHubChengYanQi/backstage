@@ -20,6 +20,8 @@ public class CodingRulesResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private CodingRulesClassificationResult codingRulesClassificationResult;
+
     /**
      * 排序
      */
