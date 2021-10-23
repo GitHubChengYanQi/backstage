@@ -37,10 +37,7 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     private SpuService spuService;
     @Autowired
     private SkuService skuService;
-    @Autowired
-    private AttributeValuesServiceImpl attributeValuesService;
-    @Autowired
-    private ItemAttributeService itemAttributeService;
+
 
     @Override
     public void add(ProductOrderDetailsParam param) {

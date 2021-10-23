@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,7 +27,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>
@@ -51,8 +55,10 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         Integer newMoney = 0;
         Long newNumber = 0L;
         List<ProductOrderDetails> productOrderDetailsList = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getOrderDetail())) {
+            throw  new ServiceException(500,"请选择规格");
+        }
         for (ProductOrderDetailsParam productOrderDetailsParam : param.getOrderDetail()) {
-
             ProductOrderDetails productOrderDetails = new ProductOrderDetails();
             productOrderDetails.setProductOrderId(entity.getProductOrderId());
             productOrderDetails.setMoney(productOrderDetailsParam.getMoney());
@@ -75,6 +81,8 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         QueryWrapper<ProductOrder> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("product_order_id", entity.getProductOrderId());
         this.update(productOrder, queryWrapper);
+
+
     }
 
     @Override
