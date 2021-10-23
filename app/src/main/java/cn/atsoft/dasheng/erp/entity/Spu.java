@@ -316,11 +316,11 @@ public class Spu implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getAttributeId() {
+    public String getAttribute() {
         return attribute;
     }
 
-    public void setAttributeId(String attribute) {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 

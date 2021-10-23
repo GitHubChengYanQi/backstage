@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import net.sf.jsqlparser.statement.select.ValuesList;
+import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,35 +54,42 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     @Override
     public void add(SpuParam param) {
         Spu entity = getEntity(param);
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
+            String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+            entity.setAttribute(toJSONString);
+        }
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
 //        Collections.sort(param.getSpuAttributes().getSpuRequests());
-        descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
 
-        List<Sku> skuList = new ArrayList<>();
-       
-        for (List<String> attributeValues : result) {
-            List<AttributeValues> valuesList = new ArrayList<>();
-            for (String attributeValue : attributeValues) {
-                List<String> skuName = Arrays.asList(attributeValue.split(":"));
-                AttributeValues values = new AttributeValues();
-                values.setAttributeId(Long.valueOf(skuName.get(0)));
-                values.setAttributeValuesId(Long.valueOf(skuName.get(1)));
-                valuesList.add(values);
+
+
+            descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
+            List<Sku> skuList = new ArrayList<>();
+
+            for (List<String> attributeValues : result) {
+                List<AttributeValues> valuesList = new ArrayList<>();
+                for (String attributeValue : attributeValues) {
+                    List<String> skuName = Arrays.asList(attributeValue.split(":"));
+                    AttributeValues values = new AttributeValues();
+                    values.setAttributeId(Long.valueOf(skuName.get(0)));
+                    values.setAttributeValuesId(Long.valueOf(skuName.get(1)));
+                    valuesList.add(values);
+                }
+                Sku sku = new Sku();
+                sku.setSkuValue(JSON.toJSONString(valuesList));
+                sku.setSkuName(SecureUtil.md5(sku.getSkuValue()));
+
+                sku.setSpuId(entity.getSpuId());
+                skuList.add(sku);
             }
-            Sku sku = new Sku();
-            sku.setSkuValue(JSON.toJSONString(valuesList));
-            sku.setSkuName(SecureUtil.md5(sku.getSkuValue()));
 
-            sku.setSpuId(entity.getSpuId());
-            skuList.add(sku);
+
+            skuService.saveBatch(skuList);
         }
 
 
-        skuService.saveBatch(skuList);
-
-//        skuService.saveBatch(skuList);
-        System.out.println(result.toString());
 
     }
 
