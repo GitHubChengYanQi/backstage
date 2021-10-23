@@ -71,6 +71,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     public PageInfo<CodingRulesResult> findPageBySpec(CodingRulesParam param) {
         Page<CodingRulesResult> pageContext = getPageContext();
         IPage<CodingRulesResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
