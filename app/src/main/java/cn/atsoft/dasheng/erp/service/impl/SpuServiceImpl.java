@@ -67,8 +67,6 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         //        Collections.sort(param.getSpuAttributes().getSpuRequests());
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
 
-
-
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
             List<Sku> skuList = new ArrayList<>();
 

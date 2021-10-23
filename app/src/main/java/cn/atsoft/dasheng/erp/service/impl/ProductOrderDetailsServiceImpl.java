@@ -37,10 +37,7 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     private SpuService spuService;
     @Autowired
     private SkuService skuService;
-    @Autowired
-    private AttributeValuesServiceImpl attributeValuesService;
-    @Autowired
-    private ItemAttributeService itemAttributeService;
+
 
     @Override
     public void add(ProductOrderDetailsParam param) {
@@ -100,11 +97,9 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     public void format(List<ProductOrderDetailsResult> data) {
         List<Long> orderIds = new ArrayList<>();
         List<Long> spuIds = new ArrayList<>();
-        List<Long> skuIds = new ArrayList<>();
         for (ProductOrderDetailsResult datum : data) {
             orderIds.add(datum.getProductOrderId());
             spuIds.add(datum.getSpuId());
-            skuIds.add(datum.getSkuId());
         }
 
         List<ProductOrder> productOrders = orderIds.size() == 0 ? new ArrayList<>() : productOrderService.lambdaQuery()
@@ -114,23 +109,6 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
         List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery()
                 .in(Spu::getSpuId, spuIds)
                 .list();
-
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSpuId, spuIds)
-                .list();
-        //通过map取出对用的sku  获取json数据
-        Map<Long, List<String>> map = new HashMap<>();
-        for (ProductOrderDetailsResult datum : data) {
-            List<String> skuValues = new ArrayList<>();
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (datum.getSpuId().equals(sku.getSpuId())) {
-                        skuValues.add(sku.getSkuValue());
-                    }
-
-                }
-                map.put(datum.getSpuId(), skuValues);
-            }
-        }
 
 
         for (ProductOrderDetailsResult datum : data) {

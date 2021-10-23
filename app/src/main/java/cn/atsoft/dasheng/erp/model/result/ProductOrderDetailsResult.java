@@ -56,8 +56,8 @@ public class ProductOrderDetailsResult implements Serializable {
     /**
      * skuId
      */
-    @ApiModelProperty("skuId")
-    private Long skuId;
+    @ApiModelProperty("sku")
+    private String sku;
 
     /**
      * 数量

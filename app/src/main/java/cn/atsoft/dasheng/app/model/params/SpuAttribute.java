@@ -5,7 +5,7 @@ import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import lombok.Data;
 
 @Data
-public class PartsAttribute {
+public class SpuAttribute {
 
     private Attribute attribute;
     private Values values;

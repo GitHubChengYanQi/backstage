@@ -10,6 +10,7 @@ public class Attribute implements Comparable<Attribute> {
     private String attributeId;
     private Long id;
     private String attribute;
+    private Long id;
     private List<Values> attributeValues;
 
 

@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.app.model.params.SpuAttribute;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,60 +12,60 @@ import java.util.List;
 
 /**
  * <p>
- * 产品订单详情
+ * 工具表
  * </p>
  *
  * @author song
- * @since 2021-10-20
+ * @since 2021-10-23
  */
 @Data
 @ApiModel
-public class ProductOrderDetailsParam implements Serializable, BaseValidatingParam {
+public class ToolParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 产品订单详情id
+     * 工具id
      */
-    @ApiModelProperty("产品订单详情id")
-    private Long productOrderDetailsId;
+    @ApiModelProperty("工具id")
+    private Long toolId;
 
     /**
-     * 产品订单id
+     * 工具名称
      */
-    @ApiModelProperty("产品订单id")
-    private Long productOrderId;
+    @ApiModelProperty("工具名称")
+    private String name;
 
     /**
-     * spuId
+     * 工具状态
      */
-    @ApiModelProperty("spuId")
-    private Long spuId;
+    @ApiModelProperty("工具状态")
+    private Integer state;
 
     /**
-     * skuId
+     * 备注
      */
-    @ApiModelProperty("sku")
-    private List<SpuAttribute> sku;
+    @ApiModelProperty("备注")
+    private String note;
 
     /**
-     * 数量
+     * 附件
      */
-    @ApiModelProperty("数量")
-    private Long number;
+    @ApiModelProperty("附件")
+    private String attachment;
 
     /**
-     * 金额
+     * 单位id
      */
-    @ApiModelProperty("金额")
-    private Integer money;
+    @ApiModelProperty("单位id")
+    private Long unitId;
 
     /**
-     * 创建时间
+     * 工具分类id
      */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
+    @ApiModelProperty("工具分类id")
+    private Long toolClassificationId;
 
     /**
      * 创建者
@@ -75,16 +74,22 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
     private Long createUser;
 
     /**
-     * 修改时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
-
-    /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
 
     /**
      * 状态
@@ -93,9 +98,9 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
     private Integer display;
 
     /**
-     * 部门编号
+     * 部门id
      */
-    @ApiModelProperty("部门编号")
+    @ApiModelProperty("部门id")
     private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")

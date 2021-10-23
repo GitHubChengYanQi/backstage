@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.app.model.params.SpuAttribute;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,60 +12,36 @@ import java.util.List;
 
 /**
  * <p>
- * 产品订单详情
+ * 编码规则分类
  * </p>
  *
  * @author song
- * @since 2021-10-20
+ * @since 2021-10-22
  */
 @Data
 @ApiModel
-public class ProductOrderDetailsParam implements Serializable, BaseValidatingParam {
+public class CodingRulesClassificationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 产品订单详情id
+     * 编码规则分类id
      */
-    @ApiModelProperty("产品订单详情id")
-    private Long productOrderDetailsId;
+    @ApiModelProperty("编码规则分类id")
+    private Long codingRulesClassificationId;
 
     /**
-     * 产品订单id
+     * 分类名称
      */
-    @ApiModelProperty("产品订单id")
-    private Long productOrderId;
+    @ApiModelProperty("分类名称")
+    private String name;
 
     /**
-     * spuId
+     * 排序
      */
-    @ApiModelProperty("spuId")
-    private Long spuId;
-
-    /**
-     * skuId
-     */
-    @ApiModelProperty("sku")
-    private List<SpuAttribute> sku;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Long number;
-
-    /**
-     * 金额
-     */
-    @ApiModelProperty("金额")
-    private Integer money;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date createTime;
+    @ApiModelProperty("排序")
+    private Long sort;
 
     /**
      * 创建者
@@ -75,16 +50,22 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
     private Long createUser;
 
     /**
-     * 修改时间
-     */
-    @ApiModelProperty(hidden = true)
-    private Date updateTime;
-
-    /**
      * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
 
     /**
      * 状态
@@ -93,9 +74,9 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
     private Integer display;
 
     /**
-     * 部门编号
+     * 部门id
      */
-    @ApiModelProperty("部门编号")
+    @ApiModelProperty("部门id")
     private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")
