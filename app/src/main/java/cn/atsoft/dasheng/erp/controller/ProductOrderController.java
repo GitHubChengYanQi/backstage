@@ -97,7 +97,7 @@ public class ProductOrderController extends BaseController {
 
         ProductOrderResult result = new ProductOrderResult();
         ToolUtil.copyProperties(detail, result);
-        result.setProductOrderDetails(productOrderDetailsList);
+        result.setOrderDetail(productOrderDetailsList);
 
         return ResponseData.success(result);
     }

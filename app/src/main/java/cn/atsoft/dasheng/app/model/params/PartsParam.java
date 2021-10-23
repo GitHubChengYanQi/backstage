@@ -31,7 +31,7 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("清单id")
     private Long partsId;
 
-    private List<PartsAttribute> partsAttributes;
+    private List<SpuAttribute> partsAttributes;
 
     /**
      * 物料名称

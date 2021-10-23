@@ -42,8 +42,8 @@ public class ProductOrderDetails implements Serializable {
     /**
      * skuId
      */
-    @TableField("sku_id")
-    private Long skuId;
+    @TableField("sku")
+    private String sku;
 
     /**
      * 数量
@@ -118,12 +118,12 @@ public class ProductOrderDetails implements Serializable {
         this.spuId = spuId;
     }
 
-    public Long getSkuId() {
-        return skuId;
+    public String getSku() {
+        return sku;
     }
 
-    public void setSkuId(Long skuId) {
-        this.skuId = skuId;
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public Long getNumber() {
@@ -196,7 +196,7 @@ public class ProductOrderDetails implements Serializable {
         "productOrderDetailsId=" + productOrderDetailsId +
         ", productOrderId=" + productOrderId +
         ", spuId=" + spuId +
-        ", skuId=" + skuId +
+        ", sku=" + sku +
         ", number=" + number +
         ", money=" + money +
         ", createTime=" + createTime +

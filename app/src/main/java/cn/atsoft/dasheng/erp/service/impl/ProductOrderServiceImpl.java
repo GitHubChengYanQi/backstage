@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -48,16 +49,29 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     public void add(ProductOrderParam param) {
         ProductOrder entity = getEntity(param);
         this.save(entity);
+        addOrderDetail(entity.getProductOrderId(),param.getOrderDetail());
+
+    }
+
+    public void addOrderDetail(Long orderId,List<ProductOrderDetailsParam> orderDetail){
         Integer newMoney = 0;
         Long newNumber = 0L;
-        List<ProductOrderDetails> productOrderDetailsList = new ArrayList<>();
-        for (ProductOrderDetailsParam productOrderDetailsParam : param.getOrderDetail()) {
 
+        List<ProductOrderDetails> productOrderDetailsList = new ArrayList<>();
+
+        for (ProductOrderDetailsParam productOrderDetailsParam : orderDetail) {
             ProductOrderDetails productOrderDetails = new ProductOrderDetails();
-            productOrderDetails.setProductOrderId(entity.getProductOrderId());
+
+            if (ToolUtil.isNotEmpty(productOrderDetailsParam.getSku())){
+                String toJSONString = JSON.toJSONString(productOrderDetailsParam.getSku());
+                productOrderDetails.setSku(toJSONString);
+            }
+
+
+            productOrderDetails.setProductOrderId(orderId);
             productOrderDetails.setMoney(productOrderDetailsParam.getMoney());
             productOrderDetails.setNumber(productOrderDetailsParam.getNumber());
-            productOrderDetails.setSkuId(productOrderDetailsParam.getSkuId());
+
             productOrderDetails.setSpuId(productOrderDetailsParam.getSpuId());
             productOrderDetailsList.add(productOrderDetails);
 
@@ -73,7 +87,7 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         productOrder.setMoney(newMoney);
         productOrder.setNumber(newNumber);
         QueryWrapper<ProductOrder> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("product_order_id", entity.getProductOrderId());
+        queryWrapper.eq("product_order_id", orderId);
         this.update(productOrder, queryWrapper);
     }
 
@@ -88,6 +102,13 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         ProductOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+        QueryWrapper<ProductOrderDetails> productOrderDetailsQueryWrapper = new QueryWrapper<>();
+        productOrderDetailsQueryWrapper.in("product_order_id",param.getProductOrderId());
+        productOrderDetailsService.remove(productOrderDetailsQueryWrapper);
+
+        addOrderDetail(param.getProductOrderId(),param.getOrderDetail());
+
     }
 
     @Override

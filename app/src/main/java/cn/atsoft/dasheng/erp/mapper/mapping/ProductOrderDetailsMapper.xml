@@ -7,7 +7,7 @@
         <id column="product_order_details_id" property="productOrderDetailsId" />
         <result column="product_order_id" property="productOrderId" />
         <result column="spu_id" property="spuId" />
-        <result column="sku_id" property="skuId" />
+        <result column="sku" property="sku" />
         <result column="number" property="number" />
         <result column="money" property="money" />
         <result column="create_time" property="createTime" />
@@ -20,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        product_order_details_id AS "productOrderDetailsId", product_order_id AS "productOrderId", spu_id AS "spuId", sku_id AS "skuId", number AS "number", money AS "money", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        product_order_details_id AS "productOrderDetailsId", product_order_id AS "productOrderId", spu_id AS "spuId", sku AS "sku", number AS "number", money AS "money", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -37,8 +37,8 @@
             <if test="paramCondition.spuId != null">
                 and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
             </if>
-            <if test="paramCondition.skuId != null">
-                and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+            <if test="paramCondition.sku != null">
+                and sku like CONCAT('%',#{paramCondition.sku},'%')
             </if>
             <if test="paramCondition.number != null">
                 and number like CONCAT('%',#{paramCondition.number},'%')
@@ -79,8 +79,8 @@
                 <if test="paramCondition.spuId != null">
                         and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
                 </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+                <if test="paramCondition.sku != null">
+                        and sku like CONCAT('%',#{paramCondition.sku},'%')
                 </if>
                 <if test="paramCondition.number != null">
                         and number like CONCAT('%',#{paramCondition.number},'%')
@@ -121,8 +121,8 @@
                 <if test="paramCondition.spuId != null">
                         and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
                 </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+                <if test="paramCondition.sku != null">
+                        and sku like CONCAT('%',#{sku},'%')
                 </if>
                 <if test="paramCondition.number != null">
                         and number like CONCAT('%',#{paramCondition.number},'%')
@@ -163,8 +163,8 @@
                 <if test="paramCondition.spuId != null">
                         and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
                 </if>
-                <if test="paramCondition.skuId != null">
-                        and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+                <if test="paramCondition.sku != null">
+                        and sku like CONCAT('%',#{paramCondition.sku},'%')
                 </if>
                 <if test="paramCondition.number != null">
                         and number like CONCAT('%',#{paramCondition.number},'%')
