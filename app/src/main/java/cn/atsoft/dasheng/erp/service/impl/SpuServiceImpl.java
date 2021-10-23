@@ -60,7 +60,11 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
-//        Collections.sort(param.getSpuAttributes().getSpuRequests());
+//        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
+        Collections.sort(param.getSpuAttributes().getSpuRequests());
+//        param.getSpuAttributes().getSpuRequests().sort(null);
+
+        //        Collections.sort(param.getSpuAttributes().getSpuRequests());
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
 
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
