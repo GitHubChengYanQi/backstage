@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -108,6 +109,9 @@ public class ProductOrderController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<ProductOrderResult> detail(@RequestBody ProductOrderParam productOrderParam) {
         ProductOrder detail = this.productOrderService.getById(productOrderParam.getProductOrderId());
+        if (ToolUtil.isEmpty(detail)) {
+            throw new ServiceException(500, "没有当前信息");
+        }
         List<ProductOrderDetails> productOrderDetails = productOrderDetailsService.lambdaQuery()
                 .in(ProductOrderDetails::getProductOrderId, detail.getProductOrderId())
                 .list();
