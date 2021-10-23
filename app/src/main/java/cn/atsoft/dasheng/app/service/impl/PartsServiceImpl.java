@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -21,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,18 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private UserService userService;
 
-
+    @Transactional
     @Override
     public void add(PartRequest partRequest) {
+        List<Long> ids = new ArrayList<>();
+        for (PartsParam part : partRequest.getParts()) {
+            ids.add(part.getSpuId());
+        }
+        long count = ids.stream().distinct().count();
+        if (partRequest.getParts().size() > count) {
+            throw new ServiceException(500, "请勿填入重复商品");
+        }
+
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.in("pid", partRequest.getPid());
         this.remove(partsQueryWrapper);
@@ -116,7 +127,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             userIds.add(datum.getCreateUser());
         }
         List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).list();
-        List<User> users =userIds.size()==0? new ArrayList<>(): userService.query().in("user_id", userIds).list();
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.query().in("user_id", userIds).list();
 
         for (PartsResult datum : data) {
             List<PartsResult> partsResults = new ArrayList<>();
