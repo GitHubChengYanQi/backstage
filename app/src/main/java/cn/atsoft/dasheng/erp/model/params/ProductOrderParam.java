@@ -26,6 +26,23 @@ public class ProductOrderParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<ProductOrderDetailsParam> orderDetail;
+
+    private Long contactsId;
+
+    private Long adressId;
+
+    private Long phoneId;
+
+    /**
+     * 客户信息
+     */
+    private String customer;
+
+    /**
+     * 状态
+     */
+    private Integer state;
+
     /**
      * 产品订单id
      */

@@ -2,13 +2,13 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.model.params.PartRequest;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.mapper.PartsMapper;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
 import cn.atsoft.dasheng.app.model.result.PartsResult;
-import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -40,6 +40,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Autowired
     private UserService userService;
+
 
     @Transactional
     @Override
@@ -120,6 +121,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     }
 
     public void format(List<PartsResult> data) {
+
+
         List<Long> pids = new ArrayList<>();
         List<Long> userIds = new ArrayList();
         for (PartsResult datum : data) {

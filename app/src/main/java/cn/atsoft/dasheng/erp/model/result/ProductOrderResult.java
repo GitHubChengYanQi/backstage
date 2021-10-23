@@ -26,7 +26,17 @@ public class ProductOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 客户信息
+     */
+    private String customer;
+    /**
+     * 状态
+     */
+    private Integer state;
+
     private List<ProductOrderDetails> orderDetail;
+
     private CustomerResult customerResult;
     /**
      * 产品订单id

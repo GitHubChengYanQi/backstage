@@ -22,6 +22,17 @@ public class ProductOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 客户信息
+     */
+    @TableField("customer")
+    private String customer;
+    /**
+     * 状态
+     */
+    @TableField("state")
+    private Integer state;
+
+    /**
      * 产品订单id
      */
       @TableId(value = "product_order_id", type = IdType.ID_WORKER)
@@ -160,6 +171,21 @@ public class ProductOrder implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     @Override

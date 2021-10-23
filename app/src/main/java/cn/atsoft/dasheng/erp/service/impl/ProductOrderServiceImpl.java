@@ -3,7 +3,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ProductOrder;
@@ -11,22 +14,27 @@ import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
 import cn.atsoft.dasheng.erp.mapper.ProductOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
+import cn.atsoft.dasheng.erp.model.params.ProductOrderRequest;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -43,17 +51,32 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     private CustomerService customerService;
     @Autowired
     private ProductOrderDetailsService productOrderDetailsService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private AdressService adressServicel;
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     @Transactional
     public void add(ProductOrderParam param) {
+        ProductOrderRequest productOrderRequest = new ProductOrderRequest();
+
+        productOrderRequest.setAdressId(param.getAdressId());
+        productOrderRequest.setContactsId(param.getContactsId());
+        productOrderRequest.setPhoneId(param.getPhoneId());
+        productOrderRequest.setCustomerId(param.getCustomerId());
+        String toJsonStr = JSONUtil.toJsonStr(productOrderRequest);
+        param.setCustomer(toJsonStr);
+
         ProductOrder entity = getEntity(param);
         this.save(entity);
-        addOrderDetail(entity.getProductOrderId(),param.getOrderDetail());
+        addOrderDetail(entity.getProductOrderId(), param.getOrderDetail());
 
     }
 
-    public void addOrderDetail(Long orderId,List<ProductOrderDetailsParam> orderDetail){
+    public void addOrderDetail(Long orderId, List<ProductOrderDetailsParam> orderDetail) {
         Integer newMoney = 0;
         Long newNumber = 0L;
 
@@ -62,7 +85,7 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         for (ProductOrderDetailsParam productOrderDetailsParam : orderDetail) {
             ProductOrderDetails productOrderDetails = new ProductOrderDetails();
 
-            if (ToolUtil.isNotEmpty(productOrderDetailsParam.getSku())){
+            if (ToolUtil.isNotEmpty(productOrderDetailsParam.getSku())) {
                 String toJSONString = JSON.toJSONString(productOrderDetailsParam.getSku());
                 productOrderDetails.setSku(toJSONString);
             }
@@ -104,10 +127,10 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         this.updateById(newEntity);
 
         QueryWrapper<ProductOrderDetails> productOrderDetailsQueryWrapper = new QueryWrapper<>();
-        productOrderDetailsQueryWrapper.in("product_order_id",param.getProductOrderId());
+        productOrderDetailsQueryWrapper.in("product_order_id", param.getProductOrderId());
         productOrderDetailsService.remove(productOrderDetailsQueryWrapper);
 
-        addOrderDetail(param.getProductOrderId(),param.getOrderDetail());
+        addOrderDetail(param.getProductOrderId(), param.getOrderDetail());
 
     }
 
@@ -149,12 +172,18 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
     public void format(List<ProductOrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
+        Map<Long, ProductOrderRequest> map = new HashMap<>();
         for (ProductOrderResult datum : data) {
             customerIds.add(datum.getCustomerId());
+            ProductOrderRequest productOrderRequest = JSONUtil.toBean(datum.getCustomer(), ProductOrderRequest.class);
+            map.put(datum.getProductOrderId(), productOrderRequest);
         }
+
+
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.lambdaQuery()
                 .in(Customer::getCustomerId, customerIds)
                 .list();
+
 
         for (ProductOrderResult datum : data) {
             for (Customer customer : customers) {

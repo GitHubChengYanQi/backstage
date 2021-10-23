@@ -25,6 +25,8 @@ public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
     private UserResult userResult;
     //零件
     private List<PartsResult> partsResults;
