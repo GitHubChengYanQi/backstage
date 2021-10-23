@@ -23,7 +23,7 @@
         <result column="class_id" property="classId" />
         <result column="unit_id" property="unitId" />
         <result column="category_id" property="categoryId" />
-        <result column="attribute_id" property="attributeId" />
+        <result column="attribute" property="attribute" />
         <result column="curing_cycle" property="curingCycle" />
         <result column="cycle_type" property="cycleType" />
         <result column="production_type" property="productionType" />
@@ -31,7 +31,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        spu_id AS "spuId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", class_id AS "classId", unit_id AS "unitId", category_id AS "categoryId", attribute_id AS "attributeId",
+        spu_id AS "spuId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", class_id AS "classId", unit_id AS "unitId", category_id AS "categoryId", attribute AS "attribute",
 curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "productionType"
     </sql>
 
@@ -79,8 +79,8 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "pr
             <if test="paramCondition.categoryId != null">
                 and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
             </if>
-            <if test="paramCondition.attributeId != null">
-                and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+            <if test="paramCondition.attribute != null">
+                and attribute like CONCAT('%',#{paramCondition.attribute},'%')
             </if>
     </select>
 
@@ -127,8 +127,8 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "pr
                 <if test="paramCondition.categoryId != null">
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
-                <if test="paramCondition.attributeId != null">
-                        and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+                <if test="paramCondition.attribute != null">
+                        and attribute like CONCAT('%',#{paramCondition.attribute},'%')
                 </if>
     </select>
 
@@ -175,8 +175,8 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "pr
                 <if test="paramCondition.categoryId != null">
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
-                <if test="paramCondition.attributeId != null">
-                        and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+                <if test="paramCondition.attribute != null">
+                        and attribute like CONCAT('%',#{paramCondition.attribute},'%')
                 </if>
     </select>
 
@@ -223,8 +223,8 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "pr
                 <if test="paramCondition.categoryId != null">
                         and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
                 </if>
-                <if test="paramCondition.attributeId != null">
-                        and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
+                <if test="paramCondition.attribute != null">
+                        and attribute like CONCAT('%',#{paramCondition.attribute},'%')
                 </if>
     </select>
 

@@ -158,7 +158,7 @@ public class SpuResult implements Serializable {
      * 属性id
      */
     @ApiModelProperty("属性id")
-    private Long attributeId;
+    private String attribute;
 
     /**
      * 养护周期值

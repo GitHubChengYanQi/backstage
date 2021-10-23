@@ -142,8 +142,8 @@ public class Spu implements Serializable {
     /**
      * 属性id
      */
-    @TableField("attribute_id")
-    private Long attributeId;
+    @TableField("attribute")
+    private String attribute;
 
     /**
      * 养护周期值
@@ -316,12 +316,12 @@ public class Spu implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public Long getAttributeId() {
-        return attributeId;
+    public String getAttribute() {
+        return attribute;
     }
 
-    public void setAttributeId(Long attributeId) {
-        this.attributeId = attributeId;
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
     }
 
     public Long getcuringCycle() {
@@ -370,7 +370,7 @@ public class Spu implements Serializable {
                 ", classId=" + classId +
                 ", unitId=" + unitId +
                 ", categoryId=" + categoryId +
-                ", attributeId=" + attributeId +
+                ", attribute=" + attribute +
                 "}";
     }
 }
