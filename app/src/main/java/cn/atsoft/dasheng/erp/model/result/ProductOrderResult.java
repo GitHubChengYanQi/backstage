@@ -38,6 +38,12 @@ public class ProductOrderResult implements Serializable {
 
     private ContactsResult contactsResult;
 
+    private Long contactsId;
+
+    private Long adressId;
+
+    private Long phoneId;
+
     /**
      * 客户信息
      */
