@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
@@ -28,6 +30,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.beetl.ext.fn.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -64,6 +67,9 @@ public class SpuController extends BaseController {
     private CategoryService categoryService;
     @Autowired
     private UnitService unitService;
+
+    @Autowired
+    private MaterialService materialService;
 
 
     /**
@@ -124,7 +130,6 @@ public class SpuController extends BaseController {
 
         List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
 
-
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
 
@@ -162,7 +167,7 @@ public class SpuController extends BaseController {
                             }
                         }
                         for (AttributeValues attributeValue : attributeValues) {
-                            if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())){
+                            if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
                                 AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
                                 Values values = new Values();
                                 values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
@@ -192,6 +197,13 @@ public class SpuController extends BaseController {
                     categoryRequests.add(categoryRequest);
                 }
             }
+        }
+
+
+        //映射材质对象
+        if (ToolUtil.isNotEmpty(detail.getMaterialId())) {
+            Material material = materialService.getById(detail.getMaterialId());
+            spuResult.setMaterial(material);
         }
 
         Category category = categoryService.getById(detail.getCategoryId());

@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,8 @@ public class ProductOrderController extends BaseController {
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 新增接口
@@ -126,12 +130,14 @@ public class ProductOrderController extends BaseController {
             AdressResult adressResult = new AdressResult();
             ToolUtil.copyProperties(adress, adressResult);
             result.setAdressResult(adressResult);
+            result.setAdressId(adressResult.getAdressId());
         }
         Contacts contacts = contactsService.query().eq("contacts_id", productOrderRequest.getContactsId()).one();
         if (ToolUtil.isNotEmpty(contacts)) {
             ContactsResult contactsResult = new ContactsResult();
             ToolUtil.copyProperties(contacts, contactsResult);
             result.setContactsResult(contactsResult);
+            result.setContactsId(contactsResult.getContactsId());
         }
 
         Phone phone = phoneService.query().eq("phone_id", productOrderRequest.getPhoneId()).one();
@@ -139,8 +145,13 @@ public class ProductOrderController extends BaseController {
             PhoneResult phoneResult = new PhoneResult();
             ToolUtil.copyProperties(phone, phoneResult);
             result.setPhoneResult(phoneResult);
-  
+            result.setPhoneId(phoneResult.getPhoneId());
+
+        }
         result.setOrderDetail(productOrderDetailsList);
+
+        User user = userService.getById(detail.getCreateUser());
+        result.setUser(user);
 
         return ResponseData.success(result);
     }

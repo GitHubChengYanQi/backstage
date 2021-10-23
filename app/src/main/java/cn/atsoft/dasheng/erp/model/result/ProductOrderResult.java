@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,7 +34,15 @@ public class ProductOrderResult implements Serializable {
 
     private PhoneResult phoneResult;
 
+    private User user;
+
     private ContactsResult contactsResult;
+
+    private Long contactsId;
+
+    private Long adressId;
+
+    private Long phoneId;
 
     /**
      * 客户信息

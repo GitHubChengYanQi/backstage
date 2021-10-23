@@ -25,6 +25,9 @@ import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
@@ -64,6 +67,8 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -128,6 +133,15 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
     @Override
     public void update(ProductOrderParam param) {
+
+        ProductOrderRequest productOrderRequest = new ProductOrderRequest();
+        productOrderRequest.setAdressId(param.getAdressId());
+        productOrderRequest.setContactsId(param.getContactsId());
+        productOrderRequest.setPhoneId(param.getPhoneId());
+        productOrderRequest.setCustomerId(param.getCustomerId());
+        String toJsonStr = JSONUtil.toJsonStr(productOrderRequest);
+        param.setCustomer(toJsonStr);
+
         ProductOrder oldEntity = getOldEntity(param);
         ProductOrder newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -180,10 +194,12 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     public void format(List<ProductOrderResult> data) {
         List<Long> customerIds = new ArrayList<>();
         Map<Long, ProductOrderRequest> map = new HashMap<>();
+        List<Long> userIds = new ArrayList<>();
         for (ProductOrderResult datum : data) {
             customerIds.add(datum.getCustomerId());
             ProductOrderRequest productOrderRequest = JSONUtil.toBean(datum.getCustomer(), ProductOrderRequest.class);
             map.put(datum.getProductOrderId(), productOrderRequest);
+            userIds.add(datum.getCreateUser());
         }
 
         List<Long> adressIds = new ArrayList<>();
@@ -207,8 +223,16 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
                 .in(Customer::getCustomerId, customerIds)
                 .list();
 
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.query().in("user_id", userIds).list();
 
         for (ProductOrderResult datum : data) {
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+
             for (Customer customer : customers) {
                 if (datum.getCustomerId() != null && datum.getCustomerId().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();

@@ -23,6 +23,10 @@ public class CodingRulesResult implements Serializable {
     private CodingRulesClassificationResult codingRulesClassificationResult;
 
     /**
+     * 状态
+     */
+    private Integer state;
+    /**
      * 排序
      */
     private Long sort;
