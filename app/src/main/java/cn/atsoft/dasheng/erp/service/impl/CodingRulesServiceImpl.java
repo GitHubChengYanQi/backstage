@@ -4,9 +4,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
 import cn.atsoft.dasheng.erp.mapper.CodingRulesMapper;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
+import cn.atsoft.dasheng.erp.model.result.CodingRulesClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -16,6 +19,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -32,7 +36,8 @@ import java.util.List;
  */
 @Service
 public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, CodingRules> implements CodingRulesService {
-
+    @Autowired
+    private CodingRulesClassificationService codingRulesClassificationService;
     @Override
     public void add(CodingRulesParam param) {
         CodingRules entity = getEntity(param);
@@ -66,7 +71,27 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     public PageInfo<CodingRulesResult> findPageBySpec(CodingRulesParam param) {
         Page<CodingRulesResult> pageContext = getPageContext();
         IPage<CodingRulesResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    private void format(List<CodingRulesResult> param){
+        List<Long> classIds =  new ArrayList<>();
+        for (CodingRulesResult codingRulesResult : param) {
+            classIds.add(codingRulesResult.getCodingRulesClassificationId());
+        }
+        List<CodingRulesClassification> list = classIds.size() == 0 ? new ArrayList<>() : codingRulesClassificationService.lambdaQuery().in(CodingRulesClassification::getCodingRulesClassificationId, classIds).list();
+
+        for (CodingRulesResult codingRulesResult : param) {
+            for (CodingRulesClassification codingRulesClassification : list) {
+                if (codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())){
+                    CodingRulesClassificationResult result = new CodingRulesClassificationResult();
+                    ToolUtil.copyProperties(codingRulesClassification,result);
+                    codingRulesResult.setCodingRulesClassificationResult(result);
+                }
+            }
+        }
+
     }
 
     /**

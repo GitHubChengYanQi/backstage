@@ -25,6 +25,11 @@ public class CodingRules implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 状态
+     */
+    @TableField("state")
+    private Integer state;
+    /**
      * 排序
      */
     @TableField("sort")
@@ -177,6 +182,14 @@ public class CodingRules implements Serializable {
 
     public void setSort(Long sort) {
         this.sort = sort;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     @Override
