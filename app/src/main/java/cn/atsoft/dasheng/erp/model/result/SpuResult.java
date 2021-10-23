@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
@@ -39,6 +40,8 @@ public class SpuResult implements Serializable {
     private List<AttributeValuesResult> itemAttributeResults;
 
     private SkuRequest spuAttributes;
+
+    private Material material;
 
     /**
      * 物品Id

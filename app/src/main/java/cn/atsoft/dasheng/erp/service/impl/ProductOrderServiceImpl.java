@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
@@ -64,6 +65,8 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private UserService userService;
 
     @Override
     @Transactional
@@ -209,6 +212,9 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
 
 
         for (ProductOrderResult datum : data) {
+
+
+
             for (Customer customer : customers) {
                 if (datum.getCustomerId() != null && datum.getCustomerId().equals(customer.getCustomerId())) {
                     CustomerResult customerResult = new CustomerResult();
