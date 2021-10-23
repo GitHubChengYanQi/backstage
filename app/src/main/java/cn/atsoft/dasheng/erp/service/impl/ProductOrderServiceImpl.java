@@ -1,8 +1,14 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -20,6 +26,7 @@ import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.log.Log;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -54,7 +61,7 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     @Autowired
     private ContactsService contactsService;
     @Autowired
-    private AdressService adressServicel;
+    private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
 
@@ -179,6 +186,22 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
             map.put(datum.getProductOrderId(), productOrderRequest);
         }
 
+        List<Long> adressIds = new ArrayList<>();
+        List<Long> contactsIds = new ArrayList<>();
+        List<Long> phoneIds = new ArrayList<>();
+
+        for (Map.Entry<Long, ProductOrderRequest> entry : map.entrySet()) {
+            ProductOrderRequest entryValue = entry.getValue();
+            adressIds.add(entryValue.getAdressId());
+            contactsIds.add(entryValue.getContactsId());
+            phoneIds.add(entryValue.getPhoneId());
+        }
+
+        List<Adress> adresses = adressIds.size() == 0 ? new ArrayList<>() : adressService.query().in("adress_id", adressIds).list();
+
+        List<Contacts> contacts = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.query().in("contacts_id", contactsIds).list();
+
+        List<Phone> phones = phoneIds.size() == 0 ? new ArrayList<>() : phoneService.query().in("phone_id", phoneIds).list();
 
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.lambdaQuery()
                 .in(Customer::getCustomerId, customerIds)
@@ -191,6 +214,31 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
                     CustomerResult customerResult = new CustomerResult();
                     ToolUtil.copyProperties(customer, customerResult);
                     datum.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            ProductOrderRequest productOrderRequest = map.get(datum.getProductOrderId());
+            for (Adress adress : adresses) {
+                if (productOrderRequest.getAdressId() != null && adress.getAdressId().equals(productOrderRequest.getAdressId())) {
+                    AdressResult adressResult = new AdressResult();
+                    ToolUtil.copyProperties(adress, adressResult);
+                    datum.setAdressResult(adressResult);
+                    break;
+                }
+            }
+            for (Contacts contact : contacts) {
+                if (productOrderRequest.getContactsId() != null && contact.getContactsId().equals(productOrderRequest.getContactsId())) {
+                    ContactsResult contactsResult = new ContactsResult();
+                    ToolUtil.copyProperties(contact, contactsResult);
+                    datum.setContactsResult(contactsResult);
+                    break;
+                }
+            }
+            for (Phone phone : phones) {
+                if (productOrderRequest.getPhoneId() != null && phone.getPhoneId().equals(productOrderRequest.getPhoneId())) {
+                    PhoneResult phoneResult = new PhoneResult();
+                    ToolUtil.copyProperties(phone, phoneResult);
+                    datum.setPhoneResult(phoneResult);
                     break;
                 }
             }

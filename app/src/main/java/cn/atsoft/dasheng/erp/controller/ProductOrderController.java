@@ -1,16 +1,28 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.model.result.AdressResult;
+import cn.atsoft.dasheng.app.model.result.ContactsResult;
+import cn.atsoft.dasheng.app.model.result.PhoneResult;
+import cn.atsoft.dasheng.app.service.AdressService;
+import cn.atsoft.dasheng.app.service.ContactsService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ProductOrder;
 import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
+import cn.atsoft.dasheng.erp.model.params.ProductOrderRequest;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
 import cn.atsoft.dasheng.erp.service.ProductOrderDetailsService;
 import cn.atsoft.dasheng.erp.service.ProductOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -36,6 +48,12 @@ public class ProductOrderController extends BaseController {
     private ProductOrderService productOrderService;
     @Autowired
     private ProductOrderDetailsService productOrderDetailsService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private AdressService adressService;
+    @Autowired
+    private PhoneService phoneService;
 
     /**
      * 新增接口
@@ -87,6 +105,9 @@ public class ProductOrderController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<ProductOrderResult> detail(@RequestBody ProductOrderParam productOrderParam) {
         ProductOrder detail = this.productOrderService.getById(productOrderParam.getProductOrderId());
+        if (ToolUtil.isEmpty(detail)) {
+            throw new ServiceException(500, "没有当前信息");
+        }
         List<ProductOrderDetails> productOrderDetails = productOrderDetailsService.lambdaQuery()
                 .in(ProductOrderDetails::getProductOrderId, detail.getProductOrderId())
                 .list();
@@ -95,8 +116,30 @@ public class ProductOrderController extends BaseController {
             productOrderDetailsList.add(productOrderDetail);
         }
 
+        ProductOrderRequest productOrderRequest = JSONUtil.toBean(detail.getCustomer(), ProductOrderRequest.class);
+
         ProductOrderResult result = new ProductOrderResult();
         ToolUtil.copyProperties(detail, result);
+
+        Adress adress = adressService.query().eq("adress_id", productOrderRequest.getAdressId()).one();
+        if (ToolUtil.isNotEmpty(adress)) {
+            AdressResult adressResult = new AdressResult();
+            ToolUtil.copyProperties(adress, adressResult);
+            result.setAdressResult(adressResult);
+        }
+        Contacts contacts = contactsService.query().eq("contacts_id", productOrderRequest.getContactsId()).one();
+        if (ToolUtil.isNotEmpty(contacts)) {
+            ContactsResult contactsResult = new ContactsResult();
+            ToolUtil.copyProperties(contacts, contactsResult);
+            result.setContactsResult(contactsResult);
+        }
+
+        Phone phone = phoneService.query().eq("phone_id", productOrderRequest.getPhoneId()).one();
+        if (ToolUtil.isNotEmpty(phone)) {
+            PhoneResult phoneResult = new PhoneResult();
+            ToolUtil.copyProperties(phone, phoneResult);
+            result.setPhoneResult(phoneResult);
+  
         result.setOrderDetail(productOrderDetailsList);
 
         return ResponseData.success(result);
