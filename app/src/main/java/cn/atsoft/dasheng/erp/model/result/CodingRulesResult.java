@@ -21,6 +21,10 @@ public class CodingRulesResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 状态
+     */
+    private Integer state;
+    /**
      * 排序
      */
     private Long sort;

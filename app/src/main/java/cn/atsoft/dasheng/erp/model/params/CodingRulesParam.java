@@ -28,6 +28,10 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
 
 
     /**
+     * 状态
+     */
+    private Integer state;
+    /**
      * 排序
      */
     private Long sort;
