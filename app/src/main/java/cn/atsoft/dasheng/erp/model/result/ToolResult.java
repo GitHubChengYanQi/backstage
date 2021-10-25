@@ -20,6 +20,16 @@ public class ToolResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 编码
+     */
+    private String coding;
+    /**
+     * 操作规范
+     */
+
+    private String norm;
+    /**
 
     /**
      * 工具id

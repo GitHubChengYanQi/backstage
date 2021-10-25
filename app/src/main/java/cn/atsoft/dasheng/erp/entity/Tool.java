@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +23,21 @@ import java.io.Serializable;
 public class Tool implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 编码
+     */
+    @TableField("coding")
+    private String coding;
+    /**
+     * 操作规范
+     */
+    @TableField("norm")
+    private String norm;
 
     /**
      * 工具id
      */
-      @TableId(value = "tool_id", type = IdType.ID_WORKER)
+    @TableId(value = "tool_id", type = IdType.ID_WORKER)
     private Long toolId;
 
     /**
@@ -66,25 +79,25 @@ public class Tool implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -204,22 +217,38 @@ public class Tool implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    public String getNorm() {
+        return norm;
+    }
+
+    public void setNorm(String norm) {
+        this.norm = norm;
+    }
+
     @Override
     public String toString() {
         return "Tool{" +
-        "toolId=" + toolId +
-        ", name=" + name +
-        ", state=" + state +
-        ", note=" + note +
-        ", attachment=" + attachment +
-        ", unitId=" + unitId +
-        ", toolClassificationId=" + toolClassificationId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "toolId=" + toolId +
+                ", name=" + name +
+                ", state=" + state +
+                ", note=" + note +
+                ", attachment=" + attachment +
+                ", unitId=" + unitId +
+                ", toolClassificationId=" + toolClassificationId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

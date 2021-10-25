@@ -125,7 +125,8 @@ public class SpuController extends BaseController {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
 
         SpuResult spuResult = new SpuResult();
-        List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
+        List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
+                skuService.query().in("spu_id", detail.getSpuId()).list();
         List<List<SkuJson>> requests = new ArrayList<>();
         SkuRequest skuRequests = new SkuRequest();
 
@@ -150,8 +151,6 @@ public class SpuController extends BaseController {
 
 
                 for (Sku sku : skus) {
-                    SpuRequest spuRequest = new SpuRequest();
-
                     JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                     List<SkuJson> list = new ArrayList<>();
@@ -167,10 +166,19 @@ public class SpuController extends BaseController {
                                     attribute.setAttribute(itemAttribute.getAttribute());
                                     skuJson.setAttribute(attribute);
                                 }
+                                CategoryRequest categoryRequest = new CategoryRequest();
+                                categoryRequest.setAttribute(itemAttribute);
+                                List<AttributeValues> attributeValuesResult = new ArrayList<>();
+                                for (AttributeValues attributeValue : attributeValues) {
+                                    if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
+                                        attributeValuesResult.add(attributeValue);
+                                    }
+                                }
+                                categoryRequest.setValue(attributeValuesResult);
+                                categoryRequests.add(categoryRequest);
                             }
                             for (AttributeValues attributeValue : attributeValues) {
                                 if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                    AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
                                     Values values = new Values();
                                     values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
                                     values.setAttributeValues(attributeValue.getAttributeValues());
@@ -180,23 +188,11 @@ public class SpuController extends BaseController {
                             list.add(skuJson);
                         }
                     }
-
                     requests.add(list);
                 }
                 skuRequests.setSpuRequests(requests);
 
-                for (ItemAttribute itemAttribute : itemAttributes) {
-                    CategoryRequest categoryRequest = new CategoryRequest();
-                    categoryRequest.setAttribute(itemAttribute);
-                    List<AttributeValues> attributeValuesResult = new ArrayList<>();
-                    for (AttributeValues attributeValue : attributeValues) {
-                        if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                            attributeValuesResult.add(attributeValue);
-                        }
-                    }
-                    categoryRequest.setValue(attributeValuesResult);
-                    categoryRequests.add(categoryRequest);
-                }
+
             }
         }
 
