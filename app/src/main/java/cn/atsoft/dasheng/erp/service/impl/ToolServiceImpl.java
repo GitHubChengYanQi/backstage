@@ -7,11 +7,13 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.mapper.ToolMapper;
 import cn.atsoft.dasheng.erp.model.params.ToolParam;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
-import  cn.atsoft.dasheng.erp.service.ToolService;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
+import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -27,20 +29,24 @@ import java.util.List;
  */
 @Service
 public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements ToolService {
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Override
-    public void add(ToolParam param){
+    public void add(ToolParam param) {
+//        String coding = codingRulesService.backCoding(param.getCod());
+//        param.setCoding(coding);
         Tool entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(ToolParam param){
+    public void delete(ToolParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ToolParam param){
+    public void update(ToolParam param) {
         Tool oldEntity = getOldEntity(param);
         Tool newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +54,23 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements To
     }
 
     @Override
-    public ToolResult findBySpec(ToolParam param){
+    public ToolResult findBySpec(ToolParam param) {
         return null;
     }
 
     @Override
-    public List<ToolResult> findListBySpec(ToolParam param){
+    public List<ToolResult> findListBySpec(ToolParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ToolResult> findPageBySpec(ToolParam param){
+    public PageInfo<ToolResult> findPageBySpec(ToolParam param) {
         Page<ToolResult> pageContext = getPageContext();
         IPage<ToolResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ToolParam param){
+    private Serializable getKey(ToolParam param) {
         return param.getToolId();
     }
 
