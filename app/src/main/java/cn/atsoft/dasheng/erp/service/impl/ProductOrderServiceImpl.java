@@ -147,6 +147,10 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
 
+        if (ToolUtil.isEmpty(param.getOrderDetail())){
+            return;
+        }
+
         QueryWrapper<ProductOrderDetails> productOrderDetailsQueryWrapper = new QueryWrapper<>();
         productOrderDetailsQueryWrapper.in("product_order_id", param.getProductOrderId());
         productOrderDetailsService.remove(productOrderDetailsQueryWrapper);
