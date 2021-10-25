@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
@@ -114,6 +115,9 @@ public class CodingRulesController extends BaseController {
     @RequestMapping(value = "/backCoding", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData backCoding(@RequestBody CodingRulesParam codingRulesParam) {
+        if (ToolUtil.isEmpty(codingRulesParam)) {
+            codingRulesParam = new CodingRulesParam();
+        }
         String backCoding = this.codingRulesService.backCoding(codingRulesParam.getCodingRulesId());
         return ResponseData.success(backCoding);
     }
