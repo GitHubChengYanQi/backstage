@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.params;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -29,7 +30,11 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
 //    private List<ItemAttributeParam> spuAttributes;
+    /**
+     * 分类id
+     */
 
+    private Long spuClassificationId;
 
     private List<SpuRequest> spuRequests;
     /**

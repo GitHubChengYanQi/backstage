@@ -43,6 +43,14 @@ public class SpuResult implements Serializable {
 
     private Material material;
 
+    private SpuClassificationResult spuClassificationResult;
+
+    /**
+     * 分类id
+     */
+
+    private Long spuClassificationId;
+
     /**
      * 物品Id
      */

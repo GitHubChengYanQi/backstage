@@ -23,7 +23,11 @@ import java.io.Serializable;
 public class Spu implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 分类id
+     */
+    @TableField("spu_classification_id")
+    private Long spuClassificationId;
 
     /**
      * 物品Id
@@ -163,6 +167,21 @@ public class Spu implements Serializable {
     @TableField("production_type")
     private Integer productionType;
 
+    public Long getCuringCycle() {
+        return curingCycle;
+    }
+
+    public void setCuringCycle(Long curingCycle) {
+        this.curingCycle = curingCycle;
+    }
+
+    public Long getSpuClassificationId() {
+        return spuClassificationId;
+    }
+
+    public void setSpuClassificationId(Long spuClassificationId) {
+        this.spuClassificationId = spuClassificationId;
+    }
 
     public Long getSpuId() {
         return spuId;
