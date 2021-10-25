@@ -16,12 +16,14 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ import java.util.List;
 public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, CodingRules> implements CodingRulesService {
     @Autowired
     private CodingRulesClassificationService codingRulesClassificationService;
+
     @Override
     public void add(CodingRulesParam param) {
         CodingRules entity = getEntity(param);
@@ -50,7 +53,16 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     }
 
     @Override
+    @Transactional
     public void update(CodingRulesParam param) {
+
+        CodingRules codingRules = new CodingRules();
+        codingRules.setState(0);
+        QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
+        codingRulesQueryWrapper.notIn("coding_rules_id", param.getCodingRulesId());
+        codingRulesQueryWrapper.in("coding_rules_classification_id", param.getCodingRulesClassificationId());
+        this.update(codingRules, codingRulesQueryWrapper);
+
         CodingRules oldEntity = getOldEntity(param);
         CodingRules newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -75,8 +87,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         return PageFactory.createPageInfo(page);
     }
 
-    private void format(List<CodingRulesResult> param){
-        List<Long> classIds =  new ArrayList<>();
+    private void format(List<CodingRulesResult> param) {
+        List<Long> classIds = new ArrayList<>();
         for (CodingRulesResult codingRulesResult : param) {
             classIds.add(codingRulesResult.getCodingRulesClassificationId());
         }
@@ -84,9 +96,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         for (CodingRulesResult codingRulesResult : param) {
             for (CodingRulesClassification codingRulesClassification : list) {
-                if (codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())){
+                if (codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
                     CodingRulesClassificationResult result = new CodingRulesClassificationResult();
-                    ToolUtil.copyProperties(codingRulesClassification,result);
+                    ToolUtil.copyProperties(codingRulesClassification, result);
                     codingRulesResult.setCodingRulesClassificationResult(result);
                 }
             }

@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +38,10 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
 
     @Override
     public void add(AttributeValuesParam param) {
+        AttributeValues attributeValues = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).one();
+        if (ToolUtil.isNotEmpty(attributeValues)) {
+            throw new ServiceException(500, "不要重复添加");
+        }
         AttributeValues entity = getEntity(param);
         this.save(entity);
     }

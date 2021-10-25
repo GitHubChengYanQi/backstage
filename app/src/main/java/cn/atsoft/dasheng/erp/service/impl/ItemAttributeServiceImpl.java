@@ -9,9 +9,11 @@ import cn.atsoft.dasheng.erp.mapper.ItemAttributeMapper;
 import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -39,6 +41,10 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
 
     @Override
     public void add(ItemAttributeParam param) {
+        ItemAttribute attribute = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).one();
+        if (ToolUtil.isNotEmpty(attribute)) {
+            throw new ServiceException(500, "请不要重复添加");
+        }
         ItemAttribute entity = getEntity(param);
         this.save(entity);
     }
