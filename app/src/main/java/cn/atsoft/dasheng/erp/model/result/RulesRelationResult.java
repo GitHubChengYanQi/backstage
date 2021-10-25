@@ -1,42 +1,31 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.erp.entity.RulesRelation;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 编码规则
+ * 编码规则和模块的对应关系
  * </p>
  *
  * @author song
- * @since 2021-10-22
+ * @since 2021-10-25
  */
 @Data
 @ApiModel
-public class CodingRulesResult implements Serializable {
+public class RulesRelationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private CodingRulesClassificationResult codingRulesClassificationResult;
-
-    private List<RulesRelation> rulesRelationList;
 
     /**
-     * 状态
+     * 规则关系id
      */
-    private Integer state;
-    /**
-     * 排序
-     */
-    private Long sort;
+    @ApiModelProperty("规则关系id")
+    private Long rulesRelationId;
 
     /**
      * 编码规则id
@@ -45,34 +34,10 @@ public class CodingRulesResult implements Serializable {
     private Long codingRulesId;
 
     /**
-     * 编码规则分类id
+     * 模块id
      */
-    @ApiModelProperty("编码规则分类id")
-    private Long codingRulesClassificationId;
-
-    /**
-     * 编码规则名称
-     */
-    @ApiModelProperty("编码规则名称")
-    private String name;
-
-    /**
-     * 编码规则
-     */
-    @ApiModelProperty("编码规则")
-    private String codingRules;
-
-    /**
-     * 创建者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-    @ApiModelProperty(hidden = true)
-    private Long updateUser;
+    @ApiModelProperty("模块id")
+    private Long moduleId;
 
     /**
      * 创建时间
@@ -87,15 +52,27 @@ public class CodingRulesResult implements Serializable {
     private Date updateTime;
 
     /**
+     * 创建者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    /**
      * 状态
      */
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
-     * 部门id
+     * 部门编号
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("部门编号")
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

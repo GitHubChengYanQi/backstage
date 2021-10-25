@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -32,10 +33,14 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements To
     @Autowired
     private CodingRulesService codingRulesService;
 
+    @Transactional
     @Override
     public void add(ToolParam param) {
-//        String coding = codingRulesService.backCoding(param.getCod());
-//        param.setCoding(coding);
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getCoding()));
+            param.setCoding(coding);
+        }
         Tool entity = getEntity(param);
         this.save(entity);
     }
@@ -47,6 +52,11 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements To
 
     @Override
     public void update(ToolParam param) {
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getCoding()));
+            param.setCoding(coding);
+        }
         Tool oldEntity = getOldEntity(param);
         Tool newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
