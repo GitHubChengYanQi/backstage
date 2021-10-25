@@ -41,8 +41,8 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
 
     @Override
     public void add(ItemAttributeParam param) {
-        ItemAttribute attribute = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).one();
-        if (ToolUtil.isNotEmpty(attribute)) {
+        Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).count();
+        if (count > 0) {
             throw new ServiceException(500, "请不要重复添加");
         }
         ItemAttribute entity = getEntity(param);

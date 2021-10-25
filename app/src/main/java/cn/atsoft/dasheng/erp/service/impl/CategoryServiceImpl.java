@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,6 +33,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public void add(CategoryParam param) {
+        Integer count = this.query().in("category_name", param.getCategoryName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "**重复添加**");
+        }
         Category entity = getEntity(param);
         this.save(entity);
     }

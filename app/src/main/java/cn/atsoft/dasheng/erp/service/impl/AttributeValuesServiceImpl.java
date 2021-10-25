@@ -38,8 +38,8 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
 
     @Override
     public void add(AttributeValuesParam param) {
-        AttributeValues attributeValues = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).one();
-        if (ToolUtil.isNotEmpty(attributeValues)) {
+        Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).count();
+        if (count > 0) {
             throw new ServiceException(500, "不要重复添加");
         }
         AttributeValues entity = getEntity(param);
