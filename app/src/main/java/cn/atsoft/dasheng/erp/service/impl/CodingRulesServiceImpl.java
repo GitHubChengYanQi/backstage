@@ -60,6 +60,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         codingRules.setState(0);
         QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
         codingRulesQueryWrapper.notIn("coding_rules_id", param.getCodingRulesId());
+        codingRulesQueryWrapper.in("coding_rules_classification_id", param.getCodingRulesClassificationId());
         this.update(codingRules, codingRulesQueryWrapper);
 
         CodingRules oldEntity = getOldEntity(param);
