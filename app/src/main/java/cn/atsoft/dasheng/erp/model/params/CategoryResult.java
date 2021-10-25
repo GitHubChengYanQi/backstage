@@ -23,6 +23,11 @@ import java.util.List;
 @ApiModel
 public class CategoryResult implements Serializable {
 
+    /**
+     * 排序
+     */
+    private Long sort;
+
     private static final long serialVersionUID = 1L;
     private CategoryResult pidCategoryResult;
     private List<CategoryRequest> categoryRequests;
