@@ -123,6 +123,7 @@ public class SpuController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
+
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = skuService.query().in("spu_id", detail.getSpuId()).list();
         List<List<SkuJson>> requests = new ArrayList<>();
@@ -133,7 +134,7 @@ public class SpuController extends BaseController {
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
 
-            List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
+            List<ItemAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery()
                     .in(ItemAttribute::getCategoryId, detail.getCategoryId())
                     .list();
 
@@ -143,7 +144,7 @@ public class SpuController extends BaseController {
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     attId.add(itemAttribute.getAttributeId());
                 }
-                List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+                List<AttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                         .in(AttributeValues::getAttributeId, attId)
                         .list();
 
@@ -154,40 +155,40 @@ public class SpuController extends BaseController {
                     JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                     List<SkuJson> list = new ArrayList<>();
-                    for (AttributeValues valuesRequest : valuesRequests) {
-                        valuesRequest.getAttributeValuesId();
-                        valuesRequest.getAttributeId();
-                        SkuJson skuJson = new SkuJson();
-                        for (ItemAttribute itemAttribute : itemAttributes) {
-                            if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-                                Attribute attribute = new Attribute();
-                                attribute.setAttributeId(itemAttribute.getAttributeId().toString());
-                                attribute.setAttribute(itemAttribute.getAttribute());
-                                skuJson.setAttribute(attribute);
+                    if (ToolUtil.isNotEmpty(valuesRequests)) {
+                        for (AttributeValues valuesRequest : valuesRequests) {
+                            valuesRequest.getAttributeValuesId();
+                            valuesRequest.getAttributeId();
+                            SkuJson skuJson = new SkuJson();
+                            for (ItemAttribute itemAttribute : itemAttributes) {
+                                if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                                    Attribute attribute = new Attribute();
+                                    attribute.setAttributeId(itemAttribute.getAttributeId().toString());
+                                    attribute.setAttribute(itemAttribute.getAttribute());
+                                    skuJson.setAttribute(attribute);
+                                }
                             }
-                        }
-                        for (AttributeValues attributeValue : attributeValues) {
-                            if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
-                                Values values = new Values();
-                                values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
-                                values.setAttributeValues(attributeValue.getAttributeValues());
-                                skuJson.setValues(values);
+                            for (AttributeValues attributeValue : attributeValues) {
+                                if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+                                    AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
+                                    Values values = new Values();
+                                    values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
+                                    values.setAttributeValues(attributeValue.getAttributeValues());
+                                    skuJson.setValues(values);
+                                }
                             }
+                            list.add(skuJson);
                         }
-                        list.add(skuJson);
                     }
 
                     requests.add(list);
                 }
                 skuRequests.setSpuRequests(requests);
 
-                List<SkuValuesRequest> skuDetail = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     CategoryRequest categoryRequest = new CategoryRequest();
                     categoryRequest.setAttribute(itemAttribute);
                     List<AttributeValues> attributeValuesResult = new ArrayList<>();
-
                     for (AttributeValues attributeValue : attributeValues) {
                         if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
                             attributeValuesResult.add(attributeValue);
