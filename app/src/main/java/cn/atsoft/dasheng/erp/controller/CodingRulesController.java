@@ -8,6 +8,8 @@ import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.CodingRulesClassificationSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.CodingRulesSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +122,19 @@ public class CodingRulesController extends BaseController {
         }
         String backCoding = this.codingRulesService.backCoding(codingRulesParam.getCodingRulesId());
         return ResponseData.success(backCoding);
+    }
+
+    /**
+     * 下拉接口
+     *
+     * @return
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.codingRulesService.listMaps();
+        CodingRulesSelectWrapper codingRulesSelectWrapper = new CodingRulesSelectWrapper(list);
+        List<Map<String, Object>> result = codingRulesSelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 }
