@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -53,8 +54,13 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     @Transactional
     @Override
     public void add(SpuParam param) {
+        Integer count = this.query().in("name", param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "不可以添加重复产品");
+        }
+
         Spu entity = getEntity(param);
-        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
             entity.setAttribute(toJSONString);
         }
@@ -65,7 +71,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //        param.getSpuAttributes().getSpuRequests().sort(null);
 
         //        Collections.sort(param.getSpuAttributes().getSpuRequests());
-        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
 
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
             List<Sku> skuList = new ArrayList<>();
@@ -92,7 +98,6 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
 
 
-
     }
 
     static void descartes1(List<Attribute> dimvalue, List<List<String>> result, int layer, List<String> curList) {
@@ -102,7 +107,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             } else {
                 for (int i = 0; i < dimvalue.get(layer).getAttributeValues().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeId()+":"+dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
+                    list.add(dimvalue.get(layer).getAttributeId() + ":" + dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
                     descartes1(dimvalue, result, layer + 1, list);
                 }
             }
@@ -112,7 +117,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             } else {
                 for (int i = 0; i < dimvalue.get(layer).getAttributeValues().size(); i++) {
                     List<String> list = new ArrayList<String>(curList);
-                    list.add(dimvalue.get(layer).getAttributeId()+":"+dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
+                    list.add(dimvalue.get(layer).getAttributeId() + ":" + dimvalue.get(layer).getAttributeValues().get(i).getAttributeValuesId());
                     result.add(list);
                 }
             }
@@ -126,7 +131,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     @Override
     public void update(SpuParam param) {
-        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())){
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
             param.setAttribute(toJSONString);
         }
@@ -174,7 +179,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 }
             }
             for (Unit unit : units) {
-                if (spuResult.getUnitId() !=null && spuResult.getUnitId().equals(unit.getUnitId())) {
+                if (spuResult.getUnitId() != null && spuResult.getUnitId().equals(unit.getUnitId())) {
                     UnitResult unitResult = new UnitResult();
                     ToolUtil.copyProperties(unit, unitResult);
                     spuResult.setUnitResult(unitResult);

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,22 +153,39 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         int quarter = dateTime.quarter();
         //所属年份的第几周
         int weekOfYear = dateTime.weekOfYear();
+        //日
+        int dayOfMonth = dateTime.dayOfMonth();
 //--------------------------------------------------------------------------------------------------------------
-        if (rules.contains("${year}")) {
-            rules = rules.replace("${year}", year + "");
+        if (rules.contains("${DD}")) {
+            int yy = Integer.parseInt(String.valueOf(year).substring(2));
+            rules = rules.replace("${DD}", yy + "");
         }
-        if (rules.contains("${month}")) {
-            rules = rules.replace("${month}", monthValue + "");
+
+        if (rules.contains("${YYYY}")) {
+            rules = rules.replace("${YYYY}", year + "");
         }
+
+        if (rules.contains("${YY}")) {
+            int yy = Integer.parseInt(String.valueOf(year).substring(2));
+            rules = rules.replace("${YY}", yy + "");
+        }
+
+        if (rules.contains("${MM}")) {
+            rules = rules.replace("${MM}", monthValue + "");
+        }
+
         if (rules.contains("${randomInt}")) {
             rules = rules.replace("${randomInt}", randomInt + "");
         }
+
         if (rules.contains("${randomString}")) {
             rules = rules.replace("${randomString}", randomString);
         }
+
         if (rules.contains("${quarter}")) {
             rules = rules.replace("${quarter}", quarter + "");
         }
+
         if (rules.contains("${weekOfYear}")) {
             rules = rules.replace("${weekOfYear}", weekOfYear + "");
         }

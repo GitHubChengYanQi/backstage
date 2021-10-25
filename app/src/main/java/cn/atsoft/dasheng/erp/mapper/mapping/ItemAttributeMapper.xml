@@ -121,6 +121,7 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        order by sort ASC
     </select>
 
     <select id="customPageMapList" resultType="map"
