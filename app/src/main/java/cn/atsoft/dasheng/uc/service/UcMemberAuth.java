@@ -132,12 +132,11 @@ public class UcMemberAuth {
         WxCpServiceImpl cpService = wxCpService.getWxCpClient();
         try {
             WxCpOauth2UserInfo wxCpOauth2UserInfo = cpService.getOauth2Service().getUserInfo(code);
-
             UcOpenUserInfo ucOpenUserInfo = new UcOpenUserInfo();
-            ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getOpenId());
             ucOpenUserInfo.setSource("wxCp");
             if (ToolUtil.isNotEmpty(wxCpOauth2UserInfo.getUserId())) {
                 WxCpUser wxCpUser = cpService.getUserService().getById(wxCpOauth2UserInfo.getUserId());
+                ucOpenUserInfo.setUuid(wxCpOauth2UserInfo.getUserId());
                 ucOpenUserInfo.setUsername(wxCpUser.getName());
                 ucOpenUserInfo.setNickname(wxCpUser.getName());
                 ucOpenUserInfo.setAvatar(wxCpUser.getAvatar());

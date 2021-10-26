@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.userInfo.controller;
 
+import cn.atsoft.dasheng.appBase.service.WxCpService;
+import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.userInfo.model.BackUser;
 import cn.atsoft.dasheng.userInfo.model.GetBind;
 import cn.atsoft.dasheng.userInfo.model.GetKey;
@@ -8,6 +10,10 @@ import cn.atsoft.dasheng.userInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import io.swagger.annotations.Api;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
+import me.chanjar.weixin.cp.bean.WxCpOauth2UserInfo;
+import me.chanjar.weixin.cp.bean.WxCpUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +60,7 @@ public class UserinfoController extends BaseController {
         userInfoService.binding(getKey);
         return ResponseData.success();
     }
+
     /**
      * 手动绑定
      *
