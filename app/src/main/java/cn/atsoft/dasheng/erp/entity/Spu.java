@@ -167,13 +167,6 @@ public class Spu implements Serializable {
     @TableField("production_type")
     private Integer productionType;
 
-    public Long getCuringCycle() {
-        return curingCycle;
-    }
-
-    public void setCuringCycle(Long curingCycle) {
-        this.curingCycle = curingCycle;
-    }
 
     public Long getSpuClassificationId() {
         return spuClassificationId;

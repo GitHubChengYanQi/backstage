@@ -100,7 +100,7 @@ public class CategoryController extends BaseController {
         if (ToolUtil.isNotEmpty(detail)) {
 
             List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery()
-                    .in(ItemAttribute::getCategoryId, detail.getCategoryId())
+                    .in(ItemAttribute::getCategoryId, detail.getCategoryId()).orderByAsc(ItemAttribute::getSort)
                     .list();
 
             if (ToolUtil.isNotEmpty(itemAttributes)) {
