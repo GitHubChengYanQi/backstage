@@ -56,7 +56,11 @@ public class SpuResult implements Serializable {
      */
     @ApiModelProperty("物品Id")
     private Long spuId;
-
+    /**
+     * 型号
+     */
+    @ApiModelProperty("型号")
+    private String model;
     /**
      * 物品名字
      */

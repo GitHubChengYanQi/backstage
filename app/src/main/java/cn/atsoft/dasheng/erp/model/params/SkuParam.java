@@ -41,7 +41,8 @@ public class SkuParam implements Serializable, BaseValidatingParam {
 
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
-
+    @ApiModelProperty("是否禁用")
+    private String isBan;
 
     /**
      * spu id
