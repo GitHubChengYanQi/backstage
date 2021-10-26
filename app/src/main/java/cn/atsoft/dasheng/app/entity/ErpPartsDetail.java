@@ -2,41 +2,30 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-
 import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-
 import java.io.Serializable;
-import java.util.function.LongFunction;
 
 /**
  * <p>
- * 清单
+ * 清单详情
  * </p>
  *
- * @author song
- * @since 2021-10-21
+ * @author cheng
+ * @since 2021-10-26
  */
-@TableName("daoxin_erp_parts")
-public class Parts implements Serializable {
+@TableName("daoxin_erp_parts_detail")
+public class ErpPartsDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
     /**
-     * 清单id
+     * 清单详情id
      */
-    @TableId(value = "parts_id", type = IdType.ID_WORKER)
-    private Long partsId;
-
-    /**
-     * 物料名称
-     */
-    @TableField("spu_id")
-    private Long spuId;
+      @TableId(value = "parts_detail_id", type = IdType.ID_WORKER)
+    private Long partsDetailId;
 
     /**
      * 规格描述
@@ -44,25 +33,17 @@ public class Parts implements Serializable {
     @TableField("attribute")
     private String attribute;
 
-    public String getSkus() {
-        return skus;
-    }
-
-    public void setSkus(String skus) {
-        this.skus = skus;
-    }
-
     /**
-     * 清单名称
+     * 组成物品id
      */
-    @TableField("skus")
-    private String skus;
+    @TableField("spu_id")
+    private Long spuId;
 
     /**
      * 组成物品id
      */
-    @TableField("pid")
-    private Long pid;
+    @TableField("parts_id")
+    private Long partsId;
 
     /**
      * 零件数量
@@ -73,25 +54,25 @@ public class Parts implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建者
      */
-    @TableField(value = "create_user", fill = FieldFill.INSERT)
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -107,32 +88,18 @@ public class Parts implements Serializable {
     private Long deptId;
 
     /**
-     * 零件名称
-     */
-    @TableField("part_name")
-    private String partName;
-
-    /**
      * 备注
      */
     @TableField("note")
     private String note;
 
 
-    public Long getPartsId() {
-        return partsId;
+    public Long getPartsDetailId() {
+        return partsDetailId;
     }
 
-    public void setPartsId(Long partsId) {
-        this.partsId = partsId;
-    }
-
-    public Long getSpuId() {
-        return spuId;
-    }
-
-    public void setSpuId(Long spuId) {
-        this.spuId = spuId;
+    public void setPartsDetailId(Long partsDetailId) {
+        this.partsDetailId = partsDetailId;
     }
 
     public String getAttribute() {
@@ -143,12 +110,20 @@ public class Parts implements Serializable {
         this.attribute = attribute;
     }
 
-    public Long getPid() {
-        return pid;
+    public Long getSpuId() {
+        return spuId;
     }
 
-    public void setPid(Long pid) {
-        this.pid = pid;
+    public void setSpuId(Long spuId) {
+        this.spuId = spuId;
+    }
+
+    public Long getPartsId() {
+        return partsId;
+    }
+
+    public void setPartsId(Long partsId) {
+        this.partsId = partsId;
     }
 
     public Integer getNumber() {
@@ -207,14 +182,6 @@ public class Parts implements Serializable {
         this.deptId = deptId;
     }
 
-    public String getPartName() {
-        return partName;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
-    }
-
     public String getNote() {
         return note;
     }
@@ -223,24 +190,19 @@ public class Parts implements Serializable {
         this.note = note;
     }
 
-
-
     @Override
     public String toString() {
-        return "Parts{" +
-                "partsId=" + partsId +
-                ", spuId=" + spuId +
-                ", attribute=" + attribute +
-                ", pid=" + pid +
-                ", number=" + number +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", createUser=" + createUser +
-                ", updateUser=" + updateUser +
-                ", display=" + display +
-                ", deptId=" + deptId +
-                ", partName=" + partName +
-                ", note=" + note +
-                "}";
+        return "ErpPartsDetail{" +
+        "partsDetailId=" + partsDetailId +
+        ", attribute=" + attribute +
+        ", number=" + number +
+        ", createTime=" + createTime +
+        ", updateTime=" + updateTime +
+        ", createUser=" + createUser +
+        ", updateUser=" + updateUser +
+        ", display=" + display +
+        ", deptId=" + deptId +
+        ", note=" + note +
+        "}";
     }
 }

@@ -54,7 +54,7 @@ public class SpuParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("物品名字")
     private String name;
-    
+
 
     /**
      * 质保期

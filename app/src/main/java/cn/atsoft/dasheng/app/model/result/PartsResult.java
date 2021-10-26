@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -30,6 +31,12 @@ public class PartsResult implements Serializable {
     private UserResult userResult;
     //零件
     private List<PartsResult> partsResults;
+
+    private List<ErpPartsDetailResult> parts;
+
+
+    @ApiModelProperty("关联sku")
+    private String skus;
     /**
      * 清单id
      */

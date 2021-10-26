@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.app.mapper.PartsMapper">
+<mapper namespace="cn.atsoft.dasheng.app.mapper.ErpPartsDetailMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.Parts">
-        <id column="parts_id" property="partsId"/>
-        <result column="spu_id" property="spuId"/>
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ErpPartsDetail">
+        <id column="parts_detail_id" property="partsDetailId"/>
         <result column="attribute" property="attribute"/>
-        <result column="pid" property="pid"/>
-        <result column="skus" property="skus"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="parts_id" property="partsId"/>
         <result column="number" property="number"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
@@ -16,34 +15,29 @@
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="part_name" property="partName"/>
         <result column="note" property="note"/>
-
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        parts_id
-        AS "partsId", spu_id AS "spuId",skus AS "skus", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
+        parts_detail_id
+        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-        </if>
-        <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        from daoxin_erp_parts_detail where 1 = 1
+        <if test="paramCondition.partsDetailId != null">
+            and parts_detail_id like CONCAT('%',#{paramCondition.partsDetailId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
         <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
+            and pid like CONCAT('%',#{paramCondition.pid},'%')
         </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
@@ -59,36 +53,21 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-        </if>
-        <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
-        </if>
-        <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-        </if>
-        <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        from daoxin_erp_parts_detail where 1 = 1
+        <if test="paramCondition.partsDetailId != null">
+            and parts_detail_id like CONCAT('%',#{paramCondition.partsDetailId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
         <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
+            and pid like CONCAT('%',#{paramCondition.pid},'%')
         </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
@@ -104,37 +83,22 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-        </if>
-        <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
-        </if>
-        <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
-            parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult"
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-        </if>
-        <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        from daoxin_erp_parts_detail where 1 = 1
+        <if test="paramCondition.partsDetailId != null">
+            and parts_detail_id like CONCAT('%',#{paramCondition.partsDetailId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
-        <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
@@ -151,35 +115,24 @@
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-        </if>
-        <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
-        </if>
-        <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
+        <if test="paramCondition.partsId != null">
+            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
         </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.PartsParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_parts where 1 = 1
-        <if test="paramCondition.partsId != null">
-            and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
-        </if>
-        <if test="paramCondition.spuId != null">
-            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        from daoxin_erp_parts_detail where 1 = 1
+        <if test="paramCondition.partsDetailId != null">
+            and parts_detail_id like CONCAT('%',#{paramCondition.partsDetailId},'%')
         </if>
         <if test="paramCondition.attribute != null and paramCondition.attribute != ''">
             and attribute like CONCAT('%',#{paramCondition.attribute},'%')
         </if>
         <if test="paramCondition.pid != null">
-            and pid = #{paramCondition.pid}
+            and pid like CONCAT('%',#{paramCondition.pid},'%')
         </if>
         <if test="paramCondition.number != null">
             and number like CONCAT('%',#{paramCondition.number},'%')
@@ -195,18 +148,6 @@
         </if>
         <if test="paramCondition.updateUser != null">
             and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
-        </if>
-        <if test="paramCondition.display != null">
-            and display like CONCAT('%',#{paramCondition.display},'%')
-        </if>
-        <if test="paramCondition.deptId != null">
-            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
-        </if>
-        <if test="paramCondition.partName != null and paramCondition.partName != ''">
-            and part_name like CONCAT('%',#{paramCondition.partName},'%')
-        </if>
-        <if test="paramCondition.note != null and paramCondition.note != ''">
-            and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
     </select>
 
