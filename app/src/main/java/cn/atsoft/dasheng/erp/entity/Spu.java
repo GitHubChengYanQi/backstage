@@ -181,6 +181,7 @@ public class Spu implements Serializable {
 
     public void setModel(String model) {
         this.model = model;
+    }
     public Long getCuringCycle() {
         return curingCycle;
     }
