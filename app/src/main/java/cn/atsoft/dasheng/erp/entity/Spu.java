@@ -175,6 +175,13 @@ public class Spu implements Serializable {
     @TableField("production_type")
     private Integer productionType;
 
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
     public Long getCuringCycle() {
         return curingCycle;
     }
@@ -349,14 +356,6 @@ public class Spu implements Serializable {
 
     public void setAttribute(String attribute) {
         this.attribute = attribute;
-    }
-
-    public Long getcuringCycle() {
-        return curingCycle;
-    }
-
-    public void setcuringCycle(Long curingCycle) {
-        this.curingCycle = curingCycle;
     }
 
     public Integer getCycleType() {

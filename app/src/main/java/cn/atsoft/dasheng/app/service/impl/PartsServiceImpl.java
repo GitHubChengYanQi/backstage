@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Phone;
+import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -41,43 +44,63 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ErpPartsDetailService erpPartsDetailService;
+
 
     @Transactional
     @Override
-    public void add(PartRequest partRequest) {
-        List<Long> ids = new ArrayList<>();
-        for (PartsParam part : partRequest.getParts()) {
-            ids.add(part.getSpuId());
-        }
-        long count = ids.stream().distinct().count();
-        if (partRequest.getParts().size() > count) {
-            throw new ServiceException(500, "请勿填入重复商品");
-        }
-
-        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.in("pid", partRequest.getPid());
-        this.remove(partsQueryWrapper);
-        List<Parts> partsList = new ArrayList<>();
-        for (PartsParam part : partRequest.getParts()) {
-            Parts parts = new Parts();
-            parts.setPid(partRequest.getPid());
-            parts.setSpuId(part.getSpuId());
-            parts.setNote(part.getNote());
-            parts.setNumber(part.getNumber());
-            String toJsonStr = JSONUtil.toJsonStr(part.getPartsAttributes());
-            parts.setAttribute(toJsonStr);
-            partsList.add(parts);
-        }
-        this.saveBatch(partsList);
+    public void add(PartsParam partsParam) {
+        Parts entity = getEntity(partsParam);
+        this.save(entity);
     }
 
     @Override
     public void delete(PartsParam param) {
         this.removeById(getKey(param));
+        QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
+        erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
+        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
     }
 
+    @Transactional
     @Override
     public void update(PartsParam param) {
+
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            String toJsonStr = JSONUtil.toJsonStr(param.getSkuIds());
+            param.setSkus(toJsonStr);
+        }
+
+        if (ToolUtil.isNotEmpty(param.getParts())){
+            List<Long> ids = new ArrayList<>();
+            for (ErpPartsDetailParam part : param.getParts()) {
+                ids.add(part.getSpuId());
+            }
+            long count = ids.stream().distinct().count();
+            if (param.getParts().size() > count) {
+                throw new ServiceException(500, "请勿填入重复商品");
+            }
+
+            QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
+            erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
+            erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
+
+            List<ErpPartsDetail> partsList = new ArrayList<>();
+
+            for (ErpPartsDetailParam partsDetailParam : param.getParts()) {
+                ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+                erpPartsDetail.setSpuId(partsDetailParam.getSpuId());
+                erpPartsDetail.setPartsId(param.getPartsId());
+                erpPartsDetail.setNote(partsDetailParam.getNote());
+                erpPartsDetail.setNumber(partsDetailParam.getNumber());
+                String toJsonStr = JSONUtil.toJsonStr(partsDetailParam.getPartsAttributes());
+                erpPartsDetail.setAttribute(toJsonStr);
+                partsList.add(erpPartsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsList);
+        }
+
         Parts oldEntity = getOldEntity(param);
         Parts newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);

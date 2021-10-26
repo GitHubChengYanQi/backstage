@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,36 +12,26 @@ import java.util.List;
 
 /**
  * <p>
- * 清单
+ * 清单详情
  * </p>
  *
- * @author song
- * @since 2021-10-21
+ * @author cheng
+ * @since 2021-10-26
  */
 @Data
 @ApiModel
-public class PartsParam implements Serializable, BaseValidatingParam {
+public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ErpPartsDetailParam> parts;
-
-    private List<Long> skuIds;
-
 
     /**
-     * 清单id
+     * 清单详情id
      */
-    @ApiModelProperty("清单id")
-    private Long partsId;
+    @ApiModelProperty("清单详情id")
+    private Long partsDetailId;
 
     private List<SpuAttribute> partsAttributes;
-
-    /**
-     * 物料名称
-     */
-    @ApiModelProperty("物料名称")
-    private Long spuId;
 
     /**
      * 规格描述
@@ -50,13 +39,14 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("规格描述")
     private String attribute;
 
-
-
     /**
      * 组成物品id
      */
     @ApiModelProperty("组成物品id")
-    private Long pid;
+    private Long spuId;
+
+    @ApiModelProperty("清单id")
+    private Long partsId;
 
     /**
      * 零件数量
@@ -99,15 +89,6 @@ public class PartsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
-
-    /**
-     * 零件名称
-     */
-    @ApiModelProperty("零件名称")
-    private String partName;
-
-    @ApiModelProperty("关联sku")
-    private String skus;
 
     /**
      * 备注

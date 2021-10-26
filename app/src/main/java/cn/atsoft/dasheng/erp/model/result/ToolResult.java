@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.UnitResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 工具表
@@ -20,6 +25,10 @@ public class ToolResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private UnitResult unitResult;
+
+    private ToolClassificationResult toolClassificationResult;
+
     /**
      * 编码
      */
@@ -30,8 +39,7 @@ public class ToolResult implements Serializable {
 
     private String norm;
     /**
-
-    /**
+     * /**
      * 工具id
      */
     @ApiModelProperty("工具id")

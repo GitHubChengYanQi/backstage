@@ -220,6 +220,7 @@ public class AuthLoginController extends BaseController {
         if (ToolUtil.isNotEmpty(memberId)) {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
+            queryWrapper.in("source","wxCp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
                 JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), jwtPayLoad.getAccount(), "xxxx");
