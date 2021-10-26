@@ -47,7 +47,16 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private RulesRelationService rulesRelationService;
 
     @Override
+    @Transactional
     public void add(CodingRulesParam param) {
+        Integer count = this.query().in("coding_rules", param.getCodingRules()).count();
+        Integer name = this.query().in("name", param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "当前规则以存在");
+        }
+        if (name > 0) {
+            throw new ServiceException(500, "不要输入重复规则名称");
+        }
         CodingRules entity = getEntity(param);
         this.save(entity);
     }
@@ -156,9 +165,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         //日
         int dayOfMonth = dateTime.dayOfMonth();
 //--------------------------------------------------------------------------------------------------------------
-        if (rules.contains("${DD}")) {
-            int yy = Integer.parseInt(String.valueOf(year).substring(2));
-            rules = rules.replace("${DD}", yy + "");
+        if (rules.contains("${dd}")) {
+            rules = rules.replace("${dd}", dayOfMonth + "");
         }
 
         if (rules.contains("${YYYY}")) {
@@ -186,8 +194,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${quarter}", quarter + "");
         }
 
-        if (rules.contains("${weekOfYear}")) {
-            rules = rules.replace("${weekOfYear}", weekOfYear + "");
+        if (rules.contains("${week}")) {
+            rules = rules.replace("${week}", weekOfYear + "");
         }
 
         return rules;
