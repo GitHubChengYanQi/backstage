@@ -13,9 +13,11 @@ import cn.atsoft.dasheng.erp.mapper.SpuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -50,6 +52,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private SkuService skuService;
     @Autowired
     private UnitService unitService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Transactional
     @Override
@@ -166,9 +170,11 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private void format(List<SpuResult> param) {
         List<Long> categoryIds = new ArrayList<>();
         List<Long> unitIds = new ArrayList<>();
+        List<Long> classIds = new ArrayList<>();
         for (SpuResult spuResult : param) {
             categoryIds.add(spuResult.getCategoryId());
             unitIds.add(spuResult.getUnitId());
+            classIds.add(spuResult.getSpuClassificationId());
         }
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.lambda().in(Category::getCategoryId, categoryIds);
@@ -176,10 +182,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
         List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.lambdaQuery().in(Unit::getUnitId, unitIds).list();
 
+
+        List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", classIds).list();
+
         for (SpuResult spuResult : param) {
             for (Category category : categoryList) {
                 if (spuResult.getCategoryId().equals(category.getCategoryId())) {
                     spuResult.setCategory(category);
+                    break;
                 }
             }
             for (Unit unit : units) {
@@ -187,6 +197,16 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                     UnitResult unitResult = new UnitResult();
                     ToolUtil.copyProperties(unit, unitResult);
                     spuResult.setUnitResult(unitResult);
+                    break;
+                }
+            }
+
+            for (SpuClassification spuClassification : spuClassifications) {
+                if (spuClassification.getSpuClassificationId().equals(spuResult.getSpuClassificationId())) {
+                    SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+                    ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+                    spuResult.setSpuClassificationResult(spuClassificationResult);
+                    break;
                 }
             }
         }
