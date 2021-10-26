@@ -23,6 +23,7 @@
         <result column="class_id" property="classId"/>
         <result column="unit_id" property="unitId"/>
         <result column="category_id" property="categoryId"/>
+        <result column="model" property="model"/>
         <result column="attribute" property="attribute"/>
         <result column="curing_cycle" property="curingCycle"/>
         <result column="cycle_type" property="cycleType"/>

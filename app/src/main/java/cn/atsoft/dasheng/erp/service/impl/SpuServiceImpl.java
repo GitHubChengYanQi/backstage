@@ -96,7 +96,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 sku.setSpuId(entity.getSpuId());
                 skuList.add(sku);
             }
-            Integer skuValue = this.query().in("sku_value", skuValues).count();
+            Integer skuValue = skuService.query().in("sku_value", skuValues).count();
             if (skuValue > 0) {
                 throw new ServiceException(500, "不可以添加型号");
             }
