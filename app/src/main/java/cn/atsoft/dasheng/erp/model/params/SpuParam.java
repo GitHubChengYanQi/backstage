@@ -39,6 +39,12 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     private Long spuId;
 
     /**
+     * 型号
+     */
+    @ApiModelProperty("型号")
+    private String model;
+
+    /**
      * 物品名字
      */
     @ApiModelProperty("物品名字")

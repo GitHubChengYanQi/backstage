@@ -42,6 +42,9 @@ public class SkuResult implements Serializable {
     @ApiModelProperty("sku名字")
     private String skuName;
 
+    @ApiModelProperty("是否禁用")
+    private String isBan;
+
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
 
