@@ -34,6 +34,14 @@ public class Spu implements Serializable {
      */
     @TableId(value = "spu_id", type = IdType.ID_WORKER)
     private Long spuId;
+    /**
+     * 型号
+     */
+    @TableField("model")
+
+    private String model;
+
+
 
     /**
      * 物品名字
@@ -167,6 +175,20 @@ public class Spu implements Serializable {
     @TableField("production_type")
     private Integer productionType;
 
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+    public Long getCuringCycle() {
+        return curingCycle;
+    }
+
+    public void setCuringCycle(Long curingCycle) {
+        this.curingCycle = curingCycle;
+    }
 
     public Long getSpuClassificationId() {
         return spuClassificationId;
@@ -334,14 +356,6 @@ public class Spu implements Serializable {
 
     public void setAttribute(String attribute) {
         this.attribute = attribute;
-    }
-
-    public Long getcuringCycle() {
-        return curingCycle;
-    }
-
-    public void setcuringCycle(Long curingCycle) {
-        this.curingCycle = curingCycle;
     }
 
     public Integer getCycleType() {

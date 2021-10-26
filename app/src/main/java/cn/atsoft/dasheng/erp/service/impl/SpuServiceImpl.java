@@ -79,7 +79,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
             List<Sku> skuList = new ArrayList<>();
-
+            List<String> skuValues = new ArrayList<>();
             for (List<String> attributeValues : result) {
                 List<AttributeValues> valuesList = new ArrayList<>();
                 for (String attributeValue : attributeValues) {
@@ -92,9 +92,13 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 Sku sku = new Sku();
                 sku.setSkuValue(JSON.toJSONString(valuesList));
                 sku.setSkuName(SecureUtil.md5(sku.getSkuValue()));
-
+                skuValues.add(sku.getSkuValue());
                 sku.setSpuId(entity.getSpuId());
                 skuList.add(sku);
+            }
+            Integer skuValue = this.query().in("sku_value", skuValues).count();
+            if (skuValue > 0) {
+                throw new ServiceException(500, "不可以添加型号");
             }
 
 

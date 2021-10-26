@@ -30,6 +30,9 @@ public class Sku implements Serializable {
     @TableField("sku_name")
     private String skuName;
 
+    @TableField("is_ban")
+    private int isBan;
+
     @TableField("sku_value")
     private String skuValue;
 
