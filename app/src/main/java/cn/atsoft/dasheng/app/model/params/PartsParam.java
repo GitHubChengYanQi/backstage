@@ -27,6 +27,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private List<ErpPartsDetailParam> parts;
 
+    private List<Long> skuIds;
+
 
     /**
      * 清单id

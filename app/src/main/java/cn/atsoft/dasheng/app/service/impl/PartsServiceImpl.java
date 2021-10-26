@@ -67,32 +67,39 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void update(PartsParam param) {
 
-        List<Long> ids = new ArrayList<>();
-        for (ErpPartsDetailParam part : param.getParts()) {
-            ids.add(part.getSpuId());
-        }
-        long count = ids.stream().distinct().count();
-        if (param.getParts().size() > count) {
-            throw new ServiceException(500, "请勿填入重复商品");
+        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+            String toJsonStr = JSONUtil.toJsonStr(param.getSkuIds());
+            param.setSkus(toJsonStr);
         }
 
-        QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
-        erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
-        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
+        if (ToolUtil.isNotEmpty(param.getParts())){
+            List<Long> ids = new ArrayList<>();
+            for (ErpPartsDetailParam part : param.getParts()) {
+                ids.add(part.getSpuId());
+            }
+            long count = ids.stream().distinct().count();
+            if (param.getParts().size() > count) {
+                throw new ServiceException(500, "请勿填入重复商品");
+            }
 
-        List<ErpPartsDetail> partsList = new ArrayList<>();
+            QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
+            erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
+            erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
 
-        for (ErpPartsDetailParam partsDetailParam : param.getParts()) {
-            ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
-            erpPartsDetail.setSpuId(partsDetailParam.getSpuId());
-            erpPartsDetail.setPartsId(param.getPartsId());
-            erpPartsDetail.setNote(partsDetailParam.getNote());
-            erpPartsDetail.setNumber(partsDetailParam.getNumber());
-            String toJsonStr = JSONUtil.toJsonStr(partsDetailParam.getPartsAttributes());
-            erpPartsDetail.setAttribute(toJsonStr);
-            partsList.add(erpPartsDetail);
+            List<ErpPartsDetail> partsList = new ArrayList<>();
+
+            for (ErpPartsDetailParam partsDetailParam : param.getParts()) {
+                ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+                erpPartsDetail.setSpuId(partsDetailParam.getSpuId());
+                erpPartsDetail.setPartsId(param.getPartsId());
+                erpPartsDetail.setNote(partsDetailParam.getNote());
+                erpPartsDetail.setNumber(partsDetailParam.getNumber());
+                String toJsonStr = JSONUtil.toJsonStr(partsDetailParam.getPartsAttributes());
+                erpPartsDetail.setAttribute(toJsonStr);
+                partsList.add(erpPartsDetail);
+            }
+            erpPartsDetailService.saveBatch(partsList);
         }
-        erpPartsDetailService.saveBatch(partsList);
 
         Parts oldEntity = getOldEntity(param);
         Parts newEntity = getEntity(param);

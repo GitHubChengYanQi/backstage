@@ -100,7 +100,7 @@ public class PartsController extends BaseController {
         Parts detail = this.partsService.getById(partsParam.getPartsId());
         PartsResult result = new PartsResult();
         ToolUtil.copyProperties(detail, result);
-
+        
         QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
         erpPartsDetailQueryWrapper.in("parts_id", detail.getPartsId());
         List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.list(erpPartsDetailQueryWrapper);
