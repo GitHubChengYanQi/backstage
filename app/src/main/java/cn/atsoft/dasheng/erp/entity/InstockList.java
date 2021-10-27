@@ -20,6 +20,11 @@ import java.io.Serializable;
 public class InstockList implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
 
     /**
      * 入库清单
@@ -197,6 +202,14 @@ public class InstockList implements Serializable {
 
     public void setStoreHouseId(Long storeHouseId) {
         this.storeHouseId = storeHouseId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     @Override

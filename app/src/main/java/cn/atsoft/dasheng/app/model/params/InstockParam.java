@@ -29,6 +29,11 @@ public class InstockParam implements Serializable, BaseValidatingParam {
     private List<Instock> instocks;
 
     /**
+     * skuId
+     */
+    private Long skuId;
+
+    /**
      * 出库单
      */
     private Long instockOrderId;

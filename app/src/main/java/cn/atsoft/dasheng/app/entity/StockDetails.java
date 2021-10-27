@@ -32,7 +32,7 @@ public class StockDetails implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
@@ -42,6 +42,12 @@ public class StockDetails implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
 
     /**
      * 明细id
@@ -238,6 +244,14 @@ public class StockDetails implements Serializable {
 
     public void setOutStockOrderId(Long outStockOrderId) {
         this.outStockOrderId = outStockOrderId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     @Override

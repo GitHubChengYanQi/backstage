@@ -49,8 +49,6 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private ItemsService itemsService;
     @Autowired
     private BrandService brandService;
@@ -82,8 +80,9 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
             InstockParam instockParam = new InstockParam();
             instockParam.setState(1);
-            instockParam.setBrandId(newEntity.getBrandId());
-            instockParam.setItemId(newEntity.getItemId());
+//            instockParam.setBrandId(newEntity.getBrandId());
+//            instockParam.setItemId(newEntity.getItemId());
+            instockParam.setSkuId(newEntity.getSkuId());
             instockParam.setStoreHouseId(newEntity.getStoreHouseId());
             instockParam.setCostPrice(newEntity.getCostPrice());
             instockParam.setSellingPrice(newEntity.getSellingPrice());
@@ -103,17 +102,19 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 stockId = stockService.update(stockParam);
             } else {
                 stockParam.setInventory(1L);
-                stockParam.setItemId(newEntity.getItemId());
-                stockParam.setBrandId(newEntity.getBrandId());
+//                stockParam.setItemId(newEntity.getItemId());
+//                stockParam.setBrandId(newEntity.getBrandId());
+                stockParam.setSkuId(newEntity.getSkuId());
                 stockParam.setStorehouseId(newEntity.getStoreHouseId());
                 stockId = stockService.add(stockParam);
             }
             StockDetailsParam stockDetailsParam = new StockDetailsParam();
             stockDetailsParam.setStockId(stockId);
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
-            stockDetailsParam.setItemId(newEntity.getItemId());
             stockDetailsParam.setPrice(newEntity.getCostPrice());
-            stockDetailsParam.setBrandId(newEntity.getBrandId());
+//            stockDetailsParam.setItemId(newEntity.getItemId());
+//            stockDetailsParam.setBrandId(newEntity.getBrandId());
+            stockDetailsParam.setSkuId(newEntity.getSkuId());
             stockDetailsService.add(stockDetailsParam);
 
         } else {
