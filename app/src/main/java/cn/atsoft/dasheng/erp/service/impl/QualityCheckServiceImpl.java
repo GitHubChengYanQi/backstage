@@ -122,8 +122,8 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         for (QualityCheckResult datum : data) {
             JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
             List<Long> list = JSONUtil.toList(jsonArray, Long.class);
+            List<ToolResult> toolResults = new ArrayList<>();
             for (Long aLong : list) {
-                List<ToolResult> toolResults = new ArrayList<>();
                 if (ToolUtil.isNotEmpty(tools)) {
                     for (Tool tool : tools) {
                         if (tool.getToolId().equals(aLong)) {
@@ -134,7 +134,7 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
                     }
                 }
             }
-            datum.setTools(tools);
+            datum.setTools(toolResults);
         }
     }
 }

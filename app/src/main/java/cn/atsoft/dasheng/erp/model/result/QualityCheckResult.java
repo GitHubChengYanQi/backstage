@@ -25,7 +25,7 @@ public class QualityCheckResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Tool> tools;
+    private List<ToolResult> tools;
     /**
      * 质检id
      */
