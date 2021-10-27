@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.erp.model.result.QualityCheckClassificationResult;
 import cn.atsoft.dasheng.erp.service.QualityCheckClassificationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckClassificationSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.ToolSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +103,22 @@ public class QualityCheckClassificationController extends BaseController {
             qualityCheckClassificationParam = new QualityCheckClassificationParam();
         }
         return this.qualityCheckClassificationService.findPageBySpec(qualityCheckClassificationParam);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+
+        List<Map<String, Object>> list = this.qualityCheckClassificationService.listMaps();
+        QualityCheckClassificationSelectWrapper factory = new QualityCheckClassificationSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 
