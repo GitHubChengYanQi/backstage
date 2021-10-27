@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.QualityCheck;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import lombok.Data;
 
@@ -26,6 +27,8 @@ public class QualityCheckResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<ToolResult> tools;
+
+    private QualityCheckClassificationResult qualityCheckClassificationResult;
     /**
      * 质检id
      */

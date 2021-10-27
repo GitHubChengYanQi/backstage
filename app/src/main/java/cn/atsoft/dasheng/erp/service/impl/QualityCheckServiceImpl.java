@@ -3,17 +3,15 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.entity.QualityCheck;
-import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityCheckMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityCheckParam;
+import cn.atsoft.dasheng.erp.model.result.QualityCheckClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
+import cn.atsoft.dasheng.erp.model.result.ToolClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
-import cn.atsoft.dasheng.erp.service.QualityCheckService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,6 +39,9 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     @Autowired
     private ToolService toolService;
+
+    @Autowired
+    private QualityCheckClassificationService qualityCheckClassificationService;
 
     @Override
     public void add(QualityCheckParam param) {
@@ -103,11 +104,12 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     public void format(List<QualityCheckResult> data) {
         List<String> jsonids = new ArrayList<>();
-
+        List<Long> classIds = new ArrayList<>();
         List<String> strings = new ArrayList<>();
         for (QualityCheckResult datum : data) {
             jsonids.add(datum.getTool());
             strings.add(datum.getTool());
+            classIds.add(datum.getQualityCheckClassificationId());
         }
         List<Long> toolIds = new ArrayList<>();
         for (String string : strings) {
@@ -118,6 +120,9 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
             }
         }
         List<Tool> tools = toolIds.size() == 0 ? new ArrayList<>() : toolService.query().in("tool_id", toolIds).list();
+
+        List<QualityCheckClassification> qualityCheckClassifications = classIds.size() == 0 ? new ArrayList<>() : qualityCheckClassificationService.query().in("quality_check_classification_id", classIds).list();
+
 
         for (QualityCheckResult datum : data) {
             JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
@@ -135,6 +140,16 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
                 }
             }
             datum.setTools(toolResults);
+            if (ToolUtil.isNotEmpty(qualityCheckClassifications)) {
+                for (QualityCheckClassification qualityCheckClassification : qualityCheckClassifications) {
+                    if (qualityCheckClassification.getQualityCheckClassificationId().equals(datum.getQualityCheckClassificationId())) {
+                        QualityCheckClassificationResult qualityCheckClassificationResult = new QualityCheckClassificationResult();
+                        ToolUtil.copyProperties(qualityCheckClassification, qualityCheckClassificationResult);
+                        datum.setQualityCheckClassificationResult(qualityCheckClassificationResult);
+                    }
+                }
+
+            }
         }
     }
 }
