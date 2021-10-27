@@ -5,21 +5,26 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.QualityCheck;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.mapper.QualityCheckMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityCheckParam;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
 import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,6 +36,9 @@ import java.util.List;
  */
 @Service
 public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, QualityCheck> implements QualityCheckService {
+
+    @Autowired
+    private ToolService toolService;
 
     @Override
     public void add(QualityCheckParam param) {
@@ -91,12 +99,25 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     public void format(List<QualityCheckResult> data) {
         List<String> jsonids = new ArrayList<>();
+        Map<Long, List<Long>> map = new HashMap<>();
+
         for (QualityCheckResult datum : data) {
             jsonids.add(datum.getTool());
+            JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            map.put(datum.getQualityCheckId(), longs);
         }
-        for (String jsonid : jsonids) {
-            JSONArray jsonArray = JSONUtil.parseArray(jsonid);
-            
+        Map<Long, List<Tool>> listMap = new HashMap<>();
+        for (Map.Entry<Long, List<Long>> longListEntry : map.entrySet()) {
+            if (ToolUtil.isNotEmpty(longListEntry.getValue())) {
+                List<Tool> tools = toolService.query().in("tool_id", longListEntry.getValue()).list();
+                listMap.put(longListEntry.getKey(), tools);
+            }
+        }
+
+        for (QualityCheckResult datum : data) {
+            List<Tool> toolList = listMap.get(datum.getQualityCheckId());
+            datum.setTools(toolList);
         }
     }
 }

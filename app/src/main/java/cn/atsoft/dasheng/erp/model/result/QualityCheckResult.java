@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.Tool;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 质检表
@@ -20,7 +25,7 @@ public class QualityCheckResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<Tool> tools;
     /**
      * 质检id
      */
