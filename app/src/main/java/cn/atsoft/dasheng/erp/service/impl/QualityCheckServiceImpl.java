@@ -9,8 +9,10 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.mapper.QualityCheckMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityCheckParam;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
+import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -42,8 +44,6 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     @Override
     public void add(QualityCheckParam param) {
-        String jsonStr = JSONUtil.toJsonStr(param.getTools());
-        param.setTool(jsonStr);
         QualityCheck entity = getEntity(param);
         this.save(entity);
     }
@@ -99,25 +99,38 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     public void format(List<QualityCheckResult> data) {
         List<String> jsonids = new ArrayList<>();
-        Map<Long, List<Long>> map = new HashMap<>();
 
+        List<String> strings = new ArrayList<>();
         for (QualityCheckResult datum : data) {
             jsonids.add(datum.getTool());
-            JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
-            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-            map.put(datum.getQualityCheckId(), longs);
+            strings.add(datum.getTool());
         }
-        Map<Long, List<Tool>> listMap = new HashMap<>();
-        for (Map.Entry<Long, List<Long>> longListEntry : map.entrySet()) {
-            if (ToolUtil.isNotEmpty(longListEntry.getValue())) {
-                List<Tool> tools = toolService.query().in("tool_id", longListEntry.getValue()).list();
-                listMap.put(longListEntry.getKey(), tools);
+        List<Long> toolIds = new ArrayList<>();
+        for (String string : strings) {
+            JSONArray jsonArray = JSONUtil.parseArray(string);
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : longs) {
+                toolIds.add(aLong);
             }
         }
+        List<Tool> tools = toolIds.size() == 0 ? new ArrayList<>() : toolService.query().in("tool_id", toolIds).list();
 
         for (QualityCheckResult datum : data) {
-            List<Tool> toolList = listMap.get(datum.getQualityCheckId());
-            datum.setTools(toolList);
+            JSONArray jsonArray = JSONUtil.parseArray(datum.getTool());
+            List<Long> list = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : list) {
+                List<ToolResult> toolResults = new ArrayList<>();
+                if (ToolUtil.isNotEmpty(tools)) {
+                    for (Tool tool : tools) {
+                        if (tool.getToolId().equals(aLong)) {
+                            ToolResult toolResult = new ToolResult();
+                            ToolUtil.copyProperties(tool, toolResult);
+                            toolResults.add(toolResult);
+                        }
+                    }
+                }
+            }
+            datum.setTools(tools);
         }
     }
 }
