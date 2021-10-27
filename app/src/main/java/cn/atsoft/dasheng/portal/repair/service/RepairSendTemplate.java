@@ -308,7 +308,7 @@ public class RepairSendTemplate extends sendTemplae {
         if (repairParam.getProgress() == null) {
             throw new ServiceException(500, "请确定步骤流程");
         }
-        Remind reminds = getReminds(0L);
+        Remind reminds = getReminds(repairParam.getProgress());
         List<Long> memberIds = new ArrayList<>();
         List<String> uuIds = new ArrayList<>();
         List<Long> getremindUserids = getremindUserids(reminds.getRemindId());
@@ -373,7 +373,6 @@ public class RepairSendTemplate extends sendTemplae {
         List<WxMpTemplateData> data = this.getTemplateData();
         StringBuffer stringBuffer = new StringBuffer();
         for (WxMpTemplateData datum : data) {
-
             switch (datum.getName()) {
                 case "name1":
                     String name1 = datum.getValue();
@@ -389,7 +388,7 @@ public class RepairSendTemplate extends sendTemplae {
                     break;
                 case "thing5":
                     String thing5 = datum.getValue();
-                    stringBuffer.append("事项" + "\n" + "\t" + thing5 + "\n");
+                    stringBuffer.append("备注" + "\n" + "\t" + thing5 + "\n");
                     break;
                 case "time":
                     String time = datum.getValue();
@@ -407,11 +406,8 @@ public class RepairSendTemplate extends sendTemplae {
                     String money = datum.getValue();
                     stringBuffer.append("维修费用" + "\n" + "\t" + money + "\n");
                     break;
-
             }
         }
-
-
         return stringBuffer.toString();
     }
 
