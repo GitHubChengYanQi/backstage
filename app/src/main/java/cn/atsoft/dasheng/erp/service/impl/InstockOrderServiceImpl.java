@@ -56,39 +56,22 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         this.save(entity);
 
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
-            List<Instock> instocks = new ArrayList<>();
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
 
                 if (ToolUtil.isNotEmpty(instockRequest)) {
 
                     InstockList instockList = new InstockList();
-                    instockList.setBrandId(instockRequest.getBrandId());
-                    instockList.setItemId(instockRequest.getItemId());
+                    instockList.setSkuId(instockRequest.getSkuId());
                     instockList.setNumber(instockRequest.getNumber());
                     instockList.setInstockOrderId(entity.getInstockOrderId());
                     instockList.setStoreHouseId(param.getStoreHouseId());
                     instockList.setCostPrice(instockRequest.getCostprice());
                     instockList.setSellingPrice(instockRequest.getSellingPrice());
                     instockLists.add(instockList);
-
-//                    for (Long i = 0L; i < instockRequest.getNumber(); i++) {
-//                        Instock instock = new Instock();
-//                        instock.setBrandId(instockRequest.getBrandId());
-//                        instock.setItemId(instockRequest.getItemId());
-//                        instock.setStoreHouseId(param.getStoreHouseId());
-//                        instock.setInstockOrderId(entity.getInstockOrderId());
-//                        instock.setSellingPrice(instockRequest.getSellingPrice());
-//                        instock.setCostPrice(instockRequest.getSellingPrice());
-//                        instock.setBarcode(instockRequest.getBarcode());
-//                        instocks.add(instock);
-//                    }
                 }
-
             }
-//            if (ToolUtil.isNotEmpty(instocks)) {
-//                instockService.saveBatch(instocks);
-//            }
+
             if (ToolUtil.isNotEmpty(instockLists)) {
                 instockListService.saveBatch(instockLists);
             }

@@ -12,7 +12,12 @@ import cn.atsoft.dasheng.app.mapper.InstockMapper;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,10 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -49,6 +51,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     private StockDetailsService stockDetailsService;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public Long add(InstockParam param) {
@@ -84,8 +88,7 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         for (Instock instock : param.getInstocks()) {
             Long stockId = null;
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, instock.getStoreHouseId())
-                    .and(i -> i.eq(Stock::getBrandId, instock.getBrandId()))
-                    .and(i -> i.eq(Stock::getItemId, instock.getItemId())).one();
+                    .and(i -> i.eq(Stock::getSkuId, instock.getSkuId())).one();
 
             StockParam stockParam = new StockParam();
 
@@ -96,8 +99,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 stockId = stockService.update(stockParam);
             } else {
                 stockParam.setStorehouseId(instock.getStoreHouseId());
-                stockParam.setItemId(instock.getItemId());
-                stockParam.setBrandId(instock.getBrandId());
+//                stockParam.setItemId(instock.getItemId());
+//                stockParam.setBrandId(instock.getBrandId());
+                stockParam.setSkuId(instock.getSkuId());
                 stockParam.setInventory(1L);
                 stockId = stockService.add(stockParam);
             }
@@ -108,8 +112,9 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             stockDetail.setStockId(stockId);
             stockDetail.setPrice(instock.getCostPrice());
             stockDetail.setStorehouseId(instock.getStoreHouseId());
-            stockDetail.setItemId(instock.getItemId());
-            stockDetail.setBrandId(instock.getBrandId());
+//            stockDetail.setItemId(instock.getItemId());
+//            stockDetail.setBrandId(instock.getBrandId());
+            stockDetail.setSkuId(instock.getSkuId());
             stockDetail.setBarcode(instock.getBarcode());
             Date date = new Date();
             stockDetail.setStorageTime(date);
@@ -119,109 +124,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         }
         stockDetailsService.saveBatch(stockDetails);
         this.updateBatchById(instocks);
-//        newEntity.setState(1);
-//        this.updateById(newEntity);
-
-
-//        Instock oldEntity = getOldEntity(param);
-//        Instock newEntity = getEntity(param);
-//
-//        Instock entity = getEntity(param);
-//        StockParam stockParam = new StockParam();
-//        List<Stock> Stock = this.stockService.list();
-//        StockDetails stockDetails = new StockDetails();
-//        boolean useFlag = false;
-//        try {
-//            if (ToolUtil.isEmpty(Stock)) {
-//                stockParam.setItemId(entity.getItemId());
-//                stockParam.setBrandId(entity.getBrandId());
-//                stockParam.setStorehouseId(entity.getStoreHouseId());
-//                stockParam.setInventory(entity.getNumber());
-//                Long StockId = this.stockService.add(stockParam);
-//
-//                stockDetails.setStockId(StockId);
-//                stockDetails.setPrice(entity.getCostPrice());
-//                stockDetails.setStorageTime(entity.getRegisterTime());
-//                stockDetails.setItemId(entity.getItemId());
-//                stockDetails.setStorehouseId(entity.getStoreHouseId());
-//                stockDetails.setBrandId(entity.getBrandId());
-//                stockDetails.setBarcode(entity.getBarcode());
-//
-//                if (ToolUtil.isNotEmpty(stockDetails)) {
-//                    List<StockDetails> list = new ArrayList<>();
-//                    for (int j = 0; j < entity.getNumber(); j++) {
-//                        list.add(stockDetails);
-//                    }
-//                    this.stockDetailsService.saveBatch(list);
-//                }
-//            } else {
-//                // 判断仓库是否有相同数据
-//                // 有相同数据则增加数量和明细数据
-//                List<StockParam> stockParamList = new ArrayList<>();
-//                List<StockDetails> stockDetailsList = new ArrayList<>();
-//                for (Stock StockList : Stock) {
-//                    if (StockList.getItemId().equals(entity.getItemId())
-//                            && StockList.getBrandId().equals(entity.getBrandId())
-//                            && StockList.getStorehouseId().equals(entity.getStoreHouseId())
-//                    ) {
-//                        stockParam.setStockId(StockList.getStockId());
-//                        stockParam.setItemId(entity.getItemId());
-//                        stockParam.setBrandId(entity.getBrandId());
-//                        stockParam.setStorehouseId(entity.getStoreHouseId());
-//                        stockParam.setInventory(entity.getNumber() + StockList.getInventory());
-////                        this.stockService.update(stockParam);
-//                        stockParamList.add(stockParam);
-//                        stockDetails.setStockId(StockList.getStockId());
-//                        stockDetails.setPrice(entity.getCostPrice());
-//                        stockDetails.setStorageTime(entity.getRegisterTime());
-//                        stockDetails.setItemId(entity.getItemId());
-//                        stockDetails.setStorehouseId(entity.getStoreHouseId());
-//                        stockDetails.setBrandId(entity.getBrandId());
-//                        stockDetails.setBarcode(entity.getBarcode());
-//                        List<StockDetails> list = new ArrayList<>();
-//                        if (ToolUtil.isNotEmpty(stockDetails)) {
-//                            for (int j = 0; j < entity.getNumber(); j++) {
-//                                list.add(stockDetails);
-//                            }
-//                            useFlag = true;
-////                            this.stockDetailsService.saveBatch(list);
-//                            for (StockDetails details : list) {
-//                                stockDetailsList.add(details);
-//                            }
-//
-//                        }
-//                    }
-//                }
-//                Collection<Stock> updateList = new ArrayList<>();
-//                ToolUtil.copyProperties(stockParamList,updateList);
-//                this.stockService.saveOrUpdateBatch(updateList);
-//                this.stockDetailsService.saveBatch(stockDetailsList);
-//                if (!useFlag) {
-//                    stockParam.setItemId(entity.getItemId());
-//                    stockParam.setBrandId(entity.getBrandId());
-//                    stockParam.setStorehouseId(entity.getStoreHouseId());
-//                    stockParam.setInventory(entity.getNumber());
-//                    Long StockId = this.stockService.add(stockParam);
-//
-//                    stockDetails.setStockId(StockId);
-//                    stockDetails.setPrice(entity.getCostPrice());
-//                    stockDetails.setStorageTime(entity.getRegisterTime());
-//                    stockDetails.setItemId(entity.getItemId());
-//                    stockDetails.setStorehouseId(entity.getStoreHouseId());
-//                    stockDetails.setBrandId(entity.getBrandId());
-//                    stockDetails.setBarcode(entity.getBarcode());
-//                    List<StockDetails> list = new ArrayList<>();
-//                    for (int j = 0; j < entity.getNumber(); j++) {
-//                        list.add(stockDetails);
-//                    }
-//                    this.stockDetailsService.saveBatch(list);
-//                }
-//            }
-//            ToolUtil.copyProperties(newEntity, oldEntity);
-//            this.updateById(newEntity);
-//        } catch (ReflectionException e) {
-//            //
-//        }
 
     }
 
@@ -270,25 +172,43 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     public void format(List<InstockResult> data) {
-        List<Long> brandIds = new ArrayList<>();
-        List<Long> itemIds = new ArrayList<>();
+//        List<Long> brandIds = new ArrayList<>();
+//        List<Long> itemIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (InstockResult datum : data) {
-            brandIds.add(datum.getBrandId());
-            itemIds.add(datum.getItemId());
+//            brandIds.add(datum.getBrandId());
+//            itemIds.add(datum.getItemId());
             storeIds.add(datum.getStoreHouseId());
+            skuIds.add(datum.getSkuId());
         }
-        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(brandIds)) {
-            brandQueryWrapper.in("brand_id", brandIds);
-        }
-        List<Brand> brandList = brandService.list(brandQueryWrapper);
+//        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+//        if (ToolUtil.isNotEmpty(brandIds)) {
+//            brandQueryWrapper.in("brand_id", brandIds);
+//        }
+//        List<Brand> brandList = brandService.list(brandQueryWrapper);
+//
+//        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
+//        if (ToolUtil.isNotEmpty(itemIds)) {
+//            itemsQueryWrapper.in("item_id", itemIds);
+//        }
+//        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(itemIds)) {
-            itemsQueryWrapper.in("item_id", itemIds);
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
+        Map<Long, List<AttributeValues>> map = new HashMap<>();
+        for (InstockResult datum : data) {
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (datum.getSkuId().equals(sku.getSpuId())) {
+                        JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                        map.put(sku.getSkuId(), valuesRequests);
+                    }
+                }
+            }
         }
-        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
+
+
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(storeIds)) {
@@ -296,26 +216,26 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (InstockResult datum : data) {
-            if (ToolUtil.isNotEmpty(brandList)) {
-                for (Brand brand : brandList) {
-                    if (brand.getBrandId().equals(datum.getBrandId())) {
-                        BrandResult brandResult = new BrandResult();
-                        ToolUtil.copyProperties(brand, brandResult);
-                        datum.setBrandResult(brandResult);
-                        break;
-                    }
-                }
-            }
-            if (ToolUtil.isNotEmpty(itemsList)) {
-                for (Items items : itemsList) {
-                    if (items.getItemId().equals(datum.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        datum.setItemsResult(itemsResult);
-                        break;
-                    }
-                }
-            }
+//            if (ToolUtil.isNotEmpty(brandList)) {
+//                for (Brand brand : brandList) {
+//                    if (brand.getBrandId().equals(datum.getBrandId())) {
+//                        BrandResult brandResult = new BrandResult();
+//                        ToolUtil.copyProperties(brand, brandResult);
+//                        datum.setBrandResult(brandResult);
+//                        break;
+//                    }
+//                }
+//            }
+//            if (ToolUtil.isNotEmpty(itemsList)) {
+//                for (Items items : itemsList) {
+//                    if (items.getItemId().equals(datum.getItemId())) {
+//                        ItemsResult itemsResult = new ItemsResult();
+//                        ToolUtil.copyProperties(items, itemsResult);
+//                        datum.setItemsResult(itemsResult);
+//                        break;
+//                    }
+//                }
+//            }
             if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {

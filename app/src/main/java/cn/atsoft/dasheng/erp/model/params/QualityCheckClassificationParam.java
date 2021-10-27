@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,72 +12,59 @@ import java.util.List;
 
 /**
  * <p>
- * 入库清单
+ * 质检分类表
  * </p>
  *
  * @author song
- * @since 2021-10-06
+ * @since 2021-10-27
  */
 @Data
 @ApiModel
-public class InstockListParam implements Serializable, BaseValidatingParam {
+public class QualityCheckClassificationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * skuId
-     */
-    private Long skuId;
+
 
     /**
-     * 入库清单
+     * 质检分类id
      */
-    @ApiModelProperty("入库清单")
-    private Long instockListId;
-
-    private Integer costPrice;
-
-
-    private Integer sellingPrice;
-
-    private Long storeHouseId;
+    @ApiModelProperty("质检分类id")
+    private Long qualityCheckClassificationId;
 
     /**
-     * 品牌id
+     * 名称
      */
-    @ApiModelProperty("品牌id")
-    private Long brandId;
+    @ApiModelProperty("名称")
+    private String name;
 
     /**
-     * 产品id
+     * 创建时间
      */
-    @ApiModelProperty("产品id")
-    private Long itemId;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Long number;
-
-    /**
-     * 入库单id
-     */
-    @ApiModelProperty("入库单id")
-    private Long instockOrderId;
-
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    @ApiModelProperty(hidden = true)
-    private Long createUser;
-
+    /**
+     * 修改时间
+     */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
-    @ApiModelProperty("")
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
     private Integer display;
 
     /**

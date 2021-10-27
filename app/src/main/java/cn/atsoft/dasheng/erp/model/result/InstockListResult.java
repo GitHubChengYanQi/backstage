@@ -31,6 +31,10 @@ public class InstockListResult implements Serializable {
     private ItemsResult itemsResult;
     private BrandResult brandResult;
     private StorehouseResult storehouseResult;
+    /**
+     * skuId
+     */
+    private Long skuId;
 
     private Integer costPrice;
 

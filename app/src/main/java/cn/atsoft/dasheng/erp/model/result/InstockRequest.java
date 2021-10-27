@@ -13,4 +13,5 @@ public class InstockRequest {
     private Long barcode;
     private Integer costprice;
     private Integer sellingPrice;
+    private Long skuId;
 }

@@ -26,6 +26,11 @@ public class StockResult implements Serializable {
     private ItemsResult itemsResult;
     private StorehouseResult storehouseResult;
     private BrandResult brandResult;
+
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 仓库id
      */
