@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.params.InstockRequest;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
@@ -195,19 +196,13 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 //        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-        Map<Long, List<AttributeValues>> map = new HashMap<>();
-        for (InstockResult datum : data) {
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (datum.getSkuId().equals(sku.getSpuId())) {
-                        JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-                        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-                        map.put(sku.getSkuId(), valuesRequests);
-                    }
-                }
+        for (Sku sku : skus) {
+            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+            List<InstockRequest> requests = JSONUtil.toList(jsonArray, InstockRequest.class);
+            for (InstockRequest request : requests) {
+
             }
         }
-
 
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
