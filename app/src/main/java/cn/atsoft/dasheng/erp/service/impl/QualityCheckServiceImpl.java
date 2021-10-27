@@ -44,6 +44,8 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     @Override
     public void add(QualityCheckParam param) {
+        String jsonStr = JSONUtil.toJsonStr(param.getTools());
+        param.setTool(jsonStr);
         QualityCheck entity = getEntity(param);
         this.save(entity);
     }
