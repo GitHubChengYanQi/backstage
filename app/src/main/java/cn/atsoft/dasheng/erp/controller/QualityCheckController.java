@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityCheck;
+import cn.atsoft.dasheng.erp.entity.QualityCheckClassification;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.QualityCheckParam;
+import cn.atsoft.dasheng.erp.model.result.QualityCheckClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
+import cn.atsoft.dasheng.erp.service.QualityCheckClassificationService;
 import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -39,6 +42,8 @@ public class QualityCheckController extends BaseController {
     private QualityCheckService qualityCheckService;
     @Autowired
     private ToolService toolService;
+    @Autowired
+    private QualityCheckClassificationService qualityCheckClassificationService;
 
     /**
      * 新增接口
@@ -94,16 +99,26 @@ public class QualityCheckController extends BaseController {
         JSONArray jsonArray = JSONUtil.parseArray(detail.getTool());
         List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
         List<Tool> tools = toolService.query().in("tool_id", longs).list();
+
+        QualityCheckClassification qualityCheckClassification = qualityCheckClassificationService.query()
+                .eq("quality_check_classification_id", detail.getQualityCheckClassificationId())
+                .one();
+
+        QualityCheckClassificationResult qualityCheckClassificationResult = new QualityCheckClassificationResult();
+        if (ToolUtil.isNotEmpty(qualityCheckClassification)) {
+            ToolUtil.copyProperties(qualityCheckClassification, qualityCheckClassificationResult);
+        }
+
         List<ToolResult> toolResults = new ArrayList<>();
         for (Tool tool : tools) {
             ToolResult toolResult = new ToolResult();
             ToolUtil.copyProperties(tool, toolResult);
             toolResults.add(toolResult);
         }
-
         QualityCheckResult result = new QualityCheckResult();
         ToolUtil.copyProperties(detail, result);
         result.setTools(toolResults);
+        result.setQualityCheckClassificationResult(qualityCheckClassificationResult);
         return ResponseData.success(result);
     }
 

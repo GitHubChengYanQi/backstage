@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.model.result.ToolClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,6 +21,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,9 +45,14 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     @Autowired
     private QualityCheckClassificationService qualityCheckClassificationService;
 
+    @Transactional
     @Override
     public void add(QualityCheckParam param) {
         String jsonStr = JSONUtil.toJsonStr(param.getTools());
+        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "已有相同质检");
+        }
         param.setTool(jsonStr);
         QualityCheck entity = getEntity(param);
         this.save(entity);
@@ -57,9 +64,14 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     }
 
     @Override
+    @Transactional
     public void update(QualityCheckParam param) {
         String jsonStr = JSONUtil.toJsonStr(param.getTools());
         param.setTool(jsonStr);
+        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "已有相同质检");
+        }
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
