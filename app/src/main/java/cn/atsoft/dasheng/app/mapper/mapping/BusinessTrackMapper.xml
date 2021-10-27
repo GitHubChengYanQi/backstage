@@ -226,9 +226,9 @@
         <if test ="paramCondition.state != null">
             and state like CONCAT('%',#{paramCondition.state},'%')
         </if>
-        <if test="paramCondition.trackMessageIds != null">
+        <if test="trackMessageIds != null">
             and track_message_id in
-            <foreach collection="trackMessageIds" item="trackMessageId" index="index" close=")" open="(" separator=",">
+            <foreach collection="trackMessageIds" item="trackMessageId" index="index" open="(" separator="," close=")">
                 #{trackMessageId}
             </foreach>
         </if>
