@@ -25,6 +25,11 @@ public class QualityPlanDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    /**
+     * 分类id
+     */
+    private Long qualityPlanClassId;
+
     private QualityCheckResult qualityCheckResult;
 
     @ApiModelProperty("")

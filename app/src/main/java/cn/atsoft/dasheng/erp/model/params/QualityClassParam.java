@@ -13,21 +13,25 @@ import java.util.List;
 
 /**
  * <p>
- * 质检方案
+ * 质检方案详情分类
  * </p>
  *
- * @author Captain_Jazz
+ * @author song
  * @since 2021-10-28
  */
 @Data
 @ApiModel
-public class QualityPlanParam implements Serializable, BaseValidatingParam {
+public class QualityClassParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-//    private List<QualityPlanDetailParam> qualityPlanDetailParams;
+    private List<QualityPlanDetailParam> qualityPlanDetailParams;
 
-    private List<QualityClassParam> qualityClassParams;
+    /**
+     * 质检方案分类id
+     */
+    @ApiModelProperty("质检方案分类id")
+    private Long qualityPlanClassId;
 
     /**
      * 质检方案id
@@ -36,46 +40,10 @@ public class QualityPlanParam implements Serializable, BaseValidatingParam {
     private Long qualityPlanId;
 
     /**
-     * 编号
+     * 质检项分类id
      */
-    @ApiModelProperty("编号")
-    private String planCoding;
-
-    /**
-     * 抽检类型
-     */
-    @ApiModelProperty("抽检类型")
-    private String testingType;
-
-    /**
-     * 方案名称
-     */
-    @ApiModelProperty("方案名称")
-    private String planName;
-
-    /**
-     * 状态
-     */
-    @ApiModelProperty("状态")
-    private Integer planStatus;
-
-    /**
-     * 质检类型
-     */
-    @ApiModelProperty("质检类型")
-    private String planType;
-
-    /**
-     * 特别提醒
-     */
-    @ApiModelProperty("特别提醒")
-    private String attentionPlease;
-
-    /**
-     * 附件
-     */
-    @ApiModelProperty("附件")
-    private String planAdjunct;
+    @ApiModelProperty("质检项分类id")
+    private Long qualityCheckClassificationId;
 
     /**
      * 创建时间
@@ -112,6 +80,12 @@ public class QualityPlanParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 分类名称
+     */
+    @ApiModelProperty("分类名称")
+    private String name;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -147,9 +148,15 @@ public class QualityCheckController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityCheckParam qualityCheckParam) {
 
-        List<Map<String, Object>> list = this.qualityCheckService.listMaps();
+        QueryWrapper<QualityCheck> qualityCheckQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(qualityCheckParam)){
+            if (ToolUtil.isNotEmpty(qualityCheckParam.getQualityCheckClassificationId())){
+                qualityCheckQueryWrapper.in("quality_check_classification_id",qualityCheckParam.getQualityCheckClassificationId());
+            }
+        }
+        List<Map<String, Object>> list = this.qualityCheckService.listMaps(qualityCheckQueryWrapper);
         QualityCheckSelectWrapper factory = new QualityCheckSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,6 +25,10 @@ public class QualityPlanDetailParam implements Serializable, BaseValidatingParam
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 分类id
+     */
+    private Long qualityPlanClassId;
 
     @ApiModelProperty("")
     private Long planDetailId;

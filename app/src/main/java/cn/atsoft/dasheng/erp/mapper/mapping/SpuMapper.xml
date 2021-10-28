@@ -36,7 +36,7 @@
     AS "spuClassificationId",
         spu_id
         AS "spuId", name AS "name", shelf_life AS "shelfLife", inventory AS "inventory", production_time AS "productionTime", important AS "important", weight AS "weight", material_id AS "materialId", cost AS "cost", vulnerability AS "vulnerability", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", class_id AS "classId", unit_id AS "unitId", category_id AS "categoryId", attribute AS "attribute",
-curing_cycle AS "curingCycle", cycle_type AS "cycleType", production_type AS "productionType"
+curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",production_type AS "productionType"
     </sql>
 
 
