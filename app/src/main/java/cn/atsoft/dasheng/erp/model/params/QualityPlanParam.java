@@ -27,6 +27,8 @@ public class QualityPlanParam implements Serializable, BaseValidatingParam {
 
     private List<QualityPlanDetailParam> qualityPlanDetailParams;
 
+
+
     /**
      * 质检方案id
      */

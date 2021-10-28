@@ -24,7 +24,7 @@ public class QualityPlanResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<QualityPlanDetailResult> planDetailResults;
+    private List<QualityPlanDetailResult> qualityPlanDetailParams;
     /**
      * 质检方案id
      */

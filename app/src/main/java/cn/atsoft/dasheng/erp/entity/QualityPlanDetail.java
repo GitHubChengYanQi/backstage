@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,7 +24,8 @@ public class QualityPlanDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "plan_detail_id", type = IdType.ID_WORKER)
+
+    @TableId(value = "plan_detail_id", type = IdType.ID_WORKER)
     private Long planDetailId;
 
     /**
@@ -67,7 +71,6 @@ public class QualityPlanDetail implements Serializable {
     private Long isNull;
 
 
-
     /**
      * 质检比例
      */
@@ -77,25 +80,25 @@ public class QualityPlanDetail implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -108,7 +111,7 @@ public class QualityPlanDetail implements Serializable {
      * 排序
      */
     @TableField("sort")
-    private Integer sort;
+    private Long sort;
 
     /**
      * 部门编号
@@ -236,23 +239,32 @@ public class QualityPlanDetail implements Serializable {
     public void setIsNull(Long isNull) {
         this.isNull = isNull;
     }
+
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
     @Override
     public String toString() {
         return "QualityPlanDetail{" +
-        "planDetailId=" + planDetailId +
-        ", planId=" + planId +
-        ", qualityCheckId=" + qualityCheckId +
-        ", operator=" + operator +
-        ", standardValue=" + standardValue +
-        ", testingType=" + testingType +
-        ", qualityAmount=" + qualityAmount +
-        ", qualityProportion=" + qualityProportion +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "planDetailId=" + planDetailId +
+                ", planId=" + planId +
+                ", qualityCheckId=" + qualityCheckId +
+                ", operator=" + operator +
+                ", standardValue=" + standardValue +
+                ", testingType=" + testingType +
+                ", qualityAmount=" + qualityAmount +
+                ", qualityProportion=" + qualityProportion +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

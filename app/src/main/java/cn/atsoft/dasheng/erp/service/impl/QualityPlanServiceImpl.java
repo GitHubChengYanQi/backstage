@@ -9,10 +9,12 @@ import cn.atsoft.dasheng.erp.mapper.QualityPlanMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,9 +40,18 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
 
+    @Autowired
+    private CodingRulesService codingRulesService;
+
     @Transactional
     @Override
     public void add(QualityPlanParam param) {
+
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getPlanCoding()));
+            param.setPlanCoding(coding);
+        }
 
         Integer count = this.query().in("plan_name", param.getPlanName()).count();
         if (count > 0) {
@@ -59,30 +70,80 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         QualityPlan entity = getEntity(param);
         this.save(entity);
         List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+
+        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
+            ids.add(planDetailParam.getQualityCheckId());
+        }
+        long l = ids.stream().distinct().count();
+
+        if (planDetailParams.size() > l) {
+            throw new ServiceException(500, "不可以填写重复质检项");
+        }
+
+
+        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
+            if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
+                throw new ServiceException(500, "请选择质检项");
+            }
+
+            QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
+            ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
+            qualityPlanDetail.setPlanId(entity.getQualityPlanId());
+            qualityPlanDetails.add(qualityPlanDetail);
+        }
+
+        qualityPlanDetailService.saveBatch(qualityPlanDetails);
+
+    }
+
+    @Override
+    @Transactional
+    public void delete(QualityPlanParam param) {
+        this.removeById(getKey(param));
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("plan_id", param.getQualityPlanId());
+        qualityPlanDetailService.remove(queryWrapper);
+    }
+
+    @Override
+    @Transactional
+    public void update(QualityPlanParam param) {
+//        Integer count = this.query().in("plan_name", param.getPlanName()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "名称已存在");
+//        }
+
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getPlanCoding()));
+            param.setPlanCoding(coding);
+        }
+
+        List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
+        if (ToolUtil.isEmpty(planDetailParams)) {
+            throw new ServiceException(500, "请确定质检项");
+        }
+
+
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("plan_id", param.getQualityPlanId());
+        qualityPlanDetailService.remove(queryWrapper);
+
+
+        List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
         for (QualityPlanDetailParam planDetailParam : planDetailParams) {
             if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
                 throw new ServiceException(500, "请选择质检项");
             }
             QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
             ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
-            qualityPlanDetail.setPlanId(entity.getQualityPlanId());
+            qualityPlanDetail.setPlanId(param.getQualityPlanId());
             qualityPlanDetails.add(qualityPlanDetail);
         }
         qualityPlanDetailService.saveBatch(qualityPlanDetails);
 
-    }
 
-    @Override
-    public void delete(QualityPlanParam param) {
-        this.removeById(getKey(param));
-    }
-
-    @Override
-    public void update(QualityPlanParam param) {
-        Integer count = this.query().in("plan_name", param.getPlanName()).count();
-        if (count > 0) {
-            throw new ServiceException(500, "名称已存在");
-        }
         QualityPlan oldEntity = getOldEntity(param);
         QualityPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
