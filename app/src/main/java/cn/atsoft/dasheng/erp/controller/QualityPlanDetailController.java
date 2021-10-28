@@ -3,16 +3,20 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
+import cn.atsoft.dasheng.erp.model.params.TypeRequest;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +71,7 @@ public class QualityPlanDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody QualityPlanDetailParam qualityPlanDetailParam)  {
+    public ResponseData delete(@RequestBody QualityPlanDetailParam qualityPlanDetailParam) {
         this.qualityPlanDetailService.delete(qualityPlanDetailParam);
         return ResponseData.success();
     }
@@ -82,9 +86,10 @@ public class QualityPlanDetailController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<QualityPlanDetailResult> detail(@RequestBody QualityPlanDetailParam qualityPlanDetailParam) {
         QualityPlanDetail detail = this.qualityPlanDetailService.getById(qualityPlanDetailParam.getPlanDetailId());
+
+
         QualityPlanDetailResult result = new QualityPlanDetailResult();
         ToolUtil.copyProperties(detail, result);
-
         return ResponseData.success(result);
     }
 
@@ -97,13 +102,11 @@ public class QualityPlanDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<QualityPlanDetailResult> list(@RequestBody(required = false) QualityPlanDetailParam qualityPlanDetailParam) {
-        if(ToolUtil.isEmpty(qualityPlanDetailParam)){
+        if (ToolUtil.isEmpty(qualityPlanDetailParam)) {
             qualityPlanDetailParam = new QualityPlanDetailParam();
         }
         return this.qualityPlanDetailService.findPageBySpec(qualityPlanDetailParam);
     }
-
-
 
 
 }

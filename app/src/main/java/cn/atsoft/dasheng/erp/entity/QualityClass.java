@@ -10,64 +10,34 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 质检方案
+ * 质检方案详情分类
  * </p>
  *
- * @author Captain_Jazz
+ * @author song
  * @since 2021-10-28
  */
-@TableName("daoxin_erp_quality_plan")
-public class QualityPlan implements Serializable {
+@TableName("daoxin_erp_quality_class")
+public class QualityClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
+     * 质检方案分类id
+     */
+      @TableId(value = "quality_plan_class_id", type = IdType.ID_WORKER)
+    private Long qualityPlanClassId;
+
+    /**
      * 质检方案id
      */
-      @TableId(value = "quality_plan_id", type = IdType.ID_WORKER)
+    @TableField("quality_plan_id")
     private Long qualityPlanId;
 
     /**
-     * 抽检类型
+     * 质检项分类id
      */
-    @TableField("testing_type")
-    private String testingType;
-
-    /**
-     * 方案名称
-     */
-    @TableField("plan_name")
-    private String planName;
-
-    /**
-     * 编号
-     */
-    @TableField("plan_coding")
-    private String planCoding;
-
-    /**
-     * 状态
-     */
-    @TableField("plan_status")
-    private Integer planStatus;
-
-    /**
-     * 质检类型
-     */
-    @TableField("plan_type")
-    private String planType;
-
-    /**
-     * 特别提醒
-     */
-    @TableField("attention_please")
-    private String attentionPlease;
-
-    /**
-     * 附件
-     */
-    @TableField("plan_adjunct")
-    private String planAdjunct;
+    @TableField("quality_check_classification_id")
+    private Long qualityCheckClassificationId;
 
     /**
      * 创建时间
@@ -105,6 +75,20 @@ public class QualityPlan implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    /**
+     * 分类名称
+     */
+    @TableField("name")
+    private String name;
+
+
+    public Long getQualityPlanClassId() {
+        return qualityPlanClassId;
+    }
+
+    public void setQualityPlanClassId(Long qualityPlanClassId) {
+        this.qualityPlanClassId = qualityPlanClassId;
+    }
 
     public Long getQualityPlanId() {
         return qualityPlanId;
@@ -114,44 +98,12 @@ public class QualityPlan implements Serializable {
         this.qualityPlanId = qualityPlanId;
     }
 
-    public String getPlanName() {
-        return planName;
+    public Long getQualityCheckClassificationId() {
+        return qualityCheckClassificationId;
     }
 
-    public void setPlanName(String planName) {
-        this.planName = planName;
-    }
-
-    public Integer getPlanStatus() {
-        return planStatus;
-    }
-
-    public void setPlanStatus(Integer planStatus) {
-        this.planStatus = planStatus;
-    }
-
-    public String getPlanType() {
-        return planType;
-    }
-
-    public void setPlanType(String planType) {
-        this.planType = planType;
-    }
-
-    public String getAttentionPlease() {
-        return attentionPlease;
-    }
-
-    public void setAttentionPlease(String attentionPlease) {
-        this.attentionPlease = attentionPlease;
-    }
-
-    public String getPlanAdjunct() {
-        return planAdjunct;
-    }
-
-    public void setPlanAdjunct(String planAdjunct) {
-        this.planAdjunct = planAdjunct;
+    public void setQualityCheckClassificationId(Long qualityCheckClassificationId) {
+        this.qualityCheckClassificationId = qualityCheckClassificationId;
     }
 
     public Date getCreateTime() {
@@ -201,29 +153,28 @@ public class QualityPlan implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
-    public String getTestingType() {
-        return testingType;
+
+    public String getName() {
+        return name;
     }
 
-    public void setTestingType(String testingType) {
-        this.testingType = testingType;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "QualityPlan{" +
-        "qualityPlanId=" + qualityPlanId +
-        ", planName=" + planName +
-        ", planStatus=" + planStatus +
-        ", planType=" + planType +
-        ", attentionPlease=" + attentionPlease +
-        ", planAdjunct=" + planAdjunct +
+        return "QualityClass{" +
+        "qualityPlanClassId=" + qualityPlanClassId +
+        ", qualityPlanId=" + qualityPlanId +
+        ", qualityCheckClassificationId=" + qualityCheckClassificationId +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", display=" + display +
         ", deptId=" + deptId +
+        ", name=" + name +
         "}";
     }
 }

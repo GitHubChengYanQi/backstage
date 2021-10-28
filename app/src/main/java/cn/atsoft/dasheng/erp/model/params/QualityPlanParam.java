@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,12 +25,27 @@ public class QualityPlanParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+//    private List<QualityPlanDetailParam> qualityPlanDetailParams;
+
+    private List<QualityClassParam> qualityClassParams;
 
     /**
      * 质检方案id
      */
     @ApiModelProperty("质检方案id")
     private Long qualityPlanId;
+
+    /**
+     * 编号
+     */
+    @ApiModelProperty("编号")
+    private String planCoding;
+
+    /**
+     * 抽检类型
+     */
+    @ApiModelProperty("抽检类型")
+    private String testingType;
 
     /**
      * 方案名称

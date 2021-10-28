@@ -3,18 +3,29 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityClass;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
+import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.mapper.QualityPlanMapper;
+import cn.atsoft.dasheng.erp.model.params.QualityClassParam;
+import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanResult;
-import  cn.atsoft.dasheng.erp.service.QualityPlanService;
+import cn.atsoft.dasheng.erp.service.QualityClassService;
+import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
+import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.jmx.remote.internal.ArrayQueue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,19 +39,68 @@ import java.util.List;
 @Service
 public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, QualityPlan> implements QualityPlanService {
 
+    @Autowired
+    private QualityPlanDetailService qualityPlanDetailService;
+    @Autowired
+    private QualityClassService qualityClassService;
+
+    @Transactional
     @Override
-    public void add(QualityPlanParam param){
+    public void add(QualityPlanParam param) {
         QualityPlan entity = getEntity(param);
         this.save(entity);
+        List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
+
+        for (QualityClassParam qualityClassParam : param.getQualityClassParams()) {
+            qualityClassParam.setQualityPlanId(entity.getQualityPlanId());
+            Long add = qualityClassService.add(qualityClassParam);
+
+            for (QualityPlanDetailParam qualityPlanDetailParam : qualityClassParam.getQualityPlanDetailParams()) {
+
+                QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
+                ToolUtil.copyProperties(qualityPlanDetailParam, qualityPlanDetail);
+                qualityPlanDetail.setQualityPlanClassId(add);
+                qualityPlanDetails.add(qualityPlanDetail);
+            }
+        }
+        qualityPlanDetailService.saveBatch(qualityPlanDetails);
+
+//        Integer count = this.query().in("plan_name", param.getPlanName()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "名称已存在");
+//        }
+//
+//        List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
+//        if (ToolUtil.isEmpty(planDetailParams)) {
+//            throw new ServiceException(500, "请确定质检项");
+//        }
+//        QualityPlan entity = getEntity(param);
+//        this.save(entity);
+//        List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
+//        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
+//            if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
+//                throw new ServiceException(500, "请选择质检项");
+//            }
+//            QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
+//            ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
+//            qualityPlanDetail.setPlanId(entity.getQualityPlanId());
+//            qualityPlanDetails.add(qualityPlanDetail);
+//        }
+//        qualityPlanDetailService.saveBatch(qualityPlanDetails);
+
     }
 
     @Override
-    public void delete(QualityPlanParam param){
+    public void delete(QualityPlanParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(QualityPlanParam param){
+    public void update(QualityPlanParam param) {
+        Integer count = this.query().in("plan_name", param.getPlanName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名称已存在");
+        }
         QualityPlan oldEntity = getOldEntity(param);
         QualityPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +108,24 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     }
 
     @Override
-    public QualityPlanResult findBySpec(QualityPlanParam param){
+    public QualityPlanResult findBySpec(QualityPlanParam param) {
         return null;
     }
 
     @Override
-    public List<QualityPlanResult> findListBySpec(QualityPlanParam param){
+    public List<QualityPlanResult> findListBySpec(QualityPlanParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param){
+    public PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param) {
         Page<QualityPlanResult> pageContext = getPageContext();
         IPage<QualityPlanResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(QualityPlanParam param){
+    private Serializable getKey(QualityPlanParam param) {
         return param.getQualityPlanId();
     }
 
@@ -82,4 +143,9 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         return entity;
     }
 
+    public void format(List<QualityPlanResult> data) {
+        for (QualityPlanResult datum : data) {
+
+        }
+    }
 }

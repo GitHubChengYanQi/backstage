@@ -1,49 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.erp.mapper.QualityPlanMapper">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.QualityClassMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.QualityPlan">
-        <id column="quality_plan_id" property="qualityPlanId" />
-        <result column="plan_name" property="planName" />
-        <result column="plan_status" property="planStatus" />
-        <result column="plan_type" property="planType" />
-        <result column="plan_coding" property="planCoding"/>
-        <result column="attention_please" property="attentionPlease" />
-        <result column="plan_adjunct" property="planAdjunct" />
-        <result column="testing_type" property="testingType" />
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.QualityClass">
+        <id column="quality_plan_class_id" property="qualityPlanClassId" />
+        <result column="quality_plan_id" property="qualityPlanId" />
+        <result column="quality_check_classification_id" property="qualityCheckClassificationId" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
+        <result column="name" property="name" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        quality_plan_id AS "qualityPlanId", testing_type AS "testingType",plan_coding AS "planCoding",plan_name AS "planName", plan_status AS "planStatus", plan_type AS "planType", attention_please AS "attentionPlease", plan_adjunct AS "planAdjunct", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        quality_plan_class_id AS "qualityPlanClassId", quality_plan_id AS "qualityPlanId", quality_check_classification_id AS "qualityCheckClassificationId", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", name AS "name"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.QualityPlanResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.QualityClassResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_plan where 1 = 1
+        from daoxin_erp_quality_class where 1 = 1
+            <if test="paramCondition.qualityPlanClassId != null">
+                and quality_plan_class_id like CONCAT('%',#{paramCondition.qualityPlanClassId},'%')
+            </if>
             <if test="paramCondition.qualityPlanId != null">
                 and quality_plan_id like CONCAT('%',#{paramCondition.qualityPlanId},'%')
             </if>
-            <if test="paramCondition.planName != null and paramCondition.planName != ''">
-                and plan_name like CONCAT('%',#{paramCondition.planName},'%')
-            </if>
-            <if test="paramCondition.planStatus != null">
-                and plan_status like CONCAT('%',#{paramCondition.planStatus},'%')
-            </if>
-            <if test="paramCondition.planType != null and paramCondition.planType != ''">
-                and plan_type like CONCAT('%',#{paramCondition.planType},'%')
-            </if>
-            <if test="paramCondition.planAdjunct != null and paramCondition.planAdjunct != ''">
-                and plan_adjunct like CONCAT('%',#{paramCondition.planAdjunct},'%')
+            <if test="paramCondition.qualityCheckClassificationId != null">
+                and quality_check_classification_id like CONCAT('%',#{paramCondition.qualityCheckClassificationId},'%')
             </if>
             <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
                 and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -63,26 +53,23 @@
             <if test="paramCondition.deptId != null">
                 and deptId like CONCAT('%',#{paramCondition.deptId},'%')
             </if>
+            <if test="paramCondition.name != null and paramCondition.name != ''">
+                and name like CONCAT('%',#{paramCondition.name},'%')
+            </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_plan where 1 = 1
+        from daoxin_erp_quality_class where 1 = 1
+                <if test="paramCondition.qualityPlanClassId != null">
+                        and quality_plan_class_id like CONCAT('%',#{paramCondition.qualityPlanClassId},'%')
+                </if>
                 <if test="paramCondition.qualityPlanId != null">
                         and quality_plan_id like CONCAT('%',#{paramCondition.qualityPlanId},'%')
                 </if>
-                <if test="paramCondition.planName != null and paramCondition.planName != ''">
-                        and plan_name like CONCAT('%',#{paramCondition.planName},'%')
-                </if>
-                <if test="paramCondition.planStatus != null">
-                        and plan_status like CONCAT('%',#{paramCondition.planStatus},'%')
-                </if>
-                <if test="paramCondition.planType != null and paramCondition.planType != ''">
-                        and plan_type like CONCAT('%',#{paramCondition.planType},'%')
-                </if>
-                <if test="paramCondition.planAdjunct != null and paramCondition.planAdjunct != ''">
-                        and plan_adjunct like CONCAT('%',#{paramCondition.planAdjunct},'%')
+                <if test="paramCondition.qualityCheckClassificationId != null">
+                        and quality_check_classification_id like CONCAT('%',#{paramCondition.qualityCheckClassificationId},'%')
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
                         and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -102,26 +89,23 @@
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.QualityPlanResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.QualityClassResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_plan where 1 = 1
+        from daoxin_erp_quality_class where 1 = 1
+                <if test="paramCondition.qualityPlanClassId != null">
+                        and quality_plan_class_id like CONCAT('%',#{paramCondition.qualityPlanClassId},'%')
+                </if>
                 <if test="paramCondition.qualityPlanId != null">
                         and quality_plan_id like CONCAT('%',#{paramCondition.qualityPlanId},'%')
                 </if>
-                <if test="paramCondition.planName != null and paramCondition.planName != ''">
-                        and plan_name like CONCAT('%',#{paramCondition.planName},'%')
-                </if>
-                <if test="paramCondition.planStatus != null">
-                        and plan_status like CONCAT('%',#{paramCondition.planStatus},'%')
-                </if>
-                <if test="paramCondition.planType != null and paramCondition.planType != ''">
-                        and plan_type like CONCAT('%',#{paramCondition.planType},'%')
-                </if>
-                <if test="paramCondition.planAdjunct != null and paramCondition.planAdjunct != ''">
-                        and plan_adjunct like CONCAT('%',#{paramCondition.planAdjunct},'%')
+                <if test="paramCondition.qualityCheckClassificationId != null">
+                        and quality_check_classification_id like CONCAT('%',#{paramCondition.qualityCheckClassificationId},'%')
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
                         and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -141,26 +125,23 @@
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
                 </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
+                </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityClassParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_plan where 1 = 1
+        from daoxin_erp_quality_class where 1 = 1
+                <if test="paramCondition.qualityPlanClassId != null">
+                        and quality_plan_class_id like CONCAT('%',#{paramCondition.qualityPlanClassId},'%')
+                </if>
                 <if test="paramCondition.qualityPlanId != null">
                         and quality_plan_id like CONCAT('%',#{paramCondition.qualityPlanId},'%')
                 </if>
-                <if test="paramCondition.planName != null and paramCondition.planName != ''">
-                        and plan_name like CONCAT('%',#{paramCondition.planName},'%')
-                </if>
-                <if test="paramCondition.planStatus != null">
-                        and plan_status like CONCAT('%',#{paramCondition.planStatus},'%')
-                </if>
-                <if test="paramCondition.planType != null and paramCondition.planType != ''">
-                        and plan_type like CONCAT('%',#{paramCondition.planType},'%')
-                </if>
-                <if test="paramCondition.planAdjunct != null and paramCondition.planAdjunct != ''">
-                        and plan_adjunct like CONCAT('%',#{paramCondition.planAdjunct},'%')
+                <if test="paramCondition.qualityCheckClassificationId != null">
+                        and quality_check_classification_id like CONCAT('%',#{paramCondition.qualityCheckClassificationId},'%')
                 </if>
                 <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
                         and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -179,6 +160,9 @@
                 </if>
                 <if test="paramCondition.deptId != null">
                         and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+                </if>
+                <if test="paramCondition.name != null and paramCondition.name != ''">
+                        and name like CONCAT('%',#{paramCondition.name},'%')
                 </if>
     </select>
 

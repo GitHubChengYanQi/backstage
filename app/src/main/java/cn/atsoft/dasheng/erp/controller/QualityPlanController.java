@@ -1,9 +1,15 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityCheck;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
+import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
+import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
+import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanResult;
+import cn.atsoft.dasheng.erp.service.QualityCheckService;
+import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +38,10 @@ public class QualityPlanController extends BaseController {
 
     @Autowired
     private QualityPlanService qualityPlanService;
+    @Autowired
+    private QualityPlanDetailService qualityPlanDetailService;
+    @Autowired
+    private QualityCheckService qualityCheckService;
 
     /**
      * 新增接口
@@ -67,7 +78,7 @@ public class QualityPlanController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody QualityPlanParam qualityPlanParam)  {
+    public ResponseData delete(@RequestBody QualityPlanParam qualityPlanParam) {
         this.qualityPlanService.delete(qualityPlanParam);
         return ResponseData.success();
     }
@@ -82,9 +93,33 @@ public class QualityPlanController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<QualityPlanResult> detail(@RequestBody QualityPlanParam qualityPlanParam) {
         QualityPlan detail = this.qualityPlanService.getById(qualityPlanParam.getQualityPlanId());
+        List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.query().in("plan_id", detail.getQualityPlanId()).list();
+        List<QualityPlanDetailResult> planDetailResults = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
+            ids.add(qualityPlanDetail.getQualityCheckId());
+        }
+        List<QualityCheck> qualityChecks = ids.size() == 0 ? new ArrayList<>() : qualityCheckService.query()
+                .in("quality_check_id", ids).list();
+        for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
+
+            for (QualityCheck qualityCheck : qualityChecks) {
+
+                QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
+                ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
+
+                if (qualityCheck.getQualityCheckId().equals(qualityPlanDetail.getQualityCheckId())) {
+
+                    QualityCheckResult qualityCheckResult =new QualityCheckResult();
+                    ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+                    qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
+                }
+                planDetailResults.add(qualityPlanDetailResult);
+            }
+        }
         QualityPlanResult result = new QualityPlanResult();
         ToolUtil.copyProperties(detail, result);
-
+        result.setPlanDetailResults(planDetailResults);
         return ResponseData.success(result);
     }
 
@@ -97,13 +132,11 @@ public class QualityPlanController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<QualityPlanResult> list(@RequestBody(required = false) QualityPlanParam qualityPlanParam) {
-        if(ToolUtil.isEmpty(qualityPlanParam)){
+        if (ToolUtil.isEmpty(qualityPlanParam)) {
             qualityPlanParam = new QualityPlanParam();
         }
         return this.qualityPlanService.findPageBySpec(qualityPlanParam);
     }
-
-
 
 
 }
