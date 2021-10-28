@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.mapper.QualityPlanDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
-import  cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
+import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,18 +29,18 @@ import java.util.List;
 public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailMapper, QualityPlanDetail> implements QualityPlanDetailService {
 
     @Override
-    public void add(QualityPlanDetailParam param){
+    public void add(QualityPlanDetailParam param) {
         QualityPlanDetail entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(QualityPlanDetailParam param){
+    public void delete(QualityPlanDetailParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(QualityPlanDetailParam param){
+    public void update(QualityPlanDetailParam param) {
         QualityPlanDetail oldEntity = getOldEntity(param);
         QualityPlanDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +48,24 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
     }
 
     @Override
-    public QualityPlanDetailResult findBySpec(QualityPlanDetailParam param){
+    public QualityPlanDetailResult findBySpec(QualityPlanDetailParam param) {
         return null;
     }
 
     @Override
-    public List<QualityPlanDetailResult> findListBySpec(QualityPlanDetailParam param){
+    public List<QualityPlanDetailResult> findListBySpec(QualityPlanDetailParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<QualityPlanDetailResult> findPageBySpec(QualityPlanDetailParam param){
+    public PageInfo<QualityPlanDetailResult> findPageBySpec(QualityPlanDetailParam param) {
         Page<QualityPlanDetailResult> pageContext = getPageContext();
         IPage<QualityPlanDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(QualityPlanDetailParam param){
+    private Serializable getKey(QualityPlanDetailParam param) {
         return param.getPlanDetailId();
     }
 
@@ -82,4 +83,10 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         return entity;
     }
 
+    public void format(List<QualityPlanDetailResult> data) {
+
+        for (QualityPlanDetailResult datum : data) {
+            
+        }
+    }
 }
