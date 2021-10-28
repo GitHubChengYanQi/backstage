@@ -34,6 +34,12 @@ public class QualityPlanResult implements Serializable {
     private String planCoding;
 
     /**
+     * 抽检类型
+     */
+    @ApiModelProperty("抽检类型")
+    private String testingType;
+
+    /**
      * 方案名称
      */
     @ApiModelProperty("方案名称")

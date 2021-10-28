@@ -37,6 +37,12 @@ public class QualityPlanDetailResult implements Serializable {
     private Long qualityCheckId;
 
     /**
+     * 是否必填
+     */
+    @ApiModelProperty("是否必填")
+    private Long isNull;
+
+    /**
      * 运算符
      */
     @ApiModelProperty("运算符")

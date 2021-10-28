@@ -8,6 +8,7 @@
         <result column="plan_id" property="planId" />
         <result column="quality_check_id" property="qualityCheckId" />
         <result column="operator" property="operator" />
+        <result column="is_null" property="isNull"/>
         <result column="standard_value" property="standardValue" />
         <result column="testing_type" property="testingType" />
         <result column="quality_amount" property="qualityAmount" />
@@ -22,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        plan_detail_id AS "planDetailId", plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        plan_detail_id AS "planDetailId", is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

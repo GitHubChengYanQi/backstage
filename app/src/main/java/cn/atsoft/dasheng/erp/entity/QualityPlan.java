@@ -28,6 +28,12 @@ public class QualityPlan implements Serializable {
     private Long qualityPlanId;
 
     /**
+     * 抽检类型
+     */
+    @TableField("testing_type")
+    private String testingType;
+
+    /**
      * 方案名称
      */
     @TableField("plan_name")
@@ -194,6 +200,13 @@ public class QualityPlan implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+    public String getTestingType() {
+        return testingType;
+    }
+
+    public void setTestingType(String testingType) {
+        this.testingType = testingType;
     }
 
     @Override

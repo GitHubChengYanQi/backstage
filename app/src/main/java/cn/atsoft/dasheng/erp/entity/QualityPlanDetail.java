@@ -61,6 +61,14 @@ public class QualityPlanDetail implements Serializable {
     private Long qualityAmount;
 
     /**
+     * 质检数量
+     */
+    @TableField("is_null")
+    private Long isNull;
+
+
+
+    /**
      * 质检比例
      */
     @TableField("quality_proportion")
@@ -215,6 +223,13 @@ public class QualityPlanDetail implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getIsNull() {
+        return isNull;
+    }
+
+    public void setIsNull(Long isNull) {
+        this.isNull = isNull;
+    }
     @Override
     public String toString() {
         return "QualityPlanDetail{" +
