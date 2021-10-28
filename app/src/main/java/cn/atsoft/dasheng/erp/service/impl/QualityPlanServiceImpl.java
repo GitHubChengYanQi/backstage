@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.mapper.QualityPlanMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -39,16 +40,27 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
 
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Transactional
     @Override
     public void add(QualityPlanParam param) {
 
-
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getPlanCoding()));
+            param.setPlanCoding(coding);
+        }
 
         Integer count = this.query().in("plan_name", param.getPlanName()).count();
         if (count > 0) {
-            throw new ServiceException(500, "名称已存在");
+            throw new ServiceException(500, "名称以重复");
+        }
+
+        Integer planCoding = this.query().in("plan_coding", param.getPlanCoding()).count();
+        if (planCoding > 0) {
+            throw new ServiceException(500, "编码以重复");
         }
 
         List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
@@ -67,6 +79,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
             qualityPlanDetail.setPlanId(entity.getQualityPlanId());
             qualityPlanDetails.add(qualityPlanDetail);
         }
+
         qualityPlanDetailService.saveBatch(qualityPlanDetails);
 
     }
@@ -87,6 +100,12 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 //        if (count > 0) {
 //            throw new ServiceException(500, "名称已存在");
 //        }
+
+        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
+        if (rulesId > 0) {
+            String coding = codingRulesService.backCoding(Long.valueOf(param.getPlanCoding()));
+            param.setPlanCoding(coding);
+        }
 
         List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
         if (ToolUtil.isEmpty(planDetailParams)) {
