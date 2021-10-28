@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 质检方案详情
@@ -20,6 +24,8 @@ public class QualityPlanDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    private QualityCheckResult qualityCheckResult;
 
     @ApiModelProperty("")
     private Long planDetailId;

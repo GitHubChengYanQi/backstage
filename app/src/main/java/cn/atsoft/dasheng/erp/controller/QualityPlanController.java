@@ -1,11 +1,14 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityCheck;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
+import cn.atsoft.dasheng.erp.model.result.QualityCheckResult;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanResult;
+import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -37,6 +40,8 @@ public class QualityPlanController extends BaseController {
     private QualityPlanService qualityPlanService;
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
+    @Autowired
+    private QualityCheckService qualityCheckService;
 
     /**
      * 新增接口
@@ -90,10 +95,27 @@ public class QualityPlanController extends BaseController {
         QualityPlan detail = this.qualityPlanService.getById(qualityPlanParam.getQualityPlanId());
         List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.query().in("plan_id", detail.getQualityPlanId()).list();
         List<QualityPlanDetailResult> planDetailResults = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
-            QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
-            ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
-            planDetailResults.add(qualityPlanDetailResult);
+            ids.add(qualityPlanDetail.getQualityCheckId());
+        }
+        List<QualityCheck> qualityChecks = ids.size() == 0 ? new ArrayList<>() : qualityCheckService.query()
+                .in("quality_check_id", ids).list();
+        for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
+
+            for (QualityCheck qualityCheck : qualityChecks) {
+
+                QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
+                ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
+
+                if (qualityCheck.getQualityCheckId().equals(qualityPlanDetail.getQualityCheckId())) {
+
+                    QualityCheckResult qualityCheckResult =new QualityCheckResult();
+                    ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+                    qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
+                }
+                planDetailResults.add(qualityPlanDetailResult);
+            }
         }
         QualityPlanResult result = new QualityPlanResult();
         ToolUtil.copyProperties(detail, result);
