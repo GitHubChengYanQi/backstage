@@ -32,6 +32,12 @@ public class QualityPlanParam implements Serializable, BaseValidatingParam {
     private Long qualityPlanId;
 
     /**
+     * 编号
+     */
+    @ApiModelProperty("编号")
+    private String planCoding;
+
+    /**
      * 方案名称
      */
     @ApiModelProperty("方案名称")
