@@ -45,6 +45,8 @@ public class QualityPlan implements Serializable {
     @TableField("plan_coding")
     private String planCoding;
 
+
+
     /**
      * 状态
      */
@@ -208,7 +210,13 @@ public class QualityPlan implements Serializable {
     public void setTestingType(String testingType) {
         this.testingType = testingType;
     }
+    public String getPlanCoding() {
+        return planCoding;
+    }
 
+    public void setPlanCoding(String planCoding) {
+        this.planCoding = planCoding;
+    }
     @Override
     public String toString() {
         return "QualityPlan{" +
