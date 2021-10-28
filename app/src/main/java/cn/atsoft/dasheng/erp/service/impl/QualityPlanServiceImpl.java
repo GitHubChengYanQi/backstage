@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -68,6 +69,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
             qualityPlanDetail.setPlanId(entity.getQualityPlanId());
             qualityPlanDetails.add(qualityPlanDetail);
         }
+
         qualityPlanDetailService.saveBatch(qualityPlanDetails);
 
     }
@@ -79,10 +81,35 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     public void update(QualityPlanParam param) {
-        Integer count = this.query().in("plan_name", param.getPlanName()).count();
-        if (count > 0) {
-            throw new ServiceException(500, "名称已存在");
+//        Integer count = this.query().in("plan_name", param.getPlanName()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "名称已存在");
+//        }
+
+        List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
+        if (ToolUtil.isEmpty(planDetailParams)) {
+            throw new ServiceException(500, "请确定质检项");
         }
+
+
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("plan_id", param.getQualityPlanId());
+        qualityPlanDetailService.remove(queryWrapper);
+
+
+        List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
+        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
+            if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
+                throw new ServiceException(500, "请选择质检项");
+            }
+            QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
+            ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
+            qualityPlanDetail.setPlanId(param.getQualityPlanId());
+            qualityPlanDetails.add(qualityPlanDetail);
+        }
+        qualityPlanDetailService.saveBatch(qualityPlanDetails);
+
+
         QualityPlan oldEntity = getOldEntity(param);
         QualityPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
