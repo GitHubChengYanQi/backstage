@@ -41,6 +41,13 @@ public class QualityPlanDetailParam implements Serializable, BaseValidatingParam
     private Long isNull;
 
     /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Long sort;
+
+
+    /**
      * 质检项id
      */
     @ApiModelProperty("质检项id")

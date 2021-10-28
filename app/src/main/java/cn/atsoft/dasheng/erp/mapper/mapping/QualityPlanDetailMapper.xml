@@ -16,6 +16,7 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="create_user" property="createUser" />
+        <result column="sort" property="sort"/>
         <result column="update_user" property="updateUser" />
         <result column="display" property="display" />
         <result column="deptId" property="deptId" />
@@ -23,7 +24,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        plan_detail_id AS "planDetailId", is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        plan_detail_id AS "planDetailId", sort AS "sort",is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

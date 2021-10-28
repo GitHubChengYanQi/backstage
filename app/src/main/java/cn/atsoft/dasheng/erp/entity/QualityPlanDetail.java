@@ -105,6 +105,12 @@ public class QualityPlanDetail implements Serializable {
     private Integer display;
 
     /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
+
+    /**
      * 部门编号
      */
     @TableField("deptId")
