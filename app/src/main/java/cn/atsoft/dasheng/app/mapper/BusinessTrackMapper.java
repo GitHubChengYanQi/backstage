@@ -45,7 +45,7 @@ public interface BusinessTrackMapper extends BaseMapper<BusinessTrack> {
      * @author cheng
      * @Date 2021-09-17
      */
-    Page<BusinessTrackResult> customPageList(List<Long> trackMessageIds,@Param("page") Page page, @Param("paramCondition") BusinessTrackParam paramCondition,@Param("dataScope") DataScope dataScope);
+    Page<BusinessTrackResult> customPageList(@Param("trackMessageIds") List<Long> trackMessageIds,@Param("page") Page page, @Param("paramCondition") BusinessTrackParam paramCondition,@Param("dataScope") DataScope dataScope);
 
     /**
      * 获取分页map列表
