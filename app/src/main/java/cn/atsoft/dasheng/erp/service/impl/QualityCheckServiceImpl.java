@@ -68,10 +68,10 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     public void update(QualityCheckParam param) {
         String jsonStr = JSONUtil.toJsonStr(param.getTools());
         param.setTool(jsonStr);
-        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
-        if (count > 0) {
-            throw new ServiceException(500, "已有相同质检");
-        }
+//        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "已有相同质检");
+//        }
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);

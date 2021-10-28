@@ -13,6 +13,8 @@ import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ToolService;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckClassificationSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
@@ -135,6 +137,22 @@ public class QualityCheckController extends BaseController {
             qualityCheckParam = new QualityCheckParam();
         }
         return this.qualityCheckService.findPageBySpec(qualityCheckParam);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+
+        List<Map<String, Object>> list = this.qualityCheckService.listMaps();
+        QualityCheckSelectWrapper factory = new QualityCheckSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 
