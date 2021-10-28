@@ -101,21 +101,19 @@ public class QualityPlanController extends BaseController {
         }
         List<QualityCheck> qualityChecks = ids.size() == 0 ? new ArrayList<>() : qualityCheckService.query()
                 .in("quality_check_id", ids).list();
+        QualityPlanDetailResult qualityPlanDetailResult = null;
         for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
+            qualityPlanDetailResult = new QualityPlanDetailResult();
+            ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
 
             for (QualityCheck qualityCheck : qualityChecks) {
-
-                QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
-                ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
-
                 if (qualityCheck.getQualityCheckId().equals(qualityPlanDetail.getQualityCheckId())) {
-
                     QualityCheckResult qualityCheckResult =new QualityCheckResult();
                     ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
                     qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
                 }
-                planDetailResults.add(qualityPlanDetailResult);
             }
+            planDetailResults.add(qualityPlanDetailResult);
         }
         QualityPlanResult result = new QualityPlanResult();
         ToolUtil.copyProperties(detail, result);
