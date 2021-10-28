@@ -111,7 +111,7 @@ public class QualityPlanDetail implements Serializable {
      * 排序
      */
     @TableField("sort")
-    private Integer sort;
+    private Long sort;
 
     /**
      * 部门编号
@@ -240,7 +240,13 @@ public class QualityPlanDetail implements Serializable {
         this.isNull = isNull;
     }
 
+    public Long getSort() {
+        return sort;
+    }
 
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
 
     @Override
     public String toString() {
