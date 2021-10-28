@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserinfoController extends BaseController {
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private WxCpService wxCpService;
 
     /**
      * 返回二维码
@@ -73,6 +75,15 @@ public class UserinfoController extends BaseController {
         return ResponseData.success();
     }
 
+
+    /**
+     * 获取ticket
+     */
+    @RequestMapping(value = "/ticket", method = RequestMethod.POST)
+    public ResponseData getTicket() throws WxErrorException {
+        String agentJsapiTicket = wxCpService.getWxCpClient().getAgentJsapiTicket();
+        return ResponseData.success(agentJsapiTicket);
+    }
 }
 
 
