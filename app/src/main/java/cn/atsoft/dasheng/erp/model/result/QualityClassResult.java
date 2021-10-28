@@ -1,87 +1,43 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 质检方案详情
+ * 质检方案详情分类
  * </p>
  *
- * @author Captain_Jazz
+ * @author song
  * @since 2021-10-28
  */
 @Data
 @ApiModel
-public class QualityPlanDetailResult implements Serializable {
+public class QualityClassResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 分类id
+     * 质检方案分类id
      */
+    @ApiModelProperty("质检方案分类id")
     private Long qualityPlanClassId;
 
-    private QualityCheckResult qualityCheckResult;
-
-    @ApiModelProperty("")
-    private Long planDetailId;
+    /**
+     * 质检方案id
+     */
+    @ApiModelProperty("质检方案id")
+    private Long qualityPlanId;
 
     /**
-     * 关联质检方案表主键id
+     * 质检项分类id
      */
-    @ApiModelProperty("关联质检方案表主键id")
-    private Long planId;
-
-    /**
-     * 质检项id
-     */
-    @ApiModelProperty("质检项id")
-    private Long qualityCheckId;
-
-    /**
-     * 是否必填
-     */
-    @ApiModelProperty("是否必填")
-    private Long isNull;
-
-    /**
-     * 运算符
-     */
-    @ApiModelProperty("运算符")
-    private Long operator;
-
-    /**
-     * 标准值
-     */
-    @ApiModelProperty("标准值")
-    private String standardValue;
-
-    /**
-     * 抽检类型
-     */
-    @ApiModelProperty("抽检类型")
-    private String testingType;
-
-    /**
-     * 质检数量
-     */
-    @ApiModelProperty("质检数量")
-    private Long qualityAmount;
-
-    /**
-     * 质检比例
-     */
-    @ApiModelProperty("质检比例")
-    private Long qualityProportion;
+    @ApiModelProperty("质检项分类id")
+    private Long qualityCheckClassificationId;
 
     /**
      * 创建时间
@@ -118,6 +74,12 @@ public class QualityPlanDetailResult implements Serializable {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
+
+    /**
+     * 分类名称
+     */
+    @ApiModelProperty("分类名称")
+    private String name;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
