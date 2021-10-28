@@ -93,7 +93,7 @@ public class QualityPlanController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<QualityPlanResult> detail(@RequestBody QualityPlanParam qualityPlanParam) {
         QualityPlan detail = this.qualityPlanService.getById(qualityPlanParam.getQualityPlanId());
-        List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.query().in("plan_id", detail.getQualityPlanId()).list();
+        List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.query().in("plan_id", detail.getQualityPlanId()).orderByAsc("sort").list();
         List<QualityPlanDetailResult> planDetailResults = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
@@ -108,8 +108,8 @@ public class QualityPlanController extends BaseController {
 
             for (QualityCheck qualityCheck : qualityChecks) {
                 if (qualityCheck.getQualityCheckId().equals(qualityPlanDetail.getQualityCheckId())) {
-                    QualityCheckResult qualityCheckResult =new QualityCheckResult();
-                    ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+                    QualityCheckResult qualityCheckResult = new QualityCheckResult();
+                    ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
                     qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
                 }
             }
