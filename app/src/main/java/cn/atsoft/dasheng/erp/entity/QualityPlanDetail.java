@@ -23,11 +23,7 @@ import java.io.Serializable;
 public class QualityPlanDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * 分类id
-     */
-    @TableField("quality_plan_class_id")
-    private Long qualityPlanClassId;
+
 
     @TableId(value = "plan_detail_id", type = IdType.ID_WORKER)
     private Long planDetailId;
@@ -244,13 +240,7 @@ public class QualityPlanDetail implements Serializable {
         this.isNull = isNull;
     }
 
-    public Long getQualityPlanClassId() {
-        return qualityPlanClassId;
-    }
 
-    public void setQualityPlanClassId(Long qualityPlanClassId) {
-        this.qualityPlanClassId = qualityPlanClassId;
-    }
 
     @Override
     public String toString() {
