@@ -38,7 +38,7 @@ import java.util.List;
  * excel导入导出示例
  */
 @Controller
-@RequestMapping("/crm/excel")
+@RequestMapping("/api")
 @Slf4j
 public class CrmExcelController {
 
@@ -67,7 +67,13 @@ public class CrmExcelController {
                 params.setTitleRows(1);
                 params.setHeadRows(1);
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
-
+                List<Customer> costomerList = new ArrayList<>();
+                for (CustomerExcelItem customerExcelItem : result) {
+                    Customer customer = new Customer();
+                    ToolUtil.copyProperties(costomerList, customer);
+                    costomerList.add(customer);
+                }
+                customerService.saveBatch(costomerList);
                 return ResponseData.success();
             } catch (Exception e) {
                 e.printStackTrace();
