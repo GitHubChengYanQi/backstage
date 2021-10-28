@@ -70,10 +70,23 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         QualityPlan entity = getEntity(param);
         this.save(entity);
         List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+
+        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
+            ids.add(planDetailParam.getQualityCheckId());
+        }
+        long l = ids.stream().distinct().count();
+
+        if (planDetailParams.size() > l) {
+            throw new ServiceException(500, "不可以填写重复质检项");
+        }
+
+
         for (QualityPlanDetailParam planDetailParam : planDetailParams) {
             if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
                 throw new ServiceException(500, "请选择质检项");
             }
+
             QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
             ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
             qualityPlanDetail.setPlanId(entity.getQualityPlanId());
