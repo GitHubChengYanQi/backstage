@@ -94,6 +94,20 @@ public class QualityCheck implements Serializable {
     private Integer display;
 
     /**
+     * 状态
+     */
+    @TableField("type")
+    private Integer type;
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    /**
      * 部门编号
      */
     @TableField("deptId")

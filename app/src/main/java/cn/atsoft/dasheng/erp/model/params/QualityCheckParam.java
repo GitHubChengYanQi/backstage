@@ -97,6 +97,7 @@ public class QualityCheckParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("状态")
     private Integer display;
+    private Integer type;
 
     /**
      * 部门编号

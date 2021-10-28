@@ -41,6 +41,8 @@ public class QualityCheckResult implements Serializable {
     @ApiModelProperty("名称")
     private String name;
 
+    private Integer type;
+
     /**
      * 简称
      */
