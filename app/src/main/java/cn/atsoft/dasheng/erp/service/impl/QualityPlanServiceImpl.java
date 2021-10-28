@@ -75,11 +75,16 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     }
 
     @Override
+    @Transactional
     public void delete(QualityPlanParam param) {
         this.removeById(getKey(param));
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("plan_id", param.getQualityPlanId());
+        qualityPlanDetailService.remove(queryWrapper);
     }
 
     @Override
+    @Transactional
     public void update(QualityPlanParam param) {
 //        Integer count = this.query().in("plan_name", param.getPlanName()).count();
 //        if (count > 0) {
