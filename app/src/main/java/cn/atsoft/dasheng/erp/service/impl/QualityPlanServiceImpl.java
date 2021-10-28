@@ -41,6 +41,12 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     @Transactional
     @Override
     public void add(QualityPlanParam param) {
+
+        Integer count = this.query().in("planName", param.getPlanName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名称已存在");
+        }
+
         List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
         if (ToolUtil.isNotEmpty(planDetailParams)) {
             throw new ServiceException(500, "请确定质检项");
@@ -65,6 +71,10 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     public void update(QualityPlanParam param) {
+        Integer count = this.query().in("planName", param.getPlanName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名称已存在");
+        }
         QualityPlan oldEntity = getOldEntity(param);
         QualityPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);

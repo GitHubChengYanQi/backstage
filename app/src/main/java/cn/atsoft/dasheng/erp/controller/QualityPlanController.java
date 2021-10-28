@@ -95,7 +95,6 @@ public class QualityPlanController extends BaseController {
             ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
             planDetailResults.add(qualityPlanDetailResult);
         }
-
         QualityPlanResult result = new QualityPlanResult();
         ToolUtil.copyProperties(detail, result);
         result.setPlanDetailResults(planDetailResults);
