@@ -68,8 +68,16 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public void update(PartsParam param) {
 
         if (ToolUtil.isNotEmpty(param.getSkuIds())){
-            String toJsonStr = JSONUtil.toJsonStr(param.getSkuIds());
-            param.setSkus(toJsonStr);
+            String skus = "";
+            for (int i = 0; i < param.getSkuIds().size(); i++) {
+                if (i == param.getSkuIds().size() - 1){
+                    skus = skus + param.getSkuIds().get(i);
+                }else {
+                    skus = skus + param.getSkuIds().get(i) + ",";
+                }
+
+            }
+            param.setSkus(skus);
         }
 
         if (ToolUtil.isNotEmpty(param.getParts())){

@@ -242,9 +242,20 @@ public class SpuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.spuService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuParam spuParam) {
 
+        QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
+
+        if (ToolUtil.isNotEmpty(spuParam)){
+            if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())){
+                spuQueryWrapper.in("spu_classification_id",spuParam.getSpuClassificationId());
+            }
+            if (ToolUtil.isNotEmpty(spuParam.getProductionType())){
+                spuQueryWrapper.in("production_type",spuParam.getProductionType());
+            }
+        }
+
+        List<Map<String, Object>> list = this.spuService.listMaps(spuQueryWrapper);
         SpuSelectWrapper factory = new SpuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);

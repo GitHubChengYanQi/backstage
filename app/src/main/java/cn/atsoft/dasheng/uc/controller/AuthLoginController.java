@@ -81,11 +81,6 @@ public class AuthLoginController extends BaseController {
     private WxuserInfoService wxuserInfoService;
 
     @Autowired
-    private UcOpenUserInfoService ucOpenUserInfoService;
-
-
-
-    @Autowired
     private SessionManager sessionManager;
 
     @ApiOperation(value = "手机验证码登录", httpMethod = "POST")
@@ -220,14 +215,12 @@ public class AuthLoginController extends BaseController {
         if (ToolUtil.isNotEmpty(memberId)) {
             QueryWrapper<WxuserInfo> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("member_id", memberId);
-            queryWrapper.in("source","wxCp");
+            queryWrapper.in("source", "wxCp");
             WxuserInfo wxuserInfo = wxuserInfoService.getOne(queryWrapper);
             if (ToolUtil.isNotEmpty(wxuserInfo)) {
                 JwtPayLoad payLoad = new JwtPayLoad(wxuserInfo.getUserId(), jwtPayLoad.getAccount(), "xxxx");
                 token = JwtTokenUtil.generateToken(payLoad);
-
                 User byId = userService.getById(wxuserInfo.getUserId());
-
                 //创建登录会话
                 sessionManager.createSession(token, authService.user(byId.getAccount()));
             }

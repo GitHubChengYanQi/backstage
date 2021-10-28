@@ -27,6 +27,11 @@ public class InstockResult implements Serializable {
     private ItemsResult itemsResult;
     private StorehouseResult storehouseResult;
 
+
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 出库单
      */

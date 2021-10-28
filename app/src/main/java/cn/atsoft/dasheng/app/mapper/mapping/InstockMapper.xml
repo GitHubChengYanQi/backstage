@@ -21,12 +21,13 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="instock_order_id" property="instockOrderId"/>
+        <result column="sku_id" property="skuId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         deptId
-        AS "deptId",instock_order_id AS "instockOrderId",
+        AS "deptId",instock_order_id AS "instockOrderId",sku_id AS "skuId",
         storehouse_id AS "storeHouseId" ,instock_id AS "instockId", item_id AS "itemId", register_time AS "registerTime", number AS "number", selling_price AS "sellingPrice",cost_price AS "costPrice", brand_id AS "brandId", barcode AS "barcode", state AS "state",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
