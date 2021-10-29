@@ -12,12 +12,15 @@ import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -48,12 +51,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
-    @Autowired
-    private ItemsService itemsService;
+
     @Autowired
     private BrandService brandService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private SkuService skuService;
 
 
     @Override
@@ -80,8 +84,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
             InstockParam instockParam = new InstockParam();
             instockParam.setState(1);
-//            instockParam.setBrandId(newEntity.getBrandId());
-//            instockParam.setItemId(newEntity.getItemId());
+            instockParam.setBrandId(newEntity.getBrandId());
+
             instockParam.setSkuId(newEntity.getSkuId());
             instockParam.setStoreHouseId(newEntity.getStoreHouseId());
             instockParam.setCostPrice(newEntity.getCostPrice());
@@ -102,8 +106,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 stockId = stockService.update(stockParam);
             } else {
                 stockParam.setInventory(1L);
-//                stockParam.setItemId(newEntity.getItemId());
-//                stockParam.setBrandId(newEntity.getBrandId());
+                stockParam.setBrandId(newEntity.getBrandId());
                 stockParam.setSkuId(newEntity.getSkuId());
                 stockParam.setStorehouseId(newEntity.getStoreHouseId());
                 stockId = stockService.add(stockParam);
@@ -112,8 +115,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setStockId(stockId);
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
             stockDetailsParam.setPrice(newEntity.getCostPrice());
-//            stockDetailsParam.setItemId(newEntity.getItemId());
-//            stockDetailsParam.setBrandId(newEntity.getBrandId());
+            stockDetailsParam.setBrandId(newEntity.getBrandId());
             stockDetailsParam.setSkuId(newEntity.getSkuId());
             stockDetailsService.add(stockDetailsParam);
 
@@ -160,24 +162,27 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     }
 
     private void format(List<InstockListResult> data) {
-        List<Long> itemIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
         for (InstockListResult datum : data) {
-            itemIds.add(datum.getItemId());
+            skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             storeIds.add(datum.getStoreHouseId());
         }
-        List<Items> items = itemIds.size() == 0 ? new ArrayList<>() : itemsService.lambdaQuery().in(Items::getItemId, itemIds).list();
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>(): skuService.query().in("sku_id", skuIds).list();
+
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
         for (InstockListResult datum : data) {
-            for (Items item : items) {
-                if (item.getItemId().equals(datum.getItemId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(item, itemsResult);
-                    datum.setItemsResult(itemsResult);
-                    break;
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+                        SkuResult skuResult = new SkuResult();
+                        ToolUtil.copyProperties(sku, skuResult);
+                        datum.setSkuResult(skuResult);
+                        break;
+                    }
                 }
             }
             for (Brand brand : brands) {

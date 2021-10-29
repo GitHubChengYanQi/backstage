@@ -217,7 +217,7 @@ public class OrCodeController extends BaseController {
                     }
                     StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
                     ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
-                    setStorehousePositionsFormat(storehousePositionsResult);
+                    storehousePositionsFormat(storehousePositionsResult);
                     StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
                     storeHousePositionsRequest.setType("storehousePositions");
                     storeHousePositionsRequest.setResult(storehousePositionsResult);
@@ -241,7 +241,7 @@ public class OrCodeController extends BaseController {
         }
     }
 
-    public void setStorehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
+    public void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehousePositionsResult.getStorehouseId()).one();
         Sku sku = skuService.query().in("sku_id", storehousePositionsResult.getSkuId()).one();
 
