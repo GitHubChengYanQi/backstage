@@ -69,6 +69,6 @@ public interface SkuService extends IService<Sku> {
     PageInfo<SkuResult> findPageBySpec(SkuParam param);
 
 
-    Map<Long, List<BackSku>> backSku(List<Long> ids);
+    List<BackSku> backSku(  Long ids);
 
 }
