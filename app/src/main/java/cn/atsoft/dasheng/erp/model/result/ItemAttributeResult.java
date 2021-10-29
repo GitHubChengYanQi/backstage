@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.params.Values;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class ItemAttributeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesResult> attributeValuesResults;
+    private List<Values> valuesList;
+
 
 
     private SpuResult spuResult;

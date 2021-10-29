@@ -77,11 +77,12 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("quality_check_id",param.getQualityCheckId());
         int count = qualityPlanDetailService.count(queryWrapper);
-        if (count>0){
-            throw new ServiceException(500,"该方案已被使用无法修改");
-        }
+
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
+        if (count>0 && oldEntity != newEntity){
+            throw new ServiceException(500,"该方案已被使用无法修改");
+        }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }

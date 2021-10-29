@@ -14,10 +14,7 @@ import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.*;
-import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
-import cn.atsoft.dasheng.erp.model.result.ItemAttributeResult;
-import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
-import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.erp.service.CategoryService;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
@@ -37,9 +34,11 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 
 /**
@@ -124,77 +123,77 @@ public class SpuController extends BaseController {
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
 
+        List<ItemAttributeResult> attributeResults = new ArrayList<>();
+        List<AttributeValuesResult> attributeValuesResults=new ArrayList<>();
+
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
                 skuService.query().in("spu_id", detail.getSpuId()).list();
         List<List<SkuJson>> requests = new ArrayList<>();
         SkuRequest skuRequests = new SkuRequest();
-
-        List<AttributeValuesResult> attributeValuesResultList = new ArrayList<>();
-
+        List<SkuResult> skuResultList = new ArrayList<>();
         List<CategoryRequest> categoryRequests = new ArrayList<>();
         if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
-
             List<ItemAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery()
                     .in(ItemAttribute::getCategoryId, detail.getCategoryId())
                     .list();
-
-
+            List<Long> attId = new ArrayList<>();
+            for (ItemAttribute itemAttribute : itemAttributes) {
+                attId.add(itemAttribute.getAttributeId());
+            }
+            List<AttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
+                    .in(AttributeValues::getAttributeId, attId)
+                    .list();
             if (ToolUtil.isNotEmpty(itemAttributes)) {
-                List<Long> attId = new ArrayList<>();
-                for (ItemAttribute itemAttribute : itemAttributes) {
-                    attId.add(itemAttribute.getAttributeId());
-                }
-                List<AttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
-                        .in(AttributeValues::getAttributeId, attId)
-                        .list();
-
-
                 for (Sku sku : skus) {
+                    //list
                     JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-                    List<SkuJson> list = new ArrayList<>();
+                    SkuResult skuResult = new SkuResult();
+                    skuResult.setSkuId(sku.getSkuId());
+                    Map<String,String> skuValueMap = new HashMap<>();
                     if (ToolUtil.isNotEmpty(valuesRequests)) {
                         for (AttributeValues valuesRequest : valuesRequests) {
-                            valuesRequest.getAttributeValuesId();
-                            valuesRequest.getAttributeId();
-                            SkuJson skuJson = new SkuJson();
-                            for (ItemAttribute itemAttribute : itemAttributes) {
-                                if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-                                    Attribute attribute = new Attribute();
-                                    attribute.setAttributeId(itemAttribute.getAttributeId().toString());
-                                    attribute.setAttribute(itemAttribute.getAttribute());
-                                    skuJson.setAttribute(attribute);
-                                }
-                                CategoryRequest categoryRequest = new CategoryRequest();
-                                categoryRequest.setAttribute(itemAttribute);
-                                List<AttributeValues> attributeValuesResult = new ArrayList<>();
-                                for (AttributeValues attributeValue : attributeValues) {
-                                    if (itemAttribute.getAttributeId().equals(attributeValue.getAttributeId())) {
-                                        attributeValuesResult.add(attributeValue);
-                                    }
-                                }
-                                categoryRequest.setValue(attributeValuesResult);
-                                categoryRequests.add(categoryRequest);
-                            }
-                            for (AttributeValues attributeValue : attributeValues) {
-                                if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                                    Values values = new Values();
-                                    values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
-                                    values.setAttributeValues(attributeValue.getAttributeValues());
-                                    skuJson.setValues(values);
-                                }
-                            }
-                            list.add(skuJson);
+                            ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
+                            itemAttributeResult.setAttributeId(valuesRequest.getAttributeId());
+                            attributeResults.add(itemAttributeResult);
+                            AttributeValuesResult attributeValuesResult = new AttributeValuesResult();
+                            attributeValuesResult.setAttributeValuesId(valuesRequest.getAttributeValuesId());
+                            attributeValuesResult.setAttributeId(valuesRequest.getAttributeId());
+                            attributeValuesResults.add(attributeValuesResult);
+                            skuValueMap.put(valuesRequest.getAttributeId().toString(),valuesRequest.getAttributeValuesId().toString());
                         }
+
                     }
-                    requests.add(list);
+                    skuResult.setSkuValuesMap(skuValueMap);
+                    skuResultList.add(skuResult);
+
                 }
                 skuRequests.setSpuRequests(requests);
+            }
+            List<ItemAttributeResult> tree = attributeResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(ItemAttributeResult::getAttributeId))), ArrayList::new));
+            List<AttributeValuesResult> treeValue = attributeValuesResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(AttributeValuesResult::getAttributeValuesId))), ArrayList::new));
+            for (AttributeValuesResult attributeValuesResult : treeValue) {
+                for (AttributeValues attributeValue : attributeValues) {
+                    if (attributeValuesResult.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+                        attributeValuesResult.setAttributeValues(attributeValue.getAttributeValues());
+                    }
+                }
+            }
+            for (ItemAttributeResult itemAttributeResult : tree) {
+                for (ItemAttribute itemAttribute : itemAttributes) {
+                    if(itemAttributeResult.getAttributeId().equals(itemAttribute.getAttributeId())){
+                        itemAttributeResult.setAttribute(itemAttribute.getAttribute());
+                    }
+                }
 
 
             }
         }
+        spuResult.setSkuResult(skuResultList);
+
+
+
 
 
         //映射材质对象
@@ -214,7 +213,6 @@ public class SpuController extends BaseController {
         ToolUtil.copyProperties(detail, spuResult);
 
         spuResult.setCategoryRequests(categoryRequests);
-        spuResult.setItemAttributeResults(attributeValuesResultList);
         spuResult.setSpuAttributes(skuRequests);
         return ResponseData.success(spuResult);
     }

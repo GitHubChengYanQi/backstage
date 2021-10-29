@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,10 +26,8 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<SkuValuesResult> skuValuesResults;
-    List<ItemAttributeValueResult> itemAttributeValueResults;
-    List<SkuJson> skuJsons;
 
+    private Map<String,String> skuValuesMap;
 
     private String categoryName;
 

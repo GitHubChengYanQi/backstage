@@ -150,7 +150,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
                 list.add(skuJson);
             }
-            skuResult.setSkuJsons(list);
 
         }
 
