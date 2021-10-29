@@ -31,7 +31,7 @@ public class ErpPartsDetailParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("清单详情id")
     private Long partsDetailId;
 
-    private List<SpuAttribute> partsAttributes;
+    private List<Spu> partsAttributes;
 
     /**
      * 规格描述

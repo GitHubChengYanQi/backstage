@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.app.model.params.Spu;
 import cn.atsoft.dasheng.app.model.params.SpuAttribute;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -48,7 +49,7 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
      * skuId
      */
     @ApiModelProperty("sku")
-    private List<SpuAttribute> sku;
+    private List<Spu> sku;
 
     /**
      * 数量
