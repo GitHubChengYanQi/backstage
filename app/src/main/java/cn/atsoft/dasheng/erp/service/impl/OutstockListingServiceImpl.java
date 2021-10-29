@@ -15,13 +15,11 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.OutstockListingMapper;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
-import cn.atsoft.dasheng.erp.model.result.ApplyDetailsResult;
-import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
-import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,6 +48,8 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     private ItemsService itemsService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private SpuService spuService;
 
     @Override
     public void add(OutstockListingParam param) {
@@ -103,6 +103,11 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
 
         for (OutstockListingResult record : page.getRecords()) {
+            List<BackSku> backSkus = skuService.backSku(record.getSkuId());
+            SpuResult result = skuService.backSpu(record.getSkuId());
+            record.setBackSkus(backSkus);
+            record.setResult(result);
+
             for (Brand brand : brandList) {
                 if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
