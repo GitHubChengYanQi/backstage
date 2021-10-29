@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuRequest;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -33,6 +34,9 @@ public class SpuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
+
     private Category category;
 
     private UnitResult unitResult;
@@ -41,7 +45,6 @@ public class SpuResult implements Serializable {
 
 
     private SkuRequest sku;
-
 
 
     private Material material;
@@ -121,36 +124,43 @@ public class SpuResult implements Serializable {
     /**
      * 创建时间
      */
+
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门编号
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门编号")
     private Long deptId;
 

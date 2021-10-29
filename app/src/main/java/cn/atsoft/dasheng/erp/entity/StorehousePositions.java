@@ -21,6 +21,7 @@ public class StorehousePositions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 仓库库位id
      */

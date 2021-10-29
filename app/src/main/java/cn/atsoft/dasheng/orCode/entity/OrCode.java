@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-29
  */
-@TableName("or_code")
+@TableName("qr_code")
 public class OrCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +24,7 @@ public class OrCode implements Serializable {
     /**
      * 码id
      */
-      @TableId(value = "or_code_id", type = IdType.ID_WORKER)
+      @TableId(value = "qr_code_id", type = IdType.ID_WORKER)
     private Long orCodeId;
 
     /**

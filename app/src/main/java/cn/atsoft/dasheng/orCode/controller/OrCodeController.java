@@ -1,11 +1,32 @@
 package cn.atsoft.dasheng.orCode.controller;
 
+import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.MaterialService;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.SpuClassificationService;
+import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.model.result.SpuRequest;
+import cn.atsoft.dasheng.orCode.model.result.StoreHousePositionsRequest;
+import cn.atsoft.dasheng.orCode.model.result.StoreHouseRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -38,6 +59,18 @@ public class OrCodeController extends BaseController {
     private OrCodeService orCodeService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private SpuService spuService;
+    @Autowired
+    private StorehouseService storehouseService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
+    @Autowired
+    private MaterialService materialService;
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 新增接口
@@ -120,12 +153,10 @@ public class OrCodeController extends BaseController {
     @ApiOperation("二维码")
     @Transactional
     public ResponseData backCode(@RequestParam String type, Long id) {
-        
-
         OrCodeBind one = orCodeBindService.query().in("source", type).in("form_id", id).one();
         if (ToolUtil.isNotEmpty(one)) {
             return ResponseData.success(one.getOrCodeId());
-        }else{
+        } else {
             OrCodeParam orCodeParam = new OrCodeParam();
             orCodeParam.setType(type);
             Long aLong = orCodeService.add(orCodeParam);
@@ -138,6 +169,93 @@ public class OrCodeController extends BaseController {
         }
     }
 
+    /**
+     * 通过二维码返回真是数据
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/backObject", method = RequestMethod.GET)
+    @Transactional
+    public ResponseData backObject(@RequestParam Long id) {
+        OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
+        if (ToolUtil.isEmpty(codeBind)) {
+            throw new ServiceException(500, "当前二维码不合法");
+        } else {
+            String source = codeBind.getSource();
+            switch (source) {
+                case "spu":
+                    Spu spu = spuService.query().eq("spu_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(spu)) {
+                        throw new ServiceException(500, "当前物料不存在");
+                    }
+                    SpuResult spuResult = new SpuResult();
+                    ToolUtil.copyProperties(spu, spuResult);
+                    spuFormat(spuResult);
+                    SpuRequest spuRequest = new SpuRequest();
+                    spuRequest.setType("spu");
+                    spuRequest.setResult(spuResult);
+                    return ResponseData.success(spuRequest);
+
+                case "storehouse":
+                    Storehouse storehouse = storehouseService.query().eq("storehouse_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(storehouse)) {
+                        throw new ServiceException(500, "当前仓库不存在");
+                    }
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+
+                    StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
+                    storeHouseRequest.setType("storehouse");
+                    storeHouseRequest.setResult(storehouseResult);
+                    return ResponseData.success(storeHouseRequest);
+
+                case "storehousePositions":
+                    StorehousePositions storehousePositions = storehousePositionsService.query().in("storehouse_positions_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(storehousePositions)) {
+                        throw new ServiceException(500, "当前库位不存在");
+                    }
+                    StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+                    ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+                    setStorehousePositionsFormat(storehousePositionsResult);
+                    StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
+                    storeHousePositionsRequest.setType("storehousePositions");
+                    storeHousePositionsRequest.setResult(storehousePositionsResult);
+                    return ResponseData.success(storeHousePositionsRequest);
+            }
+        }
+        return ResponseData.success();
+    }
+
+    public void spuFormat(SpuResult spuResult) {
+        SpuClassification spuClassification = spuResult.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
+                .query().in("spu_classification_id", spuResult.getSpuClassificationId()).one();
+        Material material = materialService.query().in("material_id", spuResult.getMaterialId()).one();
+        if (ToolUtil.isNotEmpty(spuClassification)) {
+            SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+            ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+            spuResult.setSpuClassificationResult(spuClassificationResult);
+        }
+        if (ToolUtil.isNotEmpty(material)) {
+            spuResult.setMaterial(material);
+        }
+    }
+
+    public void setStorehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
+        Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehousePositionsResult.getStorehouseId()).one();
+        Sku sku = skuService.query().in("sku_id", storehousePositionsResult.getSkuId()).one();
+
+        if (ToolUtil.isNotEmpty(storehouse)) {
+            StorehouseResult storehouseResult = new StorehouseResult();
+            ToolUtil.copyProperties(storehouse, storehouseResult);
+            storehousePositionsResult.setStorehouseResult(storehouseResult);
+        }
+        if (ToolUtil.isNotEmpty(sku)) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            storehousePositionsResult.setSkuResult(skuResult);
+        }
+    }
 }
 
 

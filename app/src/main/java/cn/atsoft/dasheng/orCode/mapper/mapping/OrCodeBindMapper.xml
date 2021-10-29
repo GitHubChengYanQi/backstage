@@ -4,8 +4,8 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.orCode.entity.OrCodeBind">
-        <id column="or_code_bind_id" property="orCodeBindId" />
-        <result column="or_code_id" property="orCodeId" />
+        <id column="qr_code_bind_id" property="orCodeBindId" />
+        <result column="qr_code_id" property="orCodeId" />
         <result column="source" property="source" />
         <result column="form_id" property="formId" />
         <result column="create_user" property="createUser" />
@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        or_code_bind_id AS "orCodeBindId", or_code_id AS "orCodeId", source AS "source", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        qr_code_bind_id AS "orCodeBindId", or_code_id AS "orCodeId", source AS "source", form_id AS "formId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

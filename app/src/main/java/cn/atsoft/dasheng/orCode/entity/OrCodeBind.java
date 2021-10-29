@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-29
  */
-@TableName("or_code_bind")
+@TableName("qr_code_bind")
 public class OrCodeBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,13 +24,13 @@ public class OrCodeBind implements Serializable {
     /**
      * 绑定id
      */
-      @TableId(value = "or_code_bind_id", type = IdType.ID_WORKER)
+      @TableId(value = "qr_code_bind_id", type = IdType.ID_WORKER)
     private Long orCodeBindId;
 
     /**
      * 二维码id
      */
-    @TableField("or_code_id")
+    @TableField("qr_code_id")
     private Long orCodeId;
 
     /**
