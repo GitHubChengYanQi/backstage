@@ -62,6 +62,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             throw new ServiceException(500, "请填写合法数据");
         }
 
+
+
         Instock entity = getEntity(param);
         this.save(entity);
         return entity.getInstockId();

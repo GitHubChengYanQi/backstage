@@ -7,13 +7,14 @@ import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
-import  cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,18 +30,20 @@ import java.util.List;
 public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> implements OrCodeService {
 
     @Override
-    public void add(OrCodeParam param){
+    @Transactional
+    public Long add(OrCodeParam param) {
         OrCode entity = getEntity(param);
         this.save(entity);
+        return entity.getOrCodeId();
     }
 
     @Override
-    public void delete(OrCodeParam param){
+    public void delete(OrCodeParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(OrCodeParam param){
+    public void update(OrCodeParam param) {
         OrCode oldEntity = getOldEntity(param);
         OrCode newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +51,23 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
     @Override
-    public OrCodeResult findBySpec(OrCodeParam param){
+    public OrCodeResult findBySpec(OrCodeParam param) {
         return null;
     }
 
     @Override
-    public List<OrCodeResult> findListBySpec(OrCodeParam param){
+    public List<OrCodeResult> findListBySpec(OrCodeParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param){
+    public PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param) {
         Page<OrCodeResult> pageContext = getPageContext();
         IPage<OrCodeResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(OrCodeParam param){
+    private Serializable getKey(OrCodeParam param) {
         return param.getOrCodeId();
     }
 

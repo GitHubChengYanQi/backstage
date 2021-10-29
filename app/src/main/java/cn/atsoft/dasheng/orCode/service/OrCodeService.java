@@ -24,7 +24,7 @@ public interface OrCodeService extends IService<OrCode> {
      * @author song
      * @Date 2021-10-29
      */
-    void add(OrCodeParam param);
+    Long add(OrCodeParam param);
 
     /**
      * 删除
