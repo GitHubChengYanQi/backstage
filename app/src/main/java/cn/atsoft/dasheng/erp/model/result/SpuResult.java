@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -42,7 +43,7 @@ public class SpuResult implements Serializable {
 
     private SkuRequest spuAttributes;
 
-    private List<SkuResult> skuResult;
+    private List<Map<String,String>> list;
 
     private Material material;
 

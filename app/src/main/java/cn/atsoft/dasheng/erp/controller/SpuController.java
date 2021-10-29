@@ -125,6 +125,7 @@ public class SpuController extends BaseController {
 
         List<ItemAttributeResult> attributeResults = new ArrayList<>();
         List<AttributeValuesResult> attributeValuesResults=new ArrayList<>();
+        List<Map<String,String>> list = new ArrayList<>();
 
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
@@ -152,6 +153,7 @@ public class SpuController extends BaseController {
                     SkuResult skuResult = new SkuResult();
                     skuResult.setSkuId(sku.getSkuId());
                     Map<String,String> skuValueMap = new HashMap<>();
+                    skuValueMap.put("id",sku.getSkuId().toString());
                     if (ToolUtil.isNotEmpty(valuesRequests)) {
                         for (AttributeValues valuesRequest : valuesRequests) {
                             ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
@@ -165,7 +167,7 @@ public class SpuController extends BaseController {
                         }
 
                     }
-                    skuResult.setSkuValuesMap(skuValueMap);
+                    list.add(skuValueMap);
                     skuResultList.add(skuResult);
 
                 }
@@ -186,11 +188,17 @@ public class SpuController extends BaseController {
                         itemAttributeResult.setAttribute(itemAttribute.getAttribute());
                     }
                 }
-
-
+                List<AttributeValuesResult> results = new ArrayList<>();
+                for (AttributeValuesResult attributeValuesResult : treeValue) {
+                    if (attributeValuesResult.getAttributeId().equals(itemAttributeResult.getAttributeId())){
+                        results.add(attributeValuesResult);
+                    }
+                }
+                itemAttributeResult.setAttributeValuesResults(results);
             }
+            spuResult.setTree(tree);
         }
-        spuResult.setSkuResult(skuResultList);
+        spuResult.setList(list);
 
 
 
