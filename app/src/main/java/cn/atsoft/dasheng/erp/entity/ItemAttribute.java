@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_item_attribute")
+@TableName("goods_class_attribute")
 public class ItemAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;

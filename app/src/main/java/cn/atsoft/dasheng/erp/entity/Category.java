@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author jazz
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_category")
+@TableName("goods_class")
 public class Category implements Serializable {
     /**
      * 排序

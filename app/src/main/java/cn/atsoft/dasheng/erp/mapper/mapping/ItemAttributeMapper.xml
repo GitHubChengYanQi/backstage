@@ -29,7 +29,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -62,7 +62,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -93,7 +93,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -128,7 +128,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>

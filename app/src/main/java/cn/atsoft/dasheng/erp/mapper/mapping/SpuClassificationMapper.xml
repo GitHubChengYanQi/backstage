@@ -23,7 +23,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.SpuClassificationResult" parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_spu_classification where 1 = 1
+        from goods_spu_class   where 1 = 1
             <if test="paramCondition.spuClassificationId != null">
                 and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
             </if>
@@ -53,7 +53,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_spu_classification where 1 = 1
+        from goods_spu_class   where 1 = 1
                 <if test="paramCondition.spuClassificationId != null">
                         and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
                 </if>
@@ -83,7 +83,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SpuClassificationResult" parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_spu_classification where 1 = 1
+        from goods_spu_class   where 1 = 1
                 <if test="paramCondition.spuClassificationId != null">
                         and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
                 </if>
@@ -113,7 +113,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_spu_classification where 1 = 1
+        from goods_spu_class   where 1 = 1
                 <if test="paramCondition.spuClassificationId != null">
                         and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
                 </if>

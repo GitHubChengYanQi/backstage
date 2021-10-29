@@ -109,10 +109,12 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     @Override
     @Transactional
     public void update(QualityPlanParam param) {
-//        Integer count = this.query().in("plan_name", param.getPlanName()).count();
-//        if (count > 0) {
-//            throw new ServiceException(500, "名称已存在");
-//        }
+        List<QualityPlan> qualityPlans = this.query().list();
+        for (QualityPlan qualityPlan : qualityPlans) {
+            if (qualityPlan.getPlanName().equals(param.getPlanName())) {
+                throw new ServiceException(500, "已有重复名");
+            }
+        }
 
         Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
         if (rulesId > 0) {

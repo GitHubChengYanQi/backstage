@@ -26,7 +26,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_sku where 1 = 1
+        from goods_sku where 1 = 1
             <if test="paramCondition.skuId != null">
                 and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
             </if>
@@ -41,7 +41,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_sku where 1 = 1
+        from goods_sku where 1 = 1
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
                 </if>
@@ -56,7 +56,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.SkuResult" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_sku where 1 = 1
+        from goods_sku where 1 = 1
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
                 </if>
@@ -71,7 +71,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_sku where 1 = 1
+        from goods_sku where 1 = 1
                 <if test="paramCondition.skuId != null">
                         and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
                 </if>

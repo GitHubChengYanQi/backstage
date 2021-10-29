@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author 
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_sku")
+@TableName("goods_sku")
 public class Sku implements Serializable {
 
     private static final long serialVersionUID = 1L;

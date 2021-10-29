@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_spu")
+@TableName("goods_spu")
 public class Spu implements Serializable {
 
     private static final long serialVersionUID = 1L;
