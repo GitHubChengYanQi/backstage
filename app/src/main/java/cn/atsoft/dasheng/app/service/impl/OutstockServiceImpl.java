@@ -11,6 +11,9 @@ import cn.atsoft.dasheng.app.mapper.OutstockMapper;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,8 +43,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
-    private DeliveryDetailsService deliveryDetailsService;
-
+    private SkuService skuService;
 
     @Override
     public Long add(OutstockParam param) {
@@ -83,7 +85,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
     @Override
     public PageInfo<OutstockResult> findPageBySpec(OutstockParam param, DataScope dataScope) {
         Page<OutstockResult> pageContext = getPageContext();
-        IPage<OutstockResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<OutstockResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -128,11 +130,11 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
 
     public void format(List<OutstockResult> data) {
         List<Long> brandIds = new ArrayList<>();
-        List<Long> itemIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         List<Long> storehouseIds = new ArrayList<>();
         for (OutstockResult datum : data) {
             brandIds.add(datum.getBrandId());
-            itemIds.add(datum.getItemId());
+            skuIds.add(datum.getSkuId());
             storehouseIds.add(datum.getStorehouseId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
@@ -141,11 +143,9 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(itemIds)) {
-            itemsQueryWrapper.in("item_id", itemIds);
-        }
-        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
+
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
+
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(storehouseIds)) {
@@ -163,13 +163,12 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                     }
                 }
             }
-            if (ToolUtil.isNotEmpty(itemsList)) {
-                for (Items items : itemsList) {
-                    if (items.getItemId().equals(datum.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        datum.setItemsResult(itemsResult);
-                        break;
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+                        SkuResult skuResult = new SkuResult();
+                        ToolUtil.copyProperties(sku, skuResult);
+                        datum.setSkuResult(skuResult);
                     }
                 }
             }

@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 出库表
@@ -24,11 +29,15 @@ OutstockResult implements Serializable {
     private BrandResult brandResult;
     private ItemsResult itemsResult;
     private StorehouseResult storehouseResult;
-
+    private SkuResult skuResult;
     private Long outstockOrderId;
     private Long outstockApplyId;
     private Long stockId;
     private Long stockItemId;
+    /**
+     * skuId
+     */
+    private Long skuId;
 
     /**
      * 出库id
@@ -65,19 +74,19 @@ OutstockResult implements Serializable {
      * 出库状态
      */
     @ApiModelProperty("出库状态")
-    private  Integer state;
+    private Integer state;
 
     /**
      * 品牌id
      */
     @ApiModelProperty("品牌id")
-    private  Long brandId;
+    private Long brandId;
 
     /**
      * 产品id
      */
     @ApiModelProperty("产品id")
-    private  Long itemId;
+    private Long itemId;
 
 
     @ApiModelProperty(hidden = true)

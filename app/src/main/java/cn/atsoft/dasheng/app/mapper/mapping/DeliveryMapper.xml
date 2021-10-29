@@ -24,12 +24,13 @@
         <result column="driver_name" property="driverName"/>
         <result column="driver_phone" property="driverPhone"/>
         <result column="license_plate" property="licensePlate"/>
+        <result column="sku_id" property="skuId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">delivery_way
-    AS "deliveryWay", logistics_company AS "logisticsCompany",logistics_number AS"logisticsNumber",
+    AS "deliveryWay", logistics_company AS "logisticsCompany",logistics_number AS"logisticsNumber",sku_id AS"skuId",
 driver_name AS "driverName", driver_phone AS "driverPhone" , license_plate AS "licensePlate",
 item_id
     AS "itemId", customer_id AS "customerId", adress_id AS "adressId", contacts_id AS "contactsId", phone_id AS "phoneId",deptId AS "deptId",

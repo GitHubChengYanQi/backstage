@@ -90,19 +90,17 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         if (count <= 0) {
             throw new ServiceException(500, "请填写合法数据");
         }
-
-        Instock oldEntity = getOldEntity(param);
-//        Instock newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
         List<StockDetails> stockDetails = new ArrayList<>();
         List<Instock> instocks = new ArrayList<>();
+
+        StockDetails stockDetail = new StockDetails();
+        Date date = new Date();
+
         for (Instock instock : param.getInstocks()) {
             Long stockId = null;
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, instock.getStoreHouseId())
                     .and(i -> i.eq(Stock::getSkuId, instock.getSkuId())).one();
-
             StockParam stockParam = new StockParam();
-
             if (ToolUtil.isNotEmpty(stock)) {
                 ToolUtil.copyProperties(stock, stockParam);
                 long l = stockParam.getInventory() + 1;
@@ -110,8 +108,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 stockId = stockService.update(stockParam);
             } else {
                 stockParam.setStorehouseId(instock.getStoreHouseId());
-//                stockParam.setItemId(instock.getItemId());
-//                stockParam.setBrandId(instock.getBrandId());
                 stockParam.setSkuId(instock.getSkuId());
                 stockParam.setInventory(1L);
                 stockId = stockService.add(stockParam);
@@ -119,19 +115,15 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             instock.setState(1);
             instocks.add(instock);
 
-            StockDetails stockDetail = new StockDetails();
             stockDetail.setStockId(stockId);
             stockDetail.setPrice(instock.getCostPrice());
             stockDetail.setStorehouseId(instock.getStoreHouseId());
-//            stockDetail.setItemId(instock.getItemId());
-//            stockDetail.setBrandId(instock.getBrandId());
             stockDetail.setSkuId(instock.getSkuId());
             stockDetail.setBarcode(instock.getBarcode());
-            Date date = new Date();
+
             stockDetail.setStorageTime(date);
             stockDetail.setStorageTime(instock.getRegisterTime());
             stockDetails.add(stockDetail);
-
         }
         stockDetailsService.saveBatch(stockDetails);
         this.updateBatchById(instocks);

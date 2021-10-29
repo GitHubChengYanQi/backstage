@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,11 +30,16 @@ public class DeliveryDetailsResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private DeliveryResult deliveryResult;
     private Integer stage;
-    private  ItemsResult itemsResult;
-    private  ItemsResult  detailesItems;
+    private ItemsResult itemsResult;
+    private ItemsResult detailesItems;
     private String qualityType;
-    private  Long brandId;
-    private  BrandResult detailsBrand;
+    private Long brandId;
+    private BrandResult detailsBrand;
+    private SkuResult skuResult;
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 发货详情id
      */

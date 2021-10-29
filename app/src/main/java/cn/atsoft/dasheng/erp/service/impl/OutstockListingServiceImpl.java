@@ -11,14 +11,17 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.OutstockListingMapper;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.ApplyDetailsResult;
 import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
-import  cn.atsoft.dasheng.erp.service.OutstockListingService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,25 +48,28 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     private BrandService brandService;
     @Autowired
     private ItemsService itemsService;
+    @Autowired
+    private SkuService skuService;
+
     @Override
-    public void add(OutstockListingParam param){
+    public void add(OutstockListingParam param) {
         OutstockListing entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(OutstockListingParam param){
+    public void delete(OutstockListingParam param) {
         OutstockListing byId = this.getById(param.getOutstockListingId());
-        if (ToolUtil.isEmpty(byId)){
-            throw new ServiceException(500,"所删除目标不存在");
-        }else {
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "所删除目标不存在");
+        } else {
             param.setDisplay(0);
             this.update(param);
         }
     }
 
     @Override
-    public void update(OutstockListingParam param){
+    public void update(OutstockListingParam param) {
         OutstockListing oldEntity = getOldEntity(param);
         OutstockListing newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -71,47 +77,47 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     }
 
     @Override
-    public OutstockListingResult findBySpec(OutstockListingParam param){
+    public OutstockListingResult findBySpec(OutstockListingParam param) {
         return null;
     }
 
     @Override
-    public List<OutstockListingResult> findListBySpec(OutstockListingParam param){
+    public List<OutstockListingResult> findListBySpec(OutstockListingParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param){
+    public PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param) {
         Page<OutstockListingResult> pageContext = getPageContext();
         IPage<OutstockListingResult> page = this.baseMapper.customPageList(pageContext, param);
         List<Long> brandIds = new ArrayList<>();
-        List<Long> itemIds=new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (OutstockListingResult record : page.getRecords()) {
             brandIds.add(record.getBrandId());
-            itemIds.add(record.getItemId());
+            skuIds.add(record.getSkuId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
-        List<Brand> brandList =brandIds.size()==0? new ArrayList<>():brandService.list(brandQueryWrapper);
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.lambda().in(Items::getItemId,itemIds);
-        List<Items> itemsList =itemIds.size()==0 ?new ArrayList<>() :  itemsService.list(itemsQueryWrapper);
+        brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
 
         for (OutstockListingResult record : page.getRecords()) {
             for (Brand brand : brandList) {
-                if (record.getBrandId()!=null && record.getBrandId().equals(brand.getBrandId())){
+                if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
-                    ToolUtil.copyProperties(brand,brandResult);
+                    ToolUtil.copyProperties(brand, brandResult);
                     record.setBrandResult(brandResult);
                     break;
                 }
             }
-            for (Items items : itemsList) {
-                if (record.getItemId() != null && record.getItemId().equals(items.getItemId())){
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items,itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
+                        SkuResult skuResult = new SkuResult();
+                        ToolUtil.copyProperties(sku, skuResult);
+                        record.setSkuResult(skuResult);
+                    }
                 }
             }
         }
@@ -132,7 +138,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 //        }
     }
 
-    private Serializable getKey(OutstockListingParam param){
+    private Serializable getKey(OutstockListingParam param) {
         return param.getOutstockListingId();
     }
 

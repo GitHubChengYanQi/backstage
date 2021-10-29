@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 仓库库位表
@@ -20,7 +25,9 @@ public class StorehousePositionsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private StorehouseResult storehouseResult;
 
+    private StorehousePositionsResult storehousePositionsResult;
     /**
      * 仓库库位id
      */

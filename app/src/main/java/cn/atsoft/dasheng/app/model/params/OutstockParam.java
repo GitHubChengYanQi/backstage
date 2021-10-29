@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.app.model.params;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -22,23 +25,10 @@ import java.util.List;
 public class OutstockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-    public String getDeliveryTime() {
-        if (deliveryTime!=null&&!deliveryTime.equals("")){
-            StringBuffer stringBuffer = new StringBuffer(deliveryTime);
-            String date = stringBuffer.substring(0,10);
-            return date;
-        }else {
-            return deliveryTime;
-        }
-
-
-    }
-
-    public void setDeliveryTime(String deliveryTime) {
-        this.deliveryTime = deliveryTime;
-    }
-
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 出库id
      */
@@ -109,6 +99,7 @@ public class OutstockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

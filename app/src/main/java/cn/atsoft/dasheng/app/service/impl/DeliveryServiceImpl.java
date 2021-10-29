@@ -14,6 +14,9 @@ import cn.atsoft.dasheng.app.model.params.DeliveryParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,7 +56,8 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     private PhoneService phoneService;
     @Autowired
     private OutstockService outStockService;
-
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public Long add(DeliveryParam param) {
@@ -98,21 +102,20 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
     @Override
     public void format(List<DeliveryResult> data) {
 
-        List<Long> Iids = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         List<Long> cIds = new ArrayList<>();
         List<Long> aIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         List<Long> pIds = new ArrayList<>();
+
         for (DeliveryResult record : data) {
-            Iids.add(record.getItemId());
+            skuIds.add(record.getSkuId());
             cIds.add(record.getCustomerId());
             aIds.add(record.getAdressId());
             contactsIds.add(record.getContactsId());
             pIds.add(record.getPhoneId());
         }
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("item_id", Iids);
-        List<Items> itemsList = Iids.size() == 0 ? new ArrayList<>() : itemsService.list(itemsQueryWrapper);
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.in("customer_id", cIds);
@@ -132,12 +135,12 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
 
         for (DeliveryResult record : data) {
-            if (ToolUtil.isNotEmpty(itemsList)) {
-                for (Items items : itemsList) {
-                    if (items.getItemId().equals(record.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        record.setItemsResult(itemsResult);
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
+                        SkuResult skuResult = new SkuResult();
+                        ToolUtil.copyProperties(sku, skuResult);
+                        record.setSkuResult(skuResult);
                         break;
                     }
                 }
