@@ -44,8 +44,6 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehousePositionsParam storehousePositionsParam) {
-        List<String>  pidValue = storehousePositionsParam.getPidValue();
-        storehousePositionsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.storehousePositionsService.add(storehousePositionsParam);
         return ResponseData.success();
     }
@@ -60,8 +58,6 @@ public class StorehousePositionsController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehousePositionsParam storehousePositionsParam) {
 
-        List<String>  pidValue = storehousePositionsParam.getPidValue();
-        storehousePositionsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
         this.storehousePositionsService.update(storehousePositionsParam);
         return ResponseData.success();
     }
@@ -110,10 +106,6 @@ public class StorehousePositionsController extends BaseController {
         if(ToolUtil.isEmpty(storehousePositionsParam)){
             storehousePositionsParam = new StorehousePositionsParam();
         }
-        if(ToolUtil.isNotEmpty(storehousePositionsParam.getPidValue())){
-            List<String>  pidValue = storehousePositionsParam.getPidValue();
-            storehousePositionsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
-        }
         return this.storehousePositionsService.findPageBySpec(storehousePositionsParam);
     }
 
@@ -127,7 +119,6 @@ public class StorehousePositionsController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String,Object>>> listSelect() {
         List<Map<String,Object>> list = this.storehousePositionsService.listMaps();
-
         StorehousePositionsSelectWrapper factory = new StorehousePositionsSelectWrapper(list);
         List<Map<String,Object>> result = factory.wrap();
         return ResponseData.success(result);
@@ -143,9 +134,6 @@ public class StorehousePositionsController extends BaseController {
     public ResponseData<List<TreeNode>> treeView() {
         List<Map<String,Object>> list = this.storehousePositionsService.listMaps();
 
-        if(ToolUtil.isEmpty(list)){
-            return ResponseData.success();
-        }
         List<TreeNode>  treeViewNodes = new ArrayList<>();
 
         TreeNode rootTreeNode = new TreeNode();
