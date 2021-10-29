@@ -110,13 +110,13 @@ public class BusinessTrackParam implements Serializable, BaseValidatingParam {
      * 经度
      */
     @ApiModelProperty("经度")
-    private BigDecimal longitude;
+    private Double longitude;
 
     /**
      * 纬度
      */
     @ApiModelProperty("纬度")
-    private BigDecimal latitude;
+    private Double latitude;
 
     /**
      * 负责人
