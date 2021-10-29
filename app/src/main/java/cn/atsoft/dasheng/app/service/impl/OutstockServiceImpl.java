@@ -12,7 +12,9 @@ import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -143,16 +145,18 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
-
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-
-
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(storehouseIds)) {
             storehouseQueryWrapper.in("storehouse_id", storehouseIds);
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (OutstockResult datum : data) {
+
+            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+            datum.setSpuResult(spuResult);
+
             if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {
                     if (brand.getBrandId().equals(datum.getBrandId())) {
@@ -163,15 +167,7 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
                     }
                 }
             }
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
-                        SkuResult skuResult = new SkuResult();
-                        ToolUtil.copyProperties(sku, skuResult);
-                        datum.setSkuResult(skuResult);
-                    }
-                }
-            }
+
             if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {

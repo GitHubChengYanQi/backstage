@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.InstockRequest;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
@@ -175,36 +177,24 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     public void format(List<InstockResult> data) {
-//        List<Long> brandIds = new ArrayList<>();
-//        List<Long> itemIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
         List<Long> storeIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         for (InstockResult datum : data) {
-//            brandIds.add(datum.getBrandId());
-//            itemIds.add(datum.getItemId());
+            brandIds.add(datum.getBrandId());
+
             storeIds.add(datum.getStoreHouseId());
             skuIds.add(datum.getSkuId());
         }
-//        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-//        if (ToolUtil.isNotEmpty(brandIds)) {
-//            brandQueryWrapper.in("brand_id", brandIds);
-//        }
-//        List<Brand> brandList = brandService.list(brandQueryWrapper);
-//
-//        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-//        if (ToolUtil.isNotEmpty(itemIds)) {
-//            itemsQueryWrapper.in("item_id", itemIds);
-//        }
-//        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
-
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-        for (Sku sku : skus) {
-            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-            List<InstockRequest> requests = JSONUtil.toList(jsonArray, InstockRequest.class);
-            for (InstockRequest request : requests) {
-
-            }
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(brandIds)) {
+            brandQueryWrapper.in("brand_id", brandIds);
         }
+        List<Brand> brandList = brandService.list(brandQueryWrapper);
+
+
+
 
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
@@ -213,26 +203,24 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (InstockResult datum : data) {
-//            if (ToolUtil.isNotEmpty(brandList)) {
-//                for (Brand brand : brandList) {
-//                    if (brand.getBrandId().equals(datum.getBrandId())) {
-//                        BrandResult brandResult = new BrandResult();
-//                        ToolUtil.copyProperties(brand, brandResult);
-//                        datum.setBrandResult(brandResult);
-//                        break;
-//                    }
-//                }
-//            }
-//            if (ToolUtil.isNotEmpty(itemsList)) {
-//                for (Items items : itemsList) {
-//                    if (items.getItemId().equals(datum.getItemId())) {
-//                        ItemsResult itemsResult = new ItemsResult();
-//                        ToolUtil.copyProperties(items, itemsResult);
-//                        datum.setItemsResult(itemsResult);
-//                        break;
-//                    }
-//                }
-//            }
+
+            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+            datum.setSpuResult(spuResult);
+
+
+            if (ToolUtil.isNotEmpty(brandList)) {
+                for (Brand brand : brandList) {
+                    if (brand.getBrandId().equals(datum.getBrandId())) {
+                        BrandResult brandResult = new BrandResult();
+                        ToolUtil.copyProperties(brand, brandResult);
+                        datum.setBrandResult(brandResult);
+                        break;
+                    }
+                }
+            }
+
             if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {

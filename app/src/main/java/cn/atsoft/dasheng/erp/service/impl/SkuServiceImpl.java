@@ -172,15 +172,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public List<BackSku> backSku(Long ids) {
-        List<AttributeValues> values = attributeValuesService.list();
-        List<ItemAttribute> attributes = itemAttributeService.list();
 
         Sku sku = this.query().eq("sku_id", ids).one();
-        Spu spu = spuService.query().eq("spu_id", sku.getSkuId()).one();
-
         JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+        List<Long> atrIds = new ArrayList<>();
+        List<Long> atrValueIds = new ArrayList<>();
+        for (AttributeValues valuesRequest : valuesRequests) {
+            atrIds.add(valuesRequest.getAttributeId());
+            atrValueIds.add(valuesRequest.getAttributeValuesId());
+        }
+
+        List<AttributeValues> values = attributeValuesService.query().in("attribute_values_id", atrValueIds).list();
+        List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", atrIds).list();
+
         List<BackSku> backSkus = new ArrayList<>();
         for (AttributeValues valuesRequest : valuesRequests) {
             for (AttributeValues value : values) {

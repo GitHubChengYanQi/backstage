@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -34,6 +36,8 @@ OutstockResult implements Serializable {
     private Long outstockApplyId;
     private Long stockId;
     private Long stockItemId;
+    private List<BackSku> backSkus;
+    private SpuResult spuResult;
     /**
      * skuId
      */

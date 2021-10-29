@@ -30,7 +30,7 @@ public class OutstockListingResult implements Serializable {
     private Long deliveryId;
     private SkuResult skuResult;
     private List<BackSku> backSkus;
-    private SpuResult result;
+    private SpuResult spuResult;
     /**
      * 出库清单id
      */

@@ -106,7 +106,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
             List<BackSku> backSkus = skuService.backSku(record.getSkuId());
             SpuResult result = skuService.backSpu(record.getSkuId());
             record.setBackSkus(backSkus);
-            record.setResult(result);
+            record.setSpuResult(result);
 
             for (Brand brand : brandList) {
                 if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
