@@ -2,8 +2,11 @@ package cn.atsoft.dasheng.orCode.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +36,8 @@ public class OrCodeController extends BaseController {
 
     @Autowired
     private OrCodeService orCodeService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     /**
      * 新增接口
@@ -67,7 +74,7 @@ public class OrCodeController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrCodeParam orCodeParam)  {
+    public ResponseData delete(@RequestBody OrCodeParam orCodeParam) {
         this.orCodeService.delete(orCodeParam);
         return ResponseData.success();
     }
@@ -96,14 +103,38 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OrCodeResult> list(@RequestBody(required = false) OrCodeParam orCodeParam) {
-        if(ToolUtil.isEmpty(orCodeParam)){
+        if (ToolUtil.isEmpty(orCodeParam)) {
             orCodeParam = new OrCodeParam();
         }
         return this.orCodeService.findPageBySpec(orCodeParam);
     }
 
 
-
+    /**
+     * 返回二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/backCode", method = RequestMethod.GET)
+    @ApiOperation("二维码")
+    @Transactional
+    public ResponseData backCode(@RequestParam String type, Long id) {
+        OrCodeBind one = orCodeBindService.query().in("source", type).in("form_id", id).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            return ResponseData.success(one.getOrCodeId());
+        }else{
+            OrCodeParam orCodeParam = new OrCodeParam();
+            orCodeParam.setType(type);
+            Long aLong = orCodeService.add(orCodeParam);
+            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+            orCodeBindParam.setSource(type);
+            orCodeBindParam.setFormId(id);
+            orCodeBindParam.setOrCodeId(aLong);
+            orCodeBindService.add(orCodeBindParam);
+            return ResponseData.success(aLong);
+        }
+    }
 
 }
 

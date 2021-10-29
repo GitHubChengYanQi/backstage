@@ -36,25 +36,13 @@ import java.util.List;
  */
 @Service
 public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storehouse> implements StorehouseService {
-    @Autowired
-    private OrCodeService orCodeService;
-    @Autowired
-    private OrCodeBindService orCodeBindService;
+
 
     @Override
     @Transactional
     public Long add(StorehouseParam param) {
         Storehouse entity = getEntity(param);
         this.save(entity);
-        OrCodeParam orCodeParam = new OrCodeParam();
-        orCodeParam.setType("仓库");
-        Long aLong = orCodeService.add(orCodeParam);
-        OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-        orCodeBindParam.setOrCodeId(aLong);
-        orCodeBindParam.setFormId(entity.getStorehouseId());
-        orCodeBindParam.setSource("仓库");
-        orCodeBindService.add(orCodeBindParam);
-
         return entity.getStorehouseId();
     }
 
