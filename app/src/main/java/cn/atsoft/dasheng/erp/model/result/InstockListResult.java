@@ -29,7 +29,7 @@ public class InstockListResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<BackSku> backSkus;
-
+    private SpuResult spuResult;
     private ItemsResult itemsResult;
     private BrandResult brandResult;
     private StorehouseResult storehouseResult;

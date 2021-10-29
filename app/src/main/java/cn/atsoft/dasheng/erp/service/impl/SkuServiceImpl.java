@@ -45,6 +45,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private AttributeValuesService attributeValuesService;
     @Autowired
     private ItemAttributeService itemAttributeService;
+    @Autowired
+    private SkuService skuService;
 
     @Transactional
     @Override
@@ -174,6 +176,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ItemAttribute> attributes = itemAttributeService.list();
 
         Sku sku = this.query().eq("sku_id", ids).one();
+        Spu spu = spuService.query().eq("spu_id", sku.getSkuId()).one();
+
         JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
 
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
@@ -196,5 +200,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
+    @Override
+    public SpuResult backSpu(Long skuId) {
+        Sku sku = skuService.query().eq("sku_id", skuId).one();
+        if (ToolUtil.isNotEmpty(sku)) {
+            Spu spu = spuService.query().eq("spu_id", sku.getSpuId()).one();
+            SpuResult spuResult = new SpuResult();
+            if (ToolUtil.isNotEmpty(spu)) {
+                ToolUtil.copyProperties(spu, spuResult);
+            }
+            return spuResult;
+        }
+        return new SpuResult();
 
+    }
 }

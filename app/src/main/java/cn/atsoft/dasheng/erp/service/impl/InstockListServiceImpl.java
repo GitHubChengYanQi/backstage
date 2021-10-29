@@ -15,10 +15,7 @@ import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
-import cn.atsoft.dasheng.erp.model.result.BackSku;
-import cn.atsoft.dasheng.erp.model.result.InstockListResult;
-import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -183,6 +180,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
             List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
             datum.setBackSkus(backSkus);
+            SpuResult backSpu = skuService.backSpu(datum.getSkuId());
+            datum.setSpuResult(backSpu);
 
             if (ToolUtil.isNotEmpty(skus)) {
                 for (Sku sku : skus) {
