@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.userInfo.service.UserInfoService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import io.swagger.annotations.Api;
+import me.chanjar.weixin.common.bean.WxJsapiSignature;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.api.impl.WxCpServiceImpl;
 import me.chanjar.weixin.cp.bean.WxCpOauth2UserInfo;
@@ -79,10 +80,10 @@ public class UserinfoController extends BaseController {
     /**
      * 获取ticket
      */
-    @RequestMapping(value = "/ticket", method = RequestMethod.POST)
-    public ResponseData getTicket() throws WxErrorException {
-        String agentJsapiTicket = wxCpService.getWxCpClient().getAgentJsapiTicket();
-        return ResponseData.success(agentJsapiTicket);
+    @RequestMapping(value = "/ticket", method = RequestMethod.GET)
+    public ResponseData getTicket(@RequestParam String url) throws WxErrorException {
+        WxJsapiSignature jsapiSignature = wxCpService.getWxCpClient().createJsapiSignature(url);
+        return ResponseData.success(jsapiSignature);
     }
 }
 
