@@ -90,9 +90,9 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instockService.add(instockParam);
 
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
-                    .and(i -> i.eq(Stock::getItemId, newEntity.getItemId()))
-                    .and(i -> i.eq(Stock::getBrandId, newEntity.getBrandId()))
+                    .and(i -> i.eq(Stock::getSkuId, newEntity.getSkuId()))
                     .one();
+
             StockParam stockParam = new StockParam();
             Long stockId = null;
             if (ToolUtil.isNotEmpty(stock)) {

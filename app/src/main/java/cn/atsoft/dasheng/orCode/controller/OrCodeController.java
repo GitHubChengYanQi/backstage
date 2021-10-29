@@ -120,6 +120,8 @@ public class OrCodeController extends BaseController {
     @ApiOperation("二维码")
     @Transactional
     public ResponseData backCode(@RequestParam String type, Long id) {
+        
+
         OrCodeBind one = orCodeBindService.query().in("source", type).in("form_id", id).one();
         if (ToolUtil.isNotEmpty(one)) {
             return ResponseData.success(one.getOrCodeId());
