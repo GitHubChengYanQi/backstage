@@ -1,14 +1,23 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.AttributeValues;
+import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.AttributeValuesService;
+import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -28,7 +37,10 @@ import java.util.Map;
 @RequestMapping("/sku")
 @Api(tags = "sku表")
 public class SkuController extends BaseController {
-
+    @Autowired
+    private ItemAttributeService itemAttributeService;
+    @Autowired
+    private AttributeValuesService attributeValuesService;
     @Autowired
     private SkuService skuService;
 
@@ -84,7 +96,34 @@ public class SkuController extends BaseController {
         Sku detail = this.skuService.getById(skuParam.getSkuId());
         SkuResult result = new SkuResult();
         ToolUtil.copyProperties(detail, result);
-
+        List<Long> attributeIds = new ArrayList<>();
+        List<Long> valuesIds = new ArrayList<>();
+        JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
+        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+        for (AttributeValues valuesRequest : valuesRequests) {
+               attributeIds.add(valuesRequest.getAttributeId());
+              valuesIds.add( valuesRequest.getAttributeValuesId());
+        }
+        List<AttributeValuesResult> results = new ArrayList<>();
+        List<ItemAttribute> attributeList = attributeIds.size()==0?new ArrayList<>(): itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).list();
+        List<AttributeValues> valuesList = valuesIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, valuesIds).list();
+        for (AttributeValues valuesRequest : valuesRequests) {
+            AttributeValuesResult valuesResult = new AttributeValuesResult();
+            valuesResult.setAttributeValuesId(valuesRequest.getAttributeValuesId());
+            valuesResult.setAttributeId(valuesRequest.getAttributeId());
+            for (ItemAttribute itemAttribute : attributeList) {
+                if (valuesRequest.getAttributeId().equals(itemAttribute.getAttributeId())) {
+                    valuesResult.setAttributeName(itemAttribute.getAttribute());
+                }
+            }
+            for (AttributeValues values : valuesList) {
+                if (valuesRequest.getAttributeValuesId().equals(values.getAttributeValuesId())) {
+                    valuesResult.setAttributeValues(values.getAttributeValues());
+                }
+            }
+            results.add(valuesResult);
+        }
+        result.setList(results);
 
         return ResponseData.success(result);
     }
