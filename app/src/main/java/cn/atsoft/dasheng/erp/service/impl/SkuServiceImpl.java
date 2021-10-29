@@ -45,6 +45,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private AttributeValuesService attributeValuesService;
     @Autowired
     private ItemAttributeService itemAttributeService;
+    @Autowired
+    private SkuService skuService;
 
     @Transactional
     @Override
@@ -169,46 +171,47 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public Map<Long, List<BackSku>> backSku(List<Long> ids) {
-        List<ItemAttribute> itemAttributes = itemAttributeService.query().list();
-        List<AttributeValues> valuesList = attributeValuesService.list();
-        Map<Long, String> map = new HashMap<>();
-        Map<Long, List<BackSku>> backSkuMap = new HashMap<>();
+    public List<BackSku> backSku(Long ids) {
+        List<AttributeValues> values = attributeValuesService.list();
+        List<ItemAttribute> attributes = itemAttributeService.list();
 
-        List<Sku> skus = this.query().in("sku_id", ids).list();
-        for (Sku sku : skus) {
-            map.put(sku.getSkuId(), sku.getSkuValue());
-        }
-        Map<Long, List<AttributeValues>> listMap = new HashMap<>();
-        for (Map.Entry<Long, String> longStringEntry : map.entrySet()) {
-            JSONArray jsonArray = JSONUtil.parseArray(longStringEntry.getValue());
-            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-            listMap.put(longStringEntry.getKey(), valuesRequests);
-        }
-        for (Map.Entry<Long, List<AttributeValues>> longListEntry : listMap.entrySet()) {
+        Sku sku = this.query().eq("sku_id", ids).one();
+        Spu spu = spuService.query().eq("spu_id", sku.getSkuId()).one();
 
-            Long key = longListEntry.getKey();
+        JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
 
-            List<AttributeValues> longListEntryValue = longListEntry.getValue();
-            for (AttributeValues attributeValues : longListEntryValue) {
-                List<BackSku> backSkus = new ArrayList<>();
-                for (ItemAttribute itemAttribute : itemAttributes) {
-                    for (AttributeValues values : valuesList) {
-                        if (itemAttribute.getAttributeId().equals(attributeValues.getAttributeId()) && values.getAttributeValuesId().equals(attributeValues.getAttributeValuesId())) {
-                            BackSku backSku = new BackSku();
-                            backSku.setAttributeValues(values);
-                            backSku.setItemAttribute(itemAttribute);
+        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+        List<BackSku> backSkus = new ArrayList<>();
+        for (AttributeValues valuesRequest : valuesRequests) {
+            for (AttributeValues value : values) {
+                if (value.getAttributeValuesId().equals(valuesRequest.getAttributeValuesId())) {
+                    BackSku backSku = new BackSku();
+                    backSku.setAttributeValues(value);
+                    for (ItemAttribute attribute : attributes) {
+                        if (attribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                            backSku.setItemAttribute(attribute);
                             backSkus.add(backSku);
                         }
-
                     }
                 }
-                backSkuMap.put(key, backSkus);
             }
         }
-        return backSkuMap;
+        return backSkus;
 
     }
 
+    @Override
+    public SpuResult backSpu(Long skuId) {
+        Sku sku = skuService.query().eq("sku_id", skuId).one();
+        if (ToolUtil.isNotEmpty(sku)) {
+            Spu spu = spuService.query().eq("spu_id", sku.getSpuId()).one();
+            SpuResult spuResult = new SpuResult();
+            if (ToolUtil.isNotEmpty(spu)) {
+                ToolUtil.copyProperties(spu, spuResult);
+            }
+            return spuResult;
+        }
+        return new SpuResult();
 
+    }
 }
