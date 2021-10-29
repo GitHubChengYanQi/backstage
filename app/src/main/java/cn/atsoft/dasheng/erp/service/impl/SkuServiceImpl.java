@@ -193,21 +193,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             for (AttributeValues attributeValues : longListEntryValue) {
                 List<BackSku> backSkus = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
-
                     for (AttributeValues values : valuesList) {
-
                         if (itemAttribute.getAttributeId().equals(attributeValues.getAttributeId()) && values.getAttributeValuesId().equals(attributeValues.getAttributeValuesId())) {
                             BackSku backSku = new BackSku();
                             backSku.setAttributeValues(values);
                             backSku.setItemAttribute(itemAttribute);
                             backSkus.add(backSku);
-                            backSkuMap.put(key, backSkus);
-
                         }
 
                     }
                 }
-
+                backSkuMap.put(key, backSkus);
             }
         }
         return backSkuMap;

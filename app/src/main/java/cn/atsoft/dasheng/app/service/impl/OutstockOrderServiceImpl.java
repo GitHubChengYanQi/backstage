@@ -66,7 +66,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
                 outstockListing.setBrandId(applyDetail.getBrandId());
-                outstockListing.setItemId(applyDetail.getItemId());
+                outstockListing.setSkuId(applyDetail.getSkuId());
                 outstockListing.setNumber(applyDetail.getNumber());
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 outstockListings.add(outstockListing);
@@ -192,7 +192,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Override
     public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope) {
         Page<OutstockOrderResult> pageContext = getPageContext();
-        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -237,7 +237,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             for (Storehouse storehouse : storehouses) {
                 if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
                     StorehouseResult storehouseResult = new StorehouseResult();
-                    ToolUtil.copyProperties(storehouse,storehouseResult);
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStorehouseResult(storehouseResult);
                     break;
                 }
