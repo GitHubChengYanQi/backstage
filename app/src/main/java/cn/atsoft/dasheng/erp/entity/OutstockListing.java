@@ -259,6 +259,8 @@ public class OutstockListing implements Serializable {
         this.skuId = skuId;
     }
 
+
+
     @Override
     public String toString() {
         return "OutstockListing{" +

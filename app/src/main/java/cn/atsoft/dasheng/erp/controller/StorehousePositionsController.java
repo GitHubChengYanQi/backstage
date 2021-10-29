@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
@@ -7,8 +9,10 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -16,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import cn.atsoft.dasheng.erp.wrapper.StorehousePositionsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +39,8 @@ public class StorehousePositionsController extends BaseController {
 
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private StorehouseService storehouseService;
 
     /**
      * 新增接口
@@ -70,7 +77,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StorehousePositionsParam storehousePositionsParam)  {
+    public ResponseData delete(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         this.storehousePositionsService.delete(storehousePositionsParam);
         return ResponseData.success();
     }
@@ -88,7 +95,7 @@ public class StorehousePositionsController extends BaseController {
         StorehousePositionsResult result = new StorehousePositionsResult();
         ToolUtil.copyProperties(detail, result);
 
-        List<Map<String,Object>> list = this.storehousePositionsService.listMaps();
+        List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         List<String> parentValue = StorehousePositionsSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
         result.setPidValue(parentValue);
         return ResponseData.success(result);
@@ -103,48 +110,58 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StorehousePositionsResult> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
-        if(ToolUtil.isEmpty(storehousePositionsParam)){
+        if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
         return this.storehousePositionsService.findPageBySpec(storehousePositionsParam);
     }
 
     /**
-    * 选择列表
-    *
-    * @author song
-    * @Date 2021-10-29
-    */
+     * 选择列表
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String,Object>>> listSelect() {
-        List<Map<String,Object>> list = this.storehousePositionsService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         StorehousePositionsSelectWrapper factory = new StorehousePositionsSelectWrapper(list);
-        List<Map<String,Object>> result = factory.wrap();
+        List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
+
     /**
      * tree列表，treeview格式
      *
      * @author song
-         * @Date 2021-10-29
+     * @Date 2021-10-29
      */
-    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    @RequestMapping(value = "/treeView", method = RequestMethod.GET)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String,Object>> list = this.storehousePositionsService.listMaps();
+    public ResponseData<List<TreeNode>> treeView(@RequestParam Long ids) {
 
-        List<TreeNode>  treeViewNodes = new ArrayList<>();
+        Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
+        if (ToolUtil.isEmpty(storehouse)) {
+            throw  new ServiceException(500,"数据不正确");
+        }
+
+        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("storehouse_id", ids);
+
+        List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
+
+        List<TreeNode> treeViewNodes = new ArrayList<>();
 
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
         rootTreeNode.setValue("0");
-        rootTreeNode.setLabel("顶级");
-        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setLabel(storehouse.getName());
+        rootTreeNode.setTitle(storehouse.getName());
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
 
-        for(Map<String, Object> item:list){
+        for (Map<String, Object> item : list) {
             TreeNode treeNode = new TreeNode();
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("storehouse_positions_id")));
@@ -163,7 +180,6 @@ public class StorehousePositionsController extends BaseController {
 
         return ResponseData.success(results);
     }
-
 
 
 }

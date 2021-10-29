@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -170,11 +172,18 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             brandIds.add(datum.getBrandId());
             storeIds.add(datum.getStoreHouseId());
         }
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>(): skuService.query().in("sku_id", skuIds).list();
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
 
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
+
+        Map<Long, List<BackSku>> listMap = skuService.backSku(skuIds);
+
         for (InstockListResult datum : data) {
+
+            List<BackSku> backSkus = listMap.get(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+
             if (ToolUtil.isNotEmpty(skus)) {
                 for (Sku sku : skus) {
                     if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {

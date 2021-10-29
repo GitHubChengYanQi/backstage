@@ -8,10 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
-import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
-import cn.atsoft.dasheng.erp.model.result.ItemAttributeValueResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SkuValuesResult;
+import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.json.JSONArray;
@@ -27,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.AttributeException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +32,7 @@ import java.util.stream.Collectors;
  * sku表	 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Service
@@ -51,9 +45,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private AttributeValuesService attributeValuesService;
     @Autowired
     private ItemAttributeService itemAttributeService;
+
     @Transactional
     @Override
-    public void add(SkuParam param){
+    public void add(SkuParam param) {
         List<Long> ids = new ArrayList<>();
 
         StringBuffer stringBuffer = new StringBuffer();
@@ -62,9 +57,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         Collections.sort(ids);
         for (Long id : ids) {
-            stringBuffer.append(id+",");
+            stringBuffer.append(id + ",");
         }
-        if (stringBuffer.length()>1) {
+        if (stringBuffer.length() > 1) {
             stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         }
         Sku entity = getEntity(param);
@@ -73,12 +68,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public void delete(SkuParam param){
+    public void delete(SkuParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(SkuParam param){
+    public void update(SkuParam param) {
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -86,24 +81,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public SkuResult findBySpec(SkuParam param){
+    public SkuResult findBySpec(SkuParam param) {
         return null;
     }
 
     @Override
-    public List<SkuResult> findListBySpec(SkuParam param){
+    public List<SkuResult> findListBySpec(SkuParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<SkuResult> findPageBySpec(SkuParam param){
+    public PageInfo<SkuResult> findPageBySpec(SkuParam param) {
         Page<SkuResult> pageContext = getPageContext();
         IPage<SkuResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private void format(List<SkuResult> param){
+    private void format(List<SkuResult> param) {
 
         List<Long> spuIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
@@ -153,12 +148,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
 
-
-
-
     }
 
-    private Serializable getKey(SkuParam param){
+    private Serializable getKey(SkuParam param) {
         return param.getSkuId();
     }
 
@@ -175,5 +167,52 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+    @Override
+    public Map<Long, List<BackSku>> backSku(List<Long> ids) {
+        List<ItemAttribute> itemAttributes = itemAttributeService.query().list();
+        List<AttributeValues> valuesList = attributeValuesService.list();
+        Map<Long, String> map = new HashMap<>();
+        Map<Long, List<BackSku>> backSkuMap = new HashMap<>();
+
+        List<Sku> skus = this.query().in("sku_id", ids).list();
+        for (Sku sku : skus) {
+            map.put(sku.getSkuId(), sku.getSkuValue());
+        }
+        Map<Long, List<AttributeValues>> listMap = new HashMap<>();
+        for (Map.Entry<Long, String> longStringEntry : map.entrySet()) {
+            JSONArray jsonArray = JSONUtil.parseArray(longStringEntry.getValue());
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            listMap.put(longStringEntry.getKey(), valuesRequests);
+        }
+        for (Map.Entry<Long, List<AttributeValues>> longListEntry : listMap.entrySet()) {
+
+            Long key = longListEntry.getKey();
+
+            List<AttributeValues> longListEntryValue = longListEntry.getValue();
+            for (AttributeValues attributeValues : longListEntryValue) {
+                List<BackSku> backSkus = new ArrayList<>();
+                for (ItemAttribute itemAttribute : itemAttributes) {
+
+                    for (AttributeValues values : valuesList) {
+
+                        if (itemAttribute.getAttributeId().equals(attributeValues.getAttributeId()) && values.getAttributeValuesId().equals(attributeValues.getAttributeValuesId())) {
+                            BackSku backSku = new BackSku();
+                            backSku.setAttributeValues(values);
+                            backSku.setItemAttribute(itemAttribute);
+                            backSkus.add(backSku);
+                            backSkuMap.put(key, backSkus);
+
+                        }
+
+                    }
+                }
+
+            }
+        }
+        return backSkuMap;
+
+    }
+
 
 }

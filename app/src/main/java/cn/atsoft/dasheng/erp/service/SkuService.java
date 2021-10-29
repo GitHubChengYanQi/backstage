@@ -3,17 +3,19 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
  * sku表	 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 public interface SkuService extends IService<Sku> {
@@ -21,7 +23,7 @@ public interface SkuService extends IService<Sku> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void add(SkuParam param);
@@ -29,7 +31,7 @@ public interface SkuService extends IService<Sku> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void delete(SkuParam param);
@@ -37,7 +39,7 @@ public interface SkuService extends IService<Sku> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     void update(SkuParam param);
@@ -45,7 +47,7 @@ public interface SkuService extends IService<Sku> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     SkuResult findBySpec(SkuParam param);
@@ -53,7 +55,7 @@ public interface SkuService extends IService<Sku> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     List<SkuResult> findListBySpec(SkuParam param);
@@ -61,9 +63,12 @@ public interface SkuService extends IService<Sku> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
-     PageInfo<SkuResult> findPageBySpec(SkuParam param);
+    PageInfo<SkuResult> findPageBySpec(SkuParam param);
+
+
+    Map<Long, List<BackSku>> backSku(List<Long> ids);
 
 }

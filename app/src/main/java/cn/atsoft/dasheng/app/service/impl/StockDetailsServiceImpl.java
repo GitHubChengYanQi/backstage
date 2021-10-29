@@ -19,10 +19,14 @@ import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +51,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private ItemsService itemsService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -82,7 +88,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Override
     public PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope) {
         Page<StockDetailsResult> pageContext = getPageContext();
-        IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<StockDetailsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -111,6 +117,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
     public void format(List<StockDetailsResult> data) {
+        List<Long> pIds = new ArrayList<>();
         List<Long> stoIds = new ArrayList<>();
         List<Long> itemIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
@@ -118,27 +125,43 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             stoIds.add(datum.getStorehouseId());
             itemIds.add(datum.getItemId());
             brandIds.add(datum.getBrandId());
+            pIds.add(datum.getStorehousePositionsId());
         }
+
+        List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
+
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        if(!stoIds.isEmpty()){
-            storehouseQueryWrapper.in("storehouse_id",stoIds);
+        if (!stoIds.isEmpty()) {
+            storehouseQueryWrapper.in("storehouse_id", stoIds);
         }
         List<Storehouse> storehouseList = storehouseService.list(storehouseQueryWrapper);
 
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if(!itemIds.isEmpty()){
-            itemsQueryWrapper.in("item_id",itemIds);
+        if (!itemIds.isEmpty()) {
+            itemsQueryWrapper.in("item_id", itemIds);
         }
         List<Items> itemsList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        if(!brandIds.isEmpty()){
-            brandQueryWrapper.in("brand_id",brandIds);
+        if (!brandIds.isEmpty()) {
+            brandQueryWrapper.in("brand_id", brandIds);
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
         for (StockDetailsResult datum : data) {
-            if(!storehouseList.isEmpty()) {
+
+            if (ToolUtil.isNotEmpty(positions)) {
+                for (StorehousePositions position : positions) {
+                    if (datum.getStorehousePositionsId() != null && position.getStorehousePositionsId().equals(datum.getStorehousePositionsId())) {
+                        StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+                        ToolUtil.copyProperties(position, storehousePositionsResult);
+                        datum.setStorehousePositionsResult(storehousePositionsResult);
+                        break;
+                    }
+                }
+            }
+
+            if (!storehouseList.isEmpty()) {
                 for (Storehouse storehouse : storehouseList) {
                     if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
@@ -148,7 +171,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     }
                 }
             }
-            if(!itemsList.isEmpty()) {
+            if (!itemsList.isEmpty()) {
                 for (Items items : itemsList) {
                     if (items.getItemId().equals(datum.getItemId())) {
                         ItemsResult itemsResult = new ItemsResult();
@@ -158,7 +181,7 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
                     }
                 }
             }
-            if(!brandList.isEmpty()) {
+            if (!brandList.isEmpty()) {
                 for (Brand brand : brandList) {
                     if (datum.getBrandId().equals(brand.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
