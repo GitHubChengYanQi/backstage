@@ -39,11 +39,10 @@ public class SpuResult implements Serializable {
 
     private List<CategoryRequest> categoryRequests;
 
-    private List<ItemAttributeResult> tree;
 
-    private SkuRequest spuAttributes;
+    private SkuRequest sku;
 
-    private List<Map<String,String>> list;
+
 
     private Material material;
 
