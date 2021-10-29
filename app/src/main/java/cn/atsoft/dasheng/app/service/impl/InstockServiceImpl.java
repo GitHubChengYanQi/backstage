@@ -57,6 +57,10 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public Long add(InstockParam param) {
+        Integer count = skuService.query().in("sku_id", param.getSkuId()).in("display",1).count();
+        if (count <= 0) {
+            throw new ServiceException(500, "请填写合法数据");
+        }
 
         Instock entity = getEntity(param);
         this.save(entity);
@@ -80,6 +84,10 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     @Override
     @Transactional
     public void update(InstockParam param) {
+        Integer count = skuService.query().in("sku_id", param.getSkuId()).in("display",1).count();
+        if (count <= 0) {
+            throw new ServiceException(500, "请填写合法数据");
+        }
 
         Instock oldEntity = getOldEntity(param);
 //        Instock newEntity = getEntity(param);
