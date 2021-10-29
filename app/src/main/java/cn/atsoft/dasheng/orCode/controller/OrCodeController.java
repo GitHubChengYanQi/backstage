@@ -1,10 +1,11 @@
 package cn.atsoft.dasheng.orCode.controller;
 
-import cn.atsoft.dasheng.app.entity.Material;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.InstockResult;
+import cn.atsoft.dasheng.app.model.result.OutstockResult;
+import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.MaterialService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -23,10 +24,7 @@ import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
-import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
-import cn.atsoft.dasheng.orCode.model.result.SpuRequest;
-import cn.atsoft.dasheng.orCode.model.result.StoreHousePositionsRequest;
-import cn.atsoft.dasheng.orCode.model.result.StoreHouseRequest;
+import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -71,6 +69,12 @@ public class OrCodeController extends BaseController {
     private MaterialService materialService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private InstockService instockService;
+    @Autowired
+    private OutstockService outstockService;
 
     /**
      * 新增接口
@@ -222,6 +226,42 @@ public class OrCodeController extends BaseController {
                     storeHousePositionsRequest.setType("storehousePositions");
                     storeHousePositionsRequest.setResult(storehousePositionsResult);
                     return ResponseData.success(storeHousePositionsRequest);
+
+                case "stock":
+                    Stock stock = stockService.query().eq("stock_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(stock)) {
+                        throw new ServiceException(500, "当前库存不存在");
+                    }
+                    StockResult stockResult = new StockResult();
+                    ToolUtil.copyProperties(stock, stockResult);
+                    StockRequest stockRequest = new StockRequest();
+                    stockRequest.setType("storehouse");
+                    stockRequest.setResult(stockResult);
+                    return ResponseData.success(stockRequest);
+
+                case "instock":
+                    Instock instock = instockService.query().eq("instock_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(instock)) {
+                        throw new ServiceException(500, "当前数据不存在");
+                    }
+                    InstockResult instockResult = new InstockResult();
+                    ToolUtil.copyProperties(instock, instockResult);
+                    InstockRequest instockRequest = new InstockRequest();
+                    instockRequest.setType("instock");
+                    instockRequest.setResult(instockResult);
+                    return ResponseData.success(instockRequest);
+
+                case "outstock":
+                    Outstock outstock = outstockService.query().eq("outstock_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(outstock)) {
+                        throw new ServiceException(500, "当前数据不存在");
+                    }
+                    OutstockResult outstockResult = new OutstockResult();
+                    ToolUtil.copyProperties(outstock, outstockResult);
+                    OutStockRequest outStockRequest = new OutStockRequest();
+                    outStockRequest.setType("outstock");
+                    outStockRequest.setResult(outstockResult);
+                    return ResponseData.success(outStockRequest);
             }
         }
         return ResponseData.success();

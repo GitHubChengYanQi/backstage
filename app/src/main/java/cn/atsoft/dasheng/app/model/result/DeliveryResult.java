@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -35,6 +37,11 @@ public class DeliveryResult implements Serializable {
     private PhoneResult phoneResult;
 
     private SkuResult skuResult;
+
+    private List<BackSku> backSkus;
+
+    private SpuResult spuResult;
+
     /**
      * skuId
      */

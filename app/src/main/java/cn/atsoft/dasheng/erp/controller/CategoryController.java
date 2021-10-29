@@ -200,7 +200,7 @@ public class CategoryController extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+        factory.setRootParentId("0");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

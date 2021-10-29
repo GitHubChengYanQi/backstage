@@ -11,7 +11,9 @@ import cn.atsoft.dasheng.app.model.params.DeliveryDetailsParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.portal.repair.entity.Repair;
 import cn.atsoft.dasheng.portal.repair.model.params.RepairParam;
@@ -133,44 +135,53 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                     break;
                 }
             }
-            for (Sku sku : skus) {
-                if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
-                    //获取产品质保期
-//                    int shelfLife = items.getShelfLife();
-                    int shelfLife = 1;
-                    //发货时间
-                    String time = String.valueOf(record.getCreateTime());
-                    Date date = DateUtil.parse(time);
 
-                    //产品到期日期
-                    Date day = DateUtil.offsetDay(date, shelfLife);
+            List<BackSku> backSkus = skuService.backSku(record.getSkuId());
 
-                    //获取当前时间
-                    Date nowtime = new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String format = formatter.format(nowtime);
-                    Date parse = DateUtil.parse(format);
+            SpuResult spuResult = skuService.backSpu(record.getSkuId());
 
-                    //剩余保修日期
-                    long between = DateUtil.between(parse, day, DateUnit.DAY);
-                    DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
-                    ToolUtil.copyProperties(record, deliveryDetailsParam);
-                    if (parse.before(day)) {
-                        deliveryDetailsParam.setQualityType("保修内");
-                        this.update(deliveryDetailsParam);
-                    } else {
-                        deliveryDetailsParam.setQualityType("保修外");
-                        this.update(deliveryDetailsParam);
-                    }
-                }
+            record.setBackSkus(backSkus);
 
-                if (sku.getSkuId().equals(record.getSkuId())) {
-                    SkuResult skuResult = new SkuResult();
-                    ToolUtil.copyProperties(sku, skuResult);
-                    record.setSkuResult(skuResult);
-                    break;
-                }
-            }
+            record.setSpuResult(spuResult);
+
+//            for (Sku sku : skus) {
+//                if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
+//                    //获取产品质保期
+////                    int shelfLife = items.getShelfLife();
+//                    int shelfLife = 1;
+//                    //发货时间
+//                    String time = String.valueOf(record.getCreateTime());
+//                    Date date = DateUtil.parse(time);
+//
+//                    //产品到期日期
+//                    Date day = DateUtil.offsetDay(date, shelfLife);
+//
+//                    //获取当前时间
+//                    Date nowtime = new Date();
+//                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                    String format = formatter.format(nowtime);
+//                    Date parse = DateUtil.parse(format);
+//
+//                    //剩余保修日期
+//                    long between = DateUtil.between(parse, day, DateUnit.DAY);
+//                    DeliveryDetailsParam deliveryDetailsParam = new DeliveryDetailsParam();
+//                    ToolUtil.copyProperties(record, deliveryDetailsParam);
+//                    if (parse.before(day)) {
+//                        deliveryDetailsParam.setQualityType("保修内");
+//                        this.update(deliveryDetailsParam);
+//                    } else {
+//                        deliveryDetailsParam.setQualityType("保修外");
+//                        this.update(deliveryDetailsParam);
+//                    }
+//                }
+//
+//                if (sku.getSkuId().equals(record.getSkuId())) {
+//                    SkuResult skuResult = new SkuResult();
+//                    ToolUtil.copyProperties(sku, skuResult);
+//                    record.setSkuResult(skuResult);
+//                    break;
+//                }
+//            }
 
 
         }
@@ -178,7 +189,7 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
         return data.size() == 0 ? null : data.get(0);
     }
 
-    ;
+
 
     private Serializable getKey(DeliveryDetailsParam param) {
         return param.getDeliveryDetailsId();

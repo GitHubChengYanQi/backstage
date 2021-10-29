@@ -15,7 +15,9 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -135,16 +137,15 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
 
         for (DeliveryResult record : data) {
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
-                        SkuResult skuResult = new SkuResult();
-                        ToolUtil.copyProperties(sku, skuResult);
-                        record.setSkuResult(skuResult);
-                        break;
-                    }
-                }
-            }
+
+            List<BackSku> backSkus = skuService.backSku(record.getSkuId());
+
+            SpuResult spuResult = skuService.backSpu(record.getSkuId());
+
+            record.setBackSkus(backSkus);
+
+            record.setSpuResult(spuResult);
+
             if (ToolUtil.isNotEmpty(customerList)) {
                 for (Customer customer : customerList) {
                     if (customer.getCustomerId().equals(record.getCustomerId())) {
@@ -236,7 +237,7 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
             DeliveryDetails details = new DeliveryDetails();
             details.setDeliveryId(add);
             details.setStockItemId(deliveryDetailsParam.getStockItemId());
-            details.setItemId(deliveryDetailsParam.getItemId());
+            details.setSkuId(deliveryDetailsParam.getSkuId());
             details.setBrandId(deliveryDetailsParam.getBrandId());
             deliveryDetails.add(details);
 

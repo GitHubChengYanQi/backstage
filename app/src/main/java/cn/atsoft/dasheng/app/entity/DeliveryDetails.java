@@ -202,6 +202,7 @@ public class DeliveryDetails implements Serializable {
         this.skuId = skuId;
     }
 
+
     @Override
     public String toString() {
         return "DeliveryDetails{" +
