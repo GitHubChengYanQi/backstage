@@ -27,7 +27,7 @@ public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String,String> skuValuesMap;
+
 
     private String categoryName;
 

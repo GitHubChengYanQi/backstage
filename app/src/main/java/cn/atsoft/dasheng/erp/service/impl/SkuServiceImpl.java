@@ -125,7 +125,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuResult skuResult : param) {
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-            SpuRequest spuRequest = new SpuRequest();
             List<SkuJson> list = new ArrayList<>();
             for (AttributeValues valuesRequest : valuesRequests) {
                 valuesRequest.getAttributeValuesId();

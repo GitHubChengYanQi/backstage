@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -38,11 +39,10 @@ public class SpuResult implements Serializable {
 
     private List<CategoryRequest> categoryRequests;
 
-    private List<ItemAttributeResult> tree;
 
-    private SkuRequest spuAttributes;
+    private SkuRequest sku;
 
-    private List<SkuResult> skuResult;
+
 
     private Material material;
 
