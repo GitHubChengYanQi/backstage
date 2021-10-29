@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +42,8 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     @Autowired
     private ToolService toolService;
-
+    @Autowired
+    private QualityPlanDetailService qualityPlanDetailService;
     @Autowired
     private QualityCheckClassificationService qualityCheckClassificationService;
 
@@ -72,6 +74,12 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 //        if (count > 0) {
 //            throw new ServiceException(500, "已有相同质检");
 //        }
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("quality_check_id",param.getQualityCheckId());
+        int count = qualityPlanDetailService.count(queryWrapper);
+        if (count>0){
+            throw new ServiceException(500,"该方案已被使用无法修改");
+        }
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
