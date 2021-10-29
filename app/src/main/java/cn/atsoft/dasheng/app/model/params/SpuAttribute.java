@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class SpuAttribute {
-
     private Attribute attribute;
     private Values values;
 }
