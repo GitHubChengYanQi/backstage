@@ -72,7 +72,7 @@ public class OutBoundServiceImpl implements OutBoundService {
             int i = 0;
             for (Stock stock : stocks) {
                 i++;
-                if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getItemId().equals(outstockListing.getItemId())) {
+                if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getSkuId().equals(outstockListing.getSkuId())) {
                     Long number = outstockListing.getNumber();
                     Long inventory = stock.getInventory();
                     if (inventory < number) {
@@ -116,12 +116,12 @@ public class OutBoundServiceImpl implements OutBoundService {
             for (int i = 0; i < stock.getInventory(); i++) {
                 stockDetails.setStage(2);
                 stockDetails.setStockId(stock.getStockId());
-                stockDetails.setItemId(stock.getItemId());
+                stockDetails.setSkuId(stock.getSkuId());
                 stockDetails.setBrandId(stock.getBrandId());
 
                 List<StockDetails> list = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
                         .in(StockDetails::getBrandId, stock.getBrandId())
-                        .in(StockDetails::getItemId, stock.getItemId())
+                        .in(StockDetails::getSkuId, stock.getSkuId())
                         .orderByAsc(StockDetails::getCreateTime)
                         .in(StockDetails::getStage, 1)
                         .list();
@@ -131,7 +131,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                 stockDetailsList.add(details);
                 Outstock outstock = new Outstock();
                 outstock.setBrandId(details.getBrandId());
-                outstock.setItemId(details.getItemId());
+                outstock.setSkuId(details.getSkuId());
                 outstock.setStockId(details.getStockId());
                 outstock.setStorehouseId(details.getStorehouseId());
                 outstock.setOutstockOrderId(outstockOrderId);
@@ -211,7 +211,7 @@ public class OutBoundServiceImpl implements OutBoundService {
         for (int i = 0; i < applyDetails.size(); i++) {
             boolean f = backItem(outstockApplyParam.getStockId(),
                     applyDetails.get(i).getBrandId(),
-                    applyDetails.get(i).getItemId(),
+                    applyDetails.get(i).getSkuId(),
                     applyDetails.get(i).getNumber());
             if (!f) {
                 throw new ServiceException(500, "此仓库没有物品，请确认库存！");
@@ -229,7 +229,7 @@ public class OutBoundServiceImpl implements OutBoundService {
 
             List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, outstockApplyParam.getStockId())
                     .and(i -> i.in(Stock::getBrandId, applyDetail.getBrandId()))
-                    .and(j -> j.in(Stock::getItemId, applyDetail.getItemId())).list();
+                    .and(j -> j.in(Stock::getSkuId, applyDetail.getSkuId())).list();
 
             List<Stock> stockList = new ArrayList<>();
             if (ToolUtil.isEmpty(stocks)) {
@@ -243,7 +243,7 @@ public class OutBoundServiceImpl implements OutBoundService {
                 stockList.add(stock);
                 List<StockDetails> details = stockDetailsService.lambdaQuery().in(StockDetails::getStockId, stock.getStockId())
                         .and(i -> i.in(StockDetails::getBrandId, stock.getBrandId()))
-                        .and(i -> i.in(StockDetails::getItemId, stock.getItemId()))
+                        .and(i -> i.in(StockDetails::getSkuId, stock.getSkuId()))
                         .and(i -> i.in(StockDetails::getStage, 1))
                         .list();
 
@@ -261,14 +261,14 @@ public class OutBoundServiceImpl implements OutBoundService {
                         stockDetails.setStage(3);
                         DeliveryDetails deliveryDetails = new DeliveryDetails();
                         deliveryDetails.setStockItemId(stockDetails.getStockItemId());
-                        deliveryDetails.setItemId(stockDetails.getItemId());
+                        deliveryDetails.setSkuId(stockDetails.getSkuId());
                         deliveryDetails.setBrandId(stockDetails.getBrandId());
                         deliveryDetails.setDeliveryId(deliveryId);
                         deliveryDetailsList.add(deliveryDetails);
 
                         Outstock outstock = new Outstock();
                         outstock.setBrandId(stockDetails.getBrandId());
-                        outstock.setItemId(stockDetails.getItemId());
+                        outstock.setSkuId(stockDetails.getSkuId());
                         outstock.setStorehouseId(stockDetails.getStorehouseId());
                         outstock.setOutstockOrderId(outstockOrder.getOutstockOrderId());
                         outstock.setStockId(stockDetails.getStockId());
@@ -306,11 +306,11 @@ public class OutBoundServiceImpl implements OutBoundService {
         return null;
     }
 
-    boolean backItem(Long id, Long brandId, Long itemId, Long number) {
+    boolean backItem(Long id, Long brandId, Long skuId, Long number) {
         boolean f = false;
         List<Stock> stocks = stockService.lambdaQuery().in(Stock::getStorehouseId, id).list();
         for (Stock stock : stocks) {
-            if (stock.getBrandId().equals(brandId) && stock.getItemId().equals(itemId)) {
+            if (stock.getBrandId().equals(brandId) && stock.getSkuId().equals(skuId)) {
                 if (stock.getInventory() < number) {
                     throw new ServiceException(500, "产品数量不足，请确认数量！");
                 }

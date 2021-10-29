@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
@@ -15,7 +17,10 @@ public class AttributeInSpu implements Comparable<AttributeInSpu>{
     private Long sort;
     @Override
     public int compareTo(AttributeInSpu o) {
-        return (int)(this.sort - o.sort);
+        if (ToolUtil.isNotEmpty(o.sort)){
+            return (int)(this.sort - o.sort);
+        }
+        return 0;
     }
 
 
