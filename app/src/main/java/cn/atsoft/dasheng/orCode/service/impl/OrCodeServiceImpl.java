@@ -1,17 +1,31 @@
 package cn.atsoft.dasheng.orCode.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Category;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,6 +42,18 @@ import java.util.List;
  */
 @Service
 public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> implements OrCodeService {
+    @Autowired
+    private SpuClassificationService spuClassificationService;
+    @Autowired
+    private MaterialService materialService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private UnitService unitService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private StorehouseService storehouseService;
 
     @Override
     @Transactional
@@ -66,6 +92,56 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         IPage<OrCodeResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public void spuFormat(SpuResult spuResult) {
+        //查询分类
+        SpuClassification spuClassification = spuResult.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
+                .query().in("spu_classification_id", spuResult.getSpuClassificationId()).one();
+        Material material = materialService.query().in("material_id", spuResult.getMaterialId()).one();
+//查询单位
+        Unit unit = spuResult.getUnitId() == null ? new Unit() : unitService.query().eq("unit_id", spuResult.getUnitId()).one();
+//返回类目
+        Category category = spuResult.getCategoryId() == null ? new Category() : categoryService.query().in("category_id", spuResult.getCategoryId()).one();
+        if (ToolUtil.isNotEmpty(category)) {
+            cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult = new CategoryResult();
+            ToolUtil.copyProperties(category, categoryResult);
+            spuResult.setCategoryResult(categoryResult);
+        }
+
+        if (ToolUtil.isNotEmpty(unit)) {
+            UnitResult unitResult = new UnitResult();
+            ToolUtil.copyProperties(unit, unitResult);
+            spuResult.setUnitResult(unitResult);
+        }
+
+        if (ToolUtil.isNotEmpty(spuClassification)) {
+            SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+            ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+            spuResult.setSpuClassificationResult(spuClassificationResult);
+        }
+        if (ToolUtil.isNotEmpty(material)) {
+            spuResult.setMaterial(material);
+        }
+    }
+
+    @Override
+    public void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
+        Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehousePositionsResult.getStorehouseId()).one();
+        Sku sku = skuService.query().in("sku_id", storehousePositionsResult.getSkuId()).one();
+
+        if (ToolUtil.isNotEmpty(storehouse)) {
+            StorehouseResult storehouseResult = new StorehouseResult();
+            ToolUtil.copyProperties(storehouse, storehouseResult);
+            storehousePositionsResult.setStorehouseResult(storehouseResult);
+        }
+        if (ToolUtil.isNotEmpty(sku)) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            storehousePositionsResult.setSkuResult(skuResult);
+        }
+    }
+
 
     private Serializable getKey(OrCodeParam param) {
         return param.getOrCodeId();

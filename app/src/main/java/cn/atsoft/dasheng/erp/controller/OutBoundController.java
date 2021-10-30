@@ -33,7 +33,7 @@ public class OutBoundController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody OutstockOrderParam outstockOrderParam) {
 
-        String judgeOutBound = this.outBoundService.judgeOutBound(outstockOrderParam.getOutstockOrderId(), outstockOrderParam.getStorehouseId());
+         String judgeOutBound = this.outBoundService.judgeOutBound(outstockOrderParam.getOutstockOrderId(), outstockOrderParam.getStorehouseId());
         outstockOrderService.update(outstockOrderParam);
         return ResponseData.success(judgeOutBound);
     }

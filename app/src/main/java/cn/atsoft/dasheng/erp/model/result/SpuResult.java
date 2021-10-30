@@ -34,7 +34,7 @@ public class SpuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult;
 
 
     private Category category;
@@ -125,7 +125,7 @@ public class SpuResult implements Serializable {
      * 创建时间
      */
 
-    @JSONField(serialize = false)
+//    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 

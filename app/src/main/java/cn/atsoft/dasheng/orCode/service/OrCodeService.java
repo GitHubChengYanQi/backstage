@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.orCode.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
@@ -64,6 +66,12 @@ public interface OrCodeService extends IService<OrCode> {
      * @author song
      * @Date 2021-10-29
      */
-     PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param);
+    PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param);
+
+    void spuFormat(SpuResult spuResult);
+
+
+    void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult);
+
 
 }
