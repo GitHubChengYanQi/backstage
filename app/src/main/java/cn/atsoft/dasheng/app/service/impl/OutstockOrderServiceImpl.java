@@ -227,7 +227,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
         for (OutstockOrderResult datum : data) {
             for (User user : users) {
-                if (user.getUserId().equals(datum.getUserId())) {
+                if (datum.getUserId() != null && user.getUserId().equals(datum.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
@@ -235,7 +235,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                 }
             }
             for (Storehouse storehouse : storehouses) {
-                if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                if (datum.getStorehouseId() != null && storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStorehouseResult(storehouseResult);

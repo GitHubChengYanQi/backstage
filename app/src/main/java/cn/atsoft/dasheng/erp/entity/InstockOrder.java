@@ -25,6 +25,13 @@ import java.io.Serializable;
 public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 库位id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
     @TableField("register_time")
     private Date time;
     /**
@@ -156,6 +163,14 @@ public class InstockOrder implements Serializable {
 
     public void setState(Boolean state) {
         this.state = state;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
     }
 
     @Override

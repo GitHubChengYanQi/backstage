@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import lombok.Data;
 
@@ -34,6 +36,8 @@ public class StockDetailsResult implements Serializable {
     private BrandResult brandResult;
     private Integer stage;
     private Long outStockOrderId;
+    private List<BackSku> backSkus;
+    private SpuResult spuResult;
 
 
     /**
