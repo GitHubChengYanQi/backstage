@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -165,15 +167,21 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
 
         for (StockResult datum : data) {
-            if (ToolUtil.isNotEmpty(skus)) {
-                for (Sku sku : skus) {
-                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
-                        SkuResult skuResult = new SkuResult();
-                        ToolUtil.copyProperties(sku, skuResult);
-                        datum.setSkuResult(skuResult);
-                    }
-                }
-            }
+            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
+            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+            datum.setSpuResult(spuResult);
+
+//
+//            if (ToolUtil.isNotEmpty(skus)) {
+//                for (Sku sku : skus) {
+//                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+//                        SkuResult skuResult = new SkuResult();
+//                        ToolUtil.copyProperties(sku, skuResult);
+//                        datum.setSkuResult(skuResult);
+//                    }
+//                }
+//            }
 
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {

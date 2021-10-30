@@ -205,6 +205,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
+
     @Override
     public SpuResult backSpu(Long skuId) {
         Sku sku = skuService.query().eq("sku_id", skuId).one();
@@ -218,5 +219,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         return new SpuResult();
 
+    }
+
+    public Map<Long, List<BackSku>> sendSku(List<Long> skuiIds) {
+        Map<Long, List<BackSku>> skuMap = new HashMap<>();
+
+        List<Sku> skus = this.query().in("sku_id", skuiIds).list();
+
+
+        return skuMap;
     }
 }

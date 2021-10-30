@@ -62,8 +62,11 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         if (count > 0) {
             throw new ServiceException(500, "不可以添加重复产品");
         }
-
         Spu entity = getEntity(param);
+        if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
+            throw new ServiceException(500, "填入信息不完整");
+        }
+
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
             entity.setAttribute(toJSONString);
