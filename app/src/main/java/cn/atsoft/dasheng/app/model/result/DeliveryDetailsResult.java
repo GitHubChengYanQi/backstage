@@ -36,6 +36,7 @@ public class DeliveryDetailsResult implements Serializable {
     private ItemsResult detailesItems;
     private String qualityType;
     private Long brandId;
+    private BrandResult brandResult;
     private BrandResult detailsBrand;
     private SkuResult skuResult;
 

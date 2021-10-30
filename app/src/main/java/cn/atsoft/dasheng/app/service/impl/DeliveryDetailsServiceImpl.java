@@ -112,13 +112,22 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
     public DeliveryDetailsResult format(List<DeliveryDetailsResult> data) {
         List<Long> dids = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
 
 
         for (DeliveryDetailsResult record : data) {
             dids.add(record.getDeliveryId());
+            brandIds.add(record.getBrandId());
             skuIds.add(record.getSkuId());
 
         }
+
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(brandIds)) {
+            brandQueryWrapper.in("brand_id", brandIds);
+        }
+        List<Brand> brandList = brandService.list(brandQueryWrapper);
+
         QueryWrapper<Delivery> deliveryQueryWrapper = new QueryWrapper<>();
         deliveryQueryWrapper.in("delivery_id", dids);
         List<Delivery> deliveryList = dids.size() == 0 ? new ArrayList<>() : deliveryService.list(deliveryQueryWrapper);
@@ -136,6 +145,17 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                 }
             }
 
+
+            if (ToolUtil.isNotEmpty(brandList)) {
+                for (Brand brand : brandList) {
+                    if (brand.getBrandId().equals(record.getBrandId())) {
+                        BrandResult brandResult = new BrandResult();
+                        ToolUtil.copyProperties(brand, brandResult);
+                        record.setBrandResult(brandResult);
+                        break;
+                    }
+                }
+            }
             List<BackSku> backSkus = skuService.backSku(record.getSkuId());
 
             SpuResult spuResult = skuService.backSpu(record.getSkuId());
