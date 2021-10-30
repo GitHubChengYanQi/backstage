@@ -25,6 +25,10 @@ public class InstockListParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     /**
+     * 库位id
+     */
+    private Long storehousePositionsId;
+    /**
      * skuId
      */
     private Long skuId;

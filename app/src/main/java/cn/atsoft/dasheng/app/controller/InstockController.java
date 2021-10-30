@@ -176,7 +176,7 @@ public class InstockController extends BaseController {
             throw new ServiceException(500, "你的数据不合法");
         }
 
-//入库 产品绑定二维码
+        //入库 产品绑定二维码-----------------------------------------------------------------------------------------------
         List<OrCodeBind> orCodeBinds = new ArrayList<>();
         List<Long> codes = new ArrayList<>();
         for (Long id : instockRequest.getIds()) {
@@ -190,10 +190,15 @@ public class InstockController extends BaseController {
             orCodeBind.setFormId(id);
             orCodeBinds.add(orCodeBind);
         }
-        orCodeBindService.saveBatch(orCodeBinds);
 
+
+
+        orCodeBindService.saveBatch(orCodeBinds);
         return ResponseData.success(codes);
     }
+
+
+
 }
 
 

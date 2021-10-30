@@ -9,4 +9,5 @@ import java.util.List;
 public class InstockRequest {
     private List<Long> ids;
     private String type;
+    private Long positionsId;
 }

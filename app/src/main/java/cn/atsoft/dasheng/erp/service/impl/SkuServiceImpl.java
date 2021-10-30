@@ -174,34 +174,38 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     public List<BackSku> backSku(Long ids) {
 
         Sku sku = this.query().eq("sku_id", ids).one();
-        JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-        List<Long> atrIds = new ArrayList<>();
-        List<Long> atrValueIds = new ArrayList<>();
-        for (AttributeValues valuesRequest : valuesRequests) {
-            atrIds.add(valuesRequest.getAttributeId());
-            atrValueIds.add(valuesRequest.getAttributeValuesId());
-        }
+        if (ToolUtil.isNotEmpty(sku)) {
+            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            List<Long> atrIds = new ArrayList<>();
+            List<Long> atrValueIds = new ArrayList<>();
+            for (AttributeValues valuesRequest : valuesRequests) {
+                atrIds.add(valuesRequest.getAttributeId());
+                atrValueIds.add(valuesRequest.getAttributeValuesId());
+            }
 
-        List<AttributeValues> values = attributeValuesService.query().in("attribute_values_id", atrValueIds).list();
-        List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", atrIds).list();
+            List<AttributeValues> values = attributeValuesService.query().in("attribute_values_id", atrValueIds).list();
+            List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", atrIds).list();
 
-        List<BackSku> backSkus = new ArrayList<>();
-        for (AttributeValues valuesRequest : valuesRequests) {
-            for (AttributeValues value : values) {
-                if (value.getAttributeValuesId().equals(valuesRequest.getAttributeValuesId())) {
-                    BackSku backSku = new BackSku();
-                    backSku.setAttributeValues(value);
-                    for (ItemAttribute attribute : attributes) {
-                        if (attribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
-                            backSku.setItemAttribute(attribute);
-                            backSkus.add(backSku);
+            List<BackSku> backSkus = new ArrayList<>();
+            for (AttributeValues valuesRequest : valuesRequests) {
+                for (AttributeValues value : values) {
+                    if (value.getAttributeValuesId().equals(valuesRequest.getAttributeValuesId())) {
+                        BackSku backSku = new BackSku();
+                        backSku.setAttributeValues(value);
+                        for (ItemAttribute attribute : attributes) {
+                            if (attribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+                                backSku.setItemAttribute(attribute);
+                                backSkus.add(backSku);
+                            }
                         }
                     }
                 }
             }
+            return backSkus;
         }
-        return backSkus;
+
+        return new ArrayList<>();
 
     }
 

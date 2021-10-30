@@ -27,6 +27,12 @@ public class InstockList implements Serializable {
     private Long skuId;
 
     /**
+     * 库位id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+
+    /**
      * 入库清单
      */
       @TableId(value = "instock_list_id", type = IdType.ID_WORKER)
@@ -210,6 +216,14 @@ public class InstockList implements Serializable {
 
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
     }
 
     @Override
