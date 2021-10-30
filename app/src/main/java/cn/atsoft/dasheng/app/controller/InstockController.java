@@ -13,13 +13,24 @@ import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.request.InstockRequest;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +52,12 @@ public class InstockController extends BaseController {
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
+    @Autowired
+    private OrCodeService orCodeService;
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 新增接口
@@ -56,8 +73,6 @@ public class InstockController extends BaseController {
         Long add = this.instockService.add(instockParam);
         return ResponseData.success(add);
     }
-
-
 
 
     /**
@@ -84,7 +99,7 @@ public class InstockController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     @Permission
-    public ResponseData delete(@RequestBody InstockParam instockParam)  {
+    public ResponseData delete(@RequestBody InstockParam instockParam) {
         this.instockService.delete(instockParam);
         return ResponseData.success();
     }
@@ -117,7 +132,7 @@ public class InstockController extends BaseController {
     @ApiOperation("列表")
     @Permission
     public PageInfo<InstockResult> list(@RequestBody(required = false) InstockParam instockParam) {
-        if(ToolUtil.isEmpty(instockParam)){
+        if (ToolUtil.isEmpty(instockParam)) {
             instockParam = new InstockParam();
         }
 //        return this.instockService.findPageBySpec(instockParam);
@@ -134,14 +149,51 @@ public class InstockController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
 
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        QueryWrapper<Instock>instockQueryWrapper = new QueryWrapper<>();
-        instockQueryWrapper.in("display",1);
+        QueryWrapper<Instock> instockQueryWrapper = new QueryWrapper<>();
+        instockQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.instockService.listMaps(instockQueryWrapper);
         InstockSelectWrapper instockSelectWrapper = new InstockSelectWrapper(list);
         List<Map<String, Object>> result = instockSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 手机端入库
+     *
+     * @author song
+     * @Date 2021-07-17
+     */
+    @Transactional
+    @RequestMapping(value = "/apiInstock", method = RequestMethod.POST)
+    public ResponseData apiInstock(@RequestBody InstockRequest instockRequest) {
+        if (!instockRequest.getType().equals("sku")) {
+            throw new ServiceException(500, "请确定商品类型");
+        }
+
+        List<Sku> skus = skuService.query().in("sku_id", instockRequest.getIds()).in("display", 1).list();
+        if (skus.size() != instockRequest.getIds().size()) {
+            throw new ServiceException(500, "你的数据不合法");
+        }
+
+//入库 产品绑定二维码
+        List<OrCodeBind> orCodeBinds = new ArrayList<>();
+        List<Long> codes = new ArrayList<>();
+        for (Long id : instockRequest.getIds()) {
+            OrCodeParam orCodeParam = new OrCodeParam();
+            orCodeParam.setType(instockRequest.getType());
+            Long aLong = orCodeService.add(orCodeParam);
+            codes.add(aLong);
+            OrCodeBind orCodeBind = new OrCodeBind();
+            orCodeBind.setOrCodeId(aLong);
+            orCodeBind.setSource(instockRequest.getType());
+            orCodeBind.setFormId(id);
+            orCodeBinds.add(orCodeBind);
+        }
+        orCodeBindService.saveBatch(orCodeBinds);
+
+        return ResponseData.success(codes);
+    }
 }
 
 
