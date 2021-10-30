@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockRequest;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -58,6 +60,8 @@ public class InstockController extends BaseController {
     private OrCodeService orCodeService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     /**
      * 新增接口
@@ -168,8 +172,24 @@ public class InstockController extends BaseController {
     @RequestMapping(value = "/apiInstock", method = RequestMethod.POST)
     public ResponseData apiInstock(@RequestBody InstockRequest instockRequest) {
 
+        OrCodeBind codeBind = orCodeBindService.query().in("form_id", instockRequest.getIds()).in("source", instockRequest.getType()).one();
+        if (ToolUtil.isEmpty(codeBind)) {
+            OrCodeParam orCodeParam = new OrCodeParam();
+            orCodeParam.setType(instockRequest.getType());
+            Long aLong = orCodeService.add(orCodeParam);
+            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+            orCodeBindParam.setOrCodeId(aLong);
+            orCodeBindParam.setSource(instockRequest.getType());
+            orCodeBindParam.setFormId(instockRequest.getIds());
+            orCodeBindService.add(orCodeBindParam);
+            return ResponseData.success(aLong);
+        }
+        Long positionsId = instockRequest.getPositionsId();
+        InstockOrderParam instockOrderParam = new InstockOrderParam();
+        instockOrderParam.setStorehousePositionsId(positionsId);
+        instockOrderService.add(instockOrderParam);
 
-        return ResponseData.success();
+        return ResponseData.success(codeBind.getOrCodeId());
     }
 }
 
