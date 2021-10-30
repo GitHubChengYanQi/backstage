@@ -167,38 +167,10 @@ public class InstockController extends BaseController {
     @Transactional
     @RequestMapping(value = "/apiInstock", method = RequestMethod.POST)
     public ResponseData apiInstock(@RequestBody InstockRequest instockRequest) {
-        if (!instockRequest.getType().equals("sku")) {
-            throw new ServiceException(500, "请确定商品类型");
-        }
-
-        List<Sku> skus = skuService.query().in("sku_id", instockRequest.getIds()).in("display", 1).list();
-        if (skus.size() != instockRequest.getIds().size()) {
-            throw new ServiceException(500, "你的数据不合法");
-        }
-
-        //入库 产品绑定二维码-----------------------------------------------------------------------------------------------
-        List<OrCodeBind> orCodeBinds = new ArrayList<>();
-        List<Long> codes = new ArrayList<>();
-        for (Long id : instockRequest.getIds()) {
-            OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(instockRequest.getType());
-            Long aLong = orCodeService.add(orCodeParam);
-            codes.add(aLong);
-            OrCodeBind orCodeBind = new OrCodeBind();
-            orCodeBind.setOrCodeId(aLong);
-            orCodeBind.setSource(instockRequest.getType());
-            orCodeBind.setFormId(id);
-            orCodeBinds.add(orCodeBind);
-        }
 
 
-
-        orCodeBindService.saveBatch(orCodeBinds);
-        return ResponseData.success(codes);
+        return ResponseData.success();
     }
-
-
-
 }
 
 
