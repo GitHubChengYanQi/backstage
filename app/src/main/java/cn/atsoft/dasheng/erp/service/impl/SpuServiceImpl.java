@@ -93,9 +93,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
 
         if (param.getIsHidden()) {
-            SpuClassificationParam spuClassificationParam = new SpuClassificationParam();
-            spuClassificationParam.setName(param.getName());
-            Long classIds = spuClassificationService.add(spuClassificationParam);
+
+            CategoryParam categoryParam = new CategoryParam();
+            categoryParam.setCategoryName(param.getName());
+            Long classIds = categoryService.add(categoryParam);
             ItemAttributeParam attributeParam = new ItemAttributeParam();
             attributeParam.setCategoryId(classIds);
             attributeParam.setAttribute("规格");
