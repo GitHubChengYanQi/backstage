@@ -36,9 +36,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     private SpuService spuService;
 
     @Override
-    public void add(SpuClassificationParam param) {
+    public Long add(SpuClassificationParam param) {
         SpuClassification entity = getEntity(param);
         this.save(entity);
+        return entity.getSpuClassificationId();
     }
 
     @Override
