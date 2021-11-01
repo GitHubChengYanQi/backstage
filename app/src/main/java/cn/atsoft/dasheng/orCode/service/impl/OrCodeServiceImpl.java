@@ -274,19 +274,41 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(id)) {
             throw new ServiceException(500, "请传入id");
         }
-        Integer count = skuService.query().in("sku_id", id).count();
-        if (count == 0) {
-            throw new ServiceException(500, "参数不合法");
+        if (ToolUtil.isEmpty(source)) {
+            throw new ServiceException(500, "请传入绑定类型");
         }
         if (ToolUtil.isEmpty(source)) {
             throw new ServiceException(500, "请传入绑定类型");
         }
-        InkindParam inkindParam = new InkindParam();
-        inkindParam.setSkuId(id);
-        inkindParam.setType(source);
-        Long kindId = inkindService.add(inkindParam);
 
-        OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", source).one();
+        switch (source) {
+            case "sku":
+                Integer count = skuService.query().in("sku_id", id).count();
+                if (count == 0) {
+                    throw new ServiceException(500, "参数不合法");
+                }
+                InkindParam inkindParam = new InkindParam();
+                inkindParam.setSkuId(id);
+                inkindParam.setType(source);
+                Long kindId = inkindService.add(inkindParam);
+                OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", source).one();
+                if (ToolUtil.isNotEmpty(one)) {
+                    return one.getOrCodeId();
+                } else {
+                    OrCodeParam orCodeParam = new OrCodeParam();
+                    orCodeParam.setType(source);
+                    Long aLong = this.add(orCodeParam);
+                    OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+                    orCodeBindParam.setSource(source);
+                    orCodeBindParam.setFormId(kindId);
+                    orCodeBindParam.setOrCodeId(aLong);
+                    orCodeBindService.add(orCodeBindParam);
+                    return aLong;
+                }
+
+        }
+
+        OrCodeBind one = orCodeBindService.query().in("form_id", id).in("source", source).one();
         if (ToolUtil.isNotEmpty(one)) {
             return one.getOrCodeId();
         } else {
@@ -295,11 +317,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Long aLong = this.add(orCodeParam);
             OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
             orCodeBindParam.setSource(source);
-            orCodeBindParam.setFormId(kindId);
+            orCodeBindParam.setFormId(id);
             orCodeBindParam.setOrCodeId(aLong);
             orCodeBindService.add(orCodeBindParam);
             return aLong;
         }
+
     }
 
     @Override
