@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -70,6 +71,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private MaterialService materialService;
     @Autowired
     private SpuClassificationService spuClassificationService;
+    @Autowired
+    private OrCodeService orCodeService;
+//    backBatchCode
     @Transactional
     @Override
     public void add(SpuParam param) {
@@ -148,7 +152,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             }else{
                 throw new ServiceException(500,"计算有误请重试");
             }
-
+            List<Sku> list = skuService.lambdaQuery().in(Sku::getSpuId, entity.getSpuId()).list();
+            List<Long> skuIds = new ArrayList<>();
+            for (Sku sku : list) {
+                skuIds.add(sku.getSkuId());
+            }
+           orCodeService.backBatchCode(skuIds,"sku");
         }
 
 
