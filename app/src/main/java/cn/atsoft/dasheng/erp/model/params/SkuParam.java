@@ -46,6 +46,8 @@ public class SkuParam implements Serializable, BaseValidatingParam  {
     private Integer isBan;
     @ApiModelProperty("规格")
     public String specifications;
+    @ApiModelProperty("执行标准")
+    private String standard;
 
     /**
      * spu id

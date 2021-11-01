@@ -31,9 +31,19 @@ public class Sku implements Serializable {
     private String skuName;
 
     @TableField("is_ban")
-    private int isBan;
+    private Integer isBan;
+    @TableField("standard")
+    private String standard;
 
-    public int getIsBan() {
+    public String getStandard() {
+        return standard;
+    }
+
+    public void setStandard(String standard) {
+        this.standard = standard;
+    }
+
+    public Integer getIsBan() {
         return isBan;
     }
     @TableField("specifications")
@@ -47,7 +57,7 @@ public class Sku implements Serializable {
         this.specifications = specifications;
     }
 
-    public void setIsBan(int isBan) {
+    public void setIsBan(Integer isBan) {
         this.isBan = isBan;
     }
 
