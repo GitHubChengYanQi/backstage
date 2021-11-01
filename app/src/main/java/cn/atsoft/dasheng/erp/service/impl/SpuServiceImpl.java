@@ -92,7 +92,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 throw new ServiceException(500, "不可以填写重复名");
             }
             CategoryParam categoryParam = new CategoryParam();
-            categoryParam.setCategoryName(param.getName());
+            categoryParam.setCategoryName(param.getName().replace(" ", ""));
             Long classIds = categoryService.add(categoryParam);
             ItemAttributeParam attributeParam = new ItemAttributeParam();
             attributeParam.setCategoryId(classIds);
