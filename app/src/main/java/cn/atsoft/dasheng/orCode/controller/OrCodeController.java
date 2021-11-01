@@ -151,22 +151,10 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.GET)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestParam String type, String source, Long id) {
-        OrCodeBind one = orCodeBindService.query().in("type", type).in("form_id", id).in("source", source).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            return ResponseData.success(one.getOrCodeId());
-        } else {
-            OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(type);
-            Long aLong = orCodeService.add(orCodeParam);
-            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(source);
-            orCodeBindParam.setType(type);
-            orCodeBindParam.setFormId(id);
-            orCodeBindParam.setOrCodeId(aLong);
-            orCodeBindService.add(orCodeBindParam);
-            return ResponseData.success(aLong);
-        }
+    public ResponseData backCode(@RequestParam Long id, String source) {
+        Long aLong = orCodeService.backCode(id, source);
+        return ResponseData.success(aLong);
+
     }
 
     /**

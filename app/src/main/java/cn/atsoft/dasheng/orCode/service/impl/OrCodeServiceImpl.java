@@ -20,8 +20,11 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -64,6 +67,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private BrandService brandService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     @Override
     @Transactional
@@ -198,6 +203,71 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 list.add(storehousePositionsResult);
             }
             storehouseResult.setStorehousePositionsResults(list);
+        }
+    }
+
+    @Override
+    public List<Long> backBatchCode(List<Long> ids, String source) {
+        List<Long> codeIds = new ArrayList<>();
+        List<Long> formIds = new ArrayList<>();
+        List<OrCodeBind> orCodeBinds = new ArrayList<>();
+        OrCodeParam orCodeParam = null;
+        List<OrCodeBind> codeBinds = ids.size() == 0 ? new ArrayList<>() : orCodeBindService.query().in("form_id", ids).in("source", source).list();
+
+        if (ToolUtil.isNotEmpty(codeBinds)) {
+            for (OrCodeBind codeBind : codeBinds) {
+                codeIds.add(codeBind.getOrCodeId());
+                formIds.add(codeBind.getFormId());
+            }
+        }
+        if (formIds.size() != 0) {
+            for (Long formId : formIds) {
+                for (Long id : ids) {
+                    if (formId != id) {
+                        orCodeParam = new OrCodeParam();
+                        Long aLong = this.add(orCodeParam);
+                        codeIds.add(aLong);
+                        OrCodeBind orCodeBind = new OrCodeBind();
+                        orCodeBind.setSource(source);
+                        orCodeBind.setFormId(id);
+                        orCodeBind.setOrCodeId(aLong);
+                        orCodeBinds.add(orCodeBind);
+                    }
+                }
+            }
+        } else {
+            for (Long id : ids) {
+                orCodeParam = new OrCodeParam();
+                Long aLong = this.add(orCodeParam);
+                codeIds.add(aLong);
+                OrCodeBind orCodeBind = new OrCodeBind();
+                orCodeBind.setSource(source);
+                orCodeBind.setFormId(id);
+                orCodeBind.setOrCodeId(aLong);
+                orCodeBinds.add(orCodeBind);
+
+            }
+        }
+
+        orCodeBindService.saveBatch(orCodeBinds);
+
+        return codeIds;
+    }
+
+    @Override
+    public Long backCode(Long id, String source) {
+        OrCodeBind one = orCodeBindService.query().in("form_id", id).in("source", source).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            return one.getOrCodeId();
+        } else {
+            OrCodeParam orCodeParam = new OrCodeParam();
+            Long aLong = this.add(orCodeParam);
+            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+            orCodeBindParam.setSource(source);
+            orCodeBindParam.setFormId(id);
+            orCodeBindParam.setOrCodeId(aLong);
+            orCodeBindService.add(orCodeBindParam);
+            return aLong;
         }
     }
 

@@ -99,4 +99,8 @@ public interface OrCodeService extends IService<OrCode> {
     void storehouseFormat(StorehouseResult storehouseResult);
 
 
+    List<Long> backBatchCode(List<Long> ids, String type);
+
+    Long backCode(Long id, String source);
+
 }
