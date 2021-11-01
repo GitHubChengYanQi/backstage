@@ -94,7 +94,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         List<List<String>> result = new ArrayList<List<String>>();
 //        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
 //        param.getSpuAttributes().getSpuRequests().sort();
-        param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId).reversed());
+        param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
 //                Collections.sort(param.getSpuAttributes().getSpuRequests());
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
@@ -118,7 +118,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
             for (SkuParam sku : param.getSpuAttributes().getValues()) {
                 List<AttributeValues> valuesList = new ArrayList<>();
-                sku.getAttributeValues().sort(Comparator.comparing(AttributeValuesParam::getAttributeId).reversed());
+                sku.getAttributeValues().sort(Comparator.comparing(AttributeValuesParam::getAttributeId));
                 for (AttributeValuesParam values : sku.getAttributeValues()) {
                     AttributeValues value = new AttributeValues();
                     value.setAttributeId(values.getAttributeId());

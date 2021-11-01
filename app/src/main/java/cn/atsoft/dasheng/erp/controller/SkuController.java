@@ -158,9 +158,7 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuParam spuParam) {
-
-
+    public ResponseData<List<Map<String, Object>>> listSelect() {
         List<Map<String, Object>> list = this.skuService.listMaps();
         SkuSelectWrapper factory = new SkuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
