@@ -74,6 +74,8 @@ public class OutBoundServiceImpl implements OutBoundService {
                 i++;
                 if (outstockListing.getBrandId() != null &&
                         outstockListing.getSkuId() != null &&
+                        stock.getBrandId() != null &&
+                        stock.getSkuId() != null &&
                         stock.getBrandId().equals(outstockListing.getBrandId()) &&
                         stock.getSkuId().equals(outstockListing.getSkuId())) {
                     Long number = outstockListing.getNumber();

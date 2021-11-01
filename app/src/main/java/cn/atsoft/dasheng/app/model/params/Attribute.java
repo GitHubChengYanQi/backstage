@@ -15,7 +15,7 @@ public class Attribute implements Comparable<Attribute> {
 
     @Override
     public int compareTo(Attribute o) {
-        return (int)(this.id - o.id);
+        return (int)(this.id - o.getId());
     }
 
 

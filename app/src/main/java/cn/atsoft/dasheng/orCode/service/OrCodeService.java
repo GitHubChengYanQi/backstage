@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.orCode.service;
 
+import cn.atsoft.dasheng.app.model.result.StockResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
@@ -64,6 +68,39 @@ public interface OrCodeService extends IService<OrCode> {
      * @author song
      * @Date 2021-10-29
      */
-     PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param);
+    PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param);
+
+    /**
+     * spu详情
+     *
+     * @param spuResult
+     */
+    void spuFormat(SpuResult spuResult);
+
+    /**
+     * 库位详情接口
+     *
+     * @param storehousePositionsResult
+     */
+    void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult);
+
+    /**
+     * 库存详情
+     *
+     * @param stockResult
+     */
+    void stockFormat(StockResult stockResult);
+
+    /**
+     * 仓库详情
+     *
+     * @param storehouseResult
+     */
+    void storehouseFormat(StorehouseResult storehouseResult);
+
+
+    List<Long> backBatchCode(List<Long> ids, String type);
+
+    Long backCode(Long id, String source);
 
 }

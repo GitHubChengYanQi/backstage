@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -54,9 +55,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> ids = new ArrayList<>();
 
         StringBuffer stringBuffer = new StringBuffer();
-        for (SkuValues skuValue : param.getSkuValues()) {
-            ids.add(skuValue.getAttributeValuesId());
-        }
+//        for (SkuValues skuValue : param.getSkuValues()) {
+//            ids.add(skuValue.getAttributeValuesId());
+//        }
         Collections.sort(ids);
         for (Long id : ids) {
             stringBuffer.append(id + ",");
@@ -120,9 +121,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 .list();
 
         for (SkuResult skuResult : param) {
-
-
-
 
 
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
@@ -213,6 +211,45 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return new ArrayList<>();
 
     }
+    @Override
+    public List<SkuResult> backSkuList(List<Long> skuIds) {
+        List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
+        List<Long> attIds = new ArrayList<>();
+        List<SkuResult> results = new ArrayList<>();
+        for (Sku sku : skuList) {
+            String skuValue = sku.getSkuValue();
+            JSONArray jsonArray = JSONUtil.parseArray(skuValue);
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            for (AttributeValues valuesRequest : valuesRequests) {
+                attIds.add(valuesRequest.getAttributeId());
+            }
+        }
+        List<ItemAttribute> attList = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attIds).list();
+        List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
+        for (Sku sku : skuList) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku,skuResult);
+            String skuValue = sku.getSkuValue();
+            JSONArray jsonArray = JSONUtil.parseArray(skuValue);
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            StringBuffer sb  = new StringBuffer();
+            for (AttributeValues valuesRequest : valuesRequests) {
+                for (AttributeValues values : attValuesList) {
+                    if (valuesRequest.getAttributeValuesId().equals(values.getAttributeValuesId())) {
+                        sb.append(values.getAttributeValues()+",");
+                    }
+                }
+            }
+            sb.deleteCharAt(sb.length()-1);
+            skuResult.setSkuTextValue(sb.toString());
+            results.add(skuResult);
+        }
+
+
+
+
+        return results ;
+    }
 
 
     @Override
@@ -230,12 +267,53 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
+    @Override
     public Map<Long, List<BackSku>> sendSku(List<Long> skuiIds) {
+        if (skuiIds.size() == 0) {
+            throw new ServiceException(500, "请确认sku");
+        }
         Map<Long, List<BackSku>> skuMap = new HashMap<>();
-
+        List<Long> values = new ArrayList<>();
+        List<Long> attIds = new ArrayList<>();
         List<Sku> skus = this.query().in("sku_id", skuiIds).list();
-
-
+        Map<Long, List<AttributeValues>> map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(skus)) {
+            for (Sku sku : skus) {
+                JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                map.put(sku.getSkuId(), valuesRequests);
+            }
+            for (Long skuiId : skuiIds) {
+                List<AttributeValues> attributeValues = map.get(skuiId);
+                for (AttributeValues attributeValue : attributeValues) {
+                    values.add(attributeValue.getAttributeValuesId());
+                    attIds.add(attributeValue.getAttributeId());
+                }
+            }
+        }
+        List<ItemAttribute> attributeList = attIds.size() == 0 ? new ArrayList<>() :
+                itemAttributeService.query().in("attribute_id", attIds).list();
+        List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() :
+                attributeValuesService.query().in("attribute_values_id", values).list();
+        for (Long skuiId : skuiIds) {
+            List<BackSku> backSkus = new ArrayList<>();
+            List<AttributeValues> list = map.get(skuiId);
+            for (AttributeValues attributeValues : list) {
+                for (ItemAttribute itemAttribute : attributeList) {
+                    if (itemAttribute.getAttributeId().equals(attributeValues.getAttributeId())) {
+                        BackSku backSku = new BackSku();
+                        backSku.setItemAttribute(itemAttribute);
+                        for (AttributeValues Values : valuesList) {
+                            if (Values.getAttributeValuesId().equals(attributeValues.getAttributeValuesId())) {
+                                backSku.setAttributeValues(Values);
+                            }
+                        }
+                        backSkus.add(backSku);
+                    }
+                }
+            }
+            skuMap.put(skuiId, backSkus);
+        }
         return skuMap;
     }
 }

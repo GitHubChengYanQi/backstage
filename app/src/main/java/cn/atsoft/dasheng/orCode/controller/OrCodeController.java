@@ -1,30 +1,21 @@
 package cn.atsoft.dasheng.orCode.controller;
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.result.InstockResult;
-import cn.atsoft.dasheng.app.model.result.OutstockResult;
-import cn.atsoft.dasheng.app.model.result.StockResult;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.Spu;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
-import cn.atsoft.dasheng.erp.model.result.SpuResult;
-import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SpuClassificationService;
-import cn.atsoft.dasheng.erp.service.SpuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
+import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
+import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -75,6 +66,10 @@ public class OrCodeController extends BaseController {
     private InstockService instockService;
     @Autowired
     private OutstockService outstockService;
+    @Autowired
+    private UnitService unitService;
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 新增接口
@@ -156,21 +151,10 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.GET)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestParam String type, Long id) {
-        OrCodeBind one = orCodeBindService.query().in("source", type).in("form_id", id).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            return ResponseData.success(one.getOrCodeId());
-        } else {
-            OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(type);
-            Long aLong = orCodeService.add(orCodeParam);
-            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(type);
-            orCodeBindParam.setFormId(id);
-            orCodeBindParam.setOrCodeId(aLong);
-            orCodeBindService.add(orCodeBindParam);
-            return ResponseData.success(aLong);
-        }
+    public ResponseData backCode(@RequestParam Long id, String source) {
+        Long aLong = orCodeService.backCode(id, source);
+        return ResponseData.success(aLong);
+
     }
 
     /**
@@ -195,7 +179,10 @@ public class OrCodeController extends BaseController {
                     }
                     SpuResult spuResult = new SpuResult();
                     ToolUtil.copyProperties(spu, spuResult);
-                    spuFormat(spuResult);
+                    try {
+                        orCodeService.spuFormat(spuResult);
+                    } catch (Exception e) {
+                    }
                     SpuRequest spuRequest = new SpuRequest();
                     spuRequest.setType("spu");
                     spuRequest.setResult(spuResult);
@@ -208,7 +195,10 @@ public class OrCodeController extends BaseController {
                     }
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
-
+                    try {
+                        orCodeService.storehouseFormat(storehouseResult);
+                    } catch (Exception e) {
+                    }
                     StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
                     storeHouseRequest.setType("storehouse");
                     storeHouseRequest.setResult(storehouseResult);
@@ -221,7 +211,10 @@ public class OrCodeController extends BaseController {
                     }
                     StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
                     ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
-                    storehousePositionsFormat(storehousePositionsResult);
+                    try {
+                        orCodeService.storehousePositionsFormat(storehousePositionsResult);
+                    } catch (Exception e) {
+                    }
                     StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
                     storeHousePositionsRequest.setType("storehousePositions");
                     storeHousePositionsRequest.setResult(storehousePositionsResult);
@@ -234,6 +227,10 @@ public class OrCodeController extends BaseController {
                     }
                     StockResult stockResult = new StockResult();
                     ToolUtil.copyProperties(stock, stockResult);
+                    try {
+                        orCodeService.stockFormat(stockResult);
+                    } catch (Exception e) {
+                    }
                     StockRequest stockRequest = new StockRequest();
                     stockRequest.setType("storehouse");
                     stockRequest.setResult(stockResult);
@@ -267,35 +264,15 @@ public class OrCodeController extends BaseController {
         return ResponseData.success();
     }
 
-    public void spuFormat(SpuResult spuResult) {
-        SpuClassification spuClassification = spuResult.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
-                .query().in("spu_classification_id", spuResult.getSpuClassificationId()).one();
-        Material material = materialService.query().in("material_id", spuResult.getMaterialId()).one();
-        if (ToolUtil.isNotEmpty(spuClassification)) {
-            SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
-            ToolUtil.copyProperties(spuClassification, spuClassificationResult);
-            spuResult.setSpuClassificationResult(spuClassificationResult);
-        }
-        if (ToolUtil.isNotEmpty(material)) {
-            spuResult.setMaterial(material);
-        }
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData test(@RequestBody OrCodeParam orCodeParam) {
+        Map<Long, List<BackSku>> listMap = skuService.sendSku(orCodeParam.getIds());
+        return ResponseData.success(listMap);
     }
 
-    public void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult) {
-        Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehousePositionsResult.getStorehouseId()).one();
-        Sku sku = skuService.query().in("sku_id", storehousePositionsResult.getSkuId()).one();
 
-        if (ToolUtil.isNotEmpty(storehouse)) {
-            StorehouseResult storehouseResult = new StorehouseResult();
-            ToolUtil.copyProperties(storehouse, storehouseResult);
-            storehousePositionsResult.setStorehouseResult(storehouseResult);
-        }
-        if (ToolUtil.isNotEmpty(sku)) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            storehousePositionsResult.setSkuResult(skuResult);
-        }
-    }
 }
 
 

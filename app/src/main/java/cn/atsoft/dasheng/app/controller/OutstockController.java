@@ -39,11 +39,7 @@ public class OutstockController extends BaseController {
     @Autowired
     private OutstockService outstockService;
 
-    @Autowired
-    private StockService stockService;
 
-    @Autowired
-    private StockDetailsService stockDetailsService;
 
 
     /**

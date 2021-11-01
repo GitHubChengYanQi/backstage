@@ -28,6 +28,8 @@ public class StockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
     private StorehouseResult storehouseResult;
     private BrandResult brandResult;
     private SkuResult skuResult;

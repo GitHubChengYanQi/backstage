@@ -8,18 +8,10 @@ import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.ItemAttribute;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.AttributeValuesService;
-import cn.atsoft.dasheng.erp.service.CategoryService;
-import cn.atsoft.dasheng.erp.service.ItemAttributeService;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
@@ -69,7 +61,8 @@ public class SpuController extends BaseController {
 
     @Autowired
     private MaterialService materialService;
-
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     /**
      * 新增接口
@@ -124,9 +117,16 @@ public class SpuController extends BaseController {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
         SkuRequest skuRequest = new SkuRequest();
 
+
         List<AttributeInSpu> attributeResults = new ArrayList<>();
-        List<AttributeValueInSpu> attributeValuesResults=new ArrayList<>();
-        List<Map<String,String>> list = new ArrayList<>();
+        List<AttributeValueInSpu> attributeValuesResults = new ArrayList<>();
+        List<Map<String, String>> list = new ArrayList<>();
+
+        SpuClassification spuClassification = detail.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
+                .query().in("spu_classification_id", detail.getSpuClassificationId()).one();
+
+
+
 
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
@@ -152,8 +152,8 @@ public class SpuController extends BaseController {
                     List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                     SkuResult skuResult = new SkuResult();
                     skuResult.setSkuId(sku.getSkuId());
-                    Map<String,String> skuValueMap = new HashMap<>();
-                    skuValueMap.put("id",sku.getSkuId().toString());
+                    Map<String, String> skuValueMap = new HashMap<>();
+                    skuValueMap.put("id", sku.getSkuId().toString());
                     if (ToolUtil.isNotEmpty(valuesRequests)) {
                         for (AttributeValues valuesRequest : valuesRequests) {
                             AttributeInSpu itemAttributeResult = new AttributeInSpu();
@@ -163,7 +163,7 @@ public class SpuController extends BaseController {
                             attributeValuesResult.setId(valuesRequest.getAttributeValuesId());
                             attributeValuesResult.setSpuId(valuesRequest.getAttributeId());
                             attributeValuesResults.add(attributeValuesResult);
-                            skuValueMap.put("s"+valuesRequest.getAttributeId().toString(),valuesRequest.getAttributeValuesId().toString());
+                            skuValueMap.put("s" + valuesRequest.getAttributeId().toString(), valuesRequest.getAttributeValuesId().toString());
                         }
 
                     }
@@ -183,14 +183,14 @@ public class SpuController extends BaseController {
             }
             for (AttributeInSpu itemAttributeResult : tree) {
                 for (ItemAttribute itemAttribute : itemAttributes) {
-                    if(itemAttributeResult.getK_s().equals(itemAttribute.getAttributeId())){
+                    if (itemAttributeResult.getK_s().equals(itemAttribute.getAttributeId())) {
                         itemAttributeResult.setK(itemAttribute.getAttribute());
                         itemAttributeResult.setSort(itemAttribute.getSort());
                     }
                 }
                 List<AttributeValueInSpu> results = new ArrayList<>();
                 for (AttributeValueInSpu attributeValuesResult : treeValue) {
-                    if (attributeValuesResult.getSpuId().equals(itemAttributeResult.getK_s())){
+                    if (attributeValuesResult.getSpuId().equals(itemAttributeResult.getK_s())) {
                         results.add(attributeValuesResult);
                     }
                 }
@@ -199,9 +199,13 @@ public class SpuController extends BaseController {
             Collections.sort(tree);
             skuRequest.setList(list);
             skuRequest.setTree(tree);
+
         }
-
-
+        if (ToolUtil.isNotEmpty(spuClassification)) {
+            SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+            ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+            spuResult.setSpuClassificationResult(spuClassificationResult);
+        }
 
         spuResult.setSku(skuRequest);
 
@@ -214,6 +218,12 @@ public class SpuController extends BaseController {
 
         Category category = categoryService.getById(detail.getCategoryId());
         spuResult.setCategory(category);
+
+        if (ToolUtil.isNotEmpty(spuClassification)) {
+            SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+            ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+            spuResult.setSpuClassificationResult(spuClassificationResult);
+        }
 
         Unit unit = unitService.getById(detail.getUnitId());
         UnitResult unitResult = new UnitResult();
@@ -253,12 +263,12 @@ public class SpuController extends BaseController {
 
         QueryWrapper<Spu> spuQueryWrapper = new QueryWrapper<>();
 
-        if (ToolUtil.isNotEmpty(spuParam)){
-            if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())){
-                spuQueryWrapper.in("spu_classification_id",spuParam.getSpuClassificationId());
+        if (ToolUtil.isNotEmpty(spuParam)) {
+            if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())) {
+                spuQueryWrapper.in("spu_classification_id", spuParam.getSpuClassificationId());
             }
-            if (ToolUtil.isNotEmpty(spuParam.getProductionType())){
-                spuQueryWrapper.in("production_type",spuParam.getProductionType());
+            if (ToolUtil.isNotEmpty(spuParam.getProductionType())) {
+                spuQueryWrapper.in("production_type", spuParam.getProductionType());
             }
         }
 

@@ -173,6 +173,7 @@ public class InstockController extends BaseController {
     public ResponseData apiInstock(@RequestBody InstockRequest instockRequest) {
 
         OrCodeBind codeBind = orCodeBindService.query().in("form_id", instockRequest.getIds()).in("source", instockRequest.getType()).one();
+
         if (ToolUtil.isEmpty(codeBind)) {
             OrCodeParam orCodeParam = new OrCodeParam();
             orCodeParam.setType(instockRequest.getType());
@@ -188,7 +189,6 @@ public class InstockController extends BaseController {
         InstockOrderParam instockOrderParam = new InstockOrderParam();
         instockOrderParam.setStorehousePositionsId(positionsId);
         instockOrderService.add(instockOrderParam);
-
         return ResponseData.success(codeBind.getOrCodeId());
     }
 }

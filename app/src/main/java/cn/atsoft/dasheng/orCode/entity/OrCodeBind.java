@@ -2,10 +2,14 @@ package cn.atsoft.dasheng.orCode.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +24,15 @@ import java.io.Serializable;
 public class OrCodeBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 类型
+     */
+    @TableField("type")
+    private String type;
     /**
      * 绑定id
      */
-      @TableId(value = "qr_code_bind_id", type = IdType.ID_WORKER)
+    @TableId(value = "qr_code_bind_id", type = IdType.ID_WORKER)
     private Long orCodeBindId;
 
     /**
@@ -48,25 +56,25 @@ public class OrCodeBind implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -162,19 +170,27 @@ public class OrCodeBind implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "OrCodeBind{" +
-        "orCodeBindId=" + orCodeBindId +
-        ", orCodeId=" + orCodeId +
-        ", source=" + source +
-        ", formId=" + formId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "orCodeBindId=" + orCodeBindId +
+                ", orCodeId=" + orCodeId +
+                ", source=" + source +
+                ", formId=" + formId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -65,5 +66,16 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @Date 2021-10-29
      */
      PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param);
+
+    /**
+     * 查询单条数据，Specification模式
+     *
+     * @author Captain_Jazz
+     * @Date 2021-10-29
+     */
+
+    Map<String, Map<String,Object>> takeStock (StorehousePositionsParam param);
+
+
 
 }
