@@ -51,6 +51,9 @@ public class SkuResult implements Serializable {
 
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
+    @ApiModelProperty("执行标准")
+    private String standard;
+
 
     /**
      * spu id
