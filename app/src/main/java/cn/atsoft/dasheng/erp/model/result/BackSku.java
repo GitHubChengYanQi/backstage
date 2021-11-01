@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class BackSku {
+
     private AttributeValues attributeValues;
     private ItemAttribute itemAttribute;
 }

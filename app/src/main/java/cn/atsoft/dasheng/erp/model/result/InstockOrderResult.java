@@ -30,6 +30,11 @@ public class InstockOrderResult implements Serializable {
 
     private StorehouseResult storehouseResult;
 
+    /**
+     * 库位id
+     */
+    private Long storehousePositionsId;
+
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
 

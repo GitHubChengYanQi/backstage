@@ -36,6 +36,7 @@ public class SkuResult implements Serializable {
     @ApiModelProperty("")
     private Long skuId;
 
+
     /**
      * sku名字
      */

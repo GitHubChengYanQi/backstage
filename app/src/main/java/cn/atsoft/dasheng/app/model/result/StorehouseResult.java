@@ -1,20 +1,24 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 地点表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -28,6 +32,7 @@ public class StorehouseResult implements Serializable {
     private BigDecimal latitude;
 
 
+    private List<StorehousePositionsResult> storehousePositionsResults;
     /**
      * 经度
      */
@@ -46,7 +51,6 @@ public class StorehouseResult implements Serializable {
      */
     @ApiModelProperty("名称")
     private String name;
-
 
 
     /**

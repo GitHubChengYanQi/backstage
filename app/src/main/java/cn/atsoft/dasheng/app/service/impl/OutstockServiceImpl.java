@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -150,11 +151,17 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
             storehouseQueryWrapper.in("storehouse_id", storehouseIds);
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
+
+        Map<Long, List<BackSku>> listMap = skuService.sendSku(skuIds);
+
         for (OutstockResult datum : data) {
 
-            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            List<BackSku> skus = listMap.get(datum.getSkuId());
+
+//            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+
             SpuResult spuResult = skuService.backSpu(datum.getSkuId());
-            datum.setBackSkus(backSkus);
+            datum.setBackSkus(skus);
             datum.setSpuResult(spuResult);
 
             if (ToolUtil.isNotEmpty(brandList)) {

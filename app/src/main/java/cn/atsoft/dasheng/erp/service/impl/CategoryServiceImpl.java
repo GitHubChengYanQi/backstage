@@ -95,14 +95,16 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         for (CategoryResult datum : data) {
             pids.add(datum.getPid());
         }
-        List<Category> categories = this.lambdaQuery().in(Category::getCategoryId, pids).list();
-        for (CategoryResult datum : data) {
-            for (Category category : categories) {
-                if (datum.getPid().equals(category.getCategoryId())) {
-                    CategoryResult categoryResult = new CategoryResult();
-                    ToolUtil.copyProperties(category, categoryResult);
-                    datum.setPidCategoryResult(categoryResult);
-                    break;
+        if (ToolUtil.isNotEmpty(pids)) {
+            List<Category> categories = this.lambdaQuery().in(Category::getCategoryId, pids).list();
+            for (CategoryResult datum : data) {
+                for (Category category : categories) {
+                    if (datum.getPid().equals(category.getCategoryId())) {
+                        CategoryResult categoryResult = new CategoryResult();
+                        ToolUtil.copyProperties(category, categoryResult);
+                        datum.setPidCategoryResult(categoryResult);
+                        break;
+                    }
                 }
             }
         }

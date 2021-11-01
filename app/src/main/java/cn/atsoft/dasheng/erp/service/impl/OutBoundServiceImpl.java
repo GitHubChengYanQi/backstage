@@ -48,7 +48,7 @@ public class OutBoundServiceImpl implements OutBoundService {
     public String judgeOutBound(Long outstockOrderId, Long stockHouseId) {
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockOrderId, outstockOrderId).one();
-        if (outstockOrder.getState() != 0){
+        if (outstockOrder.getState() != 0) {
             throw new ServiceException(500, "已出库！");
         }
 
@@ -72,7 +72,12 @@ public class OutBoundServiceImpl implements OutBoundService {
             int i = 0;
             for (Stock stock : stocks) {
                 i++;
-                if (stock.getBrandId().equals(outstockListing.getBrandId()) && stock.getSkuId().equals(outstockListing.getSkuId())) {
+                if (outstockListing.getBrandId() != null &&
+                        outstockListing.getSkuId() != null &&
+                        stock.getBrandId() != null &&
+                        stock.getSkuId() != null &&
+                        stock.getBrandId().equals(outstockListing.getBrandId()) &&
+                        stock.getSkuId().equals(outstockListing.getSkuId())) {
                     Long number = outstockListing.getNumber();
                     Long inventory = stock.getInventory();
                     if (inventory < number) {
@@ -89,9 +94,9 @@ public class OutBoundServiceImpl implements OutBoundService {
                     stocksList.add(updateStock);
 
                     QueryWrapper<OutstockApply> outstockApplyQueryWrapper = new QueryWrapper<>();
-                    outstockApplyQueryWrapper.in("outstock_apply_id",outstockListing.getOutstockApplyId());
+                    outstockApplyQueryWrapper.in("outstock_apply_id", outstockListing.getOutstockApplyId());
                     List<OutstockApply> list = outstockApplyService.list(outstockApplyQueryWrapper);
-                    if (list.size() > 0){
+                    if (list.size() > 0) {
                         for (OutstockApply outstockApply : list) {
                             outstockApplies.add(outstockApply);
                         }
@@ -105,7 +110,6 @@ public class OutBoundServiceImpl implements OutBoundService {
                 }
             }
         }
-
 
 
         List<Outstock> Outstocks = new ArrayList<>();
@@ -157,7 +161,6 @@ public class OutBoundServiceImpl implements OutBoundService {
 //                        .and(z -> z.in(StockDetails::getStage, 1))).list();
 
 
-
         outstockOrder.setState(1);
         outstockOrder.setStorehouseId(stockHouseId);
         OutstockOrderParam outstockOrderParam = new OutstockOrderParam();
@@ -170,9 +173,6 @@ public class OutBoundServiceImpl implements OutBoundService {
             outstockApplyParam.setApplyState(3);
             outstockApplyService.update(outstockApplyParam);
         }
-
-
-
 
 
         return "出库成功";
@@ -220,8 +220,8 @@ public class OutBoundServiceImpl implements OutBoundService {
         long l = -1L;
 
         OutstockOrder outstockOrder = outstockOrderService.lambdaQuery().eq(OutstockOrder::getOutstockApplyId, outstockApplyParam.getOutstockApplyId()).one();
-        if(ToolUtil.isEmpty(outstockOrder)){
-            throw new ServiceException(500,"产品不存在！");
+        if (ToolUtil.isEmpty(outstockOrder)) {
+            throw new ServiceException(500, "产品不存在！");
         }
 
         for (ApplyDetails applyDetail : applyDetails) {
@@ -295,7 +295,6 @@ public class OutBoundServiceImpl implements OutBoundService {
             ToolUtil.copyProperties(outstockApply, outstockApplyParamUpdate);
             outstockApplyService.update(outstockApplyParamUpdate);
         }
-
 
 
         outstockOrder.setState(2);
