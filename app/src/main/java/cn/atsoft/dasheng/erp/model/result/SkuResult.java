@@ -57,7 +57,8 @@ public class SkuResult implements Serializable {
      */
     @ApiModelProperty("spu id")
     private Long spuId;
-
+    @ApiModelProperty("规格")
+    public String specifications;
     /**
      * 创建时间
      */

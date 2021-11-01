@@ -26,7 +26,7 @@ import java.util.List;
 @Data
 @ApiModel
 public class SpuParam implements Serializable, BaseValidatingParam {
-
+    private Boolean isHidden;
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
 //    private List<ItemAttributeParam> spuAttributes;

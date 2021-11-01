@@ -36,6 +36,16 @@ public class Sku implements Serializable {
     public int getIsBan() {
         return isBan;
     }
+    @TableField("specifications")
+    public String specifications;
+
+    public String getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(String specifications) {
+        this.specifications = specifications;
+    }
 
     public void setIsBan(int isBan) {
         this.isBan = isBan;
