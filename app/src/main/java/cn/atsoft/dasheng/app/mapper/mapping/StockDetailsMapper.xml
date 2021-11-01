@@ -79,8 +79,8 @@ stage
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
         </if>
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
         </if>
         <if test="paramCondition.storageTime !=null">
             and storage_time like CONCAT('%',#{paramCondition.storageTime},'%')
