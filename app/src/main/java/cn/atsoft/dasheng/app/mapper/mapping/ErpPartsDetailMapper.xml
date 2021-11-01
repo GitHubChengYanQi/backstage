@@ -9,6 +9,7 @@
         <result column="spu_id" property="spuId"/>
         <result column="parts_id" property="partsId"/>
         <result column="number" property="number"/>
+        <result column="sku_id" property="skuId"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_user" property="createUser"/>
@@ -21,7 +22,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         parts_detail_id
-        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note"
+        AS "partsDetailId", attribute AS "attribute",parts_id AS "partsId", spu_id AS "spuId",sku_id AS "skuId", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", note AS "note"
     </sql>
 
 
@@ -117,6 +118,9 @@
         </if>
         <if test="paramCondition.partsId != null">
             and parts_id like CONCAT('%',#{paramCondition.partsId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
     </select>
 
