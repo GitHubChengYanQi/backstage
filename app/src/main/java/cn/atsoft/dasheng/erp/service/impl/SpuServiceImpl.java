@@ -87,7 +87,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
 
         if (param.getIsHidden()) {
-
+            Integer classcount = categoryService.query().in("category_name", param.getName()).count();
+            if (classcount > 0) {
+                throw new ServiceException(500, "不可以填写重复名");
+            }
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryName(param.getName());
             Long classIds = categoryService.add(categoryParam);
@@ -95,7 +98,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setCategoryId(classIds);
             attributeParam.setAttribute("规格");
             Long attrId = itemAttributeService.add(attributeParam);
-            
+
             this.save(entity);
         } else {
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
