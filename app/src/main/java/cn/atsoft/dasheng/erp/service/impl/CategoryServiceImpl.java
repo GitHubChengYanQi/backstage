@@ -39,7 +39,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         Category entity = getEntity(param);
         this.save(entity);
-        return entity.getCategoryId()
+        return entity.getCategoryId();
     }
 
     @Override
@@ -97,14 +97,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             pids.add(datum.getPid());
         }
         if (ToolUtil.isNotEmpty(pids)) {
-            List<Category> categories = this.lambdaQuery().in(Category::getCategoryId, pids).list();
+            List<Category> categories = pids.size() == 0 ? new ArrayList<>() :
+                    this.lambdaQuery().in(Category::getCategoryId, pids).list();
             for (CategoryResult datum : data) {
-                for (Category category : categories) {
-                    if (datum.getPid().equals(category.getCategoryId())) {
-                        CategoryResult categoryResult = new CategoryResult();
-                        ToolUtil.copyProperties(category, categoryResult);
-                        datum.setPidCategoryResult(categoryResult);
-                        break;
+                if (ToolUtil.isNotEmpty(categories)) {
+                    for (Category category : categories) {
+                        if (datum.getCategoryId() != null && datum.getPid().equals(category.getCategoryId())) {
+                            CategoryResult categoryResult = new CategoryResult();
+                            ToolUtil.copyProperties(category, categoryResult);
+                            datum.setPidCategoryResult(categoryResult);
+                            break;
+                        }
                     }
                 }
             }
