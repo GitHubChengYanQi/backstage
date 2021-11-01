@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.orCode.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeBindMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
@@ -37,15 +38,17 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
 
     @Override
     public void delete(OrCodeBindParam param) {
-        this.removeById(getKey(param));
+//        this.removeById(getKey(param));
+        throw new ServiceException(500, "不可以删除");
     }
 
     @Override
     public void update(OrCodeBindParam param) {
-        OrCodeBind oldEntity = getOldEntity(param);
-        OrCodeBind newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+//        OrCodeBind oldEntity = getOldEntity(param);
+//        OrCodeBind newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
+        throw new ServiceException(500, "不可以修改");
     }
 
     @Override

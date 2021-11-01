@@ -151,8 +151,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.GET)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestParam String type, Long id) {
-        OrCodeBind one = orCodeBindService.query().in("source", type).in("form_id", id).one();
+    public ResponseData backCode(@RequestParam String type, String source, Long id) {
+        OrCodeBind one = orCodeBindService.query().in("type", type).in("form_id", id).in("source", source).one();
         if (ToolUtil.isNotEmpty(one)) {
             return ResponseData.success(one.getOrCodeId());
         } else {
@@ -160,7 +160,8 @@ public class OrCodeController extends BaseController {
             orCodeParam.setType(type);
             Long aLong = orCodeService.add(orCodeParam);
             OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(type);
+            orCodeBindParam.setSource(source);
+            orCodeBindParam.setType(type);
             orCodeBindParam.setFormId(id);
             orCodeBindParam.setOrCodeId(aLong);
             orCodeBindService.add(orCodeBindParam);
@@ -240,7 +241,8 @@ public class OrCodeController extends BaseController {
                     ToolUtil.copyProperties(stock, stockResult);
                     try {
                         orCodeService.stockFormat(stockResult);
-                    }catch (Exception e){}
+                    } catch (Exception e) {
+                    }
                     StockRequest stockRequest = new StockRequest();
                     stockRequest.setType("storehouse");
                     stockRequest.setResult(stockResult);

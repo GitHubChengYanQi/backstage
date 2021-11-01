@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
@@ -74,15 +75,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
     @Override
     public void delete(OrCodeParam param) {
-        this.removeById(getKey(param));
+//        this.removeById(getKey(param));
+        throw new ServiceException(500, "不可以删除");
     }
 
     @Override
     public void update(OrCodeParam param) {
-        OrCode oldEntity = getOldEntity(param);
-        OrCode newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+//        OrCode oldEntity = getOldEntity(param);
+//        OrCode newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
+        throw new ServiceException(500, "不可以修改");
     }
 
     @Override
