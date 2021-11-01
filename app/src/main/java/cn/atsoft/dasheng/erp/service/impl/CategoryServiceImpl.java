@@ -102,7 +102,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             for (CategoryResult datum : data) {
                 if (ToolUtil.isNotEmpty(categories)) {
                     for (Category category : categories) {
-                        if (datum.getCategoryId() != null && datum.getPid().equals(category.getCategoryId())) {
+                        if (datum.getPid() != null && datum.getPid().equals(category.getCategoryId())) {
                             CategoryResult categoryResult = new CategoryResult();
                             ToolUtil.copyProperties(category, categoryResult);
                             datum.setPidCategoryResult(categoryResult);
