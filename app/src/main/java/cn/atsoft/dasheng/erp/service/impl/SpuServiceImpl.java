@@ -86,7 +86,6 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu entity = getEntity(param);
 
 
-
         if (param.getIsHidden()) {
 
             CategoryParam categoryParam = new CategoryParam();
@@ -95,9 +94,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             ItemAttributeParam attributeParam = new ItemAttributeParam();
             attributeParam.setCategoryId(classIds);
             attributeParam.setAttribute("规格");
-            itemAttributeService.add(attributeParam);
+            Long attrId = itemAttributeService.add(attributeParam);
+            
             this.save(entity);
-        }else{
+        } else {
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
                 throw new ServiceException(500, "填入信息不完整");
             }
@@ -369,7 +369,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", classIds).list();
 
         for (SpuResult spuResult : param) {
-            if (ToolUtil.isNotEmpty(spuResult.getCategoryId())){
+            if (ToolUtil.isNotEmpty(spuResult.getCategoryId())) {
                 for (Category category : categoryList) {
                     if (spuResult.getCategoryId().equals(category.getCategoryId())) {
                         spuResult.setCategory(category);
