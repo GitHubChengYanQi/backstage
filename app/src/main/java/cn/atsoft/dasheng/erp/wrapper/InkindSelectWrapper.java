@@ -7,18 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SkuSelectWrapper extends BaseControllerWrapper {
+public class InkindSelectWrapper extends BaseControllerWrapper {
 
-    public SkuSelectWrapper(List<Map<String, Object>> multi) {
+    public InkindSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("sku_name"));
-        String value = Convert.toStr(map.get("sku_id"));
-        map.clear();
-        map.put("label",label);
-        map.put("value",value);
     }
 }

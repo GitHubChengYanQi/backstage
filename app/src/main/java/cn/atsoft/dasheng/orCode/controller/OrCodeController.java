@@ -151,8 +151,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.GET)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestParam Long id, String source) {
-        Long aLong = orCodeService.backCode(id, source);
+    public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest ) {
+        Long aLong = orCodeService.backCode(backCodeRequest);
         return ResponseData.success(aLong);
 
     }
@@ -279,12 +279,17 @@ public class OrCodeController extends BaseController {
         return ResponseData.success();
     }
 
-
-    @RequestMapping(value = "/test", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData test(@RequestBody OrCodeParam orCodeParam) {
-        Map<Long, List<BackSku>> listMap = skuService.sendSku(orCodeParam.getIds());
-        return ResponseData.success(listMap);
+    /**
+     * 判断是否绑定
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @RequestMapping(value = "/isNotBind", method = RequestMethod.POST)
+    @ApiOperation("判断是否绑定")
+    public ResponseData isNotBind(@RequestBody InKindRequest inKindRequest) {
+        Boolean t = orCodeService.isNotBind(inKindRequest);
+        return ResponseData.success(t);
     }
 
 

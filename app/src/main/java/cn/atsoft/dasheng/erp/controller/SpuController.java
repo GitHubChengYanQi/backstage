@@ -183,7 +183,6 @@ public class SpuController extends BaseController {
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     if (itemAttributeResult.getK_s().equals(itemAttribute.getAttributeId())) {
                         itemAttributeResult.setK(itemAttribute.getAttribute());
-                        itemAttributeResult.setSort(itemAttribute.getSort());
                     }
                 }
                 List<AttributeValueInSpu> results = new ArrayList<>();
@@ -194,7 +193,6 @@ public class SpuController extends BaseController {
                 }
                 itemAttributeResult.setV(results);
             }
-            Collections.sort(tree);
             skuRequest.setList(list);
             skuRequest.setTree(tree);
 

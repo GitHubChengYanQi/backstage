@@ -24,7 +24,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.orCode.model.result.OrCodeResult" parameterType="cn.atsoft.dasheng.orCode.model.params.OrCodeParam">
         select
         <include refid="Base_Column_List"/>
-        from or_code where 1 = 1
+        from qr_code where 1 = 1
             <if test="paramCondition.orCodeId != null">
                 and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
             </if>
@@ -57,7 +57,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.orCode.model.params.OrCodeParam">
         select
         <include refid="Base_Column_List"/>
-        from or_code where 1 = 1
+        from qr_code where 1 = 1
                 <if test="paramCondition.orCodeId != null">
                         and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
                 </if>
@@ -90,7 +90,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.orCode.model.result.OrCodeResult" parameterType="cn.atsoft.dasheng.orCode.model.params.OrCodeParam">
         select
         <include refid="Base_Column_List"/>
-        from or_code where 1 = 1
+        from qr_code where 1 = 1
                 <if test="paramCondition.orCodeId != null">
                         and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
                 </if>
@@ -123,7 +123,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.orCode.model.params.OrCodeParam">
         select
         <include refid="Base_Column_List"/>
-        from or_code where 1 = 1
+        from qr_code where 1 = 1
                 <if test="paramCondition.orCodeId != null">
                         and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
                 </if>
