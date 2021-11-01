@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @ApiModel
 public class AttributeValueInSpu {
-    private Long spuId;
+    private Long attributeId;
     private Long id;
     private String name;
 }

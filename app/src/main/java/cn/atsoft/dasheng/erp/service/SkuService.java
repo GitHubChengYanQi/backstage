@@ -72,5 +72,7 @@ public interface SkuService extends IService<Sku> {
 
     List<BackSku> backSku(Long ids);
 
+    List<SkuResult> backSkuList(List<Long> skuIds);
+
     SpuResult backSpu(Long spuId);
 }
