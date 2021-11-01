@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -102,5 +103,7 @@ public interface OrCodeService extends IService<OrCode> {
     List<Long> backBatchCode(List<Long> ids, String type);
 
     Long backCode(Long id, String source);
+
+    Boolean isNotBind(InKindRequest inKindRequest);
 
 }

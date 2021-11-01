@@ -12,10 +12,8 @@ import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -26,6 +24,7 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
@@ -71,6 +70,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private InkindService inkindService;
 
     @Override
     @Transactional
@@ -208,10 +209,25 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         }
     }
 
+    /**
+     * 批量绑定
+     *
+     * @param ids
+     * @param source
+     * @return
+     */
     @Override
+    @Transactional
     public List<Long> backBatchCode(List<Long> ids, String source) {
+        //判断重复
+        long count = ids.stream().distinct().count();
+        if (ids.size() > count) {
+            throw new ServiceException(500, "不可以填写重复数据");
+        }
+        if (ToolUtil.isNotEmpty(source)) {
+            throw new ServiceException(500, "请传入绑定类型");
+        }
         List<Long> codeIds = new ArrayList<>();
-
         Map<Long, Long> map = new HashMap<>();
         List<OrCodeBind> orCodeBinds = new ArrayList<>();
         OrCodeParam orCodeParam = null;
@@ -226,7 +242,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Long aLong = map.get(id);
             if (ToolUtil.isNotEmpty(aLong)) {
                 codeIds.add(aLong);
-            }else {
+            } else {
                 orCodeParam = new OrCodeParam();
                 orCodeParam.setType(source);
                 Long codeId = this.add(orCodeParam);
@@ -244,9 +260,29 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         return codeIds;
     }
 
+    /**
+     * 单个绑定
+     *
+     * @param id
+     * @param source
+     * @return
+     */
     @Override
+    @Transactional
     public Long backCode(Long id, String source) {
-        OrCodeBind one = orCodeBindService.query().in("form_id", id).in("source", source).one();
+
+        if (ToolUtil.isNotEmpty(id)) {
+            throw new ServiceException(500, "请传入id");
+        }
+        if (ToolUtil.isNotEmpty(source)) {
+            throw new ServiceException(500, "请传入绑定类型");
+        }
+        InkindParam inkindParam = new InkindParam();
+        inkindParam.setSkuId(id);
+        inkindParam.setType(source);
+        Long kindId = inkindService.add(inkindParam);
+
+        OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", source).one();
         if (ToolUtil.isNotEmpty(one)) {
             return one.getOrCodeId();
         } else {
@@ -255,11 +291,24 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Long aLong = this.add(orCodeParam);
             OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
             orCodeBindParam.setSource(source);
-            orCodeBindParam.setFormId(id);
+            orCodeBindParam.setFormId(kindId);
             orCodeBindParam.setOrCodeId(aLong);
             orCodeBindService.add(orCodeBindParam);
             return aLong;
         }
+    }
+
+    @Override
+    public Boolean isNotBind(InKindRequest inKindRequest) {
+        OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", inKindRequest.getCodeId()).one();
+        if (ToolUtil.isEmpty(orCodeBind)) {
+            return false;
+        }
+        Inkind inkind = inkindService.query().eq("sku_id", inKindRequest.getSkuId()).eq("type", inKindRequest.getType()).one();
+        if (ToolUtil.isEmpty(inkind)) {
+            return false;
+        }
+        return true;
     }
 
 
