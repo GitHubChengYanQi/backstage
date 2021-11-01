@@ -271,10 +271,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Transactional
     public Long backCode(Long id, String source) {
 
-        if (ToolUtil.isNotEmpty(id)) {
+        if (ToolUtil.isEmpty(id)) {
             throw new ServiceException(500, "请传入id");
         }
-        if (ToolUtil.isNotEmpty(source)) {
+        Integer count = skuService.query().in("sku_id", id).count();
+        if (count == 0) {
+            throw new ServiceException(500, "参数不合法");
+        }
+        if (ToolUtil.isEmpty(source)) {
             throw new ServiceException(500, "请传入绑定类型");
         }
         InkindParam inkindParam = new InkindParam();
