@@ -24,7 +24,7 @@ public interface SpuClassificationService extends IService<SpuClassification> {
      * @author song
      * @Date 2021-10-25
      */
-    void add(SpuClassificationParam param);
+    Long add(SpuClassificationParam param);
 
     /**
      * 删除
