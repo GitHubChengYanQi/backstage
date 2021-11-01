@@ -39,7 +39,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -209,43 +211,32 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public List<Long> backBatchCode(List<Long> ids, String source) {
         List<Long> codeIds = new ArrayList<>();
-        List<Long> formIds = new ArrayList<>();
+
+        Map<Long, Long> map = new HashMap<>();
         List<OrCodeBind> orCodeBinds = new ArrayList<>();
         OrCodeParam orCodeParam = null;
         List<OrCodeBind> codeBinds = ids.size() == 0 ? new ArrayList<>() : orCodeBindService.query().in("form_id", ids).in("source", source).list();
-
+        //已有绑定
         if (ToolUtil.isNotEmpty(codeBinds)) {
             for (OrCodeBind codeBind : codeBinds) {
-                codeIds.add(codeBind.getOrCodeId());
-                formIds.add(codeBind.getFormId());
+                map.put(codeBind.getFormId(), codeBind.getOrCodeId());
             }
         }
-        if (formIds.size() != 0) {
-            for (Long formId : formIds) {
-                for (Long id : ids) {
-                    if (formId != id) {
-                        orCodeParam = new OrCodeParam();
-                        Long aLong = this.add(orCodeParam);
-                        codeIds.add(aLong);
-                        OrCodeBind orCodeBind = new OrCodeBind();
-                        orCodeBind.setSource(source);
-                        orCodeBind.setFormId(id);
-                        orCodeBind.setOrCodeId(aLong);
-                        orCodeBinds.add(orCodeBind);
-                    }
-                }
-            }
-        } else {
-            for (Long id : ids) {
-                orCodeParam = new OrCodeParam();
-                Long aLong = this.add(orCodeParam);
+
+        for (Long id : ids) {
+            Long aLong = map.get(id);
+            if (ToolUtil.isNotEmpty(aLong)) {
                 codeIds.add(aLong);
+            }else {
+                orCodeParam = new OrCodeParam();
+                orCodeParam.setType(source);
+                Long codeId = this.add(orCodeParam);
+                codeIds.add(codeId);
                 OrCodeBind orCodeBind = new OrCodeBind();
                 orCodeBind.setSource(source);
+                orCodeBind.setOrCodeId(codeId);
                 orCodeBind.setFormId(id);
-                orCodeBind.setOrCodeId(aLong);
                 orCodeBinds.add(orCodeBind);
-
             }
         }
 
@@ -261,6 +252,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             return one.getOrCodeId();
         } else {
             OrCodeParam orCodeParam = new OrCodeParam();
+            orCodeParam.setType(source);
             Long aLong = this.add(orCodeParam);
             OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
             orCodeBindParam.setSource(source);

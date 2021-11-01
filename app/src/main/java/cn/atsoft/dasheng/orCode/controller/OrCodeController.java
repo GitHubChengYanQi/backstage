@@ -158,6 +158,21 @@ public class OrCodeController extends BaseController {
     }
 
     /**
+     * 返回批量二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/batchBackCode", method = RequestMethod.POST)
+    @Transactional
+    public ResponseData batchBackCode(@RequestBody OrCodeRequest codeRequest) {
+        List<Long> longs = orCodeService.backBatchCode(codeRequest.getIds(), codeRequest.getType());
+        return ResponseData.success(longs);
+
+    }
+
+
+    /**
      * 通过二维码返回真是数据
      *
      * @author song
