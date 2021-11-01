@@ -37,13 +37,14 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
     private ItemAttributeService itemAttributeService;
 
     @Override
-    public void add(AttributeValuesParam param) {
+    public Long add(AttributeValuesParam param) {
         Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).count();
         if (count > 0) {
             throw new ServiceException(500, "不要重复添加");
         }
         AttributeValues entity = getEntity(param);
         this.save(entity);
+        return entity.getAttributeValuesId();
     }
 
     @Override
