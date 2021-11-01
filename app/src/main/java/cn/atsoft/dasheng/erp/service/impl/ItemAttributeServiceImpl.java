@@ -40,13 +40,14 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     private SpuService spuService;
 
     @Override
-    public void add(ItemAttributeParam param) {
+    public Long add(ItemAttributeParam param) {
         Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).count();
         if (count > 0) {
             throw new ServiceException(500, "请不要重复添加");
         }
         ItemAttribute entity = getEntity(param);
         this.save(entity);
+        return entity.getAttributeId();
     }
 
     @Override

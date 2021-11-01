@@ -24,7 +24,7 @@ public interface ItemAttributeService extends IService<ItemAttribute> {
      * @author song
      * @Date 2021-10-18
      */
-    void add(ItemAttributeParam param);
+    Long add(ItemAttributeParam param);
 
     /**
      * 删除
