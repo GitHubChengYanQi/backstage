@@ -28,12 +28,13 @@ public class SkuResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     List<AttributeValuesResult> list;
-
+    private List<SkuJson> skuJsons;
     private String categoryName;
 
     private String spuName;
     @ApiModelProperty("")
     private Long skuId;
+
 
     /**
      * sku名字
