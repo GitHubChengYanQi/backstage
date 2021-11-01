@@ -4,7 +4,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
@@ -12,6 +14,8 @@ import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
@@ -144,6 +148,23 @@ public class SkuController extends BaseController {
             skuParam = new SkuParam();
         }
         return this.skuService.findPageBySpec(skuParam);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuParam spuParam) {
+
+
+        List<Map<String, Object>> list = this.skuService.listMaps();
+        SkuSelectWrapper factory = new SkuSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 
