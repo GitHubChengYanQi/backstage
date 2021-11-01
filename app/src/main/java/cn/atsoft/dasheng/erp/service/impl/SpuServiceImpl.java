@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -70,6 +71,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     private MaterialService materialService;
     @Autowired
     private SpuClassificationService spuClassificationService;
+    @Autowired
+    private OrCodeService orCodeService;
+//    backBatchCode
     @Transactional
     @Override
     public void add(SpuParam param) {
@@ -92,7 +96,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //        param.getSpuAttributes().getSpuRequests().sort();
         param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId).reversed());
 
-        //        Collections.sort(param.getSpuAttributes().getSpuRequests());
+//                Collections.sort(param.getSpuAttributes().getSpuRequests());
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
 
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
@@ -128,9 +132,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                         skuEntry.setSkuValue(s);
                         skuEntry.setSkuValueMd5(SecureUtil.md5(sku.getSkuValue()));
                         skuEntry.setSpuId(entity.getSpuId());
-                        skuEntry.setIsBan(sku.getIsBan());
+                        if (ToolUtil.isNotEmpty(sku.getIsBan())){
+                            skuEntry.setIsBan(sku.getIsBan());
+                        }
                         skuEntry.setSpuId(entity.getSpuId());
-                        skuEntry.setSkuName(sku.getSkuName());
+                        if (ToolUtil.isNotEmpty(sku.getSkuName())){
+                            skuEntry.setSkuName(sku.getSkuName());
+                        }
+
                         skuList.add(skuEntry);
                     }
                 }
@@ -148,7 +157,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             }else{
                 throw new ServiceException(500,"计算有误请重试");
             }
-
+            List<Sku> list = skuService.lambdaQuery().in(Sku::getSpuId, entity.getSpuId()).list();
+            List<Long> skuIds = new ArrayList<>();
+            for (Sku sku : list) {
+                skuIds.add(sku.getSkuId());
+            }
+           orCodeService.backBatchCode(skuIds,"sku");
         }
 
 
