@@ -30,7 +30,7 @@ public class AttributeValuesParam implements Serializable, BaseValidatingParam,C
      */
     @Override
     public int compareTo(AttributeValuesParam o) {
-        return (int)(o.getAttributeId() - this.attributeId);
+        return (int)(this.attributeId - o.getAttributeId());
     }
     private Long attributeId;
 
