@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -23,13 +24,13 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SkuParam implements Serializable, BaseValidatingParam {
+public class SkuParam implements Serializable, BaseValidatingParam  {
 
     private static final long serialVersionUID = 1L;
-
-    List<SkuValues> SkuValues;
+    private List<AttributeValuesParam> attributeValues;
     @ApiModelProperty("")
     private Long skuId;
+    List<Long> skuIds;
 
     /**
      * sku名字
@@ -42,7 +43,7 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
     @ApiModelProperty("是否禁用")
-    private String isBan;
+    private Integer isBan;
 
     /**
      * spu id

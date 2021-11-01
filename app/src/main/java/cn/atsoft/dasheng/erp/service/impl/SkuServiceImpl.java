@@ -55,9 +55,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> ids = new ArrayList<>();
 
         StringBuffer stringBuffer = new StringBuffer();
-        for (SkuValues skuValue : param.getSkuValues()) {
-            ids.add(skuValue.getAttributeValuesId());
-        }
+//        for (SkuValues skuValue : param.getSkuValues()) {
+//            ids.add(skuValue.getAttributeValuesId());
+//        }
         Collections.sort(ids);
         for (Long id : ids) {
             stringBuffer.append(id + ",");
@@ -210,6 +210,45 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         return new ArrayList<>();
 
+    }
+    @Override
+    public List<SkuResult> backSkuList(List<Long> skuIds) {
+        List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
+        List<Long> attIds = new ArrayList<>();
+        List<SkuResult> results = new ArrayList<>();
+        for (Sku sku : skuList) {
+            String skuValue = sku.getSkuValue();
+            JSONArray jsonArray = JSONUtil.parseArray(skuValue);
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            for (AttributeValues valuesRequest : valuesRequests) {
+                attIds.add(valuesRequest.getAttributeId());
+            }
+        }
+        List<ItemAttribute> attList = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attIds).list();
+        List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
+        for (Sku sku : skuList) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku,skuResult);
+            String skuValue = sku.getSkuValue();
+            JSONArray jsonArray = JSONUtil.parseArray(skuValue);
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+            StringBuffer sb  = new StringBuffer();
+            for (AttributeValues valuesRequest : valuesRequests) {
+                for (AttributeValues values : attValuesList) {
+                    if (valuesRequest.getAttributeValuesId().equals(values.getAttributeValuesId())) {
+                        sb.append(values.getAttributeValues()+",");
+                    }
+                }
+            }
+            sb.deleteCharAt(sb.length()-1);
+            skuResult.setSkuTextValue(sb.toString());
+            results.add(skuResult);
+        }
+
+
+
+
+        return results ;
     }
 
 

@@ -32,6 +32,7 @@ public class SkuResult implements Serializable {
     private String categoryName;
 
     private String spuName;
+    private String skuTextValue;
     @ApiModelProperty("")
     private Long skuId;
 

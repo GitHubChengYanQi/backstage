@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -21,13 +22,16 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class AttributeValuesParam implements Serializable, BaseValidatingParam {
+public class AttributeValuesParam implements Serializable, BaseValidatingParam,Comparable<AttributeValuesParam> {
 
     private static final long serialVersionUID = 1L;
     /**
      * 属性Id
      */
-
+    @Override
+    public int compareTo(AttributeValuesParam o) {
+        return (int)(o.getAttributeId() - this.attributeId);
+    }
     private Long attributeId;
 
     /**

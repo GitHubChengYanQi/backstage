@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -65,6 +66,8 @@ public interface SpuService extends IService<Spu> {
      * @Date 2021-10-18
      */
     PageInfo<SpuResult> findPageBySpec(SpuParam param);
+
+    ResponseData<SpuResult> detail (SpuParam spuParam);
 
 
 }
