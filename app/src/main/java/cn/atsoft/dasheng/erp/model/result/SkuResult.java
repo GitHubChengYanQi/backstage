@@ -30,7 +30,7 @@ public class SkuResult implements Serializable {
     List<AttributeValuesResult> list;
     private List<SkuJson> skuJsons;
     private String categoryName;
-
+    private SpuResult spuResult;
     private String spuName;
     private String skuTextValue;
     @ApiModelProperty("")
