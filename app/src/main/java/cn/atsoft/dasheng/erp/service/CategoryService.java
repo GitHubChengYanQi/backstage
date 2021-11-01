@@ -26,7 +26,7 @@ public interface CategoryService extends IService<Category> {
      * @author jazz
      * @Date 2021-10-18
      */
-    void add(CategoryParam param);
+    Long   add(CategoryParam param);
 
     /**
      * 删除

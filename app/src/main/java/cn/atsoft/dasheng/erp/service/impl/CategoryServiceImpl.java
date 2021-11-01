@@ -32,13 +32,14 @@ import java.util.List;
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
 
     @Override
-    public void add(CategoryParam param) {
+    public Long add(CategoryParam param) {
         Integer count = this.query().in("category_name", param.getCategoryName()).count();
         if (count > 0) {
             throw new ServiceException(500, "**重复添加**");
         }
         Category entity = getEntity(param);
         this.save(entity);
+        return entity.getCategoryId()
     }
 
     @Override

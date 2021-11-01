@@ -107,6 +107,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
         for (SkuResult skuResult : param) {
+            spuIds.add(skuResult.getSpuId());
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             for (AttributeValues valuesRequest : valuesRequests) {
@@ -120,8 +121,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
 
-        for (SkuResult skuResult : param) {
 
+        List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).list();
+
+        for (SkuResult skuResult : param) {
+            if (ToolUtil.isNotEmpty(spus)) {
+                for (Spu spu : spus) {
+                    if (spu.getSpuId() != null && skuResult.getSpuId() != null && spu.getSpuId().equals(skuResult.getSpuId())) {
+                        SpuResult spuResult = new SpuResult();
+                        ToolUtil.copyProperties(spu, spuResult);
+                        skuResult.setSpuResult(spuResult);
+                        break;
+                    }
+                }
+            }
 
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
@@ -211,6 +224,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return new ArrayList<>();
 
     }
+
     @Override
     public List<SkuResult> backSkuList(List<Long> skuIds) {
         List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
@@ -228,27 +242,25 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku,skuResult);
+            ToolUtil.copyProperties(sku, skuResult);
             String skuValue = sku.getSkuValue();
             JSONArray jsonArray = JSONUtil.parseArray(skuValue);
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-            StringBuffer sb  = new StringBuffer();
+            StringBuffer sb = new StringBuffer();
             for (AttributeValues valuesRequest : valuesRequests) {
                 for (AttributeValues values : attValuesList) {
                     if (valuesRequest.getAttributeValuesId().equals(values.getAttributeValuesId())) {
-                        sb.append(values.getAttributeValues()+",");
+                        sb.append(values.getAttributeValues() + ",");
                     }
                 }
             }
-            sb.deleteCharAt(sb.length()-1);
+            sb.deleteCharAt(sb.length() - 1);
             skuResult.setSkuTextValue(sb.toString());
             results.add(skuResult);
         }
 
 
-
-
-        return results ;
+        return results;
     }
 
 
