@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.orCode.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Material;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
@@ -12,6 +15,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,6 +59,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private CategoryService categoryService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
 
     @Override
     @Transactional
@@ -99,9 +108,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         SpuClassification spuClassification = spuResult.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
                 .query().in("spu_classification_id", spuResult.getSpuClassificationId()).one();
         Material material = materialService.query().in("material_id", spuResult.getMaterialId()).one();
-//查询单位
+        //查询单位
         Unit unit = spuResult.getUnitId() == null ? new Unit() : unitService.query().eq("unit_id", spuResult.getUnitId()).one();
-//返回类目
+        //返回类目
         Category category = spuResult.getCategoryId() == null ? new Category() : categoryService.query().in("category_id", spuResult.getCategoryId()).one();
         if (ToolUtil.isNotEmpty(category)) {
             cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult = new CategoryResult();
@@ -139,6 +148,53 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             SkuResult skuResult = new SkuResult();
             ToolUtil.copyProperties(sku, skuResult);
             storehousePositionsResult.setSkuResult(skuResult);
+        }
+    }
+
+    @Override
+    public void stockFormat(StockResult stockResult) {
+        Long storehouseId = stockResult.getStorehouseId();
+        Long brandId = stockResult.getBrandId();
+        Long skuId = stockResult.getSkuId();
+
+        if (ToolUtil.isNotEmpty(storehouseId)) {
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", storehouseId).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                StorehouseResult storehouseResult = new StorehouseResult();
+                ToolUtil.copyProperties(storehouse, storehouseResult);
+                stockResult.setStorehouseResult(storehouseResult);
+            }
+        }
+
+        if (ToolUtil.isNotEmpty(brandId)) {
+            Brand brand = brandService.query().eq("brand_id", brandId).one();
+            if (ToolUtil.isNotEmpty(brand)) {
+                BrandResult brandResult = new BrandResult();
+                ToolUtil.copyProperties(brand, brandResult);
+                stockResult.setBrandResult(brandResult);
+            }
+        }
+        if (ToolUtil.isNotEmpty(skuId)) {
+            List<BackSku> backSkus = skuService.backSku(skuId);
+            SpuResult spuResult = skuService.backSpu(skuId);
+            stockResult.setBackSkus(backSkus);
+            stockResult.setSpuResult(spuResult);
+        }
+
+    }
+
+    @Override
+    public void storehouseFormat(StorehouseResult storehouseResult) {
+        Long storehouseId = storehouseResult.getStorehouseId();
+        if (ToolUtil.isNotEmpty(storehouseId)) {
+            List<StorehousePositions> positions = storehousePositionsService.query().in("storehouse_id", storehouseId).list();
+            List<StorehousePositionsResult> list = new ArrayList<>();
+            for (StorehousePositions position : positions) {
+                StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+                ToolUtil.copyProperties(position, storehousePositionsResult);
+                list.add(storehousePositionsResult);
+            }
+            storehouseResult.setStorehousePositionsResults(list);
         }
     }
 

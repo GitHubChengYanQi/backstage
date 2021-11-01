@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -122,9 +123,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuResult skuResult : param) {
 
 
-
-
-
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             List<SkuJson> list = new ArrayList<>();
@@ -230,12 +228,53 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
+    @Override
     public Map<Long, List<BackSku>> sendSku(List<Long> skuiIds) {
+        if (skuiIds.size() == 0) {
+            throw new ServiceException(500, "请确认sku");
+        }
         Map<Long, List<BackSku>> skuMap = new HashMap<>();
-
+        List<Long> values = new ArrayList<>();
+        List<Long> attIds = new ArrayList<>();
         List<Sku> skus = this.query().in("sku_id", skuiIds).list();
-
-
+        Map<Long, List<AttributeValues>> map = new HashMap<>();
+        if (ToolUtil.isNotEmpty(skus)) {
+            for (Sku sku : skus) {
+                JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+                List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+                map.put(sku.getSkuId(), valuesRequests);
+            }
+            for (Long skuiId : skuiIds) {
+                List<AttributeValues> attributeValues = map.get(skuiId);
+                for (AttributeValues attributeValue : attributeValues) {
+                    values.add(attributeValue.getAttributeValuesId());
+                    attIds.add(attributeValue.getAttributeId());
+                }
+            }
+        }
+        List<ItemAttribute> attributeList = attIds.size() == 0 ? new ArrayList<>() :
+                itemAttributeService.query().in("attribute_id", attIds).list();
+        List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() :
+                attributeValuesService.query().in("attribute_values_id", values).list();
+        for (Long skuiId : skuiIds) {
+            List<BackSku> backSkus = new ArrayList<>();
+            List<AttributeValues> list = map.get(skuiId);
+            for (AttributeValues attributeValues : list) {
+                for (ItemAttribute itemAttribute : attributeList) {
+                    if (itemAttribute.getAttributeId().equals(attributeValues.getAttributeId())) {
+                        BackSku backSku = new BackSku();
+                        backSku.setItemAttribute(itemAttribute);
+                        for (AttributeValues Values : valuesList) {
+                            if (Values.getAttributeValuesId().equals(attributeValues.getAttributeValuesId())) {
+                                backSku.setAttributeValues(Values);
+                            }
+                        }
+                        backSkus.add(backSku);
+                    }
+                }
+            }
+            skuMap.put(skuiId, backSkus);
+        }
         return skuMap;
     }
 }

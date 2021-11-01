@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.orCode.service;
 
+import cn.atsoft.dasheng.app.model.result.StockResult;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -68,10 +70,33 @@ public interface OrCodeService extends IService<OrCode> {
      */
     PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param);
 
+    /**
+     * spu详情
+     *
+     * @param spuResult
+     */
     void spuFormat(SpuResult spuResult);
 
-
+    /**
+     * 库位详情接口
+     *
+     * @param storehousePositionsResult
+     */
     void storehousePositionsFormat(StorehousePositionsResult storehousePositionsResult);
+
+    /**
+     * 库存详情
+     *
+     * @param stockResult
+     */
+    void stockFormat(StockResult stockResult);
+
+    /**
+     * 仓库详情
+     *
+     * @param storehouseResult
+     */
+    void storehouseFormat(StorehouseResult storehouseResult);
 
 
 }

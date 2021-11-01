@@ -190,7 +190,10 @@ public class OrCodeController extends BaseController {
                     }
                     SpuResult spuResult = new SpuResult();
                     ToolUtil.copyProperties(spu, spuResult);
-                    orCodeService.spuFormat(spuResult);
+                    try {
+                        orCodeService.spuFormat(spuResult);
+                    } catch (Exception e) {
+                    }
                     SpuRequest spuRequest = new SpuRequest();
                     spuRequest.setType("spu");
                     spuRequest.setResult(spuResult);
@@ -203,7 +206,10 @@ public class OrCodeController extends BaseController {
                     }
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse, storehouseResult);
-
+                    try {
+                        orCodeService.storehouseFormat(storehouseResult);
+                    } catch (Exception e) {
+                    }
                     StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
                     storeHouseRequest.setType("storehouse");
                     storeHouseRequest.setResult(storehouseResult);
@@ -216,7 +222,10 @@ public class OrCodeController extends BaseController {
                     }
                     StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
                     ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
-                    orCodeService.storehousePositionsFormat(storehousePositionsResult);
+                    try {
+                        orCodeService.storehousePositionsFormat(storehousePositionsResult);
+                    } catch (Exception e) {
+                    }
                     StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
                     storeHousePositionsRequest.setType("storehousePositions");
                     storeHousePositionsRequest.setResult(storehousePositionsResult);
@@ -229,6 +238,9 @@ public class OrCodeController extends BaseController {
                     }
                     StockResult stockResult = new StockResult();
                     ToolUtil.copyProperties(stock, stockResult);
+                    try {
+                        orCodeService.stockFormat(stockResult);
+                    }catch (Exception e){}
                     StockRequest stockRequest = new StockRequest();
                     stockRequest.setType("storehouse");
                     stockRequest.setResult(stockResult);
@@ -263,7 +275,12 @@ public class OrCodeController extends BaseController {
     }
 
 
-
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData test(@RequestBody OrCodeParam orCodeParam) {
+        Map<Long, List<BackSku>> listMap = skuService.sendSku(orCodeParam.getIds());
+        return ResponseData.success(listMap);
+    }
 
 
 }
