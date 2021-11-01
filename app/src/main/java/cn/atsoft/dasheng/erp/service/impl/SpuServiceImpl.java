@@ -84,13 +84,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             throw new ServiceException(500, "不可以添加重复产品");
         }
         Spu entity = getEntity(param);
-        if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
-            throw new ServiceException(500, "填入信息不完整");
-        }
-        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-            String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-            entity.setAttribute(toJSONString);
-        }
+
+
 
         if (param.getIsHidden()) {
 
@@ -102,7 +97,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             itemAttributeService.add(attributeParam);
             this.save(entity);
-        } else {
+        }else{
+            if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
+                throw new ServiceException(500, "填入信息不完整");
+            }
+            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+                entity.setAttribute(toJSONString);
+            }
             List<List<String>> result = new ArrayList<List<String>>();
 //        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
 //        param.getSpuAttributes().getSpuRequests().sort();
@@ -367,10 +369,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         List<SpuClassification> spuClassifications = classIds.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", classIds).list();
 
         for (SpuResult spuResult : param) {
-            for (Category category : categoryList) {
-                if (spuResult.getCategoryId().equals(category.getCategoryId())) {
-                    spuResult.setCategory(category);
-                    break;
+            if (ToolUtil.isNotEmpty(spuResult.getCategoryId())){
+                for (Category category : categoryList) {
+                    if (spuResult.getCategoryId().equals(category.getCategoryId())) {
+                        spuResult.setCategory(category);
+                        break;
+                    }
                 }
             }
             for (Unit unit : units) {
