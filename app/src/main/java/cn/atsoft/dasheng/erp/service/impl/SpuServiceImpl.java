@@ -82,9 +82,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             throw new ServiceException(500, "不可以添加重复产品");
         }
         Spu entity = getEntity(param);
-        if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
-            throw new ServiceException(500, "填入信息不完整");
-        }
+
+
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
             entity.setAttribute(toJSONString);
@@ -93,6 +92,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         if (param.getIsHidden()) {
             this.save(entity);
         }else{
+            if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
+                throw new ServiceException(500, "填入信息不完整");
+            }
             List<List<String>> result = new ArrayList<List<String>>();
 //        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
 //        param.getSpuAttributes().getSpuRequests().sort();
