@@ -161,7 +161,7 @@ public class SpuController extends BaseController {
                             attributeResults.add(itemAttributeResult);
                             AttributeValueInSpu attributeValuesResult = new AttributeValueInSpu();
                             attributeValuesResult.setId(valuesRequest.getAttributeValuesId());
-                            attributeValuesResult.setSpuId(valuesRequest.getAttributeId());
+                            attributeValuesResult.setAttributeId(valuesRequest.getAttributeId());
                             attributeValuesResults.add(attributeValuesResult);
                             skuValueMap.put("s" + valuesRequest.getAttributeId().toString(), valuesRequest.getAttributeValuesId().toString());
                         }
@@ -190,7 +190,7 @@ public class SpuController extends BaseController {
                 }
                 List<AttributeValueInSpu> results = new ArrayList<>();
                 for (AttributeValueInSpu attributeValuesResult : treeValue) {
-                    if (attributeValuesResult.getSpuId().equals(itemAttributeResult.getK_s())) {
+                    if (attributeValuesResult.getAttributeId().equals(itemAttributeResult.getK_s())) {
                         results.add(attributeValuesResult);
                     }
                 }

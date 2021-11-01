@@ -222,7 +222,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 map.put(codeBind.getFormId(), codeBind.getOrCodeId());
             }
         }
-
         for (Long id : ids) {
             Long aLong = map.get(id);
             if (ToolUtil.isNotEmpty(aLong)) {
