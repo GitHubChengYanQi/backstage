@@ -36,6 +36,8 @@ public class ErpPartsDetailResult implements Serializable {
     @ApiModelProperty("规格描述")
     private String attribute;
 
+    private Long skuId;
+
     /**
      * 组成物品id
      */

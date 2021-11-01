@@ -45,6 +45,20 @@ public class ErpPartsDetail implements Serializable {
     @TableField("parts_id")
     private Long partsId;
 
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    /**
+     * 组成物品id
+     */
+    @TableField("sku_id")
+    private Long skuId;
+
     /**
      * 零件数量
      */

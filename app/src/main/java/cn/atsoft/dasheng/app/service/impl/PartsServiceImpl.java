@@ -102,8 +102,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 erpPartsDetail.setPartsId(param.getPartsId());
                 erpPartsDetail.setNote(partsDetailParam.getNote());
                 erpPartsDetail.setNumber(partsDetailParam.getNumber());
-                String toJsonStr = JSONUtil.toJsonStr(partsDetailParam.getPartsAttributes());
-                erpPartsDetail.setAttribute(toJsonStr);
+//                String toJsonStr = JSONUtil.toJsonStr(partsDetailParam.getPartsAttributes());
+//                erpPartsDetail.setAttribute(toJsonStr);
+                erpPartsDetail.setSkuId(partsDetailParam.getSkuId());
                 partsList.add(erpPartsDetail);
             }
             erpPartsDetailService.saveBatch(partsList);

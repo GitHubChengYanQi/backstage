@@ -99,7 +99,9 @@ public class SkuController extends BaseController {
         List<Long> attributeIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
         JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
+
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+
         for (AttributeValues valuesRequest : valuesRequests) {
                attributeIds.add(valuesRequest.getAttributeId());
               valuesIds.add( valuesRequest.getAttributeValuesId());
@@ -107,6 +109,7 @@ public class SkuController extends BaseController {
         List<AttributeValuesResult> results = new ArrayList<>();
         List<ItemAttribute> attributeList = attributeIds.size()==0?new ArrayList<>(): itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).list();
         List<AttributeValues> valuesList = valuesIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, valuesIds).list();
+
         for (AttributeValues valuesRequest : valuesRequests) {
             AttributeValuesResult valuesResult = new AttributeValuesResult();
             valuesResult.setAttributeValuesId(valuesRequest.getAttributeValuesId());
