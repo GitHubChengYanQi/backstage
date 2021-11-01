@@ -151,8 +151,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.GET)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestParam Long id, String source) {
-        Long aLong = orCodeService.backCode(id, source);
+    public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest ) {
+        Long aLong = orCodeService.backCode(backCodeRequest);
         return ResponseData.success(aLong);
 
     }

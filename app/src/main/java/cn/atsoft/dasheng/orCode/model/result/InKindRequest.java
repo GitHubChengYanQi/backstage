@@ -7,4 +7,5 @@ public class InKindRequest {
     private Long codeId;
     private Long skuId;
     private String type;
+    private Long spuId;
 }

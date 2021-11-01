@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +23,13 @@ import java.io.Serializable;
 public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("spu_id")
+    private Long spuId;
 
     /**
      * 实物id
      */
-      @TableId(value = "inkind_id", type = IdType.ID_WORKER)
+    @TableId(value = "inkind_id", type = IdType.ID_WORKER)
     private Long inkindId;
 
     /**
@@ -42,25 +47,25 @@ public class Inkind implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -75,6 +80,13 @@ public class Inkind implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getSpuId() {
+        return spuId;
+    }
+
+    public void setSpuId(Long spuId) {
+        this.spuId = spuId;
+    }
 
     public Long getInkindId() {
         return inkindId;
@@ -151,15 +163,15 @@ public class Inkind implements Serializable {
     @Override
     public String toString() {
         return "Inkind{" +
-        "inkindId=" + inkindId +
-        ", type=" + type +
-        ", skuId=" + skuId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "inkindId=" + inkindId +
+                ", type=" + type +
+                ", skuId=" + skuId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

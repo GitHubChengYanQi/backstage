@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -263,57 +264,57 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     /**
      * 单个绑定
      *
-     * @param id
-     * @param source
+     * @param
+     * @param
      * @return
      */
     @Override
     @Transactional
-    public Long backCode(Long id, String source) {
+    public Long backCode(BackCodeRequest codeRequest) {
 
-        if (ToolUtil.isEmpty(id)) {
+        if (ToolUtil.isEmpty(codeRequest.getId())) {
             throw new ServiceException(500, "请传入id");
         }
-        if (ToolUtil.isEmpty(source)) {
+        if (ToolUtil.isEmpty(codeRequest.getSource())) {
             throw new ServiceException(500, "请传入绑定类型");
         }
-        switch (source) {
+        switch (codeRequest.getSource()) {
             case "sku":
-                Integer count = skuService.query().in("sku_id", id).count();
+                Integer count = skuService.query().in("sku_id", codeRequest.getId()).count();
                 if (count == 0) {
                     throw new ServiceException(500, "参数不合法");
                 }
                 InkindParam inkindParam = new InkindParam();
-                inkindParam.setSkuId(id);
-                inkindParam.setType(source);
+                inkindParam.setSkuId(codeRequest.getId());
+                inkindParam.setType(codeRequest.getSource());
+                inkindParam.setSpuId(codeRequest.getSpuId());
                 Long kindId = inkindService.add(inkindParam);
-                OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", source).one();
+                OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", codeRequest.getSource()).one();
                 if (ToolUtil.isNotEmpty(one)) {
                     return one.getOrCodeId();
                 } else {
                     OrCodeParam orCodeParam = new OrCodeParam();
-                    orCodeParam.setType(source);
+                    orCodeParam.setType(codeRequest.getSource());
                     Long aLong = this.add(orCodeParam);
                     OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-                    orCodeBindParam.setSource(source);
+                    orCodeBindParam.setSource(codeRequest.getSource());
                     orCodeBindParam.setFormId(kindId);
                     orCodeBindParam.setOrCodeId(aLong);
                     orCodeBindService.add(orCodeBindParam);
                     return aLong;
                 }
-
         }
 
-        OrCodeBind one = orCodeBindService.query().in("form_id", id).in("source", source).one();
+        OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
         if (ToolUtil.isNotEmpty(one)) {
             return one.getOrCodeId();
         } else {
             OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(source);
+            orCodeParam.setType(codeRequest.getSource());
             Long aLong = this.add(orCodeParam);
             OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(source);
-            orCodeBindParam.setFormId(id);
+            orCodeBindParam.setSource(codeRequest.getSource());
+            orCodeBindParam.setFormId(codeRequest.getId());
             orCodeBindParam.setOrCodeId(aLong);
             orCodeBindService.add(orCodeBindParam);
             return aLong;
@@ -326,7 +327,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(orCodeBind)) {
             return false;
         }
-        Inkind inkind = inkindService.query().eq("sku_id", inKindRequest.getSkuId()).eq("type", inKindRequest.getType()).one();
+        Inkind inkind = inkindService.query().eq("sku_id", inKindRequest.getSkuId()).eq("type", inKindRequest.getType())
+                .eq("spu_id", inKindRequest.getSpuId()).one();
         if (ToolUtil.isEmpty(inkind)) {
             return false;
         }
