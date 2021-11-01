@@ -277,10 +277,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(source)) {
             throw new ServiceException(500, "请传入绑定类型");
         }
-        if (ToolUtil.isEmpty(source)) {
-            throw new ServiceException(500, "请传入绑定类型");
-        }
-
         switch (source) {
             case "sku":
                 Integer count = skuService.query().in("sku_id", id).count();
@@ -322,7 +318,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             orCodeBindService.add(orCodeBindParam);
             return aLong;
         }
-
     }
 
     @Override
