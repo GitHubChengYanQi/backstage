@@ -39,7 +39,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         Category entity = getEntity(param);
         this.save(entity);
-        return entity.getCategoryId()
+        return entity.getCategoryId();
     }
 
     @Override

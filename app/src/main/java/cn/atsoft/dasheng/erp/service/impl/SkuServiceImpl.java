@@ -12,8 +12,10 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -52,21 +54,45 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Transactional
     @Override
     public void add(SkuParam param) {
-        List<Long> ids = new ArrayList<>();
+//        List<Long> ids = new ArrayList<>();
 
-        StringBuffer stringBuffer = new StringBuffer();
-//        for (SkuValues skuValue : param.getSkuValues()) {
-//            ids.add(skuValue.getAttributeValuesId());
+//        StringBuffer stringBuffer = new StringBuffer();
+////        for (SkuValues skuValue : param.getSkuValues()) {
+////            ids.add(skuValue.getAttributeValuesId());
+////        }
+//        Collections.sort(ids);
+//        for (Long id : ids) {
+//            stringBuffer.append(id + ",");
 //        }
-        Collections.sort(ids);
-        for (Long id : ids) {
-            stringBuffer.append(id + ",");
+//        if (stringBuffer.length() > 1) {
+//            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
+//        }
+        ItemAttribute one1 = new ItemAttribute();
+        Long spuId = param.getSpuId();
+        Spu byId = spuService.getById(spuId);
+        byId.getName();
+        Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).one();
+        if (ToolUtil.isNotEmpty(one)) {
+           one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
+
         }
-        if (stringBuffer.length() > 1) {
-            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-        }
+        AttributeValuesParam attributeValues = new AttributeValuesParam();
+        attributeValues.setAttributeValues(param.getSpecifications());
+        attributeValues.setAttributeId(one1.getAttributeId());
+        Long add = attributeValuesService.add(attributeValues);
+
+
         Sku entity = getEntity(param);
-        entity.setSkuName(stringBuffer.toString());
+        List<AttributeValues> list = new ArrayList<>();
+        AttributeValues attributeValue = new AttributeValues();
+        attributeValue.setAttributeId(attributeValues.getAttributeId());
+        attributeValue.setAttributeValuesId(add);
+        list.add(attributeValue);
+        String Json = JSON.toJSONString(list);
+        String md5 = SecureUtil.md5(Json);
+        entity.setSkuValueMd5(md5);
+        entity.setSkuValue(Json);
+//        entity.setSkuName(stringBuffer.toString());
         this.save(entity);
     }
 
