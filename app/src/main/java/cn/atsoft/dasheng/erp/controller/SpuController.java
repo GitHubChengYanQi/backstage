@@ -126,8 +126,6 @@ public class SpuController extends BaseController {
                 .query().in("spu_classification_id", detail.getSpuClassificationId()).one();
 
 
-
-
         SpuResult spuResult = new SpuResult();
         List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
                 skuService.query().in("spu_id", detail.getSpuId()).list();

@@ -92,7 +92,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //        param.getSpuAttributes().getSpuRequests().sort();
         param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId).reversed());
 
-        //        Collections.sort(param.getSpuAttributes().getSpuRequests());
+//                Collections.sort(param.getSpuAttributes().getSpuRequests());
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
 
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
@@ -128,9 +128,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                         skuEntry.setSkuValue(s);
                         skuEntry.setSkuValueMd5(SecureUtil.md5(sku.getSkuValue()));
                         skuEntry.setSpuId(entity.getSpuId());
-                        skuEntry.setIsBan(sku.getIsBan());
+                        if (ToolUtil.isNotEmpty(sku.getIsBan())){
+                            skuEntry.setIsBan(sku.getIsBan());
+                        }
                         skuEntry.setSpuId(entity.getSpuId());
-                        skuEntry.setSkuName(sku.getSkuName());
+                        if (ToolUtil.isNotEmpty(sku.getSkuName())){
+                            skuEntry.setSkuName(sku.getSkuName());
+                        }
+
                         skuList.add(skuEntry);
                     }
                 }
