@@ -78,7 +78,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     //    backBatchCode
     @Transactional
     @Override
-    public void add(SpuParam param) {
+    public Long add(SpuParam param) {
         Integer count = this.query().in("name", param.getName()).count();
         if (count > 0) {
             throw new ServiceException(500, "不可以添加重复产品");
@@ -184,7 +184,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
         }
 
-
+        return entity.getSpuId();
     }
 
     @Override
