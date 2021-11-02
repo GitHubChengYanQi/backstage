@@ -198,7 +198,18 @@ public class PartsController extends BaseController {
         return ResponseData.success(results);
     }
 
-
+    /**
+     * 返回詳情結合
+     *
+     * @author song
+     * @Date 2021-10-26
+     */
+    @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
+    @ApiOperation("删除")
+    public ResponseData backDetails(@RequestParam Long id) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id);
+        return ResponseData.success(detailResults);
+    }
 }
 
 

@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
+import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.PartsParam;
@@ -66,5 +68,8 @@ public interface PartsService extends IService<Parts> {
      * @Date 2021-10-21
      */
     PageInfo<PartsResult> findPageBySpec(PartsParam param);
+
+
+    List<ErpPartsDetailResult> backDetails(Long skuId);
 
 }

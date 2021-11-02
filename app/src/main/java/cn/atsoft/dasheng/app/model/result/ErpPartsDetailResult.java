@@ -1,12 +1,18 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.model.params.SpuAttribute;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 清单详情
@@ -21,7 +27,8 @@ public class ErpPartsDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<BackSku> backSkus;
+    private SpuResult spuResult;
     /**
      * 清单详情id
      */
