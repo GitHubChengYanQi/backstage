@@ -61,14 +61,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
             Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).one();
             if (ToolUtil.isNotEmpty(parts)) {
-                PartsParam param = new PartsParam();
-                ToolUtil.copyProperties(param,partsParam);
-                partsParam.setDisplay(0);
-                this.update(param);
-            }else {
+                    parts.setDisplay(0);
+                this.updateById(parts);
+            } else {
                 partsParam.setSkuId(partsParam.getPSkuId());
             }
-
+        } else {
+            throw new ServiceException(500, "请填写正确产pin");
         }
 
         Parts entity = getEntity(partsParam);
