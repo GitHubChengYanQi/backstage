@@ -148,7 +148,7 @@ public class OrCodeController extends BaseController {
      * @author song
      * @Date 2021-10-29
      */
-    @RequestMapping(value = "/backCode", method = RequestMethod.GET)
+    @RequestMapping(value = "/backCode", method = RequestMethod.POST)
     @ApiOperation("二维码")
     @Transactional
     public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest ) {
