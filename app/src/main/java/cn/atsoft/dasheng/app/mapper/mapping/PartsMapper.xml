@@ -18,11 +18,13 @@
         <result column="deptId" property="deptId"/>
         <result column="part_name" property="partName"/>
         <result column="note" property="note"/>
+        <result column="sku_id" property="skuId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">sku_id
+    AS "skuId",
         parts_id
         AS "partsId", spu_id AS "spuId",skus AS "skus", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>

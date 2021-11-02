@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.app.model.result.Item;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -27,8 +29,15 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private List<ErpPartsDetailParam> parts;
 
+    private Long pSkuId;
+
     private List<Long> skuIds;
 
+    private Long skuId;
+    /**
+     * 接參
+     */
+    private Item item;
 
     /**
      * 清单id
@@ -49,7 +58,6 @@ public class PartsParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("规格描述")
     private String attribute;
-
 
 
     /**

@@ -24,8 +24,11 @@ import java.util.function.LongFunction;
 public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
     /**
      * 清单id
      */
@@ -223,7 +226,13 @@ public class Parts implements Serializable {
         this.note = note;
     }
 
+    public Long getSkuId() {
+        return skuId;
+    }
 
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
 
     @Override
     public String toString() {
