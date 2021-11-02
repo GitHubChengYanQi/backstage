@@ -61,13 +61,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             ItemAttribute one1 = new ItemAttribute();
             Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
-                CategoryParam categoryParam = new CategoryParam();
-                categoryParam.setCategoryName(param.getSpu().getName().replace(" ", ""));
-                Long classIds = categoryService.add(categoryParam);
+
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
-                spu.setCategoryId(classIds);
                 spu.setIsHidden(true);
                 spu.setType(0);
                 spuId = spuService.add(spu);
@@ -103,10 +100,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
+
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
                 spu.setIsHidden(true);
+                spu.setType(0);
                 spuId = spuService.add(spu);
             }else {
                 param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
