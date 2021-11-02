@@ -225,7 +225,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ids.size() > count) {
             throw new ServiceException(500, "不可以填写重复数据");
         }
-        if (ToolUtil.isNotEmpty(source)) {
+        if (ToolUtil.isEmpty(source)) {
             throw new ServiceException(500, "请传入绑定类型");
         }
         List<Long> codeIds = new ArrayList<>();
