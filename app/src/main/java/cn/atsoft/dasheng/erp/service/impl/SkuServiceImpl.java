@@ -150,7 +150,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
 
-        List<AttributeValues> attributeValues = attributeIds.size()==0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
+        List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
 
