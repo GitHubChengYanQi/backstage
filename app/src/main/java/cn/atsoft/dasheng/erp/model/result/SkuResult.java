@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.SkuValues;
+import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import lombok.Data;
 
 import java.util.Date;
@@ -35,6 +37,8 @@ public class SkuResult implements Serializable {
     private String skuTextValue;
     @ApiModelProperty("")
     private Long skuId;
+
+    private Spu spu;
 
     /**
      * 类型
