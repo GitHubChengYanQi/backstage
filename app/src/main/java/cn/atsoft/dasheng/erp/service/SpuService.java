@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
@@ -68,6 +69,7 @@ public interface SpuService extends IService<Spu> {
     PageInfo<SpuResult> findPageBySpec(SpuParam param);
 
     ResponseData<SpuResult> detail (SpuParam spuParam);
+
 
 
 }

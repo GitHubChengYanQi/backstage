@@ -67,6 +67,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //        if (stringBuffer.length() > 1) {
 //            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
 //        }
+        param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
+
         ItemAttribute one1 = new ItemAttribute();
         Long spuId = param.getSpuId();
         Spu byId = spuService.getById(spuId);
@@ -80,14 +82,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         attributeValues.setAttributeValues(param.getSpecifications());
         attributeValues.setAttributeId(one1.getAttributeId());
         Long add = attributeValuesService.add(attributeValues);
+        List<AttributeValues> list = new ArrayList<>();
+        for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
+            AttributeValues attributeValueResult = new AttributeValues();
+            attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
+            for (Values attributeValue : spuRequest.getAttributeValues()) {
+                attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
+            }
+            list.add(attributeValueResult);
+        }
 
 
         Sku entity = getEntity(param);
-        List<AttributeValues> list = new ArrayList<>();
-        AttributeValues attributeValue = new AttributeValues();
-        attributeValue.setAttributeId(attributeValues.getAttributeId());
-        attributeValue.setAttributeValuesId(add);
-        list.add(attributeValue);
+
         String Json = JSON.toJSONString(list);
         String md5 = SecureUtil.md5(Json);
         entity.setSkuValueMd5(md5);
@@ -143,7 +150,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
 
-        List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery()
+        List<AttributeValues> attributeValues = attributeIds.size()==0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
                 .in(AttributeValues::getAttributeId, attributeIds)
                 .list();
 
