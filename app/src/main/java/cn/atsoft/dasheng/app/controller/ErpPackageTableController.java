@@ -60,7 +60,7 @@ public class ErpPackageTableController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ErpPackageTableParam erpPackageTableParam) {
 
-        this.erpPackageTableService.update(erpPackageTableParam);
+//        this.erpPackageTableService.update(erpPackageTableParam);
         return ResponseData.success();
     }
 
@@ -73,7 +73,7 @@ public class ErpPackageTableController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ErpPackageTableParam erpPackageTableParam)  {
-        this.erpPackageTableService.delete(erpPackageTableParam);
+//        this.erpPackageTableService.delete(erpPackageTableParam);
         return ResponseData.success();
     }
 

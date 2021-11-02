@@ -59,7 +59,16 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             throw new ServiceException(500, "已有重複名");
         }
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
-            partsParam.setSkuId(partsParam.getPSkuId());
+            Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).one();
+            if (ToolUtil.isNotEmpty(parts)) {
+                PartsParam param = new PartsParam();
+                ToolUtil.copyProperties(param,partsParam);
+                partsParam.setDisplay(0);
+                this.update(param);
+            }else {
+                partsParam.setSkuId(partsParam.getPSkuId());
+            }
+
         }
 
         Parts entity = getEntity(partsParam);
