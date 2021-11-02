@@ -25,8 +25,10 @@ public class ItemAttributeParam implements Serializable , Comparable<ItemAttribu
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValuesParams;
     private AttributeValuesParam attributeValuesParam;
-
-
+    /**
+     * 是否標配
+     */
+   private Integer standard;
 
     /**
      * 属性id
