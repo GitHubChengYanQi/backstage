@@ -106,9 +106,11 @@ public class SkuController extends BaseController {
         List<Long> attributeIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
         JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
+        if (ToolUtil.isNotEmpty(detail.getSpuId())) {
+            Spu spu = spuService.getById(detail.getSpuId());
+            result.setSpu(spu);
+        }
 
-        Spu spu = spuService.getById(detail.getSpuId());
-        result.setSpu(spu);
 
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
 
