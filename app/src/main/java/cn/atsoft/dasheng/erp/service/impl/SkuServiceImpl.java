@@ -65,10 +65,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
                 spu.setIsHidden(true);
+                spu.setType(0);
                 spuId = spuService.add(spu);
             }
             Spu byId = spuService.getById(spuId);
-            byId.getName();
             Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).one();
             if (ToolUtil.isNotEmpty(one)) {
                 one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
