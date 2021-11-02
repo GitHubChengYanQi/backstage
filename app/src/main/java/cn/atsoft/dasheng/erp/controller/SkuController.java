@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ import java.util.Map;
 /**
  * sku表控制器
  *
- * @author 
+ * @author
  * @Date 2021-10-18 14:14:21
  */
 @RestController
@@ -51,7 +52,7 @@ public class SkuController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -64,7 +65,7 @@ public class SkuController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -78,12 +79,12 @@ public class SkuController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody SkuParam skuParam)  {
+    public ResponseData delete(@RequestBody SkuParam skuParam) {
         this.skuService.delete(skuParam);
         return ResponseData.success();
     }
@@ -91,7 +92,7 @@ public class SkuController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -107,12 +108,12 @@ public class SkuController extends BaseController {
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
 
         for (AttributeValues valuesRequest : valuesRequests) {
-               attributeIds.add(valuesRequest.getAttributeId());
-              valuesIds.add( valuesRequest.getAttributeValuesId());
+            attributeIds.add(valuesRequest.getAttributeId());
+            valuesIds.add(valuesRequest.getAttributeValuesId());
         }
         List<AttributeValuesResult> results = new ArrayList<>();
-        List<ItemAttribute> attributeList = attributeIds.size()==0?new ArrayList<>(): itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).list();
-        List<AttributeValues> valuesList = valuesIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, valuesIds).list();
+        List<ItemAttribute> attributeList = attributeIds.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).list();
+        List<AttributeValues> valuesList = valuesIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, valuesIds).list();
 
         for (AttributeValues valuesRequest : valuesRequests) {
             AttributeValuesResult valuesResult = new AttributeValuesResult();
@@ -138,13 +139,13 @@ public class SkuController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<SkuResult> list(@RequestBody(required = false) SkuParam skuParam) {
-        if(ToolUtil.isEmpty(skuParam)){
+        if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
         return this.skuService.findPageBySpec(skuParam);
@@ -158,14 +159,14 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.skuService.listMaps();
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody SkuParam skuParam) {
+        QueryWrapper<Sku> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("type", skuParam.getType());
+        List<Map<String, Object>> list = this.skuService.listMaps(queryWrapper);
         SkuSelectWrapper factory = new SkuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
-
 
 
 }
