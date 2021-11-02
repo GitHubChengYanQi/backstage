@@ -263,9 +263,11 @@ public class SpuController extends BaseController {
         if (ToolUtil.isNotEmpty(spuParam)) {
             if (ToolUtil.isNotEmpty(spuParam.getSpuClassificationId())) {
                 spuQueryWrapper.in("spu_classification_id", spuParam.getSpuClassificationId());
+                spuQueryWrapper.in("type",spuParam.getType());
             }
             if (ToolUtil.isNotEmpty(spuParam.getProductionType())) {
                 spuQueryWrapper.in("production_type", spuParam.getProductionType());
+                spuQueryWrapper.in("type",spuParam.getType());
             }
             if (ToolUtil.isNotEmpty(spuParam.getName())){
                 spuQueryWrapper.like("name", spuParam.getName());

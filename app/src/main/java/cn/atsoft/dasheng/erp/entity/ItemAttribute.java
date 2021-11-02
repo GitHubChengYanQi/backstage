@@ -23,8 +23,11 @@ import java.io.Serializable;
 public class ItemAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    /**
+     * 是否標配
+     */
+    @TableField("standard")
+    private Integer standard;
     /**
      * 属性id
      */
@@ -89,10 +92,6 @@ public class ItemAttribute implements Serializable {
      */
     @TableField("sort")
     private Long sort;
-
-
-
-
 
 
     public Long getAttributeId() {
@@ -167,7 +166,13 @@ public class ItemAttribute implements Serializable {
         this.sort = sort;
     }
 
+    public Integer getStandard() {
+        return standard;
+    }
 
+    public void setStandard(Integer standard) {
+        this.standard = standard;
+    }
 
     @Override
     public String toString() {

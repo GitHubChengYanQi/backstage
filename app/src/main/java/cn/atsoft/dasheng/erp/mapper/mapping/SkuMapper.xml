@@ -73,6 +73,9 @@
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
+        <if test="paramCondition.type != null">
+            and type  = #{paramCondition.type}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">

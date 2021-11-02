@@ -188,6 +188,9 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
         <if test="paramCondition.spuClassificationId != null">
             and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
         </if>
+        <if test="paramCondition.type != null">
+            and type  =  #{paramCondition.type}
+        </if>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SpuParam">
