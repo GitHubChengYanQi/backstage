@@ -8,6 +8,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -16,22 +17,25 @@ import java.util.List;
 
 /**
  * <p>
- * sku表	
+ * sku表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Data
 @ApiModel
-public class SkuParam implements Serializable, BaseValidatingParam  {
+public class SkuParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;
     @ApiModelProperty("")
     private Long skuId;
     List<Long> skuIds;
-
+    /**
+     * 类型
+     */
+    private Integer type;
     /**
      * sku名字
      */
