@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
+import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -51,8 +52,46 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Transactional
     @Override
     public void add(PartsParam partsParam) {
+        String s = partsParam.getPartName().replace(" ", "");
+        partsParam.setPartName(s);
+        Integer count = this.query().in("part_name", s).count();
+        if (count > 0) {
+            throw new ServiceException(500, "已有重複名");
+        }
+        if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
+            Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).one();
+            if (ToolUtil.isNotEmpty(parts)) {
+                PartsParam param = new PartsParam();
+                ToolUtil.copyProperties(param,partsParam);
+                partsParam.setDisplay(0);
+                this.update(param);
+            }else {
+                partsParam.setSkuId(partsParam.getPSkuId());
+            }
+
+        }
+
         Parts entity = getEntity(partsParam);
         this.save(entity);
+        List<ErpPartsDetail> details = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(partsParam.getParts())) {
+            for (ErpPartsDetailParam part : partsParam.getParts()) {
+                if (ToolUtil.isNotEmpty(part)) {
+                    ErpPartsDetail detail = new ErpPartsDetail();
+                    detail.setSkuId(part.getSkuId());
+                    detail.setNumber(part.getNumber());
+                    detail.setPartsId(entity.getPartsId());
+                    if (ToolUtil.isNotEmpty(part.getNote())) {
+                        detail.setNote(part.getNote());
+                    }
+                    details.add(detail);
+                }
+            }
+
+        }
+
+
+        erpPartsDetailService.saveBatch(details);
     }
 
     @Override
@@ -67,12 +106,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void update(PartsParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getSkuIds())){
+        if (ToolUtil.isNotEmpty(param.getSkuIds())) {
             String skus = "";
             for (int i = 0; i < param.getSkuIds().size(); i++) {
-                if (i == param.getSkuIds().size() - 1){
+                if (i == param.getSkuIds().size() - 1) {
                     skus = skus + param.getSkuIds().get(i);
-                }else {
+                } else {
                     skus = skus + param.getSkuIds().get(i) + ",";
                 }
 
@@ -80,7 +119,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             param.setSkus(skus);
         }
 
-        if (ToolUtil.isNotEmpty(param.getParts())){
+        if (ToolUtil.isNotEmpty(param.getParts())) {
             List<Long> ids = new ArrayList<>();
             for (ErpPartsDetailParam part : param.getParts()) {
                 ids.add(part.getSpuId());
