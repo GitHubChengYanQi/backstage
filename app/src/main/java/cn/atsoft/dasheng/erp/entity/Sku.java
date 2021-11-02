@@ -37,6 +37,13 @@ public class Sku implements Serializable {
      */
     @TableField("sku_name")
     private String skuName;
+    /**
+     * 备注
+     */
+    @TableField("remarks")
+    private String remarks;
+
+
 
     @TableField("is_ban")
     private Integer isBan;
@@ -136,7 +143,13 @@ public class Sku implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getRemarks() {
+        return remarks;
+    }
 
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
     public Long getSkuId() {
         return skuId;
     }

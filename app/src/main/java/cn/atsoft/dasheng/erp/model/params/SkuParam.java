@@ -34,6 +34,7 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     List<Long> skuIds;
     private SpuParam spu;
     private Long spuClassificationId;
+    private Integer spuStandard;
     /**
      * 类型
      */
@@ -46,6 +47,8 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     private String skuName;
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
+    @ApiModelProperty("备注")
+    private String remarks;
 
     @ApiModelProperty("sku加密")
     private String skuValueMd5;

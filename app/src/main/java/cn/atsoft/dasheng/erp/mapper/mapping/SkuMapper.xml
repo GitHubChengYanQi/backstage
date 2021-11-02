@@ -17,6 +17,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="remarks" property="remarks"/>
         <result column="type" property="type"/>
     </resultMap>
 
@@ -24,7 +25,7 @@
     <sql id="Base_Column_List">type
     AS "type",
         sku_id
-        AS "skuId", sku_name AS "skuName",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+        AS "skuId", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 

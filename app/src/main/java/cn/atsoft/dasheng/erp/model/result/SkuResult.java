@@ -55,7 +55,8 @@ public class SkuResult implements Serializable {
 
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
-
+    @ApiModelProperty("备注")
+    private String remarks;
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
     @ApiModelProperty("执行标准")
