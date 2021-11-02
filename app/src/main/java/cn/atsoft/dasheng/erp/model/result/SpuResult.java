@@ -33,6 +33,10 @@ import java.util.Map;
 public class SpuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 类型
+     */
+    private Integer type;
 
     private cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult;
 
