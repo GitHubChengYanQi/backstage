@@ -25,6 +25,11 @@ public class SpuClassificationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * pid
+     */
+    private Long pid;
+
     private List<Spu> spuList;
     /**
      * spu分类id

@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
@@ -117,6 +119,42 @@ public class SpuClassificationController extends BaseController {
         return ResponseData.success(result);
     }
 
+    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    public ResponseData<List<TreeNode>> treeView() {
+        List<Map<String,Object>> list = this.spuClassificationService.listMaps();
+
+        if(ToolUtil.isEmpty(list)){
+            return ResponseData.success();
+        }
+        List<TreeNode>  treeViewNodes = new ArrayList<>();
+
+        TreeNode rootTreeNode = new TreeNode();
+        rootTreeNode.setKey("0");
+        rootTreeNode.setValue("0");
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setParentId("-1");
+        treeViewNodes.add(rootTreeNode);
+
+        for(Map<String, Object> item:list){
+            TreeNode treeNode = new TreeNode();
+            treeNode.setParentId(Convert.toStr(item.get("pid")));
+            treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
+            treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
+            treeNode.setTitle(Convert.toStr(item.get("name")));
+            treeNode.setLabel(Convert.toStr(item.get("name")));
+            treeViewNodes.add(treeNode);
+        }
+        //构建树
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("0");
+        List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
+
+        //把子节点为空的设为null
+        //DeptTreeWrapper.clearNull(results);
+
+        return ResponseData.success(results);
+    }
 }
 
 
