@@ -205,7 +205,7 @@ public class PartsController extends BaseController {
      * @Date 2021-10-26
      */
     @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
-    @ApiOperation("删除")
+    @ApiOperation("返回子表集合")
     public ResponseData backDetails(@RequestParam Long id) {
         List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id);
         return ResponseData.success(detailResults);

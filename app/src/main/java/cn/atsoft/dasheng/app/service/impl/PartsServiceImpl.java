@@ -51,7 +51,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
     @Autowired
@@ -67,6 +66,23 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (count > 0) {
             throw new ServiceException(500, "已有重複名");
         }
+        long l = partsParam.getParts().stream().distinct().count();
+        if (l < partsParam.getParts().size()) {
+            throw new ServiceException(500, "不可以填寫規格產品");
+        }
+        for (ErpPartsDetailParam part : partsParam.getParts()) {
+            if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
+                if (part.getSkuId().equals(partsParam.getPSkuId())) {
+                    throw new ServiceException(500, "不可以添加重复规格产品");
+                }
+            }
+            if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
+                if (part.getSkuId().equals(partsParam.getItem().getSkuId())) {
+                    throw new ServiceException(500, "不可以添加重复规格产品");
+                }
+            }
+        }
+
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
             Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).in("display", 1).one();
             if (ToolUtil.isNotEmpty(parts)) {
@@ -76,18 +92,20 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 this.updateById(parts);
             }
             partsParam.setSkuId(partsParam.getPSkuId());
-
         } else {
-            throw new ServiceException(500, "请填写正确产品");
-        }
-        for (ErpPartsDetailParam part : partsParam.getParts()) {
-            if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
-                if (part.getSkuId().equals(partsParam.getPSkuId())) {
-                    throw new ServiceException(500, "不可以添加重复规格产品");
+            if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
+                Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).in("display", 1).one();
+                if (ToolUtil.isNotEmpty(parts)) {
+                    parts.setDisplay(0);
+                    LoginUser user = LoginContextHolder.getContext().getUser();
+                    parts.setUpdateUser(user.getId());
+                    this.updateById(parts);
                 }
+                partsParam.setSkuId(partsParam.getItem().getSkuId());
             }
 
         }
+
 
 //以上全是判断------------------------------------------------------------------------------------------------------------------------------
 
@@ -198,10 +216,9 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
-        Parts parts = this.getById(skuId);
-
-        if (ToolUtil.isNotEmpty(parts)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", parts.getPartsId()).list();
+        Parts one = this.query().in("sku_id", skuId).in("display", 1).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
