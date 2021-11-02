@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.*;
 import cn.atsoft.dasheng.erp.model.result.*;
@@ -265,6 +266,12 @@ public class SpuController extends BaseController {
             }
             if (ToolUtil.isNotEmpty(spuParam.getProductionType())) {
                 spuQueryWrapper.in("production_type", spuParam.getProductionType());
+            }
+            if (ToolUtil.isNotEmpty(spuParam.getName())){
+                spuQueryWrapper.like("name", spuParam.getName());
+            }
+            if (ToolUtil.isNotEmpty(spuParam.getType())){
+                spuQueryWrapper.like("type", spuParam.getType());
             }
         }
 

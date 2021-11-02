@@ -84,7 +84,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             throw new ServiceException(500, "不可以添加重复产品");
         }
         Spu entity = getEntity(param);
-
+        this.save(entity);
 
         if (ToolUtil.isNotEmpty(param.getIsHidden())) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).count();
@@ -99,7 +99,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             Long attrId = itemAttributeService.add(attributeParam);
 
-            this.save(entity);
+
         } else {
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
                 throw new ServiceException(500, "填入信息不完整");
