@@ -24,6 +24,12 @@ public class SpuClassification implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
     /**
      * pid
      */
@@ -148,6 +154,14 @@ public class SpuClassification implements Serializable {
 
     public void setPid(Long pid) {
         this.pid = pid;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
     }
 
     @Override
