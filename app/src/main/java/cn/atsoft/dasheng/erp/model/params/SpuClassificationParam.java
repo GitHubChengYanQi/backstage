@@ -30,6 +30,11 @@ public class SpuClassificationParam implements Serializable, BaseValidatingParam
     private Long pid;
 
     /**
+     * 排序
+     */
+    private Integer sort;
+
+    /**
      * spu分类id
      */
     @ApiModelProperty("spu分类id")
