@@ -93,16 +93,27 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     public void format(List<SpuClassificationResult> data) {
         List<Long> ids = new ArrayList<>();
+        List<Long> pids = new ArrayList<>();
         for (SpuClassificationResult datum : data) {
             ids.add(datum.getSpuClassificationId());
+            pids.add(datum.getPid());
         }
         List<Spu> spus = ids.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuClassificationId, ids).list();
+        List<SpuClassification> classifications = pids.size() == 0 ? new ArrayList<>() : this.query().in("spu_classification_id", pids).list();
 
         for (SpuClassificationResult datum : data) {
             List<Spu> spuList = new ArrayList<>();
             for (Spu spu : spus) {
                 if (datum.getSpuClassificationId().equals(spu.getSpuClassificationId())) {
                     spuList.add(spu);
+                }
+            }
+            if (ToolUtil.isNotEmpty(classifications)) {
+                for (SpuClassification classification : classifications) {
+                    if (datum.getPid() != null && classification.getSpuClassificationId().equals(datum.getPid())) {
+                        datum.setPidName(classification.getName());
+                        break;
+                    }
                 }
             }
             datum.setSpuList(spuList);
