@@ -7,6 +7,8 @@ import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -59,15 +61,17 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             throw new ServiceException(500, "已有重複名");
         }
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
-            Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).one();
+            Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).in("display", 1).one();
             if (ToolUtil.isNotEmpty(parts)) {
-                    parts.setDisplay(0);
+                parts.setDisplay(0);
+                LoginUser user = LoginContextHolder.getContext().getUser();
+                parts.setUpdateUser(user.getId());
                 this.updateById(parts);
-            } else {
-                partsParam.setSkuId(partsParam.getPSkuId());
             }
+            partsParam.setSkuId(partsParam.getPSkuId());
+
         } else {
-            throw new ServiceException(500, "请填写正确产pin");
+            throw new ServiceException(500, "请填写正确产品");
         }
 
         Parts entity = getEntity(partsParam);
