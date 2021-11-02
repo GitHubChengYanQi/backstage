@@ -26,7 +26,7 @@ public interface SpuService extends IService<Spu> {
      * @author
      * @Date 2021-10-18
      */
-    void add(SpuParam param);
+    Long add(SpuParam param);
 
     /**
      * 删除

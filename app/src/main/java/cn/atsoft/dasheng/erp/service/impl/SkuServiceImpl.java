@@ -54,53 +54,76 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Transactional
     @Override
     public void add(SkuParam param) {
-//        List<Long> ids = new ArrayList<>();
-
-//        StringBuffer stringBuffer = new StringBuffer();
-////        for (SkuValues skuValue : param.getSkuValues()) {
-////            ids.add(skuValue.getAttributeValuesId());
-////        }
-//        Collections.sort(ids);
-//        for (Long id : ids) {
-//            stringBuffer.append(id + ",");
-//        }
-//        if (stringBuffer.length() > 1) {
-//            stringBuffer.deleteCharAt(stringBuffer.length() - 1);
-//        }
-        param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
-
-        ItemAttribute one1 = new ItemAttribute();
-        Long spuId = param.getSpuId();
-        Spu byId = spuService.getById(spuId);
-        byId.getName();
-        Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).one();
-        if (ToolUtil.isNotEmpty(one)) {
-           one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
-
-        }
-        AttributeValuesParam attributeValues = new AttributeValuesParam();
-        attributeValues.setAttributeValues(param.getSpecifications());
-        attributeValues.setAttributeId(one1.getAttributeId());
-        Long add = attributeValuesService.add(attributeValues);
-        List<AttributeValues> list = new ArrayList<>();
-        for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
-            AttributeValues attributeValueResult = new AttributeValues();
-            attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
-            for (Values attributeValue : spuRequest.getAttributeValues()) {
-                attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
+        /**
+         * type=1 是整机添加
+         */
+        if (param.getType() == 1) {
+            ItemAttribute one1 = new ItemAttribute();
+            Long spuId = param.getSpuParam().getSpuId();
+            if (spuId == null) {
+                SpuParam spu = new SpuParam();
+                spu.setName(param.getSpuParam().getName());
+                spu.setCategoryId(param.getSpuParam().getCategoryId());
+                spuId = spuService.add(spu);
             }
-            list.add(attributeValueResult);
+            Spu byId = spuService.getById(spuId);
+            byId.getName();
+            Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).one();
+            if (ToolUtil.isNotEmpty(one)) {
+                one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
+            }
+            AttributeValuesParam attributeValues = new AttributeValuesParam();
+            attributeValues.setAttributeValues(param.getSpecifications());
+            attributeValues.setAttributeId(one1.getAttributeId());
+            Long add = attributeValuesService.add(attributeValues);
+            Sku entity = getEntity(param);
+            List<AttributeValues> list = new ArrayList<>();
+            AttributeValues attributeValue = new AttributeValues();
+            attributeValue.setAttributeId(attributeValues.getAttributeId());
+            attributeValue.setAttributeValuesId(add);
+            list.add(attributeValue);
+            String Json = JSON.toJSONString(list);
+            String md5 = SecureUtil.md5(Json);
+            entity.setSpuId(spuId);
+            entity.setSkuValueMd5(md5);
+            entity.setSkuValue(Json);
+            Sku sku = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).one();
+            if (ToolUtil.isEmpty(sku)) {
+                this.save(entity);
+            }else {
+                throw new ServiceException(500,"此物料已存在");
+            }
+        } else if (param.getType() == 0) {
+            Long spuId = param.getSpuParam().getSpuId();
+            if (spuId == null) {
+                SpuParam spu = new SpuParam();
+                spu.setName(param.getSpuParam().getName());
+                spu.setCategoryId(param.getSpuParam().getCategoryId());
+                spuId = spuService.add(spu);
+            }
+            param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
+            List<AttributeValues> list = new ArrayList<>();
+            for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
+                AttributeValues attributeValueResult = new AttributeValues();
+                attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
+                for (Values attributeValue : spuRequest.getAttributeValues()) {
+                    attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
+                }
+                list.add(attributeValueResult);
+            }
+            Sku entity = getEntity(param);
+            entity.setSpuId(spuId);
+            String Json = JSON.toJSONString(list);
+            String md5 = SecureUtil.md5(Json);
+            entity.setSkuValueMd5(md5);
+            entity.setSkuValue(Json);
+            Sku one = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).one();
+            if (ToolUtil.isEmpty(one)) {
+                this.save(entity);
+            }else {
+                throw new ServiceException(500,"此物料已存在");
+            }
         }
-
-
-        Sku entity = getEntity(param);
-
-        String Json = JSON.toJSONString(list);
-        String md5 = SecureUtil.md5(Json);
-        entity.setSkuValueMd5(md5);
-        entity.setSkuValue(Json);
-//        entity.setSkuName(stringBuffer.toString());
-        this.save(entity);
     }
 
     @Override
