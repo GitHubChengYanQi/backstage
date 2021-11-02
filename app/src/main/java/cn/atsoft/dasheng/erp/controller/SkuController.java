@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
@@ -47,6 +48,8 @@ public class SkuController extends BaseController {
     private AttributeValuesService attributeValuesService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private SpuService spuService;
 
     /**
      * 新增接口
@@ -103,6 +106,9 @@ public class SkuController extends BaseController {
         List<Long> attributeIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
         JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
+        
+        Spu spu = spuService.getById(detail.getSpuId());
+        result.setSpu(spu);
 
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
 

@@ -57,13 +57,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         /**
          * type=1 是整机添加
          */
-        if (param.getType() == 1) {
+        if (param.getType() == 0) {
             ItemAttribute one1 = new ItemAttribute();
             Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
-                spu.setCategoryId(param.getSpu().getCategoryId());
+                spu.setSpuClassificationId(param.getSpuClassificationId());
+                spu.setIsHidden(true);
                 spuId = spuService.add(spu);
             }
             Spu byId = spuService.getById(spuId);
@@ -94,36 +95,39 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }else {
                 throw new ServiceException(500,"此物料已存在");
             }
-        } else if (param.getType() == 0) {
+        } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
+                spu.setIsHidden(true);
                 spuId = spuService.add(spu);
-            }
-            param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
-            List<AttributeValues> list = new ArrayList<>();
-            for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
-                AttributeValues attributeValueResult = new AttributeValues();
-                attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
-                for (Values attributeValue : spuRequest.getAttributeValues()) {
-                    attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
-                }
-                list.add(attributeValueResult);
-            }
-            Sku entity = getEntity(param);
-            entity.setSpuId(spuId);
-            String Json = JSON.toJSONString(list);
-            String md5 = SecureUtil.md5(Json);
-            entity.setSkuValueMd5(md5);
-            entity.setSkuValue(Json);
-            Sku one = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).one();
-            if (ToolUtil.isEmpty(one)) {
-                this.save(entity);
             }else {
-                throw new ServiceException(500,"此物料已存在");
+                param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
+                List<AttributeValues> list = new ArrayList<>();
+                for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
+                    AttributeValues attributeValueResult = new AttributeValues();
+                    attributeValueResult.setAttributeId(Long.valueOf(spuRequest.getAttributeId()));
+                    for (Values attributeValue : spuRequest.getAttributeValues()) {
+                        attributeValueResult.setAttributeValuesId(Long.valueOf(attributeValue.getAttributeValuesId()));
+                    }
+                    list.add(attributeValueResult);
+                }
+                Sku entity = getEntity(param);
+                entity.setSpuId(spuId);
+                String Json = JSON.toJSONString(list);
+                String md5 = SecureUtil.md5(Json);
+                entity.setSkuValueMd5(md5);
+                entity.setSkuValue(Json);
+                Sku one = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).one();
+                if (ToolUtil.isEmpty(one)) {
+                    this.save(entity);
+                }else {
+                    throw new ServiceException(500,"此物料已存在");
+                }
             }
+
         }
     }
 
