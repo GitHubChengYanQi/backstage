@@ -59,11 +59,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          */
         if (param.getType() == 1) {
             ItemAttribute one1 = new ItemAttribute();
-            Long spuId = param.getSpuParam().getSpuId();
+            Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
-                spu.setName(param.getSpuParam().getName());
-                spu.setCategoryId(param.getSpuParam().getCategoryId());
+                spu.setName(param.getSpu().getName());
+                spu.setCategoryId(param.getSpu().getCategoryId());
                 spuId = spuService.add(spu);
             }
             Spu byId = spuService.getById(spuId);
@@ -87,6 +87,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setSpuId(spuId);
             entity.setSkuValueMd5(md5);
             entity.setSkuValue(Json);
+
             Sku sku = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).one();
             if (ToolUtil.isEmpty(sku)) {
                 this.save(entity);
@@ -94,11 +95,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 throw new ServiceException(500,"此物料已存在");
             }
         } else if (param.getType() == 0) {
-            Long spuId = param.getSpuParam().getSpuId();
+            Long spuId = param.getSpu().getSpuId();
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
-                spu.setName(param.getSpuParam().getName());
-                spu.setCategoryId(param.getSpuParam().getCategoryId());
+                spu.setName(param.getSpu().getName());
+                spu.setSpuClassificationId(param.getSpuClassificationId());
                 spuId = spuService.add(spu);
             }
             param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
