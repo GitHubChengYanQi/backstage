@@ -1,8 +1,12 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
+import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
+import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
+import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -50,6 +54,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private ItemAttributeService itemAttributeService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private PartsService partsService;
+    @Autowired
+    private ErpPartsDetailService partsDetailService;
 
     @Transactional
     @Override
@@ -66,6 +74,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
                 spu.setIsHidden(true);
+                spu.setSpuStandard(param.getSpuStandard());
                 spu.setType(0);
                 spuId = spuService.add(spu);
 
@@ -137,12 +146,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public void delete(SkuParam param) {
-        this.removeById(getKey(param));
+        Sku sku = new Sku();
+        ToolUtil.copyProperties(param,sku);
+        sku.setDisplay(0);
+        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getSkuId()).list();
+        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getSkuId()).list();
+        if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
+            throw new ServiceException(500,"清单中有此物品数据,删除终止");
+        }
+        this.skuService.updateById(sku);
     }
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
-        List<Sku> skuList = param.getSkuIds().size()==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
+        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, param.getId()).list();
         List<Long> spuIds = new ArrayList<>();
         for (Sku sku : skuList) {
             sku.setDisplay(0);
@@ -157,6 +174,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).list();
         for (Category category : categoryList) {
             category.setDisplay(0);
+        }
+        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getId()).list();
+        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getId()).list();
+        if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
+            throw new ServiceException(500,"清单中有此物品数据,删除终止");
         }
         this.categoryService.updateBatchById(categoryList);
         this.spuService.updateBatchById(spuList);

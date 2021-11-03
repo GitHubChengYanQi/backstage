@@ -93,7 +93,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData deleteBatch(@RequestBody SkuParam skuParam)  {
-        this.skuService.delete(skuParam);
+        this.skuService.deleteBatch(skuParam);
         return ResponseData.success();
     }
 

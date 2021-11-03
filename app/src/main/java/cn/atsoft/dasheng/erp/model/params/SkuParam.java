@@ -31,10 +31,11 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     private List<AttributeValuesParam> attributeValues;
     @ApiModelProperty("")
     private Long skuId;
-    List<Long> skuIds;
+    private List<Long> skuIds;
     private SpuParam spu;
     private Long spuClassificationId;
-    private Integer spuStandard;
+    private Long spuStandard;
+    private List<Long> id;
     /**
      * 类型
      */
