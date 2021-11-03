@@ -161,8 +161,10 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
             SpuResult spuResult = skuService.backSpu(record.getSkuId());
 
             record.setBackSkus(backSkus);
+            if (ToolUtil.isNotEmpty(spuResult)) {
+                record.setSpuResult(spuResult);
+            }
 
-            record.setSpuResult(spuResult);
 
 //            for (Sku sku : skus) {
 //                if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {

@@ -144,7 +144,10 @@ public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery> i
 
             record.setBackSkus(backSkus);
 
-            record.setSpuResult(spuResult);
+            if (ToolUtil.isNotEmpty(spuResult)) {
+                record.setSpuResult(spuResult);
+            }
+
 
             if (ToolUtil.isNotEmpty(customerList)) {
                 for (Customer customer : customerList) {
