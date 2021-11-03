@@ -29,6 +29,7 @@ public class SpuParam implements Serializable, BaseValidatingParam {
     private Boolean isHidden;
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
+    private Long spuStandard;
 //    private List<ItemAttributeParam> spuAttributes;
 
     /**
