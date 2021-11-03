@@ -86,7 +86,7 @@ public class PartsController extends BaseController {
 
 //        List<String>  pidValue = partsParam.getPidValue();
 //        partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
-        this.partsService.update(partsParam);
+//        this.partsService.update(partsParam);
         return ResponseData.success();
     }
 

@@ -63,10 +63,21 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public void add(PartsParam partsParam) {
         String s = partsParam.getPartName().replace(" ", "");
         partsParam.setPartName(s);
-        Integer count = this.query().in("part_name", s).in("display", 1).count();
-        if (count > 0) {
-            throw new ServiceException(500, "错误");
+        if (ToolUtil.isNotEmpty(partsParam.getPartsId())) {
+            Parts parts = this.getById(partsParam.getPartsId());
+            if (!partsParam.getPartName().equals(parts.getPartName())) {
+                Integer count = this.query().in("part_name", partsParam.getPartName()).in("display", 1).count();
+                if (count > 0) {
+                    throw new ServiceException(500, "错误");
+                }
+            }
+        } else {
+            Integer count = this.query().in("part_name", s).in("display", 1).count();
+            if (count > 0) {
+                throw new ServiceException(500, "名字以重复");
+            }
         }
+
         long l = partsParam.getParts().stream().distinct().count();
         if (l > partsParam.getParts().size()) {
             throw new ServiceException(500, "错误");
@@ -97,7 +108,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 parts.setDisplay(0);
                 LoginUser user = LoginContextHolder.getContext().getUser();
                 parts.setUpdateUser(user.getId());
-                this.updateById(parts);
+                QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("parts_id", parts.getPartsId());
+                this.update(parts, queryWrapper);
+
+                partsParam.setPartsId(null);
+
                 ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
                 erpPartsDetail.setDisplay(0);
                 erpPartsDetail.setUpdateUser(user.getId());
@@ -113,7 +129,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     parts.setDisplay(0);
                     LoginUser user = LoginContextHolder.getContext().getUser();
                     parts.setUpdateUser(user.getId());
-                    this.updateById(parts);
+
+                    QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.eq("parts_id", parts.getPartsId());
+                    this.update(parts, queryWrapper);
+
+                    partsParam.setPartsId(null);
+
                     ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
                     erpPartsDetail.setDisplay(0);
                     erpPartsDetail.setUpdateUser(user.getId());
@@ -295,10 +317,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
-        Parts one = this.query().in("sku_id", skuId).in("display", 0).one();
-//        map.put("part" + partsId + "skuId" + one.getSkuId(), "真");
-        if (ToolUtil.isNotEmpty(one)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).in("display", 0).list();
+        Parts parts = this.query().in("sku_id", skuId).in("display", 0).eq("parts_id", partsId).one();
+
+        if (ToolUtil.isNotEmpty(parts)) {
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", parts.getPartsId()).in("display", 0).list();
             List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
@@ -313,10 +335,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
 
                 for (ErpPartsDetailResult detailResult : detailResults) {
-                    List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
-                    SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
-                    detailResult.setBackSkus(backSkus);
-                    detailResult.setSpuResult(spuResult);
+                    if (parts.getPartsId().equals(detailResult.getPartsId())) {
+                        List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
+                        SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
+                        detailResult.setBackSkus(backSkus);
+                        detailResult.setSpuResult(spuResult);
+                    }
+
                 }
                 return detailResults;
             }
@@ -355,7 +380,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             userIds.add(datum.getCreateUser());
             skuIds.add(datum.getSkuId());
         }
-        List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).list();
+        List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay,1).list();
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.query().in("user_id", userIds).list();
         Map<Long, List<BackSku>> sendSku = null;
         if (ToolUtil.isNotEmpty(skuIds)) {
