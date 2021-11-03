@@ -62,6 +62,14 @@ public interface PartsService extends IService<Parts> {
     List<PartsResult> findListBySpec(PartsParam param);
 
     /**
+     * 旧查询列表，Specification模式
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    PageInfo<PartsResult> oldFindPageBySpec(PartsParam param);
+
+    /**
      * 查询分页数据，Specification模式
      *
      * @author song

@@ -45,6 +45,15 @@ public interface PartsMapper extends BaseMapper<Parts> {
      */
     Page<PartsResult> customPageList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
 
+
+    /**
+     * 获取旧分页实体列表
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    Page<PartsResult> oldCustomPageList(@Param("page") Page page, @Param("paramCondition") PartsParam paramCondition);
+
     /**
      * 获取分页map列表
      *
