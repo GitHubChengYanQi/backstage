@@ -65,27 +65,27 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         partsParam.setPartName(s);
         Integer count = this.query().in("part_name", s).in("display", 1).count();
         if (count > 0) {
-            throw new ServiceException(500, "已有重複名");
+            throw new ServiceException(500, "错误");
         }
         long l = partsParam.getParts().stream().distinct().count();
         if (l > partsParam.getParts().size()) {
-            throw new ServiceException(500, "不可以填寫規格產品");
+            throw new ServiceException(500, "错误");
         }
         List<Parts> partsList = this.query().in("display", 1).list();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
                 if (part.getSkuId().equals(partsParam.getPSkuId())) {
-                    throw new ServiceException(500, "不可以添加重复规格产品");
+                    throw new ServiceException(500, "错误");
                 }
             }
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
                 if (part.getSkuId().equals(partsParam.getItem().getSkuId())) {
-                    throw new ServiceException(500, "不可以添加重复规格产品");
+                    throw new ServiceException(500, "错误");
                 }
             }
             for (Parts parts : partsList) {
                 if (parts.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "已有相同规格");
+                    throw new ServiceException(500, "错误");
                 }
 
             }
@@ -169,34 +169,34 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public void update(PartsParam param) {
         if (ToolUtil.isEmpty(param.getPartsId())) {
-            throw new ServiceException(500, "请确定清单");
+            throw new ServiceException(500, "错误");
         }
         Parts parts = this.getById(param.getPartsId());
         if (!parts.getPartName().equals(param.getPartName())) {
             Integer count = this.query().in("part_name", param.getPartName()).count();
             if (count > 0) {
-                throw new ServiceException(500, "名字已被使用");
+                throw new ServiceException(500, "错误");
             }
         }
         long l = param.getParts().stream().distinct().count();
         if (l > param.getParts().size()) {
-            throw new ServiceException(500, "不可以填寫規格產品");
+            throw new ServiceException(500, "错误");
         }
         List<Parts> partsList = this.query().in("display", 1).list();
         for (ErpPartsDetailParam part : param.getParts()) {
             if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(param.getPSkuId())) {
                 if (part.getSkuId().equals(param.getPSkuId())) {
-                    throw new ServiceException(500, "不可以添加重复规格产品");
+                    throw new ServiceException(500, "错误");
                 }
             }
             if (ToolUtil.isNotEmpty(param.getItem().getSkuId())) {
                 if (part.getSkuId().equals(param.getItem().getSkuId())) {
-                    throw new ServiceException(500, "不可以添加重复规格产品");
+                    throw new ServiceException(500, "错误");
                 }
             }
             for (Parts partList : partsList) {
                 if (partList.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "已有相同规格");
+                    throw new ServiceException(500, "错误");
                 }
             }
         }
@@ -261,7 +261,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts one = this.query().in("sku_id", skuId).in("display", 1).one();
 //        map.put("part" + partsId + "skuId" + one.getSkuId(), "真");
         if (ToolUtil.isNotEmpty(one)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).list();
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).in("display", 1).list();
             List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
@@ -276,6 +276,41 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 }
 
 
+                for (ErpPartsDetailResult detailResult : detailResults) {
+                    List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
+                    SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
+                    detailResult.setBackSkus(backSkus);
+                    detailResult.setSpuResult(spuResult);
+                }
+                return detailResults;
+            }
+        }
+
+
+        return null;
+    }
+
+    @Override
+    public List<ErpPartsDetailResult> oldBackDetails(Long skuId, Long partsId) {
+        if (ToolUtil.isEmpty(skuId)) {
+            throw new ServiceException(500, "沒傳入skuId");
+        }
+        Parts one = this.query().in("sku_id", skuId).in("display", 0).one();
+//        map.put("part" + partsId + "skuId" + one.getSkuId(), "真");
+        if (ToolUtil.isNotEmpty(one)) {
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).in("display", 0).list();
+            List<Long> skuIds = new ArrayList<>();
+            for (ErpPartsDetail detail : details) {
+                skuIds.add(detail.getSkuId());
+            }
+            if (ToolUtil.isNotEmpty(skuIds)) {
+                Map<Long, List<BackSku>> sendSku = skuService.sendSku(skuIds);
+                List<ErpPartsDetailResult> detailResults = new ArrayList<>();
+                for (ErpPartsDetail detail : details) {
+                    ErpPartsDetailResult detailResult = new ErpPartsDetailResult();
+                    ToolUtil.copyProperties(detail, detailResult);
+                    detailResults.add(detailResult);
+                }
 
                 for (ErpPartsDetailResult detailResult : detailResults) {
                     List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());

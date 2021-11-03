@@ -80,4 +80,6 @@ public interface PartsService extends IService<Parts> {
 
     List<ErpPartsDetailResult> backDetails(Long skuId,Long partsId);
 
+    List<ErpPartsDetailResult> oldBackDetails(Long skuId,Long partsId);
+
 }
