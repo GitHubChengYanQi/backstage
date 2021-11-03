@@ -90,6 +90,12 @@ public class SkuController extends BaseController {
         this.skuService.delete(skuParam);
         return ResponseData.success();
     }
+    @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData deleteBatch(@RequestBody SkuParam skuParam)  {
+        this.skuService.delete(skuParam);
+        return ResponseData.success();
+    }
 
     /**
      * 查看详情接口

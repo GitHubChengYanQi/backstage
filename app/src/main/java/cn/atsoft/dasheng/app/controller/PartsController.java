@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -112,6 +113,12 @@ public class PartsController extends BaseController {
             erpPartsDetailResult.setPartsAttributes(erpPartsDetail.getAttribute());
             erpPartsDetailParams.add(erpPartsDetailResult);
         }
+
+        Item item = new Item();
+        if (ToolUtil.isNotEmpty(detail.getSkuId())){
+            item.setSkuId(detail.getSkuId());
+        }
+        result.setItem(item);
 
         result.setParts(erpPartsDetailParams);
 
