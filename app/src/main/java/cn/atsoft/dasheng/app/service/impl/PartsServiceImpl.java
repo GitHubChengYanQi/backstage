@@ -62,14 +62,15 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     public void add(PartsParam partsParam) {
         String s = partsParam.getPartName().replace(" ", "");
         partsParam.setPartName(s);
-        Integer count = this.query().in("part_name", s).count();
+        Integer count = this.query().in("part_name", s).in("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "已有重複名");
         }
         long l = partsParam.getParts().stream().distinct().count();
-        if (l < partsParam.getParts().size()) {
+        if (l > partsParam.getParts().size()) {
             throw new ServiceException(500, "不可以填寫規格產品");
         }
+        List<Parts> partsList = this.query().in("display", 1).list();
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
                 if (part.getSkuId().equals(partsParam.getPSkuId())) {
@@ -81,6 +82,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "不可以添加重复规格产品");
                 }
             }
+            for (Parts parts : partsList) {
+                if (parts.getSkuId().equals(part.getSkuId())) {
+                    throw new ServiceException(500, "已有相同规格");
+                }
+
+            }
         }
 
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
@@ -90,16 +97,28 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 LoginUser user = LoginContextHolder.getContext().getUser();
                 parts.setUpdateUser(user.getId());
                 this.updateById(parts);
+                ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+                erpPartsDetail.setDisplay(0);
+                erpPartsDetail.setUpdateUser(user.getId());
+                QueryWrapper<ErpPartsDetail> detailQueryWrapper = new QueryWrapper<>();
+                detailQueryWrapper.in("parts_id", parts.getPartsId());
+                erpPartsDetailService.update(erpPartsDetail, detailQueryWrapper);
             }
             partsParam.setSkuId(partsParam.getPSkuId());
         } else {
             if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
-                Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).in("display", 1).one();
+                Parts parts = this.query().in("sku_id", partsParam.getItem().getSkuId()).in("display", 1).one();
                 if (ToolUtil.isNotEmpty(parts)) {
                     parts.setDisplay(0);
                     LoginUser user = LoginContextHolder.getContext().getUser();
                     parts.setUpdateUser(user.getId());
                     this.updateById(parts);
+                    ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+                    erpPartsDetail.setDisplay(0);
+                    erpPartsDetail.setUpdateUser(user.getId());
+                    QueryWrapper<ErpPartsDetail> detailQueryWrapper = new QueryWrapper<>();
+                    detailQueryWrapper.in("parts_id", parts.getPartsId());
+                    erpPartsDetailService.update(erpPartsDetail, detailQueryWrapper);
                 }
                 partsParam.setSkuId(partsParam.getItem().getSkuId());
             }
@@ -134,10 +153,16 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
     @Override
     public void delete(PartsParam param) {
-        this.removeById(getKey(param));
+//        this.removeById(getKey(param));
+        Parts parts = new Parts();
+        parts.setDisplay(0);
+        this.update(parts, new QueryWrapper<Parts>().in("parts_id", param.getPartsId()));
         QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
         erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
-        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
+        ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+        erpPartsDetail.setDisplay(0);
+//        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
+        erpPartsDetailService.update(erpPartsDetail, erpPartsDetailQueryWrapper);
     }
 
     @Transactional
