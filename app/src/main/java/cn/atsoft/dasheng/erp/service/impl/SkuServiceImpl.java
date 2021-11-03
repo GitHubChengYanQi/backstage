@@ -74,6 +74,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
                 spu.setIsHidden(true);
+                spu.setSpuStandard(param.getSpuStandard());
                 spu.setType(0);
                 spuId = spuService.add(spu);
 
@@ -158,7 +159,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
-        List<Sku> skuList = param.getSkuIds().size()==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
+        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, param.getId()).list();
         List<Long> spuIds = new ArrayList<>();
         for (Sku sku : skuList) {
             sku.setDisplay(0);
@@ -174,8 +175,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (Category category : categoryList) {
             category.setDisplay(0);
         }
-        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getSkuIds()).list();
-        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getSkuIds()).list();
+        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getId()).list();
+        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getId()).list();
         if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
             throw new ServiceException(500,"清单中有此物品数据,删除终止");
         }

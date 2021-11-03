@@ -64,7 +64,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_sku where 1 = 1
+        from goods_sku where 1 = 1 and display =1
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
@@ -74,6 +74,7 @@
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">

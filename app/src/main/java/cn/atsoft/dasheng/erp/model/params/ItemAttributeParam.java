@@ -28,7 +28,7 @@ public class ItemAttributeParam implements Serializable , Comparable<ItemAttribu
     /**
      * 是否標配
      */
-   private Integer standard;
+   private Long standard;
 
     /**
      * 属性id

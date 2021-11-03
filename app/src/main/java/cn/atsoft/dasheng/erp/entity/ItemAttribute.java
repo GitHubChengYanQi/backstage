@@ -27,7 +27,7 @@ public class ItemAttribute implements Serializable {
      * 是否標配
      */
     @TableField("standard")
-    private Integer standard;
+    private Long standard;
     /**
      * 属性id
      */
@@ -166,11 +166,11 @@ public class ItemAttribute implements Serializable {
         this.sort = sort;
     }
 
-    public Integer getStandard() {
+    public Long getStandard() {
         return standard;
     }
 
-    public void setStandard(Integer standard) {
+    public void setStandard(Long standard) {
         this.standard = standard;
     }
 
