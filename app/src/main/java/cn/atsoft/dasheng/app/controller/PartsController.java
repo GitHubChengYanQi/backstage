@@ -115,7 +115,7 @@ public class PartsController extends BaseController {
         }
 
         Item item = new Item();
-        if (ToolUtil.isNotEmpty(detail.getSkuId())){
+        if (ToolUtil.isNotEmpty(detail.getSkuId())) {
             item.setSkuId(detail.getSkuId());
         }
         result.setItem(item);
@@ -213,8 +213,8 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
     @ApiOperation("返回子表集合")
-    public ResponseData backDetails(@RequestParam Long id) {
-        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id);
+    public ResponseData backDetails(@RequestParam Long id, Long partsId) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId);
         return ResponseData.success(detailResults);
     }
 }

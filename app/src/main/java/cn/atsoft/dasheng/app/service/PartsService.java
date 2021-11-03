@@ -70,6 +70,6 @@ public interface PartsService extends IService<Parts> {
     PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
 
-    List<ErpPartsDetailResult> backDetails(Long skuId);
+    List<ErpPartsDetailResult> backDetails(Long skuId,Long partsId);
 
 }

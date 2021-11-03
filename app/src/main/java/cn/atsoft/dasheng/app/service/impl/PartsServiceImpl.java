@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,12 +83,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "不可以添加重复规格产品");
                 }
             }
-            for (Parts parts : partsList) {
-                if (parts.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "已有相同规格");
-                }
-
-            }
+//            for (Parts parts : partsList) {
+//                if (parts.getSkuId().equals(part.getSkuId())) {
+//                    throw new ServiceException(500, "已有相同规格");
+//                }
+//
+//            }
         }
 
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
@@ -193,11 +194,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "不可以添加重复规格产品");
                 }
             }
-            for (Parts partList : partsList) {
-                if (partList.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "已有相同规格");
-                }
-            }
+//            for (Parts partList : partsList) {
+//                if (partList.getSkuId().equals(part.getSkuId())) {
+//                    throw new ServiceException(500, "已有相同规格");
+//                }
+//            }
         }
 //------------------------------------------------------------------------------------
         if (ToolUtil.isNotEmpty(param.getPSkuId())) {
@@ -242,12 +243,15 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         return PageFactory.createPageInfo(page);
     }
 
+    Map<String, String> map = new HashMap<>();
+
     @Override
-    public List<ErpPartsDetailResult> backDetails(Long skuId) {
+    public List<ErpPartsDetailResult> backDetails(Long skuId, Long partsId) {
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
         Parts one = this.query().in("sku_id", skuId).in("display", 1).one();
+        map.put("part" + partsId + "skuId" + one.getSkuId(), "真");
         if (ToolUtil.isNotEmpty(one)) {
             List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).list();
             List<Long> skuIds = new ArrayList<>();
@@ -262,6 +266,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     ToolUtil.copyProperties(detail, detailResult);
                     detailResults.add(detailResult);
                 }
+
+                for (ErpPartsDetailResult detailResult : detailResults) {
+                    String s = map.get("part" + partsId + "skuId" + one.getSkuId());
+                    if (s.equals("真")) {
+                        return null;
+                    }
+                }
+
                 for (ErpPartsDetailResult detailResult : detailResults) {
                     List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
                     SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
