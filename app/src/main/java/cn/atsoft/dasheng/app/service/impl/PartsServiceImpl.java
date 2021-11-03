@@ -24,6 +24,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -94,14 +95,23 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "错误");
                 }
             }
-            for (Parts parts : partsList) {
-                if (parts.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "错误");
-                }
 
-            }
         }
-
+//**************************************************************************************
+//        List<Parts> partlist = this.list();
+//
+//        for (Parts parts : partlist) {
+//            JSONArray jsonArray = JSONUtil.parseArray(parts.getChild());
+//            List<Long> lists = JSONUtil.toList(jsonArray, Long.class);
+//            for (Long id : lists) {
+//                for (ErpPartsDetailParam part : partsParam.getParts()) {
+//                    if (part.getSkuId().equals(id)) {
+//                        throw new ServiceException(500, "错误");
+//                    }
+//                }
+//            }
+//        }
+////************************************************************************************
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
             Parts parts = this.query().in("sku_id", partsParam.getPSkuId()).in("display", 1).one();
             if (ToolUtil.isNotEmpty(parts)) {
@@ -154,6 +164,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts entity = getEntity(partsParam);
 //        this.save(entity);
         this.saveOrUpdate(entity);
+
+
         List<ErpPartsDetail> details = new ArrayList<>();
         if (ToolUtil.isNotEmpty(partsParam.getParts())) {
             for (ErpPartsDetailParam part : partsParam.getParts()) {
@@ -171,7 +183,26 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         }
         erpPartsDetailService.saveBatch(details);
+        List<ErpPartsDetail> list = erpPartsDetailService.query().in("parts_id", entity.getPartsId()).in("display", 1).list();
+        List<Long> ids = new ArrayList<>();
+        for (ErpPartsDetail erpPartsDetail : list) {
+            ids.add(erpPartsDetail.getSkuId());
+        }
+        List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().in("sku_id", ids).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
+            skuIds.add(erpPartsDetail.getSkuId());
+        }
+        String str = JSONUtil.toJsonStr(skuIds);
+        String jsonStr = JSONUtil.toJsonStr(ids);
+        entity.setChild(jsonStr);
+        entity.setChilds(str);
+        QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("parts_id", entity.getPartsId());
+        this.update(entity, queryWrapper);
+
     }
+
 
     @Override
     public void delete(PartsParam param) {
@@ -380,7 +411,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             userIds.add(datum.getCreateUser());
             skuIds.add(datum.getSkuId());
         }
-        List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay,1).list();
+        List<Parts> parts = pids.size() == 0 ? new ArrayList<>() : this.lambdaQuery().in(Parts::getPartsId, pids).in(Parts::getDisplay, 1).list();
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.query().in("user_id", userIds).list();
         Map<Long, List<BackSku>> sendSku = null;
         if (ToolUtil.isNotEmpty(skuIds)) {

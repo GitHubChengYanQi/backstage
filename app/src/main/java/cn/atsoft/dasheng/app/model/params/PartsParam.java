@@ -27,6 +27,12 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+
+    private String child;
+
+    private String childs;
+
+
     private List<ErpPartsDetailParam> parts;
 
     private Long pSkuId;
