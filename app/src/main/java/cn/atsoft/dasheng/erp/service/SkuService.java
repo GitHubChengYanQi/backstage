@@ -38,6 +38,11 @@ public interface SkuService extends IService<Sku> {
     void delete(SkuParam param);
 
     /**
+     * 批量删除
+     */
+    void deleteBatch(SkuParam param);
+
+    /**
      * 更新
      *
      * @author
@@ -82,4 +87,5 @@ public interface SkuService extends IService<Sku> {
      * @return
      */
     Map<Long, List<BackSku>> sendSku(List<Long> skuiIds);
+
 }

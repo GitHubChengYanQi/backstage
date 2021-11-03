@@ -139,6 +139,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     public void delete(SkuParam param) {
         this.removeById(getKey(param));
     }
+    @Transactional
+    @Override
+    public void deleteBatch(SkuParam param) {
+        List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
+        List<Long> spuIds = new ArrayList<>();
+        for (Sku sku : skuList) {
+            sku.setDisplay(1);
+            spuIds.add(sku.getSkuId());
+        }
+        List<Long> categoryIds = new ArrayList<>();
+        List<Spu> spuList = spuService.lambdaQuery().in(Spu::getSpuId, spuIds).list();
+        for (Spu spu : spuList) {
+            spu.setDisplay(0);
+            categoryIds.add(spu.getCategoryId());
+        }
+        List<Category> categoryList = categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).list();
+        for (Category category : categoryList) {
+            category.setDisplay(0);
+        }
+        this.categoryService.updateBatchById(categoryList);
+        this.spuService.updateBatchById(spuList);
+        this.skuService.updateBatchById(skuList);
+    }
+
 
     @Override
     public void update(SkuParam param) {
