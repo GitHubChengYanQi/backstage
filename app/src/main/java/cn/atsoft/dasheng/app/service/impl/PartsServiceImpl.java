@@ -194,11 +194,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "错误");
                 }
             }
-            for (Parts partList : partsList) {
-                if (partList.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "错误");
-                }
-            }
+//            for (Parts partList : partsList) {
+//                if (partList.getSkuId().equals(part.getSkuId())) {
+//                    throw new ServiceException(500, "错误");
+//                }
+//            }
         }
 //------------------------------------------------------------------------------------
         if (ToolUtil.isNotEmpty(param.getPSkuId())) {
