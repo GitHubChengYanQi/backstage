@@ -29,6 +29,20 @@ public class CodingRules implements Serializable {
      */
     @TableField("state")
     private Integer state;
+
+    public Integer getModule() {
+        return module;
+    }
+
+    public void setModule(Integer module) {
+        this.module = module;
+    }
+
+    /**
+     * 模块
+     */
+    @TableField("module")
+    private Integer module;
     /**
      * 排序
      */

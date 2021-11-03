@@ -36,6 +36,10 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
      */
     private Long sort;
 
+    private Integer module;
+
+    private List<Codings> codings;
+
     /**
      * 编码规则id
      */
