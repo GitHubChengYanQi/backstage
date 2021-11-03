@@ -82,12 +82,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     throw new ServiceException(500, "不可以添加重复规格产品");
                 }
             }
-            for (Parts parts : partsList) {
-                if (parts.getSkuId().equals(part.getSkuId())) {
-                    throw new ServiceException(500, "已有相同规格");
-                }
-
-            }
+//            for (Parts parts : partsList) {
+//                if (parts.getSkuId().equals(part.getSkuId())) {
+//                    throw new ServiceException(500, "已有相同规格");
+//                }
+//
+//            }
         }
 
         if (ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
@@ -232,6 +232,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Override
     public List<PartsResult> findListBySpec(PartsParam param) {
         return null;
+    }
+
+    @Override
+    public PageInfo<PartsResult> oldFindPageBySpec(PartsParam param) {
+        Page<PartsResult> pageContext = getPageContext();
+        IPage<PartsResult> page = this.baseMapper.oldCustomPageList(pageContext, param);
+        format(page.getRecords());
+        return PageFactory.createPageInfo(page);
     }
 
     @Override
