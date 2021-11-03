@@ -32,6 +32,8 @@ public class PartsResult implements Serializable {
 
     private UserResult userResult;
     private SpuResult spuResult;
+
+    private Item item;
     //零件
     private List<PartsResult> partsResults;
 
