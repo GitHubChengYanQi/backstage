@@ -79,9 +79,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             }
             Spu byId = spuService.getById(spuId);
-            Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).and(i->i.eq(Category::getDisplay,1)).one();
+            Category one = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i->i.eq(Category::getDisplay,1)).one();
             if (ToolUtil.isNotEmpty(one)) {
-                one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).and(i->i.eq(ItemAttribute::getDisplay,1)).one();
+                one1 = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, one.getCategoryId()).and(i->i.eq(ItemAttribute::getDisplay,1)).one();
             }
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());
@@ -98,12 +98,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setSpuId(spuId);
             entity.setSkuValueMd5(md5);
             entity.setSkuValue(Json);
-
-            Sku sku = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
-            if (ToolUtil.isEmpty(sku)) {
-                this.save(entity);
+            Spu spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
+            Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
+            Sku skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).one();
+            if (ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName)) {
+                throw new ServiceException(500,"此物料在产品中已存在");
             }else {
-                throw new ServiceException(500,"此物料已存在");
+                this.save(entity);
             }
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
@@ -111,6 +112,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
                 spu.setSpuClassificationId(param.getSpuClassificationId());
+                spu.setIsHidden(false);
                 spu.setType(0);
                 spuId = spuService.add(spu);
             }else {
@@ -130,11 +132,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String md5 = SecureUtil.md5(Json);
                 entity.setSkuValueMd5(md5);
                 entity.setSkuValue(Json);
-                Sku one = skuService.lambdaQuery().in(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
-                if (ToolUtil.isEmpty(one)) {
-                    this.save(entity);
+                Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
+                Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
+                if (ToolUtil.isNotEmpty(sku)||ToolUtil.isNotEmpty(spu)) {
+                    throw new ServiceException(500,"此物料在产品中已存在");
                 }else {
-                    throw new ServiceException(500,"此物料已存在");
+                    this.save(entity);
                 }
             }
 

@@ -42,7 +42,7 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues())
                 .in("display", 1).count();
         if (count > 0) {
-            throw new ServiceException(500, "不要重复添加");
+            throw new ServiceException(500, "不要重复添加属性");
         }
         AttributeValues entity = getEntity(param);
         this.save(entity);
