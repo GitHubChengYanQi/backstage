@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -42,6 +43,8 @@ public class PartsResult implements Serializable {
     private String child;
 
     private String childs;
+
+    private Sku sku;
 
 
     @ApiModelProperty("关联sku")

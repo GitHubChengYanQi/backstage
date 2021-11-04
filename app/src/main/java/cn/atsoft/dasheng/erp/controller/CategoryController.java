@@ -180,7 +180,9 @@ public class CategoryController extends BaseController {
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String, Object>> list = this.categoryService.listMaps();
+        QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
+        categoryQueryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
 
         List<TreeNode> treeViewNodes = new ArrayList<>();
 
