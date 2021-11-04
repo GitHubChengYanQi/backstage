@@ -89,7 +89,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             throw new ServiceException(500, "错误!!!!");
         }
 
-        if (param.getIsHidden()==false) {
+        if (param.getIsHidden()==true) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).and(i->i.eq("display",1)).count();
             if (classcount > 0) {
                 throw new ServiceException(500, "分类名称重复");
