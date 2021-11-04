@@ -85,8 +85,11 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
         Spu entity = getEntity(param);
 
+        if (ToolUtil.isEmpty(param.getIsHidden())){
+            throw new ServiceException(500, "错误!!!!");
+        }
 
-        if (ToolUtil.isEmpty(param.getIsHidden())) {
+        if (param.getIsHidden()) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).count();
             if (classcount > 0) {
                 throw new ServiceException(500, "不可以填写重复名");
