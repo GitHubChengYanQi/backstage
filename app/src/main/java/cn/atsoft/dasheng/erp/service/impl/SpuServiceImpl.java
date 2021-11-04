@@ -112,11 +112,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 entity.setAttribute(toJSONString);
             }
             List<List<String>> result = new ArrayList<List<String>>();
-//        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
-//        param.getSpuAttributes().getSpuRequests().sort();
             param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
-//                Collections.sort(param.getSpuAttributes().getSpuRequests());
             if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
 
                 descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
@@ -323,7 +320,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     @Override
     public void delete(SpuParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        spuService.update(param);
     }
 
     @Override
