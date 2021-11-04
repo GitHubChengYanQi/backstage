@@ -126,25 +126,25 @@ public class SpuController extends BaseController {
             List<Map<String, String>> list = new ArrayList<>();
 
             SpuClassification spuClassification = detail.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
-                    .query().in("spu_classification_id", detail.getSpuClassificationId()).one();
+                    .query().in("spu_classification_id", detail.getSpuClassificationId()).and(i->i.eq("display",1)).one();
 
 
             SpuResult spuResult = new SpuResult();
             List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
-                    skuService.query().in("spu_id", detail.getSpuId()).list();
+                    skuService.query().in("spu_id", detail.getSpuId()).and(i->i.eq("display",1)).list();
             List<List<SkuJson>> requests = new ArrayList<>();
             List<SkuResult> skuResultList = new ArrayList<>();
             List<CategoryRequest> categoryRequests = new ArrayList<>();
             if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
                 List<ItemAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery()
-                        .in(ItemAttribute::getCategoryId, detail.getCategoryId())
+                        .in(ItemAttribute::getCategoryId, detail.getCategoryId()).and(i->i.eq(ItemAttribute::getDisplay,1))
                         .list();
                 List<Long> attId = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     attId.add(itemAttribute.getAttributeId());
                 }
                 List<AttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
-                        .in(AttributeValues::getAttributeId, attId)
+                        .in(AttributeValues::getAttributeId, attId).and(i->i.eq(AttributeValues::getDisplay,1))
                         .list();
                 if (ToolUtil.isNotEmpty(itemAttributes)) {
                     for (Sku sku : skus) {
@@ -171,33 +171,59 @@ public class SpuController extends BaseController {
                         list.add(skuValueMap);
                         skuResultList.add(skuResult);
 
+
                     }
                 }
-                List<AttributeInSpu> tree = attributeResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(AttributeInSpu::getK_s))), ArrayList::new));
-                List<AttributeValueInSpu> treeValue = attributeValuesResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(AttributeValueInSpu::getId))), ArrayList::new));
-                for (AttributeValueInSpu attributeValuesResult : treeValue) {
-                    for (AttributeValues attributeValue : attributeValues) {
-                        if (attributeValuesResult.getId().equals(attributeValue.getAttributeValuesId())) {
-                            attributeValuesResult.setName(attributeValue.getAttributeValues());
-                        }
+                JSONArray jsonArray = JSONUtil.parseArray(detail.getAttribute());
+                List<Attribute> attributes = JSONUtil.toList(jsonArray, Attribute.class);
+
+
+               List<AttributeInSpu> tree = new ArrayList<>();
+                for (Attribute attribute : attributes) {
+                    AttributeInSpu attributeInSpu = new AttributeInSpu();
+                    attributeInSpu.setK_s(Long.valueOf(attribute.getAttributeId()));
+                    attributeInSpu.setK(attribute.getAttribute());
+                    List<AttributeValueInSpu> v = new ArrayList<>();
+                    for (Values attributeValue : attribute.getAttributeValues()) {
+                        AttributeValueInSpu attributeValueInSpu = new AttributeValueInSpu();
+                        attributeValueInSpu.setId(Long.valueOf(attributeValue.getAttributeValuesId()));
+                        attributeValueInSpu.setName(attributeValue.getAttributeValues());
+                        attributeValueInSpu.setAttributeId(Long.valueOf(attribute.getAttributeId()));
+                        v.add(attributeValueInSpu);
                     }
+                    attributeInSpu.setV(v);
+                    tree.add(attributeInSpu);
                 }
-                for (AttributeInSpu itemAttributeResult : tree) {
-                    for (ItemAttribute itemAttribute : itemAttributes) {
-                        if (itemAttributeResult.getK_s().equals(itemAttribute.getAttributeId())) {
-                            itemAttributeResult.setK(itemAttribute.getAttribute());
-                        }
-                    }
-                    List<AttributeValueInSpu> results = new ArrayList<>();
-                    for (AttributeValueInSpu attributeValuesResult : treeValue) {
-                        if (attributeValuesResult.getAttributeId().equals(itemAttributeResult.getK_s())) {
-                            results.add(attributeValuesResult);
-                        }
-                    }
-                    itemAttributeResult.setV(results);
-                }
-                skuRequest.setList(list);
                 skuRequest.setTree(tree);
+
+                /**
+                 * 废弃笛卡尔积计算出的tree改用上方的valuesRequests
+                 */
+//                List<AttributeInSpu> tree = attributeResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(AttributeInSpu::getK_s))), ArrayList::new));
+//                List<AttributeValueInSpu> treeValue = attributeValuesResults.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(AttributeValueInSpu::getId))), ArrayList::new));
+//                for (AttributeValueInSpu attributeValuesResult : treeValue) {
+//                    for (AttributeValues attributeValue : attributeValues) {
+//                        if (attributeValuesResult.getId().equals(attributeValue.getAttributeValuesId())) {
+//                            attributeValuesResult.setName(attributeValue.getAttributeValues());
+//                        }
+//                    }
+//                }
+//                for (AttributeInSpu itemAttributeResult : tree) {
+//                    for (ItemAttribute itemAttribute : itemAttributes) {
+//                        if (itemAttributeResult.getK_s().equals(itemAttribute.getAttributeId())) {
+//                            itemAttributeResult.setK(itemAttribute.getAttribute());
+//                        }
+//                    }
+//                    List<AttributeValueInSpu> results = new ArrayList<>();
+//                    for (AttributeValueInSpu attributeValuesResult : treeValue) {
+//                        if (attributeValuesResult.getAttributeId().equals(itemAttributeResult.getK_s())) {
+//                            results.add(attributeValuesResult);
+//                        }
+//                    }
+//                    itemAttributeResult.setV(results);
+//                }
+                skuRequest.setList(list);
+//                skuRequest.setTree(tree);
 
             }
             if (ToolUtil.isNotEmpty(spuClassification)) {
@@ -280,8 +306,9 @@ public class SpuController extends BaseController {
             if (ToolUtil.isNotEmpty(spuParam.getType())){
                 spuQueryWrapper.in("type", spuParam.getType());
             }
-        }
 
+        }
+        spuQueryWrapper.in("display",1);
         List<Map<String, Object>> list = this.spuService.listMaps(spuQueryWrapper);
         SpuSelectWrapper factory = new SpuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
