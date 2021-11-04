@@ -85,7 +85,6 @@ public class TableViewController extends BaseController {
         TableViewResult result = new TableViewResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
