@@ -90,10 +90,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
 
         if (param.getIsHidden()) {
-            Integer classcount = categoryService.query().eq("category_name", param.getName()).and(i->i.eq("display",1)).count();
-            if (classcount > 0) {
-                throw new ServiceException(500, "配置名称重复");
-            }
+//            Integer classcount = categoryService.query().eq("category_name", param.getName()).and(i->i.eq("display",1)).count();
+//            if (classcount > 0) {
+//                throw new ServiceException(500, "配置名称重复");
+//            }
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryName(param.getName().replace(" ", ""));
             Long classIds = categoryService.add(categoryParam);
