@@ -146,43 +146,138 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public void delete(SkuParam param) {
-        Sku sku = new Sku();
-        ToolUtil.copyProperties(param,sku);
-        sku.setDisplay(0);
-        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getSkuId()).list();
-        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getSkuId()).list();
-        if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
-            throw new ServiceException(500,"清单中有此物品数据,删除终止");
-        }
-        this.skuService.updateById(sku);
+        List<Long> id = new ArrayList<>();
+        id.add(param.getSkuId());
+        param.setId(id);
+        this.deleteBatch(param);
+    }
+    public void de(SkuParam param){
+
     }
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
-        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, param.getId()).list();
-        List<Long> spuIds = new ArrayList<>();
-        for (Sku sku : skuList) {
-            sku.setDisplay(0);
-            spuIds.add(sku.getSkuId());
-        }
-        List<Long> categoryIds = new ArrayList<>();
-        List<Spu> spuList = spuIds.size() ==0 ? new ArrayList<>(): spuService.lambdaQuery().in(Spu::getSpuId, spuIds).list();
-        for (Spu spu : spuList) {
-            spu.setDisplay(0);
-            categoryIds.add(spu.getCategoryId());
-        }
-        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).list();
-        for (Category category : categoryList) {
-            category.setDisplay(0);
-        }
-        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, param.getId()).list();
-        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, param.getId()).list();
+//        List<Long> skuIds = param.getId();
+//        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId,skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+//        List<Long> spuIds = new ArrayList<>();
+//        List<Long> attributeValuesIds = new ArrayList<>();
+//        List<Long> attributeIds = new ArrayList<>();
+//        List<Long> categoryIds = new ArrayList<>();
+//        List<Category> categoryList = new ArrayList<>();
+//
+//        for (Sku sku : skuList) {
+//            spuIds.add(sku.getSpuId());//获取skuid
+//            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+//            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);//skuValue解析
+//            for (AttributeValues valuesRequest : valuesRequests) {
+//                attributeValuesIds.add(valuesRequest.getAttributeValuesId());//获取sku属性值
+//                attributeIds.add(valuesRequest.getAttributeId());//获取sku属性
+//            }
+//            sku.setDisplay(0);
+//        }
+//
+//        skuService.updateBatchById(skuList);
+//        List<Long>hsSpuIds = new ArrayList<>();
+//        List<Sku> beforSkuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSpuId,spuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+//        for (Sku sku : beforSkuList) {
+//            hsSpuIds.add(sku.getSpuId());
+//        }
+//        spuIds.removeAll(hsSpuIds);
+//        List<AttributeValues> attributeValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i->i.eq(AttributeValues::getDisplay,1)).list();
+//        for (AttributeValues attributeValues : attributeValuesList) {
+//            attributeValues.setDisplay(0);
+//        }
+//        attributeValuesService.updateBatchById(attributeValuesList);
+//        List<Spu> spuList =spuIds.size() == 0 ? new ArrayList<>(): spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i->i.eq(Spu::getDisplay,1)).list();
+//        for (Spu spu : spuList) {
+//            spu.setDisplay(0);
+//            categoryIds.add(spu.getCategoryId());
+//        }
+//
+//
+//        spuService.updateBatchById(spuList);
+//        List<Spu> afterSkuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuId, hsSpuIds).and(i->i.eq(Spu::getDisplay,1)).list();
+//        for (Spu spu : afterSkuList) {
+//            categoryIds.remove(spu.getCategoryId());
+//        }
+//        List<Spu> beforspuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getCategoryId, categoryIds).and(i->i.eq(Spu::getDisplay,1)).list();
+//        if (beforspuList.size()>1){
+//            for (Long categoryId : categoryIds) {
+//                Category category = new Category();
+//                category.setCategoryId(categoryId);
+//                category.setDisplay(0);
+//                categoryList.add(category);
+//            }
+//        }
+//        categoryService.updateBatchById(categoryList);
+        List<Long> skuIds = param.getId();
+
+        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, skuIds).list();
+        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).list();
         if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
             throw new ServiceException(500,"清单中有此物品数据,删除终止");
         }
-        this.categoryService.updateBatchById(categoryList);
-        this.spuService.updateBatchById(spuList);
-        this.skuService.updateBatchById(skuList);
+        List<Long> attributeValuesIds = new ArrayList<>();
+        List<Long> attributeIds = new ArrayList<>();
+        List<Long> spuIds = new ArrayList<>();
+        List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+        for (Sku sku : skuList) {
+            //获取spuId
+            spuIds.add(sku.getSpuId());
+            //循环设置逻辑删除值
+            sku.setDisplay(0);
+            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
+            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);//skuValue解析
+            for (AttributeValues valuesRequest : valuesRequests) {
+                attributeValuesIds.add(valuesRequest.getAttributeValuesId());//获取sku属性值
+                attributeIds.add(valuesRequest.getAttributeId());//获取sku属性
+            }
+        }
+        skuService.updateBatchById(skuList);
+        List<AttributeValues> attributeValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        for (AttributeValues attributeValues : attributeValuesList) {
+            attributeValues.setDisplay(0);
+        }
+        attributeValuesService.updateBatchById(attributeValuesList);
+        List<AttributeValues> afterDeleteValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
+        for (ItemAttribute itemAttribute : itemAttributes) {
+            itemAttribute.setDisplay(0);
+            for (AttributeValues afterDeleteValue : afterDeleteValues) {
+                if (itemAttribute.getAttributeId().equals(afterDeleteValue.getAttributeId())) {
+                    itemAttribute.setDisplay(1);
+                }
+            }
+        }
+        itemAttributeService.updateBatchById(itemAttributes);
+
+        //获取分类id
+        List<Long> categoryIds = new ArrayList<>();
+        List<Spu> spuList = spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
+        List<Sku> afterDeleteSkuList = skuService.lambdaQuery().in(Sku::getSpuId, spuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+        for (Spu spu : spuList) {
+            spu.setDisplay(0);
+            for (Sku sku : afterDeleteSkuList) {
+                if (sku.getSpuId().equals(spu.getSpuId())) {
+                    spu.setDisplay(1);
+                }
+            }
+            categoryIds.add(spu.getCategoryId());
+        }
+        spuService.updateBatchById(spuList);
+
+        List<Category> categoryList = categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).and(i -> i.eq(Category::getDisplay, 1)).list();
+        List<Spu> afterDeleteSpuList = spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
+        for (Category category : categoryList) {
+            category.setDisplay(0);
+            for (Spu spu : afterDeleteSpuList) {
+                if (category.getCategoryId().equals(spu.getCategoryId())) {
+                    category.setDisplay(1);
+                }
+            }
+        }
+        categoryService.updateBatchById(categoryList);
+
     }
 
 

@@ -45,7 +45,7 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
             parameterType="cn.atsoft.dasheng.erp.model.params.SpuParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu where 1 = 1
+        from goods_spu where 1 = 1 and display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -93,7 +93,7 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SpuParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu where 1 = 1
+        from goods_spu where 1 = 1 and display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -142,7 +142,7 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
             parameterType="cn.atsoft.dasheng.erp.model.params.SpuParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu where 1 = 1
+        from goods_spu where 1 = 1 and display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>
@@ -196,7 +196,7 @@ curing_cycle AS "curingCycle", cycle_type AS "cycleType", model AS "model",produ
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SpuParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu where 1 = 1
+        from goods_spu where 1 = 1 and display = 1
         <if test="paramCondition.name != null and paramCondition.name != ''">
             and name like CONCAT('%',#{paramCondition.name},'%')
         </if>

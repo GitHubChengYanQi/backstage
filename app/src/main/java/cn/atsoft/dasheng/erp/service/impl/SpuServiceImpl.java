@@ -86,7 +86,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu entity = getEntity(param);
 
 
-        if (ToolUtil.isNotEmpty(param.getIsHidden())) {
+        if (param.getIsHidden()) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).count();
             if (classcount > 0) {
                 throw new ServiceException(500, "不可以填写重复名");
@@ -112,11 +112,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 entity.setAttribute(toJSONString);
             }
             List<List<String>> result = new ArrayList<List<String>>();
-//        param.getSpuAttributes().getSpuRequests().sort((x, y) -> x.getAttributeId().compareTo(y.getAttributeId()));
-//        param.getSpuAttributes().getSpuRequests().sort();
             param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
-//                Collections.sort(param.getSpuAttributes().getSpuRequests());
             if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
 
                 descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
@@ -165,7 +162,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                     }
                 }
                 if (toJsonSkuValue.size() == skuList.size()) {
-                    skuService.saveBatch(skuList);
+//                    skuService.saveBatch(skuList);
                 } else {
                     throw new ServiceException(500, "计算有误请重试");
                 }
@@ -174,7 +171,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 for (Sku sku : list) {
                     skuIds.add(sku.getSkuId());
                 }
-                orCodeService.backBatchCode(skuIds, "sku");
+//                orCodeService.backBatchCode(skuIds, "sku");
 
             }
 
@@ -323,7 +320,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     @Override
     public void delete(SpuParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        spuService.update(param);
     }
 
     @Override
