@@ -239,7 +239,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<ItemAttribute> itemAttributes = attributeIds.size() == 0 ? new ArrayList<>() :itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
         for (ItemAttribute itemAttribute : itemAttributes) {
             itemAttribute.setDisplay(0);
-            for (AttributeValues afterDeleteValue : afterDeleteValues) {0
+            for (AttributeValues afterDeleteValue : afterDeleteValues) {
                 if (itemAttribute.getAttributeId().equals(afterDeleteValue.getAttributeId())) {
                     itemAttribute.setDisplay(1);
                 }
