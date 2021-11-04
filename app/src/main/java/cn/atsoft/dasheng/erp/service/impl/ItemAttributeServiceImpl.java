@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +42,9 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
 
     @Override
     public Long add(ItemAttributeParam param) {
-        Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).count();
+        Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute())
+                .in("display", 1)
+                .count();
         if (count > 0) {
             throw new ServiceException(500, "请不要重复添加");
         }
@@ -52,7 +55,12 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
 
     @Override
     public void delete(ItemAttributeParam param) {
-        this.removeById(getKey(param));
+        ItemAttribute itemAttribute = new ItemAttribute();
+        itemAttribute.setDisplay(0);
+        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
+        itemAttributeQueryWrapper.in("attribute_id", param.getAttributeId());
+//        this.removeById(getKey(param));
+        this.update(itemAttribute, itemAttributeQueryWrapper);
     }
 
     @Override

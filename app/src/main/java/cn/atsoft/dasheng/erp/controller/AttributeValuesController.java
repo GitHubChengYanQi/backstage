@@ -116,6 +116,7 @@ public class AttributeValuesController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(Long attributeId) {
         QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
         attributeValuesQueryWrapper.in("attribute_id", attributeId);
+        attributeValuesQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.attributeValuesService.listMaps(attributeValuesQueryWrapper);
         AttributeValuesSelectWrapper attributeValuesSelectWrapper = new AttributeValuesSelectWrapper(list);
         List<Map<String, Object>> result = attributeValuesSelectWrapper.wrap();

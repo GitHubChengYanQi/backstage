@@ -364,7 +364,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             classIds.add(spuResult.getSpuClassificationId());
         }
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
-        categoryQueryWrapper.lambda().in(Category::getCategoryId, categoryIds);
+        categoryQueryWrapper.lambda().in(Category::getCategoryId, categoryIds).in(Category::getDisplay, 1);
         List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.list(categoryQueryWrapper);
 
         List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.lambdaQuery().in(Unit::getUnitId, unitIds).list();

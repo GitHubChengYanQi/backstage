@@ -95,7 +95,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_class_attribute where 1 = 1
+        from goods_class_attribute where display = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>

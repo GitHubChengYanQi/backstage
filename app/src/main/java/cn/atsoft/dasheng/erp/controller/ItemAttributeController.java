@@ -132,6 +132,7 @@ public class ItemAttributeController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(Long itemId) {
         QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
+        itemAttributeQueryWrapper.in("display", 1);
         if (ToolUtil.isNotEmpty(itemId)) {
             itemAttributeQueryWrapper.in("item_id", itemId);
         }
