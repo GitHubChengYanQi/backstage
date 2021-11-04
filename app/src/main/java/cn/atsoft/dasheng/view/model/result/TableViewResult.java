@@ -36,6 +36,8 @@ public class TableViewResult implements Serializable {
     @ApiModelProperty("")
     private String field;
 
+    private String name;
+
     /**
      * 创建者
      */
