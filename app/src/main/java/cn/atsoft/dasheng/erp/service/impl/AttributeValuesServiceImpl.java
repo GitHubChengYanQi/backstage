@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,7 +39,8 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
 
     @Override
     public Long add(AttributeValuesParam param) {
-        Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).count();
+        Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues())
+                .in("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "不要重复添加");
         }
@@ -49,7 +51,12 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
 
     @Override
     public void delete(AttributeValuesParam param) {
-        this.removeById(getKey(param));
+//        this.removeById(getKey(param));
+        AttributeValues attributeValues = new AttributeValues();
+        attributeValues.setDisplay(0);
+        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
+        attributeValuesQueryWrapper.in("attribute_values_id", param.getAttributeValuesId());
+        this.update(attributeValues, attributeValuesQueryWrapper);
     }
 
     @Override

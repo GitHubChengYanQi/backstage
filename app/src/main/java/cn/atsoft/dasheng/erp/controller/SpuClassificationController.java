@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.wrapper.SpuClassificationSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -113,7 +114,9 @@ public class SpuClassificationController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.spuClassificationService.listMaps();
+        QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
         return ResponseData.success(result);
@@ -121,12 +124,12 @@ public class SpuClassificationController extends BaseController {
 
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String,Object>> list = this.spuClassificationService.listMaps();
+        List<Map<String, Object>> list = this.spuClassificationService.listMaps();
 
-        if(ToolUtil.isEmpty(list)){
+        if (ToolUtil.isEmpty(list)) {
             return ResponseData.success();
         }
-        List<TreeNode>  treeViewNodes = new ArrayList<>();
+        List<TreeNode> treeViewNodes = new ArrayList<>();
 
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
@@ -136,7 +139,7 @@ public class SpuClassificationController extends BaseController {
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
 
-        for(Map<String, Object> item:list){
+        for (Map<String, Object> item : list) {
             TreeNode treeNode = new TreeNode();
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));

@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import cn.atsoft.dasheng.erp.service.SpuClassificationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,6 +39,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     @Override
     public Long add(SpuClassificationParam param) {
+        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名字以重复");
+        }
         SpuClassification entity = getEntity(param);
         this.save(entity);
         return entity.getSpuClassificationId();
@@ -44,7 +50,12 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     @Override
     public void delete(SpuClassificationParam param) {
-        this.removeById(getKey(param));
+        SpuClassification spuClassification = new SpuClassification();
+        spuClassification.setDisplay(0);
+        QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("spu_classification_id", param.getSpuClassificationId());
+        this.update(spuClassification, queryWrapper);
+//        this.removeById(getKey(param));
     }
 
     @Override

@@ -75,7 +75,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.AttributeValuesParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_class_attribute_value where 1 = 1
+        from goods_class_attribute_value where display = 1
         <if test="paramCondition.attributeValuesId != null">
             and attribute_values_id like CONCAT('%',#{paramCondition.attributeValuesId},'%')
         </if>
