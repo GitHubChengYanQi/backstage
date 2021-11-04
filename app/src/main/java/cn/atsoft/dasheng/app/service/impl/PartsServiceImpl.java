@@ -37,6 +37,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.tools.Tool;
@@ -62,8 +63,6 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     @Autowired
     private SkuService skuService;
 
-
-    @Transactional
     @Override
     public void add(PartsParam partsParam) {
 
@@ -81,10 +80,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
 
-        for (Parts part:parts){
-//            if( JSON.parseArray(part.getChilds())){
-//                partsParam.getItem().getSkuId()
-//            }
+        for (Parts part : parts) {
+            JSONArray jsonArray = JSONUtil.parseArray(part.getChilds());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : longs) {
+                if (partsParam.getItem().getSkuId().equals(aLong)) {
+                    throw new ServiceException(500, "请勿循环添加");
+                }
+            }
         }
 
         Sku sku = new Sku();
@@ -102,6 +105,14 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 throw new ServiceException(500, "物料不存在");
             }
         }
+
+//        partsOne.setDisplay(0);
+        QueryWrapper<Parts> wrapper = new QueryWrapper<>();
+        wrapper.in("sku_id", sku.getSkuId());
+        Parts tmp = new Parts(){{
+            setDisplay(0);
+        }};
+        this.update(tmp, wrapper);
 
 
         // 删除清单
@@ -133,13 +144,24 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         erpPartsDetailService.saveBatch(details);
 
         // 更新当前节点，及下级
-        getChildrens(entity.getSkuId());
+        List<Long> childrens = getChildrens(entity.getSkuId());
+        String jsonStr = JSONUtil.toJsonStr(childrens);
+        entity.setChilds(jsonStr);
+        entity.setChild(JSON.toJSONString(skuIds));
+        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("parts_id", entity.getPartsId());
+        this.update(entity, partsQueryWrapper);
 
         // 更新包含它的
-        List<Parts> partList = this.query().eq("sku_id", entity.getSkuId()).eq("display", 1).list();
-        for (Parts part:partList){
-            getChildrens(part.getSkuId());
+        List<Parts> partList = this.query().like("child", entity.getSkuId()).eq("display", 1).list();
+        for (Parts part : partList) {
+            List<Long> newChildrens = getChildrens(entity.getSkuId());
+            String newJsonStr = JSONUtil.toJsonStr(newChildrens);
+            part.setChilds(newJsonStr);
             // update
+            QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("parts_id", part.getPartsId());
+            this.update(part, queryWrapper);
         }
 
     }
@@ -152,7 +174,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(parts)) {
             List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
             for (ErpPartsDetail detail : details) {
-//                skuIds.add(detail.getSkuId());
+                childrensSkuIds.add(detail.getSkuId());
                 childrensSkuIds.addAll(this.getChildrens(detail.getSkuId()));
             }
 //            parts.setChilds(childrensSkuIds.toString());
