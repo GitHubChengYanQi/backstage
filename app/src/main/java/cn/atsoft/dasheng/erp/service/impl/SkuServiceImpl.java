@@ -80,9 +80,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             }
             Spu byId = spuService.getById(spuId);
-            Category one = categoryService.lambdaQuery().in(Category::getCategoryName, byId.getName()).one();
+            Category one = categoryService.lambdaQuery().in(Category::getDisplay,1).in(Category::getCategoryName, byId.getName()).one();
             if (ToolUtil.isNotEmpty(one)) {
-                one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
+                one1 = itemAttributeService.lambdaQuery().in(ItemAttribute::getDisplay,1).in(ItemAttribute::getCategoryId, one.getCategoryId()).one();
             }
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());

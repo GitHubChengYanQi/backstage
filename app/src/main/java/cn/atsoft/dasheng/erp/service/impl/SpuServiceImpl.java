@@ -100,7 +100,6 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
             Long attrId = itemAttributeService.add(attributeParam);
-
             this.save(entity);
         } else {
             this.save(entity);
