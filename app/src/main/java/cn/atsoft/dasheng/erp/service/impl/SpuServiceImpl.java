@@ -85,6 +85,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
         Spu entity = getEntity(param);
 
+        if (ToolUtil.isEmpty(param.getIsHidden())){
+            throw new ServiceException(500, "错误!!!!");
+        }
 
         if (param.getIsHidden()==false) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).and(i->i.eq("display",1)).count();
