@@ -36,7 +36,8 @@ public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView
 
     @Override
     public void delete(TableViewParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

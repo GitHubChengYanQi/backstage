@@ -35,6 +35,42 @@ public class TableViewResult implements Serializable {
 
     @ApiModelProperty("")
     private String field;
+
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long createUser;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date createTime;
+
+    /**
+     * 修改者
+     */
+    @ApiModelProperty(hidden = true)
+    private Long updateUser;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty("状态")
+    private Integer display;
+
+    /**
+     * 部门编号
+     */
+    @ApiModelProperty("部门编号")
+    private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
