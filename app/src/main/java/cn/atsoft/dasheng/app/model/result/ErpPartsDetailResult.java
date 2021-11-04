@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.model.params.Spu;
 import cn.atsoft.dasheng.app.model.params.SpuAttribute;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import lombok.Data;
@@ -29,6 +31,8 @@ public class ErpPartsDetailResult implements Serializable {
 
     private List<BackSku> backSkus;
     private SpuResult spuResult;
+
+    private Sku sku;
     /**
      * 清单详情id
      */
