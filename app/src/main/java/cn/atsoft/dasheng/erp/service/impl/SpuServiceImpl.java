@@ -162,7 +162,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                     }
                 }
                 if (toJsonSkuValue.size() == skuList.size()) {
-                    skuService.saveBatch(skuList);
+//                    skuService.saveBatch(skuList);
                 } else {
                     throw new ServiceException(500, "计算有误请重试");
                 }
@@ -171,7 +171,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                 for (Sku sku : list) {
                     skuIds.add(sku.getSkuId());
                 }
-                orCodeService.backBatchCode(skuIds, "sku");
+//                orCodeService.backBatchCode(skuIds, "sku");
 
             }
 
