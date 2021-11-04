@@ -90,10 +90,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         }
 
         if (param.getIsHidden()) {
-            Integer classcount = categoryService.query().eq("category_name", param.getName()).and(i->i.eq("display",1)).count();
-            if (classcount > 0) {
-                throw new ServiceException(500, "配置名称重复");
-            }
+//            Integer classcount = categoryService.query().eq("category_name", param.getName()).and(i->i.eq("display",1)).count();
+//            if (classcount > 0) {
+//                throw new ServiceException(500, "配置名称重复");
+//            }
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryName(param.getName().replace(" ", ""));
             Long classIds = categoryService.add(categoryParam);
@@ -103,19 +103,17 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
             Long attrId = itemAttributeService.add(attributeParam);
-//            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-//                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-//                entity.setAttribute(toJSONString);
-//            }
 
             this.save(entity);
             return entity.getSpuId();
         } else {
-            this.save(entity);
-            if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
-                throw new ServiceException(500, "填入信息不完整");
+            if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+                entity.setAttribute(toJSONString);
+            }else {
+                throw new ServiceException(500,"请配置属性！");
             }
-
+            this.save(entity);
             List<List<String>> result = new ArrayList<List<String>>();
             param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
