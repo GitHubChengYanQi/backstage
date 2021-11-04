@@ -103,14 +103,15 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
             Long attrId = itemAttributeService.add(attributeParam);
-//            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-//                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-//                entity.setAttribute(toJSONString);
-//            }
+//
 
             this.save(entity);
             return entity.getSpuId();
         } else {
+            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+                entity.setAttribute(toJSONString);
+            }
             this.save(entity);
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
                 throw new ServiceException(500, "填入信息不完整");
