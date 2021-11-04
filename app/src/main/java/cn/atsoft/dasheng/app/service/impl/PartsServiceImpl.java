@@ -30,6 +30,7 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,6 +38,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.tools.Tool;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -101,7 +103,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (l > partsParam.getParts().size()) {
             throw new ServiceException(500, "错误");
         }
-        List<Parts> partsList = this.query().in("display", 1).list();
+
 
         for (ErpPartsDetailParam part : partsParam.getParts()) {
             if (ToolUtil.isNotEmpty(part) && ToolUtil.isNotEmpty(partsParam.getPSkuId())) {
@@ -127,9 +129,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("parts_id", parts.getPartsId());
                 this.update(parts, queryWrapper);
-
                 partsParam.setPartsId(null);
-
                 ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
                 erpPartsDetail.setDisplay(0);
                 erpPartsDetail.setUpdateUser(user.getId());
@@ -145,13 +145,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     parts.setDisplay(0);
                     LoginUser user = LoginContextHolder.getContext().getUser();
                     parts.setUpdateUser(user.getId());
-
                     QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
                     queryWrapper.eq("parts_id", parts.getPartsId());
                     this.update(parts, queryWrapper);
-
                     partsParam.setPartsId(null);
-
                     ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
                     erpPartsDetail.setDisplay(0);
                     erpPartsDetail.setUpdateUser(user.getId());
@@ -170,11 +167,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts entity = getEntity(partsParam);
 //        this.save(entity);
         this.saveOrUpdate(entity);
-
+        List<Long> childSkuIds = new ArrayList<>();
         List<ErpPartsDetail> details = new ArrayList<>();
         if (ToolUtil.isNotEmpty(partsParam.getParts())) {
             for (ErpPartsDetailParam part : partsParam.getParts()) {
                 if (ToolUtil.isNotEmpty(part)) {
+                    childSkuIds.add(part.getSkuId());
                     ErpPartsDetail detail = new ErpPartsDetail();
                     detail.setSkuId(part.getSkuId());
                     detail.setNumber(part.getNumber());
@@ -188,39 +186,115 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         }
         erpPartsDetailService.saveBatch(details);
-        List<ErpPartsDetail> list = erpPartsDetailService.query().in("parts_id", entity.getPartsId()).in("display", 1).list();
-        List<Long> ids = new ArrayList<>();
-        for (ErpPartsDetail erpPartsDetail : list) {
-            ids.add(erpPartsDetail.getSkuId());
-        }
-        List<ErpPartsDetail> erpPartsDetails = erpPartsDetailService.query().in("sku_id", ids).list();
-        List<Long> skuIds = new ArrayList<>();
-        for (ErpPartsDetail erpPartsDetail : erpPartsDetails) {
-            skuIds.add(erpPartsDetail.getSkuId());
-        }
-        String str = JSONUtil.toJsonStr(skuIds);
-        String jsonStr = JSONUtil.toJsonStr(ids);
+//        List<ErpPartsDetail> list = entity.getPartsId() == null ? new ArrayList<>() : erpPartsDetailService.query().in("parts_id", entity.getPartsId()).in("display", 1).list();
+//        List<Long> ids = new ArrayList<>();
+//        if (ToolUtil.isNotEmpty(list)) {
+//            for (ErpPartsDetail erpPartsDetail : list) {
+//                ids.add(erpPartsDetail.getSkuId());
+//            }
+//        }
+//        List<Parts> parts = ids.size() == 0 ? new ArrayList<>() : this.query().in("display", 1).in("sku_id", ids).list();
+//        List<Long> partIds = new ArrayList<>();
+//        if (ToolUtil.isNotEmpty(parts)) {
+//            for (Parts part : parts) {
+//                partIds.add(part.getPartsId());
+//            }
+//        }
+//        List<ErpPartsDetail> partsDetails = partIds.size() == 0 ? new ArrayList<>() : erpPartsDetailService.query().in("display", 1).in("parts_id", partIds).list();
+//        List<Long> cSkuIds = new ArrayList<>();
+//        if (ToolUtil.isNotEmpty(partsDetails)) {
+//            for (ErpPartsDetail partsDetail : partsDetails) {
+//                cSkuIds.add(partsDetail.getSkuId());
+//            }
+//
+//        }
+        List<Long> children = getChildren(entity.getSkuId());
+//        String str = JSONUtil.toJsonStr(cSkuIds);
+        String jsonStr = JSONUtil.toJsonStr(children);
         entity.setChild(jsonStr);
-        entity.setChilds(str);
+//        entity.setChilds(str);
         QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("parts_id", entity.getPartsId());
         this.update(entity, queryWrapper);
 
+
+    }
+    List<Long> children = null;
+    public List<Long> getChildren(Long id) {
+
+//        Parts parts = this.getById(id);
+        Parts parts = this.query().in("sku_id", id).in("display", 1).one();
+        if (ToolUtil.isNotEmpty(parts)) {
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", parts.getPartsId()).in("display", 1).list();
+            for (ErpPartsDetail detail : details) {
+                return  this.getChildren(detail.getSkuId());
+
+            }
+        }
+        return  null;
     }
 
 
+//    //递归
+//    boolean judge(Long id, List<Long> ids) {
+//        //查出所有父集
+//        List<Parts> parts = this.query().in("display", 1).list();
+//        //通过父集skuId 查出自己的子集
+//        List<ErpPartsDetail> details = erpPartsDetailService.query().in("sku_id", id).in("display", 1).list();
+//
+//        List<Long> partIds = new ArrayList<>();
+//        for (Parts part : parts) {
+//            partIds.add(part.getPartsId());
+//        }
+//        List<ErpPartsDetail> partsDetails = erpPartsDetailService.query().in("display", 1).in("parts_id", partIds).list();
+////        for (ErpPartsDetail partsDetail : partsDetails) {
+////            if (partsDetail.getSkuId().equals(id)) {
+////                return true;
+////            }
+////        }
+//        for (ErpPartsDetail detail : details) {
+//            if (detail.getSkuId().equals(id)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+
+    //    private List<Map<String, Object>> generateOrgMapToTree(List<Map<String, Object>> orgMaps, Integer pid) {
+//        if (null == orgMaps || orgMaps.size() == 0) {
+//            List<StatusResponseCodeEntity> list = statusResponseCodeRepository.findAll();
+//            String json_list = JSONObject.toJSONString(list);
+//            orgMaps = (List<Map<String, Object>>) JSONObject.parse(json_list);
+//        }
+//        List<Map<String, Object>> orgList = new ArrayList<>();
+//        if (orgMaps != null && orgMaps.size() > 0) {
+//            for (Map<String, Object> item : orgMaps) {
+//                //比较传入pid与当前对象pid是否相等
+//                if (pid.equals(item.get("pid"))) {
+//                    //将当前对象id做为pid递归调用当前方法，获取下级结果
+//                    List<Map<String, Object>> children = generateOrgMapToTree(orgMaps, Integer.valueOf(item.get("id").toString()));
+//                    //将子结果集存入当前对象的children字段中
+//                    item.put("children", children);
+//                    //添加当前对象到主结果集中
+//                    orgList.add(item);
+//                }
+//            }
+//        }
+//        return orgList;
+//    }
     @Override
     public void delete(PartsParam param) {
 //        this.removeById(getKey(param));
-        Parts parts = new Parts();
-        parts.setDisplay(0);
-        this.update(parts, new QueryWrapper<Parts>().in("parts_id", param.getPartsId()));
-        QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
-        erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
-        ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
-        erpPartsDetail.setDisplay(0);
-//        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
-        erpPartsDetailService.update(erpPartsDetail, erpPartsDetailQueryWrapper);
+//        Parts parts = new Parts();
+//        parts.setDisplay(0);
+//        this.update(parts, new QueryWrapper<Parts>().in("parts_id", param.getPartsId()));
+//        QueryWrapper<ErpPartsDetail> erpPartsDetailQueryWrapper = new QueryWrapper<>();
+//        erpPartsDetailQueryWrapper.in("parts_id", param.getPartsId());
+//        ErpPartsDetail erpPartsDetail = new ErpPartsDetail();
+//        erpPartsDetail.setDisplay(0);
+////        erpPartsDetailService.remove(erpPartsDetailQueryWrapper);
+//        erpPartsDetailService.update(erpPartsDetail, erpPartsDetailQueryWrapper);
     }
 
     @Transactional
@@ -282,6 +356,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         erpPartsDetailService.saveOrUpdateBatch(details);
 
     }
+
 
     @Override
     public PartsResult findBySpec(PartsParam param) {

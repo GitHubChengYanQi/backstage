@@ -87,7 +87,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.CategoryParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_class where display = 1
+        from goods_class where display = 1 and pid is not null
         <if test="paramCondition.categoryId != null">
             and category_id like CONCAT('%',#{paramCondition.categoryId},'%')
         </if>
