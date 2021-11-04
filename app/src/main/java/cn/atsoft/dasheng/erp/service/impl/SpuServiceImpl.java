@@ -86,7 +86,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu entity = getEntity(param);
 
 
-        if (param.getIsHidden()) {
+        if (ToolUtil.isEmpty(param.getIsHidden())) {
             Integer classcount = categoryService.query().in("category_name", param.getName()).count();
             if (classcount > 0) {
                 throw new ServiceException(500, "不可以填写重复名");
@@ -100,6 +100,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
             Long attrId = itemAttributeService.add(attributeParam);
+            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+                entity.setAttribute(toJSONString);
+            }
 
             this.save(entity);
         } else {
@@ -107,10 +111,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
                 throw new ServiceException(500, "填入信息不完整");
             }
-            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-                entity.setAttribute(toJSONString);
-            }
+
             List<List<String>> result = new ArrayList<List<String>>();
             param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
