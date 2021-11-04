@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
 import cn.atsoft.dasheng.erp.entity.RulesRelation;
 import cn.atsoft.dasheng.erp.mapper.CodingRulesMapper;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
+import cn.atsoft.dasheng.erp.model.params.Codings;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesClassificationResult;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesClassificationService;
@@ -49,11 +50,27 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     @Override
     @Transactional
     public void add(CodingRulesParam param) {
-        Integer count = this.query().in("coding_rules", param.getCodingRules()).count();
-        Integer name = this.query().in("name", param.getName()).count();
-        if (count > 0) {
-            throw new ServiceException(500, "当前规则以存在");
+
+        String codingRules = "";
+        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0){
+            throw new ServiceException(500,"必须定义规则！");
+        }else {
+            for (Codings codings : param.getCodings()) {
+                if (codingRules.equals("")){
+                    codingRules = codings.getValues();
+                }else {
+                    codingRules = codingRules +","+ codings.getValues();
+                }
+
+            }
         }
+        param.setCodingRules(codingRules);
+
+//        Integer count = this.query().in("coding_rules", param.getCodingRules()).count();
+        Integer name = this.query().in("name", param.getName()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "当前规则以存在");
+//        }
         if (name > 0) {
             throw new ServiceException(500, "不要输入重复规则名称");
         }
@@ -70,12 +87,27 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     @Transactional
     public void update(CodingRulesParam param) {
 
-        CodingRules codingRules = new CodingRules();
-        codingRules.setState(0);
-        QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
-        codingRulesQueryWrapper.notIn("coding_rules_id", param.getCodingRulesId());
-        codingRulesQueryWrapper.in("state", param.getState());
-        this.update(codingRules, codingRulesQueryWrapper);
+        String codingRules = "";
+        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0){
+            throw new ServiceException(500,"必须定义规则！");
+        }else {
+            for (Codings codings : param.getCodings()) {
+                if (codingRules.equals("")){
+                    codingRules = codings.getValues();
+                }else {
+                    codingRules = codingRules +","+ codings.getValues();
+                }
+
+            }
+        }
+        param.setCodingRules(codingRules);
+
+//        CodingRules codingRules = new CodingRules();
+//        codingRules.setState(0);
+//        QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
+//        codingRulesQueryWrapper.notIn("coding_rules_id", param.getCodingRulesId());
+//        codingRulesQueryWrapper.in("state", param.getState());
+//        this.update(codingRules, codingRulesQueryWrapper);
 
         CodingRules oldEntity = getOldEntity(param);
         CodingRules newEntity = getEntity(param);
@@ -146,7 +178,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
             throw new ServiceException(500, "没有制定规则");
         }
-        rules = codingRules.getCodingRules();
+        rules = codingRules.getCodingRules().replace(",","");
 
         DateTime dateTime = new DateTime();
         //年

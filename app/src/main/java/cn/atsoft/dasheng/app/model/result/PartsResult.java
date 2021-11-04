@@ -39,6 +39,10 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
+    private String child;
+
+    private String childs;
+
 
     @ApiModelProperty("关联sku")
     private String skus;

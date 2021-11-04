@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
+import cn.atsoft.dasheng.erp.model.params.Codings;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -88,6 +89,17 @@ public class CodingRulesController extends BaseController {
         CodingRules detail = this.codingRulesService.getById(codingRulesParam.getCodingRulesId());
         CodingRulesResult result = new CodingRulesResult();
         ToolUtil.copyProperties(detail, result);
+
+        if (ToolUtil.isNotEmpty(detail.getCodingRules())) {
+            String[] split = detail.getCodingRules().split(",");
+            List<Codings> codingsList = new ArrayList<>();
+            for (String s : split) {
+                Codings codings = new Codings();
+                codings.setValues(s);
+                codingsList.add(codings);
+            }
+            result.setCodings(codingsList);
+        }
 
         return ResponseData.success(result);
     }

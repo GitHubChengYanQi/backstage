@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.app.model.result.Item;
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.atsoft.dasheng.app.model.result.SkuRequest;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -26,6 +26,16 @@ import java.util.List;
 public class PartsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private String skuName;
+
+    private List<SkuRequest> skuRequests;
+
+    private String child;
+
+    private String childs;
+
+    private String skuNote;
 
     private List<ErpPartsDetailParam> parts;
 

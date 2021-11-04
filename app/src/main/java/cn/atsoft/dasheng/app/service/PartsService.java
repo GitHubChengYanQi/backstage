@@ -62,6 +62,14 @@ public interface PartsService extends IService<Parts> {
     List<PartsResult> findListBySpec(PartsParam param);
 
     /**
+     * 旧查询列表，Specification模式
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    PageInfo<PartsResult> oldFindPageBySpec(PartsParam param);
+
+    /**
      * 查询分页数据，Specification模式
      *
      * @author song
@@ -70,6 +78,8 @@ public interface PartsService extends IService<Parts> {
     PageInfo<PartsResult> findPageBySpec(PartsParam param);
 
 
-    List<ErpPartsDetailResult> backDetails(Long skuId);
+    List<ErpPartsDetailResult> backDetails(Long skuId,Long partsId);
+
+    List<ErpPartsDetailResult> oldBackDetails(Long skuId,Long partsId);
 
 }

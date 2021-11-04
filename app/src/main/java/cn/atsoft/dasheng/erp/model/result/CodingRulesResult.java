@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.RulesRelation;
+import cn.atsoft.dasheng.erp.model.params.Codings;
 import lombok.Data;
 
 import java.util.Date;
@@ -29,10 +30,13 @@ public class CodingRulesResult implements Serializable {
 
     private List<RulesRelation> rulesRelationList;
 
+    private List<Codings> codings;
+
     /**
      * 状态
      */
     private Integer state;
+    private Integer module;
     /**
      * 排序
      */
