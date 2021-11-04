@@ -81,15 +81,15 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     public Long add(SpuParam param) {
         Integer count = this.query().in("name", param.getName()).count();
         if (count > 0) {
-            throw new ServiceException(500, "不可以添加重复产品");
+            throw new ServiceException(500, "产品名称重复,请更换");
         }
         Spu entity = getEntity(param);
 
 
-        if (ToolUtil.isEmpty(param.getIsHidden())) {
-            Integer classcount = categoryService.query().in("category_name", param.getName()).count();
+        if (param.getIsHidden()==false) {
+            Integer classcount = categoryService.query().in("category_name", param.getName()).and(i->i.eq("display",1)).count();
             if (classcount > 0) {
-                throw new ServiceException(500, "不可以填写重复名");
+                throw new ServiceException(500, "分类名称重复");
             }
             CategoryParam categoryParam = new CategoryParam();
             categoryParam.setCategoryName(param.getName().replace(" ", ""));
@@ -100,12 +100,13 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
             Long attrId = itemAttributeService.add(attributeParam);
-            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-                entity.setAttribute(toJSONString);
-            }
+//            if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+//                String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+//                entity.setAttribute(toJSONString);
+//            }
 
             this.save(entity);
+            return entity.getSpuId();
         } else {
             this.save(entity);
             if (ToolUtil.isEmpty(param.getSpuAttributes().getSpuRequests())) {
@@ -181,10 +182,9 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //            if (skuValue > 0) {
 //                throw new ServiceException(500, "不可以添加型号");
 //            }
-
+            return  entity.getSpuId();
 
         }
-        return entity.getSpuId();
 
     }
 
