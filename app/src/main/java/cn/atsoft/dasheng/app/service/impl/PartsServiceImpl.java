@@ -337,6 +337,12 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 for (ErpPartsDetailResult detailResult : detailResults) {
                     List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
                     SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
+
+                    if (ToolUtil.isNotEmpty(detailResult.getSkuId())) {
+                        Sku sku = skuService.getById(detailResult.getSkuId());
+                        detailResult.setSku(sku);
+                    }
+
                     detailResult.setBackSkus(backSkus);
                     detailResult.setSpuResult(spuResult);
                 }
@@ -424,6 +430,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         }
         for (PartsResult datum : data) {
 
+            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
             if (sendSku != null && ToolUtil.isNotEmpty(datum.getSkuId())) {
                 List<BackSku> backSkus = sendSku.get(datum.getSkuId());
                 datum.setBackSkus(backSkus);
