@@ -40,6 +40,8 @@ public class TableViewParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("")
     private String field;
 
+    private String name;
+
     /**
      * 创建者
      */
