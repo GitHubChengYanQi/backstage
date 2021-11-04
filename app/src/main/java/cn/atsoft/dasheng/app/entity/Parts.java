@@ -24,8 +24,10 @@ import java.util.function.LongFunction;
 public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @TableField("child")
     private String child;
+
     @TableField("childs")
     private String childs;
     /**
