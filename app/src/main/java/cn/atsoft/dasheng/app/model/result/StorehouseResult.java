@@ -105,6 +105,10 @@ public class StorehouseResult implements Serializable {
     @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
+    private String children;
+
+    private String childrens;
+
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

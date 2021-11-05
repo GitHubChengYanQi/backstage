@@ -13,12 +13,14 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="sort" property="sort"/>
+        <result column="children" property="children"/>
+        <result column="childrens" property="childrens"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sort
     AS "sort",
-        category_id AS "categoryId", pid AS "pid", category_name AS "categoryName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
+        category_id AS "categoryId",children AS "children",childrens AS "childrens", pid AS "pid", category_name AS "categoryName", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"
     </sql>
 
 
