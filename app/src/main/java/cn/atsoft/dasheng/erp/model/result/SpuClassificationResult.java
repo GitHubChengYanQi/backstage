@@ -24,6 +24,12 @@ import java.util.List;
 public class SpuClassificationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 编码分类
+     */
+    private String codingClass;
+
     private String pidName;
     /**
      * 排序

@@ -164,10 +164,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.deleteBatch(param);
     }
 
-    public void de(SkuParam param) {
-
-    }
-
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
@@ -320,6 +316,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+
+
 
     private void format(List<SkuResult> param) {
 

@@ -60,6 +60,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     @Override
     public void update(SpuClassificationParam param) {
+        List<SpuClassification> classifications = this.query().eq("pid", param.getSpuClassificationId()).list();
+
+
         SpuClassification oldEntity = getOldEntity(param);
         SpuClassification newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -109,6 +112,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             ids.add(datum.getSpuClassificationId());
             pids.add(datum.getPid());
         }
+
         List<Spu> spus = ids.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuClassificationId, ids).list();
         List<SpuClassification> classifications = pids.size() == 0 ? new ArrayList<>() : this.query().in("spu_classification_id", pids).list();
 
@@ -130,4 +134,6 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             datum.setSpuList(spuList);
         }
     }
+
+
 }

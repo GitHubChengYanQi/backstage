@@ -144,46 +144,63 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         erpPartsDetailService.saveBatch(details);
 
         // 更新当前节点，及下级
-        List<Long> childrens = getChildrens(entity.getSkuId());
-        String jsonStr = JSONUtil.toJsonStr(childrens);
-        entity.setChildrens(jsonStr);
+        Map<String,List<Long>> childrenMap = getChildrens(entity.getSkuId());
+        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
         entity.setChildren(JSON.toJSONString(skuIds));
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.eq("parts_id", entity.getPartsId());
         this.update(entity, partsQueryWrapper);
 
-        // 更新包含它的
-        List<Parts> partList = this.query().like("child", entity.getSkuId()).eq("display", 1).list();
+        updateChildren(entity.getSkuId());
+
+
+
+
+    }
+    /**
+     * 更新包含它的
+      */
+    public void updateChildren(Long skuId){
+        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).list();
         for (Parts part : partList) {
-            List<Long> newChildrens = getChildrens(entity.getSkuId());
-            String newJsonStr = JSONUtil.toJsonStr(newChildrens);
-            part.setChildrens(newJsonStr);
+            Map<String,List<Long>> childrenMap = getChildrens(skuId);
+            part.setChildren(JSON.toJSONString(childrenMap.get("children")));
+            part.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
             // update
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
             this.update(part, queryWrapper);
+            updateChildren(part.getSkuId());
         }
-
     }
 
-    //递归
-    public List<Long> getChildrens(Long id) {
-//        List<Long> skuIds = new ArrayList<>();
+    /**
+     * 递归
+     */
+    public Map<String,List<Long>> getChildrens(Long id) {
+
         List<Long> childrensSkuIds = new ArrayList<>();
+        Map<String,List<Long>> result = new HashMap<String,List<Long>>(){
+            {
+                put("children",new ArrayList<>());
+                put("childrens",new ArrayList<>());
+            }
+        };
+
+        List<Long> skuIds = new ArrayList<>();
         Parts parts = this.query().eq("sku_id", id).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(parts)) {
             List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", parts.getPartsId()).eq("display", 1).list();
             for (ErpPartsDetail detail : details) {
+                skuIds.add(detail.getSkuId());
                 childrensSkuIds.add(detail.getSkuId());
-                childrensSkuIds.addAll(this.getChildrens(detail.getSkuId()));
+                Map<String,List<Long>> childrenMap = this.getChildrens(detail.getSkuId());
+                childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
-//            parts.setChilds(childrensSkuIds.toString());
-//            parts.setChild(skuIds.toString());
-//            QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("parts_id", parts.getPartsId());
-//            this.update(parts, queryWrapper);
+            result.put("children",skuIds);
+            result.put("childrens",childrensSkuIds);
         }
-        return childrensSkuIds;
+        return result;
     }
 
     @Override
