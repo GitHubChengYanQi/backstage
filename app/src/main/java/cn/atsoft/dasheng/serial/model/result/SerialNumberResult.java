@@ -1,18 +1,14 @@
-package cn.atsoft.dasheng.view.model.params;
+package cn.atsoft.dasheng.serial.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 
+ * 流水号
  * </p>
  *
  * @author 
@@ -20,25 +16,35 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class TableViewParam implements Serializable, BaseValidatingParam {
+public class SerialNumberResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 表视图主键
+     * 流水号id
      */
-    @ApiModelProperty("表视图主键")
-    private Long tableViewId;
+    @ApiModelProperty("流水号id")
+    private Long 
+serialId;
 
-    @ApiModelProperty("")
-    private String tableKey;
+    /**
+     * 日期
+     */
+    @ApiModelProperty("日期")
+    private Date date;
 
-    @ApiModelProperty("")
-    private Long userId;
+    /**
+     * 样式
+     */
+    @ApiModelProperty("样式")
+    private String model;
 
-    @ApiModelProperty("")
-    private String field;
+    /**
+     * 流水号
+     */
+    @ApiModelProperty("流水号")
+    private Long num;
 
     /**
      * 创建者
@@ -75,13 +81,6 @@ public class TableViewParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门编号")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }

@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.view.entity;
+package cn.atsoft.dasheng.serial.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -10,31 +10,40 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 流水号
  * </p>
  *
  * @author 
  * @since 2021-11-04
  */
-@TableName("view_table_view")
-public class TableView implements Serializable {
+@TableName("serial_number")
+public class SerialNumber implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 表视图主键
+     * 流水号id
      */
-      @TableId(value = "table_view_id", type = IdType.ID_WORKER)
-    private Long tableViewId;
+      @TableId(value = "serial_id", type = IdType.ID_WORKER)
+    private Long serialId;
 
-    @TableField("table_key")
-    private String tableKey;
+    /**
+     * 日期
+     */
+    @TableField("date")
+    private Date date;
 
-    @TableField("user_id")
-    private Long userId;
+    /**
+     * 样式
+     */
+    @TableField("model")
+    private String model;
 
-    @TableField("field")
-    private String field;
+    /**
+     * 流水号
+     */
+    @TableField("num")
+    private Long num;
 
     /**
      * 创建者
@@ -69,40 +78,39 @@ public class TableView implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill = FieldFill.INSERT_UPDATE)
+    @TableField("deptId")
     private Long deptId;
 
 
-    public Long getTableViewId() {
-        return tableViewId;
+    public Long getserialId() {return serialId;
     }
 
-    public void setTableViewId(Long tableViewId) {
-        this.tableViewId = tableViewId;
+    public void setSerialId(Long serialId) {
+        this.serialId = serialId;
     }
 
-    public String getTableKey() {
-        return tableKey;
+    public Date getDate() {
+        return date;
     }
 
-    public void setTableKey(String tableKey) {
-        this.tableKey = tableKey;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getModel() {
+        return model;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setModel(String model) {
+        this.model = model;
     }
 
-    public String getField() {
-        return field;
+    public Long getNum() {
+        return num;
     }
 
-    public void setField(String field) {
-        this.field = field;
+    public void setNum(Long num) {
+        this.num = num;
     }
 
     public Long getCreateUser() {
@@ -155,11 +163,11 @@ public class TableView implements Serializable {
 
     @Override
     public String toString() {
-        return "TableView{" +
-        "tableViewId=" + tableViewId +
-        ", tableKey=" + tableKey +
-        ", userId=" + userId +
-        ", field=" + field +
+        return "SerialNumber{" +
+        " serialId=" + serialId +
+        ", date=" + date +
+        ", model=" + model +
+        ", num=" + num +
         ", createUser=" + createUser +
         ", createTime=" + createTime +
         ", updateUser=" + updateUser +

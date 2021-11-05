@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.view.model.params;
+package cn.atsoft.dasheng.serial.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ * 流水号
  * </p>
  *
  * @author 
@@ -20,25 +20,34 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class TableViewParam implements Serializable, BaseValidatingParam {
+public class SerialNumberParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private Long cont;
+    /**
+     * 流水号id
+     */
+    @ApiModelProperty("流水号id")
+    private Long serialId;
 
     /**
-     * 表视图主键
+     * 日期
      */
-    @ApiModelProperty("表视图主键")
-    private Long tableViewId;
+    @ApiModelProperty("日期")
+    private Date date;
 
-    @ApiModelProperty("")
-    private String tableKey;
+    /**
+     * 样式
+     */
+    @ApiModelProperty("样式")
+    private String model;
 
-    @ApiModelProperty("")
-    private Long userId;
-
-    @ApiModelProperty("")
-    private String field;
+    /**
+     * 流水号
+     */
+    @ApiModelProperty("流水号")
+    private Long num;
 
     /**
      * 创建者
