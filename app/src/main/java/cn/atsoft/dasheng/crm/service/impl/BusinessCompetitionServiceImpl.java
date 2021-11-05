@@ -51,7 +51,8 @@ public class BusinessCompetitionServiceImpl extends ServiceImpl<BusinessCompetit
 
     @Override
     public void delete(BusinessCompetitionParam param) {
-        this.removeById(getKey(param));
+       param.setDisplay(0);
+       this.update(param);
     }
 
     @Override

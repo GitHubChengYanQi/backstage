@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -60,11 +61,13 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         this.save(entity);
     }
 
+    @BussinessLog
     @Override
     public void delete(QualityCheckParam param) {
         this.removeById(getKey(param));
     }
 
+    @BussinessLog
     @Override
     @Transactional
     public void update(QualityCheckParam param) {

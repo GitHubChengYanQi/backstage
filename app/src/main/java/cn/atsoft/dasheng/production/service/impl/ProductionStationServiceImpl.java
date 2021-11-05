@@ -46,7 +46,8 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
 
     @Override
     public void delete(ProductionStationParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

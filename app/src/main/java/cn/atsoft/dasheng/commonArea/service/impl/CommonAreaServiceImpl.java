@@ -41,7 +41,8 @@ public class CommonAreaServiceImpl extends ServiceImpl<CommonAreaMapper, CommonA
 
     @Override
     public void delete(CommonAreaParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

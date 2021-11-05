@@ -39,7 +39,8 @@ public class ProductionStationClassServiceImpl extends ServiceImpl<ProductionSta
 
     @Override
     public void delete(ProductionStationClassParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -57,12 +58,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions entity = getEntity(param);
         this.save(entity);
     }
-
+    @BussinessLog
     @Override
     public void delete(StorehousePositionsParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
-
+    @BussinessLog
     @Override
     public void update(StorehousePositionsParam param) {
         StorehousePositions oldEntity = getOldEntity(param);

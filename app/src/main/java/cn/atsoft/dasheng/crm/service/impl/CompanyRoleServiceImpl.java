@@ -38,7 +38,8 @@ public class CompanyRoleServiceImpl extends ServiceImpl<CompanyRoleMapper, Compa
 
     @Override
     public void delete(CompanyRoleParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0L);
+        this.update(param);
     }
 
     @Override

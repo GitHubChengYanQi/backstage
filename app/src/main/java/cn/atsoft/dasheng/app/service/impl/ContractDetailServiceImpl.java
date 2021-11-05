@@ -137,7 +137,8 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
 
     @Override
     public void delete(ContractDetailParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override
