@@ -79,14 +79,17 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     @Transactional
     @Override
     public Long add(SpuParam param) {
+
+        Spu entity = getEntity(param);
+        //查询判断是否有相同名称spu
         Integer count = this.query().eq("name", param.getName()).count();
         if (count > 0) {
             throw new ServiceException(500, "产品名称重复,请更换");
         }
-        Spu entity = getEntity(param);
 
+        //如果此参数为空
         if (ToolUtil.isEmpty(param.getIsHidden())){
-            throw new ServiceException(500, "参数有错误");
+            throw new ServiceException(500, "（测试用）参数有错误无状态判断值");
         }
 
         if (param.getIsHidden()) {
@@ -99,10 +102,10 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
             entity.setCategoryId(classIds);
             attributeParam.setAttribute("规格");
             attributeParam.setStandard(param.getSpuStandard());
-            Long attrId = itemAttributeService.add(attributeParam);
-
+            itemAttributeService.add(attributeParam);
             this.save(entity);
             return entity.getSpuId();
+
         } else {
             if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
                 String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
@@ -174,14 +177,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 //                orCodeService.backBatchCode(skuIds, "sku");
 
             }
-
-
-//            Integer skuValue = skuService.query().in("sku_value", skuValues).count();
-//            if (skuValue > 0) {
-//                throw new ServiceException(500, "不可以添加型号");
-//            }
             return  entity.getSpuId();
-
         }
 
     }
