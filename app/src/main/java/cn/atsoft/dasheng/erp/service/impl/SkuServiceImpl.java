@@ -66,8 +66,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * type=1 是整机添加
          */
         if (param.getType() == 0) {
-            ItemAttribute one1 = new ItemAttribute();
+            Long itemAttributeId = null;
             Long spuId = param.getSpu().getSpuId();
+            if (ToolUtil.isEmpty(spuId)) {
+                spuId = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one().getSpuId();
+            }
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
@@ -79,13 +82,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             }
             Spu byId = spuService.getById(spuId);
-            Category one = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
-            if (ToolUtil.isNotEmpty(one)) {
-                one1 = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, one.getCategoryId()).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
+            //判断是否有已存在的分类
+            Long categoryId = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i -> i.eq(Category::getDisplay, 1)).one().getCategoryId();
+            if (ToolUtil.isNotEmpty(categoryId)) {
+                //查询出属性id
+                itemAttributeId = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one().getAttributeId();
             }
+            //根据分类查询出属性新建属性值
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());
-            attributeValues.setAttributeId(one1.getAttributeId());
+            attributeValues.setAttributeId(itemAttributeId);
             Long add = attributeValuesService.add(attributeValues);
             Sku entity = getEntity(param);
             List<AttributeValues> list = new ArrayList<>();
@@ -111,6 +117,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
+            if (ToolUtil.isEmpty(spuId)) {
+                spuId = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one().getSpuId();
+            }
             if (spuId == null) {
                 SpuParam spu = new SpuParam();
                 spu.setName(param.getSpu().getName());
