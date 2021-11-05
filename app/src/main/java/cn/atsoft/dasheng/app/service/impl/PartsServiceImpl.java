@@ -96,6 +96,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
             partsParam.getSkuRequests().sort(Comparator.comparing(SkuRequest::getAttributeId));
             String json = JSONUtil.toJsonStr(partsParam.getSkuRequests());
+            Integer count = skuService.query().like("sku_value", json).count();
+            if (count > 0) {
+                throw new ServiceException(500, "已有相同物料");
+            }
             sku.setSkuValue(json);
             sku.setSkuName(partsParam.getSkuName());
             sku.setType(0);
@@ -326,6 +330,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     if (parts.getPartsId().equals(detailResult.getPartsId())) {
                         List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
                         SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
+                        detailResult.setIsNull(true);
+                        Parts oldparts = partsService.query().in("sku_id", detailResult.getSkuId()).eq("display", 0).one();
+                        if (ToolUtil.isEmpty(oldparts)) {
+                            detailResult.setIsNull(false);
+                        }
                         detailResult.setBackSkus(backSkus);
                         detailResult.setSpuResult(spuResult);
                     }
