@@ -35,7 +35,7 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         this.save(entity);
     }
 
-    @BussinessLog
+
     @Override
     @BussinessLog
     public void delete(QualityPlanDetailParam param) {
@@ -43,7 +43,7 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         this.update(param);
     }
 
-    @BussinessLog
+
     @Override
     @BussinessLog
     public void update(QualityPlanDetailParam param) {
