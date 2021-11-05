@@ -145,8 +145,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 
         // 更新当前节点，及下级
         Map<String,List<Long>> childrenMap = getChildrens(entity.getSkuId());
-        entity.setChilds(JSON.toJSONString(childrenMap.get("childrens")));
-        entity.setChild(JSON.toJSONString(skuIds));
+        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        entity.setChildren(JSON.toJSONString(skuIds));
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.eq("parts_id", entity.getPartsId());
         this.update(entity, partsQueryWrapper);
@@ -164,8 +164,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> partList = this.query().like("child", skuId).eq("display", 1).list();
         for (Parts part : partList) {
             Map<String,List<Long>> childrenMap = getChildrens(skuId);
-            part.setChild(JSON.toJSONString(childrenMap.get("children")));
-            part.setChilds(JSON.toJSONString(childrenMap.get("childrens")));
+            part.setChildren(JSON.toJSONString(childrenMap.get("children")));
+            part.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
             // update
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
