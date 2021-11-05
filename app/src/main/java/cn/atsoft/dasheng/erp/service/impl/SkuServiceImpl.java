@@ -103,7 +103,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             String json = JSON.toJSONString(list);
 
             entity.setSpuId(spuId);
-            entity.setSkuValue(spuId + "," + json);
+            entity.setSkuValue(json);
+//            entity.setSkuValue(spuId + "," + json);
             String md5 = SecureUtil.md5(entity.getSkuValue());
             entity.setSkuValueMd5(md5);
             List<Spu> spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
@@ -141,7 +142,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 Sku entity = getEntity(param);
                 entity.setSpuId(spuId);
                 String json = JSON.toJSONString(list);
-                entity.setSkuValue(spuId + "," + json);
+                entity.setSkuValue(json);
+//                entity.setSkuValue(spuId + "," + json);
                 String md5 = SecureUtil.md5(entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
