@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
@@ -58,6 +59,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     }
 
     @Override
+    @BussinessLog
     public void delete(OutstockListingParam param) {
         OutstockListing byId = this.getById(param.getOutstockListingId());
         if (ToolUtil.isEmpty(byId)) {
@@ -69,6 +71,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     }
 
     @Override
+    @BussinessLog
     public void update(OutstockListingParam param) {
         OutstockListing oldEntity = getOldEntity(param);
         OutstockListing newEntity = getEntity(param);

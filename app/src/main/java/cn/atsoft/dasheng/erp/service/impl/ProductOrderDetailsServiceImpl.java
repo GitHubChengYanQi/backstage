@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -46,11 +47,13 @@ public class ProductOrderDetailsServiceImpl extends ServiceImpl<ProductOrderDeta
     }
 
     @Override
+    @BussinessLog
     public void delete(ProductOrderDetailsParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(ProductOrderDetailsParam param) {
         ProductOrderDetails oldEntity = getOldEntity(param);
         ProductOrderDetails newEntity = getEntity(param);

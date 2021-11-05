@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.app.service.PartsService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -162,6 +163,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
+    @BussinessLog
     public void delete(SkuParam param) {
         List<Long> id = new ArrayList<>();
         id.add(param.getSkuId());
@@ -171,6 +173,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Transactional
     @Override
+    @BussinessLog
     public void deleteBatch(SkuParam param) {
 //        List<Long> skuIds = param.getId();
 //        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId,skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
@@ -297,6 +300,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
     @Override
+    @BussinessLog
     public void update(SkuParam param) {
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);

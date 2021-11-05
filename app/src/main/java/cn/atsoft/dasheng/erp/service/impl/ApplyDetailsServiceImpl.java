@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
@@ -53,11 +54,18 @@ public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, App
         this.save(entity);
     }
 
+    @BussinessLog
     @Override
     public void delete(ApplyDetailsParam param) {
-        this.removeById(getKey(param));
+        ApplyDetails applyDetails = new ApplyDetails();
+        applyDetails.setDisplay(0);
+        QueryWrapper<ApplyDetails> applyDetailsQueryWrapper = new QueryWrapper<>();
+        applyDetailsQueryWrapper.in("outstock_apply_details_id", param.getOutstockApplyDetailsId());
+        this.update(applyDetails, applyDetailsQueryWrapper);
+//        this.removeById(getKey(param));
     }
 
+    @BussinessLog
     @Override
     public void update(ApplyDetailsParam param) {
         ApplyDetails oldEntity = getOldEntity(param);
@@ -91,7 +99,7 @@ public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, App
         brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
         List<Brand> brandList = brandIds.size() > 0 ? brandService.list(brandQueryWrapper) : new ArrayList<>();
 
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (ApplyDetailsResult record : page.getRecords()) {
             for (Brand brand : brandList) {

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.RulesRelation;
@@ -43,11 +44,13 @@ public class RulesRelationServiceImpl extends ServiceImpl<RulesRelationMapper, R
     }
 
     @Override
+    @BussinessLog
     public void delete(RulesRelationParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(RulesRelationParam param) {
 
         RulesRelation oldEntity = getOldEntity(param);
