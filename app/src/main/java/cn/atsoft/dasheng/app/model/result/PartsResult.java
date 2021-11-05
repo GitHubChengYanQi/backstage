@@ -40,9 +40,9 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
-    private String child;
+    private String children;
 
-    private String childs;
+    private String childrens;
 
     private Sku sku;
 

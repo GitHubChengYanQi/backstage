@@ -31,9 +31,9 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private List<SkuRequest> skuRequests;
 
-    private String child;
+    private String children;
 
-    private String childs;
+    private String childrens;
 
     private String skuNote;
 

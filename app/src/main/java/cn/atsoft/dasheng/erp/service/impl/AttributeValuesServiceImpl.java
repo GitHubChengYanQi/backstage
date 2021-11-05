@@ -39,14 +39,18 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
 
     @Override
     public Long add(AttributeValuesParam param) {
-        Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues())
-                .in("display", 1).count();
-        if (count > 0) {
-            throw new ServiceException(500, "不要重复添加属性");
+        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
+        attributeValuesQueryWrapper.eq("attribute_id", param.getAttributeId()).eq("attribute_values", param.getAttributeValues()).eq("display", 1);
+        AttributeValues one = this.getOne(attributeValuesQueryWrapper);
+        if (ToolUtil.isNotEmpty(one)) {
+//            throw new ServiceException(500, "当前规格在其他中存在");
+            return one.getAttributeValuesId();
+        }else {
+            AttributeValues entity = getEntity(param);
+            this.save(entity);
+            return entity.getAttributeValuesId();
         }
-        AttributeValues entity = getEntity(param);
-        this.save(entity);
-        return entity.getAttributeValuesId();
+
     }
 
     @Override

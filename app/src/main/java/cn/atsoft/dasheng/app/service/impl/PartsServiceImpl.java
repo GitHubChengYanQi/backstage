@@ -81,7 +81,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (Parts part : parts) {
-            JSONArray jsonArray = JSONUtil.parseArray(part.getChilds());
+            JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
             List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
             for (Long aLong : longs) {
                 if (partsParam.getItem().getSkuId().equals(aLong)) {
