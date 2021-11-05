@@ -64,6 +64,7 @@ public class SkuValuesServiceImpl extends ServiceImpl<SkuValuesMapper, SkuValues
     @Override
     public PageInfo<SkuValuesResult> findPageBySpec(SkuValuesParam param){
         Page<SkuValuesResult> pageContext = getPageContext();
+
         IPage<SkuValuesResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }

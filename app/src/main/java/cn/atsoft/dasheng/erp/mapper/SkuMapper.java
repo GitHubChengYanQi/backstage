@@ -16,7 +16,7 @@ import java.util.Map;
  * sku表	 Mapper 接口
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 public interface SkuMapper extends BaseMapper<Sku> {
@@ -24,7 +24,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
     /**
      * 获取列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     List<SkuResult> customList(@Param("paramCondition") SkuParam paramCondition);
@@ -32,7 +32,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
     /**
      * 获取map列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") SkuParam paramCondition);
@@ -40,15 +40,15 @@ public interface SkuMapper extends BaseMapper<Sku> {
     /**
      * 获取分页实体列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
-    Page<SkuResult> customPageList(@Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
+    Page<SkuResult> customPageList(@Param("SkuIdList") List<Long> skuIds, @Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
 
     /**
      * 获取分页map列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
