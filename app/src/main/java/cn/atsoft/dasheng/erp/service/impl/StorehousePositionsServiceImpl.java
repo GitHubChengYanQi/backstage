@@ -58,14 +58,16 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions entity = getEntity(param);
         this.save(entity);
     }
-    @BussinessLog
+
     @Override
+    @BussinessLog
     public void delete(StorehousePositionsParam param) {
         param.setDisplay(0);
         this.update(param);
     }
-    @BussinessLog
+
     @Override
+    @BussinessLog
     public void update(StorehousePositionsParam param) {
         StorehousePositions oldEntity = getOldEntity(param);
         StorehousePositions newEntity = getEntity(param);

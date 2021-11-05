@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
@@ -52,7 +53,7 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         }
 
     }
-
+    @BussinessLog
     @Override
     public void delete(AttributeValuesParam param) {
 //        this.removeById(getKey(param));
@@ -62,7 +63,7 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         attributeValuesQueryWrapper.in("attribute_values_id", param.getAttributeValuesId());
         this.update(attributeValues, attributeValuesQueryWrapper);
     }
-
+    @BussinessLog
     @Override
     public void update(AttributeValuesParam param) {
         AttributeValues oldEntity = getOldEntity(param);

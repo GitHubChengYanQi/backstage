@@ -161,8 +161,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-    @BussinessLog
+
     @Override
+    @BussinessLog
     public void delete(SkuParam param) {
         List<Long> id = new ArrayList<>();
         id.add(param.getSkuId());
@@ -170,9 +171,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.deleteBatch(param);
     }
 
-    @BussinessLog
+
     @Transactional
     @Override
+    @BussinessLog
     public void deleteBatch(SkuParam param) {
 //        List<Long> skuIds = param.getId();
 //        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId,skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
@@ -297,8 +299,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
-    @BussinessLog
+
     @Override
+    @BussinessLog
     public void update(SkuParam param) {
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);

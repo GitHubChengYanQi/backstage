@@ -61,14 +61,16 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         this.save(entity);
     }
 
-    @BussinessLog
+
     @Override
+    @BussinessLog
     public void delete(QualityCheckParam param) {
         this.removeById(getKey(param));
     }
 
-    @BussinessLog
+
     @Override
+    @BussinessLog
     @Transactional
     public void update(QualityCheckParam param) {
         String jsonStr = JSONUtil.toJsonStr(param.getTools());

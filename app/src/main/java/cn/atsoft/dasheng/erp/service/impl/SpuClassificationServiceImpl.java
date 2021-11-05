@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -49,6 +50,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     }
 
     @Override
+    @BussinessLog
     public void delete(SpuClassificationParam param) {
         Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
         if (count>0) {
@@ -61,6 +63,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     }
 
     @Override
+    @BussinessLog
     public void update(SpuClassificationParam param) {
         List<SpuClassification> classifications = this.query().eq("pid", param.getSpuClassificationId()).list();
 
