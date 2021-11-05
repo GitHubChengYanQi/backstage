@@ -77,6 +77,27 @@ public class Category implements Serializable {
     @TableField("display")
     private Integer display;
 
+    @TableField("children")
+    private String children;
+
+    @TableField("childrens")
+    private String childrens;
+
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
 
     public Long getSort() {
         return sort;

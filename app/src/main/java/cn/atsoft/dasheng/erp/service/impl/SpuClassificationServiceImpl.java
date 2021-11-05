@@ -77,11 +77,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @BussinessLog
     public void delete(SpuClassificationParam param) {
-        SpuClassification spuClassification = new SpuClassification();
-        spuClassification.setDisplay(0);
-        QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("spu_classification_id", param.getSpuClassificationId());
-        this.update(spuClassification, queryWrapper);
+        Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
+        if (count>0) {
+            throw new ServiceException(500,"此分类下有物品,无法删除");
+        }else{
+            param.setDisplay(0);
+            this.update(param);
+        }
 //        this.removeById(getKey(param));
     }
 
