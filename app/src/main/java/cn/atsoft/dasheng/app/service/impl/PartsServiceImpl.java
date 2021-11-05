@@ -62,6 +62,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     private ErpPartsDetailService erpPartsDetailService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private PartsService partsService;
 
     @Override
     public void add(PartsParam partsParam) {
@@ -109,7 +111,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
 //        partsOne.setDisplay(0);
         QueryWrapper<Parts> wrapper = new QueryWrapper<>();
         wrapper.in("sku_id", sku.getSkuId());
-        Parts tmp = new Parts(){{
+        Parts tmp = new Parts() {{
             setDisplay(0);
         }};
         this.update(tmp, wrapper);
@@ -144,7 +146,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         erpPartsDetailService.saveBatch(details);
 
         // 更新当前节点，及下级
-        Map<String,List<Long>> childrenMap = getChildrens(entity.getSkuId());
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getSkuId());
         entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
         entity.setChildren(JSON.toJSONString(skuIds));
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
@@ -154,16 +156,15 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         updateChildren(entity.getSkuId());
 
 
-
-
     }
+
     /**
      * 更新包含它的
-      */
-    public void updateChildren(Long skuId){
+     */
+    public void updateChildren(Long skuId) {
         List<Parts> partList = this.query().like("children", skuId).eq("display", 1).list();
         for (Parts part : partList) {
-            Map<String,List<Long>> childrenMap = getChildrens(skuId);
+            Map<String, List<Long>> childrenMap = getChildrens(skuId);
             part.setChildren(JSON.toJSONString(childrenMap.get("children")));
             part.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
             // update
@@ -177,13 +178,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
     /**
      * 递归
      */
-    public Map<String,List<Long>> getChildrens(Long id) {
+    public Map<String, List<Long>> getChildrens(Long id) {
 
         List<Long> childrensSkuIds = new ArrayList<>();
-        Map<String,List<Long>> result = new HashMap<String,List<Long>>(){
+        Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
             {
-                put("children",new ArrayList<>());
-                put("childrens",new ArrayList<>());
+                put("children", new ArrayList<>());
+                put("childrens", new ArrayList<>());
             }
         };
 
@@ -194,11 +195,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
                 childrensSkuIds.add(detail.getSkuId());
-                Map<String,List<Long>> childrenMap = this.getChildrens(detail.getSkuId());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSkuId());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
-            result.put("children",skuIds);
-            result.put("childrens",childrensSkuIds);
+            result.put("children", skuIds);
+            result.put("childrens", childrensSkuIds);
         }
         return result;
     }
@@ -256,10 +257,10 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
-        Parts one = this.query().in("sku_id", skuId).in("display", 1).one();
+        Parts one = this.query().eq("sku_id", skuId).in("display", 1).one();
 
         if (ToolUtil.isNotEmpty(one)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", one.getPartsId()).in("display", 1).list();
+            List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", one.getPartsId()).eq("display", 1).list();
             List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
@@ -277,6 +278,11 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                 for (ErpPartsDetailResult detailResult : detailResults) {
                     List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
                     SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
+
+                    Parts parts = partsService.query().in("sku_id", detailResult.getSkuId()).one();
+                    if (ToolUtil.isEmpty(parts)) {
+                        detailResult.setIsNull(false);
+                    }
 
                     if (ToolUtil.isNotEmpty(detailResult.getSkuId())) {
                         Sku sku = skuService.getById(detailResult.getSkuId());

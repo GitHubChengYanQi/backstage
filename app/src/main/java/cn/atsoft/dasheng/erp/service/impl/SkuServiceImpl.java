@@ -69,7 +69,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long itemAttributeId = null;
             Long spuId = param.getSpu().getSpuId();
             if (ToolUtil.isEmpty(spuId)) {
-                spuId = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one().getSpuId();
+                Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+                if (ToolUtil.isNotEmpty(spu)) {
+                    spuId = spu.getSpuId();
+                }
             }
             if (spuId == null) {
                 SpuParam spu = new SpuParam();

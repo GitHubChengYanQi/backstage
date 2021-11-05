@@ -32,6 +32,8 @@ public class ErpPartsDetailResult implements Serializable {
     private List<BackSku> backSkus;
     private SpuResult spuResult;
 
+    private Boolean isNull;
+
     private Sku sku;
     /**
      * 清单详情id
