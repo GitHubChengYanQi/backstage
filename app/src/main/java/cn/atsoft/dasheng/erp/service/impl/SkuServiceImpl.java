@@ -90,9 +90,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Long categoryId = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i -> i.eq(Category::getDisplay, 1)).one().getCategoryId();
             if (ToolUtil.isNotEmpty(categoryId)) {
                 //查询出属性id
-                itemAttributeId = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one().getAttributeId();
+
+                ItemAttribute one = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
+                if (ToolUtil.isNotEmpty(one)){
+                    itemAttributeId =one.getAttributeId();
+                }else {
+                    ItemAttributeParam attributeParam = new ItemAttributeParam();
+                    attributeParam.setCategoryId(categoryId);
+                    attributeParam.setAttribute("规格");
+                    attributeParam.setStandard(param.getSpuStandard());
+                    itemAttributeId = itemAttributeService.add(attributeParam);
+                }
             }
             //根据分类查询出属性新建属性值
+
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());
             attributeValues.setAttributeId(itemAttributeId);
