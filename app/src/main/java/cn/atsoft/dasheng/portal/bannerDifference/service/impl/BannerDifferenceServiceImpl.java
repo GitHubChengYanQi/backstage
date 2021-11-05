@@ -36,7 +36,8 @@ public class BannerDifferenceServiceImpl extends ServiceImpl<BannerDifferenceMap
 
     @Override
     public void delete(BannerDifferenceParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

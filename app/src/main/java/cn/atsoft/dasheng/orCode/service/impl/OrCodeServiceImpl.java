@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -82,12 +83,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         return entity.getOrCodeId();
     }
 
+    @BussinessLog
     @Override
     public void delete(OrCodeParam param) {
 //        this.removeById(getKey(param));
         throw new ServiceException(500, "不可以删除");
     }
 
+    @BussinessLog
     @Override
     public void update(OrCodeParam param) {
 //        OrCode oldEntity = getOldEntity(param);

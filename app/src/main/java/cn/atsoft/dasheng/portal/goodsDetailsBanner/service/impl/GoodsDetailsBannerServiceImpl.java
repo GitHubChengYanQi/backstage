@@ -36,7 +36,8 @@ public class GoodsDetailsBannerServiceImpl extends ServiceImpl<GoodsDetailsBanne
 
     @Override
     public void delete(GoodsDetailsBannerParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

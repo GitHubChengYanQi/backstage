@@ -161,7 +161,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-
+    @BussinessLog
     @Override
     @BussinessLog
     public void delete(SkuParam param) {
@@ -171,6 +171,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.deleteBatch(param);
     }
 
+    @BussinessLog
     @Transactional
     @Override
     @BussinessLog
@@ -298,7 +299,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
-
+    @BussinessLog
     @Override
     @BussinessLog
     public void update(SkuParam param) {

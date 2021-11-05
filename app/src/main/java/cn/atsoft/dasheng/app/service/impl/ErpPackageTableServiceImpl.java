@@ -53,7 +53,8 @@ public class ErpPackageTableServiceImpl extends ServiceImpl<ErpPackageTableMappe
 
     @Override
     public void delete(ErpPackageTableParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

@@ -81,7 +81,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void delete(OutstockOrderParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+       this.update(param);
     }
 
 
