@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
@@ -54,6 +55,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     }
 
     @Override
+    @BussinessLog
     public void delete(ItemAttributeParam param) {
         ItemAttribute itemAttribute = new ItemAttribute();
         itemAttribute.setDisplay(0);
@@ -64,6 +66,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     }
 
     @Override
+    @BussinessLog
     public void update(ItemAttributeParam param) {
         ItemAttribute oldEntity = getOldEntity(param);
         ItemAttribute newEntity = getEntity(param);

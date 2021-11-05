@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -314,12 +315,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
+    @BussinessLog
     public void delete(SpuParam param) {
         param.setDisplay(0);
         spuService.update(param);
     }
 
     @Override
+    @BussinessLog
     public void update(SpuParam param) {
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());

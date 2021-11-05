@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.production.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.WorkingPorcedureClass;
@@ -34,11 +35,13 @@ public class WorkingPorcedureClassServiceImpl extends ServiceImpl<WorkingPorcedu
         this.save(entity);
     }
 
+    @BussinessLog
     @Override
     public void delete(WorkingPorcedureClassParam param){
         this.removeById(getKey(param));
     }
 
+    @BussinessLog
     @Override
     public void update(WorkingPorcedureClassParam param){
         WorkingPorcedureClass oldEntity = getOldEntity(param);

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -36,11 +37,13 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     }
 
     @Override
+    @BussinessLog
     public void delete(InkindParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(InkindParam param) {
         Inkind oldEntity = getOldEntity(param);
         Inkind newEntity = getEntity(param);

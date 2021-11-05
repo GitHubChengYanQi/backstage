@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ToolClassification;
@@ -35,11 +36,13 @@ public class ToolClassificationServiceImpl extends ServiceImpl<ToolClassificatio
     }
 
     @Override
+    @BussinessLog
     public void delete(ToolClassificationParam param){
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(ToolClassificationParam param){
         ToolClassification oldEntity = getOldEntity(param);
         ToolClassification newEntity = getEntity(param);

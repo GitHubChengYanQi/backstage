@@ -36,7 +36,8 @@ public class NavigationDifferenceServiceImpl extends ServiceImpl<NavigationDiffe
 
     @Override
     public void delete(NavigationDifferenceParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

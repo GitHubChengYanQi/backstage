@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
@@ -34,12 +35,17 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         this.save(entity);
     }
 
-    @Override
-    public void delete(QualityPlanDetailParam param) {
-        this.removeById(getKey(param));
-    }
 
     @Override
+    @BussinessLog
+    public void delete(QualityPlanDetailParam param) {
+        param.setDisplay(0);
+        this.update(param);
+    }
+
+
+    @Override
+    @BussinessLog
     public void update(QualityPlanDetailParam param) {
         QualityPlanDetail oldEntity = getOldEntity(param);
         QualityPlanDetail newEntity = getEntity(param);

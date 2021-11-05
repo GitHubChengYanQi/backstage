@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
@@ -88,11 +89,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
+    @BussinessLog
     public void delete(InstockOrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(InstockOrderParam param) {
         InstockOrder oldEntity = getOldEntity(param);
         InstockOrder newEntity = getEntity(param);

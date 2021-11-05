@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
@@ -99,6 +100,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     @Transactional
+    @BussinessLog
     public void delete(QualityPlanParam param) {
         this.removeById(getKey(param));
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
@@ -108,6 +110,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     @Transactional
+    @BussinessLog
     public void update(QualityPlanParam param) {
         List<QualityPlan> qualityPlans = this.query().list();
         for (QualityPlan qualityPlan : qualityPlans) {

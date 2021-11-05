@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ProductOrder;
@@ -129,11 +130,13 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     }
 
     @Override
+    @BussinessLog
     public void delete(ProductOrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(ProductOrderParam param) {
 
         ProductOrderRequest productOrderRequest = new ProductOrderRequest();

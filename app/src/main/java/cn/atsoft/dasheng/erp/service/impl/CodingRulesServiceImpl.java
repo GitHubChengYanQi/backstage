@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
@@ -49,6 +50,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
     @Override
     @Transactional
+
     public void add(CodingRulesParam param) {
 
         String codingRules = "";
@@ -79,12 +81,14 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     }
 
     @Override
+    @BussinessLog
     public void delete(CodingRulesParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
     @Transactional
+    @BussinessLog
     public void update(CodingRulesParam param) {
 
         String codingRules = "";

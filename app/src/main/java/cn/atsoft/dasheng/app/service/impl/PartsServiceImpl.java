@@ -279,7 +279,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     List<BackSku> backSkus = sendSku.get(detailResult.getSkuId());
                     SpuResult spuResult = skuService.backSpu(detailResult.getSkuId());
                     detailResult.setIsNull(true);
-                    Parts parts = partsService.query().in("sku_id", detailResult.getSkuId()).one();
+                    Parts parts = partsService.query().in("sku_id", detailResult.getSkuId()).eq("display", 1).one();
                     if (ToolUtil.isEmpty(parts)) {
                         detailResult.setIsNull(false);
                     }

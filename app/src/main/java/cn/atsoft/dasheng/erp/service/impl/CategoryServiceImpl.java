@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
@@ -57,6 +58,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
+    @BussinessLog
     @Transactional
     public void delete(CategoryParam param) {
         Category category = new Category();
@@ -64,34 +66,35 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.in("category_id", param.getCategoryId());
         this.update(category, categoryQueryWrapper);
-        List<ItemAttribute> attributes = param.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, param.getCategoryId())
-                .in(ItemAttribute::getDisplay, 1)
-                .list();
-        List<Long> values = new ArrayList<>();
-        List<ItemAttribute> itemAttributes = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(attributes)) {
-            for (ItemAttribute attribute : attributes) {
-                attribute.setDisplay(0);
-                itemAttributes.add(attribute);
-                values.add(attribute.getAttributeId());
-            }
-        }
-        itemAttributeService.updateBatchById(itemAttributes);
-        List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, values)
-                .in(AttributeValues::getDisplay, 1).list();
-
-        if (ToolUtil.isNotEmpty(valuesList)) {
-            List<AttributeValues> attributeValuesList = new ArrayList<>();
-            for (AttributeValues attributeValues : valuesList) {
-                attributeValues.setDisplay(0);
-                attributeValuesList.add(attributeValues);
-            }
-            attributeValuesService.updateBatchById(attributeValuesList);
-        }
+//        List<ItemAttribute> attributes = param.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, param.getCategoryId())
+//                .in(ItemAttribute::getDisplay, 1)
+//                .list();
+//        List<Long> values = new ArrayList<>();
+//        List<ItemAttribute> itemAttributes = new ArrayList<>();
+//        if (ToolUtil.isNotEmpty(attributes)) {
+//            for (ItemAttribute attribute : attributes) {
+//                attribute.setDisplay(0);
+//                itemAttributes.add(attribute);
+//                values.add(attribute.getAttributeId());
+//            }
+//        }
+//        itemAttributeService.updateBatchById(itemAttributes);
+//        List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, values)
+//                .in(AttributeValues::getDisplay, 1).list();
+//
+//        if (ToolUtil.isNotEmpty(valuesList)) {
+//            List<AttributeValues> attributeValuesList = new ArrayList<>();
+//            for (AttributeValues attributeValues : valuesList) {
+//                attributeValues.setDisplay(0);
+//                attributeValuesList.add(attributeValues);
+//            }
+//            attributeValuesService.updateBatchById(attributeValuesList);
+//        }
 //        this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     @Transactional
     public void update(CategoryParam param) {
         Category category = this.getById(param.getCategoryId());
