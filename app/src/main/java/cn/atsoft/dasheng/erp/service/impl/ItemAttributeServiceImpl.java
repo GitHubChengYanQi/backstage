@@ -46,7 +46,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
                 .in("display", 1)
                 .count();
         if (count > 0) {
-            throw new ServiceException(500, "请不要重复添加");
+            throw new ServiceException(500, "请不要重复添加属性");
         }
         ItemAttribute entity = getEntity(param);
         this.save(entity);

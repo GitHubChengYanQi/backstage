@@ -123,8 +123,14 @@ public class SpuClassificationController extends BaseController {
     }
 
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
-    public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String, Object>> list = this.spuClassificationService.listMaps();
+    public ResponseData<List<TreeNode>> treeView(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
+        QueryWrapper<SpuClassification> spuClassificationQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(spuClassificationParam)){
+            if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())){
+                spuClassificationQueryWrapper.in("spu_classification_id",spuClassificationParam.getSpuClassificationId());
+            }
+        }
+        List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {
             return ResponseData.success();

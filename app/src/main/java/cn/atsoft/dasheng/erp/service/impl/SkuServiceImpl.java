@@ -93,17 +93,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attributeValue.setAttributeId(attributeValues.getAttributeId());
             attributeValue.setAttributeValuesId(add);
             list.add(attributeValue);
-            String Json = JSON.toJSONString(list);
-            String md5 = SecureUtil.md5(Json);
+            list.sort(Comparator.comparing(AttributeValues::getAttributeId));
+            String json = JSON.toJSONString(list);
+
             entity.setSpuId(spuId);
+            entity.setSkuValue(spuId+","+json);
+            String md5 = SecureUtil.md5(entity.getSkuValue());
             entity.setSkuValueMd5(md5);
-            entity.setSkuValue(Json);
-            Spu spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
-            Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
-            Sku skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).one();
-            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName)) || (md5.equals(sku.getSkuValueMd5()))) {
-                throw new ServiceException(500, "此物料在产品中已存在");
-            } else {
+            List<Spu> spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
+            List<Sku> sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).list();
+
+            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName))&&(ToolUtil.isNotEmpty(sku))){
+                throw new ServiceException(500,"此物料在产品中已存在");
+            }else {
                 this.save(entity);
             }
         } else if (param.getType() == 1) {
@@ -128,10 +131,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
                 Sku entity = getEntity(param);
                 entity.setSpuId(spuId);
-                String Json = JSON.toJSONString(list);
-                String md5 = SecureUtil.md5(Json);
+                String json = JSON.toJSONString(list);
+                entity.setSkuValue(spuId+","+json);
+                String md5 = SecureUtil.md5(entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
-                entity.setSkuValue(Json);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
                 Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
                 if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
