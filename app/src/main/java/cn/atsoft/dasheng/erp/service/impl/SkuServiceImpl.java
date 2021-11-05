@@ -179,7 +179,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 entity.setSkuValueMd5(md5);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
                 Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
-                Sku SkuStander
+//                Sku SkuStander
                 if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
                     throw new ServiceException(500, "此物料在产品中已存在");
                 } else {
