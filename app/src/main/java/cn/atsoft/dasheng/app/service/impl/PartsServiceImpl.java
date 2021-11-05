@@ -161,7 +161,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
      * 更新包含它的
       */
     public void updateChildren(Long skuId){
-        List<Parts> partList = this.query().like("child", skuId).eq("display", 1).list();
+        List<Parts> partList = this.query().like("children", skuId).eq("display", 1).list();
         for (Parts part : partList) {
             Map<String,List<Long>> childrenMap = getChildrens(skuId);
             part.setChildren(JSON.toJSONString(childrenMap.get("children")));
