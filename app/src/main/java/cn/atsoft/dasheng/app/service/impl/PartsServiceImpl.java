@@ -312,7 +312,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Parts parts = this.query().in("sku_id", skuId).in("display", 0).eq("parts_id", partsId).one();
 
         if (ToolUtil.isNotEmpty(parts)) {
-            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", parts.getPartsId()).in("display", 0).list();
+            List<ErpPartsDetail> details = erpPartsDetailService.query().in("parts_id", parts.getPartsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (ErpPartsDetail detail : details) {
                 skuIds.add(detail.getSkuId());
