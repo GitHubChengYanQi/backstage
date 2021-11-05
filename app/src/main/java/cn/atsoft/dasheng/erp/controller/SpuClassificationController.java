@@ -115,7 +115,7 @@ public class SpuClassificationController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("display", 1);
+        queryWrapper.eq("display", 1);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
@@ -127,9 +127,10 @@ public class SpuClassificationController extends BaseController {
         QueryWrapper<SpuClassification> spuClassificationQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(spuClassificationParam)){
             if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())){
-                spuClassificationQueryWrapper.in("spu_classification_id",spuClassificationParam.getSpuClassificationId());
+                spuClassificationQueryWrapper.eq("spu_classification_id",spuClassificationParam.getSpuClassificationId());
             }
         }
+        spuClassificationQueryWrapper.eq("display",1);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {
