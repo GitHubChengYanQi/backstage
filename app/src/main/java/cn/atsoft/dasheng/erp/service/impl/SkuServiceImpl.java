@@ -79,9 +79,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             }
             Spu byId = spuService.getById(spuId);
-            Category one = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i->i.eq(Category::getDisplay,1)).one();
+            Category one = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
             if (ToolUtil.isNotEmpty(one)) {
-                one1 = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, one.getCategoryId()).and(i->i.eq(ItemAttribute::getDisplay,1)).one();
+                one1 = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, one.getCategoryId()).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
             }
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());
@@ -99,11 +99,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             entity.setSkuValueMd5(md5);
             entity.setSkuValue(Json);
             Spu spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
-            Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
+            Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
             Sku skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).one();
-            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName))||(md5.equals(sku.getSkuValueMd5()))) {
-                throw new ServiceException(500,"此物料在产品中已存在");
-            }else {
+            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName)) || (md5.equals(sku.getSkuValueMd5()))) {
+                throw new ServiceException(500, "此物料在产品中已存在");
+            } else {
                 this.save(entity);
             }
         } else if (param.getType() == 1) {
@@ -115,7 +115,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spu.setIsHidden(false);
                 spu.setType(0);
                 spuId = spuService.add(spu);
-            }else {
+            } else {
                 param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
                 List<AttributeValues> list = new ArrayList<>();
                 for (Attribute spuRequest : param.getSpuAttributes().getSpuRequests()) {
@@ -133,10 +133,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 entity.setSkuValueMd5(md5);
                 entity.setSkuValue(Json);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
-                Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i->i.eq(Sku::getDisplay,1)).one();
-                if (ToolUtil.isNotEmpty(sku)||ToolUtil.isNotEmpty(spu)) {
-                    throw new ServiceException(500,"此物料在产品中已存在");
-                }else {
+                Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
+                if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
+                    throw new ServiceException(500, "此物料在产品中已存在");
+                } else {
                     this.save(entity);
                 }
             }
@@ -151,9 +151,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         param.setId(id);
         this.deleteBatch(param);
     }
-    public void de(SkuParam param){
 
-    }
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
@@ -213,14 +211,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> skuIds = param.getId();
 
         List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, skuIds).list();
-        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i->i.eq(Parts::getDisplay,1)).list();
-        if (ToolUtil.isNotEmpty(partsDetailList)||ToolUtil.isNotEmpty(partList)){
-            throw new ServiceException(500,"清单中有此物品数据,删除终止");
+        List<Parts> partList = partsService.lambdaQuery().in(Parts::getSkuId, skuIds).and(i -> i.eq(Parts::getDisplay, 1)).list();
+        if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
+            throw new ServiceException(500, "清单中有此物品数据,删除终止");
         }
         List<Long> attributeValuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
         List<Long> spuIds = new ArrayList<>();
-        List<Sku> skuList = skuIds.size() ==0? new ArrayList<>(): skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         for (Sku sku : skuList) {
             //获取spuId
             spuIds.add(sku.getSpuId());
@@ -234,13 +232,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         skuService.updateBatchById(skuList);
-        List<AttributeValues> attributeValuesList =attributeValuesIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        List<AttributeValues> attributeValuesList = attributeValuesIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
         for (AttributeValues attributeValues : attributeValuesList) {
             attributeValues.setDisplay(0);
         }
         attributeValuesService.updateBatchById(attributeValuesList);
         List<AttributeValues> afterDeleteValues = attributeValuesList.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attributeIds).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
-        List<ItemAttribute> itemAttributes = attributeIds.size() == 0 ? new ArrayList<>() :itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
+        List<ItemAttribute> itemAttributes = attributeIds.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
         for (ItemAttribute itemAttribute : itemAttributes) {
             itemAttribute.setDisplay(0);
             for (AttributeValues afterDeleteValue : afterDeleteValues) {
@@ -253,8 +251,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         //获取分类id
         List<Long> categoryIds = new ArrayList<>();
-        List<Spu> spuList = spuIds.size() == 0? new ArrayList<>(): spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
-        List<Sku> afterDeleteSkuList = spuIds.size() == 0? new ArrayList<>(): skuService.lambdaQuery().in(Sku::getSpuId, spuIds).and(i->i.eq(Sku::getDisplay,1)).list();
+        List<Spu> spuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
+        List<Sku> afterDeleteSkuList = spuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSpuId, spuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         for (Spu spu : spuList) {
             spu.setDisplay(0);
             for (Sku sku : afterDeleteSkuList) {
@@ -266,8 +264,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         spuService.updateBatchById(spuList);
 
-        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>(): categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).and(i -> i.eq(Category::getDisplay, 1)).list();
-        List<Spu> afterDeleteSpuList = spuIds.size() == 0? new ArrayList<>(): spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
+        List<Category> categoryList = categoryIds.size() == 0 ? new ArrayList<>() : categoryService.lambdaQuery().in(Category::getCategoryId, categoryIds).and(i -> i.eq(Category::getDisplay, 1)).list();
+        List<Spu> afterDeleteSpuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i -> i.eq(Spu::getDisplay, 1)).list();
         for (Category category : categoryList) {
             category.setDisplay(0);
             for (Spu spu : afterDeleteSpuList) {
@@ -306,6 +304,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+
+
 
     private void format(List<SkuResult> param) {
 

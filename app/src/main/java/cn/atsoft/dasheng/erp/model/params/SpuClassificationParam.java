@@ -24,6 +24,11 @@ import java.util.List;
 public class SpuClassificationParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 编码分类
+     */
+    private String codingClass;
     /**
      * pid
      */

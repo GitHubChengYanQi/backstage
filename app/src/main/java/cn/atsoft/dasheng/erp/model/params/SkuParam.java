@@ -36,6 +36,8 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     private Long spuClassificationId;
     private Long spuStandard;
     private List<Long> id;
+
+    private Long spuClass;
     /**
      * 类型
      */

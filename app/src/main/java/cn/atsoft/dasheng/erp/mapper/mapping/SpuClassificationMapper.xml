@@ -14,11 +14,12 @@
         <result column="deptId" property="deptId"/>
         <result column="pid" property="pid"/>
         <result column="sort" property="sort"/>
+        <result column="coding_class" property="codingClass"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">pid
-    AS "pid",sort AS "sort",
+    AS "pid",sort AS "sort",coding_class AS "codingClass",
         spu_classification_id
         AS "spuClassificationId", name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
@@ -114,6 +115,9 @@
         </if>
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+        <if test="paramCondition.codingClass != null">
+            and coding_class like CONCAT('%',#{paramCondition.codingClass},'%')
         </if>
         order by sort ASC
     </select>
