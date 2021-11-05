@@ -51,25 +51,21 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
+
+
         SpuClassification entity = getEntity(param);
         this.save(entity);
 
-//        if (ToolUtil.isNotEmpty(param.getPid()) && param.getPid() != 0) {
-//            Map<String, List<Long>> childrens = this.getChildrens(param.getPid());
-//            param.setChildren(JSON.toJSONString(childrens.get("children")));
-//            param.setChildrens(JSON.toJSONString(childrens.get("childrens")));
-//        }
-//
-//        // 更新当前节点，及下级
-//        SpuClassification spuClassification = new SpuClassification();
-//        Map<String, List<Long>> childrenMap = getChildrens(entity.getSpuClassificationId());
-//        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-//        spuClassification.setChildren(JSON.toJSONString(param.getPid()));
-//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-//        QueryWrapper.eq("spu_classification_id", entity.getPid());
-//        this.update(spuClassification, QueryWrapper);
-//
-//        updateChildren(entity.getSpuClassificationId());
+        // 更新当前节点，及下级
+        SpuClassification spuClassification = new SpuClassification();
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("spu_classification_id", entity.getPid());
+        this.update(spuClassification, QueryWrapper);
+
+        updateChildren(entity.getSpuClassificationId());
 
         return entity.getSpuClassificationId();
 
@@ -104,10 +100,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 //            }
 //        }
 
-//        Map<String, List<Long>> childrens = this.getChildrens(param.getSpuClassificationId());
-//
-//        param.setChildren(JSON.toJSONString(childrens.get("children")));
-//        param.setChildrens(JSON.toJSONString(childrens.get("childrens")));
+        Map<String, List<Long>> childrens = this.getChildrens(param.getSpuClassificationId());
+
+        param.setChildren(JSON.toJSONString(childrens.get("children")));
+        param.setChildrens(JSON.toJSONString(childrens.get("childrens")));
 
         SpuClassification oldEntity = getOldEntity(param);
         SpuClassification newEntity = getEntity(param);
@@ -135,7 +131,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             for (SpuClassification detail : details) {
                 skuIds.add(detail.getSpuClassificationId());
                 childrensSkuIds.add(detail.getSpuClassificationId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getPid());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSpuClassificationId());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
             result.put("children", skuIds);
