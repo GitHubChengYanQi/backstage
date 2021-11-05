@@ -81,7 +81,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         List<Parts> parts = this.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (Parts part : parts) {
-            JSONArray jsonArray = JSONUtil.parseArray(part.getChilds());
+            JSONArray jsonArray = JSONUtil.parseArray(part.getChildrens());
             List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
             for (Long aLong : longs) {
                 if (partsParam.getItem().getSkuId().equals(aLong)) {
@@ -146,8 +146,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         // 更新当前节点，及下级
         List<Long> childrens = getChildrens(entity.getSkuId());
         String jsonStr = JSONUtil.toJsonStr(childrens);
-        entity.setChilds(jsonStr);
-        entity.setChild(JSON.toJSONString(skuIds));
+        entity.setChildrens(jsonStr);
+        entity.setChildren(JSON.toJSONString(skuIds));
         QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
         partsQueryWrapper.eq("parts_id", entity.getPartsId());
         this.update(entity, partsQueryWrapper);
@@ -157,7 +157,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         for (Parts part : partList) {
             List<Long> newChildrens = getChildrens(entity.getSkuId());
             String newJsonStr = JSONUtil.toJsonStr(newChildrens);
-            part.setChilds(newJsonStr);
+            part.setChildrens(newJsonStr);
             // update
             QueryWrapper<Parts> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("parts_id", part.getPartsId());
