@@ -97,16 +97,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             String json = JSON.toJSONString(list);
 
             entity.setSpuId(spuId);
-            entity.setSkuValue(spuId+","+json);
+            entity.setSkuValue(spuId + "," + json);
             String md5 = SecureUtil.md5(entity.getSkuValue());
             entity.setSkuValueMd5(md5);
             List<Spu> spuName = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
             List<Sku> sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).list();
 
             List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName))&&(ToolUtil.isNotEmpty(sku))){
-                throw new ServiceException(500,"此物料在产品中已存在");
-            }else {
+            if ((ToolUtil.isNotEmpty(spuName) && ToolUtil.isNotEmpty(skuName)) && (ToolUtil.isNotEmpty(sku))) {
+                throw new ServiceException(500, "此物料在产品中已存在");
+            } else {
                 this.save(entity);
             }
         } else if (param.getType() == 1) {
@@ -132,7 +132,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 Sku entity = getEntity(param);
                 entity.setSpuId(spuId);
                 String json = JSON.toJSONString(list);
-                entity.setSkuValue(spuId+","+json);
+                entity.setSkuValue(spuId + "," + json);
                 String md5 = SecureUtil.md5(entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
@@ -303,12 +303,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public PageInfo<SkuResult> findPageBySpec(SkuParam param) {
         Page<SkuResult> pageContext = getPageContext();
-        IPage<SkuResult> page = this.baseMapper.customPageList(pageContext, param);
+        List<Long> spuIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(param.getSpuClass())) {
+            List<Spu> spuList = spuService.query().eq("spu_classification_id", param.getSpuClass()).list();
+            for (Spu spu : spuList) {
+                spuIds.add(spu.getSpuId());
+            }
+        }
+        IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-
 
 
     private void format(List<SkuResult> param) {
