@@ -4,20 +4,21 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.sys.modular.system.entity.OperationLog">
-        <id column="operation_log_id" property="operationLogId" />
-        <result column="log_type" property="logType" />
-        <result column="log_name" property="logName" />
-        <result column="user_id" property="userId" />
-        <result column="class_name" property="className" />
-        <result column="method" property="method" />
-        <result column="create_time" property="createTime" />
-        <result column="succeed" property="succeed" />
-        <result column="message" property="message" />
+        <id column="operation_log_id" property="operationLogId"/>
+        <result column="log_type" property="logType"/>
+        <result column="log_name" property="logName"/>
+        <result column="user_id" property="userId"/>
+        <result column="class_name" property="className"/>
+        <result column="method" property="method"/>
+        <result column="create_time" property="createTime"/>
+        <result column="succeed" property="succeed"/>
+        <result column="message" property="message"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        operation_log_id AS "operationLogId", log_type AS "logType", log_name AS "logName", user_id AS "userId", class_name AS "className", method AS "method", create_time AS "createTime", succeed AS "succeed", message AS "message"
+        operation_log_id
+        AS "operationLogId", log_type AS "logType", log_name AS "logName", user_id AS "userId", class_name AS "className", method AS "method", create_time AS "createTime", succeed AS "succeed", message AS "message"
     </sql>
 
     <select id="getOperationLogs" resultType="map">
@@ -33,6 +34,7 @@
         <if test="logType != null and logType !=''">
             and log_type like CONCAT('%',#{logType},'%')
         </if>
+        order by create_time desc
     </select>
 
     <select id="getOperationLogs" resultType="map" databaseId="pgsql">
@@ -42,7 +44,7 @@
         <if test="beginTime != null and beginTime !='' ">
             and create_time &gt;= to_timestamp(#{beginTime}||' 00:00:00','yyyy-mm-dd hh24:mi:ss')
         </if>
-       <if test="endTime != null and endTime != '' ">
+        <if test="endTime != null and endTime != '' ">
             and create_time &lt;= to_timestamp(#{endTime}||' 23:59:59','yyyy-mm-dd hh24:mi:ss')
         </if>
         <if test="logName != null and logName !=''">
@@ -51,6 +53,7 @@
         <if test="logType != null and logType !=''">
             and log_type like '%' || #{logType} || '%'
         </if>
+        order by create_time desc
     </select>
 
     <select id="getOperationLogs" resultType="map" databaseId="oracle">
@@ -67,6 +70,7 @@
         <if test="logType != null and logType !=''">
             and log_type like '%' || #{logType} || '%'
         </if>
+        order by create_time desc
     </select>
 
 </mapper>
