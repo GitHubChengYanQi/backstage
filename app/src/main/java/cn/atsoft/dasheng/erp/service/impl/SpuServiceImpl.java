@@ -151,7 +151,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
                         if (s1.equals(s)) {
                             Sku skuEntry = new Sku();
                             skuEntry.setSkuValue(s);
-                            skuEntry.setSkuValueMd5(SecureUtil.md5(sku.getSkuValue()));
+                            skuEntry.setSkuValueMd5(SecureUtil.md5(entity.getSpuId()+sku.getSkuValue()));
                             skuEntry.setSpuId(entity.getSpuId());
                             if (ToolUtil.isNotEmpty(sku.getIsBan())) {
                                 skuEntry.setIsBan(sku.getIsBan());
