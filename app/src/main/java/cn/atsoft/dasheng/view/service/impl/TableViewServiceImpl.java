@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.view.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.view.entity.TableView;
 import cn.atsoft.dasheng.view.mapper.TableViewMapper;
 import cn.atsoft.dasheng.view.model.params.TableViewParam;
@@ -29,9 +30,16 @@ import java.util.List;
 public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView> implements TableViewService {
 
     @Override
-    public void add(TableViewParam param){
+    public Long add(TableViewParam param){
+
+        Integer count = this.query().in("table_key",param.getTableKey()).eq("name", param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "视图名称重复,请更换");
+        }
+
         TableView entity = getEntity(param);
         this.save(entity);
+        return entity.getTableViewId();
     }
 
     @Override

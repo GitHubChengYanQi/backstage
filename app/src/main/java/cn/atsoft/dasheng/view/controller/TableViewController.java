@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.view.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.crm.wrapper.DataSelectWrapper;
 import cn.atsoft.dasheng.view.entity.TableView;
 import cn.atsoft.dasheng.view.model.params.TableViewParam;
 import cn.atsoft.dasheng.view.model.result.TableViewResult;
@@ -8,7 +11,9 @@ import cn.atsoft.dasheng.view.service.TableViewService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.view.wrapper.TableViewSelectWrapper;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -41,8 +46,8 @@ public class TableViewController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody TableViewParam tableViewParam) {
-        this.tableViewService.add(tableViewParam);
-        return ResponseData.success();
+        Long tableViewId = this.tableViewService.add(tableViewParam);
+        return ResponseData.success(tableViewId);
     }
 
     /**
@@ -102,6 +107,28 @@ public class TableViewController extends BaseController {
         }
         return this.tableViewService.findPageBySpec(tableViewParam);
     }
+
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) TableViewParam tableViewParam) {
+        QueryWrapper<TableView> tableViewQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(tableViewParam.getTableKey())){
+            tableViewQueryWrapper.in("table_key",tableViewParam.getTableKey());
+        }
+        Long userId = LoginContextHolder.getContext().getUserId();
+        tableViewQueryWrapper.in("create_user",userId);
+        List<Map<String, Object>> list = this.tableViewService.listMaps(tableViewQueryWrapper);
+        TableViewSelectWrapper tableViewSelectWrapper = new TableViewSelectWrapper(list);
+        List<Map<String, Object>> result = tableViewSelectWrapper.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 

@@ -33,8 +33,19 @@ public class TableView implements Serializable {
     @TableField("user_id")
     private Long userId;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @TableField("field")
     private String field;
+
+    @TableField("name")
+    private String name;
 
     /**
      * 创建者
