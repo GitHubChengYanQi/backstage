@@ -85,14 +85,25 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spuId = spuService.add(spu);
 
             }
-            Spu byId = spuService.lambdaQuery().eq(Spu::getSpuId,spuId).and(i->i.eq(Spu::getDisplay,1)).one();
+            Spu byId = spuService.lambdaQuery().eq(Spu::getSpuId, spuId).and(i -> i.eq(Spu::getDisplay, 1)).one();
             //判断是否有已存在的分类
             Long categoryId = categoryService.lambdaQuery().eq(Category::getCategoryName, byId.getName()).and(i -> i.eq(Category::getDisplay, 1)).one().getCategoryId();
             if (ToolUtil.isNotEmpty(categoryId)) {
                 //查询出属性id
-                itemAttributeId = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one().getAttributeId();
+
+                ItemAttribute one = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
+                if (ToolUtil.isNotEmpty(one)){
+                    itemAttributeId =one.getAttributeId();
+                }else {
+                    ItemAttributeParam attributeParam = new ItemAttributeParam();
+                    attributeParam.setCategoryId(categoryId);
+                    attributeParam.setAttribute("规格");
+                    attributeParam.setStandard(param.getSpuStandard());
+                    itemAttributeId = itemAttributeService.add(attributeParam);
+                }
             }
             //根据分类查询出属性新建属性值
+
             AttributeValuesParam attributeValues = new AttributeValuesParam();
             attributeValues.setAttributeValues(param.getSpecifications());
             attributeValues.setAttributeId(itemAttributeId);
@@ -322,13 +333,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public PageInfo<SkuResult> findPageBySpec(SkuParam param) {
         Page<SkuResult> pageContext = getPageContext();
-        List<Long> spuIds = new ArrayList<>();
+        List<Long> spuIds = null;
         if (ToolUtil.isNotEmpty(param.getSpuClass())) {
+            spuIds = new ArrayList<>();
             List<Spu> spuList = spuService.query().eq("spu_classification_id", param.getSpuClass()).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }
+            if (ToolUtil.isEmpty(spuList)) {
+                spuIds.add(0L);
+            }
+        } else {
+            spuIds = new ArrayList<>();
         }
+
         IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
