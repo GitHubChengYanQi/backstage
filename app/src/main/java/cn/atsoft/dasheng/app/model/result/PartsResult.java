@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -40,8 +41,10 @@ public class PartsResult implements Serializable {
 
     private List<ErpPartsDetailResult> parts;
 
+    @JSONField(serialize = false)
     private String children;
 
+    @JSONField(serialize = false)
     private String childrens;
 
     private Sku sku;
