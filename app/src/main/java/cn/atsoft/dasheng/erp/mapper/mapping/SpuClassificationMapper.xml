@@ -15,11 +15,13 @@
         <result column="pid" property="pid"/>
         <result column="sort" property="sort"/>
         <result column="coding_class" property="codingClass"/>
+        <result column="children" property="children"/>
+        <result column="childrens" property="childrens"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">pid
-    AS "pid",sort AS "sort",coding_class AS "codingClass",
+    AS "pid",sort AS "sort",coding_class AS "codingClass", children AS "children",childrens AS "childrens",
         spu_classification_id
         AS "spuClassificationId", name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>

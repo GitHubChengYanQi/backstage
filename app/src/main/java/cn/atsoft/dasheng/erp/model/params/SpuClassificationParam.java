@@ -25,6 +25,10 @@ public class SpuClassificationParam implements Serializable, BaseValidatingParam
 
     private static final long serialVersionUID = 1L;
 
+    private String children;
+
+
+    private String childrens;
     /**
      * 编码分类
      */
