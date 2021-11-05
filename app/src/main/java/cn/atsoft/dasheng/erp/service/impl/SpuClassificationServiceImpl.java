@@ -61,12 +61,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         }
 
         // 更新当前节点，及下级
+        SpuClassification spuClassification = new SpuClassification();
         Map<String, List<Long>> childrenMap = getChildrens(entity.getSpuClassificationId());
-        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        entity.setChildren(JSON.toJSONString(param.getPid()));
+        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        spuClassification.setChildren(JSON.toJSONString(param.getPid()));
         QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("spu_classification_id", entity.getSpuClassificationId());
-        this.update(entity, QueryWrapper);
+        QueryWrapper.eq("spu_classification_id", entity.getPid());
+        this.update(spuClassification, QueryWrapper);
 
         updateChildren(entity.getSpuClassificationId());
 
@@ -78,9 +79,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @BussinessLog
     public void delete(SpuClassificationParam param) {
         Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
-        if (count>0) {
-            throw new ServiceException(500,"此分类下有物品,无法删除");
-        }else{
+        if (count > 0) {
+            throw new ServiceException(500, "此分类下有物品,无法删除");
+        } else {
             param.setDisplay(0);
             this.update(param);
         }
@@ -134,7 +135,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             for (SpuClassification detail : details) {
                 skuIds.add(detail.getSpuClassificationId());
                 childrensSkuIds.add(detail.getSpuClassificationId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSpuClassificationId());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getPid());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
             result.put("children", skuIds);
