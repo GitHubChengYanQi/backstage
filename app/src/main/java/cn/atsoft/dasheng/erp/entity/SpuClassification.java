@@ -26,6 +26,11 @@ public class SpuClassification implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 编码分类
+     */
+    @TableField("coding_class")
+    private String codingClass;
+    /**
      * 排序
      */
     @TableField("sort")
@@ -162,6 +167,14 @@ public class SpuClassification implements Serializable {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public String getCodingClass() {
+        return codingClass;
+    }
+
+    public void setCodingClass(String codingClass) {
+        this.codingClass = codingClass;
     }
 
     @Override
