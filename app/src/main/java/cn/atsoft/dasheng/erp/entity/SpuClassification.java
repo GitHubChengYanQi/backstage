@@ -24,7 +24,11 @@ public class SpuClassification implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
+    @TableField("children")
+    private String children;
 
+    @TableField("childrens")
+    private String childrens;
     /**
      * 编码分类
      */
@@ -175,6 +179,22 @@ public class SpuClassification implements Serializable {
 
     public void setCodingClass(String codingClass) {
         this.codingClass = codingClass;
+    }
+
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
     }
 
     @Override
