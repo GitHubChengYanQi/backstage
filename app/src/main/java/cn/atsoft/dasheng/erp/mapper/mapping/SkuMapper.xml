@@ -19,11 +19,12 @@
         <result column="display" property="display"/>
         <result column="remarks" property="remarks"/>
         <result column="type" property="type"/>
+        <result column="coding" property="coding"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
-    AS "type",
+    AS "type",coding AS "coding",
         sku_id
         AS "skuId", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
@@ -67,6 +68,9 @@
         from goods_sku where 1 = 1 and display =1
         <if test="paramCondition.skuId != null">
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.coding != null">
+            and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
             and sku_name like CONCAT('%',#{paramCondition.skuName},'%')

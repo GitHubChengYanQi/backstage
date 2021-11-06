@@ -38,9 +38,13 @@ public class SkuResult implements Serializable {
     private Long spuClass;
     @ApiModelProperty("")
     private Long skuId;
-
     private Spu spu;
 
+
+    /**
+     * 编码
+     */
+    private String coding;
     /**
      * 类型
      */
