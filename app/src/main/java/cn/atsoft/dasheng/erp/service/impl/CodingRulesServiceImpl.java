@@ -91,20 +91,23 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     @BussinessLog
     public void update(CodingRulesParam param) {
 
-        String codingRules = "";
-        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0){
-            throw new ServiceException(500,"必须定义规则！");
-        }else {
-            for (Codings codings : param.getCodings()) {
-                if (codingRules.equals("")){
-                    codingRules = codings.getValues();
-                }else {
-                    codingRules = codingRules +","+ codings.getValues();
-                }
+        if (ToolUtil.isNotEmpty(param.getCodings())){
+            String codingRules = "";
+            if (param.getCodings().size() == 0){
+                throw new ServiceException(500,"必须定义规则！");
+            }else {
+                for (Codings codings : param.getCodings()) {
+                    if (codingRules.equals("")){
+                        codingRules = codings.getValues();
+                    }else {
+                        codingRules = codingRules +","+ codings.getValues();
+                    }
 
+                }
             }
+            param.setCodingRules(codingRules);
         }
-        param.setCodingRules(codingRules);
+
 
 //        CodingRules codingRules = new CodingRules();
 //        codingRules.setState(0);

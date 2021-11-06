@@ -32,6 +32,10 @@ public class CodingRulesResult implements Serializable {
 
     private List<Codings> codings;
 
+    @ApiModelProperty("描述")
+    private String note;
+
+
     /**
      * 状态
      */

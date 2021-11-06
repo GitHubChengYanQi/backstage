@@ -15,6 +15,7 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="sort" property="sort"/>
+        <result column="note" property="note"/>
         <result column="module" property="module"/>
         <result column="state" property="state"/>
     </resultMap>
@@ -22,7 +23,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">sort
     AS "sort",state AS "state",module AS "module",
-        coding_rules_id AS "codingRulesId", coding_rules_classification_id AS "codingRulesClassificationId", name AS "name", coding_rules AS "codingRules", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        coding_rules_id AS "codingRulesId", coding_rules_classification_id AS "codingRulesClassificationId", name AS "name",note AS "note", coding_rules AS "codingRules", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 

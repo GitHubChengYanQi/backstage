@@ -58,6 +58,9 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("编码规则名称")
     private String name;
 
+    @ApiModelProperty("描述")
+    private String note;
+
     /**
      * 编码规则
      */
