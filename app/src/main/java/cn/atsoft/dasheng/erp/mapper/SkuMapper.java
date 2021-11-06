@@ -43,7 +43,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
      * @author
      * @Date 2021-10-18
      */
-    Page<SkuResult> customPageList( List<Long> spuIds, @Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
+    Page<SkuResult> customPageList(@Param("spuIds") List<Long> spuIds, @Param("page") Page page, @Param("paramCondition") SkuParam paramCondition);
 
     /**
      * 获取分页map列表

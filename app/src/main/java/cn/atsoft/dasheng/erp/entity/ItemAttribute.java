@@ -40,16 +40,16 @@ public class ItemAttribute implements Serializable {
     @TableField("attribute")
     private String attribute;
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
     @TableField("category_id")
-    private String categoryId;
+    private Long categoryId;
 
     /**
      * 产品id

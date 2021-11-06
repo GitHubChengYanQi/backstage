@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.SpuClassificationMapper;
@@ -51,25 +52,21 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
+
         SpuClassification entity = getEntity(param);
         this.save(entity);
 
-//        if (ToolUtil.isNotEmpty(param.getPid()) && param.getPid() != 0) {
-//            Map<String, List<Long>> childrens = this.getChildrens(param.getPid());
-//            param.setChildren(JSON.toJSONString(childrens.get("children")));
-//            param.setChildrens(JSON.toJSONString(childrens.get("childrens")));
-//        }
-//
-//        // 更新当前节点，及下级
-//        SpuClassification spuClassification = new SpuClassification();
-//        Map<String, List<Long>> childrenMap = getChildrens(entity.getSpuClassificationId());
-//        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-//        spuClassification.setChildren(JSON.toJSONString(param.getPid()));
-//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-//        QueryWrapper.eq("spu_classification_id", entity.getPid());
-//        this.update(spuClassification, QueryWrapper);
-//
-//        updateChildren(entity.getSpuClassificationId());
+
+        // 更新当前节点，及下级
+        SpuClassification spuClassification = new SpuClassification();
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("spu_classification_id", entity.getPid());
+        this.update(spuClassification, QueryWrapper);
+
+        updateChildren(entity.getPid());
 
         return entity.getSpuClassificationId();
 
@@ -91,23 +88,56 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @BussinessLog
     public void update(SpuClassificationParam param) {
+        //如果设为顶级 修改所有当前节点的父级
+        if (param.getPid() == 0) {
+            List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
+            for (SpuClassification spuClassification : spuClassifications) {
+                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
+                JSONArray childrenJson = JSONUtil.parseArray(spuClassification.getChildren());
+                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+                List<Long> newChildrenList = new ArrayList<>();
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                longs.remove(param.getSpuClassificationId());
+                for (Long aLong : oldchildrenList) {
+                    if (!aLong.equals(param.getSpuClassificationId())) {
+                        newChildrenList.add(aLong);
+                    }
+                }
+                spuClassification.setChildren(JSONUtil.toJsonStr(newChildrenList));
+                spuClassification.setChildrens(JSONUtil.toJsonStr(longs));
+                this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
+            }
 
-//        List<SpuClassification> classifications = this.query().eq("pid", param.getSpuClassificationId()).list();
-//
-//        for (SpuClassification classification : classifications) {
-//            JSONArray jsonArray = JSONUtil.parseArray(classification.getChildrens());
-//            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-//            for (Long aLong : longs) {
-//                if (param.getPid().equals(aLong)) {
-//                    throw new ServiceException(500, "请勿循环添加");
-//                }
-//            }
-//        }
+        }
 
-//        Map<String, List<Long>> childrens = this.getChildrens(param.getSpuClassificationId());
-//
-//        param.setChildren(JSON.toJSONString(childrens.get("children")));
-//        param.setChildrens(JSON.toJSONString(childrens.get("childrens")));
+        if (ToolUtil.isNotEmpty(param.getPid())) {
+            List<SpuClassification> spuClassifications = this.query().in("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).list();
+            for (SpuClassification spuClassification : spuClassifications) {
+                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                for (Long aLong : longs) {
+                    if (param.getPid().equals(aLong)) {
+                        throw new ServiceException(500, "请勿循环添加");
+                    }
+                }
+            }
+        }
+
+
+        // 更新当前节点，及下级
+        SpuClassification spuClassification = new SpuClassification();
+        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+        List<Long> childrens = childrenMap.get("childrens");
+        childrens.add(param.getSpuClassificationId());
+        spuClassification.setChildrens(JSON.toJSONString(childrens));
+        List<Long> children = childrenMap.get("children");
+        children.add(param.getSpuClassificationId());
+        spuClassification.setChildren(JSON.toJSONString(children));
+        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("spu_classification_id", param.getPid());
+        this.update(spuClassification, QueryWrapper);
+
+        updateChildren(param.getPid());
 
         SpuClassification oldEntity = getOldEntity(param);
         SpuClassification newEntity = getEntity(param);
@@ -135,7 +165,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
             for (SpuClassification detail : details) {
                 skuIds.add(detail.getSpuClassificationId());
                 childrensSkuIds.add(detail.getSpuClassificationId());
-                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getPid());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSpuClassificationId());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
             result.put("children", skuIds);
@@ -151,11 +181,16 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         List<SpuClassification> classifications = this.query().like("children", id).eq("display", 1).list();
         for (SpuClassification classification : classifications) {
             Map<String, List<Long>> childrenMap = getChildrens(id);
-            classification.setChildren(JSON.toJSONString(childrenMap.get("children")));
-            classification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+            JSONArray childrensjsonArray = JSONUtil.parseArray(classification.getChildrens());
+            List<Long> longs = JSONUtil.toList(childrensjsonArray, Long.class);
+            List<Long> list = childrenMap.get("childrens");
+            for (Long aLong : list) {
+                longs.add(aLong);
+            }
+            classification.setChildrens(JSON.toJSONString(longs));
             // update
             QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("spu_classification_id", classification.getPid());
+            queryWrapper.eq("spu_classification_id", classification.getSpuClassificationId());
             this.update(classification, queryWrapper);
             updateChildren(classification.getSpuClassificationId());
         }

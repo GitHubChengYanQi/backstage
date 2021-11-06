@@ -43,7 +43,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
 
     @Override
     public Long add(ItemAttributeParam param) {
-        Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute())
+        Integer count = this.query().eq("category_id", param.getCategoryId()).eq("attribute", param.getAttribute())
                 .in("display", 1)
                 .count();
         if (count > 0) {

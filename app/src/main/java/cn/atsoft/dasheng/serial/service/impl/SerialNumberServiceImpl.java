@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.ServiceUI;
 import java.io.Serializable;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author 
  * @since 2021-11-04
  */
+@Transactional
 @Service
 public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, SerialNumber> implements SerialNumberService {
     @Autowired
@@ -59,7 +61,7 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         for (int i = 0; i<param.getCont();i++){
             SerialNumber serialNumber = new SerialNumber();
             ToolUtil.copyProperties(param,serialNumber);
-            serialNumber.setNum(number);
+            serialNumber.setNum(number+i);
             serialNumbers.add(serialNumber);
         }
         serialNumberService.saveBatch(serialNumbers);
