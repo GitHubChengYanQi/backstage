@@ -9,6 +9,8 @@ import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.model.result.SerialNumberResult;
 import  cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.ServiceUI;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,7 +46,13 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         if (ToolUtil.isEmpty(num)) {
             param.setNum(0L);
         }else {
+
             param.setNum(num.getNum() + 1);
+            param.setDate(new Date());
+            NumberFormat nf = NumberFormat.getInstance();
+            nf.setGroupingUsed(false);
+            nf.setMaximumIntegerDigits(param.getLength());
+            nf.setMinimumIntegerDigits(param.getLength());
         }
         this.save(entity);
     }
