@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Parts;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.SpuClassificationMapper;
@@ -87,6 +88,27 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @BussinessLog
     public void update(SpuClassificationParam param) {
+        //如果设为顶级 修改所有当前节点的父级
+        if (param.getPid() == 0) {
+            List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
+            for (SpuClassification spuClassification : spuClassifications) {
+                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
+                JSONArray childrenJson = JSONUtil.parseArray(spuClassification.getChildren());
+                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+                List<Long> newChildrenList = new ArrayList<>();
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                longs.remove(param.getSpuClassificationId());
+                for (Long aLong : oldchildrenList) {
+                    if (!aLong.equals(param.getSpuClassificationId())) {
+                        newChildrenList.add(aLong);
+                    }
+                }
+                spuClassification.setChildren(JSONUtil.toJsonStr(newChildrenList));
+                spuClassification.setChildrens(JSONUtil.toJsonStr(longs));
+                this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
+            }
+
+        }
 
         if (ToolUtil.isNotEmpty(param.getPid())) {
             List<SpuClassification> spuClassifications = this.query().in("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).list();
@@ -105,8 +127,12 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         // 更新当前节点，及下级
         SpuClassification spuClassification = new SpuClassification();
         Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        List<Long> childrens = childrenMap.get("childrens");
+        childrens.add(param.getSpuClassificationId());
+        spuClassification.setChildrens(JSON.toJSONString(childrens));
+        List<Long> children = childrenMap.get("children");
+        children.add(param.getSpuClassificationId());
+        spuClassification.setChildren(JSON.toJSONString(children));
         QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("spu_classification_id", param.getPid());
         this.update(spuClassification, QueryWrapper);
