@@ -125,12 +125,12 @@ public class SpuClassificationController extends BaseController {
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     public ResponseData<List<TreeNode>> treeView(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> spuClassificationQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(spuClassificationParam)){
-            if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())){
-                spuClassificationQueryWrapper.eq("spu_classification_id",spuClassificationParam.getSpuClassificationId());
+        if (ToolUtil.isNotEmpty(spuClassificationParam)) {
+            if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
+                spuClassificationQueryWrapper.eq("spu_classification_id", spuClassificationParam.getSpuClassificationId());
             }
         }
-        spuClassificationQueryWrapper.eq("display",1);
+        spuClassificationQueryWrapper.eq("display", 1);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {
@@ -151,7 +151,7 @@ public class SpuClassificationController extends BaseController {
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
             treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
-            treeNode.setTitle(Convert.toStr(item.get("name")));
+            treeNode.setTitle(Convert.toStr(item.get("coding_class")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
             treeViewNodes.add(treeNode);
         }

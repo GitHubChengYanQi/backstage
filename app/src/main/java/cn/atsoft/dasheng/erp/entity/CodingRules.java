@@ -67,6 +67,20 @@ public class CodingRules implements Serializable {
     @TableField("name")
     private String name;
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    /**
+     * 描述
+     */
+    @TableField("note")
+    private String note;
+
     /**
      * 编码规则
      */
