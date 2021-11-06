@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import cn.atsoft.dasheng.erp.model.params.ToolClassificationParam;
 import cn.atsoft.dasheng.erp.model.params.ToolParam;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import cn.atsoft.dasheng.erp.service.ToolService;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +60,7 @@ public class ToolController extends BaseController {
      * @Date 2021-10-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改工具", key = "name", dict = ToolParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ToolParam toolParam) {
 
@@ -71,8 +75,9 @@ public class ToolController extends BaseController {
      * @Date 2021-10-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除工具", key = "name", dict = ToolParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ToolParam toolParam)  {
+    public ResponseData delete(@RequestBody ToolParam toolParam) {
         this.toolService.delete(toolParam);
         return ResponseData.success();
     }
@@ -102,7 +107,7 @@ public class ToolController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ToolResult> list(@RequestBody(required = false) ToolParam toolParam) {
-        if(ToolUtil.isEmpty(toolParam)){
+        if (ToolUtil.isEmpty(toolParam)) {
             toolParam = new ToolParam();
         }
         return this.toolService.findPageBySpec(toolParam);
@@ -123,8 +128,6 @@ public class ToolController extends BaseController {
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
-
 
 
 }

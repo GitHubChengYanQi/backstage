@@ -59,7 +59,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     }
 
     @Override
-    @BussinessLog
+
     public void delete(OutstockListingParam param) {
         OutstockListing byId = this.getById(param.getOutstockListingId());
         if (ToolUtil.isEmpty(byId)) {
@@ -71,7 +71,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     }
 
     @Override
-    @BussinessLog
+
     public void update(OutstockListingParam param) {
         OutstockListing oldEntity = getOldEntity(param);
         OutstockListing newEntity = getEntity(param);

@@ -49,7 +49,7 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         return entity.getAttributeValuesId();
     }
 
-    @BussinessLog
+
     @Override
     public void delete(AttributeValuesParam param) {
 //        this.removeById(getKey(param));
@@ -60,7 +60,7 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
         this.update(attributeValues, attributeValuesQueryWrapper);
     }
 
-    @BussinessLog
+
     @Override
     public void update(AttributeValuesParam param) {
         AttributeValues oldEntity = getOldEntity(param);

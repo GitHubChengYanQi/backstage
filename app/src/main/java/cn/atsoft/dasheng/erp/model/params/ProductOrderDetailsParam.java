@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.app.model.params.Spu;
 import cn.atsoft.dasheng.app.model.params.SpuAttribute;
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ProductOrderDetailsParam implements Serializable, BaseValidatingParam {
+public class ProductOrderDetailsParam  extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
@@ -107,4 +108,13 @@ public class ProductOrderDetailsParam implements Serializable, BaseValidatingPar
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

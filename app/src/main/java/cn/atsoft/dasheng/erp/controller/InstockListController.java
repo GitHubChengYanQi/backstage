@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
+import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.service.InstockListService;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +55,7 @@ public class InstockListController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改入库清单", key = "name", dict = InstockListParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody InstockListParam instockListParam) {
 
@@ -66,8 +70,9 @@ public class InstockListController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除入库清单", key = "name", dict = InstockListParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockListParam instockListParam)  {
+    public ResponseData delete(@RequestBody InstockListParam instockListParam) {
         this.instockListService.delete(instockListParam);
         return ResponseData.success();
     }
@@ -98,13 +103,11 @@ public class InstockListController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InstockListResult> list(@RequestBody(required = false) InstockListParam instockListParam) {
-        if(ToolUtil.isEmpty(instockListParam)){
+        if (ToolUtil.isEmpty(instockListParam)) {
             instockListParam = new InstockListParam();
         }
         return this.instockListService.findPageBySpec(instockListParam);
     }
-
-
 
 
 }

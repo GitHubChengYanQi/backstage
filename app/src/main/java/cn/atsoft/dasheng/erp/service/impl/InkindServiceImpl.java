@@ -37,13 +37,13 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     }
 
     @Override
-    @BussinessLog
+
     public void delete(InkindParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
+
     public void update(InkindParam param) {
         Inkind oldEntity = getOldEntity(param);
         Inkind newEntity = getEntity(param);

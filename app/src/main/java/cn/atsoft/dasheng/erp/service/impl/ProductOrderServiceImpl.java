@@ -130,13 +130,11 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
     }
 
     @Override
-    @BussinessLog
     public void delete(ProductOrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
     public void update(ProductOrderParam param) {
 
         ProductOrderRequest productOrderRequest = new ProductOrderRequest();

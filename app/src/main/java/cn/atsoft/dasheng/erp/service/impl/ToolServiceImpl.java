@@ -64,13 +64,11 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements To
     }
 
     @Override
-    @BussinessLog
     public void delete(ToolParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
     public void update(ToolParam param) {
         Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getCoding()).count();
         if (rulesId > 0) {

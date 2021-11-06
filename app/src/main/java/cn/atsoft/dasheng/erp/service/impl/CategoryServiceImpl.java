@@ -127,7 +127,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    @BussinessLog
     @Transactional
     public void delete(CategoryParam param) {
         Category category = new Category();
@@ -163,7 +162,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    @BussinessLog
     @Transactional
     public void update(CategoryParam param) {
         //如果设为顶级 修改所有当前节点的父级

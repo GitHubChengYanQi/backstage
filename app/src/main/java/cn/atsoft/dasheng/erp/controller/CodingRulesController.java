@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.model.params.CodingRulesClassificationParam;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.params.Codings;
 import cn.atsoft.dasheng.erp.model.result.CodingRulesResult;
@@ -57,6 +59,7 @@ public class CodingRulesController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改编码规则", key = "name", dict = CodingRulesParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CodingRulesParam codingRulesParam) {
 
@@ -71,6 +74,7 @@ public class CodingRulesController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除编码规则", key = "name", dict = CodingRulesParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody CodingRulesParam codingRulesParam) {
         this.codingRulesService.delete(codingRulesParam);

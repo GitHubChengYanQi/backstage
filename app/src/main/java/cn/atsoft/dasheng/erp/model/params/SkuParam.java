@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SkuParam implements Serializable, BaseValidatingParam {
+public class SkuParam  extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;
@@ -111,4 +112,13 @@ public class SkuParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

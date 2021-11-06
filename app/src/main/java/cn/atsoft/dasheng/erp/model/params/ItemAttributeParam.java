@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -20,7 +22,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ItemAttributeParam implements Serializable , Comparable<ItemAttributeParam>, BaseValidatingParam {
+public class ItemAttributeParam extends AbstractDictMap implements Serializable, Comparable<ItemAttributeParam>, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValuesParams;
@@ -28,7 +30,7 @@ public class ItemAttributeParam implements Serializable , Comparable<ItemAttribu
     /**
      * 是否標配
      */
-   private Long standard;
+    private Long standard;
 
     /**
      * 属性id
@@ -86,7 +88,6 @@ public class ItemAttributeParam implements Serializable , Comparable<ItemAttribu
     private Long sort;
 
 
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
@@ -98,5 +99,15 @@ public class ItemAttributeParam implements Serializable , Comparable<ItemAttribu
     @Override
     public int compareTo(ItemAttributeParam o) {
         return (int) (o.getAttributeId() - this.getAttributeId());
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
     }
 }

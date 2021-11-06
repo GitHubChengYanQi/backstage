@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.wrapper.UnitSelectWrapper;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
 import cn.atsoft.dasheng.erp.model.params.CodingRulesClassificationParam;
@@ -55,6 +56,7 @@ public class CodingRulesClassificationController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改编码规则分类", key = "name", dict = CodingRulesClassificationParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CodingRulesClassificationParam codingRulesClassificationParam) {
 
@@ -69,6 +71,7 @@ public class CodingRulesClassificationController extends BaseController {
      * @Date 2021-10-22
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除编码规则分类", key = "name", dict = CodingRulesClassificationParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody CodingRulesClassificationParam codingRulesClassificationParam) {
         this.codingRulesClassificationService.delete(codingRulesClassificationParam);

@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
@@ -71,6 +73,7 @@ public class SkuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改sku", key = "name", dict = SkuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SkuParam skuParam) {
 
@@ -85,12 +88,15 @@ public class SkuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody SkuParam skuParam)  {
         this.skuService.delete(skuParam);
         return ResponseData.success();
     }
+
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
+    @BussinessLog(value = "批量删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
     public ResponseData deleteBatch(@RequestBody SkuParam skuParam)  {
         this.skuService.deleteBatch(skuParam);

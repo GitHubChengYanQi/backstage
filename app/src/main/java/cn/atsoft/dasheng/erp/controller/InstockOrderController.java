@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
@@ -52,6 +54,7 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改入库单", key = "name", dict = InstockOrderParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody InstockOrderParam instockOrderParam) {
 
@@ -66,6 +69,7 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除入库单", key = "name", dict = InstockOrderParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody InstockOrderParam instockOrderParam)  {
         this.instockOrderService.delete(instockOrderParam);

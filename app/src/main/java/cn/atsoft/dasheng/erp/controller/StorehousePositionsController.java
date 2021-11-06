@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -62,6 +64,7 @@ public class StorehousePositionsController extends BaseController {
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改仓库库位表", key = "name", dict = StorehousePositionsParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehousePositionsParam storehousePositionsParam) {
 
@@ -76,6 +79,7 @@ public class StorehousePositionsController extends BaseController {
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除仓库库位表", key = "name", dict = StorehousePositionsParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         this.storehousePositionsService.delete(storehousePositionsParam);

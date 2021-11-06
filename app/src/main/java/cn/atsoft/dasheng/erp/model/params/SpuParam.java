@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.AttributeValuesService;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SpuParam implements Serializable, BaseValidatingParam {
+public class SpuParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
     private Boolean isHidden;
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
@@ -196,4 +197,13 @@ public class SpuParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

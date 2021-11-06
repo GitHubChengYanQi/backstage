@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.Values;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.MaterialService;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -86,6 +87,7 @@ public class SpuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改spu", key = "name", dict = SpuParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SpuParam spuParam) {
 
@@ -100,6 +102,7 @@ public class SpuController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除spu", key = "name", dict = SpuParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody SpuParam spuParam) {
         this.spuService.delete(spuParam);
@@ -117,7 +120,7 @@ public class SpuController extends BaseController {
     public ResponseData<SpuResult> detail(@RequestBody SpuParam spuParam) {
         Spu detail = this.spuService.getById(spuParam.getSpuId());
 
-        if (ToolUtil.isNotEmpty(detail)){
+        if (ToolUtil.isNotEmpty(detail)) {
             SkuRequest skuRequest = new SkuRequest();
 
 
@@ -126,25 +129,25 @@ public class SpuController extends BaseController {
             List<Map<String, String>> list = new ArrayList<>();
 
             SpuClassification spuClassification = detail.getSpuClassificationId() == null ? new SpuClassification() : spuClassificationService
-                    .query().in("spu_classification_id", detail.getSpuClassificationId()).and(i->i.eq("display",1)).one();
+                    .query().in("spu_classification_id", detail.getSpuClassificationId()).and(i -> i.eq("display", 1)).one();
 
 
             SpuResult spuResult = new SpuResult();
             List<Sku> skus = detail.getSpuId() == null ? new ArrayList<>() :
-                    skuService.query().in("spu_id", detail.getSpuId()).and(i->i.eq("display",1)).list();
+                    skuService.query().in("spu_id", detail.getSpuId()).and(i -> i.eq("display", 1)).list();
             List<List<SkuJson>> requests = new ArrayList<>();
             List<SkuResult> skuResultList = new ArrayList<>();
             List<CategoryRequest> categoryRequests = new ArrayList<>();
             if (ToolUtil.isNotEmpty(detail.getCategoryId())) {
                 List<ItemAttribute> itemAttributes = detail.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery()
-                        .in(ItemAttribute::getCategoryId, detail.getCategoryId()).and(i->i.eq(ItemAttribute::getDisplay,1))
+                        .in(ItemAttribute::getCategoryId, detail.getCategoryId()).and(i -> i.eq(ItemAttribute::getDisplay, 1))
                         .list();
                 List<Long> attId = new ArrayList<>();
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     attId.add(itemAttribute.getAttributeId());
                 }
                 List<AttributeValues> attributeValues = attId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
-                        .in(AttributeValues::getAttributeId, attId).and(i->i.eq(AttributeValues::getDisplay,1))
+                        .in(AttributeValues::getAttributeId, attId).and(i -> i.eq(AttributeValues::getDisplay, 1))
                         .list();
                 if (ToolUtil.isNotEmpty(itemAttributes)) {
                     for (Sku sku : skus) {
@@ -178,7 +181,7 @@ public class SpuController extends BaseController {
                 List<Attribute> attributes = JSONUtil.toList(jsonArray, Attribute.class);
 
 
-               List<AttributeInSpu> tree = new ArrayList<>();
+                List<AttributeInSpu> tree = new ArrayList<>();
                 for (Attribute attribute : attributes) {
                     AttributeInSpu attributeInSpu = new AttributeInSpu();
                     attributeInSpu.setK_s(Long.valueOf(attribute.getAttributeId()));
@@ -260,7 +263,7 @@ public class SpuController extends BaseController {
             spuResult.setCategoryRequests(categoryRequests);
 
             return ResponseData.success(spuResult);
-        }else {
+        } else {
             return null;
         }
 
@@ -300,15 +303,15 @@ public class SpuController extends BaseController {
             if (ToolUtil.isNotEmpty(spuParam.getProductionType())) {
                 spuQueryWrapper.in("production_type", spuParam.getProductionType());
             }
-            if (ToolUtil.isNotEmpty(spuParam.getName())){
+            if (ToolUtil.isNotEmpty(spuParam.getName())) {
                 spuQueryWrapper.like("name", spuParam.getName());
             }
-            if (ToolUtil.isNotEmpty(spuParam.getType())){
+            if (ToolUtil.isNotEmpty(spuParam.getType())) {
                 spuQueryWrapper.in("type", spuParam.getType());
             }
 
         }
-        spuQueryWrapper.in("display",1);
+        spuQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.spuService.listMaps(spuQueryWrapper);
         SpuSelectWrapper factory = new SpuSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();

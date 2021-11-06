@@ -89,13 +89,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
-    @BussinessLog
+
     public void delete(InstockOrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
+
     public void update(InstockOrderParam param) {
         InstockOrder oldEntity = getOldEntity(param);
         InstockOrder newEntity = getEntity(param);

@@ -82,14 +82,14 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     }
 
     @Override
-    @BussinessLog
+
     public void delete(CodingRulesParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
     @Transactional
-    @BussinessLog
+
     public void update(CodingRulesParam param) {
 
         if (ToolUtil.isNotEmpty(param.getCodings())){

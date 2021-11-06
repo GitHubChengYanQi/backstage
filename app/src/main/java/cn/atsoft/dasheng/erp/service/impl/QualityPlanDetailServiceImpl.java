@@ -37,7 +37,6 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
 
 
     @Override
-    @BussinessLog
     public void delete(QualityPlanDetailParam param) {
         param.setDisplay(0);
         this.update(param);
@@ -45,7 +44,6 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
 
 
     @Override
-    @BussinessLog
     public void update(QualityPlanDetailParam param) {
         QualityPlanDetail oldEntity = getOldEntity(param);
         QualityPlanDetail newEntity = getEntity(param);
