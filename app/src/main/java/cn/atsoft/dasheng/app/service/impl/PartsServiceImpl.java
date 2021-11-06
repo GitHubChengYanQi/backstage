@@ -289,6 +289,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                     Parts parts = partsService.query().in("sku_id", detailResult.getSkuId()).eq("display", 1).one();
                     if (ToolUtil.isEmpty(parts)) {
                         detailResult.setIsNull(false);
+                    }else {
+                        detailResult.setId(parts.getPartsId());
                     }
 
                     if (ToolUtil.isNotEmpty(detailResult.getSkuId())) {
@@ -312,6 +314,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
+
         Parts parts = this.query().in("sku_id", skuId).in("display", 0).eq("parts_id", partsId).one();
 
         if (ToolUtil.isNotEmpty(parts)) {
@@ -337,6 +340,8 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
                         Parts oldparts = partsService.query().in("sku_id", detailResult.getSkuId()).eq("display", 0).one();
                         if (ToolUtil.isEmpty(oldparts)) {
                             detailResult.setIsNull(false);
+                        }else {
+                            detailResult.setId(oldparts.getPartsId());
                         }
                         detailResult.setBackSkus(backSkus);
                         detailResult.setSpuResult(spuResult);
