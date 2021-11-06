@@ -17,9 +17,13 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.RulesRelationService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.serial.entity.SerialNumber;
+import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -47,6 +51,8 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private CodingRulesClassificationService codingRulesClassificationService;
     @Autowired
     private RulesRelationService rulesRelationService;
+    @Autowired
+    private SerialNumberService serialNumberService;
 
     @Override
     @Transactional
@@ -55,7 +61,6 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
 
         String codingRules = "";
-
 
 
         if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0) {
@@ -92,16 +97,16 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
     public void update(CodingRulesParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getCodings())){
+        if (ToolUtil.isNotEmpty(param.getCodings())) {
             String codingRules = "";
-            if (param.getCodings().size() == 0){
-                throw new ServiceException(500,"必须定义规则！");
-            }else {
+            if (param.getCodings().size() == 0) {
+                throw new ServiceException(500, "必须定义规则！");
+            } else {
                 for (Codings codings : param.getCodings()) {
-                    if (codingRules.equals("")){
+                    if (codingRules.equals("")) {
                         codingRules = codings.getValues();
-                    }else {
-                        codingRules = codingRules +","+ codings.getValues();
+                    } else {
+                        codingRules = codingRules + "," + codings.getValues();
                     }
 
                 }
@@ -240,6 +245,13 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         if (rules.contains("${skuClass}")) {
             rules = rules.replace("${skuClass}", "${skuClass}");
+        }
+        if (rules.contains("${serial}")) {
+
+//            Long size = JSONObject.parseObject(rules).getLong("size");
+            SerialNumberParam serialNumberParam = new SerialNumberParam();
+            serialNumberService.add(serialNumberParam);
+//            rules = rules.replace("${skuClass}", "${skuClass}");
         }
         return rules;
     }

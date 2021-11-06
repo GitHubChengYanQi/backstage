@@ -23,6 +23,12 @@ import java.io.Serializable;
 public class CodingRules implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 流水号
+     */
+    @TableField("serial")
+    private String serial;
+
 
     /**
      * 状态
@@ -123,6 +129,14 @@ public class CodingRules implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
 
     public Long getCodingRulesId() {
         return codingRulesId;

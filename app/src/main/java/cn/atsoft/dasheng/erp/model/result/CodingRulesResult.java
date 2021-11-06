@@ -37,6 +37,11 @@ public class CodingRulesResult implements Serializable {
 
 
     /**
+     * 流水号
+     */
+    private String serial;
+
+    /**
      * 状态
      */
     private Integer state;

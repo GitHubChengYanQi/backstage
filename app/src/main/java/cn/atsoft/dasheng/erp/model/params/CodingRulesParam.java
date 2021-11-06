@@ -27,6 +27,12 @@ public class CodingRulesParam extends AbstractDictMap implements Serializable, B
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 流水号
+     */
+    private String serial;
+
+    private List<CodingSerial> codingSerials;
 
     /**
      * 状态
