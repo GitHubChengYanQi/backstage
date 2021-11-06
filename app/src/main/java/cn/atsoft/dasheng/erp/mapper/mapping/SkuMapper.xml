@@ -78,6 +78,12 @@
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}
         </if>
+        <if test="paramCondition.standard != null">
+            and standard like CONCAT('%',#{paramCondition.standard},'%')
+        </if>
+        <if test="paramCondition.spuId != null">
+            and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
+        </if>
         <if test="spuIds != null  and spuIds.size > 0 ">
             and spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">
