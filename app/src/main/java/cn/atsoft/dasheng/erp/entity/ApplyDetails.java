@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @since 2021-09-15
  */
 @TableName("daoxin_erp_outstock_apply_details")
-public class ApplyDetails implements Serializable {
+public class ApplyDetails implements Serializable  {
 
     private static final long serialVersionUID = 1L;
 

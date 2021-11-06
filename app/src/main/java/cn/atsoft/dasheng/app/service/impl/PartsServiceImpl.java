@@ -104,6 +104,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
             sku.setSkuName(partsParam.getSkuName());
             sku.setType(0);
             sku.setRemarks(partsParam.getSkuNote());
+            sku.setStandard(partsParam.getStandard());
             skuService.save(sku);
         } else if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
             sku = skuService.getById(partsParam.getItem().getSkuId()); // query().eq("sku_id", partsParam.getItem().getSkuId()).eq("display", 1).count();

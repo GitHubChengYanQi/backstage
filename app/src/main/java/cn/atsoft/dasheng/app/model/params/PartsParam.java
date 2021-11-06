@@ -44,6 +44,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
     private List<Long> skuIds;
 
     private Long skuId;
+
+    private String standard;
     /**
      * 接參
      */
