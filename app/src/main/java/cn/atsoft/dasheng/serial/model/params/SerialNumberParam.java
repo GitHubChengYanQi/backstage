@@ -23,7 +23,7 @@ import java.util.List;
 public class SerialNumberParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private Integer length;
     private Long cont;
     /**
      * 流水号id
