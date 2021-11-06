@@ -50,7 +50,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .in("display", 1)
                 .count();
         if (count > 0) {
-            throw new ServiceException(500, "**重复添加**");
+            throw new ServiceException(500, "分类不可重复添加");
         }
         Category entity = getEntity(param);
         this.save(entity);
