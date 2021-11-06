@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.serial.entity.SerialNumber;
 import cn.atsoft.dasheng.serial.mapper.SerialNumberMapper;
 import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.model.result.SerialNumberResult;
-import  cn.atsoft.dasheng.serial.service.SerialNumberService;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
@@ -31,7 +31,7 @@ import java.util.List;
  * 流水号 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-04
  */
 @Transactional
@@ -39,13 +39,14 @@ import java.util.List;
 public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, SerialNumber> implements SerialNumberService {
     @Autowired
     private SerialNumberService serialNumberService;
+
     @Override
-    public void add(SerialNumberParam param){
+    public Long add(SerialNumberParam param) {
         SerialNumber entity = getEntity(param);
         SerialNumber num = this.getSerial();
         if (ToolUtil.isEmpty(num)) {
             param.setNum(0L);
-        }else {
+        } else {
 
             param.setNum(num.getNum() + 1);
             param.setDate(new Date());
@@ -55,40 +56,43 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
             nf.setMinimumIntegerDigits(param.getLength());
         }
         this.save(entity);
+        return entity.getNum();
     }
 
     @Override
-    public void addBatch(SerialNumberParam param){
+    public void addBatch(SerialNumberParam param) {
         SerialNumber entity = getEntity(param);
         SerialNumber num = this.getSerial();
         Long number = 0L;
         if (ToolUtil.isEmpty(num)) {
             number = 0L;
-        }else {
-            number = num.getNum()+1;
+        } else {
+            number = num.getNum() + 1;
         }
         List<SerialNumber> serialNumbers = new ArrayList<>();
-        for (int i = 0; i<param.getCont();i++){
+        for (int i = 0; i < param.getCont(); i++) {
             SerialNumber serialNumber = new SerialNumber();
-            ToolUtil.copyProperties(param,serialNumber);
-            serialNumber.setNum(number+i);
+            ToolUtil.copyProperties(param, serialNumber);
+            serialNumber.setNum(number + i);
             serialNumbers.add(serialNumber);
         }
         serialNumberService.saveBatch(serialNumbers);
     }
-    public SerialNumber getSerial (){
+
+    public SerialNumber getSerial() {
         QueryWrapper<SerialNumber> queryWrapper = new QueryWrapper<>();
         queryWrapper.apply("date_format(create_time,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d')").orderByAsc("num");
         SerialNumber num = this.baseMapper.selectOne(queryWrapper.orderByDesc("num").last("limit 1"));
         return num;
     }
+
     @Override
-    public void delete(SerialNumberParam param){
+    public void delete(SerialNumberParam param) {
 //        this.removeById(getKey(param));
     }
 
     @Override
-    public void update(SerialNumberParam param){
+    public void update(SerialNumberParam param) {
 //        SerialNumber oldEntity = getOldEntity(param);
 //        SerialNumber newEntity = getEntity(param);
 //        ToolUtil.copyProperties(newEntity, oldEntity);
@@ -96,23 +100,23 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
     }
 
     @Override
-    public SerialNumberResult findBySpec(SerialNumberParam param){
+    public SerialNumberResult findBySpec(SerialNumberParam param) {
         return null;
     }
 
     @Override
-    public List<SerialNumberResult> findListBySpec(SerialNumberParam param){
+    public List<SerialNumberResult> findListBySpec(SerialNumberParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<SerialNumberResult> findPageBySpec(SerialNumberParam param){
+    public PageInfo<SerialNumberResult> findPageBySpec(SerialNumberParam param) {
         Page<SerialNumberResult> pageContext = getPageContext();
         IPage<SerialNumberResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(SerialNumberParam param){
+    private Serializable getKey(SerialNumberParam param) {
         return param.getSerialId();
     }
 

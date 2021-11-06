@@ -247,11 +247,10 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${skuClass}", "${skuClass}");
         }
         if (rules.contains("${serial}")) {
-
-//            Long size = JSONObject.parseObject(rules).getLong("size");
             SerialNumberParam serialNumberParam = new SerialNumberParam();
-            serialNumberService.add(serialNumberParam);
-//            rules = rules.replace("${skuClass}", "${skuClass}");
+            Long add = serialNumberService.add(serialNumberParam);
+            rules = rules.replace("${serial}", +add +"");
+
         }
         return rules;
     }
