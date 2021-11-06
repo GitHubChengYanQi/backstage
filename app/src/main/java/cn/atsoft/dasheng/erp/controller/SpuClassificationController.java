@@ -151,7 +151,7 @@ public class SpuClassificationController extends BaseController {
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
             treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
-            treeNode.setTitle(Convert.toStr(item.get("coding_class")));
+            treeNode.setTitle(Convert.toStr(item.get("name")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
             treeViewNodes.add(treeNode);
         }
