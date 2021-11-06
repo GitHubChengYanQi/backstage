@@ -59,10 +59,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private PartsService partsService;
     @Autowired
     private ErpPartsDetailService partsDetailService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Transactional
     @Override
     public void add(SkuParam param) {
+        //生成编码
+
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClassificationId()).one();
+            if (ToolUtil.isNotEmpty(classification)) {
+                String replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                param.setCoding(replace);
+            }
+        }
+
         /**
          * type=1 是整机添加
          */
@@ -187,7 +203,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String json = JSON.toJSONString(list);
                 entity.setSkuValue(json);
 //                entity.setSkuValue(spuId + "," + json);
-                String md5 = SecureUtil.md5(entity.getSpuId()+entity.getSkuValue());
+                String md5 = SecureUtil.md5(entity.getSpuId() + entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
                 Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
                 Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();

@@ -53,26 +53,27 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
     public void add(CodingRulesParam param) {
 
+
         String codingRules = "";
-        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0){
-            throw new ServiceException(500,"必须定义规则！");
-        }else {
+
+
+
+        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0) {
+            throw new ServiceException(500, "必须定义规则！");
+        } else {
             for (Codings codings : param.getCodings()) {
-                if (codingRules.equals("")){
+                if (codingRules.equals("")) {
                     codingRules = codings.getValues();
-                }else {
-                    codingRules = codingRules +","+ codings.getValues();
+                } else {
+                    codingRules = codingRules + "," + codings.getValues();
                 }
 
             }
         }
         param.setCodingRules(codingRules);
 
-//        Integer count = this.query().in("coding_rules", param.getCodingRules()).count();
         Integer name = this.query().in("name", param.getName()).count();
-//        if (count > 0) {
-//            throw new ServiceException(500, "当前规则以存在");
-//        }
+
         if (name > 0) {
             throw new ServiceException(500, "不要输入重复规则名称");
         }
@@ -92,14 +93,14 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     public void update(CodingRulesParam param) {
 
         String codingRules = "";
-        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0){
-            throw new ServiceException(500,"必须定义规则！");
-        }else {
+        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0) {
+            throw new ServiceException(500, "必须定义规则！");
+        } else {
             for (Codings codings : param.getCodings()) {
-                if (codingRules.equals("")){
+                if (codingRules.equals("")) {
                     codingRules = codings.getValues();
-                }else {
-                    codingRules = codingRules +","+ codings.getValues();
+                } else {
+                    codingRules = codingRules + "," + codings.getValues();
                 }
 
             }
@@ -182,7 +183,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (ToolUtil.isEmpty(codingRules.getCodingRules())) {
             throw new ServiceException(500, "没有制定规则");
         }
-        rules = codingRules.getCodingRules().replace(",","");
+        rules = codingRules.getCodingRules().replace(",", "");
 
         DateTime dateTime = new DateTime();
         //年
@@ -234,6 +235,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${week}", weekOfYear + "");
         }
 
+        if (rules.contains("${skuClass}")) {
+            rules = rules.replace("${skuClass}", "${skuClass}");
+        }
         return rules;
     }
 
