@@ -30,7 +30,7 @@ import java.util.List;
 public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView> implements TableViewService {
 
     @Override
-    public Long add(TableViewParam param){
+    public TableView add(TableViewParam param){
 
         Integer count = this.query().in("table_key",param.getTableKey()).eq("name", param.getName()).count();
         if (count > 0) {
@@ -39,7 +39,7 @@ public class TableViewServiceImpl extends ServiceImpl<TableViewMapper, TableView
 
         TableView entity = getEntity(param);
         this.save(entity);
-        return entity.getTableViewId();
+        return entity;
     }
 
     @Override

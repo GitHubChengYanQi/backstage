@@ -24,7 +24,7 @@ public interface TableViewService extends IService<TableView> {
      * @author 
      * @Date 2021-11-04
      */
-    Long add(TableViewParam param);
+    TableView add(TableViewParam param);
 
     /**
      * 删除
