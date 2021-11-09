@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
 /**
  * 控制器
  *
- * @author 
+ * @author
  * @Date 2021-11-04 16:02:10
  */
 @RestController
@@ -40,20 +41,20 @@ public class TableViewController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-11-04
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody TableViewParam tableViewParam) {
-        Long tableViewId = this.tableViewService.add(tableViewParam);
-        return ResponseData.success(tableViewId);
+        TableView tableView = this.tableViewService.add(tableViewParam);
+        return ResponseData.success(tableView);
     }
 
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-11-04
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -67,12 +68,12 @@ public class TableViewController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-11-04
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody TableViewParam tableViewParam)  {
+    public ResponseData delete(@RequestBody TableViewParam tableViewParam) {
         this.tableViewService.delete(tableViewParam);
         return ResponseData.success();
     }
@@ -80,13 +81,18 @@ public class TableViewController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-11-04
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<TableViewResult> detail(@RequestBody TableViewParam tableViewParam) {
         TableView detail = this.tableViewService.getById(tableViewParam.getTableViewId());
+
+        if (ToolUtil.isEmpty(detail)) {
+            return null;
+        }
+
         TableViewResult result = new TableViewResult();
         ToolUtil.copyProperties(detail, result);
 
@@ -96,13 +102,13 @@ public class TableViewController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-11-04
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<TableViewResult> list(@RequestBody(required = false) TableViewParam tableViewParam) {
-        if(ToolUtil.isEmpty(tableViewParam)){
+        if (ToolUtil.isEmpty(tableViewParam)) {
             tableViewParam = new TableViewParam();
         }
         return this.tableViewService.findPageBySpec(tableViewParam);
@@ -118,19 +124,16 @@ public class TableViewController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) TableViewParam tableViewParam) {
         QueryWrapper<TableView> tableViewQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(tableViewParam.getTableKey())){
-            tableViewQueryWrapper.in("table_key",tableViewParam.getTableKey());
+        if (ToolUtil.isNotEmpty(tableViewParam.getTableKey())) {
+            tableViewQueryWrapper.in("table_key", tableViewParam.getTableKey());
         }
         Long userId = LoginContextHolder.getContext().getUserId();
-        tableViewQueryWrapper.in("create_user",userId);
+        tableViewQueryWrapper.in("create_user", userId);
         List<Map<String, Object>> list = this.tableViewService.listMaps(tableViewQueryWrapper);
         TableViewSelectWrapper tableViewSelectWrapper = new TableViewSelectWrapper(list);
         List<Map<String, Object>> result = tableViewSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-
-
-
 
 
 }
