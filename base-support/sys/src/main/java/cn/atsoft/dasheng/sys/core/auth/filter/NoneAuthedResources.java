@@ -51,6 +51,7 @@ public class NoneAuthedResources {
             "/api/**",
             "/sms/sendCode",
             "/pay/**",
+            "crm/excel/**",
 
             // session登录失效之后的跳转
             "/global/sessionError",

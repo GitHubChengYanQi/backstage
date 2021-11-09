@@ -96,6 +96,11 @@ public class StorehouseParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("状态")
     private Integer display;
 
+    private String children;
+
+    private String childrens;
+
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;

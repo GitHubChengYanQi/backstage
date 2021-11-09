@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -161,7 +162,9 @@ public class CategoryController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.categoryService.listMaps();
+        QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
+        categoryQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
 
         CategorySelectWrapper factory = new CategorySelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
@@ -177,7 +180,9 @@ public class CategoryController extends BaseController {
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView() {
-        List<Map<String, Object>> list = this.categoryService.listMaps();
+        QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
+        categoryQueryWrapper.in("display",1);
+        List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
 
         List<TreeNode> treeViewNodes = new ArrayList<>();
 
@@ -200,7 +205,7 @@ public class CategoryController extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+        factory.setRootParentId("0");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

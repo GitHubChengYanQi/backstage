@@ -36,7 +36,8 @@ public class RepairDynamicServiceImpl extends ServiceImpl<RepairDynamicMapper, R
 
     @Override
     public void delete(RepairDynamicParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        this.update(param);
     }
 
     @Override

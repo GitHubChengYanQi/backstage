@@ -10,11 +10,18 @@ import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,26 +31,28 @@ import java.util.List;
  * 地点表 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Service
 public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storehouse> implements StorehouseService {
 
+
     @Override
-    public Long add(StorehouseParam param){
+    @Transactional
+    public Long add(StorehouseParam param) {
         Storehouse entity = getEntity(param);
         this.save(entity);
         return entity.getStorehouseId();
     }
 
     @Override
-    public void delete(StorehouseParam param){
+    public void delete(StorehouseParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(StorehouseParam param){
+    public void update(StorehouseParam param) {
         Storehouse oldEntity = getOldEntity(param);
         Storehouse newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -51,28 +60,28 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
     }
 
     @Override
-    public StorehouseResult findBySpec(StorehouseParam param){
+    public StorehouseResult findBySpec(StorehouseParam param) {
         return null;
     }
 
     @Override
-    public List<StorehouseResult> findListBySpec(StorehouseParam param){
+    public List<StorehouseResult> findListBySpec(StorehouseParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope){
+    public PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope) {
         Page<StorehouseResult> pageContext = getPageContext();
-        IPage<StorehouseResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<StorehouseResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(StorehouseParam param){
+    private Serializable getKey(StorehouseParam param) {
         return param.getStorehouseId();
     }
 
     private Page<StorehouseResult> getPageContext() {
-        List<String> fields = new ArrayList<String>(){{
+        List<String> fields = new ArrayList<String>() {{
             add("itemId");
             add("brandId");
             add("name");

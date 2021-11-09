@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.SkuValues;
+import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,6 +13,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,17 +28,27 @@ import java.util.List;
 public class SkuResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<SkuValuesResult> skuValuesResults;
-    List<ItemAttributeValueResult> itemAttributeValueResults;
-    List<SkuJson> skuJsons;
 
-
+    List<AttributeValuesResult> list;
+    private List<SkuJson> skuJsons;
     private String categoryName;
-
+    private SpuResult spuResult;
     private String spuName;
+    private String skuTextValue;
+    private Long spuClass;
     @ApiModelProperty("")
     private Long skuId;
+    private Spu spu;
 
+
+    /**
+     * 编码
+     */
+    private String coding;
+    /**
+     * 类型
+     */
+    private Integer type;
     /**
      * sku名字
      */
@@ -47,16 +60,21 @@ public class SkuResult implements Serializable {
 
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
-
+    @ApiModelProperty("备注")
+    private String remarks;
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
+    @ApiModelProperty("执行标准")
+    private String standard;
+
 
     /**
      * spu id
      */
     @ApiModelProperty("spu id")
     private Long spuId;
-
+    @ApiModelProperty("规格")
+    public String specifications;
     /**
      * 创建时间
      */

@@ -66,7 +66,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             for (ApplyDetails applyDetail : applyDetails) {
                 OutstockListing outstockListing = new OutstockListing();
                 outstockListing.setBrandId(applyDetail.getBrandId());
-                outstockListing.setItemId(applyDetail.getItemId());
+                outstockListing.setSkuId(applyDetail.getSkuId());
                 outstockListing.setNumber(applyDetail.getNumber());
                 outstockListing.setOutstockOrderId(entity.getOutstockOrderId());
                 outstockListings.add(outstockListing);
@@ -81,7 +81,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void delete(OutstockOrderParam param) {
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+       this.update(param);
     }
 
 
@@ -192,7 +193,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Override
     public PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope) {
         Page<OutstockOrderResult> pageContext = getPageContext();
-        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<OutstockOrderResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -227,7 +228,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
         for (OutstockOrderResult datum : data) {
             for (User user : users) {
-                if (user.getUserId().equals(datum.getUserId())) {
+                if (datum.getUserId() != null && user.getUserId().equals(datum.getUserId())) {
                     UserResult userResult = new UserResult();
                     ToolUtil.copyProperties(user, userResult);
                     datum.setUserResult(userResult);
@@ -235,9 +236,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
                 }
             }
             for (Storehouse storehouse : storehouses) {
-                if (storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
+                if (datum.getStorehouseId() != null && storehouse.getStorehouseId().equals(datum.getStorehouseId())) {
                     StorehouseResult storehouseResult = new StorehouseResult();
-                    ToolUtil.copyProperties(storehouse,storehouseResult);
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
                     datum.setStorehouseResult(storehouseResult);
                     break;
                 }

@@ -19,10 +19,15 @@ import java.io.Serializable;
  * @author
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_spu")
+@TableName("goods_spu")
 public class Spu implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 类型
+     */
+    @TableField("type")
+    private Integer type;
     /**
      * 分类id
      */
@@ -40,7 +45,6 @@ public class Spu implements Serializable {
     @TableField("model")
 
     private String model;
-
 
 
     /**
@@ -175,6 +179,14 @@ public class Spu implements Serializable {
     @TableField("production_type")
     private Integer productionType;
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     public String getModel() {
         return model;
     }
@@ -182,6 +194,7 @@ public class Spu implements Serializable {
     public void setModel(String model) {
         this.model = model;
     }
+
     public Long getCuringCycle() {
         return curingCycle;
     }

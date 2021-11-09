@@ -24,6 +24,11 @@ public class Delivery implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
+    /**
      * 车牌号
      */
     @TableField("license_plate")
@@ -293,6 +298,14 @@ public class Delivery implements Serializable {
 
     public void setDeliveryWay(Integer deliveryWay) {
         this.deliveryWay = deliveryWay;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
     }
 
     @Override

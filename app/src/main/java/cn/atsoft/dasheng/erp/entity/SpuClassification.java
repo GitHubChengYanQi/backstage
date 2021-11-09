@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -16,15 +19,35 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-25
  */
-@TableName("daoxin_erp_spu_classification")
+@TableName("goods_spu_class  ")
 public class SpuClassification implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
+    private static final long serialVersionUID = 1L;
+    @TableField("children")
+    private String children;
+
+    @TableField("childrens")
+    private String childrens;
+    /**
+     * 编码分类
+     */
+    @TableField("coding_class")
+    private String codingClass;
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
+    /**
+     * pid
+     */
+    @TableField("pid")
+    private Long pid;
     /**
      * spu分类id
      */
-      @TableId(value = "spu_classification_id", type = IdType.ID_WORKER)
+    @TableId(value = "spu_classification_id", type = IdType.ID_WORKER)
     private Long spuClassificationId;
 
     /**
@@ -36,25 +59,25 @@ public class SpuClassification implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -134,17 +157,57 @@ public class SpuClassification implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    public String getCodingClass() {
+        return codingClass;
+    }
+
+    public void setCodingClass(String codingClass) {
+        this.codingClass = codingClass;
+    }
+
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
+
     @Override
     public String toString() {
         return "SpuClassification{" +
-        "spuClassificationId=" + spuClassificationId +
-        ", name=" + name +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "spuClassificationId=" + spuClassificationId +
+                ", name=" + name +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

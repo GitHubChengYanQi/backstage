@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -25,32 +27,25 @@ public class Outstock implements Serializable {
     /**
      * 出库id
      */
-      @TableId(value = "outstock_id", type = IdType.ID_WORKER)
+    @TableId(value = "outstock_id", type = IdType.ID_WORKER)
     private Long outstockId;
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    /**
+     * 部门Id
+     */
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
 
     /**
      * 仓库id
      */
     @TableField("storehouse_id")
     private Long storehouseId;
-
-    public Long getStockId() {
-        return stockId;
-    }
-
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
-    }
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
 
     @TableField("stock_id")
     private Long stockId;
@@ -69,11 +64,9 @@ public class Outstock implements Serializable {
 
     @TableField("stock_item_id")
     private Long stockItemId;
-
     /**
      * 出库时间
      */
-
     @TableField("delivery_time")
     private Date deliveryTime;
 
@@ -111,16 +104,16 @@ public class Outstock implements Serializable {
      */
     @TableField("outstock_apply_id")
     private Long outstockApplyId;
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     @TableField("display")
@@ -246,22 +239,46 @@ public class Outstock implements Serializable {
         this.outstockApplyId = outstockApplyId;
     }
 
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    public Long getStockId() {
+        return stockId;
+    }
+
+    public void setStockId(Long stockId) {
+        this.stockId = stockId;
+    }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
     @Override
     public String toString() {
         return "Delivery{" +
-        "deliveryId=" + outstockId +
-        ", storehouseId=" + storehouseId +
-        ", delivery time=" + deliveryTime +
-        ", number=" + number +
-        ", price=" + price +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", brandId=" + brandId +
-        ", state=" + state +
-        ", itemId=" + itemId +
-        "}";
+                "deliveryId=" + outstockId +
+                ", storehouseId=" + storehouseId +
+                ", delivery time=" + deliveryTime +
+                ", number=" + number +
+                ", price=" + price +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", brandId=" + brandId +
+                ", state=" + state +
+                ", itemId=" + itemId +
+                "}";
     }
 }

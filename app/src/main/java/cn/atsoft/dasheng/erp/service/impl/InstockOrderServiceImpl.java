@@ -6,17 +6,20 @@ import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -30,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -49,6 +53,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private StorehouseService storehouseService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(InstockOrderParam param) {
@@ -65,6 +71,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockList.setSkuId(instockRequest.getSkuId());
                     instockList.setNumber(instockRequest.getNumber());
                     instockList.setInstockOrderId(entity.getInstockOrderId());
+                    instockList.setBrandId(instockRequest.getBrandId());
                     instockList.setStoreHouseId(param.getStoreHouseId());
                     instockList.setCostPrice(instockRequest.getCostprice());
                     instockList.setSellingPrice(instockRequest.getSellingPrice());
@@ -82,11 +89,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     @Override
+    @BussinessLog
     public void delete(InstockOrderParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(InstockOrderParam param) {
         InstockOrder oldEntity = getOldEntity(param);
         InstockOrder newEntity = getEntity(param);
@@ -138,6 +147,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
             storeIds.add(datum.getStoreHouseId());
@@ -145,7 +155,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
+
+
         for (InstockOrderResult datum : data) {
+
             for (User user : users) {
                 if (datum.getUserId().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();

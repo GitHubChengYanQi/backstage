@@ -1,19 +1,24 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 地点表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -24,9 +29,10 @@ public class StorehouseResult implements Serializable {
     /**
      * 纬度
      */
-    private String itemName;
     private BigDecimal latitude;
 
+
+    private List<StorehousePositionsResult> storehousePositionsResults;
     /**
      * 经度
      */
@@ -36,6 +42,7 @@ public class StorehouseResult implements Serializable {
     /**
      * 仓库id
      */
+
     @ApiModelProperty("仓库id")
     private Long storehouseId;
 
@@ -44,7 +51,6 @@ public class StorehouseResult implements Serializable {
      */
     @ApiModelProperty("名称")
     private String name;
-
 
 
     /**
@@ -68,33 +74,44 @@ public class StorehouseResult implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("状态")
     private Integer display;
+    private String children;
+
+    private String childrens;
+
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+    @JSONField(serialize = false)
     private Long deptId;
 }

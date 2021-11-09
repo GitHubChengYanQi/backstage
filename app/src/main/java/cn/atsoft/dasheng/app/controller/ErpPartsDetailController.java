@@ -55,7 +55,7 @@ public class ErpPartsDetailController extends BaseController {
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ErpPartsDetailParam erpPartsDetailParam) {
 
-        this.erpPartsDetailService.update(erpPartsDetailParam);
+//        this.erpPartsDetailService.update(erpPartsDetailParam);
         return ResponseData.success();
     }
 
@@ -68,7 +68,7 @@ public class ErpPartsDetailController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ErpPartsDetailParam erpPartsDetailParam)  {
-        this.erpPartsDetailService.delete(erpPartsDetailParam);
+//        this.erpPartsDetailService.delete(erpPartsDetailParam);
         return ResponseData.success();
     }
 

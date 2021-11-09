@@ -25,7 +25,16 @@ public class Parts implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("children")
+    private String children;
 
+    @TableField("childrens")
+    private String childrens;
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
     /**
      * 清单id
      */
@@ -223,7 +232,29 @@ public class Parts implements Serializable {
         this.note = note;
     }
 
+    public Long getSkuId() {
+        return skuId;
+    }
 
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
 
     @Override
     public String toString() {

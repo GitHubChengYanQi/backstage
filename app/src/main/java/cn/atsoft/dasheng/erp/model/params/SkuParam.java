@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,6 +8,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,10 +17,10 @@ import java.util.List;
 
 /**
  * <p>
- * sku表	
+ * sku表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
 @Data
@@ -26,11 +28,26 @@ import java.util.List;
 public class SkuParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-    List<SkuValues> SkuValues;
+    private List<AttributeValuesParam> attributeValues;
     @ApiModelProperty("")
     private Long skuId;
+    private List<Long> skuIds;
+    private SpuParam spu;
+    private Long spuClassificationId;
+    private Long spuStandard;
+    private List<Long> id;
 
+    private Long spuClass;
+
+    /**
+     * 编码
+     */
+    private String coding;
+    /**
+     * 类型
+     */
+    private SpuRequest spuAttributes;
+    private Integer type;
     /**
      * sku名字
      */
@@ -38,11 +55,17 @@ public class SkuParam implements Serializable, BaseValidatingParam {
     private String skuName;
     @ApiModelProperty("sku唯一标识")
     private String skuValue;
+    @ApiModelProperty("备注")
+    private String remarks;
 
     @ApiModelProperty("sku加密")
     private String skuValueMd5;
     @ApiModelProperty("是否禁用")
-    private String isBan;
+    private Integer isBan;
+    @ApiModelProperty("规格")
+    public String specifications;
+    @ApiModelProperty("执行标准")
+    private String standard;
 
     /**
      * spu id

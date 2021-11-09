@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
@@ -116,6 +117,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     }
 
     @Override
+    @BussinessLog
     public void delete(OutstockApplyParam param) {
         OutstockApply byId = this.getById(param.getOutstockApplyId());
         if (ToolUtil.isEmpty(byId)) {
@@ -127,6 +129,7 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     }
 
     @Override
+    @BussinessLog
     public void update(OutstockApplyParam param) {
 
         OutstockApply oldEntity = getOldEntity(param);

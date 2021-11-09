@@ -3,11 +3,15 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 出库清单
@@ -23,12 +27,19 @@ public class OutstockListingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private ItemsResult itemsResult;
     private BrandResult brandResult;
-    private  Long deliveryId;
+    private Long deliveryId;
+    private SkuResult skuResult;
+    private List<BackSku> backSkus;
+    private SpuResult spuResult;
     /**
      * 出库清单id
      */
     @ApiModelProperty("出库清单id")
     private Long outstockListingId;
+    /**
+     * skuId
+     */
+    private Long skuId;
 
     /**
      * 出库时间

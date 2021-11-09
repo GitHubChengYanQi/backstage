@@ -4,6 +4,8 @@ package cn.atsoft.dasheng.app.model.params;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,6 +31,10 @@ public class DeliveryDetailsParam implements Serializable, BaseValidatingParam {
 
     private  Long itemId;
     private Long brandId;
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 发货详情id
      */

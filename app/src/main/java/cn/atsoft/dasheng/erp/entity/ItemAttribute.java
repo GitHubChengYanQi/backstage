@@ -19,12 +19,15 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_item_attribute")
+@TableName("goods_class_attribute")
 public class ItemAttribute implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    /**
+     * 是否標配
+     */
+    @TableField("standard")
+    private Long standard;
     /**
      * 属性id
      */
@@ -37,16 +40,16 @@ public class ItemAttribute implements Serializable {
     @TableField("attribute")
     private String attribute;
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
     @TableField("category_id")
-    private String categoryId;
+    private Long categoryId;
 
     /**
      * 产品id
@@ -89,10 +92,6 @@ public class ItemAttribute implements Serializable {
      */
     @TableField("sort")
     private Long sort;
-
-
-
-
 
 
     public Long getAttributeId() {
@@ -167,7 +166,13 @@ public class ItemAttribute implements Serializable {
         this.sort = sort;
     }
 
+    public Long getStandard() {
+        return standard;
+    }
 
+    public void setStandard(Long standard) {
+        this.standard = standard;
+    }
 
     @Override
     public String toString() {

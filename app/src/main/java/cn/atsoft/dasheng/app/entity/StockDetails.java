@@ -28,6 +28,11 @@ public class StockDetails implements Serializable {
     private Long outStockOrderId;
     @TableField("stage")
     private Integer stage;
+    /**
+     * 库位id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
 
     @TableField("storehouse_id")
     private Long storehouseId;
@@ -252,6 +257,14 @@ public class StockDetails implements Serializable {
 
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
     }
 
     @Override

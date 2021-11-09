@@ -11,11 +11,13 @@ public class Attribute implements Comparable<Attribute> {
     private Long id;
     private String attribute;
     private List<Values> attributeValues;
-
+    //------------------------
+    private String k;
+    private Long ks;
 
     @Override
     public int compareTo(Attribute o) {
-        return (int)(this.id - o.id);
+        return (int) (this.id - o.getId());
     }
 
 

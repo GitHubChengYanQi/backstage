@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -79,6 +80,11 @@ public class CategoryResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+    @JSONField(serialize = false)
+    private String children;
+    @JSONField(serialize = false)
+    private String childrens;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

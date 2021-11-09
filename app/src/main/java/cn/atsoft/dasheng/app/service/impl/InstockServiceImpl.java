@@ -15,6 +15,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.params.InstockRequest;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
@@ -57,6 +59,12 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
 
     @Override
     public Long add(InstockParam param) {
+        Integer count = skuService.query().in("sku_id", param.getSkuId()).in("display",1).count();
+        if (count <= 0) {
+            throw new ServiceException(500, "请填写合法数据");
+        }
+
+
 
         Instock entity = getEntity(param);
         this.save(entity);
@@ -80,19 +88,21 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     @Override
     @Transactional
     public void update(InstockParam param) {
-
-        Instock oldEntity = getOldEntity(param);
-//        Instock newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
+        Integer count = skuService.query().in("sku_id", param.getSkuId()).in("display",1).count();
+        if (count <= 0) {
+            throw new ServiceException(500, "请填写合法数据");
+        }
         List<StockDetails> stockDetails = new ArrayList<>();
         List<Instock> instocks = new ArrayList<>();
+
+        StockDetails stockDetail = new StockDetails();
+        Date date = new Date();
+
         for (Instock instock : param.getInstocks()) {
             Long stockId = null;
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, instock.getStoreHouseId())
                     .and(i -> i.eq(Stock::getSkuId, instock.getSkuId())).one();
-
             StockParam stockParam = new StockParam();
-
             if (ToolUtil.isNotEmpty(stock)) {
                 ToolUtil.copyProperties(stock, stockParam);
                 long l = stockParam.getInventory() + 1;
@@ -100,8 +110,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
                 stockId = stockService.update(stockParam);
             } else {
                 stockParam.setStorehouseId(instock.getStoreHouseId());
-//                stockParam.setItemId(instock.getItemId());
-//                stockParam.setBrandId(instock.getBrandId());
                 stockParam.setSkuId(instock.getSkuId());
                 stockParam.setInventory(1L);
                 stockId = stockService.add(stockParam);
@@ -109,19 +117,15 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             instock.setState(1);
             instocks.add(instock);
 
-            StockDetails stockDetail = new StockDetails();
             stockDetail.setStockId(stockId);
             stockDetail.setPrice(instock.getCostPrice());
             stockDetail.setStorehouseId(instock.getStoreHouseId());
-//            stockDetail.setItemId(instock.getItemId());
-//            stockDetail.setBrandId(instock.getBrandId());
             stockDetail.setSkuId(instock.getSkuId());
             stockDetail.setBarcode(instock.getBarcode());
-            Date date = new Date();
+
             stockDetail.setStorageTime(date);
             stockDetail.setStorageTime(instock.getRegisterTime());
             stockDetails.add(stockDetail);
-
         }
         stockDetailsService.saveBatch(stockDetails);
         this.updateBatchById(instocks);
@@ -173,36 +177,24 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     }
 
     public void format(List<InstockResult> data) {
-//        List<Long> brandIds = new ArrayList<>();
-//        List<Long> itemIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
         List<Long> storeIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
         for (InstockResult datum : data) {
-//            brandIds.add(datum.getBrandId());
-//            itemIds.add(datum.getItemId());
+            brandIds.add(datum.getBrandId());
+
             storeIds.add(datum.getStoreHouseId());
             skuIds.add(datum.getSkuId());
         }
-//        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-//        if (ToolUtil.isNotEmpty(brandIds)) {
-//            brandQueryWrapper.in("brand_id", brandIds);
-//        }
-//        List<Brand> brandList = brandService.list(brandQueryWrapper);
-//
-//        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-//        if (ToolUtil.isNotEmpty(itemIds)) {
-//            itemsQueryWrapper.in("item_id", itemIds);
-//        }
-//        List<Items> itemsList = itemsService.list(itemsQueryWrapper);
-
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
-        for (Sku sku : skus) {
-            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-            List<InstockRequest> requests = JSONUtil.toList(jsonArray, InstockRequest.class);
-            for (InstockRequest request : requests) {
-
-            }
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(brandIds)) {
+            brandQueryWrapper.in("brand_id", brandIds);
         }
+        List<Brand> brandList = brandService.list(brandQueryWrapper);
+
+
+
 
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
@@ -211,26 +203,24 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
         for (InstockResult datum : data) {
-//            if (ToolUtil.isNotEmpty(brandList)) {
-//                for (Brand brand : brandList) {
-//                    if (brand.getBrandId().equals(datum.getBrandId())) {
-//                        BrandResult brandResult = new BrandResult();
-//                        ToolUtil.copyProperties(brand, brandResult);
-//                        datum.setBrandResult(brandResult);
-//                        break;
-//                    }
-//                }
-//            }
-//            if (ToolUtil.isNotEmpty(itemsList)) {
-//                for (Items items : itemsList) {
-//                    if (items.getItemId().equals(datum.getItemId())) {
-//                        ItemsResult itemsResult = new ItemsResult();
-//                        ToolUtil.copyProperties(items, itemsResult);
-//                        datum.setItemsResult(itemsResult);
-//                        break;
-//                    }
-//                }
-//            }
+
+            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+            datum.setSpuResult(spuResult);
+
+
+            if (ToolUtil.isNotEmpty(brandList)) {
+                for (Brand brand : brandList) {
+                    if (brand.getBrandId().equals(datum.getBrandId())) {
+                        BrandResult brandResult = new BrandResult();
+                        ToolUtil.copyProperties(brand, brandResult);
+                        datum.setBrandResult(brandResult);
+                        break;
+                    }
+                }
+            }
+
             if (ToolUtil.isNotEmpty(storeList)) {
                 for (Storehouse storehouse : storeList) {
                     if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {

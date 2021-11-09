@@ -1,7 +1,11 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,14 +29,25 @@ import java.util.List;
 public class PartsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-
+    private Long skuId;
+    private List<BackSku> backSkus;
 
     private UserResult userResult;
+    private SpuResult spuResult;
+
+    private Item item;
     //零件
     private List<PartsResult> partsResults;
 
     private List<ErpPartsDetailResult> parts;
+
+    @JSONField(serialize = false)
+    private String children;
+
+    @JSONField(serialize = false)
+    private String childrens;
+
+    private Sku sku;
 
 
     @ApiModelProperty("关联sku")

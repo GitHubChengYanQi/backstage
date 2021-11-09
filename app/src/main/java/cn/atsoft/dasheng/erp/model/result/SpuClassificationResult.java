@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.Spu;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,6 +25,25 @@ import java.util.List;
 public class SpuClassificationResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JSONField(serialize = false)
+    private String children;
+
+    @JSONField(serialize = false)
+    private String childrens;
+    /**
+     * 编码分类
+     */
+    private String codingClass;
+
+    private String pidName;
+    /**
+     * 排序
+     */
+    private Integer sort;
+    /**
+     * pid
+     */
+    private Long pid;
 
     private List<Spu> spuList;
     /**

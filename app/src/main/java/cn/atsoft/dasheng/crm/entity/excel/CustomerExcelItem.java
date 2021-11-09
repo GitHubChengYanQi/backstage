@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.crm.entity.excel;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelCollection;
+import cn.afterturn.easypoi.excel.annotation.ExcelEntity;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
@@ -26,10 +28,12 @@ public class CustomerExcelItem implements Serializable {
 
 
     @TableField("agent")
+    @Excel(name = "代理商")
     private Integer agent;
 
 
     @TableField("classification")
+    @Excel(name = "客户分类")
     private Integer classification;
 
     @TableField("sort")
@@ -50,27 +54,31 @@ public class CustomerExcelItem implements Serializable {
      * 客户地址id
      */
     @TableField("customer_level_id")
+    @Excel(name = "客户等级")
     private Long customerLevelId;
     @TableField("status")
+    @Excel(name = "客户状态")
     private Integer status;
     @TableField("origin_id")
+    @Excel(name = "客户状态")
     private Long originId;
     @TableField("note")
+    @Excel(name = "备注")
     private String note;
-    @TableField("user_id")
-    private Long userId;
     @TableField("emall")
+    @Excel(name = "邮箱")
     private String emall;
     @TableField("url")
+    @Excel(name = "网址")
     private String url;
     @TableField("industry_id")
+    @Excel(name = "行业")
     private Long industryId;
     /**
      * 法定代表人
      */
     @TableField("legal")
     @Excel(name = "法定代表人")
-
     private String legal;
 
     /**
@@ -92,7 +100,6 @@ public class CustomerExcelItem implements Serializable {
      */
     @TableField("business_term")
     @Excel(name = "营业期限")
-
     private Date businessTerm;
 
     /**
@@ -100,7 +107,6 @@ public class CustomerExcelItem implements Serializable {
      */
     @TableField("sign_in")
     @Excel(name = "注册地址")
-
     private String signIn;
 
     /**
@@ -171,7 +177,6 @@ public class CustomerExcelItem implements Serializable {
                 ", status=" + status +
                 ", originId=" + originId +
                 ", note='" + note + '\'' +
-                ", userId=" + userId +
                 ", emall='" + emall + '\'' +
                 ", url='" + url + '\'' +
                 ", industryId=" + industryId +
@@ -228,13 +233,8 @@ public class CustomerExcelItem implements Serializable {
         this.note = note;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+
 
     public Long getIndustryId() {
         return industryId;

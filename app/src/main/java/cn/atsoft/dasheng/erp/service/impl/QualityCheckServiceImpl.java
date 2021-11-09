@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -15,6 +16,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +43,8 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 
     @Autowired
     private ToolService toolService;
-
+    @Autowired
+    private QualityPlanDetailService qualityPlanDetailService;
     @Autowired
     private QualityCheckClassificationService qualityCheckClassificationService;
 
@@ -58,22 +61,33 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         this.save(entity);
     }
 
+
     @Override
+    @BussinessLog
     public void delete(QualityCheckParam param) {
         this.removeById(getKey(param));
     }
 
+
     @Override
+    @BussinessLog
     @Transactional
     public void update(QualityCheckParam param) {
         String jsonStr = JSONUtil.toJsonStr(param.getTools());
         param.setTool(jsonStr);
-        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
-        if (count > 0) {
-            throw new ServiceException(500, "已有相同质检");
-        }
+//        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
+//        if (count > 0) {
+//            throw new ServiceException(500, "已有相同质检");
+//        }
+        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("quality_check_id",param.getQualityCheckId());
+        int count = qualityPlanDetailService.count(queryWrapper);
+
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
+        if (count>0 && oldEntity != newEntity){
+            throw new ServiceException(500,"该方案已被使用无法修改");
+        }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }

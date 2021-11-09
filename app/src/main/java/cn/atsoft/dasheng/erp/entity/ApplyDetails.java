@@ -2,29 +2,32 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
  * @since 2021-09-15
  */
 @TableName("daoxin_erp_outstock_apply_details")
-public class ApplyDetails implements Serializable {
+public class ApplyDetails implements Serializable  {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * 发货申请详情id
      */
-      @TableId(value = "outstock_apply_details_id", type = IdType.ID_WORKER)
+    @TableId(value = "outstock_apply_details_id", type = IdType.ID_WORKER)
     private Long outstockApplyDetailsId;
 
     /**
@@ -34,6 +37,11 @@ public class ApplyDetails implements Serializable {
     private Long itemId;
 
 
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
 
     /**
      * 品牌id
@@ -50,25 +58,25 @@ public class ApplyDetails implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -164,10 +172,18 @@ public class ApplyDetails implements Serializable {
         this.number = number;
     }
 
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
     /**
      * 部门id
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     public Long getDeptId() {
@@ -177,19 +193,20 @@ public class ApplyDetails implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
+
     @Override
     public String toString() {
         return "ApplyDetails{" +
-        "outstockApplyDetailsId=" + outstockApplyDetailsId +
-        ", itemId=" + itemId +
-        ", brandId=" + brandId +
-        ", outstockApplyId=" + outstockApplyId +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", number=" + number +
-        "}";
+                "outstockApplyDetailsId=" + outstockApplyDetailsId +
+                ", itemId=" + itemId +
+                ", brandId=" + brandId +
+                ", outstockApplyId=" + outstockApplyId +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", number=" + number +
+                "}";
     }
 }

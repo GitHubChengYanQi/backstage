@@ -13,10 +13,13 @@ import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ToolService;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckClassificationSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -135,6 +138,28 @@ public class QualityCheckController extends BaseController {
             qualityCheckParam = new QualityCheckParam();
         }
         return this.qualityCheckService.findPageBySpec(qualityCheckParam);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityCheckParam qualityCheckParam) {
+
+        QueryWrapper<QualityCheck> qualityCheckQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(qualityCheckParam)){
+            if (ToolUtil.isNotEmpty(qualityCheckParam.getQualityCheckClassificationId())){
+                qualityCheckQueryWrapper.in("quality_check_classification_id",qualityCheckParam.getQualityCheckClassificationId());
+            }
+        }
+        List<Map<String, Object>> list = this.qualityCheckService.listMaps(qualityCheckQueryWrapper);
+        QualityCheckSelectWrapper factory = new QualityCheckSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,6 +25,23 @@ public class SpuClassificationParam implements Serializable, BaseValidatingParam
 
     private static final long serialVersionUID = 1L;
 
+    private String children;
+
+
+    private String childrens;
+    /**
+     * 编码分类
+     */
+    private String codingClass;
+    /**
+     * pid
+     */
+    private Long pid;
+
+    /**
+     * 排序
+     */
+    private Integer sort;
 
     /**
      * spu分类id

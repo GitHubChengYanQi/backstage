@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
@@ -13,6 +14,7 @@ import cn.atsoft.dasheng.erp.service.AttributeValuesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,20 +39,28 @@ public class AttributeValuesServiceImpl extends ServiceImpl<AttributeValuesMappe
     private ItemAttributeService itemAttributeService;
 
     @Override
-    public void add(AttributeValuesParam param) {
-        Integer count = this.query().in("attribute_id", param.getAttributeId()).in("attribute_values", param.getAttributeValues()).count();
+    public Long add(AttributeValuesParam param) {
+        Integer count = this.query().eq("attribute_id", param.getAttributeId()).eq("attribute_values", param.getAttributeValues()).eq("display", 1).count();
         if (count > 0) {
-            throw new ServiceException(500, "不要重复添加");
+            throw new ServiceException(500, "请不要重复添加属性");
         }
         AttributeValues entity = getEntity(param);
         this.save(entity);
+        return entity.getAttributeValuesId();
     }
 
+    @BussinessLog
     @Override
     public void delete(AttributeValuesParam param) {
-        this.removeById(getKey(param));
+//        this.removeById(getKey(param));
+        AttributeValues attributeValues = new AttributeValues();
+        attributeValues.setDisplay(0);
+        QueryWrapper<AttributeValues> attributeValuesQueryWrapper = new QueryWrapper<>();
+        attributeValuesQueryWrapper.in("attribute_values_id", param.getAttributeValuesId());
+        this.update(attributeValues, attributeValuesQueryWrapper);
     }
 
+    @BussinessLog
     @Override
     public void update(AttributeValuesParam param) {
         AttributeValues oldEntity = getOldEntity(param);

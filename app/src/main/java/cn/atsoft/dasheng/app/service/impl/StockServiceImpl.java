@@ -13,6 +13,11 @@ import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,6 +47,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     private BrandService brandService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public Long add(StockParam param) {
@@ -125,12 +132,12 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     public void format(List<StockResult> data) {
         List<Long> storeIds = new ArrayList<>();
-        List<Long> itemIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> stockIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (StockResult datum : data) {
             storeIds.add(datum.getStorehouseId());
-            itemIds.add(datum.getItemId());
+            skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             stockIds.add(datum.getStockId());
         }
@@ -141,28 +148,41 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         List<Storehouse> storeList = storehouseService.list(storehouseQueryWrapper);
 
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        if (!itemIds.isEmpty()) {
-            itemsQueryWrapper.in("item_id", itemIds);
-        }
-        List<Items> itemList = itemsService.list(itemsQueryWrapper);
 
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
         if (!brandIds.isEmpty()) {
             brandQueryWrapper.in("brand_id", brandIds);
         }
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
+
         List<Brand> brandList = brandService.list(brandQueryWrapper);
         List<StockDetails> stockDetails = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(storeIds) && ToolUtil.isNotEmpty(itemIds) && ToolUtil.isNotEmpty(brandIds)) {
+        if (ToolUtil.isNotEmpty(storeIds) && ToolUtil.isNotEmpty(skus) && ToolUtil.isNotEmpty(brandIds)) {
             stockDetails = stockDetailsService.lambdaQuery()
                     .in(StockDetails::getStockId, stockIds)
                     .and(i -> i.in(StockDetails::getBrandId, brandIds))
-                    .and(i -> i.in(StockDetails::getItemId, itemIds))
+                    .and(i -> i.in(StockDetails::getItemId, skus))
                     .list();
         }
 
 
         for (StockResult datum : data) {
+            SpuResult spuResult = skuService.backSpu(datum.getSkuId());
+            List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
+            datum.setBackSkus(backSkus);
+            datum.setSpuResult(spuResult);
+
+//
+//            if (ToolUtil.isNotEmpty(skus)) {
+//                for (Sku sku : skus) {
+//                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
+//                        SkuResult skuResult = new SkuResult();
+//                        ToolUtil.copyProperties(sku, skuResult);
+//                        datum.setSkuResult(skuResult);
+//                    }
+//                }
+//            }
+
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {
                     if (datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
@@ -173,19 +193,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     }
                 }
             }
-            if (!itemList.isEmpty()) {
-                for (Items items : itemList) {
-                    if (datum.getItemId().equals(items.getItemId())) {
-                        ItemsResult itemsResult = new ItemsResult();
-                        ToolUtil.copyProperties(items, itemsResult);
-                        datum.setItemsResult(itemsResult);
-                        break;
-                    }
-                }
-            }
+
             if (!brandList.isEmpty()) {
                 for (Brand brand : brandList) {
-                    if (datum.getBrandId().equals(brand.getBrandId())) {
+                    if (datum.getBrandId() != null && datum.getBrandId().equals(brand.getBrandId())) {
                         BrandResult brandResult = new BrandResult();
                         ToolUtil.copyProperties(brand, brandResult);
                         datum.setBrandResult(brandResult);
@@ -200,7 +211,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                             .equals(datum.getBrandId()) && datum.getItemId()
                             .equals(stockDetail.getItemId())) {
 
-                        if (ToolUtil.isNotEmpty(stockDetail.getPrice())){
+                        if (ToolUtil.isNotEmpty(stockDetail.getPrice())) {
                             datum.setSalePrice(Math.toIntExact(stockDetail.getPrice()));
                         }
 

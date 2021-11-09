@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author song
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_attribute_values")
+@TableName("goods_class_attribute_value")
 public class AttributeValues implements Serializable {
     /**
      * 属性Id

@@ -26,10 +26,16 @@ import java.util.List;
 @Data
 @ApiModel
 public class SpuParam implements Serializable, BaseValidatingParam {
-
+    private Boolean isHidden;
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
+    private Long spuStandard;
 //    private List<ItemAttributeParam> spuAttributes;
+
+    /**
+     * 类型
+     */
+    private Integer type;
     /**
      * 分类id
      */

@@ -14,12 +14,14 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="sort" property="sort"/>
+        <result column="standard" property="standard"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-
+        standard
+        AS "standard",
         attribute_id
         AS "attributeId", attribute AS "attribute", item_id AS "itemId", create_user AS "createUser",category_id AS "categoryId",update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
     </sql>
@@ -29,7 +31,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -62,7 +64,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -93,7 +95,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where display = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>
@@ -121,6 +123,9 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        <if test="paramCondition.standard != null">
+            and standard = #{{paramCondition.standard}
+        </if>
         order by sort ASC
     </select>
 
@@ -128,7 +133,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.ItemAttributeParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_item_attribute where 1 = 1
+        from goods_class_attribute where 1 = 1
         <if test="paramCondition.attributeId != null">
             and attribute_id like CONCAT('%',#{paramCondition.attributeId},'%')
         </if>

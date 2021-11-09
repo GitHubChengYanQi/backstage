@@ -8,14 +8,19 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.ApplyDetailsMapper;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.result.ApplyDetailsResult;
-import  cn.atsoft.dasheng.erp.service.ApplyDetailsService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.sys.core.constant.dictmap.MenuDict;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,7 +34,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author song
@@ -41,19 +46,29 @@ public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, App
     private BrandService brandService;
     @Autowired
     private ItemsService itemsService;
+    @Autowired
+    private SkuService skuService;
+
     @Override
-    public void add(ApplyDetailsParam param){
+    public void add(ApplyDetailsParam param) {
         ApplyDetails entity = getEntity(param);
         this.save(entity);
     }
 
+    @BussinessLog
     @Override
-    public void delete(ApplyDetailsParam param){
-        this.removeById(getKey(param));
+    public void delete(ApplyDetailsParam param) {
+        ApplyDetails applyDetails = new ApplyDetails();
+        applyDetails.setDisplay(0);
+        QueryWrapper<ApplyDetails> applyDetailsQueryWrapper = new QueryWrapper<>();
+        applyDetailsQueryWrapper.in("outstock_apply_details_id", param.getOutstockApplyDetailsId());
+        this.update(applyDetails, applyDetailsQueryWrapper);
+//        this.removeById(getKey(param));
     }
 
+    @BussinessLog
     @Override
-    public void update(ApplyDetailsParam param){
+    public void update(ApplyDetailsParam param) {
         ApplyDetails oldEntity = getOldEntity(param);
         ApplyDetails newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -61,58 +76,57 @@ public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, App
     }
 
     @Override
-    public ApplyDetailsResult findBySpec(ApplyDetailsParam param){
+    public ApplyDetailsResult findBySpec(ApplyDetailsParam param) {
         return null;
     }
 
     @Override
-    public List<ApplyDetailsResult> findListBySpec(ApplyDetailsParam param){
+    public List<ApplyDetailsResult> findListBySpec(ApplyDetailsParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ApplyDetailsResult> findPageBySpec(ApplyDetailsParam param){
+    public PageInfo<ApplyDetailsResult> findPageBySpec(ApplyDetailsParam param) {
         Page<ApplyDetailsResult> pageContext = getPageContext();
         IPage<ApplyDetailsResult> page = this.baseMapper.customPageList(pageContext, param);
 
         List<Long> brandIds = new ArrayList<>();
-        List<Long> itemIds=new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (ApplyDetailsResult record : page.getRecords()) {
             brandIds.add(record.getBrandId());
-            itemIds.add(record.getItemId());
+            skuIds.add(record.getSkuId());
         }
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        brandQueryWrapper.lambda().in(Brand::getBrandId,brandIds);
+        brandQueryWrapper.lambda().in(Brand::getBrandId, brandIds);
         List<Brand> brandList = brandIds.size() > 0 ? brandService.list(brandQueryWrapper) : new ArrayList<>();
-        QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.lambda().in(Items::getItemId,itemIds);
-        List<Items> itemsList = itemIds.size() > 0 ? itemsService.list(itemsQueryWrapper) : new ArrayList<>();
+
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).eq("display", 1).list();
 
         for (ApplyDetailsResult record : page.getRecords()) {
             for (Brand brand : brandList) {
-                if (record.getBrandId()!=null && record.getBrandId().equals(brand.getBrandId())){
+                if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
-                    ToolUtil.copyProperties(brand,brandResult);
+                    ToolUtil.copyProperties(brand, brandResult);
                     record.setBrandResult(brandResult);
                     break;
                 }
             }
-            for (Items items : itemsList) {
-                if (record.getItemId() != null && record.getItemId().equals(items.getItemId())){
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items,itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
+            if (ToolUtil.isNotEmpty(skus)) {
+                for (Sku sku : skus) {
+                    if (record.getSkuId() != null && sku.getSkuId().equals(record.getSkuId())) {
+                        SkuResult skuResult = new SkuResult();
+                        ToolUtil.copyProperties(sku, skuResult);
+                        record.setSkuResult(skuResult);
+                    }
                 }
             }
         }
-
 
 
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ApplyDetailsParam param){
+    private Serializable getKey(ApplyDetailsParam param) {
         return param.getOutstockApplyDetailsId();
     }
 

@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
@@ -14,6 +15,7 @@ import cn.atsoft.dasheng.erp.service.ItemAttributeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,21 +42,31 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     private SpuService spuService;
 
     @Override
-    public void add(ItemAttributeParam param) {
-        Integer count = this.query().in("category_id", param.getCategoryId()).eq("attribute", param.getAttribute()).count();
+    public Long add(ItemAttributeParam param) {
+        Integer count = this.query().eq("category_id", param.getCategoryId()).eq("attribute", param.getAttribute())
+                .in("display", 1)
+                .count();
         if (count > 0) {
-            throw new ServiceException(500, "请不要重复添加");
+            throw new ServiceException(500, "请不要重复添加属性");
         }
         ItemAttribute entity = getEntity(param);
         this.save(entity);
+        return entity.getAttributeId();
     }
 
     @Override
+    @BussinessLog
     public void delete(ItemAttributeParam param) {
-        this.removeById(getKey(param));
+        ItemAttribute itemAttribute = new ItemAttribute();
+        itemAttribute.setDisplay(0);
+        QueryWrapper<ItemAttribute> itemAttributeQueryWrapper = new QueryWrapper<>();
+        itemAttributeQueryWrapper.in("attribute_id", param.getAttributeId());
+//        this.removeById(getKey(param));
+        this.update(itemAttribute, itemAttributeQueryWrapper);
     }
 
     @Override
+    @BussinessLog
     public void update(ItemAttributeParam param) {
         ItemAttribute oldEntity = getOldEntity(param);
         ItemAttribute newEntity = getEntity(param);

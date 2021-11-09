@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.CodingRulesClassification;
@@ -35,11 +36,13 @@ public class CodingRulesClassificationServiceImpl extends ServiceImpl<CodingRule
     }
 
     @Override
+    @BussinessLog
     public void delete(CodingRulesClassificationParam param){
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(CodingRulesClassificationParam param){
         CodingRulesClassification oldEntity = getOldEntity(param);
         CodingRulesClassification newEntity = getEntity(param);

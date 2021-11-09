@@ -25,7 +25,10 @@ import java.util.List;
 public class DeliveryParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * skuId
+     */
+    private Long skuId;
     /**
      * 车牌号
      */

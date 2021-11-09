@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.entity.ErpPartsDetail;
 import cn.atsoft.dasheng.app.model.params.ErpPartsDetailParam;
 import cn.atsoft.dasheng.app.model.params.PartRequest;
 import cn.atsoft.dasheng.app.model.result.ErpPartsDetailResult;
+import cn.atsoft.dasheng.app.model.result.Item;
 import cn.atsoft.dasheng.app.service.ErpPartsDetailService;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Parts;
@@ -12,6 +13,8 @@ import cn.atsoft.dasheng.app.model.result.PartsResult;
 import cn.atsoft.dasheng.app.service.PartsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -44,6 +47,8 @@ public class PartsController extends BaseController {
 
     @Autowired
     private ErpPartsDetailService erpPartsDetailService;
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 新增接口
@@ -55,6 +60,16 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
 
+        if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
+            Sku sku = skuService.getById(partsParam.getItem().getSkuId());
+            if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
+                partsParam.setSpuId(sku.getSpuId());
+            }
+        } else {
+            if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
+                partsParam.setSpuId(partsParam.getItem().getSpuId());
+            }
+        }
         this.partsService.add(partsParam);
         return ResponseData.success();
     }
@@ -71,7 +86,7 @@ public class PartsController extends BaseController {
 
 //        List<String>  pidValue = partsParam.getPidValue();
 //        partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size()-1)));
-        this.partsService.update(partsParam);
+//        this.partsService.update(partsParam);
         return ResponseData.success();
     }
 
@@ -113,6 +128,12 @@ public class PartsController extends BaseController {
             erpPartsDetailParams.add(erpPartsDetailResult);
         }
 
+        Item item = new Item();
+        if (ToolUtil.isNotEmpty(detail.getSkuId())) {
+            item.setSkuId(detail.getSkuId());
+        }
+        result.setItem(item);
+
         result.setParts(erpPartsDetailParams);
 
 
@@ -136,6 +157,25 @@ public class PartsController extends BaseController {
             partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size() - 1)));
         }
         return this.partsService.findPageBySpec(partsParam);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2021-10-21
+     */
+    @RequestMapping(value = "/oldList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<PartsResult> oldList(@RequestBody(required = false) PartsParam partsParam) {
+        if (ToolUtil.isEmpty(partsParam)) {
+            partsParam = new PartsParam();
+        }
+        if (ToolUtil.isNotEmpty(partsParam.getPidValue())) {
+            List<String> pidValue = partsParam.getPidValue();
+            partsParam.setPid(Long.valueOf(pidValue.get(pidValue.size() - 1)));
+        }
+        return this.partsService.oldFindPageBySpec(partsParam);
     }
 
     /**
@@ -198,7 +238,32 @@ public class PartsController extends BaseController {
         return ResponseData.success(results);
     }
 
+    /**
+     * 返回詳情結合
+     *
+     * @author song
+     * @Date 2021-10-26
+     */
+    @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
+    @ApiOperation("返回子表集合")
+    public ResponseData backDetails(@RequestParam Long id, Long partsId) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId);
+        return ResponseData.success(detailResults);
+    }
 
+    /**
+     * 返回历史u详情数据
+     *
+     * @param id
+     * @param partsId
+     * @return
+     */
+    @RequestMapping(value = "/oldBackDetails", method = RequestMethod.GET)
+    @ApiOperation("返回子表集合")
+    public ResponseData oldBackDetails(@RequestParam Long id, Long partsId) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.oldBackDetails(id, partsId);
+        return ResponseData.success(detailResults);
+    }
 }
 
 

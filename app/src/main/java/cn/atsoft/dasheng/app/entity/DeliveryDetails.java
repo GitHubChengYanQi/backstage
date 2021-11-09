@@ -24,8 +24,15 @@ import java.io.Serializable;
 public class DeliveryDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
+
     @TableField("brand_id")
     private Long brandId;
+
     @TableField("quality_type")
     private String qualityType;
 
@@ -186,6 +193,16 @@ public class DeliveryDetails implements Serializable {
     public void setBrandId(Long brandId) {
         this.brandId = brandId;
     }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+
     @Override
     public String toString() {
         return "DeliveryDetails{" +

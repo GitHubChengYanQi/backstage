@@ -23,6 +23,12 @@ import java.io.Serializable;
 public class Instock implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 库位id
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
     /**
      * skuId
      */
@@ -107,6 +113,16 @@ public class Instock implements Serializable {
     private Integer display;
     @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
+
+
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
+    }
 
     public Long getDeptId() {
         return deptId;

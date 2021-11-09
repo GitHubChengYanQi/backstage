@@ -36,6 +36,10 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
      */
     private Long sort;
 
+    private Integer module;
+
+    private List<Codings> codings;
+
     /**
      * 编码规则id
      */
@@ -53,6 +57,9 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("编码规则名称")
     private String name;
+
+    @ApiModelProperty("描述")
+    private String note;
 
     /**
      * 编码规则

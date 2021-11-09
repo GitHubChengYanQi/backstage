@@ -2,26 +2,34 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * sku表	
+ * sku表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-18
  */
-@TableName("daoxin_erp_sku")
+@TableName("goods_sku")
 public class Sku implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 类型
+     */
+    @TableField("type")
+    private Integer type;
 
-      @TableId(value = "sku_id", type = IdType.ID_WORKER)
+    @TableId(value = "sku_id", type = IdType.ID_WORKER)
     private Long skuId;
 
     /**
@@ -29,9 +37,48 @@ public class Sku implements Serializable {
      */
     @TableField("sku_name")
     private String skuName;
+    /**
+     * 备注
+     */
+    @TableField("remarks")
+    private String remarks;
+    /**
+     * 编码
+     */
+    @TableField("coding")
+    private String coding;
 
     @TableField("is_ban")
-    private int isBan;
+    private Integer isBan;
+    @TableField("standard")
+    private String standard;
+
+    public String getStandard() {
+        return standard;
+    }
+
+    public void setStandard(String standard) {
+        this.standard = standard;
+    }
+
+    public Integer getIsBan() {
+        return isBan;
+    }
+
+    @TableField("specifications")
+    public String specifications;
+
+    public String getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(String specifications) {
+        this.specifications = specifications;
+    }
+
+    public void setIsBan(Integer isBan) {
+        this.isBan = isBan;
+    }
 
     @TableField("sku_value")
     private String skuValue;
@@ -55,6 +102,14 @@ public class Sku implements Serializable {
         this.skuValue = skuValue;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     /**
      * spu id
      */
@@ -64,25 +119,25 @@ public class Sku implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -91,6 +146,13 @@ public class Sku implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public Long getSkuId() {
         return skuId;
@@ -156,17 +218,25 @@ public class Sku implements Serializable {
         this.display = display;
     }
 
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
     @Override
     public String toString() {
         return "Sku{" +
-        "skuId=" + skuId +
-        ", skuName=" + skuName +
-        ", spuId=" + spuId +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        "}";
+                "skuId=" + skuId +
+                ", skuName=" + skuName +
+                ", spuId=" + spuId +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                "}";
     }
 }

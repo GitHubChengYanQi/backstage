@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
@@ -11,6 +13,7 @@ import cn.atsoft.dasheng.erp.wrapper.SpuClassificationSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -111,12 +114,57 @@ public class SpuClassificationController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
-        List<Map<String, Object>> list = this.spuClassificationService.listMaps();
+        QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
         return ResponseData.success(result);
     }
 
+    @RequestMapping(value = "/treeView", method = RequestMethod.POST)
+    public ResponseData<List<TreeNode>> treeView(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
+        QueryWrapper<SpuClassification> spuClassificationQueryWrapper = new QueryWrapper<>();
+        if (ToolUtil.isNotEmpty(spuClassificationParam)) {
+            if (ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
+                spuClassificationQueryWrapper.eq("spu_classification_id", spuClassificationParam.getSpuClassificationId());
+            }
+        }
+        spuClassificationQueryWrapper.eq("display", 1);
+        List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
+
+        if (ToolUtil.isEmpty(list)) {
+            return ResponseData.success();
+        }
+        List<TreeNode> treeViewNodes = new ArrayList<>();
+
+        TreeNode rootTreeNode = new TreeNode();
+        rootTreeNode.setKey("0");
+        rootTreeNode.setValue("0");
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
+        rootTreeNode.setParentId("-1");
+        treeViewNodes.add(rootTreeNode);
+
+        for (Map<String, Object> item : list) {
+            TreeNode treeNode = new TreeNode();
+            treeNode.setParentId(Convert.toStr(item.get("pid")));
+            treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
+            treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
+            treeNode.setTitle(Convert.toStr(item.get("name")));
+            treeNode.setLabel(Convert.toStr(item.get("name")));
+            treeViewNodes.add(treeNode);
+        }
+        //构建树
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("0");
+        List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
+
+        //把子节点为空的设为null
+        //DeptTreeWrapper.clearNull(results);
+
+        return ResponseData.success(results);
+    }
 }
 
 

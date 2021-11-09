@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -29,6 +30,11 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private String pname;
     private Long storehouseId;
     private Long outStockOrderId;
+
+    /**
+     * 库位id
+     */
+    private Long storehousePositionsId;
     /**
      * skuId
      */

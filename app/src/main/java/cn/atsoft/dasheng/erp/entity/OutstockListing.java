@@ -31,6 +31,12 @@ public class OutstockListing implements Serializable {
     private Long outstockListingId;
 
 
+    /**
+     * skuId
+     */
+    @TableField("sku_id")
+    private Long skuId;
+
     @TableField("delivery_id")
     private Long deliveryId;
     /**
@@ -244,6 +250,16 @@ public class OutstockListing implements Serializable {
     public void setOutstockApplyId(Long outstockApplyId) {
         this.outstockApplyId = outstockApplyId;
     }
+
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+
 
     @Override
     public String toString() {

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.erp.mapper.QualityPlanDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.QualityPlanDetail">
+        <id column="plan_detail_id" property="planDetailId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="quality_check_id" property="qualityCheckId"/>
+        <result column="operator" property="operator"/>
+        <result column="is_null" property="isNull"/>
+        <result column="standard_value" property="standardValue"/>
+        <result column="testing_type" property="testingType"/>
+        <result column="quality_amount" property="qualityAmount"/>
+        <result column="quality_proportion" property="qualityProportion"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="sort" property="sort"/>
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">sort
+    AS "sort",
+        plan_detail_id
+        AS "planDetailId", is_null AS "isNull",plan_id AS "planId", quality_check_id AS "qualityCheckId", operator AS "operator", standard_value AS "standardValue", testing_type AS "testingType", quality_amount AS "qualityAmount", quality_proportion AS "qualityProportion", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_quality_plan_detail where 1 = 1
+        <if test="paramCondition.planDetailId != null">
+            and plan_detail_id like CONCAT('%',#{paramCondition.planDetailId},'%')
+        </if>
+        <if test="paramCondition.planId != null">
+            and plan_id like CONCAT('%',#{paramCondition.planId},'%')
+        </if>
+        <if test="paramCondition.qualityCheckId != null">
+            and quality_check_id like CONCAT('%',#{paramCondition.qualityCheckId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_quality_plan_detail where 1 = 1
+        <if test="paramCondition.planDetailId != null">
+            and plan_detail_id like CONCAT('%',#{paramCondition.planDetailId},'%')
+        </if>
+        <if test="paramCondition.planId != null">
+            and plan_id like CONCAT('%',#{paramCondition.planId},'%')
+        </if>
+        <if test="paramCondition.qualityCheckId != null">
+            and quality_check_id like CONCAT('%',#{paramCondition.qualityCheckId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult"
+            parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_quality_plan_detail where 1 = 1
+        <if test="paramCondition.planDetailId != null">
+            and plan_detail_id like CONCAT('%',#{paramCondition.planDetailId},'%')
+        </if>
+        <if test="paramCondition.planId != null">
+            and plan_id like CONCAT('%',#{paramCondition.planId},'%')
+        </if>
+        <if test="paramCondition.qualityCheckId != null">
+            and quality_check_id like CONCAT('%',#{paramCondition.qualityCheckId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_erp_quality_plan_detail where 1 = 1
+        <if test="paramCondition.planDetailId != null">
+            and plan_detail_id like CONCAT('%',#{paramCondition.planDetailId},'%')
+        </if>
+        <if test="paramCondition.planId != null">
+            and plan_id like CONCAT('%',#{paramCondition.planId},'%')
+        </if>
+        <if test="paramCondition.qualityCheckId != null">
+            and quality_check_id like CONCAT('%',#{paramCondition.qualityCheckId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+    </select>
+
+</mapper>

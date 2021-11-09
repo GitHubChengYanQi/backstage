@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.app.service.UnitService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Tool;
@@ -63,11 +64,13 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool> implements To
     }
 
     @Override
+    @BussinessLog
     public void delete(ToolParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
+    @BussinessLog
     public void update(ToolParam param) {
         Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getCoding()).count();
         if (rulesId > 0) {
