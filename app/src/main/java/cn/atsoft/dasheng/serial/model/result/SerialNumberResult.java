@@ -44,7 +44,11 @@ public class SerialNumberResult implements Serializable {
      */
     @ApiModelProperty("流水号")
     private Long num;
-
+    /**
+     * 长度
+     */
+    @ApiModelProperty("长度")
+    private Long serialLength;
     /**
      * 创建者
      */

@@ -248,7 +248,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         }
         if (rules.contains("${serial}")) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();
-            serialNumberParam.setNum(5L);
+            serialNumberParam.setSerialLength(4L);
             Long add = serialNumberService.add(serialNumberParam);
             rules = rules.replace("${serial}", +add +"");
 
