@@ -49,7 +49,12 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         }
         entity.setDate(new Date());
         this.save(entity);
-        return entity.getNum();
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setGroupingUsed(false);
+        nf.setMaximumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
+        nf.setMinimumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
+        Long snum = entity.getNum();
+        return Long.valueOf(nf.format(snum));
     }
 
     @Override
