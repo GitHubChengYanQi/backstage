@@ -186,6 +186,11 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             SpuResult backSpu = skuService.backSpu(datum.getSkuId());
             datum.setSpuResult(backSpu);
 
+            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
+
             if (ToolUtil.isNotEmpty(skus)) {
                 for (Sku sku : skus) {
                     if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {

@@ -9,8 +9,6 @@ import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.model.result.SerialNumberResult;
 import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.hutool.core.date.DateUnit;
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.ServiceUI;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -45,18 +42,19 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         SerialNumber entity = getEntity(param);
         SerialNumber num = this.getSerial();
         if (ToolUtil.isEmpty(num)) {
-            param.setNum(0L);
+            param.setNum(1L);
         } else {
+            entity.setNum(num.getNum()+1L);
 
-            param.setNum(num.getNum() + 1);
-            param.setDate(new Date());
-            NumberFormat nf = NumberFormat.getInstance();
-            nf.setGroupingUsed(false);
-            nf.setMaximumIntegerDigits(param.getLength());
-            nf.setMinimumIntegerDigits(param.getLength());
         }
+        entity.setDate(new Date());
         this.save(entity);
-        return entity.getNum();
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setGroupingUsed(false);
+        nf.setMaximumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
+        nf.setMinimumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
+        Long snum = entity.getNum();
+        return Long.valueOf(nf.format(snum));
     }
 
     @Override
@@ -81,7 +79,7 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
 
     public SerialNumber getSerial() {
         QueryWrapper<SerialNumber> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("date_format(create_time,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d')").orderByAsc("num");
+        queryWrapper.apply("date_format(create_time,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d')").orderByDesc("num");
         SerialNumber num = this.baseMapper.selectOne(queryWrapper.orderByDesc("num").last("limit 1"));
         return num;
     }

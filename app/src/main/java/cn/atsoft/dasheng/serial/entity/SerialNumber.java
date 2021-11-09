@@ -49,6 +49,20 @@ public class SerialNumber implements Serializable {
     private Long num;
 
     /**
+     * 流水号
+     */
+    @TableField("serial_length")
+    private Long serialLength;
+
+    public Long getSerialLength() {
+        return serialLength;
+    }
+
+    public void setSerialLength(Long serialLength) {
+        this.serialLength = serialLength;
+    }
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
