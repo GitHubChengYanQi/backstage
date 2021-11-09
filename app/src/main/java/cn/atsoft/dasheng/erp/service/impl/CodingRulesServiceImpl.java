@@ -260,9 +260,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         Matcher matcher = compile.matcher(rules);
         if (matcher.find()) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();
-            serialNumberParam.setLength(Integer.valueOf(matcher.group(3)));
+            serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
             Long aLong = serialNumberService.add(serialNumberParam);
-            rules = rules.replace("@" + matcher.group(0), aLong + "");
+            rules = rules.replace( matcher.group(0), aLong + "");
         }
 
         return rules;
