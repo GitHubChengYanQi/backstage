@@ -209,6 +209,11 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
 
+            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
+
 
             if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {

@@ -17,15 +17,15 @@
         <result column="update_user" property="updateUser"/>
         <result column="deptId" property="deptId"/>
         <result column="display" property="display"/>
-        <result column="children" property="children"/>
-        <result column="childrens" property="childrens"/>
+<!--        <result column="children" property="children"/>-->
+<!--        <result column="childrens" property="childrens"/>-->
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
     AS "deptId",
 longitude
-    AS "longitude",storehouse_id AS "storehouseId",children AS "children",childrens AS "childrens", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    AS "longitude",storehouse_id AS "storehouseId", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
