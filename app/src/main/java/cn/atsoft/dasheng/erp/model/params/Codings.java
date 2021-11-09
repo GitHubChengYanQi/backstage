@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class Codings {
+    private String key;
     private String values;
 }
