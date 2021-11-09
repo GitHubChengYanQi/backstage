@@ -252,9 +252,6 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${week}", weekOfYear + "");
         }
 
-        if (rules.contains("${skuClass}")) {
-            rules = rules.replace("${skuClass}", "${skuClass}");
-        }
 
         Pattern compile = Pattern.compile("\\<(serial.*?(\\[(\\d[0-9]?)\\]))\\>");
         Matcher matcher = compile.matcher(rules);
@@ -262,9 +259,12 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             SerialNumberParam serialNumberParam = new SerialNumberParam();
             serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
             Long aLong = serialNumberService.add(serialNumberParam);
-            rules = rules.replace( matcher.group(0), aLong + "");
+            rules = rules.replace(matcher.group(0) + "", aLong + "");
         }
 
+        if (rules.contains("${skuClass}")) {
+            rules = rules.replace("${skuClass}", "${skuClass}");
+        }
         return rules;
     }
 
