@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class BackCodeRequest {
-    private Long id;
+    private Long codeId;
     private String source;
-    private Long spuId;
+    private Long Id;
+
 }
