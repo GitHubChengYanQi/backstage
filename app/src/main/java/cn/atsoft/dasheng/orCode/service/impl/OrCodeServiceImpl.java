@@ -400,6 +400,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
+            inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
