@@ -10,4 +10,6 @@ public class InKindRequest {
     private String type;
     private InstockParam instockParam;
 
+    private Long sorehousePositionsId;
+
 }
