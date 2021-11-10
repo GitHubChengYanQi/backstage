@@ -60,21 +60,11 @@ public class OrCodeController extends BaseController {
     @Autowired
     private StorehousePositionsService storehousePositionsService;
     @Autowired
-    private SpuClassificationService spuClassificationService;
-    @Autowired
-    private MaterialService materialService;
-    @Autowired
-    private SkuService skuService;
-    @Autowired
     private StockService stockService;
     @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
     private OutstockService outstockService;
-    @Autowired
-    private UnitService unitService;
-    @Autowired
-    private CategoryService categoryService;
     @Autowired
     private UserService userService;
     @Autowired
