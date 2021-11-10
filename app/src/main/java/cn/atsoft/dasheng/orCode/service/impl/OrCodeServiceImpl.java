@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -129,7 +130,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //返回类目
         Category category = spuResult.getCategoryId() == null ? new Category() : categoryService.query().in("category_id", spuResult.getCategoryId()).one();
         if (ToolUtil.isNotEmpty(category)) {
-            cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult = new CategoryResult();
+            CategoryResult categoryResult = new CategoryResult();
             ToolUtil.copyProperties(category, categoryResult);
             spuResult.setCategoryResult(categoryResult);
         }
