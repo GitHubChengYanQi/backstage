@@ -90,6 +90,6 @@ public class TreeNode implements Tree {
 
     @Override
     public void setChildrenNodes(List childrenNodes) {
-        this.children = childrenNodes.size() > 0 ? childrenNodes : null;
+        this.children = childrenNodes;
     }
 }
