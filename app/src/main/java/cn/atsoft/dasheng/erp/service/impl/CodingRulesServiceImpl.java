@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xkcoding.http.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -68,9 +71,15 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         } else {
             for (Codings codings : param.getCodings()) {
                 if (codingRules.equals("")) {
-                    codingRules = codings.getValues();
+                    codingRules = codings.getKey();
+                    if (codings.getKey().equals("${serial}")) {
+                        param.setSerial(codings.getValues());
+                    }
                 } else {
-                    codingRules = codingRules + "," + codings.getValues();
+                    if (codings.getKey().equals("${serial}")) {
+                        param.setSerial(codings.getValues());
+                    }
+                    codingRules = codingRules + "," + codings.getKey();
                 }
 
             }
@@ -243,15 +252,18 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             rules = rules.replace("${week}", weekOfYear + "");
         }
 
+
+        Pattern compile = Pattern.compile("\\<(serial.*?(\\[(\\d[0-9]?)\\]))\\>");
+        Matcher matcher = compile.matcher(rules);
+        if (matcher.find()) {
+            SerialNumberParam serialNumberParam = new SerialNumberParam();
+            serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
+            Long aLong = serialNumberService.add(serialNumberParam);
+            rules = rules.replace(matcher.group(0) + "", aLong + "");
+        }
+
         if (rules.contains("${skuClass}")) {
             rules = rules.replace("${skuClass}", "${skuClass}");
-        }
-        if (rules.contains("${serial}")) {
-            SerialNumberParam serialNumberParam = new SerialNumberParam();
-            serialNumberParam.setSerialLength(4L);
-            Long add = serialNumberService.add(serialNumberParam);
-            rules = rules.replace("${serial}", +add +"");
-
         }
         return rules;
     }
