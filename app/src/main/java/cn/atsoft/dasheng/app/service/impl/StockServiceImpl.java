@@ -172,16 +172,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
 
-//
-//            if (ToolUtil.isNotEmpty(skus)) {
-//                for (Sku sku : skus) {
-//                    if (datum.getSkuId() != null && sku.getSkuId().equals(datum.getSkuId())) {
-//                        SkuResult skuResult = new SkuResult();
-//                        ToolUtil.copyProperties(sku, skuResult);
-//                        datum.setSkuResult(skuResult);
-//                    }
-//                }
-//            }
+            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
 
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {
