@@ -394,16 +394,18 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     @Transactional
     public void instockByCode(InKindRequest inKindRequest) {
-        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getId()).eq("source", inKindRequest.getType()).one();
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
             if (one.getType().equals("1")) {
                 throw new ServiceException(500, "已入库");
             }
             one.setType("1");
-            InkindParam inkindParam = new InkindParam();
-            ToolUtil.copyProperties(one,inkindParam);
-            inkindService.update(inkindParam);
+            Inkind inkind = new Inkind();
+            inkind.setType("1");
+            QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("inkind_id", one.getInkindId());
+            inkindService.update(inkind, queryWrapper);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockParam())) {
                 instockService.update(inKindRequest.getInstockParam());
             }
