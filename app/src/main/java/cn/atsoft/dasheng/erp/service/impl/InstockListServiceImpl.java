@@ -93,6 +93,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instockParam.setCostPrice(newEntity.getCostPrice());
             instockParam.setSellingPrice(newEntity.getSellingPrice());
             instockParam.setInstockOrderId(newEntity.getInstockOrderId());
+            instockParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             instockService.add(instockParam);
 
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
@@ -119,6 +120,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setPrice(newEntity.getCostPrice());
             stockDetailsParam.setBrandId(newEntity.getBrandId());
             stockDetailsParam.setSkuId(newEntity.getSkuId());
+            stockDetailsParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             stockDetailsService.add(stockDetailsParam);
 
         } else {

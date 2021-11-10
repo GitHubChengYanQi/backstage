@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.orCode.controller;
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -21,6 +23,9 @@ import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,21 +60,17 @@ public class OrCodeController extends BaseController {
     @Autowired
     private StorehousePositionsService storehousePositionsService;
     @Autowired
-    private SpuClassificationService spuClassificationService;
-    @Autowired
-    private MaterialService materialService;
-    @Autowired
-    private SkuService skuService;
-    @Autowired
     private StockService stockService;
     @Autowired
-    private InstockService instockService;
+    private InstockOrderService instockOrderService;
     @Autowired
     private OutstockService outstockService;
     @Autowired
-    private UnitService unitService;
+    private UserService userService;
     @Autowired
-    private CategoryService categoryService;
+    private InstockListService instockListService;
+    @Autowired
+    private InstockService instockService;
 
     /**
      * 新增接口
@@ -109,6 +110,22 @@ public class OrCodeController extends BaseController {
     public ResponseData delete(@RequestBody OrCodeParam orCodeParam) {
         this.orCodeService.delete(orCodeParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 返回二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
+    @ApiOperation("二维码")
+    @Transactional
+    public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
+        orCodeService.instockByCode(inKindRequest);
+        return ResponseData.success();
+
     }
 
     /**
@@ -151,7 +168,7 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/backCode", method = RequestMethod.POST)
     @ApiOperation("二维码")
     @Transactional
-    public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest ) {
+    public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest) {
         Long aLong = orCodeService.backCode(backCodeRequest);
         return ResponseData.success(aLong);
 
@@ -252,15 +269,41 @@ public class OrCodeController extends BaseController {
                     return ResponseData.success(stockRequest);
 
                 case "instock":
-                    Instock instock = instockService.query().eq("instock_id", codeBind.getFormId()).one();
-                    if (ToolUtil.isEmpty(instock)) {
+                    InstockOrder instockOrder = instockOrderService.query().eq("instock_order_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(instockOrder)) {
                         throw new ServiceException(500, "当前数据不存在");
                     }
-                    InstockResult instockResult = new InstockResult();
-                    ToolUtil.copyProperties(instock, instockResult);
+                    InstockOrderResult instockOrderResult = new InstockOrderResult();
+                    ToolUtil.copyProperties(instockOrder, instockOrderResult);
+                    Storehouse storehouseDetail = storehouseService.getById(instockOrder.getStoreHouseId());
+                    if (ToolUtil.isNotEmpty(storehouseDetail)) {
+                        StorehouseResult storehouseResult1 = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouseDetail, storehouseResult1);
+                        instockOrderResult.setStorehouseResult(storehouseResult1);
+                    }
+                    User user = userService.getById(instockOrder.getUserId());
+                    if (ToolUtil.isNotEmpty(user)) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        instockOrderResult.setUserResult(userResult);
+                    }
+                    InstockListParam instockListParam = new InstockListParam();
+                    instockListParam.setInstockOrderId(instockOrder.getInstockOrderId());
+                    PageInfo<InstockListResult> instockListResultPageInfo = instockListService.findPageBySpec(instockListParam);
+                    List<InstockListResult> instockListResults = instockListResultPageInfo.getData();
+
+                    instockOrderResult.setInstockListResults(instockListResults);
+
+                    InstockParam instockParam = new InstockParam();
+                    instockParam.setInstockOrderId(instockOrder.getInstockOrderId());
+                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam, null);
+                    List<InstockResult> instockResults = instockResultPageInfo.getData();
+
+                    instockOrderResult.setInstockResults(instockResults);
+
                     InstockRequest instockRequest = new InstockRequest();
                     instockRequest.setType("instock");
-                    instockRequest.setResult(instockResult);
+                    instockRequest.setResult(instockOrderResult);
                     return ResponseData.success(instockRequest);
 
                 case "outstock":
@@ -292,6 +335,19 @@ public class OrCodeController extends BaseController {
         return ResponseData.success(t);
     }
 
+
+    /**
+     * 判断绑定合法性
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @RequestMapping(value = "/judgeBind", method = RequestMethod.POST)
+    @ApiOperation("判断是否绑定")
+    public ResponseData judgeBind(@RequestBody InKindRequest inKindRequest) {
+        Boolean t = orCodeService.judgeBind(inKindRequest);
+        return ResponseData.success(t);
+    }
 
 }
 

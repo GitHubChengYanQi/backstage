@@ -143,15 +143,20 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.GET)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView(@RequestParam Long ids) {
+    public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids) {
 
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
-        if (ToolUtil.isEmpty(storehouse)) {
-            throw  new ServiceException(500,"数据不正确");
-        }
+
+
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("-1");
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("storehouse_id", ids);
+        if (ToolUtil.isNotEmpty(ids)){
+            queryWrapper.in("storehouse_id", ids);
+
+        }
+
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
 
@@ -160,8 +165,14 @@ public class StorehousePositionsController extends BaseController {
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
         rootTreeNode.setValue("0");
-        rootTreeNode.setLabel(storehouse.getName());
-        rootTreeNode.setTitle(storehouse.getName());
+        if (ToolUtil.isNotEmpty(storehouse)){
+            rootTreeNode.setLabel(storehouse.getName());
+            rootTreeNode.setTitle(storehouse.getName());
+        }else {
+            rootTreeNode.setLabel("顶级");
+            rootTreeNode.setTitle("顶级");
+        }
+
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
 
@@ -175,8 +186,7 @@ public class StorehousePositionsController extends BaseController {
             treeViewNodes.add(treeNode);
         }
         //构建树
-        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

@@ -25,6 +25,31 @@ public class Inkind implements Serializable {
     private static final long serialVersionUID = 1L;
     @TableField("spu_id")
     private Long spuId;
+    /**
+     * 品牌
+     */
+    @TableField("brand_id")
+    private Long brandId;
+    /**
+     * 库位
+     */
+    @TableField("storehouse_positions_id")
+    private Long storehousePositionsId;
+    /**
+     * 入库单
+     */
+    @TableField("instock_order_id")
+    private Long instockOrderId;
+    /**
+     * 成本价格
+     */
+    @TableField("cost_price")
+    private Integer costPrice;
+    /**
+     * 出售价格
+     */
+    @TableField("selling_price")
+    private Integer sellingPrice;
 
     /**
      * 实物id
@@ -158,6 +183,47 @@ public class Inkind implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+
+    public Long getInstockOrderId() {
+        return instockOrderId;
+    }
+
+    public void setInstockOrderId(Long instockOrderId) {
+        this.instockOrderId = instockOrderId;
+    }
+
+    public Integer getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(Integer costPrice) {
+        this.costPrice = costPrice;
+    }
+
+    public Integer getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(Integer sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
+
+    public Long getStorehousePositionsId() {
+        return storehousePositionsId;
+    }
+
+    public void setStorehousePositionsId(Long storehousePositionsId) {
+        this.storehousePositionsId = storehousePositionsId;
     }
 
     @Override

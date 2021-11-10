@@ -13,13 +13,13 @@ import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
@@ -30,7 +30,7 @@ import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -74,6 +74,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OrCodeBindService orCodeBindService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private InstockListService instockListService;
 
     @Override
     @Transactional
@@ -128,7 +130,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //返回类目
         Category category = spuResult.getCategoryId() == null ? new Category() : categoryService.query().in("category_id", spuResult.getCategoryId()).one();
         if (ToolUtil.isNotEmpty(category)) {
-            cn.atsoft.dasheng.erp.model.result.CategoryResult categoryResult = new CategoryResult();
+            CategoryResult categoryResult = new CategoryResult();
             ToolUtil.copyProperties(category, categoryResult);
             spuResult.setCategoryResult(categoryResult);
         }
@@ -275,67 +277,138 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Transactional
     public Long backCode(BackCodeRequest codeRequest) {
 
-        if (ToolUtil.isEmpty(codeRequest.getId())) {
-            throw new ServiceException(500, "请传入id");
-        }
+
         if (ToolUtil.isEmpty(codeRequest.getSource())) {
             throw new ServiceException(500, "请传入绑定类型");
         }
         switch (codeRequest.getSource()) {
             case "sku":
-                Integer count = skuService.query().in("sku_id", codeRequest.getId()).count();
-                if (count == 0) {
-                    throw new ServiceException(500, "参数不合法");
+
+                OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+                //添加绑定表
+                orCodeBindParam.setSource(codeRequest.getSource());
+                orCodeBindParam.setFormId(codeRequest.getId());
+                if (ToolUtil.isEmpty(codeRequest.getCodeId())) {
+                    OrCodeParam orCodeParam = new OrCodeParam();
+                    orCodeParam.setType(codeRequest.getSource());
+                    Long aLong = this.add(orCodeParam);
+                    orCodeBindParam.setOrCodeId(aLong);
+                    orCodeBindService.add(orCodeBindParam);
+                    return aLong;
+                } else {
+                    OrCode qrCodeId = this.query().in("qr_code_id", codeRequest.getCodeId()).one();
+                    if (ToolUtil.isEmpty(qrCodeId)) {
+                        throw new ServiceException(500, "二维码不存在");
+                    }
+                    orCodeBindParam.setOrCodeId(codeRequest.getCodeId());
+                    orCodeBindService.add(orCodeBindParam);
+                    return codeRequest.getCodeId();
+                }
+            case "item":
+                OrCode orCode = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
+                if (ToolUtil.isEmpty(orCode)) {
+                    throw new ServiceException(500, "二维码不合法");
+                }
+                OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", codeRequest.getCodeId()).one();
+                if (ToolUtil.isNotEmpty(orCodeBind)) {
+                    throw new ServiceException(500, "二维码已绑定");
                 }
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
-                inkindParam.setType(codeRequest.getSource());
-                inkindParam.setSpuId(codeRequest.getSpuId());
-                Long kindId = inkindService.add(inkindParam);
-                OrCodeBind one = orCodeBindService.query().in("form_id", kindId).in("source", codeRequest.getSource()).one();
+                inkindParam.setType("0");
+                inkindParam.setCostPrice(codeRequest.getCostPrice());
+                inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
+                inkindParam.setSellingPrice(codeRequest.getSellingPrice());
+                inkindParam.setBrandId(codeRequest.getBrandId());
+                Long aLong = inkindService.add(inkindParam);
+                OrCodeBindParam bindParam = new OrCodeBindParam();
+                bindParam.setOrCodeId(codeRequest.getCodeId());
+                bindParam.setFormId(aLong);
+                bindParam.setSource(codeRequest.getSource());
+                orCodeBindService.add(bindParam);
+                return codeRequest.getCodeId();
+            default:
+                OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
                 if (ToolUtil.isNotEmpty(one)) {
                     return one.getOrCodeId();
                 } else {
                     OrCodeParam orCodeParam = new OrCodeParam();
                     orCodeParam.setType(codeRequest.getSource());
-                    Long aLong = this.add(orCodeParam);
-                    OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-                    orCodeBindParam.setSource(codeRequest.getSource());
-                    orCodeBindParam.setFormId(kindId);
-                    orCodeBindParam.setOrCodeId(aLong);
-                    orCodeBindService.add(orCodeBindParam);
-                    return aLong;
+                    Long Long = this.add(orCodeParam);
+                    OrCodeBindParam BindParam = new OrCodeBindParam();
+                    BindParam.setSource(codeRequest.getSource());
+                    BindParam.setFormId(codeRequest.getId());
+                    BindParam.setOrCodeId(Long);
+                    orCodeBindService.add(BindParam);
+                    return Long;
                 }
+
         }
 
-        OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            return one.getOrCodeId();
-        } else {
-            OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(codeRequest.getSource());
-            Long aLong = this.add(orCodeParam);
-            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(codeRequest.getSource());
-            orCodeBindParam.setFormId(codeRequest.getId());
-            orCodeBindParam.setOrCodeId(aLong);
-            orCodeBindService.add(orCodeBindParam);
-            return aLong;
-        }
     }
 
     @Override
     public Boolean isNotBind(InKindRequest inKindRequest) {
-        OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", inKindRequest.getCodeId()).one();
-        if (ToolUtil.isEmpty(orCodeBind)) {
-            return false;
+        if (ToolUtil.isNotEmpty(inKindRequest.getCodeId())) {
+            OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
+            if (ToolUtil.isNotEmpty(orCodeBind)) {
+                return true;
+            }
         }
-        Inkind inkind = inkindService.query().eq("sku_id", inKindRequest.getSkuId()).eq("type", inKindRequest.getType())
-                .eq("spu_id", inKindRequest.getSpuId()).one();
-        if (ToolUtil.isEmpty(inkind)) {
-            return false;
+//        if (ToolUtil.isNotEmpty(inKindRequest.getSkuId())) {
+//            Inkind inkind = inkindService.query().eq("sku_id", inKindRequest.getSkuId()).eq("type", inKindRequest.getType())
+//                    .eq("spu_id", inKindRequest.getSpuId()).one();
+//            if (ToolUtil.isEmpty(inkind)) {
+//                return false;
+//            }
+//        }
+        return false;
+    }
+
+    //判断是否入库
+    @Override
+    public Boolean judgeBind(InKindRequest inKindRequest) {
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
+        if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
+            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId()).one();
+            if (ToolUtil.isEmpty(one)) {
+                return false;
+            }
+            if (one.getType().equals("0")) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        return true;
+
+        return false;
+    }
+
+    /**
+     * 扫码入库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    @Transactional
+    public void instockByCode(InKindRequest inKindRequest) {
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
+        if (ToolUtil.isNotEmpty(orCodeBind)) {
+            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
+            if (one.getType().equals("1")) {
+                throw new ServiceException(500, "已入库");
+            }
+            one.setType("1");
+            Inkind inkind = new Inkind();
+            inkind.setType("1");
+            inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
+            QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("inkind_id", one.getInkindId());
+            inkindService.update(inkind, queryWrapper);
+            if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
+                instockListService.update(inKindRequest.getInstockListParam());
+            }
+        }
     }
 
 
