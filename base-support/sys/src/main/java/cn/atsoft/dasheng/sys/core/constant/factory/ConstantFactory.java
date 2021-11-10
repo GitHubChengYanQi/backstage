@@ -24,8 +24,6 @@ import cn.atsoft.dasheng.sys.core.constant.cache.CacheKey;
 import cn.atsoft.dasheng.sys.core.constant.state.ManagerStatus;
 import cn.atsoft.dasheng.sys.core.constant.state.MenuStatus;
 import cn.atsoft.dasheng.sys.core.log.LogObjectHolder;
-import cn.atsoft.dasheng.sys.modular.system.entity.*;
-import cn.atsoft.dasheng.sys.modular.system.mapper.*;
 import cn.atsoft.dasheng.sys.modular.system.service.PositionService;
 import cn.atsoft.dasheng.sys.modular.system.service.UserPosService;
 import cn.atsoft.dasheng.core.util.SpringContextHolder;
