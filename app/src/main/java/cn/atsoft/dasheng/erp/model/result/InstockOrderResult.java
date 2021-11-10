@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.InstockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -29,6 +30,9 @@ public class InstockOrderResult implements Serializable {
     private UserResult userResult;
 
     private StorehouseResult storehouseResult;
+
+    private List<InstockListResult> instockListResults;
+    private List<InstockResult> instockResults;
 
     /**
      * 库位id
