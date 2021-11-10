@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -38,6 +39,7 @@ public class StockDetailsResult implements Serializable {
     private Long outStockOrderId;
     private List<BackSku> backSkus;
     private SpuResult spuResult;
+    private Sku sku;
 
 
     /**
