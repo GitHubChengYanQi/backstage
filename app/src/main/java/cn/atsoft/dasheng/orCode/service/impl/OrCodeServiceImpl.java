@@ -332,22 +332,21 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 break;
 
         }
-//
-//        OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
-//        if (ToolUtil.isNotEmpty(one)) {
-//            return one.getOrCodeId();
-//        } else {
-//            OrCodeParam orCodeParam = new OrCodeParam();
-//            orCodeParam.setType(codeRequest.getSource());
-//            Long aLong = this.add(orCodeParam);
-//            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-//            orCodeBindParam.setSource(codeRequest.getSource());
-//            orCodeBindParam.setFormId(codeRequest.getCodeId());
-//            orCodeBindParam.setOrCodeId(aLong);
-//            orCodeBindService.add(orCodeBindParam);
-//            return aLong;
-//        }
-        return null;
+
+        OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
+        if (ToolUtil.isNotEmpty(one)) {
+            return one.getOrCodeId();
+        } else {
+            OrCodeParam orCodeParam = new OrCodeParam();
+            orCodeParam.setType(codeRequest.getSource());
+            Long aLong = this.add(orCodeParam);
+            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
+            orCodeBindParam.setSource(codeRequest.getSource());
+            orCodeBindParam.setFormId(codeRequest.getId());
+            orCodeBindParam.setOrCodeId(aLong);
+            orCodeBindService.add(orCodeBindParam);
+            return aLong;
+        }
     }
 
     @Override
@@ -371,7 +370,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     //判断是否入库
     @Override
     public Boolean judgeBind(InKindRequest inKindRequest) {
-        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getId()).one();
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId()).one();
             if (ToolUtil.isEmpty(one)) {
