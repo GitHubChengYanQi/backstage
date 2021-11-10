@@ -401,11 +401,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             if (one.getType().equals("1")) {
                 throw new ServiceException(500, "已入库");
             }
-            Inkind inkind = new Inkind();
-            inkind.setType("1");
-            QueryWrapper<Inkind> inkindQueryWrapper = new QueryWrapper<>();
-            inkindQueryWrapper.eq("inkind_id", one.getInkindId());
-            inkindService.update(inkind, inkindQueryWrapper);
+            one.setType("1");
+            InkindParam inkindParam = new InkindParam();
+            ToolUtil.copyProperties(one,inkindParam);
+            inkindService.update(inkindParam);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockParam())) {
                 instockService.update(inKindRequest.getInstockParam());
             }
