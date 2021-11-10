@@ -112,6 +112,22 @@ public class OrCodeController extends BaseController {
         return ResponseData.success();
     }
 
+
+    /**
+     * 返回二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
+    @ApiOperation("二维码")
+    @Transactional
+    public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
+        orCodeService.instockByCode(inKindRequest);
+        return ResponseData.success();
+
+    }
+
     /**
      * 查看详情接口
      *
@@ -260,15 +276,15 @@ public class OrCodeController extends BaseController {
                     InstockOrderResult instockOrderResult = new InstockOrderResult();
                     ToolUtil.copyProperties(instockOrder, instockOrderResult);
                     Storehouse storehouseDetail = storehouseService.getById(instockOrder.getStoreHouseId());
-                    if (ToolUtil.isNotEmpty(storehouseDetail)){
+                    if (ToolUtil.isNotEmpty(storehouseDetail)) {
                         StorehouseResult storehouseResult1 = new StorehouseResult();
                         ToolUtil.copyProperties(storehouseDetail, storehouseResult1);
                         instockOrderResult.setStorehouseResult(storehouseResult1);
                     }
                     User user = userService.getById(instockOrder.getUserId());
-                    if (ToolUtil.isNotEmpty(user)){
+                    if (ToolUtil.isNotEmpty(user)) {
                         UserResult userResult = new UserResult();
-                        ToolUtil.copyProperties(user,userResult);
+                        ToolUtil.copyProperties(user, userResult);
                         instockOrderResult.setUserResult(userResult);
                     }
                     InstockListParam instockListParam = new InstockListParam();
@@ -280,7 +296,7 @@ public class OrCodeController extends BaseController {
 
                     InstockParam instockParam = new InstockParam();
                     instockParam.setInstockOrderId(instockOrder.getInstockOrderId());
-                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam,null);
+                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam, null);
                     List<InstockResult> instockResults = instockResultPageInfo.getData();
 
                     instockOrderResult.setInstockResults(instockResults);

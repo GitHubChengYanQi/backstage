@@ -31,6 +31,7 @@ import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -281,15 +282,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         }
         switch (codeRequest.getSource()) {
             case "sku":
-                //添加实物表
-                InkindParam inkindParam = new InkindParam();
-                inkindParam.setType(codeRequest.getSource());
-                inkindParam.setSkuId(codeRequest.getId());
-                Long kindId = inkindService.add(inkindParam);
+
                 OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
                 //添加绑定表
                 orCodeBindParam.setSource(codeRequest.getSource());
-                orCodeBindParam.setFormId(kindId);
+                orCodeBindParam.setFormId(codeRequest.getId());
                 if (ToolUtil.isEmpty(codeRequest.getCodeId())) {
                     OrCodeParam orCodeParam = new OrCodeParam();
                     orCodeParam.setType(codeRequest.getSource());
@@ -298,10 +295,38 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     orCodeBindService.add(orCodeBindParam);
                     return aLong;
                 } else {
+                    OrCode qrCodeId = this.query().in("qr_code_id", codeRequest.getCodeId()).one();
+                    if (ToolUtil.isEmpty(qrCodeId)) {
+                        throw new ServiceException(500, "二维码不存在");
+                    }
                     orCodeBindParam.setOrCodeId(codeRequest.getCodeId());
                     orCodeBindService.add(orCodeBindParam);
                     return codeRequest.getCodeId();
                 }
+            case "item":
+                OrCode orCode = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
+                if (ToolUtil.isEmpty(orCode)) {
+                    throw new ServiceException(500, "二维码不合法");
+                }
+                OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", codeRequest.getCodeId()).one();
+                if (ToolUtil.isNotEmpty(orCodeBind)) {
+                    throw new ServiceException(500, "二维码已绑定");
+                }
+                InkindParam inkindParam = new InkindParam();
+                inkindParam.setSkuId(codeRequest.getId());
+                inkindParam.setType("0");
+                inkindParam.setCostPrice(codeRequest.getCostPrice());
+                inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
+                inkindParam.setSellingPrice(codeRequest.getSellingPrice());
+                inkindParam.setBrandId(codeRequest.getBrandId());
+                inkindParam.setStorehousePositionsId(codeRequest.getStorehousePositionsId());
+                Long aLong = inkindService.add(inkindParam);
+                OrCodeBindParam bindParam = new OrCodeBindParam();
+                bindParam.setOrCodeId(codeRequest.getCodeId());
+                bindParam.setFormId(aLong);
+                bindParam.setSource(codeRequest.getSource());
+                orCodeBindService.add(bindParam);
+                break;
 
         }
 //
@@ -325,7 +350,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public Boolean isNotBind(InKindRequest inKindRequest) {
         if (ToolUtil.isNotEmpty(inKindRequest.getCodeId())) {
-            OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", inKindRequest.getCodeId()).one();
+            OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
             if (ToolUtil.isNotEmpty(orCodeBind)) {
                 return true;
             }
@@ -340,26 +365,41 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         return false;
     }
 
+    //判断是否入库
     @Override
     public Boolean judgeBind(InKindRequest inKindRequest) {
-        List<Inkind> inkinds = inkindService.query().eq("sku_id", inKindRequest.getId()).list();
-        if (ToolUtil.isNotEmpty(inkinds)) {
-            List<Long> ids = new ArrayList<>();
-            for (Inkind inkind : inkinds) {
-                ids.add(inkind.getSkuId());
-            }
-
-            OrCodeBind orCodeBind = orCodeBindService.query()
-                    .eq("qr_code_id", inKindRequest.getCodeId())
-                    .eq("source", inKindRequest.getType())
-                    .in("form_id", ids).one();
-
-            if (ToolUtil.isNotEmpty(orCodeBind)) {
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getId()).one();
+        if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
+            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
+            if (one.getType().equals("0")) {
                 return true;
+            } else {
+                return false;
             }
         }
 
         return false;
+    }
+
+    /**
+     * 扫码入库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    public void instockByCode(InKindRequest inKindRequest) {
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getId()).eq("source", inKindRequest.getType()).one();
+        if (ToolUtil.isNotEmpty(orCodeBind)) {
+            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
+            if (one.getType().equals("1")) {
+                throw new ServiceException(500, "已入库");
+            }
+            Inkind inkind = new Inkind();
+            inkind.setType("1");
+            QueryWrapper<Inkind> inkindQueryWrapper = new QueryWrapper<>();
+            inkindQueryWrapper.eq("inkind_id", one.getInkindId());
+            inkindService.update(inkind, inkindQueryWrapper);
+        }
     }
 
 

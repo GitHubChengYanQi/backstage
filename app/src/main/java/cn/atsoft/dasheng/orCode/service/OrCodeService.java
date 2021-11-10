@@ -105,6 +105,7 @@ public interface OrCodeService extends IService<OrCode> {
 
     /**
      * 返回二维码
+     *
      * @param backCodeRequest
      * @return
      */
@@ -125,5 +126,12 @@ public interface OrCodeService extends IService<OrCode> {
      * @return
      */
     Boolean judgeBind(InKindRequest inKindRequest);
+
+    /**
+     * 扫码入库
+     *
+     * @param inKindRequest
+     */
+    void instockByCode(InKindRequest inKindRequest);
 
 }
