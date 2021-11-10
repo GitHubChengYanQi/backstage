@@ -330,23 +330,25 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 bindParam.setSource(codeRequest.getSource());
                 orCodeBindService.add(bindParam);
                 break;
+            default:
+                OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
+                if (ToolUtil.isNotEmpty(one)) {
+                    return one.getOrCodeId();
+                } else {
+                    OrCodeParam orCodeParam = new OrCodeParam();
+                    orCodeParam.setType(codeRequest.getSource());
+                    Long Long = this.add(orCodeParam);
+                    OrCodeBindParam BindParam = new OrCodeBindParam();
+                    BindParam.setSource(codeRequest.getSource());
+                    BindParam.setFormId(codeRequest.getId());
+                    BindParam.setOrCodeId(Long);
+                    orCodeBindService.add(BindParam);
+                    return Long;
+                }
 
         }
+        return null;
 
-        OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
-        if (ToolUtil.isNotEmpty(one)) {
-            return one.getOrCodeId();
-        } else {
-            OrCodeParam orCodeParam = new OrCodeParam();
-            orCodeParam.setType(codeRequest.getSource());
-            Long aLong = this.add(orCodeParam);
-            OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
-            orCodeBindParam.setSource(codeRequest.getSource());
-            orCodeBindParam.setFormId(codeRequest.getId());
-            orCodeBindParam.setOrCodeId(aLong);
-            orCodeBindService.add(orCodeBindParam);
-            return aLong;
-        }
     }
 
     @Override
