@@ -148,15 +148,13 @@ public class StorehousePositionsController extends BaseController {
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
 
 
-        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(ids)){
             queryWrapper.in("storehouse_id", ids);
 
         }
-
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
 
@@ -165,16 +163,12 @@ public class StorehousePositionsController extends BaseController {
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
         rootTreeNode.setValue("0");
-        if (ToolUtil.isNotEmpty(storehouse)){
-            rootTreeNode.setLabel(storehouse.getName());
-            rootTreeNode.setTitle(storehouse.getName());
-        }else {
-            rootTreeNode.setLabel("顶级");
-            rootTreeNode.setTitle("顶级");
-        }
-
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
+
+
 
         for (Map<String, Object> item : list) {
             TreeNode treeNode = new TreeNode();
@@ -186,7 +180,8 @@ public class StorehousePositionsController extends BaseController {
             treeViewNodes.add(treeNode);
         }
         //构建树
-
+        DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
+        factory.setRootParentId("0");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null
