@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -58,6 +59,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void add(InstockOrderParam param) {
+        //防止添加重复数据
+        List<Long> judge = new ArrayList<>();
+        for (InstockRequest instockRequest : param.getInstockRequest()) {
+            Long brandId = instockRequest.getBrandId();
+            Long skuId = instockRequest.getSkuId();
+            Integer sellingPrice = instockRequest.getSellingPrice();
+            Integer costprice = instockRequest.getCostprice();
+            judge.add(brandId + skuId + sellingPrice + costprice);
+        }
+        long count = judge.stream().distinct().count();
+        if (param.getInstockRequest().size() > count) {
+            throw new ServiceException(500, "请勿重复添加");
+        }
+
         InstockOrder entity = getEntity(param);
         this.save(entity);
 
@@ -154,7 +169,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
-
 
 
         for (InstockOrderResult datum : data) {

@@ -10,7 +10,9 @@ public class InKindRequest {
     private Long Id;
     private String type;
     private InstockListParam instockListParam;
-
+    private Long brandId;
+    private Integer costPrice;
+    private Integer sellingPrice;
     private Long sorehousePositionsId;
 
 }
