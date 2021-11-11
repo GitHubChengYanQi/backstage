@@ -9,17 +9,17 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
-import cn.atsoft.dasheng.erp.service.InstockListService;
-import cn.atsoft.dasheng.erp.service.InstockOrderService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -56,9 +56,20 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private InstockListService instockListService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     @Override
     public void add(InstockOrderParam param) {
+
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            String replace = backCoding.replace("${instock}", "instock");
+            param.setCoding(replace);
+        }
         //防止添加重复数据
         List<Long> judge = new ArrayList<>();
         for (InstockRequest instockRequest : param.getInstockRequest()) {
