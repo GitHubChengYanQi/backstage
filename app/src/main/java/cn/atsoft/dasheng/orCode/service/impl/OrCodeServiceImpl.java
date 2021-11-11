@@ -317,7 +317,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 }
                 //判断相同物料绑定
                 Inkind inkind = inkindService.query().eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("selling_price", codeRequest.getSellingPrice())
-                        .eq("cost_price", codeRequest.getCostPrice()).eq("instock_order_id", codeRequest.getInstockOrderId()).one();
+                        .eq("cost_price", codeRequest.getCostPrice()).eq("instock_order_id", codeRequest.getInstockOrderId()).eq("type", 0).one();
                 //判断相同二维码绑定
                 OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", codeRequest.getCodeId()).one();
 
