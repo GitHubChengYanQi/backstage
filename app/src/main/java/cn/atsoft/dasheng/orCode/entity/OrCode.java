@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.orCode.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +23,15 @@ import java.io.Serializable;
 public class OrCode implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 绑定状态
+     */
+    @TableField("state")
+    private Integer state;
     /**
      * 码id
      */
-      @TableId(value = "qr_code_id", type = IdType.ID_WORKER)
+    @TableId(value = "qr_code_id", type = IdType.ID_WORKER)
     private Long orCodeId;
 
     /**
@@ -42,25 +49,25 @@ public class OrCode implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -148,18 +155,26 @@ public class OrCode implements Serializable {
         this.deptId = deptId;
     }
 
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "OrCode{" +
-        "orCodeId=" + orCodeId +
-        ", type=" + type +
-        ", data=" + data +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "orCodeId=" + orCodeId +
+                ", type=" + type +
+                ", data=" + data +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

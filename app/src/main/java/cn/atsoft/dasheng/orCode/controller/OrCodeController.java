@@ -86,6 +86,20 @@ public class OrCodeController extends BaseController {
     }
 
     /**
+     * 批量增加二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/batchAdd", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData batchAdd(@RequestBody OrCodeParam orCodeParam) {
+        this.orCodeService.batchAdd(orCodeParam);
+        return ResponseData.success();
+    }
+
+
+    /**
      * 编辑接口
      *
      * @author song
