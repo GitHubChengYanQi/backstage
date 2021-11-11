@@ -392,10 +392,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      * 扫码入库
      *
      * @param inKindRequest
+     * @return
      */
     @Override
     @Transactional
-    public void instockByCode(InKindRequest inKindRequest) {
+    public Boolean instockByCode(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
@@ -410,9 +411,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
-                instockListService.update(inKindRequest.getInstockListParam());
+                try {
+                    instockListService.update(inKindRequest.getInstockListParam());
+                } catch (Exception e) {
+                    return false;
+                }
             }
         }
+        return true;
     }
 
 
