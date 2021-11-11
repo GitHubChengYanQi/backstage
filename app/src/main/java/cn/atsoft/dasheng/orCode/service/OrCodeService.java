@@ -131,7 +131,8 @@ public interface OrCodeService extends IService<OrCode> {
      * 扫码入库
      *
      * @param inKindRequest
+     * @return
      */
-    void instockByCode(InKindRequest inKindRequest);
+    Boolean instockByCode(InKindRequest inKindRequest);
 
 }
