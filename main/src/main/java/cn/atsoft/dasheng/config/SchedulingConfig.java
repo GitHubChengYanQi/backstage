@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.core.schedue.quartz.StartQuartzExample;
 import cn.atsoft.dasheng.core.schedue.spring.SpringTasks;
 import org.quartz.Scheduler;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
  * @Date 2019/2/24 16:23
  */
 //@Configuration
-//@EnableScheduling
+@EnableScheduling
 public class SchedulingConfig {
 
     /**
