@@ -319,6 +319,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 if (ToolUtil.isNotEmpty(orCodeBind)) {
                     throw new ServiceException(500, "二维码已绑定");
                 }
+                Inkind inkind = inkindService.query().eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("selling_price", codeRequest.getSellingPrice())
+                        .eq("cost_price", codeRequest.getCostPrice()).eq("instock_order_id", codeRequest.getInstockOrderId()).one();
+                if (ToolUtil.isNotEmpty(inkind)) {
+                    throw new ServiceException(500, "已经绑定");
+                }
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
                 inkindParam.setType("0");
@@ -420,6 +425,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 InstockList instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
                     if (instockList.getNumber() == 1) {
+                        try {
+                            instockListService.update(inKindRequest.getInstockListParam());
+                        } catch (Exception e) {
+                            return false;
+                        }
                         return false;
                     }
                 }
