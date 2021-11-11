@@ -29,6 +29,8 @@ public class InstockOrderResult implements Serializable {
 
     private UserResult userResult;
 
+    private String coding;
+
     private StorehouseResult storehouseResult;
 
     private List<InstockListResult> instockListResults;
