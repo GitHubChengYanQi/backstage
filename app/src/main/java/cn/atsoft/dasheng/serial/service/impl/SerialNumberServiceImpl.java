@@ -38,11 +38,11 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
     private SerialNumberService serialNumberService;
 
     @Override
-    public Long add(SerialNumberParam param) {
+    public String add(SerialNumberParam param) {
         SerialNumber entity = getEntity(param);
         SerialNumber num = this.getSerial();
         if (ToolUtil.isEmpty(num)) {
-            param.setNum(1L);
+            entity.setNum(1L);
         } else {
             entity.setNum(num.getNum()+1L);
 
@@ -51,10 +51,12 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
         this.save(entity);
         NumberFormat nf = NumberFormat.getInstance();
         nf.setGroupingUsed(false);
-        nf.setMaximumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
-        nf.setMinimumIntegerDigits(Integer.valueOf(entity.getSerialLength().toString()));
+        int max = entity.getSerialLength().intValue();
+
+        nf.setMaximumIntegerDigits(max);
+        nf.setMinimumIntegerDigits(max);
         Long snum = entity.getNum();
-        return Long.valueOf(nf.format(snum));
+        return nf.format(snum);
     }
 
     @Override
