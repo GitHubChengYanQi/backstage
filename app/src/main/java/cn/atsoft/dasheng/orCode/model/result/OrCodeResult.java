@@ -20,7 +20,10 @@ public class OrCodeResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 绑定状态
+     */
+    private Integer state;
     /**
      * 码id
      */

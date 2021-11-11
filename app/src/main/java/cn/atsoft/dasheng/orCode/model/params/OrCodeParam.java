@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.orCode.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -26,6 +27,11 @@ public class OrCodeParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private List<Long> ids;
 
+    private Integer addSize;
+    /**
+     * 绑定状态
+     */
+    private Integer state;
     /**
      * 码id
      */

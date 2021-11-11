@@ -277,9 +277,15 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Transactional
     public Long backCode(BackCodeRequest codeRequest) {
 
-
         if (ToolUtil.isEmpty(codeRequest.getSource())) {
             throw new ServiceException(500, "请传入绑定类型");
+        }
+        OrCode code = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
+        if (ToolUtil.isNotEmpty(code)) {
+            code.setType(codeRequest.getSource());
+            QueryWrapper<OrCode> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("qr_code_id", code.getOrCodeId());
+            this.update(code, queryWrapper);
         }
         switch (codeRequest.getSource()) {
             case "sku":
@@ -411,6 +417,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
+                InstockList instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
+                if (ToolUtil.isNotEmpty(instockList)) {
+                    if (instockList.getNumber() == 1) {
+                        return false;
+                    }
+                }
                 try {
                     instockListService.update(inKindRequest.getInstockListParam());
                 } catch (Exception e) {
@@ -419,6 +431,20 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             }
         }
         return true;
+    }
+
+    @Override
+    public void batchAdd(OrCodeParam param) {
+        if (param.getAddSize() > 1000) {
+            throw new ServiceException(500, "最大只可以生成1000个二维码");
+        }
+        List<OrCode> orCodes = new ArrayList<>();
+        for (Integer i = 0; i < param.getAddSize(); i++) {
+            OrCode orCode = new OrCode();
+            orCode.setState(0);
+            orCodes.add(orCode);
+        }
+        this.saveBatch(orCodes);
     }
 
 
