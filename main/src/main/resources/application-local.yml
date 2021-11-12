@@ -58,6 +58,12 @@ spring:
     username: sn93@qq.com
     password: xxxpassword
 
+  rabbitmq:
+    addresses: 192.168.1.249
+    username: guest
+    password: guest
+    port: 5672
+
 # 邮件发送（改为自己的账号）
 mail:
   from: sn93@qq.com
