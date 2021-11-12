@@ -133,7 +133,7 @@ public interface OrCodeService extends IService<OrCode> {
      * @param inKindRequest
      * @return
      */
-    Boolean instockByCode(InKindRequest inKindRequest);
+    Long instockByCode(InKindRequest inKindRequest);
 
     /**
      * 批量增加二维码
