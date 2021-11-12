@@ -146,8 +146,8 @@ public class OrCodeController extends BaseController {
     @ApiOperation("二维码")
     @Transactional
     public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
-        Boolean aBoolean = orCodeService.instockByCode(inKindRequest);
-        return ResponseData.success(aBoolean);
+        Long number = orCodeService.instockByCode(inKindRequest);
+        return ResponseData.success(number);
 
     }
 
