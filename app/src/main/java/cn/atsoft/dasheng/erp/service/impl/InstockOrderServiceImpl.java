@@ -83,8 +83,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
         if (ToolUtil.isNotEmpty(codingRules)) {
             String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-            String replace = backCoding.replace("${instock}", "instock");
-            param.setCoding(replace);
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStoreHouseId()).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                String replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                param.setCoding(replace);
+            }
         }
         //防止添加重复数据
         List<Long> judge = new ArrayList<>();
