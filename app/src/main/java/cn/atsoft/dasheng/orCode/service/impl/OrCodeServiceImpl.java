@@ -1,14 +1,9 @@
 package cn.atsoft.dasheng.orCode.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Material;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.entity.Unit;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.StockResult;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.model.result.UnitResult;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -16,20 +11,25 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
+import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
-import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
-import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
-import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.model.result.*;
+import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
+import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -76,6 +76,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private InkindService inkindService;
     @Autowired
     private InstockListService instockListService;
+    @Autowired
+    private InstockOrderService instockOrderService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private InstockService instockService;
 
     @Override
     @Transactional
@@ -116,8 +124,18 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param) {
         Page<OrCodeResult> pageContext = getPageContext();
         IPage<OrCodeResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+    public void format(List<OrCodeResult> data) {
+        for (OrCodeResult datum : data) {
+            Object obj = orcodeBackObj(datum.getOrCodeId());
+            datum.setObject(obj);
+        }
+
+    }
+
 
     @Override
     public void spuFormat(SpuResult spuResult) {
@@ -289,7 +307,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         }
         switch (codeRequest.getSource()) {
             case "sku":
-
                 OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
                 //添加绑定表
                 orCodeBindParam.setSource(codeRequest.getSource());
@@ -479,4 +496,126 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         return entity;
     }
 
+    public Object orcodeBackObj(Long id) {
+        OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
+        if (ToolUtil.isEmpty(codeBind)) {
+            return null;
+        } else {
+            String source = codeBind.getSource();
+            switch (source) {
+                case "storehouse":
+                    Storehouse storehouse = storehouseService.query().eq("storehouse_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(storehouse)) {
+                        return null;
+                    }
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse, storehouseResult);
+                    try {
+                        storehouseFormat(storehouseResult);
+                    } catch (Exception e) {
+                    }
+                    StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
+                    storeHouseRequest.setType("storehouse");
+                    storeHouseRequest.setResult(storehouseResult);
+                    return ResponseData.success(storeHouseRequest);
+
+                case "storehousePositions":
+                    StorehousePositions storehousePositions = storehousePositionsService.query().in("storehouse_positions_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(storehousePositions)) {
+                        return null;
+                    }
+                    StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+                    ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+                    try {
+                        storehousePositionsFormat(storehousePositionsResult);
+                    } catch (Exception e) {
+                    }
+                    StoreHousePositionsRequest storeHousePositionsRequest = new StoreHousePositionsRequest();
+                    storeHousePositionsRequest.setType("storehousePositions");
+                    storeHousePositionsRequest.setResult(storehousePositionsResult);
+                    return storeHousePositionsRequest;
+
+                case "stock":
+                    Stock stock = stockService.query().eq("stock_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(stock)) {
+                        return null;
+                    }
+                    StockResult stockResult = new StockResult();
+                    ToolUtil.copyProperties(stock, stockResult);
+                    try {
+                        stockFormat(stockResult);
+                    } catch (Exception e) {
+                    }
+                    StockRequest stockRequest = new StockRequest();
+                    stockRequest.setType("storehouse");
+                    stockRequest.setResult(stockResult);
+                    return stockRequest;
+
+                case "instock":
+                    InstockOrder instockOrder = instockOrderService.query().eq("instock_order_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(instockOrder)) {
+                        return null;
+                    }
+                    InstockOrderResult instockOrderResult = new InstockOrderResult();
+                    ToolUtil.copyProperties(instockOrder, instockOrderResult);
+                    Storehouse storehouseDetail = storehouseService.getById(instockOrder.getStoreHouseId());
+                    if (ToolUtil.isNotEmpty(storehouseDetail)) {
+                        StorehouseResult storehouseResult1 = new StorehouseResult();
+                        ToolUtil.copyProperties(storehouseDetail, storehouseResult1);
+                        instockOrderResult.setStorehouseResult(storehouseResult1);
+                    }
+                    User user = userService.getById(instockOrder.getUserId());
+                    if (ToolUtil.isNotEmpty(user)) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        instockOrderResult.setUserResult(userResult);
+                    }
+                    InstockListParam instockListParam = new InstockListParam();
+                    instockListParam.setInstockOrderId(instockOrder.getInstockOrderId());
+                    PageInfo<InstockListResult> instockListResultPageInfo = instockListService.findPageBySpec(instockListParam);
+                    List<InstockListResult> instockListResults = instockListResultPageInfo.getData();
+
+                    instockOrderResult.setInstockListResults(instockListResults);
+
+                    InstockParam instockParam = new InstockParam();
+                    instockParam.setInstockOrderId(instockOrder.getInstockOrderId());
+                    PageInfo<InstockResult> instockResultPageInfo = instockService.findPageBySpec(instockParam, null);
+                    List<InstockResult> instockResults = instockResultPageInfo.getData();
+
+                    instockOrderResult.setInstockResults(instockResults);
+
+                    cn.atsoft.dasheng.orCode.model.result.InstockRequest instockRequest = new InstockRequest();
+                    instockRequest.setType("instock");
+                    instockRequest.setResult(instockOrderResult);
+                    return instockRequest;
+
+                case "item":
+                    Inkind inkind = inkindService.query().eq("inkind_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(inkind)) {
+                        return null;
+                    }
+                    List<BackSku> backSkus = skuService.backSku(inkind.getSkuId());
+                    OrcodeBackItem orcodeBackItem = new OrcodeBackItem();
+                    Sku sku = skuService.query().eq("sku_id", inkind.getSkuId()).one();
+                    SpuResult backSpu = skuService.backSpu(inkind.getSkuId());
+                    if (ToolUtil.isNotEmpty(sku)) {
+                        orcodeBackItem.setSkuName(sku.getSkuName());
+                    }
+                    orcodeBackItem.setBackSkus(backSkus);
+                    orcodeBackItem.setBackSpu(backSpu);
+                    ItemRequest itemRequest = new ItemRequest();
+                    itemRequest.setType("item");
+                    itemRequest.setOrcodeBackItem(orcodeBackItem);
+                    return itemRequest;
+
+            }
+        }
+        return null;
+    }
 }
+
+
+
+
+
+
