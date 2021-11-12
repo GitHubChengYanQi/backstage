@@ -171,7 +171,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             List<RulesRelation> rulesRelationList = new ArrayList<>();
             for (RulesRelation rulesRelation : rulesRelations) {
 
-                if (rulesRelation.getCodingRulesId().equals(codingRulesResult.getCodingRulesId())) {
+                if (rulesRelation.getCodingRulesId() != null && codingRulesResult.getCodingRulesId() != null && rulesRelation.getCodingRulesId().equals(codingRulesResult.getCodingRulesId())) {
                     rulesRelationList.add(rulesRelation);
                 }
             }
