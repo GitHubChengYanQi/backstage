@@ -85,7 +85,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
             Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStoreHouseId()).one();
             if (ToolUtil.isNotEmpty(storehouse)) {
-                String replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                String replace = "";
+                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                }else {
+                    replace = backCoding.replace("${storehouse}", "");
+                }
                 param.setCoding(replace);
             }
         }
