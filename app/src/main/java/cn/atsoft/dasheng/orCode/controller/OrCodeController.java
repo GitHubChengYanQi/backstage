@@ -27,15 +27,24 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import javafx.scene.control.IndexedCell;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 
 /**
@@ -187,6 +196,138 @@ public class OrCodeController extends BaseController {
         return ResponseData.success(aLong);
 
     }
+
+
+    @RequestMapping(value = "/qrCodetoExcel", method = RequestMethod.POST)
+    @ApiOperation("导出")
+    public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
+        String title = "二维码导出表单";
+        String[] header = {"序号", "Id", "地址","请扫描"};
+
+
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("二维码导出");
+        sheet.setDefaultColumnWidth(40);
+        CellRangeAddress region = new CellRangeAddress(0, 0, 0, 3);
+        sheet.addMergedRegion(region);
+//        sheet.setColumnWidth(0, 10);
+        HSSFRow titleRow = sheet.createRow(0);
+        HSSFCell ti = titleRow.createCell(0);
+        ti.setCellValue(title);
+        HSSFCellStyle titleStyle = workbook.createCellStyle();
+        titleStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        ti.setCellStyle(titleStyle);
+
+
+
+        HSSFRow headrow = sheet.createRow(1);
+
+        for (int i = 0; i < header.length; i++) {
+            //创建一个单元格
+            HSSFCell cell = headrow.createCell(i);
+
+            //创建一个内容对象
+            HSSFRichTextString text = new HSSFRichTextString(header[i]);
+
+
+            HSSFCellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.index);
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            //将内容对象的文字内容写入到单元格中
+            cell.setCellValue(text);
+            cell.setCellStyle(headerStyle);
+        }
+
+
+        List<Map<String, String>> list = new ArrayList<>();
+        //所有二维码
+        if (type == 0) {
+            List<OrCode> orCodes = orCodeService.query().list();
+            for (OrCode orCode : orCodes) {
+                Map<String, String> codeMap = new HashMap<>();
+                Long orCodeId = orCode.getOrCodeId();
+                String replace = url.replace("codeId", orCode.getOrCodeId().toString());
+                codeMap.put("id", orCodeId.toString());
+                codeMap.put("url", replace);
+                list.add(codeMap);
+            }
+        }
+        //未绑定的二维码
+        if ((type == 1)) {
+            List<OrCodeBind> codeBinds = orCodeBindService.query().list();
+            List<Long> ids = new ArrayList<>();
+            for (OrCodeBind codeBind : codeBinds) {
+                ids.add(codeBind.getOrCodeId());
+            }
+            List<OrCode> codes = orCodeService.query().notIn("qr_code_id", ids).list();
+            for (OrCode code : codes) {
+                Map<String, String> codeMap = new HashMap<>();
+                Long orCodeId = code.getOrCodeId();
+                String replace = url.replace("codeId", orCodeId.toString());
+                codeMap.put("id", orCodeId.toString());
+                codeMap.put("url", replace);
+                list.add(codeMap);
+            }
+        }
+        //绑定的二维码
+        if (type == 2) {
+            List<OrCodeBind> binds = orCodeBindService.list();
+            for (OrCodeBind bind : binds) {
+                Map<String, String> codeMap = new HashMap<>();
+                Long orCodeId = bind.getOrCodeId();
+                String replace = url.replace("codeId", orCodeId.toString());
+                codeMap.put("id", orCodeId.toString());
+                codeMap.put("url", replace);
+                list.add(codeMap);
+            }
+        }
+
+        int i = 2;
+        for (Map<String, String> longStringMap : list) {
+
+            HSSFRow row1 = sheet.createRow(i);
+            HSSFCell id = row1.createCell(1);
+            HSSFCell url1 = row1.createCell(2);
+            HSSFRichTextString idValue = new HSSFRichTextString(longStringMap.get("id"));
+            HSSFRichTextString urlValue = new HSSFRichTextString(longStringMap.get("url"));
+            id.setCellValue(idValue);
+            url1.setCellValue(urlValue);
+            i++;
+
+        }
+
+
+//        int i =1;
+//        for (Long orCode : codeIds) {
+//            if (ToolUtil.isEmpty(orCode)) {
+//                HSSFRow row1 = sheet.createRow(i);
+//                HSSFCell id = row1.createCell(1);
+//                HSSFCell url = row1.createCell(2);
+//                HSSFRichTextString text = new HSSFRichTextString(orCode.getOrCodeId().toString());
+//                id.setCellValue(text);
+//                url.setCellValue("www.baidu.com");
+//                i++;
+//            }
+//        }
+
+        //准备将Excel的输出流通过response输出到页面下载
+        //八进制输出流
+        response.setContentType("application/octet-stream");
+
+        //这后面可以设置导出Excel的名称
+        response.setHeader("Content-disposition", "attachment;filename=qrCode.xls");
+
+        //刷新缓冲
+        response.flushBuffer();
+
+        //workbook将Excel写入到response的输出流中，供页面下载
+        workbook.write(response.getOutputStream());
+//        System.out.println(workbook.write(response.getOutputStream()));
+    }
+
 
     /**
      * 返回批量二维码
