@@ -62,24 +62,15 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
     public void add(CodingRulesParam param) {
 
-
         String codingRules = "";
-
-
-        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0) {
+        if (param.getCodings().size() == 0) {
             throw new ServiceException(500, "必须定义规则！");
         } else {
             for (Codings codings : param.getCodings()) {
                 if (codingRules.equals("")) {
-                    codingRules = codings.getKey();
-                    if (codings.getKey().equals("${serial}")) {
-                        param.setSerial(codings.getValues());
-                    }
+                    codingRules = codings.getValues();
                 } else {
-                    if (codings.getKey().equals("${serial}")) {
-                        param.setSerial(codings.getValues());
-                    }
-                    codingRules = codingRules + "," + codings.getKey();
+                    codingRules = codingRules + "," + codings.getValues();
                 }
 
             }
@@ -258,7 +249,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (matcher.find()) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();
             serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
-            Long aLong = serialNumberService.add(serialNumberParam);
+            String aLong = serialNumberService.add(serialNumberParam);
             rules = rules.replace(matcher.group(0) + "", aLong + "");
         }
 

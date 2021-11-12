@@ -38,6 +38,7 @@ public class InstockOrderParam extends AbstractDictMap implements Serializable, 
     private List<InstockRequest> instockRequest;
 
     private Date time;
+    private String coding;
 
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
