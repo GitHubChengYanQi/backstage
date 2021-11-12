@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -43,6 +45,7 @@ public class StorehousePositionsController extends BaseController {
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private StorehouseService storehouseService;
+
 
     /**
      * 新增接口
@@ -148,10 +151,8 @@ public class StorehousePositionsController extends BaseController {
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
 
 
-
-
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(ids)){
+        if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
 
         }
@@ -167,7 +168,6 @@ public class StorehousePositionsController extends BaseController {
         rootTreeNode.setTitle("顶级");
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
-
 
 
         for (Map<String, Object> item : list) {

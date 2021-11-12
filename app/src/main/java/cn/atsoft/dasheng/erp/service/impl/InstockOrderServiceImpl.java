@@ -1,14 +1,18 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.InstockService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -21,15 +25,20 @@ import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,11 +66,18 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private SkuService skuService;
     @Autowired
-    private CodingRulesService codingRulesService;
+    private BusinessTrackService businessTrackService;
     @Autowired
-    private SpuClassificationService spuClassificationService;
+    private InstockSendTemplate instockSendTemplate;
+    @Autowired
+    private RepairSendTemplate repairSendTemplate;
+    @Autowired
+    private OrCodeService orCodeService;
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Override
+    @Transactional
     public void add(InstockOrderParam param) {
 
         CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
@@ -83,10 +99,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (param.getInstockRequest().size() > count) {
             throw new ServiceException(500, "请勿重复添加");
         }
-
         InstockOrder entity = getEntity(param);
         this.save(entity);
-
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
@@ -104,14 +118,28 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockLists.add(instockList);
                 }
             }
-
             if (ToolUtil.isNotEmpty(instockLists)) {
                 instockListService.saveBatch(instockLists);
             }
+            //添加代办信息
+            BusinessTrack businessTrack = new BusinessTrack();
+            businessTrack.setType("代办");
+            businessTrack.setMessage("入库");
+            businessTrack.setUserId(param.getUserId());
+            businessTrack.setNote("有物料需要入库");
+            DateTime data = new DateTime();
+            businessTrack.setTime(data);
+            BackCodeRequest backCodeRequest = new BackCodeRequest();
+            backCodeRequest.setId(entity.getInstockOrderId());
+            backCodeRequest.setSource("instock");
+            Long aLong = orCodeService.backCode(backCodeRequest);
+            String url = param.getUrl().replace("codeId", aLong.toString());
 
+            instockSendTemplate.setBusinessTrack(businessTrack);
+            instockSendTemplate.setUrl(url);
+            instockSendTemplate.sendTemolate();
+            businessTrackService.save(businessTrack);
         }
-
-
     }
 
     @Override
@@ -180,7 +208,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
-
 
         for (InstockOrderResult datum : data) {
 

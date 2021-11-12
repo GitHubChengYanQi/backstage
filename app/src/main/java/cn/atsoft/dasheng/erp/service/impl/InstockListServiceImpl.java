@@ -51,13 +51,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
-
     @Autowired
     private BrandService brandService;
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
     private SkuService skuService;
+
 
 
     @Override
