@@ -427,8 +427,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      */
     @Override
     @Transactional
-    public Boolean instockByCode(InKindRequest inKindRequest) {
+    public Long instockByCode(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
+        InstockList instockList = null;
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
             if (one.getType().equals("1")) {
@@ -442,25 +443,29 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
-                InstockList instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
+                instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
-                    if (instockList.getNumber() == 1) {
+                    if ((instockList.getNumber() - inKindRequest.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
                         } catch (Exception e) {
-                            return false;
+                            return 0L;
                         }
-                        return false;
+                        return 0L;
                     }
                 }
                 try {
                     instockListService.update(inKindRequest.getInstockListParam());
                 } catch (Exception e) {
-                    return false;
+                    return 0L;
                 }
             }
         }
-        return true;
+        if (ToolUtil.isNotEmpty(instockList)){
+            return 0L;
+        }else {
+            return instockList.getNumber() - inKindRequest.getNumber();
+        }
     }
 
     @Override
