@@ -100,7 +100,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     @Transactional
-    @BussinessLog
+
     public void delete(QualityPlanParam param) {
         this.removeById(getKey(param));
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
@@ -110,7 +110,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Override
     @Transactional
-    @BussinessLog
+
     public void update(QualityPlanParam param) {
         List<QualityPlan> qualityPlans = this.query().list();
         for (QualityPlan qualityPlan : qualityPlans) {

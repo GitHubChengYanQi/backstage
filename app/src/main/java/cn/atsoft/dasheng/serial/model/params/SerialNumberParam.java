@@ -23,7 +23,6 @@ import java.util.List;
 public class SerialNumberParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
     private Long cont;
     /**
      * 流水号id
@@ -48,6 +47,11 @@ public class SerialNumberParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("流水号")
     private Long num;
+    /**
+     * 长度
+     */
+    @ApiModelProperty("长度")
+    private Long serialLength;
 
     /**
      * 创建者

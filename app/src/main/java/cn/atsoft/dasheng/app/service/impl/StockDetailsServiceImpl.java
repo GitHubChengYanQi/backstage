@@ -19,6 +19,7 @@ import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
@@ -153,6 +154,11 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             SpuResult spuResult = skuService.backSpu(datum.getSkuId());
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
+
+            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
 
             if (ToolUtil.isNotEmpty(positions)) {
                 for (StorehousePositions position : positions) {

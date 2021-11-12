@@ -9,9 +9,11 @@ import cn.atsoft.dasheng.app.model.result.PhoneResult;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ProductOrder;
 import cn.atsoft.dasheng.erp.entity.ProductOrderDetails;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderRequest;
 import cn.atsoft.dasheng.erp.model.result.ProductOrderResult;
@@ -79,6 +81,7 @@ public class ProductOrderController extends BaseController {
      * @Date 2021-10-20
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改产品订单", key = "name", dict = ProductOrderParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ProductOrderParam productOrderParam) {
 
@@ -93,6 +96,7 @@ public class ProductOrderController extends BaseController {
      * @Date 2021-10-20
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除产品订单", key = "name", dict = ProductOrderParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ProductOrderParam productOrderParam) {
         this.productOrderService.delete(productOrderParam);

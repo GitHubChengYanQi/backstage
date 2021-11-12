@@ -14,10 +14,12 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.InstockRequest;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -50,6 +52,8 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     private ItemsService itemsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private StorehousePositionsService storehousePositionsService;
     @Autowired
     private StockDetailsService stockDetailsService;
     @Autowired
@@ -193,10 +197,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
         }
         List<Brand> brandList = brandService.list(brandQueryWrapper);
 
-
-
-
-
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(storeIds)) {
             storehouseQueryWrapper.in("storehouse_id", storeIds);
@@ -208,6 +208,16 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
             SpuResult spuResult = skuService.backSpu(datum.getSkuId());
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
+
+            if (ToolUtil.isNotEmpty(datum.getStorehousePositionsId())){
+                StorehousePositions storehousePositionsServiceById = storehousePositionsService.getById(datum.getStorehousePositionsId());
+                datum.setStorehousePositions(storehousePositionsServiceById);
+            }
+
+            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
 
 
             if (ToolUtil.isNotEmpty(brandList)) {

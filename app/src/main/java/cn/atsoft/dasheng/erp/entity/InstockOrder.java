@@ -26,6 +26,8 @@ public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
     /**
      * 库位id
      */
@@ -34,6 +36,17 @@ public class InstockOrder implements Serializable {
 
     @TableField("register_time")
     private Date time;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    @TableField("coding")
+    private String coding;
     /**
      * 入库单
      */

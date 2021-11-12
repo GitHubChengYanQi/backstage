@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.model.params.CodingRulesParam;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +55,7 @@ public class InkindController extends BaseController {
      * @Date 2021-11-01
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改实物", key = "name", dict = InkindParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody InkindParam inkindParam) {
 
@@ -66,8 +70,9 @@ public class InkindController extends BaseController {
      * @Date 2021-11-01
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除实物", key = "name", dict = InkindParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InkindParam inkindParam)  {
+    public ResponseData delete(@RequestBody InkindParam inkindParam) {
         this.inkindService.delete(inkindParam);
         return ResponseData.success();
     }
@@ -96,13 +101,11 @@ public class InkindController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InkindResult> list(@RequestBody(required = false) InkindParam inkindParam) {
-        if(ToolUtil.isEmpty(inkindParam)){
+        if (ToolUtil.isEmpty(inkindParam)) {
             inkindParam = new InkindParam();
         }
         return this.inkindService.findPageBySpec(inkindParam);
     }
-
-
 
 
 }

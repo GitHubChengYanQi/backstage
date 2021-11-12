@@ -1,11 +1,13 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.app.model.params.Attribute;
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -22,16 +24,18 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class AttributeValuesParam implements Serializable, BaseValidatingParam,Comparable<AttributeValuesParam> {
+public class AttributeValuesParam extends AbstractDictMap implements Serializable, BaseValidatingParam, Comparable<AttributeValuesParam> {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * 属性Id
      */
     @Override
     public int compareTo(AttributeValuesParam o) {
-        return (int)(this.attributeId - o.getAttributeId());
+        return (int) (this.attributeId - o.getAttributeId());
     }
+
     private Long attributeId;
 
     /**
@@ -84,4 +88,13 @@ public class AttributeValuesParam implements Serializable, BaseValidatingParam,C
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

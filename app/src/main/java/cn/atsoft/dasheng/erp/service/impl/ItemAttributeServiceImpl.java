@@ -55,7 +55,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     }
 
     @Override
-    @BussinessLog
+
     public void delete(ItemAttributeParam param) {
         ItemAttribute itemAttribute = new ItemAttribute();
         itemAttribute.setDisplay(0);
@@ -66,7 +66,7 @@ public class ItemAttributeServiceImpl extends ServiceImpl<ItemAttributeMapper, I
     }
 
     @Override
-    @BussinessLog
+
     public void update(ItemAttributeParam param) {
         ItemAttribute oldEntity = getOldEntity(param);
         ItemAttribute newEntity = getEntity(param);

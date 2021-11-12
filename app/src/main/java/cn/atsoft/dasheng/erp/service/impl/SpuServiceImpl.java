@@ -298,14 +298,14 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     }
 
     @Override
-    @BussinessLog
+
     public void delete(SpuParam param) {
         param.setDisplay(0);
         spuService.update(param);
     }
 
     @Override
-    @BussinessLog
+
     public void update(SpuParam param) {
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());

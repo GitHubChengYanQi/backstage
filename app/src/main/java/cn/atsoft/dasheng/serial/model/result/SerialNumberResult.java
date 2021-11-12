@@ -25,8 +25,7 @@ public class SerialNumberResult implements Serializable {
      * 流水号id
      */
     @ApiModelProperty("流水号id")
-    private Long 
-serialId;
+    private Long serialId;
 
     /**
      * 日期
@@ -45,7 +44,11 @@ serialId;
      */
     @ApiModelProperty("流水号")
     private Long num;
-
+    /**
+     * 长度
+     */
+    @ApiModelProperty("长度")
+    private Long serialLength;
     /**
      * 创建者
      */

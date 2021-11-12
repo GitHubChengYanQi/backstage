@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -38,6 +39,7 @@ public class InstockListResult implements Serializable {
     private BrandResult brandResult;
     private StorehouseResult storehouseResult;
     private SkuResult skuResult;
+    private Sku sku;
     /**
      * skuId
      */

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -22,10 +23,16 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CodingRulesParam implements Serializable, BaseValidatingParam {
+public class CodingRulesParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 流水号
+     */
+    private String serial;
+
+    private List<CodingSerial> codingSerials;
 
     /**
      * 状态
@@ -111,4 +118,13 @@ public class CodingRulesParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

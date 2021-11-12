@@ -11,6 +11,7 @@
         <result column="update_time" property="updateTime"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="coding" property="coding"/>
         <result column="deptId" property="deptId"/>
         <result column="state" property="state"/>
         <result column="storehouse_id" property="storeHouseId"/>
@@ -21,7 +22,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">storehouse_id
     AS "storeHouseId",register_time AS "time",storehouse_positions_id AS "storehousePositionsId",
-        instock_order_id AS "instockOrderId", user_id AS "userId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state"
+        instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state"
     </sql>
 
 

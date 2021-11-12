@@ -1,9 +1,13 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -42,6 +46,7 @@ public class StorehousePositionsController extends BaseController {
     @Autowired
     private StorehouseService storehouseService;
 
+
     /**
      * 新增接口
      *
@@ -62,6 +67,7 @@ public class StorehousePositionsController extends BaseController {
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改仓库库位表", key = "name", dict = StorehousePositionsParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody StorehousePositionsParam storehousePositionsParam) {
 
@@ -76,6 +82,7 @@ public class StorehousePositionsController extends BaseController {
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除仓库库位表", key = "name", dict = StorehousePositionsParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody StorehousePositionsParam storehousePositionsParam) {
         this.storehousePositionsService.delete(storehousePositionsParam);
@@ -139,15 +146,16 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.GET)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView(@RequestParam Long ids) {
+    public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids) {
 
         Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
-        if (ToolUtil.isEmpty(storehouse)) {
-            throw  new ServiceException(500,"数据不正确");
-        }
+
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("storehouse_id", ids);
+        if (ToolUtil.isNotEmpty(ids)) {
+            queryWrapper.in("storehouse_id", ids);
+
+        }
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
 
@@ -156,10 +164,11 @@ public class StorehousePositionsController extends BaseController {
         TreeNode rootTreeNode = new TreeNode();
         rootTreeNode.setKey("0");
         rootTreeNode.setValue("0");
-        rootTreeNode.setLabel(storehouse.getName());
-        rootTreeNode.setTitle(storehouse.getName());
+        rootTreeNode.setLabel("顶级");
+        rootTreeNode.setTitle("顶级");
         rootTreeNode.setParentId("-1");
         treeViewNodes.add(rootTreeNode);
+
 
         for (Map<String, Object> item : list) {
             TreeNode treeNode = new TreeNode();
@@ -172,7 +181,7 @@ public class StorehousePositionsController extends BaseController {
         }
         //构建树
         DefaultTreeBuildFactory<TreeNode> factory = new DefaultTreeBuildFactory<>();
-        factory.setRootParentId("-1");
+        factory.setRootParentId("0");
         List<TreeNode> results = factory.doTreeBuild(treeViewNodes);
 
         //把子节点为空的设为null

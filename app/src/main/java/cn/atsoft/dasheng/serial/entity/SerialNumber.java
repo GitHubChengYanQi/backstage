@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.serial.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 流水号
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-04
  */
 @TableName("serial_number")
@@ -24,7 +27,7 @@ public class SerialNumber implements Serializable {
     /**
      * 流水号id
      */
-      @TableId(value = "serial_id", type = IdType.ID_WORKER)
+    @TableId(value = "serial_id", type = IdType.ID_WORKER)
     private Long serialId;
 
     /**
@@ -46,27 +49,41 @@ public class SerialNumber implements Serializable {
     private Long num;
 
     /**
+     * 流水号
+     */
+    @TableField("serial_length")
+    private Long serialLength;
+
+    public Long getSerialLength() {
+        return serialLength;
+    }
+
+    public void setSerialLength(Long serialLength) {
+        this.serialLength = serialLength;
+    }
+
+    /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -81,8 +98,8 @@ public class SerialNumber implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-
-    public Long getserialId() {return serialId;
+    public Long getSerialId() {
+        return serialId;
     }
 
     public void setSerialId(Long serialId) {
@@ -164,16 +181,16 @@ public class SerialNumber implements Serializable {
     @Override
     public String toString() {
         return "SerialNumber{" +
-        " serialId=" + serialId +
-        ", date=" + date +
-        ", model=" + model +
-        ", num=" + num +
-        ", createUser=" + createUser +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                " serialId=" +serialId +
+                ", date=" + date +
+                ", model=" + model +
+                ", num=" + num +
+                ", createUser=" + createUser +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

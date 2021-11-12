@@ -145,6 +145,11 @@ public class DeliveryDetailsServiceImpl extends ServiceImpl<DeliveryDetailsMappe
                 }
             }
 
+            if (ToolUtil.isNotEmpty(record.getSkuId())) {
+                Sku sku = skuService.getById(record.getSkuId());
+                record.setSku(sku);
+            }
+
 
             if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {

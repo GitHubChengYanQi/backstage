@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuClassificationParam;
 import cn.atsoft.dasheng.erp.model.result.SpuClassificationResult;
 import cn.atsoft.dasheng.erp.service.SpuClassificationService;
@@ -58,6 +60,7 @@ public class SpuClassificationController extends BaseController {
      * @Date 2021-10-25
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改spu分类", key = "name", dict = SpuClassificationParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody SpuClassificationParam spuClassificationParam) {
 
@@ -72,6 +75,7 @@ public class SpuClassificationController extends BaseController {
      * @Date 2021-10-25
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除spu分类", key = "name", dict = SpuClassificationParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody SpuClassificationParam spuClassificationParam) {
         this.spuClassificationService.delete(spuClassificationParam);

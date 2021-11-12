@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityCheckClassification;
+import cn.atsoft.dasheng.erp.model.params.ProductOrderDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.QualityCheckClassificationParam;
 import cn.atsoft.dasheng.erp.model.result.QualityCheckClassificationResult;
 import cn.atsoft.dasheng.erp.service.QualityCheckClassificationService;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,7 @@ public class QualityCheckClassificationController extends BaseController {
      * @Date 2021-10-27
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改质检分类", key = "name", dict = QualityCheckClassificationParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam) {
 
@@ -68,8 +72,9 @@ public class QualityCheckClassificationController extends BaseController {
      * @Date 2021-10-27
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除质检分类", key = "name", dict = QualityCheckClassificationParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam)  {
+    public ResponseData delete(@RequestBody QualityCheckClassificationParam qualityCheckClassificationParam) {
         this.qualityCheckClassificationService.delete(qualityCheckClassificationParam);
         return ResponseData.success();
     }
@@ -99,7 +104,7 @@ public class QualityCheckClassificationController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<QualityCheckClassificationResult> list(@RequestBody(required = false) QualityCheckClassificationParam qualityCheckClassificationParam) {
-        if(ToolUtil.isEmpty(qualityCheckClassificationParam)){
+        if (ToolUtil.isEmpty(qualityCheckClassificationParam)) {
             qualityCheckClassificationParam = new QualityCheckClassificationParam();
         }
         return this.qualityCheckClassificationService.findPageBySpec(qualityCheckClassificationParam);
@@ -120,8 +125,6 @@ public class QualityCheckClassificationController extends BaseController {
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
-
 
 
 }

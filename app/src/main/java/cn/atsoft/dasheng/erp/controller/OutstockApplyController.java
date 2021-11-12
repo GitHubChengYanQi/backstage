@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.OutstockApply;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
+import cn.atsoft.dasheng.erp.model.params.ItemAttributeParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockApplyParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockApplyResult;
 import cn.atsoft.dasheng.erp.service.OutstockApplyService;
@@ -66,6 +68,7 @@ public class OutstockApplyController extends BaseController {
      * @Date 2021-09-14
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改出库申请", key = "name", dict = OutstockApplyParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody OutstockApplyParam outstockApplyParam) {
         this.outstockApplyService.update(outstockApplyParam);
@@ -79,6 +82,7 @@ public class OutstockApplyController extends BaseController {
      * @Date 2021-09-14
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除出库申请", key = "name", dict = OutstockApplyParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody OutstockApplyParam outstockApplyParam) {
         this.outstockApplyService.delete(outstockApplyParam);

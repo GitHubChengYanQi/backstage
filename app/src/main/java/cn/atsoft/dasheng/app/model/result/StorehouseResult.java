@@ -52,6 +52,8 @@ public class StorehouseResult implements Serializable {
     @ApiModelProperty("名称")
     private String name;
 
+    private String coding;
+
 
     /**
      * 位置

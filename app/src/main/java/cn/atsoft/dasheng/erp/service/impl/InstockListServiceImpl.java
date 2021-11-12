@@ -51,13 +51,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
-
     @Autowired
     private BrandService brandService;
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
     private SkuService skuService;
+
 
 
     @Override
@@ -67,13 +67,13 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     }
 
     @Override
-    @BussinessLog
+
     public void delete(InstockListParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
+
     public void update(InstockListParam param) {
         InstockList oldEntity = getOldEntity(param);
         InstockList newEntity = getEntity(param);
@@ -93,6 +93,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instockParam.setCostPrice(newEntity.getCostPrice());
             instockParam.setSellingPrice(newEntity.getSellingPrice());
             instockParam.setInstockOrderId(newEntity.getInstockOrderId());
+            instockParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             instockService.add(instockParam);
 
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
@@ -119,6 +120,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setPrice(newEntity.getCostPrice());
             stockDetailsParam.setBrandId(newEntity.getBrandId());
             stockDetailsParam.setSkuId(newEntity.getSkuId());
+            stockDetailsParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             stockDetailsService.add(stockDetailsParam);
 
         } else {
@@ -185,6 +187,11 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             datum.setBackSkus(backSkus);
             SpuResult backSpu = skuService.backSpu(datum.getSkuId());
             datum.setSpuResult(backSpu);
+
+            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
 
             if (ToolUtil.isNotEmpty(skus)) {
                 for (Sku sku : skus) {

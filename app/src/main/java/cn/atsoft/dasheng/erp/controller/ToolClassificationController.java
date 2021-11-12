@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.ToolClassification;
+import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.params.ToolClassificationParam;
 import cn.atsoft.dasheng.erp.model.result.ToolClassificationResult;
 import cn.atsoft.dasheng.erp.service.ToolClassificationService;
@@ -54,6 +56,7 @@ public class ToolClassificationController extends BaseController {
      * @Date 2021-10-23
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改工具分类", key = "name", dict = ToolClassificationParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ToolClassificationParam toolClassificationParam) {
 
@@ -68,6 +71,7 @@ public class ToolClassificationController extends BaseController {
      * @Date 2021-10-23
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除工具分类", key = "name", dict = ToolClassificationParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody ToolClassificationParam toolClassificationParam)  {
         this.toolClassificationService.delete(toolClassificationParam);

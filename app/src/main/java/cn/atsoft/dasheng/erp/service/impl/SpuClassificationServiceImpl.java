@@ -73,7 +73,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     }
 
     @Override
-    @BussinessLog
+
     public void delete(SpuClassificationParam param) {
         Integer count = spuService.lambdaQuery().eq(Spu::getSpuClassificationId, param.getSpuClassificationId()).and(i -> i.eq(Spu::getDisplay, 1)).count();
         if (count > 0) {
@@ -86,7 +86,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     }
 
     @Override
-    @BussinessLog
+
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
         if (param.getPid() == 0) {

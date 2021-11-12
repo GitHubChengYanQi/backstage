@@ -164,6 +164,11 @@ public class OutstockServiceImpl extends ServiceImpl<OutstockMapper, Outstock> i
             datum.setBackSkus(skus);
             datum.setSpuResult(spuResult);
 
+            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
+                Sku sku = skuService.getById(datum.getSkuId());
+                datum.setSku(sku);
+            }
+
             if (ToolUtil.isNotEmpty(brandList)) {
                 for (Brand brand : brandList) {
                     if (brand.getBrandId().equals(datum.getBrandId())) {

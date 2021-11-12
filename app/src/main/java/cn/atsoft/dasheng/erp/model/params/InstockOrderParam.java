@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.app.entity.Instock;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -24,11 +25,11 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InstockOrderParam implements Serializable, BaseValidatingParam {
+public class InstockOrderParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
-
+    //跳转路径
+    private String url;
     /**
      * 库位id
      */
@@ -37,6 +38,7 @@ public class InstockOrderParam implements Serializable, BaseValidatingParam {
     private List<InstockRequest> instockRequest;
 
     private Date time;
+    private String coding;
 
     @ApiModelProperty("仓库id")
     private Long storeHouseId;
@@ -87,4 +89,13 @@ public class InstockOrderParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

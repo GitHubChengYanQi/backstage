@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
@@ -39,6 +40,7 @@ public class DeliveryDetailsResult implements Serializable {
     private BrandResult brandResult;
     private BrandResult detailsBrand;
     private SkuResult skuResult;
+    private Sku sku;
 
     private List<BackSku> backSkus;
 

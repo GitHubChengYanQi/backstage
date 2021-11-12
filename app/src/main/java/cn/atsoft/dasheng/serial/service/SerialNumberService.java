@@ -24,7 +24,7 @@ public interface SerialNumberService extends IService<SerialNumber> {
      * @author 
      * @Date 2021-11-04
      */
-    void add(SerialNumberParam param);
+    String add(SerialNumberParam param);
 
     /**
      * 指定数量新增

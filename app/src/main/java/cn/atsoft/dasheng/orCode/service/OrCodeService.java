@@ -103,8 +103,43 @@ public interface OrCodeService extends IService<OrCode> {
 
     List<Long> backBatchCode(List<Long> ids, String type);
 
+    /**
+     * 返回二维码
+     *
+     * @param backCodeRequest
+     * @return
+     */
     Long backCode(BackCodeRequest backCodeRequest);
 
+    /**
+     * 判断
+     *
+     * @param inKindRequest
+     * @return
+     */
     Boolean isNotBind(InKindRequest inKindRequest);
+
+    /**
+     * 判断绑定合法性
+     *
+     * @param inKindRequest
+     * @return
+     */
+    Boolean judgeBind(InKindRequest inKindRequest);
+
+    /**
+     * 扫码入库
+     *
+     * @param inKindRequest
+     * @return
+     */
+    Boolean instockByCode(InKindRequest inKindRequest);
+
+    /**
+     * 批量增加二维码
+     *
+     * @param param
+     */
+    void batchAdd(OrCodeParam param);
 
 }

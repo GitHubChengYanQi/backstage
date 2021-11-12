@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -20,10 +22,30 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InkindParam implements Serializable, BaseValidatingParam {
+public class InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private Long spuId;
+    /**
+     * 品牌
+     */
+    private Long brandId;
+    /**
+     * 库位
+     */
+    private Long storehousePositionsId;
+    /**
+     * 入库单
+     */
+    private Long instockOrderId;
+    /**
+     * 成本价格
+     */
+    private Integer costPrice;
+    /**
+     * 出售价格
+     */
+    private Integer sellingPrice;
 
     /**
      * 实物id
@@ -87,4 +109,13 @@ public class InkindParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

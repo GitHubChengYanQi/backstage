@@ -53,6 +53,7 @@ public class StorehouseParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("位置")
     private String palce;
+    private String coding;
 
     /**
      * 面积

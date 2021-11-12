@@ -9,11 +9,13 @@ import cn.atsoft.dasheng.erp.service.ApplyDetailsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.core.constant.dictmap.RoleDict;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ public class ApplyDetailsController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+
     public ResponseData addItem(@RequestBody ApplyDetailsParam applyDetailsParam) {
         this.applyDetailsService.add(applyDetailsParam);
         return ResponseData.success();
@@ -53,6 +56,7 @@ public class ApplyDetailsController extends BaseController {
      * @Date 2021-09-15
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改发货申请详情", key = "name", dict = ApplyDetailsParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody ApplyDetailsParam applyDetailsParam) {
 
@@ -68,7 +72,8 @@ public class ApplyDetailsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ApplyDetailsParam applyDetailsParam)  {
+    @BussinessLog(value = "删除发货申请详情", key = "name", dict = ApplyDetailsParam.class)
+    public ResponseData delete(@RequestBody ApplyDetailsParam applyDetailsParam) {
         this.applyDetailsService.delete(applyDetailsParam);
         return ResponseData.success();
     }
@@ -98,7 +103,7 @@ public class ApplyDetailsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ApplyDetailsResult> list(@RequestBody(required = false) ApplyDetailsParam applyDetailsParam) {
-        if(ToolUtil.isEmpty(applyDetailsParam)){
+        if (ToolUtil.isEmpty(applyDetailsParam)) {
             applyDetailsParam = new ApplyDetailsParam();
         }
         return this.applyDetailsService.findPageBySpec(applyDetailsParam);

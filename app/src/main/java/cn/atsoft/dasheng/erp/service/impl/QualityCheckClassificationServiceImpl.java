@@ -41,13 +41,11 @@ public class QualityCheckClassificationServiceImpl extends ServiceImpl<QualityCh
     }
 
     @Override
-    @BussinessLog
     public void delete(QualityCheckClassificationParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
     public void update(QualityCheckClassificationParam param) {
         QualityCheckClassification oldEntity = getOldEntity(param);
         QualityCheckClassification newEntity = getEntity(param);

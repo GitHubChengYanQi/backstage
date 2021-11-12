@@ -60,14 +60,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    @BussinessLog
     public void delete(StorehousePositionsParam param) {
         param.setDisplay(0);
         this.update(param);
     }
 
     @Override
-    @BussinessLog
     public void update(StorehousePositionsParam param) {
         StorehousePositions oldEntity = getOldEntity(param);
         StorehousePositions newEntity = getEntity(param);
@@ -104,10 +102,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         List<Long> collect = skuIds.stream().distinct().collect(Collectors.toList());
         List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, collect).list();
-        List<SkuResult> skuResults  =new ArrayList<>();
-        for (Sku sku : skuList) {
 
-        }
         Map<String,Map<String,Object>> resultMap = new HashMap<>();
         List<List<StockDetails>> listArrayList = new ArrayList<>();
         for (Long skuId : collect) {

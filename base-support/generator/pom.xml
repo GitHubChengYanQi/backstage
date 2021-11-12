@@ -41,12 +41,6 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>cn.atsoft</groupId>
-            <artifactId>dbctn</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
 

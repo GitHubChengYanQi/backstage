@@ -44,13 +44,13 @@ public class RulesRelationServiceImpl extends ServiceImpl<RulesRelationMapper, R
     }
 
     @Override
-    @BussinessLog
+
     public void delete(RulesRelationParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    @BussinessLog
+
     public void update(RulesRelationParam param) {
 
         RulesRelation oldEntity = getOldEntity(param);

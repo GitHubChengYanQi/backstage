@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class CodingRulesClassificationParam implements Serializable, BaseValidatingParam {
+public class CodingRulesClassificationParam  extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
@@ -87,4 +88,13 @@ public class CodingRulesClassificationParam implements Serializable, BaseValidat
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

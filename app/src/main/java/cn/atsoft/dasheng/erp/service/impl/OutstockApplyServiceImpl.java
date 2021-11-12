@@ -117,7 +117,6 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     }
 
     @Override
-    @BussinessLog
     public void delete(OutstockApplyParam param) {
         OutstockApply byId = this.getById(param.getOutstockApplyId());
         if (ToolUtil.isEmpty(byId)) {
@@ -129,7 +128,6 @@ public class OutstockApplyServiceImpl extends ServiceImpl<OutstockApplyMapper, O
     }
 
     @Override
-    @BussinessLog
     public void update(OutstockApplyParam param) {
 
         OutstockApply oldEntity = getOldEntity(param);

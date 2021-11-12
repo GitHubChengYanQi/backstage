@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.ItemAttribute;
+import cn.atsoft.dasheng.erp.model.params.AttributeValuesParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryParam;
 import cn.atsoft.dasheng.erp.model.params.CategoryRequest;
 
@@ -67,6 +69,7 @@ public class CategoryController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改类目", key = "name", dict = CategoryParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody CategoryParam categoryParam) {
 
@@ -81,6 +84,7 @@ public class CategoryController extends BaseController {
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除类目", key = "name", dict = CategoryParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody CategoryParam categoryParam) {
         this.categoryService.delete(categoryParam);
@@ -174,14 +178,14 @@ public class CategoryController extends BaseController {
     /**
      * tree列表，treeview格式
      *
-     * @author jazz
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.POST)
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView() {
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
-        categoryQueryWrapper.in("display",1);
+        categoryQueryWrapper.in("display", 1);
         List<Map<String, Object>> list = this.categoryService.listMaps(categoryQueryWrapper);
 
         List<TreeNode> treeViewNodes = new ArrayList<>();

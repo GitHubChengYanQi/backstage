@@ -14,11 +14,16 @@
         <result column="display" property="display"/>
         <result column="spu_id" property="spuId"/>
         <result column="deptId" property="deptId"/>
+        <result column="instock_order_id" property="instockOrderId"/>
+        <result column="cost_price" property="costPrice"/>
+        <result column="selling_price" property="sellingPrice"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="brand_id" property="brandId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">spu_id
-    AS "spuId",
+    AS "spuId",instock_order_id AS "instockOrderId", cost_price AS "costPrice" , selling_price AS "sellingPrice",storehouse_positions_id AS "storehousePositionsId" ,brand_id AS "brandId",
         inkind_id
         AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

@@ -17,13 +17,18 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.RulesRelationService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.serial.entity.SerialNumber;
+import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.Month;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xkcoding.http.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +37,8 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -47,18 +54,16 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     private CodingRulesClassificationService codingRulesClassificationService;
     @Autowired
     private RulesRelationService rulesRelationService;
+    @Autowired
+    private SerialNumberService serialNumberService;
 
     @Override
     @Transactional
 
     public void add(CodingRulesParam param) {
 
-
         String codingRules = "";
-
-
-
-        if (ToolUtil.isEmpty(param.getCodings()) && param.getCodings().size() == 0) {
+        if (param.getCodings().size() == 0) {
             throw new ServiceException(500, "必须定义规则！");
         } else {
             for (Codings codings : param.getCodings()) {
@@ -82,26 +87,26 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
     }
 
     @Override
-    @BussinessLog
+
     public void delete(CodingRulesParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
     @Transactional
-    @BussinessLog
+
     public void update(CodingRulesParam param) {
 
-        if (ToolUtil.isNotEmpty(param.getCodings())){
+        if (ToolUtil.isNotEmpty(param.getCodings())) {
             String codingRules = "";
-            if (param.getCodings().size() == 0){
-                throw new ServiceException(500,"必须定义规则！");
-            }else {
+            if (param.getCodings().size() == 0) {
+                throw new ServiceException(500, "必须定义规则！");
+            } else {
                 for (Codings codings : param.getCodings()) {
-                    if (codingRules.equals("")){
+                    if (codingRules.equals("")) {
                         codingRules = codings.getValues();
-                    }else {
-                        codingRules = codingRules +","+ codings.getValues();
+                    } else {
+                        codingRules = codingRules + "," + codings.getValues();
                     }
 
                 }
@@ -155,7 +160,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         for (CodingRulesResult codingRulesResult : param) {
             for (CodingRulesClassification codingRulesClassification : list) {
-                if (codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
+                if (codingRulesResult.getCodingRulesClassificationId() != null &&
+                        codingRulesClassification.getCodingRulesClassificationId() != null &&
+                        codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
                     CodingRulesClassificationResult result = new CodingRulesClassificationResult();
                     ToolUtil.copyProperties(codingRulesClassification, result);
                     codingRulesResult.setCodingRulesClassificationResult(result);
@@ -164,7 +171,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
             List<RulesRelation> rulesRelationList = new ArrayList<>();
             for (RulesRelation rulesRelation : rulesRelations) {
 
-                if (rulesRelation.getCodingRulesId().equals(codingRulesResult.getCodingRulesId())) {
+                if (rulesRelation.getCodingRulesId() != null && codingRulesResult.getCodingRulesId() != null && rulesRelation.getCodingRulesId().equals(codingRulesResult.getCodingRulesId())) {
                     rulesRelationList.add(rulesRelation);
                 }
             }
@@ -236,6 +243,16 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         if (rules.contains("${week}")) {
             rules = rules.replace("${week}", weekOfYear + "");
+        }
+
+
+        Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
+        Matcher matcher = compile.matcher(rules);
+        if (matcher.find()) {
+            SerialNumberParam serialNumberParam = new SerialNumberParam();
+            serialNumberParam.setSerialLength(Long.valueOf(matcher.group(3)));
+            String aLong = serialNumberService.add(serialNumberParam);
+            rules = rules.replace(matcher.group(0) + "", aLong + "");
         }
 
         if (rules.contains("${skuClass}")) {
