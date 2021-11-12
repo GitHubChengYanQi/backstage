@@ -160,7 +160,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
 
         for (CodingRulesResult codingRulesResult : param) {
             for (CodingRulesClassification codingRulesClassification : list) {
-                if (codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
+                if (codingRulesResult.getCodingRulesClassificationId() != null &&
+                        codingRulesClassification.getCodingRulesClassificationId() != null &&
+                        codingRulesResult.getCodingRulesClassificationId().equals(codingRulesClassification.getCodingRulesClassificationId())) {
                     CodingRulesClassificationResult result = new CodingRulesClassificationResult();
                     ToolUtil.copyProperties(codingRulesClassification, result);
                     codingRulesResult.setCodingRulesClassificationResult(result);
@@ -244,7 +246,7 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         }
 
 
-        Pattern compile = Pattern.compile("\\<(serial.*?(\\[(\\d[0-9]?)\\]))\\>");
+        Pattern compile = Pattern.compile("\\$\\{(serial.*?(\\[(\\d[0-9]?)\\]))\\}");
         Matcher matcher = compile.matcher(rules);
         if (matcher.find()) {
             SerialNumberParam serialNumberParam = new SerialNumberParam();

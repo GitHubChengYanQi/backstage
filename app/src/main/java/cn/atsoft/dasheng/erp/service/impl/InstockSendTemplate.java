@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.appBase.service.sendTemplae;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
@@ -28,6 +29,8 @@ public class InstockSendTemplate {
     private UcOpenUserInfoService ucOpenUserInfoService;
     @Autowired
     private WxCpService wxCpService;
+    @Autowired
+    private BusinessTrackService businessTrackService;
 
     private String url;
 
@@ -56,7 +59,7 @@ public class InstockSendTemplate {
     }
 
     public String getDescription() {
-        return "有新的入库消息";
+        return "有新的物料需要入库";
     }
 
 
@@ -64,7 +67,7 @@ public class InstockSendTemplate {
         return url;
     }
 
-    public void sendTemolate() {
+    public void sendTemplate() {
         List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();
@@ -82,4 +85,14 @@ public class InstockSendTemplate {
             }
         }
     }
+
+//    public void timerSendTemplate(Long id) {
+//        BusinessTrack trackId = businessTrackService.query().eq("track_id", id).one();
+//        WxCpMessage wxCpMessage = new WxCpMessage();
+//        wxCpMessage.setMsgType("textcard");
+//        wxCpMessage.setTitle(getTitle());
+//        wxCpMessage.setDescription(getDescription());
+//        wxCpMessage.setUrl(getUrl());
+//    }
+
 }

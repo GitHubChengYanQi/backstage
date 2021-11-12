@@ -104,9 +104,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (ToolUtil.isNotEmpty(param.getInstockRequest())) {
             List<InstockList> instockLists = new ArrayList<>();
             for (InstockRequest instockRequest : param.getInstockRequest()) {
-
                 if (ToolUtil.isNotEmpty(instockRequest)) {
-
                     InstockList instockList = new InstockList();
                     instockList.setSkuId(instockRequest.getSkuId());
                     instockList.setNumber(instockRequest.getNumber());
@@ -134,10 +132,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             backCodeRequest.setSource("instock");
             Long aLong = orCodeService.backCode(backCodeRequest);
             String url = param.getUrl().replace("codeId", aLong.toString());
-
             instockSendTemplate.setBusinessTrack(businessTrack);
             instockSendTemplate.setUrl(url);
-            instockSendTemplate.sendTemolate();
+            instockSendTemplate.sendTemplate();
             businessTrackService.save(businessTrack);
         }
     }
