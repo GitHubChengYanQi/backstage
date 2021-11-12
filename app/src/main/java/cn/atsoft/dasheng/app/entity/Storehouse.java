@@ -78,6 +78,16 @@ public class Storehouse implements Serializable {
     @TableField("name")
     private String name;
 
+    @TableField("coding")
+    private String coding;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
 
     /**
      * 位置

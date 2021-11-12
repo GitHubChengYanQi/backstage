@@ -13,6 +13,7 @@
         <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
         <result column="latitude" property="latitude"/>
+        <result column="coding" property="coding"/>
         <result column="longitude" property="longitude"/>
         <result column="update_user" property="updateUser"/>
         <result column="deptId" property="deptId"/>
@@ -25,7 +26,7 @@
     <sql id="Base_Column_List">deptId
     AS "deptId",
 longitude
-    AS "longitude",storehouse_id AS "storehouseId", name AS "name", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
+    AS "longitude",storehouse_id AS "storehouseId", name AS "name", coding AS "coding", palce AS "palce",  latitude AS "latitude", measure AS "measure", capacity AS "capacity", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
 
 
