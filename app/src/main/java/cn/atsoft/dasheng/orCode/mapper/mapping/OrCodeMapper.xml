@@ -100,7 +100,13 @@
             and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+            <if test="paramCondition.type == 'null'">
+                and type is null
+            </if>
+            <if test="paramCondition.type != 'null'">
+                and type like CONCAT('%',#{paramCondition.type},'%')
+            </if>
+
         </if>
         <if test="paramCondition.data != null and paramCondition.data != ''">
             and data like CONCAT('%',#{paramCondition.data},'%')
