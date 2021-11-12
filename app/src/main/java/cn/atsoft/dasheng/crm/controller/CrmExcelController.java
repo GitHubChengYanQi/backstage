@@ -1,8 +1,12 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 
+import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.atsoft.dasheng.Tool.VoUtilsTool;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
@@ -18,9 +22,17 @@ import cn.atsoft.dasheng.crm.entity.excel.ContactsExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeExcel;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.poi.excel.ExcelUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +43,9 @@ import javax.transaction.Transactional;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,6 +64,10 @@ public class CrmExcelController {
     private CustomerService customerService;
     @Autowired
     private ContactsService contactsService;
+    @Autowired
+    private OrCodeService orCodeService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     /**
      * 上传excel填报
@@ -67,6 +85,7 @@ public class CrmExcelController {
                 params.setTitleRows(1);
                 params.setHeadRows(1);
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
+
                 List<Customer> costomerList = new ArrayList<>();
                 for (CustomerExcelItem customerExcelItem : result) {
                     Customer customer = new Customer();
@@ -162,5 +181,8 @@ public class CrmExcelController {
         }
         return null;
     }
+
+
+
 }
 
