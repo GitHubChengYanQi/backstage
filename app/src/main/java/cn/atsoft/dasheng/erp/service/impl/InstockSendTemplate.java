@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
@@ -14,6 +15,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.userInfo.service.UserInfoService;
+import cn.hutool.core.date.DateTime;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -76,6 +78,10 @@ public class InstockSendTemplate {
     public void sendTemplate() {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
+
+
+
+
         List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();
@@ -83,7 +89,7 @@ public class InstockSendTemplate {
             wxCpMessage.setTitle(getTitle());
             wxCpMessage.setDescription(getDescription());
             wxCpMessage.setUrl(getUrl());
-            for (String userId : userIds) {
+             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
                 messageEntity.setCpData(wxCpMessage);
                 messageEntity.setTimes(0);
@@ -91,6 +97,16 @@ public class InstockSendTemplate {
                 try {
                     messageProducer.sendMessage(messageEntity);
 //                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+                    //添加代办信息
+                    Message message = new Message();
+                    message.setTime(new DateTime());
+                    message.setTitle("入库提醒");
+                    message.setContent("您有新的入库单需要操作");
+                    message.setMessageId(3L);
+                    message.setSort(0L);
+                    messageEntity.setType(MessageType.MESSAGE);
+                    messageEntity.setMessage(message);
+                    messageProducer.sendMessage(messageEntity);
 
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Instock;
+import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -125,7 +126,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isNotEmpty(instockLists)) {
                 instockListService.saveBatch(instockLists);
             }
-            //添加代办信息
+
+
+
+
             BusinessTrack businessTrack = new BusinessTrack();
             businessTrack.setType("代办");
             businessTrack.setMessage("入库");
@@ -141,7 +145,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             instockSendTemplate.setBusinessTrack(businessTrack);
             instockSendTemplate.setUrl(url);
             instockSendTemplate.sendTemplate();
-            businessTrackService.save(businessTrack);
+
         }
     }
 

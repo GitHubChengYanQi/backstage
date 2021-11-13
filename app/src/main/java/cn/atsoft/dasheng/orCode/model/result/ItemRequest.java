@@ -6,4 +6,5 @@ import lombok.Data;
 public class ItemRequest {
     private String type;
     private OrcodeBackItem orcodeBackItem;
+    private Long inKindNumber;
 }

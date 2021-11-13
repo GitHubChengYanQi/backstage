@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.message.topic;
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.service.BusinessTrackService;
+import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import com.alibaba.fastjson.JSON;
@@ -21,6 +24,10 @@ import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QU
 public class TopicMessage {
     @Autowired
     private WxCpService wxCpService;
+    @Autowired
+    private BusinessTrackService businessTrackService;
+    @Autowired
+    private MessageService messageService;
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
@@ -42,6 +49,10 @@ public class TopicMessage {
                 break;
 
             case SMS:
+                break;
+
+            case MESSAGE:
+                messageService.save(messageEntity.getMessage());
                 break;
             default:
         }
