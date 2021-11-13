@@ -84,6 +84,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private UserService userService;
     @Autowired
     private InstockService instockService;
+    @Autowired
+    private OutstockService outstockService;
 
     @Override
     @Transactional
@@ -528,7 +530,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     StoreHouseRequest storeHouseRequest = new StoreHouseRequest();
                     storeHouseRequest.setType("storehouse");
                     storeHouseRequest.setResult(storehouseResult);
-                    return ResponseData.success(storeHouseRequest);
+                    return storeHouseRequest;
 
                 case "storehousePositions":
                     StorehousePositions storehousePositions = storehousePositionsService.query().in("storehouse_positions_id", codeBind.getFormId()).one();
@@ -619,6 +621,13 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
+                case "outstock":
+                    OutStockOrderRequest outStockOrderRequest = new OutStockOrderRequest();
+                    outStockOrderRequest.setType("outstock");
+                    OutstockOrderResult outstockOrderResult = new OutstockOrderResult();
+                    outstockOrderResult.setOutstockOrderId(codeBind.getFormId());
+                    outStockOrderRequest.setResult(outstockOrderResult);
+                    return outStockOrderRequest;
 
             }
         }
