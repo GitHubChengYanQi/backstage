@@ -6,11 +6,13 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.InstockParam;
+import cn.atsoft.dasheng.app.model.params.OutstockParam;
 import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
+import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
@@ -90,6 +92,10 @@ public class OrCodeController extends BaseController {
     private InstockListService instockListService;
     @Autowired
     private InstockService instockService;
+    @Autowired
+    private OutstockListingService outstockListingService;
+    @Autowired
+    private OutstockService outstockService;
 
     /**
      * 新增接口
@@ -347,6 +353,30 @@ public class OrCodeController extends BaseController {
                     }
                     OutstockOrderResult outstockResult = new OutstockOrderResult();
                     ToolUtil.copyProperties(outstockOrder, outstockResult);
+
+                    Storehouse outStockStorehouse = storehouseService.getById(outstockResult.getStorehouseId());
+                    if (ToolUtil.isNotEmpty(outStockStorehouse)) {
+                        StorehouseResult storehouseResult1 = new StorehouseResult();
+                        ToolUtil.copyProperties(outStockStorehouse, storehouseResult1);
+                        outstockResult.setStorehouseResult(storehouseResult1);
+                    }
+                    User outStockUser = userService.getById(outstockOrder.getUserId());
+                    if (ToolUtil.isNotEmpty(outStockUser)) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(outStockUser, userResult);
+                        outstockResult.setUserResult(userResult);
+                    }
+
+                    OutstockListingParam outstockListingParams = new OutstockListingParam();
+                    outstockListingParams.setOutstockOrderId(outstockOrder.getOutstockOrderId());
+                    PageInfo<OutstockListingResult> listingResultPageInfo = outstockListingService.findPageBySpec(outstockListingParams);
+                    outstockResult.setOutstockListing(listingResultPageInfo.getData());
+
+                    OutstockParam outstockParam = new OutstockParam();
+                    outstockParam.setOutstockOrderId(outstockOrder.getOutstockOrderId());
+                    PageInfo<OutstockResult> outstockResultPageInfo = outstockService.findPageBySpec(outstockParam, null);
+                    outstockResult.setOutstockResults(outstockResultPageInfo.getData());
+
                     OutStockOrderRequest outStockOrderRequest = new OutStockOrderRequest();
                     outStockOrderRequest.setType("outstock");
                     outStockOrderRequest.setResult(outstockResult);

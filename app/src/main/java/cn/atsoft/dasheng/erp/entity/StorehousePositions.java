@@ -46,6 +46,17 @@ public class StorehousePositions implements Serializable {
     @TableField("name")
     private String name;
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    @TableField("note")
+    private String note;
+
     /**
      * 数量
      */

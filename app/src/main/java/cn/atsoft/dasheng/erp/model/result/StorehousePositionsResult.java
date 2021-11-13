@@ -57,6 +57,8 @@ public class StorehousePositionsResult implements Serializable {
     @ApiModelProperty("库位名称")
     private String name;
 
+    private String note;
+
     /**
      * 数量
      */
