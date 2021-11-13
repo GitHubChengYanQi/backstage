@@ -83,7 +83,7 @@ public class OrCodeController extends BaseController {
     @Autowired
     private InstockOrderService instockOrderService;
     @Autowired
-    private OutstockService outstockService;
+    private OutstockOrderService outstockOrderService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -341,16 +341,16 @@ public class OrCodeController extends BaseController {
                     return ResponseData.success(instockRequest);
 
                 case "outstock":
-                    Outstock outstock = outstockService.query().eq("outstock_id", codeBind.getFormId()).one();
-                    if (ToolUtil.isEmpty(outstock)) {
+                    OutstockOrder outstockOrder = outstockOrderService.query().eq("outstock_order_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(outstockOrder)) {
                         throw new ServiceException(500, "当前数据不存在");
                     }
-                    OutstockResult outstockResult = new OutstockResult();
-                    ToolUtil.copyProperties(outstock, outstockResult);
-                    OutStockRequest outStockRequest = new OutStockRequest();
-                    outStockRequest.setType("outstock");
-                    outStockRequest.setResult(outstockResult);
-                    return ResponseData.success(outStockRequest);
+                    OutstockOrderResult outstockResult = new OutstockOrderResult();
+                    ToolUtil.copyProperties(outstockOrder, outstockResult);
+                    OutStockOrderRequest outStockOrderRequest = new OutStockOrderRequest();
+                    outStockOrderRequest.setType("outstock");
+                    outStockOrderRequest.setResult(outstockResult);
+                    return ResponseData.success(outStockOrderRequest);
             }
         }
         return ResponseData.success();
