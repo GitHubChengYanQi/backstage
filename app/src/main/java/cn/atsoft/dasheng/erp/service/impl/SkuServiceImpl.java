@@ -577,7 +577,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     public Map<Long, List<BackSku>> sendSku(List<Long> skuiIds) {
         if (skuiIds.size() == 0) {
-            throw new ServiceException(500, "请确认sku");
+            return null;
         }
         Map<Long, List<BackSku>> skuMap = new HashMap<>();
         List<Long> values = new ArrayList<>();
