@@ -50,6 +50,8 @@ public class StorehousePositionsParam extends AbstractDictMap implements Seriali
     @ApiModelProperty("库位名称")
     private String name;
 
+    private String note;
+
     /**
      * 数量
      */

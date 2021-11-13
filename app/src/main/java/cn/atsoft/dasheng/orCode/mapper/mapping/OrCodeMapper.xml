@@ -101,7 +101,7 @@
         </if>
 
         <if test="paramCondition.type != null and paramCondition.type != ''">
-            and type like CONCAT('%',#{paramCondition.type},'%')
+            and type = #{paramCondition.type}
         </if>
         <if test="paramCondition.data != null and paramCondition.data != ''">
             and data like CONCAT('%',#{paramCondition.data},'%')
