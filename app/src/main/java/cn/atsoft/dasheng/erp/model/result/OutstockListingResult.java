@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,6 +32,8 @@ public class OutstockListingResult implements Serializable {
     private SkuResult skuResult;
     private List<BackSku> backSkus;
     private SpuResult spuResult;
+
+    private Sku sku;
     /**
      * 出库清单id
      */
