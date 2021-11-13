@@ -40,6 +40,8 @@ public class StockDetailsResult implements Serializable {
     private List<BackSku> backSkus;
     private SpuResult spuResult;
     private Sku sku;
+    private Long number;
+    private Long qrCodeId;
 
 
     /**

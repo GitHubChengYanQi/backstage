@@ -35,6 +35,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.poi.hssf.usermodel.*;
+import org.bouncycastle.operator.AADProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -136,6 +137,25 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
+
+
+        List<OrCodeBind> binds = orCodeBindService.query().list();
+        Map<Long, Map<String, List<Long>>> map = new HashMap<>();
+        Map<String, List<Long>> orcodeMap = new HashMap<>();
+        List<Long> itemIds = new ArrayList<>();
+        for (OrCodeBind bind : binds) {
+            if (bind.getSource().equals("item")) {
+                itemIds.add(bind.getFormId());
+            }
+        }
+        orcodeMap.put("item", itemIds);
+        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
+            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
+            for (Inkind inkind : inkinds) {
+
+            }
+        }
+
 
     }
 
@@ -286,8 +306,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         return codeIds;
     }
-
-
 
 
     /**
@@ -444,10 +462,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
+            inkind.setNumber(inKindRequest.getNumber());
             inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
+            inKindRequest.getInstockListParam().setNum(inKindRequest.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
@@ -467,9 +487,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 }
             }
         }
-        if (ToolUtil.isNotEmpty(instockList)){
+        if (ToolUtil.isEmpty(instockList)) {
             return 0L;
-        }else {
+        } else {
             return instockList.getNumber() - inKindRequest.getNumber();
         }
     }

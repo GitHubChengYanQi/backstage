@@ -49,7 +49,7 @@ public class OrCodeParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("类型")
     private String type;
 
-    private String codeType;
+//    private String codeType;
 
     /**
      * 信息

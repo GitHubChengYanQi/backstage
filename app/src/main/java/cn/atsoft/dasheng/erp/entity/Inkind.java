@@ -23,6 +23,10 @@ import java.io.Serializable;
 public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @TableField("number")
+    private Long number;
+
     @TableField("spu_id")
     private Long spuId;
     /**
@@ -104,6 +108,14 @@ public class Inkind implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
     public Long getSpuId() {
         return spuId;

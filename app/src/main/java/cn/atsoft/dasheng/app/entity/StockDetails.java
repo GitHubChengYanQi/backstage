@@ -24,6 +24,12 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("number")
+    private Long number;
+
+    @TableField("qr_code_id")
+    private Long qrCodeid;
+
     @TableField("outstock_order_id")
     private Long outStockOrderId;
     @TableField("stage")
@@ -126,6 +132,21 @@ public class StockDetails implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    public Long getQrCodeid() {
+        return qrCodeid;
+    }
+
+    public void setQrCodeid(Long qrCodeid) {
+        this.qrCodeid = qrCodeid;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

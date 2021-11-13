@@ -23,6 +23,8 @@ import java.util.List;
 public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private Long number;
     /**
      * 品牌
      */
