@@ -76,10 +76,6 @@ public class CrmExcelController {
     @Autowired
     private OrCodeBindService orCodeBindService;
 
-    @Autowired
-    private OrCodeBindService orCodeBindService;
-    @Autowired
-    private OrCodeService orCodeService;
 
     /**
      * 上传excel填报
