@@ -94,7 +94,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instockParam.setStoreHouseId(newEntity.getStoreHouseId());
             instockParam.setCostPrice(newEntity.getCostPrice());
             instockParam.setSellingPrice(newEntity.getSellingPrice());
-            instockParam.setNumber(param.getNumber());
+            instockParam.setNumber(param.getNum());
             instockParam.setInstockOrderId(newEntity.getInstockOrderId());
             instockParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             instockService.add(instockParam);
@@ -106,12 +106,12 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             StockParam stockParam = new StockParam();
             Long stockId = null;
             if (ToolUtil.isNotEmpty(stock)) {
-                long number = stock.getInventory() + param.getNumber();
+                long number = stock.getInventory() + param.getNum();
                 stock.setInventory(number);
                 ToolUtil.copyProperties(stock, stockParam);
                 stockId = stockService.update(stockParam);
             } else {
-                stockParam.setInventory(1L);
+                stockParam.setInventory(param.getNum());
                 stockParam.setBrandId(newEntity.getBrandId());
                 stockParam.setSkuId(newEntity.getSkuId());
                 stockParam.setStorehouseId(newEntity.getStoreHouseId());
