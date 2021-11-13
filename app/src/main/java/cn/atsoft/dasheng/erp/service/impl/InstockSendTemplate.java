@@ -8,6 +8,9 @@ import cn.atsoft.dasheng.appBase.service.sendTemplae;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.message.enmu.MessageType;
+import cn.atsoft.dasheng.message.entity.MessageEntity;
+import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.userInfo.service.UserInfoService;
@@ -31,6 +34,9 @@ public class InstockSendTemplate {
     private WxCpService wxCpService;
     @Autowired
     private BusinessTrackService businessTrackService;
+
+    @Autowired
+    MessageProducer messageProducer;
 
     private String url;
 
@@ -68,6 +74,8 @@ public class InstockSendTemplate {
     }
 
     public void sendTemplate() {
+        MessageEntity messageEntity = new MessageEntity();
+        messageEntity.setType(MessageType.CP);
         List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();
@@ -77,8 +85,13 @@ public class InstockSendTemplate {
             wxCpMessage.setUrl(getUrl());
             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
+                messageEntity.setCpData(wxCpMessage);
+                messageEntity.setTimes(0);
+                messageEntity.setMaxTimes(2);
                 try {
-                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+                    messageProducer.sendMessage(messageEntity);
+//                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
