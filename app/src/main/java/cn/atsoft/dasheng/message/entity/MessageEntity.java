@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.message.entity;
 
+import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import me.chanjar.weixin.mp.bean.subscribe.WxMpSubscribeMessage;
+import org.bouncycastle.cms.PasswordRecipientId;
 
 @Data
 public class MessageEntity {
@@ -39,4 +41,8 @@ public class MessageEntity {
      * 当前推送次数
      */
     private Integer times;
+    /**
+     * 代办消息
+     */
+    private BusinessTrack businessTrack;
 }
