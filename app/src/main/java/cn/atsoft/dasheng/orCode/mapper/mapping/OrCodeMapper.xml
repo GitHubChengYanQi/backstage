@@ -99,16 +99,9 @@
         <if test="paramCondition.orCodeId != null">
             and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
         </if>
-        <if test="paramCondition.codeType != null and paramCondition.codeType != ''">
-            <if test="paramCondition.codeType == 'null'">
-                and type is null
-            </if>
-            <if test="paramCondition.codeType == 'noNull'">
-                and type is not null
-            </if>
-        </if>
+
         <if test="paramCondition.type != null and paramCondition.type != ''">
-                and type like CONCAT('%',#{paramCondition.type},'%')
+            and type like CONCAT('%',#{paramCondition.type},'%')
         </if>
         <if test="paramCondition.data != null and paramCondition.data != ''">
             and data like CONCAT('%',#{paramCondition.data},'%')
@@ -131,6 +124,10 @@
         <if test="paramCondition.deptId != null">
             and deptId like CONCAT('%',#{paramCondition.deptId},'%')
         </if>
+        <if test="paramCondition.state != null">
+            and state =#{paramCondition.state}
+        </if>
+
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.orCode.model.params.OrCodeParam">

@@ -123,7 +123,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param) {
         Page<OrCodeResult> pageContext = getPageContext();
-
         IPage<OrCodeResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
@@ -134,30 +133,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
-
-
-//        List<OrCodeBind> binds = orCodeBindService.query().list();
-//        Map<String, List<Long>> orcodeMap = new HashMap<>();
-//        List<Long> itemIds = new ArrayList<>();
-//        for (OrCodeBind bind : binds) {
-//            if (bind.getSource().equals("item")) {
-//                itemIds.add(bind.getFormId());
-//            }
-//        }
-//        orcodeMap.put("item", itemIds);
-//
-//        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
-//            List<Long> item = orcodeMap.get("item");
-//            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
-//            for (Inkind inkind : inkinds) {
-//                for (Long aLong : item) {
-//                    if (aLong.equals(inkind.getInkindId())) {
-//
-//                    }
-//                }
-//            }
-//        }
-
 
     }
 
@@ -646,6 +621,28 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             }
         }
         return null;
+    }
+
+    /**
+     * 扫码出库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    public void outstockByCode(InKindRequest inKindRequest) {
+        Long codeId = inKindRequest.getCodeId();
+        OrCodeBind codeBind = orCodeBindService.query().eq("qr_code_id", codeId).one();
+
+        switch (codeBind.getSource()) {
+            case "item":
+                Inkind inkind = inkindService.query().eq("inkind_id", codeBind.getFormId()).one();
+
+                break;
+            case "storehousePositions":
+                StorehousePositions positions = storehousePositionsService.query().eq("storehouse_positions_id", codeBind.getFormId()).one();
+
+                break;
+        }
     }
 }
 
