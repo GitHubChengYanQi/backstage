@@ -87,6 +87,17 @@ public class OutstockOrder implements Serializable {
      */
     @TableField("note")
     private String note;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    @TableField("coding")
+    private String coding;
     /**
      * 计划出库时间
      */
