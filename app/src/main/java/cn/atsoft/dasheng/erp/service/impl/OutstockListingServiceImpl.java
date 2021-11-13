@@ -111,6 +111,11 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
             record.setBackSkus(backSkus);
             record.setSpuResult(result);
 
+            if (ToolUtil.isNotEmpty(record.getSkuId())){
+                Sku sku = skuService.getById(record.getSkuId());
+                record.setSku(sku);
+            }
+
             for (Brand brand : brandList) {
                 if (record.getBrandId() != null && record.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
