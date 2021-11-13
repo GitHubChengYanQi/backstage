@@ -139,22 +139,27 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         }
 
 
-        List<OrCodeBind> binds = orCodeBindService.query().list();
-        Map<Long, Map<String, List<Long>>> map = new HashMap<>();
-        Map<String, List<Long>> orcodeMap = new HashMap<>();
-        List<Long> itemIds = new ArrayList<>();
-        for (OrCodeBind bind : binds) {
-            if (bind.getSource().equals("item")) {
-                itemIds.add(bind.getFormId());
-            }
-        }
-        orcodeMap.put("item", itemIds);
-        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
-            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
-            for (Inkind inkind : inkinds) {
-
-            }
-        }
+//        List<OrCodeBind> binds = orCodeBindService.query().list();
+//        Map<String, List<Long>> orcodeMap = new HashMap<>();
+//        List<Long> itemIds = new ArrayList<>();
+//        for (OrCodeBind bind : binds) {
+//            if (bind.getSource().equals("item")) {
+//                itemIds.add(bind.getFormId());
+//            }
+//        }
+//        orcodeMap.put("item", itemIds);
+//
+//        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
+//            List<Long> item = orcodeMap.get("item");
+//            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
+//            for (Inkind inkind : inkinds) {
+//                for (Long aLong : item) {
+//                    if (aLong.equals(inkind.getInkindId())) {
+//
+//                    }
+//                }
+//            }
+//        }
 
 
     }
