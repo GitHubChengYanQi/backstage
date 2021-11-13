@@ -47,7 +47,8 @@ public class TopicMessage {
 
             case SMS:
                 break;
-            case INSTOCK:
+
+            case TRACK:
                 messageEntity.getBusinessTrack();
                 businessTrackService.save(messageEntity.getBusinessTrack());
                 break;
