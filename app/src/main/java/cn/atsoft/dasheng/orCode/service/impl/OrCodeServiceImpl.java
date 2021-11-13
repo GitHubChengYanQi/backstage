@@ -123,6 +123,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public PageInfo<OrCodeResult> findPageBySpec(OrCodeParam param) {
         Page<OrCodeResult> pageContext = getPageContext();
+
         IPage<OrCodeResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
@@ -326,6 +327,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         OrCode code = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(code)) {
             code.setType(codeRequest.getSource());
+            code.setState(1);
             QueryWrapper<OrCode> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("qr_code_id", code.getOrCodeId());
             this.update(code, queryWrapper);
