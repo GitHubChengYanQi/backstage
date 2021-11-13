@@ -36,6 +36,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -132,30 +133,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
-
-
-//        List<OrCodeBind> binds = orCodeBindService.query().list();
-//        Map<String, List<Long>> orcodeMap = new HashMap<>();
-//        List<Long> itemIds = new ArrayList<>();
-//        for (OrCodeBind bind : binds) {
-//            if (bind.getSource().equals("item")) {
-//                itemIds.add(bind.getFormId());
-//            }
-//        }
-//        orcodeMap.put("item", itemIds);
-//
-//        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
-//            List<Long> item = orcodeMap.get("item");
-//            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
-//            for (Inkind inkind : inkinds) {
-//                for (Long aLong : item) {
-//                    if (aLong.equals(inkind.getInkindId())) {
-//
-//                    }
-//                }
-//            }
-//        }
-
 
     }
 
@@ -325,6 +302,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         OrCode code = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(code)) {
             code.setType(codeRequest.getSource());
+            code.setState(1);
             QueryWrapper<OrCode> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("qr_code_id", code.getOrCodeId());
             this.update(code, queryWrapper);
@@ -380,6 +358,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 bindParam.setOrCodeId(codeRequest.getCodeId());
                 bindParam.setFormId(aLong);
                 bindParam.setSource(codeRequest.getSource());
+                ;
                 orCodeBindService.add(bindParam);
                 return codeRequest.getCodeId();
             default:
@@ -388,6 +367,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     return one.getOrCodeId();
                 } else {
                     OrCodeParam orCodeParam = new OrCodeParam();
+                    orCodeParam.setState(1);
                     orCodeParam.setType(codeRequest.getSource());
                     Long Long = this.add(orCodeParam);
                     OrCodeBindParam BindParam = new OrCodeBindParam();
@@ -637,11 +617,34 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     ItemRequest itemRequest = new ItemRequest();
                     itemRequest.setType("item");
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
+                    itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
 
             }
         }
         return null;
+    }
+
+    /**
+     * 扫码出库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    public void outstockByCode(InKindRequest inKindRequest) {
+        Long codeId = inKindRequest.getCodeId();
+        OrCodeBind codeBind = orCodeBindService.query().eq("qr_code_id", codeId).one();
+
+        switch (codeBind.getSource()) {
+            case "item":
+                Inkind inkind = inkindService.query().eq("inkind_id", codeBind.getFormId()).one();
+
+                break;
+            case "storehousePositions":
+                StorehousePositions positions = storehousePositionsService.query().eq("storehouse_positions_id", codeBind.getFormId()).one();
+
+                break;
+        }
     }
 }
 

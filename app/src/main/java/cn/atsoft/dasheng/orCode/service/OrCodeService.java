@@ -142,4 +142,9 @@ public interface OrCodeService extends IService<OrCode> {
      */
     void batchAdd(OrCodeParam param);
 
+
+    /**
+     * 扫码出库
+     */
+    void outstockByCode(InKindRequest inKindRequest);
 }
