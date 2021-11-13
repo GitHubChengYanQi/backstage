@@ -83,13 +83,13 @@ public class InstockSendTemplate {
             wxCpMessage.setTitle(getTitle());
             wxCpMessage.setDescription(getDescription());
             wxCpMessage.setUrl(getUrl());
-            for (String userId : userIds) {
+             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
                 messageEntity.setCpData(wxCpMessage);
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
-                    messageProducer.sendMessage(messageEntity);
+                    messageProducer.sendMessage(messageEntity,500);
 //                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
 
                 } catch (Exception e) {
