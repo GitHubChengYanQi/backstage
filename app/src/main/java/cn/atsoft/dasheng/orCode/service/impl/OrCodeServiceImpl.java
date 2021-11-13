@@ -36,6 +36,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -637,6 +638,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     ItemRequest itemRequest = new ItemRequest();
                     itemRequest.setType("item");
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
+                    itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
 
             }

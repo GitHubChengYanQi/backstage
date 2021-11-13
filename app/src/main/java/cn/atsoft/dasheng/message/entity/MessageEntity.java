@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.message.entity;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
+import cn.atsoft.dasheng.app.entity.Message;
+import cn.atsoft.dasheng.crm.model.params.TrackMessageParam;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.binarywang.wx.miniapp.bean.WxMaSubscribeMessage;
 import lombok.Data;
@@ -44,5 +46,5 @@ public class MessageEntity {
     /**
      * 代办消息
      */
-    private BusinessTrack businessTrack;
+    private Message message;
 }
