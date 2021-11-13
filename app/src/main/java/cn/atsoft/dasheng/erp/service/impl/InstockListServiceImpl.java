@@ -59,7 +59,6 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private SkuService skuService;
 
 
-
     @Override
     public void add(InstockListParam param) {
         InstockList entity = getEntity(param);
@@ -77,8 +76,11 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     public void update(InstockListParam param) {
         InstockList oldEntity = getOldEntity(param);
         InstockList newEntity = getEntity(param);
+        if (oldEntity.getNumber() > param.getNumber()) {
+            throw new ServiceException(500, "数量不符");
+        }
         if (oldEntity.getNumber() > 0) {
-            long l = oldEntity.getNumber() - 1;
+            long l = oldEntity.getNumber() - param.getNum();
             newEntity.setNumber(l);
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
@@ -92,6 +94,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instockParam.setStoreHouseId(newEntity.getStoreHouseId());
             instockParam.setCostPrice(newEntity.getCostPrice());
             instockParam.setSellingPrice(newEntity.getSellingPrice());
+            instockParam.setNumber(param.getNum());
             instockParam.setInstockOrderId(newEntity.getInstockOrderId());
             instockParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             instockService.add(instockParam);
@@ -103,12 +106,12 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             StockParam stockParam = new StockParam();
             Long stockId = null;
             if (ToolUtil.isNotEmpty(stock)) {
-                long number = stock.getInventory() + 1;
+                long number = stock.getInventory() + param.getNum();
                 stock.setInventory(number);
                 ToolUtil.copyProperties(stock, stockParam);
                 stockId = stockService.update(stockParam);
             } else {
-                stockParam.setInventory(1L);
+                stockParam.setInventory(param.getNum());
                 stockParam.setBrandId(newEntity.getBrandId());
                 stockParam.setSkuId(newEntity.getSkuId());
                 stockParam.setStorehouseId(newEntity.getStoreHouseId());
@@ -116,6 +119,10 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             }
             StockDetailsParam stockDetailsParam = new StockDetailsParam();
             stockDetailsParam.setStockId(stockId);
+            stockDetailsParam.setNumber(param.getNum());
+            if (ToolUtil.isNotEmpty(param.getCodeId())) {
+                stockDetailsParam.setQrCodeid(param.getCodeId());
+            }
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
             stockDetailsParam.setPrice(newEntity.getCostPrice());
             stockDetailsParam.setBrandId(newEntity.getBrandId());
@@ -188,7 +195,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             SpuResult backSpu = skuService.backSpu(datum.getSkuId());
             datum.setSpuResult(backSpu);
 
-            if (ToolUtil.isNotEmpty(datum.getSkuId())){
+            if (ToolUtil.isNotEmpty(datum.getSkuId())) {
                 Sku sku = skuService.getById(datum.getSkuId());
                 datum.setSku(sku);
             }

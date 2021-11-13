@@ -25,6 +25,11 @@ import java.util.List;
 public class OrCodeParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
+    private String codeType;
+
+    private String url;
+
     private List<Long> ids;
 
     private Integer addSize;
@@ -44,7 +49,7 @@ public class OrCodeParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("类型")
     private String type;
 
-    private String codeType;
+//    private String codeType;
 
     /**
      * 信息

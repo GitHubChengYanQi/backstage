@@ -70,8 +70,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private InstockSendTemplate instockSendTemplate;
     @Autowired
-    private RepairSendTemplate repairSendTemplate;
-    @Autowired
     private OrCodeService orCodeService;
     @Autowired
     private CodingRulesService codingRulesService;

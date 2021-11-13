@@ -36,7 +36,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -133,6 +132,30 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Object obj = orcodeBackObj(datum.getOrCodeId());
             datum.setObject(obj);
         }
+
+
+//        List<OrCodeBind> binds = orCodeBindService.query().list();
+//        Map<String, List<Long>> orcodeMap = new HashMap<>();
+//        List<Long> itemIds = new ArrayList<>();
+//        for (OrCodeBind bind : binds) {
+//            if (bind.getSource().equals("item")) {
+//                itemIds.add(bind.getFormId());
+//            }
+//        }
+//        orcodeMap.put("item", itemIds);
+//
+//        if (ToolUtil.isNotEmpty(orcodeMap.get("item"))) {
+//            List<Long> item = orcodeMap.get("item");
+//            List<Inkind> inkinds = inkindService.query().in("inkind_id", orcodeMap.get("item")).list();
+//            for (Inkind inkind : inkinds) {
+//                for (Long aLong : item) {
+//                    if (aLong.equals(inkind.getInkindId())) {
+//
+//                    }
+//                }
+//            }
+//        }
+
 
     }
 
@@ -284,6 +307,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         return codeIds;
     }
 
+
     /**
      * 单个绑定
      *
@@ -427,8 +451,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      */
     @Override
     @Transactional
-    public Boolean instockByCode(InKindRequest inKindRequest) {
+    public Long instockByCode(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
+        InstockList instockList = null;
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
             if (one.getType().equals("1")) {
@@ -437,30 +462,36 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
+            inkind.setNumber(inKindRequest.getNumber());
             inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
+            inKindRequest.getInstockListParam().setNum(inKindRequest.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
-                InstockList instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
+                instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
-                    if (instockList.getNumber() == 1) {
+                    if ((instockList.getNumber() - inKindRequest.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
                         } catch (Exception e) {
-                            return false;
+                            return 0L;
                         }
-                        return false;
+                        return 0L;
                     }
                 }
                 try {
                     instockListService.update(inKindRequest.getInstockListParam());
                 } catch (Exception e) {
-                    return false;
+                    return 0L;
                 }
             }
         }
-        return true;
+        if (ToolUtil.isEmpty(instockList)) {
+            return 0L;
+        } else {
+            return instockList.getNumber() - inKindRequest.getNumber();
+        }
     }
 
     @Override

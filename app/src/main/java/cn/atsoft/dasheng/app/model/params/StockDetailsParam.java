@@ -30,6 +30,8 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private String pname;
     private Long storehouseId;
     private Long outStockOrderId;
+    private Long number;
+    private Long qrCodeid;
 
     /**
      * 库位id
@@ -114,6 +116,7 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

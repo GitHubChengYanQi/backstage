@@ -22,7 +22,7 @@ public class MessageProducer {
      */
     public void sendMessage(MessageEntity messageEntity){
         messageEntity.setTimes(1+ messageEntity.getTimes());
-        if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()< messageEntity.getMaxTimes()) {
+        if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
             rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_QUEUE, JSON.toJSONString(messageEntity));
         }
     }
@@ -36,7 +36,7 @@ public class MessageProducer {
 
         messageEntity.setExpiration(ttl);
         messageEntity.setTimes(1+ messageEntity.getTimes());
-        if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()< messageEntity.getMaxTimes()){
+        if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()){
             rabbitTemplate.convertAndSend(MESSAGE_DELAY_EXCHANGE,MESSAGE_DELAY_ROUTE,JSON.toJSONString(messageEntity), message -> {
                 MessageProperties messageProperties = message.getMessageProperties();
                 messageProperties.setExpiration(ttl.toString());//单位是毫秒
