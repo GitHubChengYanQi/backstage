@@ -358,6 +358,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 bindParam.setOrCodeId(codeRequest.getCodeId());
                 bindParam.setFormId(aLong);
                 bindParam.setSource(codeRequest.getSource());
+                ;
                 orCodeBindService.add(bindParam);
                 return codeRequest.getCodeId();
             default:
@@ -366,6 +367,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     return one.getOrCodeId();
                 } else {
                     OrCodeParam orCodeParam = new OrCodeParam();
+                    orCodeParam.setState(1);
                     orCodeParam.setType(codeRequest.getSource());
                     Long Long = this.add(orCodeParam);
                     OrCodeBindParam BindParam = new OrCodeBindParam();
