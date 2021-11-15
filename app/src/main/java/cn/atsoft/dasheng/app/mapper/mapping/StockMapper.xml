@@ -105,6 +105,9 @@
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id = #{paramCondition.skuId}
+        </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
