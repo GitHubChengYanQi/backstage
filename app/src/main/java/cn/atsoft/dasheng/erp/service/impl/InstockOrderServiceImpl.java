@@ -98,9 +98,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         for (InstockRequest instockRequest : param.getInstockRequest()) {
             Long brandId = instockRequest.getBrandId();
             Long skuId = instockRequest.getSkuId();
-            Integer sellingPrice = instockRequest.getSellingPrice();
-            Integer costprice = instockRequest.getCostprice();
-            judge.add(brandId + skuId + sellingPrice + costprice);
+            judge.add(brandId + skuId);
         }
         long count = judge.stream().distinct().count();
         if (param.getInstockRequest().size() > count) {
