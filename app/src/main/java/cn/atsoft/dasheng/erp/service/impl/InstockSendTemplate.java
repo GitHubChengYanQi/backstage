@@ -80,8 +80,6 @@ public class InstockSendTemplate {
         messageEntity.setType(MessageType.CP);
 
 
-
-
         List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();
@@ -89,29 +87,34 @@ public class InstockSendTemplate {
             wxCpMessage.setTitle(getTitle());
             wxCpMessage.setDescription(getDescription());
             wxCpMessage.setUrl(getUrl());
-             for (String userId : userIds) {
+            for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
                 messageEntity.setCpData(wxCpMessage);
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
-                    messageProducer.sendMessage(messageEntity);
 //                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
                     //添加代办信息
-                    Message message = new Message();
-                    message.setTime(new DateTime());
-                    message.setTitle("入库提醒");
-                    message.setContent("您有新的入库单需要操作");
-                    message.setMessageId(3L);
-                    message.setSort(0L);
-                    messageEntity.setType(MessageType.MESSAGE);
-                    messageEntity.setMessage(message);
-                    messageProducer.sendMessage(messageEntity);
+
+
+                    messageEntity.setType(MessageType.CP);
+                    messageProducer.sendMessage(messageEntity, 500);
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+               Message message = new Message();
+               message.setTime(new DateTime());
+               message.setTitle("入库提醒");
+               message.setContent("您有新的入库单需要操作");
+               message.setType(3);
+               message.setSort(0L);
+               messageEntity.setType(MessageType.MESSAGE);
+               messageEntity.setMessage(message);
+               messageProducer.sendMessage(messageEntity, 1000);
+
+
         }
     }
 
