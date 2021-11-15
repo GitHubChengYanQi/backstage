@@ -29,7 +29,7 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
 
     private Long codeId;
     private Long num;
-
+    private Long instockNumber;
     /**
      * 库位id
      */

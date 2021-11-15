@@ -732,9 +732,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (outstockListing.getNumber() == 0) {
             throw new ServiceException(500, "数量不足");
         }
-        if (outstockListing.getNumber() <= inKindRequest.getNumber()) {
+        if (outstockListing.getNumber() < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
+
         long listNumber = outstockListing.getNumber() - inKindRequest.getNumber();
         outstockListing.setNumber(listNumber);
         QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();
@@ -746,7 +747,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (stock.getInventory() == 0) {
             throw new ServiceException(500, "数量不足");
         }
-        if (stock.getInventory() <= inKindRequest.getNumber()) {
+        if (stock.getInventory() < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
         long newNumber = stock.getInventory() - inKindRequest.getNumber();
@@ -761,7 +762,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (inkind.getNumber() == 0) {
             throw new ServiceException(500, "数量不足");
         }
-        if (inkind.getNumber() <= inKindRequest.getNumber()) {
+        if (inkind.getNumber() < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
         long inkindNumber = inkind.getNumber() - inKindRequest.getNumber();

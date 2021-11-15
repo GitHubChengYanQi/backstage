@@ -59,6 +59,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 
     @Override
     public void add(OutstockListingParam param) {
+        param.setDelivery(param.getNumber());
         OutstockListing entity = getEntity(param);
         this.save(entity);
     }
@@ -155,7 +156,6 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 //            }
 //        }
     }
-
 
 
     private Serializable getKey(OutstockListingParam param) {

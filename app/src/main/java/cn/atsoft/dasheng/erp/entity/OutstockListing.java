@@ -30,6 +30,11 @@ public class OutstockListing implements Serializable {
     @TableId(value = "outstock_listing_id", type = IdType.ID_WORKER)
     private Long outstockListingId;
 
+    /**
+     * 出库数量
+     */
+    @TableField("delivery")
+    private Long delivery;
 
     /**
      * skuId
@@ -66,7 +71,7 @@ public class OutstockListing implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -259,7 +264,13 @@ public class OutstockListing implements Serializable {
         this.skuId = skuId;
     }
 
+    public Long getDelivery() {
+        return delivery;
+    }
 
+    public void setDelivery(Long delivery) {
+        this.delivery = delivery;
+    }
 
     @Override
     public String toString() {
