@@ -15,5 +15,6 @@ public class InKindRequest {
     private Integer costPrice;
     private Integer sellingPrice;
     private Long sorehousePositionsId;
+    private Long storehouse;
 
 }

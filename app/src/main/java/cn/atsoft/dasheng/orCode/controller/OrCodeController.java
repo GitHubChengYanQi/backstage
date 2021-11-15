@@ -413,6 +413,20 @@ public class OrCodeController extends BaseController {
         return ResponseData.success(t);
     }
 
+
+    /**
+     * 判断出库
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @RequestMapping(value = "/backInkindByCode", method = RequestMethod.POST)
+    @ApiOperation("判断是否绑定")
+    public ResponseData backInkindByCode(@RequestBody InKindRequest inKindRequest) {
+        Object o = orCodeService.backInkindByCode(inKindRequest);
+        return ResponseData.success(o);
+    }
+
 //    /**
 //     * 二维码导出
 //     *

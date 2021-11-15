@@ -66,4 +66,7 @@ public interface InkindService extends IService<Inkind> {
      */
     PageInfo<InkindResult> findPageBySpec(InkindParam param);
 
+
+    InkindResult backInKindgetById(Long id);
+
 }
