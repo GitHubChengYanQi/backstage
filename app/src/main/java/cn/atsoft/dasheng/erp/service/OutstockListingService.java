@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -68,5 +70,7 @@ public interface OutstockListingService extends IService<OutstockListing> {
     PageInfo<OutstockListingResult> findPageBySpec(OutstockListingParam param);
 
     void addList(List<ApplyDetailsParam> applyDetails);
+
+
 
 }

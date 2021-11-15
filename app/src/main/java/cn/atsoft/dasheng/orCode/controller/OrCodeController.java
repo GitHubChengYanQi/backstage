@@ -413,66 +413,32 @@ public class OrCodeController extends BaseController {
         return ResponseData.success(t);
     }
 
-//    /**
-//     * 二维码导出
-//     *
-//     * @return
-//     */
-//    @RequestMapping(value = "/codeingExcelExport", method = RequestMethod.POST)
-//    public void codeingExcelExport(@RequestBody OrCodeParam orCodeParam) {
-//        Map<Long, String> codeMap = new HashMap<>();
-//        List<Long> codeIds = new ArrayList<>();
-//        //所有二维码
-//        if (orCodeParam.getCodeType() == 0) {
-//            List<OrCode> orCodes = orCodeService.query().list();
-//            for (OrCode orCode : orCodes) {
-//                Long orCodeId = orCode.getOrCodeId();
-//                String replace = orCodeParam.getUrl().replace("codeId", orCode.getOrCodeId().toString());
-//                codeIds.add(orCodeId);
-//                codeMap.put(orCodeId, replace);
-//            }
-//        }
-//        //未绑定的二维码
-//        if (orCodeParam.getCodeType() == 1) {
-//            List<OrCodeBind> codeBinds = orCodeBindService.query().list();
-//            List<Long> ids = new ArrayList<>();
-//            for (OrCodeBind codeBind : codeBinds) {
-//                ids.add(codeBind.getOrCodeId());
-//            }
-//            List<OrCode> codes = orCodeService.query().notIn("qr_code_id", ids).list();
-//            for (OrCode code : codes) {
-//                Long orCodeId = code.getOrCodeId();
-//                codeIds.add(orCodeId);
-//                String replace = orCodeParam.getUrl().replace("codeId", orCodeId.toString());
-//                codeMap.put(orCodeId, replace);
-//            }
-//        }
-//        //绑定的二维码
-//        if (orCodeParam.getCodeType() == 2) {
-//            List<OrCodeBind> binds = orCodeBindService.list();
-//            for (OrCodeBind bind : binds) {
-//                Long orCodeId = bind.getOrCodeId();
-//                codeIds.add(orCodeId);
-//                String replace = orCodeParam.getUrl().replace("codeId", orCodeId.toString());
-//                codeMap.put(orCodeId, replace);
-//            }
-//        }
-//        List<OrCodeExcel> orCodeExcels = new ArrayList<>();
-//        for (Long codeId : codeIds) {
-//            String s = codeMap.get(codeId);
-//            OrCodeExcel orCodeExcel = new OrCodeExcel();
-//            orCodeExcel.setCode(codeId);
-//            orCodeExcel.setUrl(s);
-//            orCodeExcels.add(orCodeExcel);
-//        }
-//        ExportParams exportParams = new ExportParams();
-//        exportParams.setTitle("二维码");
-//        exportParams.setSecondTitle("路径");
-//
-//
-//        Workbook sheets = ExcelExportUtil.exportExcel(exportParams, OrCodeExcel.class, orCodeExcels);
-//
-//    }
+
+    /**
+     * 判断出库
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @RequestMapping(value = "/backInkindByCode", method = RequestMethod.POST)
+    @ApiOperation("判断是否绑定")
+    public ResponseData backInkindByCode(@RequestBody InKindRequest inKindRequest) {
+        Object o = orCodeService.backInkindByCode(inKindRequest);
+        return ResponseData.success(o);
+    }
+
+    /**
+     * 扫码出库
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/outStockByCode", method = RequestMethod.POST)
+    @Transactional
+    public ResponseData outStockByCode(@RequestBody InKindRequest inKindRequest) {
+        Long aLong = orCodeService.outStockByCode(inKindRequest);
+        return ResponseData.success(aLong);
+    }
 }
 
 
