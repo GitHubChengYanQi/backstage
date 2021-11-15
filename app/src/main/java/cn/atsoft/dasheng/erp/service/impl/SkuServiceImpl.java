@@ -375,6 +375,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public PageInfo<SkuResult> findPageBySpec(SkuParam param) {
+        if (param.getSkuIds() != null){
+            if (param.getSkuIds().size() == 0){
+                return null;
+            }
+        }
         Page<SkuResult> pageContext = getPageContext();
         List<Long> spuIds = null;
         if (ToolUtil.isNotEmpty(param.getSpuClass())) {
