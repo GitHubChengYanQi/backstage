@@ -112,7 +112,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         BackCodeRequest backCodeRequest = new BackCodeRequest();
         backCodeRequest.setId(entity.getOutstockOrderId());
-        backCodeRequest.setSource("instock");
+        backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
         String url = param.getUrl().replace("codeId", aLong.toString());
         outstockSendTemplate.setUserId(param.getUserId());
