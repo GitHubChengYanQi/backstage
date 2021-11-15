@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Material;
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.app.model.result.UnitResult;
 import cn.atsoft.dasheng.erp.entity.Category;
@@ -32,6 +33,8 @@ import java.util.Map;
 @ApiModel
 public class SpuResult implements Serializable {
 
+    private UnitResult unitResult;
+
     private static final long serialVersionUID = 1L;
     /**
      * 类型
@@ -43,7 +46,6 @@ public class SpuResult implements Serializable {
 
     private Category category;
 
-    private UnitResult unitResult;
 
     private List<CategoryRequest> categoryRequests;
 
