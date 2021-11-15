@@ -46,8 +46,10 @@ public class ProductionStationServiceImpl extends ServiceImpl<ProductionStationM
 
     @Override
     public void delete(ProductionStationParam param) {
-        param.setDisplay(0);
-        this.update(param);
+
+        ProductionStation deleteEntity = getOldEntity(param);
+        deleteEntity.setDisplay(0);
+        this.baseMapper.updateById(deleteEntity);
     }
 
     @Override

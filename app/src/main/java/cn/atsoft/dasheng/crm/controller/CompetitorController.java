@@ -2,10 +2,12 @@ package cn.atsoft.dasheng.crm.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.crm.entity.Competitor;
 import cn.atsoft.dasheng.crm.entity.CompetitorQuote;
+import cn.atsoft.dasheng.crm.model.params.CompanyRoleParam;
 import cn.atsoft.dasheng.crm.model.params.CompetitorIdsRequest;
 import cn.atsoft.dasheng.crm.model.params.CompetitorParam;
 import cn.atsoft.dasheng.crm.model.params.ListSelectRequest;
@@ -68,6 +70,8 @@ public class CompetitorController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @BussinessLog(value = "竞争对手", key = "name", dict = CompanyRoleParam.class)
+
     @Permission
     public ResponseData update(@RequestBody CompetitorParam competitorParam) {
 

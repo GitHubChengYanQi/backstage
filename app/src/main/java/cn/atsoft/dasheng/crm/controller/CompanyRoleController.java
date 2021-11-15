@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.controller;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BatchDeleteRequest;
 import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.CompanyRole;
 import cn.atsoft.dasheng.crm.model.params.CompanyRoleParam;
@@ -11,6 +12,7 @@ import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.wrapper.CompanyRoleSelectWrapper;
+import cn.atsoft.dasheng.erp.model.params.ApplyDetailsParam;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -59,6 +61,7 @@ public class CompanyRoleController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @BussinessLog(value = "修改公司角色", key = "name", dict = CompanyRoleParam.class)
     public ResponseData update(@RequestBody CompanyRoleParam companyRoleParam) {
 
         this.companyRoleService.update(companyRoleParam);
@@ -73,6 +76,7 @@ public class CompanyRoleController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @BussinessLog(value = "删除公司角色", key = "name", dict = CompanyRoleParam.class)
     public ResponseData delete(@RequestBody CompanyRoleParam companyRoleParam) {
         this.companyRoleService.delete(companyRoleParam);
         return ResponseData.success();
