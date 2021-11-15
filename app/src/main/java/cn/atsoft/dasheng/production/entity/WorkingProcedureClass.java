@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @since 2021-10-29
  */
 @TableName("working_porcedure_class")
-public class WorkingPorcedureClass implements Serializable {
+public class WorkingProcedureClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

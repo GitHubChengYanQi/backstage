@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class WorkingPorcedureClassParam implements Serializable, BaseValidatingParam {
+public class WorkingProcedureClassParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 

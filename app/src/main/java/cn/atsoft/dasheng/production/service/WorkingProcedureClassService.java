@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.production.entity.WorkingPorcedureClass;
-import cn.atsoft.dasheng.production.model.params.WorkingPorcedureClassParam;
-import cn.atsoft.dasheng.production.model.result.WorkingPorcedureClassResult;
+import cn.atsoft.dasheng.production.entity.WorkingProcedureClass;
+import cn.atsoft.dasheng.production.model.params.WorkingProcedureClassParam;
+import cn.atsoft.dasheng.production.model.result.WorkingProcedureClassResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author 
  * @since 2021-10-29
  */
-public interface WorkingPorcedureClassService extends IService<WorkingPorcedureClass> {
+public interface WorkingProcedureClassService extends IService<WorkingProcedureClass> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-    void add(WorkingPorcedureClassParam param);
+    void add(WorkingProcedureClassParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-    void delete(WorkingPorcedureClassParam param);
+    void delete(WorkingProcedureClassParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-    void update(WorkingPorcedureClassParam param);
+    void update(WorkingProcedureClassParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-    WorkingPorcedureClassResult findBySpec(WorkingPorcedureClassParam param);
+    WorkingProcedureClassResult findBySpec(WorkingProcedureClassParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-    List<WorkingPorcedureClassResult> findListBySpec(WorkingPorcedureClassParam param);
+    List<WorkingProcedureClassResult> findListBySpec(WorkingProcedureClassParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface WorkingPorcedureClassService extends IService<WorkingPorcedureC
      * @author 
      * @Date 2021-10-29
      */
-     PageInfo<WorkingPorcedureClassResult> findPageBySpec(WorkingPorcedureClassParam param);
+     PageInfo<WorkingProcedureClassResult> findPageBySpec(WorkingProcedureClassParam param);
 
 }

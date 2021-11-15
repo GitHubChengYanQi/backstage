@@ -12,14 +12,20 @@ workingProcedureId" />
         <result column="accessories" property="accessories" />
         <result column="remark" property="remark" />
         <result column="working_procedure_name" property="workingProcedureName" />
-        <result column="working_procedure_class" property="workingProcedureClass"/>
+        <result column="working_procedure_class" property="workingProcedureClass" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="display" property="display" />
+        <result column="deptId" property="deptId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         
 working_procedure_id AS "
-workingProcedureId", user_id AS "userId", working_procedure_class AS "workingProcedureClass",production_station_id AS "productionStationId", accessories AS "accessories", remark AS "remark", working_procedure_name AS "workingProcedureName"
+workingProcedureId", user_id AS "userId", production_station_id AS "productionStationId", accessories AS "accessories", remark AS "remark", working_procedure_name AS "workingProcedureName", working_procedure_class AS "workingProcedureClass", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -27,11 +33,8 @@ workingProcedureId", user_id AS "userId", working_procedure_class AS "workingPro
         select
         <include refid="Base_Column_List"/>
         from working_procedure where 1 = 1
-            <if test="paramCondition.
-workingProcedureId != null">
-                and 
-working_procedure_id like CONCAT('%',#{paramCondition.
-workingProcedureId},'%')
+            <if test="paramCondition.workingProcedureId != null">
+                and working_procedure_id like CONCAT('%',#{paramCondition.workingProcedureId},'%')
             </if>
             <if test="paramCondition.userId != null">
                 and user_id like CONCAT('%',#{paramCondition.userId},'%')
@@ -45,17 +48,20 @@ workingProcedureId},'%')
             <if test="paramCondition.remark != null and paramCondition.remark != ''">
                 and remark like CONCAT('%',#{paramCondition.remark},'%')
             </if>
+            <if test="paramCondition.workingProcedureName != null and paramCondition.workingProcedureName != ''">
+                and working_procedure_name like CONCAT('%',#{paramCondition.workingProcedureName},'%')
+            </if>
+            <if test="paramCondition.workingProcedureClass != null">
+                and working_procedure_class like CONCAT('%',#{paramCondition.workingProcedureClass},'%')
+            </if>
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.WorkingProcedureParam">
         select
         <include refid="Base_Column_List"/>
         from working_procedure where 1 = 1
-                <if test="paramCondition.
-workingProcedureId != null">
-                        and 
-working_procedure_id like CONCAT('%',#{paramCondition.
-workingProcedureId},'%')
+                <if test="paramCondition.workingProcedureId != null">
+                        and working_procedure_id like CONCAT('%',#{paramCondition.workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
@@ -68,6 +74,12 @@ workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.workingProcedureName != null and paramCondition.workingProcedureName != ''">
+                        and working_procedure_name like CONCAT('%',#{paramCondition.workingProcedureName},'%')
+                </if>
+                <if test="paramCondition.workingProcedureClass != null">
+                        and working_procedure_class like CONCAT('%',#{paramCondition.workingProcedureClass},'%')
                 </if>
     </select>
 
@@ -75,11 +87,8 @@ workingProcedureId},'%')
         select
         <include refid="Base_Column_List"/>
         from working_procedure where 1 = 1
-                <if test="paramCondition.
-workingProcedureId != null">
-                        and 
-working_procedure_id like CONCAT('%',#{paramCondition.
-workingProcedureId},'%')
+                <if test="paramCondition.workingProcedureId != null">
+                        and working_procedure_id like CONCAT('%',#{paramCondition.workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
@@ -92,6 +101,12 @@ workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.workingProcedureName != null and paramCondition.workingProcedureName != ''">
+                        and working_procedure_name like CONCAT('%',#{paramCondition.workingProcedureName},'%')
+                </if>
+                <if test="paramCondition.workingProcedureClass != null">
+                        and working_procedure_class like CONCAT('%',#{paramCondition.workingProcedureClass},'%')
                 </if>
     </select>
 
@@ -99,11 +114,8 @@ workingProcedureId},'%')
         select
         <include refid="Base_Column_List"/>
         from working_procedure where 1 = 1
-                <if test="paramCondition.
-workingProcedureId != null">
-                        and 
-working_procedure_id like CONCAT('%',#{paramCondition.
-workingProcedureId},'%')
+                <if test="paramCondition.workingProcedureId != null">
+                        and working_procedure_id like CONCAT('%',#{paramCondition.workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.userId != null">
                         and user_id like CONCAT('%',#{paramCondition.userId},'%')
@@ -116,6 +128,12 @@ workingProcedureId},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.workingProcedureName != null and paramCondition.workingProcedureName != ''">
+                        and working_procedure_name like CONCAT('%',#{paramCondition.workingProcedureName},'%')
+                </if>
+                <if test="paramCondition.workingProcedureClass != null">
+                        and working_procedure_class like CONCAT('%',#{paramCondition.workingProcedureClass},'%')
                 </if>
     </select>
 

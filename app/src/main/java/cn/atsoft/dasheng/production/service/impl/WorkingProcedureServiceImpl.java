@@ -72,31 +72,31 @@ public class WorkingProcedureServiceImpl extends ServiceImpl<WorkingProcedureMap
     public PageInfo<WorkingProcedureResult> findPageBySpec(WorkingProcedureParam param){
         Page<WorkingProcedureResult> pageContext = getPageContext();
         IPage<WorkingProcedureResult> page = this.baseMapper.customPageList(pageContext, param);
-        this.format(page.getRecords());
+//        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<WorkingProcedureResult> param){
-        List<Long> userIds = new ArrayList<>();
-        List<Long> productionStationIds = new ArrayList<>();
-        for (WorkingProcedureResult workingProcedureResult : param) {
-            userIds.add(workingProcedureResult.getUserId());
-            productionStationIds.add(workingProcedureResult.getProductionStationId());
-        }
-        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
-        List<ProductionStation> productionStationClassList = productionStationIds.size() == 0 ? new ArrayList<>() : productionStationService.lambdaQuery().in(ProductionStation::getProductionStationId, productionStationIds).list();
-        for (WorkingProcedureResult workingProcedureResult : param) {
-            for (User user : userList) {
-                if (workingProcedureResult.getUserId().equals(user.getUserId())) {
-                    workingProcedureResult.setUserName(user.getName());
-                }
-            }
-            for (ProductionStation productionStation : productionStationClassList) {
-                if (productionStation.getProductionStationId().equals(workingProcedureResult.getWorkingProcedureId())) {
-                    workingProcedureResult.setWorkingProcedureName(productionStation.getName());
-                }
-            }
-        }
-    }
+//    private void format(List<WorkingProcedureResult> param){
+//        List<Long> userIds = new ArrayList<>();
+//        List<Long> productionStationIds = new ArrayList<>();
+//        for (WorkingProcedureResult workingProcedureResult : param) {
+//            userIds.add(workingProcedureResult.getUserId());
+//            productionStationIds.add(workingProcedureResult.getProductionStationId());
+//        }
+//        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
+//        List<ProductionStation> productionStationClassList = productionStationIds.size() == 0 ? new ArrayList<>() : productionStationService.lambdaQuery().in(ProductionStation::getProductionStationId, productionStationIds).list();
+//        for (WorkingProcedureResult workingProcedureResult : param) {
+//            for (User user : userList) {
+//                if (workingProcedureResult.getUserId().equals(user.getUserId())) {
+//                    workingProcedureResult.setUserName(user.getName());
+//                }
+//            }
+//            for (ProductionStation productionStation : productionStationClassList) {
+//                if (productionStation.getProductionStationId().equals(workingProcedureResult.getWorkingProcedureId())) {
+//                    workingProcedureResult.setWorkingProcedureName(productionStation.getName());
+//                }
+//            }
+//        }
+//    }
 
     private Serializable getKey(WorkingProcedureParam param){
         return param.getWorkingProcedureId();

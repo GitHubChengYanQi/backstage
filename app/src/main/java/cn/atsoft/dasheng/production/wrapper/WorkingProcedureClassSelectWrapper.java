@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class WorkingPorcedureClassSelectWrapper extends BaseControllerWrapper {
+public class WorkingProcedureClassSelectWrapper extends BaseControllerWrapper {
 
-    public WorkingPorcedureClassSelectWrapper(List<Map<String, Object>> multi) {
+    public WorkingProcedureClassSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 

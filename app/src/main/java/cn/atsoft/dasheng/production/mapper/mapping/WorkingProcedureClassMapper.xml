@@ -3,7 +3,7 @@
 <mapper namespace="cn.atsoft.dasheng.production.mapper.WorkingPorcedureClassMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.WorkingPorcedureClass">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.WorkingProcedureClass">
         <id column="wp_class_id" property="wpClassId" />
         <result column="wp_class_name" property="wpClassName" />
     </resultMap>
@@ -14,10 +14,10 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.WorkingPorcedureClassResult" parameterType="cn.atsoft.dasheng.production.model.params.WorkingPorcedureClassParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.WorkingProcedureClassResult" parameterType="cn.atsoft.dasheng.production.model.params.WorkingProcedureClassParam">
         select
         <include refid="Base_Column_List"/>
-        from working_porcedure_class where 1 = 1
+        from working_procedure_class where 1 = 1
             <if test="paramCondition.wpClassId != null">
                 and wp_class_id like CONCAT('%',#{paramCondition.wpClassId},'%')
             </if>
@@ -26,10 +26,10 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.WorkingPorcedureClassParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.WorkingProcedureClassParam">
         select
         <include refid="Base_Column_List"/>
-        from working_porcedure_class where 1 = 1
+        from working_procedure_class where 1 = 1
                 <if test="paramCondition.wpClassId != null">
                         and wp_class_id like CONCAT('%',#{paramCondition.wpClassId},'%')
                 </if>
@@ -38,10 +38,10 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.WorkingPorcedureClassResult" parameterType="cn.atsoft.dasheng.production.model.params.WorkingPorcedureClassParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.WorkingProcedureClassResult" parameterType="cn.atsoft.dasheng.production.model.params.WorkingProcedureClassParam">
         select
         <include refid="Base_Column_List"/>
-        from working_porcedure_class where 1 = 1
+        from working_procedure_class where 1 = 1
                 <if test="paramCondition.wpClassId != null">
                         and wp_class_id like CONCAT('%',#{paramCondition.wpClassId},'%')
                 </if>
@@ -50,10 +50,10 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.WorkingPorcedureClassParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.WorkingProcedureClassParam">
         select
         <include refid="Base_Column_List"/>
-        from working_porcedure_class where 1 = 1
+        from working_procedure_class where 1 = 1
                 <if test="paramCondition.wpClassId != null">
                         and wp_class_id like CONCAT('%',#{paramCondition.wpClassId},'%')
                 </if>

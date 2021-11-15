@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class WorkingPorcedureClassResult implements Serializable {
+public class WorkingProcedureClassResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
