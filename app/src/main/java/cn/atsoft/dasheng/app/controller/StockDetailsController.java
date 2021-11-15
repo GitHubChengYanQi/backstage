@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.List;
+
 
 /**
  * 仓库物品明细表控制器
@@ -108,7 +110,19 @@ public class StockDetailsController extends BaseController {
         }
     }
 
+    /**
+     * 返回sku
+     *
+     * @author
+     * @Date 2021-07-15
+     */
+    @RequestMapping(value = "/backSkuByStoreHouse", method = RequestMethod.GET)
+    @ApiOperation("编辑")
+    public ResponseData backSkuByStoreHouse(@RequestParam Long id) {
 
+        List<Long> longs = this.stockDetailsService.backSkuByStoreHouse(id);
+        return ResponseData.success(longs);
+    }
 
 
 }

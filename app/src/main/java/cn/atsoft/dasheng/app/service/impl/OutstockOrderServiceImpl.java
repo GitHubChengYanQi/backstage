@@ -12,9 +12,14 @@ import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
+import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -52,10 +57,40 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OutstockListingService outstockListingService;
     @Autowired
     private StorehouseService storehouseService;
-
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private OutstockSendTemplate outstockSendTemplate;
+    @Autowired
+    private OrCodeService orCodeService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
+        List<Long> ids = new ArrayList<>();
+        for (ApplyDetails applyDetail : param.getApplyDetails()) {
+            ids.add(applyDetail.getBrandId() + applyDetail.getSkuId());
+        }
+        long count = ids.stream().distinct().count();
+        if (param.getApplyDetails().size() > count) {
+            throw new ServiceException(500, "请勿添加重复数据");
+        }
+
+
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                String replace = "";
+                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                } else {
+                    replace = backCoding.replace("${storehouse}", "");
+                }
+                param.setCoding(replace);
+            }
+        }
+
         OutstockOrder entity = getEntity(param);
         this.save(entity);
 
@@ -75,14 +110,21 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
             outstockListingService.saveBatch(outstockListings);
         }
 
-
+        BackCodeRequest backCodeRequest = new BackCodeRequest();
+        backCodeRequest.setId(entity.getOutstockOrderId());
+        backCodeRequest.setSource("instock");
+        Long aLong = orCodeService.backCode(backCodeRequest);
+        String url = param.getUrl().replace("codeId", aLong.toString());
+        outstockSendTemplate.setUserId(param.getUserId());
+        outstockSendTemplate.setUrl(url);
+        outstockSendTemplate.sendTemplate();
         return entity;
     }
 
     @Override
     public void delete(OutstockOrderParam param) {
         param.setDisplay(0);
-       this.update(param);
+        this.update(param);
     }
 
 

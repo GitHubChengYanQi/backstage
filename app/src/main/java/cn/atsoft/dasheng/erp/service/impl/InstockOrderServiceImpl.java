@@ -87,7 +87,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 String replace = "";
                 if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
                     replace = backCoding.replace("${storehouse}", storehouse.getCoding());
-                }else {
+                } else {
                     replace = backCoding.replace("${storehouse}", "");
                 }
                 param.setCoding(replace);
@@ -117,17 +117,19 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                     instockList.setNumber(instockRequest.getNumber());
                     instockList.setInstockOrderId(entity.getInstockOrderId());
                     instockList.setBrandId(instockRequest.getBrandId());
+                    if (ToolUtil.isNotEmpty(instockRequest.getCostprice())) {
+                        instockList.setCostPrice(instockRequest.getCostprice());
+                    }
                     instockList.setStoreHouseId(param.getStoreHouseId());
-                    instockList.setCostPrice(instockRequest.getCostprice());
-                    instockList.setSellingPrice(instockRequest.getSellingPrice());
+                    if (ToolUtil.isNotEmpty(instockRequest.getSellingPrice())) {
+                        instockList.setSellingPrice(instockRequest.getSellingPrice());
+                    }
                     instockLists.add(instockList);
                 }
             }
             if (ToolUtil.isNotEmpty(instockLists)) {
                 instockListService.saveBatch(instockLists);
             }
-
-
 
 
             BusinessTrack businessTrack = new BusinessTrack();

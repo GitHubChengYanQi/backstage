@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * 仓库物品明细表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 public interface StockDetailsService extends IService<StockDetails> {
@@ -22,7 +23,7 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     Long add(StockDetailsParam param);
@@ -30,7 +31,7 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     void delete(StockDetailsParam param);
@@ -38,7 +39,7 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     void update(StockDetailsParam param);
@@ -46,7 +47,7 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     StockDetailsResult findBySpec(StockDetailsParam param);
@@ -54,7 +55,7 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     List<StockDetailsResult> findListBySpec(StockDetailsParam param);
@@ -62,9 +63,19 @@ public interface StockDetailsService extends IService<StockDetails> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
-     PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope );
+    PageInfo<StockDetailsResult> findPageBySpec(StockDetailsParam param, DataScope dataScope);
+
+    /**
+     * 通过仓库返回所有sku
+     *
+     * @param id
+     * @return
+     */
+    List<Long> backSkuByStoreHouse(Long id);
+
+
 
 }

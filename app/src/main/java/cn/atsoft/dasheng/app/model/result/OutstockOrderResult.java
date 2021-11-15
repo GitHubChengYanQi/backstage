@@ -61,6 +61,8 @@ public class OutstockOrderResult implements Serializable {
     @ApiModelProperty("备注")
     private String note;
 
+    private String coding;
+
     /**
      * 计划出库时间
      */
