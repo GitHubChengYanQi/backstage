@@ -436,17 +436,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 unitIds.add(spu.getUnitId());
             }
         }
-        List<Unit> units = unitService.query().in("unit_id", unitIds).list();
+//        List<Unit> units = unitService.query().in("unit_id", unitIds).list();
 
-        for (Spu spu : spus) {
-            for (Unit unit : units) {
-                if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
-                    UnitResult unitResult = new UnitResult();
-                    ToolUtil.copyProperties(unit, unitResult);
-                    unitMaps.put(spu.getSpuId(), unitResult);
-                }
-            }
-        }
+//        for (Spu spu : spus) {
+//            for (Unit unit : units) {
+//                if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
+//                    UnitResult unitResult = new UnitResult();
+//                    ToolUtil.copyProperties(unit, unitResult);
+//                    unitMaps.put(spu.getSpuId(), unitResult);
+//                }
+//            }
+//        }
 
 
         for (SkuResult skuResult : param) {
@@ -455,8 +455,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     if (spu.getSpuId() != null && skuResult.getSpuId() != null && spu.getSpuId().equals(skuResult.getSpuId())) {
                         SpuResult spuResult = new SpuResult();
                         ToolUtil.copyProperties(spu, spuResult);
-                        UnitResult unitResult = unitMaps.get(spu.getSpuId());
-                        spuResult.setUnitResult(unitResult);
+//                        UnitResult unitResult = unitMaps.get(spu.getSpuId());
+//                        spuResult.setUnitResult(unitResult);
                         skuResult.setSpuResult(spuResult);
                         break;
                     }
