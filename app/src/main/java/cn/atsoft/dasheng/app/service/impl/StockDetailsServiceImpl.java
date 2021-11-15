@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -41,15 +42,13 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
-    private ItemsService itemsService;
-    @Autowired
     private BrandService brandService;
     @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
     private SkuService skuService;
-    @Autowired
-    private StockService stockService;
+
+
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -101,6 +100,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
         return skuIds;
     }
+
+
 
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();

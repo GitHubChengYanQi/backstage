@@ -3,10 +3,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ItemsService;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -22,6 +24,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -51,6 +54,8 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     private SkuService skuService;
     @Autowired
     private SpuService spuService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(OutstockListingParam param) {
@@ -111,7 +116,7 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
             record.setBackSkus(backSkus);
             record.setSpuResult(result);
 
-            if (ToolUtil.isNotEmpty(record.getSkuId())){
+            if (ToolUtil.isNotEmpty(record.getSkuId())) {
                 Sku sku = skuService.getById(record.getSkuId());
                 record.setSku(sku);
             }
@@ -151,6 +156,8 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
 //        }
     }
 
+
+
     private Serializable getKey(OutstockListingParam param) {
         return param.getOutstockListingId();
     }
@@ -168,5 +175,6 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }
