@@ -718,7 +718,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long outStockByCode(InKindRequest inKindRequest) {
         //修改库存详情
         StockDetails stockDetails = stockDetailsService.query().eq("storehouse_id", inKindRequest.getStorehouse()).eq("qr_code_id", inKindRequest.getCodeId()).one();
-        if (stockDetails.getNumber().equals("0")) {
+        if (stockDetails.getNumber() == 0) {
             throw new ServiceException(500, "数量不足");
         }
         long l = stockDetails.getNumber() - inKindRequest.getNumber();
@@ -729,7 +729,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         //修改出库清单
         OutstockListing outstockListing = outstockListingService.query().eq("outstock_listing_id", inKindRequest.getOutstockListingId()).one();
-        if (outstockListing.getNumber() < inKindRequest.getNumber()) {
+        if (outstockListing.getNumber() == 0) {
+            throw new ServiceException(500, "数量不足");
+        }
+        if (outstockListing.getNumber() <= inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
         long listNumber = outstockListing.getNumber() - inKindRequest.getNumber();
@@ -740,7 +743,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         //修改库存
         Stock stock = stockService.query().eq("stock_id", stockDetails.getStockId()).one();
-        if (stock.getInventory() < inKindRequest.getNumber()) {
+        if (stock.getInventory() == 0) {
+            throw new ServiceException(500, "数量不足");
+        }
+        if (stock.getInventory() <= inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
         long newNumber = stock.getInventory() - inKindRequest.getNumber();
@@ -752,7 +758,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //修改实物
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         Inkind inkind = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
-        if (inkind.getNumber() < inKindRequest.getNumber()) {
+        if (inkind.getNumber() == 0) {
+            throw new ServiceException(500, "数量不足");
+        }
+        if (inkind.getNumber() <= inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
         long inkindNumber = inkind.getNumber() - inKindRequest.getNumber();
