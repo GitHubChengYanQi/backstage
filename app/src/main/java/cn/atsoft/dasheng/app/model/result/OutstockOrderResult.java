@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -39,6 +40,9 @@ public class OutstockOrderResult implements Serializable {
     private UserResult userResult;
 
     private StorehouseResult storehouseResult;
+
+    private List<OutstockListingResult> outstockListing;
+    private List<OutstockResult> outstockResults;
     /**
      * 出库状态
      */
@@ -56,6 +60,8 @@ public class OutstockOrderResult implements Serializable {
      */
     @ApiModelProperty("备注")
     private String note;
+
+    private String coding;
 
     /**
      * 计划出库时间

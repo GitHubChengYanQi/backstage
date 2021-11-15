@@ -12,9 +12,12 @@ import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -52,10 +55,29 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OutstockListingService outstockListingService;
     @Autowired
     private StorehouseService storehouseService;
-
+    @Autowired
+    private OrCodeService orCodeService;
+    @Autowired
+    private CodingRulesService codingRulesService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
+
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", param.getStorehouseId()).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                String replace = "";
+                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                }else {
+                    replace = backCoding.replace("${storehouse}", "");
+                }
+                param.setCoding(replace);
+            }
+        }
+
         OutstockOrder entity = getEntity(param);
         this.save(entity);
 
