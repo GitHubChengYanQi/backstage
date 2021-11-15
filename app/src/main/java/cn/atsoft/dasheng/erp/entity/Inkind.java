@@ -23,6 +23,11 @@ import java.io.Serializable;
 public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 出库单
+     */
+    @TableField("outstock_order_id")
+    private Long outstockOrderId;
 
     @TableField("number")
     private Long number;
@@ -236,6 +241,14 @@ public class Inkind implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getOutstockOrderId() {
+        return outstockOrderId;
+    }
+
+    public void setOutstockOrderId(Long outstockOrderId) {
+        this.outstockOrderId = outstockOrderId;
     }
 
     @Override

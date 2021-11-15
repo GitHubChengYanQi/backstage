@@ -16,5 +16,7 @@ public class InKindRequest {
     private Integer sellingPrice;
     private Long sorehousePositionsId;
     private Long storehouse;
+    private Long outstockOrderId;
+    private Long outstockListingId;
 
 }

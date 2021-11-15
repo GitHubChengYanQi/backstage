@@ -27,6 +27,8 @@ public class InkindResult implements Serializable {
 
     private Brand brand;
 
+    private Long outstockOrderId;
+
     private List<BackSku> backSku;
 
     private Long number;

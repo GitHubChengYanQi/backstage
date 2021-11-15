@@ -150,6 +150,7 @@ public interface OrCodeService extends IService<OrCode> {
 
     /**
      * 扫码出库
+     * @return
      */
-    void outStockByCode(InKindRequest inKindRequest);
+    Long outStockByCode(InKindRequest inKindRequest);
 }
