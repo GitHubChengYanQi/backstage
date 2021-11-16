@@ -219,6 +219,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (InstockOrderResult datum : data) {
 
+            Integer instockLising = instockListService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
+            Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
+            if (instock > 0) {
+                datum.setState(1);
+            } else {
+                datum.setState(0);
+            }
+
             for (User user : users) {
                 if (datum.getUserId().equals(user.getUserId())) {
                     UserResult userResult = new UserResult();
