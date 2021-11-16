@@ -657,6 +657,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         switch (codeBind.getSource()) {
             case "item":
                 InkindResult inkindResult = inkindService.backInKindgetById(codeBind.getFormId());
+                if (inkindResult.getNumber() == 0) {
+                    throw new ServiceException(500, "已出库，请勿重复扫描");
+                }
                 if (ToolUtil.isEmpty(inkindResult)) {
                     throw new ServiceException(500, "没有此物料");
                 }
