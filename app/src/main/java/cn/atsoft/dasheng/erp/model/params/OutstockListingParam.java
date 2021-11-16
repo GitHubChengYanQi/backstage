@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -30,6 +31,11 @@ public class OutstockListingParam extends AbstractDictMap implements Serializabl
      * skuId
      */
     private Long skuId;
+
+    /**
+     * 出库数量
+     */
+    private Long delivery;
 
     /**
      * 出库清单id

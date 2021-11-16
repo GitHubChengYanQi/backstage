@@ -27,7 +27,7 @@ public class OutstockOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private String url;
     /**
      * 出库详细id
      */

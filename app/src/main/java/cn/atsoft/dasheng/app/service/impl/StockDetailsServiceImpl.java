@@ -1,22 +1,13 @@
 package cn.atsoft.dasheng.app.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Items;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.ItemsService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.result.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.mapper.StockDetailsMapper;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
-import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
-import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -26,18 +17,17 @@ import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -52,13 +42,13 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     @Autowired
     private StorehouseService storehouseService;
     @Autowired
-    private ItemsService itemsService;
-    @Autowired
     private BrandService brandService;
     @Autowired
     private StorehousePositionsService positionsService;
     @Autowired
     private SkuService skuService;
+
+
 
     @Override
     public Long add(StockDetailsParam param) {
@@ -98,6 +88,20 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public List<Long> backSkuByStoreHouse(Long id) {
+        List<StockDetails> details = this.query().eq("storehouse_id", id).list();
+        List<Long> skuIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(details)) {
+            for (StockDetails detail : details) {
+                skuIds.add(detail.getSkuId());
+            }
+        }
+        return skuIds;
+    }
+
+
 
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();

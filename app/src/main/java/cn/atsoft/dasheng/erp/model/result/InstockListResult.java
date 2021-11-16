@@ -32,7 +32,7 @@ public class InstockListResult implements Serializable {
      * 库位id
      */
     private Long storehousePositionsId;
-
+    private Long instockNumber;
     private List<BackSku> backSkus;
     private SpuResult spuResult;
     private ItemsResult itemsResult;

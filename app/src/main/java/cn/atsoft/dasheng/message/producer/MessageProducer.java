@@ -23,7 +23,7 @@ public class MessageProducer {
     public void sendMessage(MessageEntity messageEntity){
         messageEntity.setTimes(1+ messageEntity.getTimes());
         if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
-            rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_QUEUE, JSON.toJSONString(messageEntity));
+            rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
         }
     }
 

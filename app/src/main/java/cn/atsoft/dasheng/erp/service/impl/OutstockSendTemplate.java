@@ -2,10 +2,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Message;
-import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
-import cn.atsoft.dasheng.appBase.service.sendTemplae;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -14,11 +12,9 @@ import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
-import cn.atsoft.dasheng.userInfo.service.UserInfoService;
 import cn.hutool.core.date.DateTime;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
-import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +23,7 @@ import java.util.List;
 
 @Service
 @Data
-public class InstockSendTemplate {
+public class OutstockSendTemplate {
     @Autowired
     private WxuserInfoService wxuserInfoService;
     @Autowired
@@ -42,14 +38,14 @@ public class InstockSendTemplate {
 
     private String url;
 
-    private BusinessTrack businessTrack;
+    private Long userId;
 
 
     //企业微信推送
     public List<String> userIds() {
         //获取uuid
         List<String> uuIds = new ArrayList<>();
-        WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", businessTrack.getUserId()).eq("source", "wxCp").one();
+        WxuserInfo wxuserInfo = wxuserInfoService.query().eq("user_id", userId).eq("source", "wxCp").one();
         if (ToolUtil.isNotEmpty(wxuserInfo)) {
 
             UcOpenUserInfo ucOpenUserInfo = ucOpenUserInfoService.query().eq("member_id", wxuserInfo.getMemberId()).eq("source", "wxCp").one();
@@ -63,11 +59,11 @@ public class InstockSendTemplate {
     }
 
     public String getTitle() {
-        return "入库提醒";
+        return "出库提醒";
     }
 
     public String getDescription() {
-        return "有新的物料需要入库";
+        return "有新的物料需要出库";
     }
 
 
@@ -93,31 +89,24 @@ public class InstockSendTemplate {
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
+                    messageProducer.sendMessage(messageEntity);
 //                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
                     //添加代办信息
-
-
-                    messageEntity.setType(MessageType.CP);
-                    messageProducer.sendMessage(messageEntity, 500);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                Message message = new Message();
+                message.setTime(new DateTime());
+                message.setTitle("出库提醒");
+                message.setContent("您有新的出库单需要操作");
+                message.setType(3);
+                message.setSort(0L);
+                messageEntity.setType(MessageType.MESSAGE);
+                messageEntity.setMessage(message);
+                messageProducer.sendMessage(messageEntity);
             }
-               Message message = new Message();
-               message.setTime(new DateTime());
-               message.setTitle("入库提醒");
-               message.setContent("您有新的入库单需要操作");
-               message.setType(3);
-               message.setSort(0L);
-               messageEntity.setType(MessageType.MESSAGE);
-               messageEntity.setMessage(message);
-               messageProducer.sendMessage(messageEntity, 1000);
-
-
         }
     }
-
 
 
 }

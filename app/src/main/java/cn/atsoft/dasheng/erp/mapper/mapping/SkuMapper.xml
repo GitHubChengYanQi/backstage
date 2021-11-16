@@ -91,6 +91,13 @@
             </foreach>
 
         </if>
+        <if test="paramCondition.skuIds != null  and paramCondition.skuIds.size > 0 ">
+            and sku_id in
+            <foreach collection="paramCondition.skuIds" index="index" item="state" separator="," close=")" open="(">
+                #{state}
+            </foreach>
+
+        </if>
 
     </select>
 

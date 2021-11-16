@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SkuParam  extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class SkuParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;

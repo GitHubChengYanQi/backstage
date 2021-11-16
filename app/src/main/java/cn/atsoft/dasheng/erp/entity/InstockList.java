@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -25,6 +28,11 @@ public class InstockList implements Serializable {
      */
     @TableField("sku_id")
     private Long skuId;
+    /**
+     * 入库数量
+     */
+    @TableField("instock_number")
+    private Long instockNumber;
 
     /**
      * 库位id
@@ -35,7 +43,7 @@ public class InstockList implements Serializable {
     /**
      * 入库清单
      */
-      @TableId(value = "instock_list_id", type = IdType.ID_WORKER)
+    @TableId(value = "instock_list_id", type = IdType.ID_WORKER)
     private Long instockListId;
 
     /**
@@ -77,16 +85,16 @@ public class InstockList implements Serializable {
     @TableField("instock_order_id")
     private Long instockOrderId;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     @TableField("display")
@@ -95,7 +103,7 @@ public class InstockList implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     public Integer getCostPrice() {
@@ -226,20 +234,28 @@ public class InstockList implements Serializable {
         this.storehousePositionsId = storehousePositionsId;
     }
 
+    public Long getInstockNumber() {
+        return instockNumber;
+    }
+
+    public void setInstockNumber(Long instockNumber) {
+        this.instockNumber = instockNumber;
+    }
+
     @Override
     public String toString() {
         return "InstockList{" +
-        "instockListId=" + instockListId +
-        ", brandId=" + brandId +
-        ", itemId=" + itemId +
-        ", number=" + number +
-        ", instockOrderId=" + instockOrderId +
-        ", createTime=" + createTime +
-        ", createUser=" + createUser +
-        ", updateTime=" + updateTime +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "instockListId=" + instockListId +
+                ", brandId=" + brandId +
+                ", itemId=" + itemId +
+                ", number=" + number +
+                ", instockOrderId=" + instockOrderId +
+                ", createTime=" + createTime +
+                ", createUser=" + createUser +
+                ", updateTime=" + updateTime +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }
