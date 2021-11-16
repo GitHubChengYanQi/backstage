@@ -670,9 +670,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     object.setInkind(inkindResult);
                     return object;
                 }
-            default:
-                throw new ServiceException(500, "物料不符");
+
         }
+        throw new ServiceException(500, "请扫描物料二维码");
     }
 
     //扫码出库
