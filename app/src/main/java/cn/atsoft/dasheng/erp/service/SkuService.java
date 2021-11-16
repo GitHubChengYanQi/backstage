@@ -88,4 +88,6 @@ public interface SkuService extends IService<Sku> {
      */
     Map<Long, List<BackSku>> sendSku(List<Long> skuiIds);
 
+    void format(List<SkuResult> param);
+
 }

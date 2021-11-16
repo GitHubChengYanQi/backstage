@@ -405,8 +405,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return PageFactory.createPageInfo(page);
     }
 
-
-    private void format(List<SkuResult> param) {
+    @Override
+    public void format(List<SkuResult> param) {
 
         List<Long> spuIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
