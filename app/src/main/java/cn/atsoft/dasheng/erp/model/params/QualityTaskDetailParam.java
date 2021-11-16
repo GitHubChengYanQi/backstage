@@ -41,6 +41,17 @@ public class QualityTaskDetailParam implements Serializable, BaseValidatingParam
     private Long qualityTaskId;
 
     /**
+     * 质检项
+     */
+    @ApiModelProperty("质检项")
+    private Long qualityPlanId;
+    /**
+     * 品牌
+     */
+    @ApiModelProperty("品牌")
+    private Long brandId;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)
@@ -51,6 +62,8 @@ public class QualityTaskDetailParam implements Serializable, BaseValidatingParam
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
+
+
 
     /**
      * 创建时间

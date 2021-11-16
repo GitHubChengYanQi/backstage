@@ -7,6 +7,8 @@
         <id column="quality_task_detail_id" property="qualityTaskDetailId" />
         <result column="sku_id" property="skuId" />
         <result column="quality_task_id" property="qualityTaskId" />
+        <result column="quality_plan_id" property="qualityPlanId"/>
+        <result column="brand_id" property="brandId"/>
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -17,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        quality_task_detail_id AS "qualityTaskDetailId", sku_id AS "skuId", quality_task_id AS "qualityTaskId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        quality_task_detail_id AS "qualityTaskDetailId", sku_id AS "skuId", quality_plan_id AS "qualityPlanId",brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
