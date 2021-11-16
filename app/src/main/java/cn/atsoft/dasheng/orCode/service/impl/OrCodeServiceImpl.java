@@ -663,6 +663,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 if (ToolUtil.isEmpty(inkindResult)) {
                     throw new ServiceException(500, "没有此物料");
                 }
+
+
                 if (inkindResult.getSkuId().equals(inKindRequest.getId()) && inkindResult.getBrandId().equals(inKindRequest.getBrandId())) {
                     if (ToolUtil.isNotEmpty(inkindResult.getStorehousePositionsId())) {
                         StorehousePositions storehousePositions = storehousePositionsService.query()
@@ -694,10 +696,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         //修改出库清单
         OutstockListing outstockListing = outstockListingService.query().eq("outstock_listing_id", inKindRequest.getOutstockListingId()).one();
-        if (outstockListing.getNumber() == 0) {
+        Long ListingNumber = outstockListing.getNumber();
+        if (ListingNumber == 0) {
             throw new ServiceException(500, "数量不足");
         }
-        if (outstockListing.getNumber() < inKindRequest.getNumber()) {
+        if (ListingNumber < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不符");
         }
 

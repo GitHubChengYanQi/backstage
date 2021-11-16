@@ -124,8 +124,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void delete(OutstockOrderParam param) {
-        param.setDisplay(0);
-        this.update(param);
+//        param.setDisplay(0);
+//        this.update(param);
+        throw new ServiceException(500, "不可以删除");
     }
 
 
@@ -216,11 +217,12 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {
-        OutstockOrder oldEntity = getOldEntity(param);
-        OutstockOrder newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-        return newEntity;
+        throw new ServiceException(500, "不可以修改");
+//        OutstockOrder oldEntity = getOldEntity(param);
+//        OutstockOrder newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
+//        return newEntity;
     }
 
     @Override
