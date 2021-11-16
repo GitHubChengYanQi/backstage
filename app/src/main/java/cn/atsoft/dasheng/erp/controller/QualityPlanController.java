@@ -15,8 +15,11 @@ import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.wrapper.QualityCheckSelectWrapper;
+import cn.atsoft.dasheng.erp.wrapper.QualityPlanSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -138,6 +141,18 @@ public class QualityPlanController extends BaseController {
             qualityPlanParam = new QualityPlanParam();
         }
         return this.qualityPlanService.findPageBySpec(qualityPlanParam);
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityPlanParam qualityPlanParam) {
+
+        QueryWrapper<QualityPlan> qualityCheckQueryWrapper = new QueryWrapper<>();
+
+        List<Map<String, Object>> list = this.qualityPlanService.listMaps(qualityCheckQueryWrapper);
+        QualityPlanSelectWrapper factory = new QualityPlanSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 

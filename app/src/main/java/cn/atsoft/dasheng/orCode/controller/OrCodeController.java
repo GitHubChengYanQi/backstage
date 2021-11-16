@@ -381,6 +381,11 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setType("outstock");
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
+                case "quality":
+//                    OutStockOrderRequest outStockOrderRequest = new OutStockOrderRequest();
+//                    outStockOrderRequest.setType("outstock");
+//                    outStockOrderRequest.setResult(outstockResult);
+//                    return ResponseData.success(outStockOrderRequest);
             }
         }
         return ResponseData.success();
