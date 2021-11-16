@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,9 @@ import java.util.List;
 public class QualityTaskDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private SkuResult skuResult;
+    private BrandResult brand;
+    private QualityPlanResult qualityPlanResult;
 
     @ApiModelProperty("")
     private Long qualityTaskDetailId;
@@ -47,6 +50,12 @@ public class QualityTaskDetailResult implements Serializable {
      */
     @ApiModelProperty("品牌")
     private Long brandId;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
 
     /**
      * 创建者

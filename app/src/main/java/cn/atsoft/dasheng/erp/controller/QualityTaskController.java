@@ -84,7 +84,7 @@ public class QualityTaskController extends BaseController {
         QualityTask detail = this.qualityTaskService.getById(qualityTaskParam.getQualityTaskId());
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(detail, result);
-
+        qualityTaskService.detailFormat(result);
         return ResponseData.success(result);
     }
 

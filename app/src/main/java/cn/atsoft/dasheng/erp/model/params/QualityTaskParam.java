@@ -23,7 +23,7 @@ import java.util.List;
 public class QualityTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<QualityTaskDetailParam> details;
 
     @ApiModelProperty("")
     private Long qualityTaskId;

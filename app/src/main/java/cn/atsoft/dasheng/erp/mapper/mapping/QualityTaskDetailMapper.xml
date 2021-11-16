@@ -9,6 +9,7 @@
         <result column="quality_task_id" property="qualityTaskId" />
         <result column="quality_plan_id" property="qualityPlanId"/>
         <result column="brand_id" property="brandId"/>
+        <result column="number" property="number"/>
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />

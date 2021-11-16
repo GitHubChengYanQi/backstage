@@ -25,7 +25,13 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @Date 2021-11-16
      */
     void add(QualityTaskParam param);
-
+    /**
+     * 详情格式化
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    void detailFormat(QualityTaskResult param);
     /**
      * 删除
      *

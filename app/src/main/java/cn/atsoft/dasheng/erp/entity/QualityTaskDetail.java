@@ -35,11 +35,19 @@ public class QualityTaskDetail implements Serializable {
      */
     @TableField("quality_plan_id")
     private Long qualityPlanId;
+
     /**
      * 物料id
      */
     @TableField("brand_id")
     private Long brandId;
+
+    /**
+     * 数量
+     */
+    @TableField("number")
+    private Integer number;
+
 
 
     /**

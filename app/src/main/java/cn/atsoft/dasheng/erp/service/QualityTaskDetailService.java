@@ -26,6 +26,8 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
      */
     void add(QualityTaskDetailParam param);
 
+    void format(List<QualityTaskDetailResult> param);
+
     /**
      * 删除
      *

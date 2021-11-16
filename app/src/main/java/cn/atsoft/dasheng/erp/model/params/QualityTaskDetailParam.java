@@ -52,6 +52,12 @@ public class QualityTaskDetailParam implements Serializable, BaseValidatingParam
     private Long brandId;
 
     /**
+     * 数量
+     */
+    @ApiModelProperty("数量")
+    private Integer number;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

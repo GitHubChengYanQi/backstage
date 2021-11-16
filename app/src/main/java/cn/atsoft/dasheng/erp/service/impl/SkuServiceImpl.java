@@ -554,7 +554,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public List<SkuResult> backSkuList(List<Long> skuIds) {
-        List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
+        List<Sku> skuList =skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
         List<Long> attIds = new ArrayList<>();
         List<SkuResult> results = new ArrayList<>();
         for (Sku sku : skuList) {
