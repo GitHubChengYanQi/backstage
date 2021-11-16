@@ -262,14 +262,39 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public void format(List<OutstockOrderResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> stockHouseIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
         for (OutstockOrderResult datum : data) {
             ids.add(datum.getUserId());
             stockHouseIds.add(datum.getStorehouseId());
+            orderIds.add(datum.getOutstockOrderId());
         }
         List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
 
+        List<Outstock> outstocks = orderIds.size() == 0 ? new ArrayList<>() : outstockService.query().eq("outstock_order_id", orderIds).list();
+
+        List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().eq("outstock_order_id", orderIds).list();
+
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
         for (OutstockOrderResult datum : data) {
+            //判断出库挡墙状态
+            datum.setState(0);
+            if (ToolUtil.isNotEmpty(outstocks)) {
+                for (Outstock outstock : outstocks) {
+                    if (outstock.getOutstockId().equals(datum.getOutstockOrderId())) {
+                        datum.setState(1);
+                    }
+                }
+            }
+            //判断出库当前状态
+            if (ToolUtil.isNotEmpty(outstockListings)) {
+                for (OutstockListing outstockListing : outstockListings) {
+                    if (outstockListing.getNumber() == 0) {
+                        datum.setState(3);
+                    }
+                }
+            }
+
+
             for (User user : users) {
                 if (datum.getUserId() != null && user.getUserId().equals(datum.getUserId())) {
                     UserResult userResult = new UserResult();

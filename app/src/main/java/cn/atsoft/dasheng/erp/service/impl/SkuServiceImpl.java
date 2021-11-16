@@ -235,59 +235,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Transactional
     @Override
     public void deleteBatch(SkuParam param) {
-//        List<Long> skuIds = param.getId();
-//        List<Sku> skuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId,skuIds).and(i->i.eq(Sku::getDisplay,1)).list();
-//        List<Long> spuIds = new ArrayList<>();
-//        List<Long> attributeValuesIds = new ArrayList<>();
-//        List<Long> attributeIds = new ArrayList<>();
-//        List<Long> categoryIds = new ArrayList<>();
-//        List<Category> categoryList = new ArrayList<>();
-//
-//        for (Sku sku : skuList) {
-//            spuIds.add(sku.getSpuId());//获取skuid
-//            JSONArray jsonArray = JSONUtil.parseArray(sku.getSkuValue());
-//            List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);//skuValue解析
-//            for (AttributeValues valuesRequest : valuesRequests) {
-//                attributeValuesIds.add(valuesRequest.getAttributeValuesId());//获取sku属性值
-//                attributeIds.add(valuesRequest.getAttributeId());//获取sku属性
-//            }
-//            sku.setDisplay(0);
-//        }
-//
-//        skuService.updateBatchById(skuList);
-//        List<Long>hsSpuIds = new ArrayList<>();
-//        List<Sku> beforSkuList = param.getId().size() ==0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSpuId,spuIds).and(i->i.eq(Sku::getDisplay,1)).list();
-//        for (Sku sku : beforSkuList) {
-//            hsSpuIds.add(sku.getSpuId());
-//        }
-//        spuIds.removeAll(hsSpuIds);
-//        List<AttributeValues> attributeValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, attributeValuesIds).and(i->i.eq(AttributeValues::getDisplay,1)).list();
-//        for (AttributeValues attributeValues : attributeValuesList) {
-//            attributeValues.setDisplay(0);
-//        }
-//        attributeValuesService.updateBatchById(attributeValuesList);
-//        List<Spu> spuList =spuIds.size() == 0 ? new ArrayList<>(): spuService.lambdaQuery().in(Spu::getSpuId, spuIds).and(i->i.eq(Spu::getDisplay,1)).list();
-//        for (Spu spu : spuList) {
-//            spu.setDisplay(0);
-//            categoryIds.add(spu.getCategoryId());
-//        }
-//
-//
-//        spuService.updateBatchById(spuList);
-//        List<Spu> afterSkuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getSpuId, hsSpuIds).and(i->i.eq(Spu::getDisplay,1)).list();
-//        for (Spu spu : afterSkuList) {
-//            categoryIds.remove(spu.getCategoryId());
-//        }
-//        List<Spu> beforspuList = spuIds.size() == 0 ? new ArrayList<>() : spuService.lambdaQuery().in(Spu::getCategoryId, categoryIds).and(i->i.eq(Spu::getDisplay,1)).list();
-//        if (beforspuList.size()>1){
-//            for (Long categoryId : categoryIds) {
-//                Category category = new Category();
-//                category.setCategoryId(categoryId);
-//                category.setDisplay(0);
-//                categoryList.add(category);
-//            }
-//        }
-//        categoryService.updateBatchById(categoryList);
         List<Long> skuIds = param.getId();
 
         List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().in(ErpPartsDetail::getSkuId, skuIds).list();
@@ -570,7 +517,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attIds.add(valuesRequest.getAttributeId());
             }
         }
-        List<ItemAttribute> attList = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attIds).list();
+
         List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();
