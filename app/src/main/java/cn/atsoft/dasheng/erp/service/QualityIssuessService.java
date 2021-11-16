@@ -25,7 +25,13 @@ public interface QualityIssuessService extends IService<QualityIssuess> {
      * @Date 2021-11-15
      */
     void add(QualityIssuessParam param);
-
+    /**
+     * 详情格式化
+     *
+     * @author
+     * @Date 2021-11-15
+     */
+    void detailFormat(QualityIssuessResult param);
     /**
      * 删除
      *

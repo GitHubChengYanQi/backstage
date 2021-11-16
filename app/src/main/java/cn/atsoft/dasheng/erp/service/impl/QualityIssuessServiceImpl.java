@@ -108,6 +108,31 @@ public class QualityIssuessServiceImpl extends ServiceImpl<QualityIssuessMapper,
         }
 
     }
+    @Override
+    public void detailFormat(QualityIssuessResult param){
+        List<String> skuIds = new ArrayList<>();
+        skuIds = Arrays.asList(param.getSkuIds().split(","));
+        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
+        List<SkuResult> skuResultList = new ArrayList<>();
+        for (Sku sku : skuList) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku,skuResult);
+            skuResultList.add(skuResult);
+        }
+        skuService.format(skuResultList);
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (String skuId : skuIds) {
+            for (SkuResult sku : skuResultList) {
+                if (skuId.equals(sku.getSkuId().toString())) {
+                    SkuResult skuResult = new SkuResult();
+                    ToolUtil.copyProperties(sku,skuResult);
+                    skuResults.add(skuResult);
+                }
+            }
+        }
+        param.setSkuResults(skuResults);
+
+    }
 
     private Serializable getKey(QualityIssuessParam param) {
         return null;
