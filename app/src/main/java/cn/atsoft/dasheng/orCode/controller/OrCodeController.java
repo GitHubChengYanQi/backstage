@@ -96,6 +96,8 @@ public class OrCodeController extends BaseController {
     private OutstockListingService outstockListingService;
     @Autowired
     private OutstockService outstockService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
     /**
      * 新增接口
@@ -381,6 +383,19 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setType("outstock");
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
+                case "quality":
+                    QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(qualityTask)) {
+                        throw new ServiceException(500, "当前数据不存在");
+                    }
+
+                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+
+                    QualityRequest qualityRequest = new QualityRequest();
+                    qualityRequest.setType("quality");
+                    qualityRequest.setResult(qualityTaskResult);
+                    return ResponseData.success(qualityRequest);
             }
         }
         return ResponseData.success();
