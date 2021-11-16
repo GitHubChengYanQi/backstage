@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -128,6 +129,17 @@ public class QualityTaskController extends BaseController {
     }
 
 
+    /**
+     * 添加data
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/addData", method = RequestMethod.POST)
+    public ResponseData addData(@RequestBody FormDataPojo formDataPojo)  {
+        this.qualityTaskService.addFormData(formDataPojo);
+        return ResponseData.success();
+    }
 
 
 }

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.mapper.QualityTaskMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
+import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
@@ -103,6 +104,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         return PageFactory.createPageInfo(page);
     }
 
+
     @Override
     public void addFormData(FormDataPojo formDataPojo) {
         FormData formData = new FormData();
@@ -110,11 +112,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         formData.setFormId(formDataPojo.getFormId());
         formData.setMainId(0L);
         formDataService.save(formData);
-        FormDataValue formDataValue = new FormDataValue();
-        formDataValue.setValue(formDataPojo.getValue());
-        formDataValue.setDataId(formData.getDataId());
-        formDataValue.setField(formDataPojo.getField());
-        formDataValueService.save(formDataValue);
+
+        List<FormValues> formValues = formDataPojo.getFormValues();
+        List<FormDataValue> formValuesList = new ArrayList<>();
+        for (FormValues formValue : formValues) {
+            FormDataValue formDataValue = new FormDataValue();
+             formDataValue.setValue(formValue.getValue());
+             formDataValue.setDataId(formData.getDataId());
+             formDataValue.setField(formValue.getField());
+            formValuesList.add(formDataValue);
+        }
+        formDataValueService.saveBatch(formValuesList);
     }
     @Override
     public void formDataFormat(FormDataResult param){
