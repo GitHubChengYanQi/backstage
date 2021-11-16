@@ -27,7 +27,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_task_detail where 1 = 1
+        from daoxin_erp_quality_task_detail where 1 = 1 and display = 1
             <if test="paramCondition.qualityTaskDetailId != null">
                 and quality_task_detail_id like CONCAT('%',#{paramCondition.qualityTaskDetailId},'%')
             </if>
@@ -60,7 +60,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_task_detail where 1 = 1
+        from daoxin_erp_quality_task_detail where 1 = 1 and display = 1
                 <if test="paramCondition.qualityTaskDetailId != null">
                         and quality_task_detail_id like CONCAT('%',#{paramCondition.qualityTaskDetailId},'%')
                 </if>
@@ -93,7 +93,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult" parameterType="cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_task_detail where 1 = 1
+        from daoxin_erp_quality_task_detail where 1 = 1 and display = 1
                 <if test="paramCondition.qualityTaskDetailId != null">
                         and quality_task_detail_id like CONCAT('%',#{paramCondition.qualityTaskDetailId},'%')
                 </if>
@@ -126,7 +126,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_task_detail where 1 = 1
+        from daoxin_erp_quality_task_detail where 1 = 1 and display = 1
                 <if test="paramCondition.qualityTaskDetailId != null">
                         and quality_task_detail_id like CONCAT('%',#{paramCondition.qualityTaskDetailId},'%')
                 </if>
