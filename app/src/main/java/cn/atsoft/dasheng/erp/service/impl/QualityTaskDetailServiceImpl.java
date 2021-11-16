@@ -97,17 +97,22 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         //查询质检项目
         List<QualityPlan> qualityPlanList = planIds.size() == 0 ? new ArrayList<>() : qualityPlanService.lambdaQuery().in(QualityPlan::getQualityPlanId, planIds).and(i -> i.eq(QualityPlan::getDisplay, 1)).list();
         //查询sku
-        List<SkuResult> skuResults = skuService.backSkuList(skuIds);
-
-        List<QualityPlanDetail> qualityPlanDetails = qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
+        List<SkuResult> skuResults = new ArrayList<>();
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku,skuResult);
+            skuResults.add(skuResult);
+        }
+        skuService.format(skuResults);
+        List<QualityPlanDetail> qualityPlanDetails =planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
 
         //取出qualityPlanDetails 中的 checkId
         List<Long> qualityCheckIds = new ArrayList<>();
         for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
             qualityCheckIds.add(qualityPlanDetail.getQualityCheckId());
         }
-
-        List<QualityCheck> qualityChecks = qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, qualityCheckIds).and(i -> i.eq(QualityCheck::getDisplay, 1)).list();
+        List<QualityCheck> qualityChecks =qualityCheckIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, qualityCheckIds).and(i -> i.eq(QualityCheck::getDisplay, 1)).list();
 
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {

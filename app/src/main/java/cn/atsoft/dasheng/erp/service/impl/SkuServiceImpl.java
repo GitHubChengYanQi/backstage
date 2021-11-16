@@ -565,8 +565,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attIds.add(valuesRequest.getAttributeId());
             }
         }
-        List<ItemAttribute> attList = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attIds).list();
-        List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
+//        List<ItemAttribute> attList = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attIds).list();
+        List<AttributeValues> attValuesList =attIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();
             ToolUtil.copyProperties(sku, skuResult);
