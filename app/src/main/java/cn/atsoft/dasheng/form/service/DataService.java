@@ -64,6 +64,14 @@ public interface DataService extends IService<Data> {
      * @author song
      * @Date 2021-11-16
      */
-     PageInfo<DataResult> findPageBySpec(DataParam param);
+    PageInfo<DataResult> findPageBySpec(DataParam param);
 
+    /**
+     * 创建data
+     * @param formId
+     * @param module
+     * @param field
+     * @param value
+     */
+    void addByQuality(Long formId, String module, Long field, String value);
 }
