@@ -392,6 +392,8 @@ public class OrCodeController extends BaseController {
                     QualityTaskResult qualityTaskResult = new QualityTaskResult();
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
 
+                    qualityTaskService.detailFormat(qualityTaskResult);
+
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
                     qualityRequest.setResult(qualityTaskResult);
