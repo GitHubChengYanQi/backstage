@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @Date 2021-11-16
      */
     void add(QualityTaskParam param);
+
+    void formDataFormat(FormDataResult param);
 
     /**
      * 详情格式化

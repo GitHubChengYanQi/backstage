@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.Date;
@@ -76,18 +79,24 @@ public class QualityPlanResult implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
+
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 创建者
      */
+
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
@@ -100,14 +109,19 @@ public class QualityPlanResult implements Serializable {
     /**
      * 状态
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门编号
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty("部门编号")
     private Long deptId;
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

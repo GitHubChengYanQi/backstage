@@ -3,24 +3,21 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
-import cn.atsoft.dasheng.erp.model.result.QualityIssuessResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
-import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.service.QualityCheckService;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.model.params.FormDataParam;
+import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,9 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -54,6 +49,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private FormDataService formDataService;
     @Autowired
     private FormDataValueService formDataValueService;
+    @Autowired
+    private QualityCheckService qualityCheckService;
 
     @Override
     @Transactional
@@ -118,6 +115,36 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         formDataValue.setDataId(formData.getDataId());
         formDataValue.setField(formDataPojo.getField());
         formDataValueService.save(formDataValue);
+    }
+    @Override
+    public void formDataFormat(FormDataResult param){
+        Long dataId = param.getDataId();
+        List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
+        List<Long> checkIds  = new ArrayList<>();
+        for (FormDataValue formDataValue : formDataValues) {
+            checkIds.add(formDataValue.getField());
+        }
+        List<QualityCheck> qualityChecklist = qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
+        List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
+        for (QualityCheck qualityCheck : qualityChecklist) {
+            QualityCheckResult qualityCheckResult = new QualityCheckResult();
+            ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+            qualityCheckResults.add(qualityCheckResult);
+        }
+        List< Map<String,Object>> maps = new ArrayList<>();
+        for (FormDataValue formDataValue : formDataValues) {
+            for (QualityCheckResult qualityCheck : qualityCheckResults) {
+                if (qualityCheck.getQualityCheckId().equals(formDataValue.getField())) {
+                    Map<String,Object> map = new HashMap<>();
+                    map.put("name",qualityCheck.getName());
+                    map.put("value",formDataValue.getValue());
+                    map.put("field",qualityCheck);
+                    maps.add(map);
+                }
+
+            }
+        }
+        param.setValueResults(maps);
     }
 
     @Override

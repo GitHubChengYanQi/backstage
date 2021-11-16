@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.QualityCheck;
 import cn.atsoft.dasheng.erp.entity.Tool;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -76,36 +77,48 @@ public class QualityCheckResult implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 创建者
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 修改者
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 状态
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty("状态")
     private Integer display;
 
     /**
      * 部门编号
      */
+    @JSONField(serialize = false)
+
     @ApiModelProperty("部门编号")
     private Long deptId;
 
@@ -120,6 +133,8 @@ public class QualityCheckResult implements Serializable {
      */
     @ApiModelProperty("编码")
     private String coding;
+    @JSONField(serialize = false)
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

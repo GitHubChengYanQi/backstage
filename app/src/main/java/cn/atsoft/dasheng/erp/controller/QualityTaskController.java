@@ -7,6 +7,10 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.model.params.FormDataParam;
+import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,8 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private FormDataService formDataService;
 
     /**
      * 新增接口
@@ -101,6 +107,24 @@ public class QualityTaskController extends BaseController {
             qualityTaskParam = new QualityTaskParam();
         }
         return this.qualityTaskService.findPageBySpec(qualityTaskParam);
+    }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/formDetail", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public FormDataResult formDetail(@RequestBody(required = false) FormDataParam formDataParam) {
+        if(ToolUtil.isEmpty(formDataParam)){
+            formDataParam = new FormDataParam();
+        }
+        FormData byId = formDataService.getById(formDataParam);
+        FormDataResult formDataResult = new FormDataResult();
+        ToolUtil.copyProperties(byId,formDataResult);
+         qualityTaskService.formDataFormat(formDataResult);
+        return formDataResult;
     }
 
 
