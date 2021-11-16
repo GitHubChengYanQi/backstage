@@ -431,22 +431,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> unitIds = new ArrayList<>();
         Map<Long, UnitResult> unitMaps = new HashMap<>();
 
-        for (Spu spu : spus) {
-            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
-                unitIds.add(spu.getUnitId());
-            }
-        }
-        List<Unit> units = unitService.query().in("unit_id", unitIds).list();
+//        for (Spu spu : spus) {
+//            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
+//                unitIds.add(spu.getUnitId());
+//            }
+//        }
+//        List<Unit> units = unitService.query().in("unit_id", unitIds).list();
 
-        for (Spu spu : spus) {
-            for (Unit unit : units) {
-                if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
-                    UnitResult unitResult = new UnitResult();
-                    ToolUtil.copyProperties(unit, unitResult);
-                    unitMaps.put(spu.getSpuId(), unitResult);
-                }
-            }
-        }
+//        for (Spu spu : spus) {
+//            for (Unit unit : units) {
+//                if (spu.getUnitId() != null && spu.getUnitId().equals(unit.getUnitId())) {
+//                    UnitResult unitResult = new UnitResult();
+//                    ToolUtil.copyProperties(unit, unitResult);
+//                    unitMaps.put(spu.getSpuId(), unitResult);
+//                }
+//            }
+//        }
 
 
         for (SkuResult skuResult : param) {

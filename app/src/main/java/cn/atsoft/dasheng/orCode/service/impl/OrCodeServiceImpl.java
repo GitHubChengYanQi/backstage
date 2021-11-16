@@ -666,7 +666,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                                 .eq("storehouse_positions_id", inkindResult.getStorehousePositionsId()).one();
                         object.setPositions(storehousePositions);
                     }
-
                     object.setInkind(inkindResult);
                     return object;
                 }
