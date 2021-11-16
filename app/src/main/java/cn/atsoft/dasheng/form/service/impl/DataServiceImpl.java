@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.form.entity.Data;
 import cn.atsoft.dasheng.form.entity.DataValue;
 import cn.atsoft.dasheng.form.mapper.DataMapper;
 import cn.atsoft.dasheng.form.model.params.DataParam;
+import cn.atsoft.dasheng.form.model.params.DataRequest;
 import cn.atsoft.dasheng.form.model.result.DataResult;
 import cn.atsoft.dasheng.form.service.DataService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -71,16 +72,16 @@ public class DataServiceImpl extends ServiceImpl<DataMapper, Data> implements Da
 
 
     @Override
-    public void addByQuality(Long formId, String module, Long field, String value) {
+    public void addByQuality(DataRequest dataRequest) {
         Data data = new Data();
-        data.setFormId(formId);
-        data.setModule(module);
+        data.setFormId(dataRequest.getFormId());
+        data.setModule(dataRequest.getModule());
         data.setMainId(0L);
         this.save(data);
         DataValue dataValue = new DataValue();
         dataValue.setDataId(data.getDataId());
-        dataValue.setField(field);
-        dataValue.setValue(value);
+        dataValue.setField(dataRequest.getField());
+        dataValue.setValue(dataRequest.getValue());
         dataValueService.save(dataValue);
     }
 

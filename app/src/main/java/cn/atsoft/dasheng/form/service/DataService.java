@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.Data;
 import cn.atsoft.dasheng.form.model.params.DataParam;
+import cn.atsoft.dasheng.form.model.params.DataRequest;
 import cn.atsoft.dasheng.form.model.result.DataResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -68,10 +69,8 @@ public interface DataService extends IService<Data> {
 
     /**
      * 创建data
-     * @param formId
-     * @param module
-     * @param field
-     * @param value
+     *
+     * @param dataRequest
      */
-    void addByQuality(Long formId, String module, Long field, String value);
+    void addByQuality(DataRequest dataRequest);
 }
