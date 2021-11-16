@@ -676,37 +676,37 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 return object;
 
 
-            case "storehousePositions":
-                StorehousePositions positions = storehousePositionsService.query().eq("storehouse_positions_id", codeBind.getFormId()).one();
-                if (positions.getStorehouseId() != inKindRequest.getStorehouse()) {
-                    throw new ServiceException(500, "请选择当前仓库");
-                }
-                List<StockDetails> details = detailsService.query().in("storehouse_positions_id", positions.getStorehousePositionsId()).list();
-                List<Long> codeIds = new ArrayList<>();
-                if (ToolUtil.isEmpty(details)) {
-                    throw new ServiceException(500, "库存没有此物");
-                }
-                for (StockDetails detail : details) {
-                    codeIds.add(detail.getQrCodeid());
-                }
-                List<OrCodeBind> orCodeBinds = orCodeBindService.query().in("qr_code_id", codeIds).list();
-                List<Long> inKindIds = new ArrayList<>();
-                if (ToolUtil.isEmpty(orCodeBinds)) {
-                    throw new ServiceException(500, "此库存物料未绑定二维码");
-                }
-                for (OrCodeBind orCodeBind : orCodeBinds) {
-                    inKindIds.add(orCodeBind.getFormId());
-                }
-                List<InkindResult> inkindResults = new ArrayList<>();
-                for (Long inKindId : inKindIds) {
-                    InkindResult inkindResult1 = inkindService.backInKindgetById(inKindId);
-                    if (inkindResult1.getSkuId().equals(inKindRequest.getId()) && inkindResult1.getBrandId().equals(inKindRequest.getBrandId())) {
-                        inkindResults.add(inkindResult1);
-                    }
-                }
-                object.setInkindResults(inkindResults);
-                object.setPositions(positions);
-                return object;
+//            case "storehousePositions":
+//                StorehousePositions positions = storehousePositionsService.query().eq("storehouse_positions_id", codeBind.getFormId()).one();
+//                if (positions.getStorehouseId() != inKindRequest.getStorehouse()) {
+//                    throw new ServiceException(500, "请选择当前仓库");
+//                }
+//                List<StockDetails> details = detailsService.query().in("storehouse_positions_id", positions.getStorehousePositionsId()).list();
+//                List<Long> codeIds = new ArrayList<>();
+//                if (ToolUtil.isEmpty(details)) {
+//                    throw new ServiceException(500, "库存没有此物");
+//                }
+//                for (StockDetails detail : details) {
+//                    codeIds.add(detail.getQrCodeid());
+//                }
+//                List<OrCodeBind> orCodeBinds = orCodeBindService.query().in("qr_code_id", codeIds).list();
+//                List<Long> inKindIds = new ArrayList<>();
+//                if (ToolUtil.isEmpty(orCodeBinds)) {
+//                    throw new ServiceException(500, "此库存物料未绑定二维码");
+//                }
+//                for (OrCodeBind orCodeBind : orCodeBinds) {
+//                    inKindIds.add(orCodeBind.getFormId());
+//                }
+//                List<InkindResult> inkindResults = new ArrayList<>();
+//                for (Long inKindId : inKindIds) {
+//                    InkindResult inkindResult1 = inkindService.backInKindgetById(inKindId);
+//                    if (inkindResult1.getSkuId().equals(inKindRequest.getId()) && inkindResult1.getBrandId().equals(inKindRequest.getBrandId())) {
+//                        inkindResults.add(inkindResult1);
+//                    }
+//                }
+//                object.setInkindResults(inkindResults);
+//                object.setPositions(positions);
+//                return object;
             default:
                 throw new ServiceException(500, "请扫正确二维码");
         }

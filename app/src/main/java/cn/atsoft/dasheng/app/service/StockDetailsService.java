@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -74,4 +75,7 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @return
      */
     List<Long> backSkuByStoreHouse(Long id);
+
+
+
 }
