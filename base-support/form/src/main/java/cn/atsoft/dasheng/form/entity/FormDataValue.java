@@ -37,7 +37,7 @@ public class FormDataValue implements Serializable {
      * 字段
      */
     @TableField("field")
-    private String field;
+    private Long field;
 
     /**
      * 值
@@ -80,11 +80,12 @@ public class FormDataValue implements Serializable {
         this.dataId = dataId;
     }
 
-    public String getField() {
+
+    public Long getField() {
         return field;
     }
 
-    public void setField(String field) {
+    public void setField(Long field) {
         this.field = field;
     }
 

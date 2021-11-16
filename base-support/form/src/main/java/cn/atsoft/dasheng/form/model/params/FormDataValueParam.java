@@ -41,7 +41,7 @@ public class FormDataValueParam implements Serializable, BaseValidatingParam {
      * 字段
      */
     @ApiModelProperty("字段")
-    private String field;
+    private Long field;
 
     /**
      * 值
