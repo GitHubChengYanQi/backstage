@@ -10,14 +10,19 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityIssuessResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
-import  cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.form.service.FormDataValueService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,7 +41,7 @@ import java.util.List;
  * 质检任务 服务实现类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 @Service
@@ -45,10 +50,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     QualityTaskDetailService detailService;
     @Autowired
     SkuService skuService;
+    @Autowired
+    private FormDataService formDataService;
+    @Autowired
+    private FormDataValueService formDataValueService;
 
     @Override
     @Transactional
-    public void add(QualityTaskParam param){
+    public void add(QualityTaskParam param) {
         QualityTask entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getDetails())) {
@@ -56,7 +65,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             for (QualityTaskDetailParam detailParam : param.getDetails()) {
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
-                ToolUtil.copyProperties(detailParam,detail);
+                ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
             detailService.saveBatch(details);
@@ -65,15 +74,15 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public void delete(QualityTaskParam param){
+    public void delete(QualityTaskParam param) {
         param.setDisplay(0);
         QualityTask qualityTask = new QualityTask();
-        ToolUtil.copyProperties(param,qualityTask);
+        ToolUtil.copyProperties(param, qualityTask);
         this.updateById(qualityTask);
     }
 
     @Override
-    public void update(QualityTaskParam param){
+    public void update(QualityTaskParam param) {
         QualityTask oldEntity = getOldEntity(param);
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -81,21 +90,36 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public QualityTaskResult findBySpec(QualityTaskParam param){
+    public QualityTaskResult findBySpec(QualityTaskParam param) {
         return null;
     }
 
     @Override
-    public List<QualityTaskResult> findListBySpec(QualityTaskParam param){
+    public List<QualityTaskResult> findListBySpec(QualityTaskParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<QualityTaskResult> findPageBySpec(QualityTaskParam param){
+    public PageInfo<QualityTaskResult> findPageBySpec(QualityTaskParam param) {
         Page<QualityTaskResult> pageContext = getPageContext();
         IPage<QualityTaskResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
+
+    @Override
+    public void addFormData(FormDataPojo formDataPojo) {
+        FormData formData = new FormData();
+        formData.setModule(formDataPojo.getModule());
+        formData.setFormId(formDataPojo.getFormId());
+        formData.setMainId(0L);
+        formDataService.save(formData);
+        FormDataValue formDataValue = new FormDataValue();
+        formDataValue.setValue(formDataPojo.getValue());
+        formDataValue.setDataId(formData.getDataId());
+        formDataValue.setField(formDataPojo.getField());
+        formDataValueService.save(formDataValue);
+    }
+
     @Override
     public void detailFormat(QualityTaskResult param) {
 //        List<String> skuIds = new ArrayList<>();
@@ -134,7 +158,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<QualityTaskDetailResult> qualityTaskDetailResults = new ArrayList<>();
         for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
             QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
-            ToolUtil.copyProperties(qualityTaskDetail,qualityTaskDetailResult);
+            ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
             qualityTaskDetailResults.add(qualityTaskDetailResult);
         }
         detailService.format(qualityTaskDetailResults);
@@ -168,7 +192,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     }
 
-    private Serializable getKey(QualityTaskParam param){
+    private Serializable getKey(QualityTaskParam param) {
         return param.getQualityTaskId();
     }
 
@@ -185,5 +209,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }
