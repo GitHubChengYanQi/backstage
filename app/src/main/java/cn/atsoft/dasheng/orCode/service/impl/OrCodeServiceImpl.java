@@ -671,7 +671,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 }
 
         }
-        throw new ServiceException(500, "请扫描物料二维码");
+        throw new ServiceException(500, "请扫正确物料二维码");
     }
 
     //扫码出库
