@@ -209,22 +209,34 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
-        List<Long> skuIds = new ArrayList<>();
+        List<Long> InstockListIds = new ArrayList<>();
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
             storeIds.add(datum.getStoreHouseId());
+            InstockListIds.add(datum.getInstockOrderId());
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
+        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().eq("instock_order_id", InstockListIds).list();
+
         for (InstockOrderResult datum : data) {
 
-            Integer instockLising = instockListService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
             Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
             if (instock > 0) {
                 datum.setState(1);
             } else {
                 datum.setState(0);
+            }
+
+            if (ToolUtil.isNotEmpty(instockLists)) {
+                for (InstockList instockList : instockLists) {
+                    if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                        if (instockList.getNumber() == 0) {
+                            datum.setState(3);
+                        }
+                    }
+                }
             }
 
             for (User user : users) {
