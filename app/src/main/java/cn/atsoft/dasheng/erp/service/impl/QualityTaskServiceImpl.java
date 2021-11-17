@@ -72,10 +72,25 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityPlanDetailService qualityPlanDetailService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CodingRulesService rulesService;
 
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
+        CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(rules)) {
+            String backCoding = rulesService.backCoding(Long.valueOf(param.getCoding()));
+            String replace = "";
+            if (param.getType().equals("入厂")) {
+                replace = backCoding.replace("${type}", "in");
+            }
+            if (param.getType().equals("出厂")) {
+                replace = backCoding.replace("${type}", "out");
+            }
+            param.setCoding(replace);
+        }
+
         QualityTask entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getDetails())) {

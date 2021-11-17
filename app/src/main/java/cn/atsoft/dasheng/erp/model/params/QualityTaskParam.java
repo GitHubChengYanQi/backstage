@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * 质检任务
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 @Data
@@ -26,7 +27,6 @@ public class QualityTaskParam implements Serializable, BaseValidatingParam {
     private List<QualityTaskDetailParam> details;
 
     private String url;
-
 
 
     @ApiModelProperty("")
