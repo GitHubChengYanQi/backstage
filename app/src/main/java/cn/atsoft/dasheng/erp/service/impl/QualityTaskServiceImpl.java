@@ -238,15 +238,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             List<Inkind> inkinds = iKinds.size() == 0 ? new ArrayList<>() : inkindService.query().in("inkind_id", iKinds).list();
             Map<Long, Integer> skuMap = new HashMap<>();
             List<TaskCount> taskCounts = new ArrayList<>();
-
+            Integer i;
             for (Inkind inkind : inkinds) {
                 Sku sku = skuService.query().eq("sku_id", inkind.getSkuId()).one();
-                Integer integer = skuMap.get(sku.getSkuId());
-                Integer count = formDataService.query().in("form_id", iKinds).count();
-                if (ToolUtil.isEmpty(integer)) {
-                    skuMap.put(sku.getSkuId(), count);
+                i = skuMap.get(sku.getSkuId());
+                if (ToolUtil.isEmpty(i)) {
+                    i = 0;
+                    skuMap.put(sku.getSkuId(), 0);
                 }
-                skuMap.put(sku.getSkuId(), integer + count);
+                Integer count = formDataService.query().in("form_id", inkind.getInkindId()).count();
+
+                skuMap.put(sku.getSkuId(), i + count);
 
             }
             for (Map.Entry<Long, Integer> longIntegerEntry : skuMap.entrySet()) {
