@@ -10,11 +10,8 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
-import cn.atsoft.dasheng.erp.service.QualityCheckService;
-import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.form.model.params.FormDataParam;
@@ -52,6 +49,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private FormDataValueService formDataValueService;
     @Autowired
     private QualityCheckService qualityCheckService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private QualityPlanDetailService qualityPlanDetailService;
 
     @Override
     @Transactional
@@ -126,13 +127,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
     @Override
     public void formDataFormat(FormDataResult param){
+        Long formId = param.getFormId();
+        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i->i.eq(Inkind::getDisplay, 1)).one();
+        param.setInkind(one);
         Long dataId = param.getDataId();
         List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
-        List<Long> checkIds  = new ArrayList<>();
+        List<Long> planIds  = new ArrayList<>();
         for (FormDataValue formDataValue : formDataValues) {
-            checkIds.add(formDataValue.getField());
+            planIds.add(formDataValue.getField());
         }
-        List<QualityCheck> qualityChecklist = qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
+        List<QualityPlanDetail> planDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanDetailId,planIds).and(i->i.eq(QualityPlanDetail::getDisplay,1)).list();
+        List<Long> checkIds  = new ArrayList<>();
+        for (QualityPlanDetail planDetail : planDetails) {
+            checkIds.add(planDetail.getQualityCheckId());
+        }
+
+
+        List<QualityCheck> qualityChecklist = checkIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
         List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
         for (QualityCheck qualityCheck : qualityChecklist) {
             QualityCheckResult qualityCheckResult = new QualityCheckResult();
@@ -141,16 +152,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         List< Map<String,Object>> maps = new ArrayList<>();
         for (FormDataValue formDataValue : formDataValues) {
-            for (QualityCheckResult qualityCheck : qualityCheckResults) {
-                if (qualityCheck.getQualityCheckId().equals(formDataValue.getField())) {
-                    Map<String,Object> map = new HashMap<>();
-                    map.put("name",qualityCheck.getName());
-                    map.put("value",formDataValue.getValue());
-                    map.put("field",qualityCheck);
-                    maps.add(map);
-                }
+            for (QualityPlanDetail planDetail : planDetails) {
+                if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
+                    for (QualityCheckResult qualityCheck : qualityCheckResults) {
+                        if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
+                            Map<String,Object> map = new HashMap<>();
+                            map.put("name",qualityCheck.getName());
+                            map.put("value",formDataValue.getValue());
+                            map.put("field",qualityCheck);
+                            maps.add(map);
+                        }
 
+                    }
+                }
             }
+
         }
         param.setValueResults(maps);
     }
