@@ -25,6 +25,10 @@ public class QualityTaskParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailParam> details;
 
+    private String url;
+
+
+
     @ApiModelProperty("")
     private Long qualityTaskId;
 

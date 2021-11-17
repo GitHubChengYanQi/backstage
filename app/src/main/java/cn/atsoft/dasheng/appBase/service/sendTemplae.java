@@ -25,6 +25,7 @@ abstract public class sendTemplae implements sendTemplateInterface {
         List<WxMpTemplateData> data = this.getTemplateData();
         String templateId = this.getTemplateId();
         String page = this.getPage();
+
         List<String> openIds = this.getOpenIds();
 
         WxMpTemplateMsgService templateMsgService = wxMpService.getTemplateMsgService();
