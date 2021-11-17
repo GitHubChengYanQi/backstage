@@ -21,6 +21,13 @@ import cn.atsoft.dasheng.form.model.params.FormDataParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -52,6 +59,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private FormDataValueService formDataValueService;
     @Autowired
     private QualityCheckService qualityCheckService;
+    @Autowired
+    private OrCodeBindService bindService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private OrCodeService orCodeService;
 
     @Override
     @Transactional
@@ -68,7 +81,20 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             detailService.saveBatch(details);
         }
-
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(param.getUserId());
+        wxCpTemplate.setUserIds(userIds);
+        BackCodeRequest backCodeRequest = new BackCodeRequest();
+        backCodeRequest.setId(entity.getQualityTaskId());
+        backCodeRequest.setSource("qualitytask");
+        Long aLong = orCodeService.backCode(backCodeRequest);
+        String url = param.getUrl().replace("codeId", aLong.toString());
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("质检任务提醒");
+        wxCpTemplate.setDescription("有新的质检任务");
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -107,28 +133,34 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public void addFormData(FormDataPojo formDataPojo) {
-        FormData formData = new FormData();
-        formData.setModule(formDataPojo.getModule());
-        formData.setFormId(formDataPojo.getFormId());
-        formData.setMainId(0L);
-        formDataService.save(formData);
+        OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
+        if (codeId.getSource().equals("item")) {
 
-        List<FormValues> formValues = formDataPojo.getFormValues();
-        List<FormDataValue> formValuesList = new ArrayList<>();
-        for (FormValues formValue : formValues) {
-            FormDataValue formDataValue = new FormDataValue();
-             formDataValue.setValue(formValue.getValue());
-             formDataValue.setDataId(formData.getDataId());
-             formDataValue.setField(formValue.getField());
-            formValuesList.add(formDataValue);
+            FormData formData = new FormData();
+            formData.setModule(formDataPojo.getModule());
+            formData.setFormId(codeId.getFormId());
+            formData.setMainId(0L);
+            formDataService.save(formData);
+
+            List<FormValues> formValues = formDataPojo.getFormValues();
+            List<FormDataValue> formValuesList = new ArrayList<>();
+            for (FormValues formValue : formValues) {
+                FormDataValue formDataValue = new FormDataValue();
+                formDataValue.setValue(formValue.getValue());
+                formDataValue.setDataId(formData.getDataId());
+                formDataValue.setField(formValue.getField());
+                formValuesList.add(formDataValue);
+            }
+            formDataValueService.saveBatch(formValuesList);
         }
-        formDataValueService.saveBatch(formValuesList);
+
     }
+
     @Override
-    public void formDataFormat(FormDataResult param){
+    public void formDataFormat(FormDataResult param) {
         Long dataId = param.getDataId();
         List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
-        List<Long> checkIds  = new ArrayList<>();
+        List<Long> checkIds = new ArrayList<>();
         for (FormDataValue formDataValue : formDataValues) {
             checkIds.add(formDataValue.getField());
         }
@@ -136,17 +168,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
         for (QualityCheck qualityCheck : qualityChecklist) {
             QualityCheckResult qualityCheckResult = new QualityCheckResult();
-            ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+            ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
             qualityCheckResults.add(qualityCheckResult);
         }
-        List< Map<String,Object>> maps = new ArrayList<>();
+        List<Map<String, Object>> maps = new ArrayList<>();
         for (FormDataValue formDataValue : formDataValues) {
             for (QualityCheckResult qualityCheck : qualityCheckResults) {
                 if (qualityCheck.getQualityCheckId().equals(formDataValue.getField())) {
-                    Map<String,Object> map = new HashMap<>();
-                    map.put("name",qualityCheck.getName());
-                    map.put("value",formDataValue.getValue());
-                    map.put("field",qualityCheck);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", qualityCheck.getName());
+                    map.put("value", formDataValue.getValue());
+                    map.put("field", qualityCheck);
                     maps.add(map);
                 }
 

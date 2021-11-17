@@ -367,7 +367,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 bindParam.setOrCodeId(codeRequest.getCodeId());
                 bindParam.setFormId(aLong);
                 bindParam.setSource(codeRequest.getSource());
-                ;
+
                 orCodeBindService.add(bindParam);
                 return codeRequest.getCodeId();
             default:
