@@ -62,6 +62,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private OrCodeService orCodeService;
+    @Autowired
     private InkindService inkindService;
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
