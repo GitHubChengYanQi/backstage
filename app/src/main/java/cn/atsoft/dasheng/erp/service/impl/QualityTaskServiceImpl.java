@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.form.model.params.FormDataParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -27,6 +28,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -70,6 +72,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityPlanDetailService qualityPlanDetailService;
     @Autowired
     private UserService userService;
+
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
@@ -111,10 +114,28 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public void update(QualityTaskParam param) {
-        QualityTask oldEntity = getOldEntity(param);
-        QualityTask newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        //防止添加质检任务
+        List<Long> judge = new ArrayList<>();
+        for (QualityTaskDetailParam detail : param.getDetails()) {
+            judge.add(detail.getSkuId() + detail.getBrandId());
+        }
+        long count = judge.stream().distinct().count();
+        if (param.getDetails().size() > count) {
+            throw new ServiceException(500, "请勿添加重复物料");
+        }
+        //修改质检任务的物料
+        QueryWrapper<QualityTaskDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("quality_task_id", param.getQualityTaskId());
+        detailService.remove(queryWrapper);
+
+        List<QualityTaskDetail> results = new ArrayList<>();
+        for (QualityTaskDetailParam detail : param.getDetails()) {
+            QualityTaskDetail result = new QualityTaskDetail();
+            ToolUtil.copyProperties(detail, result);
+            result.setQualityTaskId(param.getQualityTaskId());
+            results.add(result);
+        }
+        detailService.saveBatch(results);
     }
 
     @Override
@@ -134,7 +155,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-    private void format(List<QualityTaskResult> param){
+
+    private void format(List<QualityTaskResult> param) {
         List<Long> userIds = new ArrayList<>();
         for (QualityTaskResult qualityTaskResult : param) {
             userIds.add(qualityTaskResult.getUserId());
@@ -177,18 +199,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public void formDataFormat(FormDataResult param){
+    public void formDataFormat(FormDataResult param) {
         Long formId = param.getFormId();
-        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i->i.eq(Inkind::getDisplay, 1)).one();
+        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i -> i.eq(Inkind::getDisplay, 1)).one();
         param.setInkind(one);
         Long dataId = param.getDataId();
         List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
-        List<Long> planIds  = new ArrayList<>();
+        List<Long> planIds = new ArrayList<>();
         for (FormDataValue formDataValue : formDataValues) {
             planIds.add(formDataValue.getField());
         }
-        List<QualityPlanDetail> planDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanDetailId,planIds).and(i->i.eq(QualityPlanDetail::getDisplay,1)).list();
-        List<Long> checkIds  = new ArrayList<>();
+        List<QualityPlanDetail> planDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanDetailId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
+        List<Long> checkIds = new ArrayList<>();
         for (QualityPlanDetail planDetail : planDetails) {
             checkIds.add(planDetail.getQualityCheckId());
         }
@@ -207,10 +229,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
                     for (QualityCheckResult qualityCheck : qualityCheckResults) {
                         if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
-                            Map<String,Object> map = new HashMap<>();
-                            map.put("name",qualityCheck.getName());
-                            map.put("value",formDataValue.getValue());
-                            map.put("field",qualityCheck);
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("name", qualityCheck.getName());
+                            map.put("value", formDataValue.getValue());
+                            map.put("field", qualityCheck);
                             maps.add(map);
                         }
 
