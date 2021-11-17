@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.erp.controller;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -40,6 +43,9 @@ public class QualityTaskController extends BaseController {
     private QualityTaskService qualityTaskService;
     @Autowired
     private FormDataService formDataService;
+    @Autowired
+    private QualityTaskBindService qualityTaskBindService;
+
 
     /**
      * 新增接口
@@ -122,15 +128,27 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/formDetail", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public FormDataResult formDetail(@RequestBody(required = false) FormDataParam formDataParam) {
-        if(ToolUtil.isEmpty(formDataParam)){
-            formDataParam = new FormDataParam();
+    public List<FormDataResult> formDetail(@RequestBody(required = false) QualityTaskParam param) {
+        if(ToolUtil.isEmpty(param)){
+            param = new QualityTaskParam();
         }
-        FormData byId = formDataService.getById(formDataParam);
-        FormDataResult formDataResult = new FormDataResult();
-        ToolUtil.copyProperties(byId,formDataResult);
-         qualityTaskService.formDataFormat(formDataResult);
-        return formDataResult;
+        List<QualityTaskBind> binds = qualityTaskBindService.lambdaQuery().eq(QualityTaskBind::getQualityTaskId, param.getQualityTaskId()).and(i->i.eq(QualityTaskBind::getDisplay, 1)).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (QualityTaskBind bind : binds) {
+            inkindIds.add(bind.getInkindId());
+        }
+        List<FormData> formDatas = formDataService.lambdaQuery().in(FormData::getFormId, inkindIds).and(i -> i.eq(FormData::getDisplay, 1)).list();
+        List<FormDataResult> formDataResults = new ArrayList<>();
+        for (FormData formData : formDatas) {
+            FormDataResult formDataResult = new FormDataResult();
+            ToolUtil.copyProperties(formData,formDataResult);
+            qualityTaskService.formDataFormat(formDataResult);
+            formDataResults.add(formDataResult);
+        }
+
+
+
+        return formDataResults;
     }
 
 
