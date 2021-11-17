@@ -8,6 +8,8 @@ import java.util.List;
 public class FormDataPojo {
     private String module;//所属模块
     private Long formId;//表单id
-  private List<FormValues> formValues;
+    private List<FormValues> formValues;
     private Integer option;
+
+    private Long taskId;
 }

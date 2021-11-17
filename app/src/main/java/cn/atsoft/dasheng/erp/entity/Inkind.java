@@ -24,6 +24,12 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
+     * 表单id
+     */
+    @TableField("form_id")
+    private Long formId;
+
+    /**
      * 出库单
      */
     @TableField("outstock_order_id")
@@ -249,6 +255,14 @@ public class Inkind implements Serializable {
 
     public void setOutstockOrderId(Long outstockOrderId) {
         this.outstockOrderId = outstockOrderId;
+    }
+
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
     }
 
     @Override

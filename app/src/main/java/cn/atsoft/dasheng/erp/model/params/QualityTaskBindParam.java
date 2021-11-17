@@ -1,12 +1,9 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.base.dict.AbstractDictMap;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,59 +12,36 @@ import java.util.List;
 
 /**
  * <p>
- * 实物表
+ * 
  * </p>
  *
  * @author song
- * @since 2021-11-01
+ * @since 2021-11-17
  */
 @Data
 @ApiModel
-public class InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class QualityTaskBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long outstockOrderId;
-    private Long number;
-    private Long spuId;
-    private Long formId;
+
+
     /**
-     * 品牌
+     * 质检任务绑定id
      */
-    private Long brandId;
+    @ApiModelProperty("质检任务绑定id")
+    private Long bingId;
+
     /**
-     * 库位
+     * 质检任务id
      */
-    private Long storehousePositionsId;
-    /**
-     * 入库单
-     */
-    private Long instockOrderId;
-    /**
-     * 成本价格
-     */
-    private Integer costPrice;
-    /**
-     * 出售价格
-     */
-    private Integer sellingPrice;
+    @ApiModelProperty("质检任务id")
+    private Long qualityTaskId;
 
     /**
      * 实物id
      */
     @ApiModelProperty("实物id")
     private Long inkindId;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * skuId
-     */
-    @ApiModelProperty("skuId")
-    private Long skuId;
 
     /**
      * 创建者
@@ -99,12 +73,6 @@ public class InkindParam extends AbstractDictMap implements Serializable, BaseVa
     @ApiModelProperty("状态")
     private Integer display;
 
-    /**
-     * 部门id
-     */
-    @ApiModelProperty("部门id")
-    private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
@@ -113,13 +81,4 @@ public class InkindParam extends AbstractDictMap implements Serializable, BaseVa
         return null;
     }
 
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

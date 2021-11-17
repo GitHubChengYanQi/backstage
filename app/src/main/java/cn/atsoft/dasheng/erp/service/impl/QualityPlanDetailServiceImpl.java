@@ -1,21 +1,26 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.mapper.QualityPlanDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.service.FormDataValueService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +33,11 @@ import java.util.List;
  */
 @Service
 public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailMapper, QualityPlanDetail> implements QualityPlanDetailService {
+    @Autowired
+    private QualityTaskDetailService detailService;
+    @Autowired
+    private FormDataValueService dataValueService;
+
 
     @Override
     public void add(QualityPlanDetailParam param) {
@@ -65,9 +75,9 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
     public PageInfo<QualityPlanDetailResult> findPageBySpec(QualityPlanDetailParam param) {
         Page<QualityPlanDetailResult> pageContext = getPageContext();
         IPage<QualityPlanDetailResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
 
     private Serializable getKey(QualityPlanDetailParam param) {
         return param.getPlanDetailId();
@@ -87,10 +97,5 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         return entity;
     }
 
-    public void format(List<QualityPlanDetailResult> data) {
 
-        for (QualityPlanDetailResult datum : data) {
-            
-        }
-    }
 }

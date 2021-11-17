@@ -14,7 +14,6 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
-import cn.atsoft.dasheng.form.model.params.FormDataParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
@@ -23,14 +22,12 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.portal.remind.model.params.WxTemplateData;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,10 +71,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private UserService userService;
     @Autowired
     private CodingRulesService rulesService;
+    @Autowired
+    private QualityTaskBindService taskBindService;
 
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
+
+
         CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
         if (ToolUtil.isNotEmpty(rules)) {
             String backCoding = rulesService.backCoding(Long.valueOf(param.getCoding()));
@@ -101,6 +102,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
+
             detailService.saveBatch(details);
         }
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -109,7 +111,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         wxCpTemplate.setUserIds(userIds);
         BackCodeRequest backCodeRequest = new BackCodeRequest();
         backCodeRequest.setId(entity.getQualityTaskId());
-        backCodeRequest.setSource("qualitytask");
+        backCodeRequest.setSource("quality");
         Long aLong = orCodeService.backCode(backCodeRequest);
         String url = param.getUrl().replace("codeId", aLong.toString());
         wxCpTemplate.setUrl(url);
@@ -165,6 +167,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public PageInfo<QualityTaskResult> findPageBySpec(QualityTaskParam param) {
+
+
         Page<QualityTaskResult> pageContext = getPageContext();
         IPage<QualityTaskResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
@@ -198,6 +202,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             formData.setFormId(codeId.getFormId());
             formData.setMainId(0L);
             formDataService.save(formData);
+            //添加绑定关系
+            QualityTaskBind taskBind = new QualityTaskBind();
+            taskBind.setQualityTaskId(formDataPojo.getTaskId());
+            taskBind.setInkindId(codeId.getFormId());
+            taskBindService.save(taskBind);
 
             List<FormValues> formValues = formDataPojo.getFormValues();
             List<FormDataValue> formValuesList = new ArrayList<>();
@@ -207,10 +216,48 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 formDataValue.setDataId(formData.getDataId());
                 formDataValue.setField(formValue.getField());
                 formValuesList.add(formDataValue);
+
             }
             formDataValueService.saveBatch(formValuesList);
         }
 
+
+    }
+
+    @Override
+    public List<TaskCount> backIkind(Long id) {
+        //通过绑定找出ikinds
+        List<QualityTaskBind> taskBindList = taskBindService.query().eq("quality_task_id", id).list();
+        List<Long> iKinds = new ArrayList<>();
+        for (QualityTaskBind taskBind : taskBindList) {
+            iKinds.add(taskBind.getInkindId());
+
+        }
+        if (ToolUtil.isNotEmpty(iKinds)) {
+            //通过inkind获取sku
+            List<Inkind> inkinds = iKinds.size() == 0 ? new ArrayList<>() : inkindService.query().in("inkind_id", iKinds).list();
+            Map<Long, Integer> skuMap = new HashMap<>();
+            List<TaskCount> taskCounts = new ArrayList<>();
+
+            for (Inkind inkind : inkinds) {
+                Sku sku = skuService.query().eq("sku_id", inkind.getSkuId()).one();
+                Integer integer = skuMap.get(sku.getSkuId());
+                Integer count = formDataService.query().in("form_id", iKinds).count();
+                if (ToolUtil.isEmpty(integer)) {
+                    skuMap.put(sku.getSkuId(), count);
+                }
+                skuMap.put(sku.getSkuId(), integer + count);
+
+            }
+            for (Map.Entry<Long, Integer> longIntegerEntry : skuMap.entrySet()) {
+                TaskCount taskCount = new TaskCount();
+                taskCount.setSkuId(longIntegerEntry.getKey());
+                taskCount.setCount(longIntegerEntry.getValue());
+                taskCounts.add(taskCount);
+            }
+            return taskCounts;
+        }
+        return null;
     }
 
     @Override
