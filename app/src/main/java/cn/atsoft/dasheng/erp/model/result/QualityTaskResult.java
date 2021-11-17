@@ -21,7 +21,7 @@ public class QualityTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailResult>  details;
-
+    private String userName;
     @ApiModelProperty("")
     private Long qualityTaskId;
 

@@ -18,6 +18,8 @@ import cn.atsoft.dasheng.form.model.params.FormDataParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -53,7 +55,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private InkindService inkindService;
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
-
+    @Autowired
+    private UserService userService;
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
@@ -102,7 +105,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public PageInfo<QualityTaskResult> findPageBySpec(QualityTaskParam param) {
         Page<QualityTaskResult> pageContext = getPageContext();
         IPage<QualityTaskResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+    private void format(List<QualityTaskResult> param){
+        List<Long> userIds = new ArrayList<>();
+        for (QualityTaskResult qualityTaskResult : param) {
+            userIds.add(qualityTaskResult.getUserId());
+        }
+        List<User> users = userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
+        for (QualityTaskResult qualityTaskResult : param) {
+            for (User user : users) {
+                if (qualityTaskResult.getUserId().equals(user.getUserId())) {
+                    qualityTaskResult.setUserName(user.getName());
+                }
+            }
+        }
+
     }
 
 
