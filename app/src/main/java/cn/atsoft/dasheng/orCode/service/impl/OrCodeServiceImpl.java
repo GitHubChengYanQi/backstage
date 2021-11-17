@@ -740,13 +740,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         inkindService.update(inkind, inkindQueryWrapper);
 
         //新建出库的实物
-        Inkind newinKind = new Inkind();
-        newinKind.setNumber(inKindRequest.getNumber());
-        newinKind.setSkuId(inkind.getSkuId());
-        newinKind.setOutstockOrderId(inKindRequest.getOutstockOrderId());
-        newinKind.setBrandId(inkind.getBrandId());
-        inkindService.save(newinKind);
-
+        if (inkind.getNumber() > 0) {
+            Inkind newinKind = new Inkind();
+            newinKind.setNumber(inKindRequest.getNumber());
+            newinKind.setSkuId(inkind.getSkuId());
+            newinKind.setOutstockOrderId(inKindRequest.getOutstockOrderId());
+            newinKind.setBrandId(inkind.getBrandId());
+            inkindService.save(newinKind);
+        }
         //增加出库详情
         Outstock outstock = new Outstock();
         outstock.setStorehouseId(inKindRequest.getStorehouse());
