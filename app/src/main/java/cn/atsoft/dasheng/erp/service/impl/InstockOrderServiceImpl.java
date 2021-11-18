@@ -246,12 +246,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
             for (User user : users) {
-                if (datum.getUserId().equals(user.getUserId())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    datum.setUserResult(userResult);
-                    break;
+                if(ToolUtil.isNotEmpty(datum.getUserId())){
+                    if (datum.getUserId().equals(user.getUserId())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        datum.setUserResult(userResult);
+                        break;
+                    }
                 }
+
             }
             for (Storehouse storehouse : storehouses) {
                 if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {

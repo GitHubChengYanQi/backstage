@@ -119,6 +119,8 @@ public class QualityPlanDetailResult implements Serializable {
     @ApiModelProperty("状态")
     private Integer display;
 
+    private Integer batch;
+
     /**
      * 部门编号
      */
