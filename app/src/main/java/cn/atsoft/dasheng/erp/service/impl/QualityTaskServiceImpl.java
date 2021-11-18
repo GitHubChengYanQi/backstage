@@ -352,6 +352,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                     map.put("name", qualityCheck.getName());
                                     map.put("value", formDataValue.getValue());
                                     Boolean flag = false;
+                                    if (ToolUtil.isEmpty(planDetail.getOperator())||ToolUtil.isEmpty(planDetail.getStandardValue())) {
+                                        flag = true;
+                                    }else {
+                                        this.mathData(planDetail.getStandardValue(),planDetail.getOperator(),Long.valueOf(formDataValue.getValue()));
+                                    }
+
                                     map.put("standar",flag);
                                     map.put("field", planDetail);
                                     maps.add(map);
@@ -368,35 +374,35 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
     private Boolean mathData (String standardValue,Long operator,Long value){
         Boolean flag = false;
-        switch (operator){
-            case 1L:
-                if (value == Long.valueOf(standardValue))
+        switch (operator.toString()){
+            case "1":
+                if (value == Integer.parseInt(standardValue))
                     flag = true;
                 break;
-            case 2L:
-                if (value >= Long.valueOf(standardValue) )
+            case "2":
+                if (value >= Integer.parseInt(standardValue) )
                     flag = true;
                 break;
-            case 3L:
-                if (value <= Long.valueOf(standardValue) )
+            case "3":
+                if (value <= Integer.parseInt(standardValue) )
                     flag = true;
                 break;
-            case 4L:
-                if (value > Long.valueOf(standardValue) )
+            case "4":
+                if (value > Integer.parseInt(standardValue) )
                     flag = true;
                 break;
-            case 5L:
-                if (value < Long.valueOf(standardValue) )
+            case "5":
+                if (value < Integer.parseInt(standardValue) )
                     flag = true;
                 break;
-            case 6L:
-                List<String> result = Arrays.asList(standardValue.split(","));
-                if (value < Long.valueOf(standardValue) )
-                    flag = true;
+            case "6":
+//                List<String> result = Arrays.asList(standardValue.split(","));
+//                if (value >= Integer.parseInt(result.get(1)) &&  value <= Integer.parseInt(result.get(2)))
+//                    flag = true;
                 break;
 
         }
-
+        return flag;
     }
     @Override
     public void detailFormat(QualityTaskResult param) {
