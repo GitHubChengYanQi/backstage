@@ -30,6 +30,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import net.sf.jsqlparser.expression.LongValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -262,12 +263,73 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public void formDataFormat(FormDataResult param) {
-        Long formId = param.getFormId();
-        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i -> i.eq(Inkind::getDisplay, 1)).one();
-        param.setInkind(one);
-        Long dataId = param.getDataId();
-        List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
+//        Long formId = param.getFormId();
+//        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i -> i.eq(Inkind::getDisplay, 1)).one();
+//        param.setInkind(one);
+//        Long dataId = param.getDataId();
+//        List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
+//        List<Long> planIds = new ArrayList<>();
+//        for (FormDataValue formDataValue : formDataValues) {
+//            planIds.add(formDataValue.getField());
+//        }
+//        List<QualityPlanDetail> planDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanDetailId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
+//        List<Long> checkIds = new ArrayList<>();
+//        for (QualityPlanDetail planDetail : planDetails) {
+//            checkIds.add(planDetail.getQualityCheckId());
+//        }
+//
+//
+//        List<QualityCheck> qualityChecklist = checkIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
+//        List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
+//        for (QualityCheck qualityCheck : qualityChecklist) {
+//            QualityCheckResult qualityCheckResult = new QualityCheckResult();
+//            ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
+//            qualityCheckResults.add(qualityCheckResult);
+//        }
+//        List<Map<String, Object>> maps = new ArrayList<>();
+//        for (FormDataValue formDataValue : formDataValues) {
+//            for (QualityPlanDetail planDetail : planDetails) {
+//                if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
+//                    for (QualityCheckResult qualityCheck : qualityCheckResults) {
+//                        if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
+//                            Map<String, Object> map = new HashMap<>();
+//                            map.put("name", qualityCheck.getName());
+//                            map.put("value", formDataValue.getValue());
+//                            map.put("field", qualityCheck);
+//                            maps.add(map);
+//                        }
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//        param.setValueResults(maps);
+    }
+    @Override
+    public void formDataFormat1(List<FormDataResult> param) {
+        List<Long> formIds = new ArrayList<>();
+        List<Long> dataIds = new ArrayList<>();
+        for (FormDataResult formDataResult : param) {
+            formIds.add(formDataResult.getFormId());
+            dataIds.add(formDataResult.getDataId());
+        }
+        List<Inkind> inkinds = inkindService.lambdaQuery().in(Inkind::getInkindId, formIds).and(i -> i.eq(Inkind::getDisplay, 1)).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            skuIds.add(inkind.getSkuId());
+        }
+        List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku,skuResult);
+            skuResults.add(skuResult);
+        }
+        skuService.format(skuResults);
+        List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().in(FormDataValue::getDataId, dataIds).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
         List<Long> planIds = new ArrayList<>();
+
         for (FormDataValue formDataValue : formDataValues) {
             planIds.add(formDataValue.getField());
         }
@@ -276,8 +338,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         for (QualityPlanDetail planDetail : planDetails) {
             checkIds.add(planDetail.getQualityCheckId());
         }
-
-
         List<QualityCheck> qualityChecklist = checkIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
         List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
         for (QualityCheck qualityCheck : qualityChecklist) {
@@ -285,27 +345,75 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
             qualityCheckResults.add(qualityCheckResult);
         }
-        List<Map<String, Object>> maps = new ArrayList<>();
-        for (FormDataValue formDataValue : formDataValues) {
-            for (QualityPlanDetail planDetail : planDetails) {
-                if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
-                    for (QualityCheckResult qualityCheck : qualityCheckResults) {
-                        if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("name", qualityCheck.getName());
-                            map.put("value", formDataValue.getValue());
-                            map.put("field", qualityCheck);
-                            maps.add(map);
-                        }
 
+        for (FormDataResult formDataResult : param) {
+            for (Inkind inkind : inkinds) {
+                if (formDataResult.getFormId().equals(inkind.getInkindId())) {
+                    formDataResult.setInkind(inkind);
+                    for (SkuResult skuResult : skuResults) {
+                        if (skuResult.getSkuId().equals(inkind.getSkuId())){
+                            formDataResult.setSku(skuResult);
+                        }
                     }
                 }
             }
+            List<Map<String, Object>> maps = new ArrayList<>();
+            for (FormDataValue formDataValue : formDataValues) {
+                if (formDataResult.getDataId().equals(formDataValue.getDataId())) {
+                    for (QualityPlanDetail planDetail : planDetails) {
+                        if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
+                            for (QualityCheckResult qualityCheck : qualityCheckResults) {
+                                if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("name", qualityCheck.getName());
+                                    map.put("value", formDataValue.getValue());
+                                    Boolean flag = false;
+                                    map.put("standar",flag);
+                                    map.put("field", planDetail);
+                                    maps.add(map);
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            formDataResult.setValueResults(maps);
 
         }
-        param.setValueResults(maps);
     }
+    private Boolean mathData (String standardValue,Long operator,Long value){
+        Boolean flag = false;
+        switch (operator){
+            case 1L:
+                if (value == Long.valueOf(standardValue))
+                    flag = true;
+                break;
+            case 2L:
+                if (value >= Long.valueOf(standardValue) )
+                    flag = true;
+                break;
+            case 3L:
+                if (value <= Long.valueOf(standardValue) )
+                    flag = true;
+                break;
+            case 4L:
+                if (value > Long.valueOf(standardValue) )
+                    flag = true;
+                break;
+            case 5L:
+                if (value < Long.valueOf(standardValue) )
+                    flag = true;
+                break;
+            case 6L:
+                List<String> result = Arrays.asList(standardValue.split(","));
+                if (value < Long.valueOf(standardValue) )
+                    flag = true;
+                break;
 
+        }
+
+    }
     @Override
     public void detailFormat(QualityTaskResult param) {
 //        List<String> skuIds = new ArrayList<>();
