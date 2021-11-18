@@ -396,9 +396,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     flag = true;
                 break;
             case "6":
-//                List<String> result = Arrays.asList(standardValue.split(","));
-//                if (value >= Integer.parseInt(result.get(1)) &&  value <= Integer.parseInt(result.get(2)))
-//                    flag = true;
+                List<String> result = Arrays.asList(standardValue.split(","));
+                if (value >= Long.parseLong(result.get(0)) &&  value <= Long.parseLong(result.get(1)))
+                    flag = true;
                 break;
 
         }
