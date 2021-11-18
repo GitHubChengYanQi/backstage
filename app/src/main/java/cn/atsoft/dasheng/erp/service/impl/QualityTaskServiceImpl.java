@@ -353,9 +353,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                     map.put("value", formDataValue.getValue());
                                     Boolean flag = false;
                                     if (ToolUtil.isEmpty(planDetail.getOperator())||ToolUtil.isEmpty(planDetail.getStandardValue())) {
-                                        flag = true;
+                                        flag = false;
                                     }else {
-                                        this.mathData(planDetail.getStandardValue(),planDetail.getOperator(),Long.valueOf(formDataValue.getValue()));
+                                        flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
                                     }
 
                                     map.put("standar",flag);
@@ -376,23 +376,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         Boolean flag = false;
         switch (operator.toString()){
             case "1":
-                if (value == Integer.parseInt(standardValue))
+                if (value == Long.parseLong(standardValue))
                     flag = true;
                 break;
             case "2":
-                if (value >= Integer.parseInt(standardValue) )
+                if (value >= Long.parseLong(standardValue) )
                     flag = true;
                 break;
             case "3":
-                if (value <= Integer.parseInt(standardValue) )
+                if (value <= Long.parseLong(standardValue) )
                     flag = true;
                 break;
             case "4":
-                if (value > Integer.parseInt(standardValue) )
+                if (value > Long.parseLong(standardValue) )
                     flag = true;
                 break;
             case "5":
-                if (value < Integer.parseInt(standardValue) )
+                if (value < Long.parseLong(standardValue) )
                     flag = true;
                 break;
             case "6":
