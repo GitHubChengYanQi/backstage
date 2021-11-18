@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.service.*;
@@ -98,9 +99,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         for (InstockRequest instockRequest : param.getInstockRequest()) {
             Long brandId = instockRequest.getBrandId();
             Long skuId = instockRequest.getSkuId();
-            Integer sellingPrice = instockRequest.getSellingPrice();
-            Integer costprice = instockRequest.getCostprice();
-            judge.add(brandId + skuId + sellingPrice + costprice);
+            judge.add(brandId + skuId);
         }
         long count = judge.stream().distinct().count();
         if (param.getInstockRequest().size() > count) {
@@ -211,15 +210,40 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
-        List<Long> skuIds = new ArrayList<>();
+        List<Long> InstockListIds = new ArrayList<>();
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
             storeIds.add(datum.getStoreHouseId());
+            InstockListIds.add(datum.getInstockOrderId());
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
+        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", InstockListIds).list();
+
+        Integer state = null;
         for (InstockOrderResult datum : data) {
+            Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
+            if (instock > 0) {
+                if (ToolUtil.isNotEmpty(instockLists)) {
+                    for (InstockList instockList : instockLists) {
+                        if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                            if (instockList.getNumber() == 0) {
+                                state = 2;
+                            } else {
+                                state = 1;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+            } else {
+                state = 0;
+            }
+            datum.setState(state);
+
 
             for (User user : users) {
                 if (datum.getUserId().equals(user.getUserId())) {

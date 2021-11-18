@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
@@ -124,8 +125,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public void delete(OutstockOrderParam param) {
-        param.setDisplay(0);
-        this.update(param);
+//        param.setDisplay(0);
+//        this.update(param);
+        throw new ServiceException(500, "不可以删除");
     }
 
 
@@ -216,11 +218,12 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {
-        OutstockOrder oldEntity = getOldEntity(param);
-        OutstockOrder newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-        return newEntity;
+        throw new ServiceException(500, "不可以修改");
+//        OutstockOrder oldEntity = getOldEntity(param);
+//        OutstockOrder newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
+//        return newEntity;
     }
 
     @Override
@@ -262,14 +265,43 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public void format(List<OutstockOrderResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> stockHouseIds = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
         for (OutstockOrderResult datum : data) {
             ids.add(datum.getUserId());
             stockHouseIds.add(datum.getStorehouseId());
+            orderIds.add(datum.getOutstockOrderId());
         }
         List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
 
+        List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().in("outstock_order_id", orderIds).list();
+
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
+
         for (OutstockOrderResult datum : data) {
+            Integer state = null;
+            //判断出库当前状态
+            Integer outstock = outstockService.query().eq("outstock_order_id", datum.getOutstockOrderId()).count();
+            if (outstock > 0) {
+                if (ToolUtil.isNotEmpty(outstockListings)) {
+                    for (OutstockListing outstockListing : outstockListings) {
+                        if (outstockListing.getOutstockOrderId().equals(datum.getOutstockOrderId())) {
+                            if (outstockListing.getNumber() == 0) {
+                                state = 2;
+                            } else {
+                                state = 1;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+            } else {
+                state = 0;
+            }
+            datum.setState(state);
+
+
             for (User user : users) {
                 if (datum.getUserId() != null && user.getUserId().equals(datum.getUserId())) {
                     UserResult userResult = new UserResult();

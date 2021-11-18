@@ -27,6 +27,7 @@ public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private UserResult userResult;
 
     private String coding;
@@ -82,7 +83,7 @@ public class InstockOrderResult implements Serializable {
      * 入库状态
      */
     @ApiModelProperty("入库状态")
-    private Boolean state;
+    private Integer state;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }
