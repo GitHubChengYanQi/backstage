@@ -21,6 +21,7 @@ import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.service.*;
@@ -229,14 +230,18 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 datum.setState(0);
             }
 
+            Integer state = null;
             if (ToolUtil.isNotEmpty(instockLists)) {
                 for (InstockList instockList : instockLists) {
                     if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
                         if (instockList.getNumber() == 0) {
-                            datum.setState(3);
+                            state = 3;
+                        } else {
+                            state = 1;
                         }
                     }
                 }
+                datum.setState(state);
             }
 
             for (User user : users) {

@@ -27,6 +27,7 @@ public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private UserResult userResult;
 
     private String coding;
