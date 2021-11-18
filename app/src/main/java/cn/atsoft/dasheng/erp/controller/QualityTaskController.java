@@ -168,7 +168,7 @@ public class QualityTaskController extends BaseController {
     }
 
     /**
-     * 计算数量
+     * 判断质检项数量
      *
      * @author
      * @Date 2021-11-16

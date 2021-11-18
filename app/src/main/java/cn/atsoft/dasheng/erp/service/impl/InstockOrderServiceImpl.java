@@ -14,12 +14,10 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
-import cn.atsoft.dasheng.erp.entity.CodingRules;
-import cn.atsoft.dasheng.erp.entity.InstockList;
-import cn.atsoft.dasheng.erp.entity.InstockOrder;
-import cn.atsoft.dasheng.erp.entity.SpuClassification;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
@@ -66,15 +64,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Autowired
     private InstockListService instockListService;
     @Autowired
-    private SkuService skuService;
-    @Autowired
-    private BusinessTrackService businessTrackService;
-    @Autowired
     private InstockSendTemplate instockSendTemplate;
     @Autowired
     private OrCodeService orCodeService;
     @Autowired
     private CodingRulesService codingRulesService;
+    @Autowired
+    private InkindService inkindService;
+
 
     @Override
     @Transactional
@@ -183,6 +180,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+    /**
+     * 通过质检创建入库单
+     *
+     * @param instockParams
+     */
+    @Override
+    public void addByQuality(InstockParams instockParams) {
+        List<Inkind> inkinds = inkindService.query().in("inkind_id", instockParams.getInkinds()).list();
+        //创建入库单
+        InstockOrder instockOrder = new InstockOrder();
+        instockOrder.setCoding("质检生成入库单");
+        this.save(instockOrder);
+        //通过实物id查询sku和brand  创建入库清单
+        List<InstockList> instockLists = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            InstockList instockList = new InstockList();
+            instockList.setSkuId(inkind.getSkuId());
+            instockList.setBrandId(inkind.getBrandId());
+            instockList.setInstockOrderId(instockOrder.getInstockOrderId());
+            instockLists.add(instockList);
+        }
+        instockListService.saveBatch(instockLists);
+    }
+
 
     private Serializable getKey(InstockOrderParam param) {
         return param.getInstockOrderId();
