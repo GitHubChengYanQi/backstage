@@ -67,22 +67,24 @@ public class OutstockListingServiceImpl extends ServiceImpl<OutstockListingMappe
     @Override
 
     public void delete(OutstockListingParam param) {
-        OutstockListing byId = this.getById(param.getOutstockListingId());
-        if (ToolUtil.isEmpty(byId)) {
-            throw new ServiceException(500, "所删除目标不存在");
-        } else {
-            param.setDisplay(0);
-            this.update(param);
-        }
+        throw new ServiceException(500, "不可以删除");
+//        OutstockListing byId = this.getById(param.getOutstockListingId());
+//        if (ToolUtil.isEmpty(byId)) {
+//            throw new ServiceException(500, "所删除目标不存在");
+//        } else {
+//            param.setDisplay(0);
+//            this.update(param);
+//        }
     }
 
     @Override
 
     public void update(OutstockListingParam param) {
-        OutstockListing oldEntity = getOldEntity(param);
-        OutstockListing newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        throw new ServiceException(500, "不可以修改");
+//        OutstockListing oldEntity = getOldEntity(param);
+//        OutstockListing newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
     }
 
     @Override
