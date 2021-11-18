@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.ApplyDetails;
 import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.OutstockListing;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
@@ -274,27 +275,33 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
         List<Outstock> outstocks = orderIds.size() == 0 ? new ArrayList<>() : outstockService.query().eq("outstock_order_id", orderIds).list();
 
-        List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().eq("outstock_order_id", orderIds).list();
+        List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().in("outstock_order_id", orderIds).list();
 
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
+
         for (OutstockOrderResult datum : data) {
-            //判断出库挡墙状态
-            datum.setState(0);
-            if (ToolUtil.isNotEmpty(outstocks)) {
-                for (Outstock outstock : outstocks) {
-                    if (outstock.getOutstockId().equals(datum.getOutstockOrderId())) {
-                        datum.setState(1);
-                    }
-                }
-            }
+            Integer state = null;
             //判断出库当前状态
-            if (ToolUtil.isNotEmpty(outstockListings)) {
-                for (OutstockListing outstockListing : outstockListings) {
-                    if (outstockListing.getNumber() == 0) {
-                        datum.setState(3);
+            Integer outstock = outstockService.query().eq("outstock_order_id", datum.getOutstockOrderId()).count();
+            if (outstock > 0) {
+                if (ToolUtil.isNotEmpty(outstockListings)) {
+                    for (OutstockListing outstockListing : outstockListings) {
+                        if (outstockListing.getOutstockOrderId().equals(datum.getOutstockOrderId())) {
+                            if (outstockListing.getNumber() == 0) {
+                                state = 2;
+                            } else {
+                                state = 1;
+                                break;
+                            }
+                        }
                     }
+
                 }
+
+            } else {
+                state = 0;
             }
+            datum.setState(state);
 
 
             for (User user : users) {

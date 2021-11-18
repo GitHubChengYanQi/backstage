@@ -219,30 +219,31 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
-        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().eq("instock_order_id", InstockListIds).list();
+        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", InstockListIds).list();
 
+        Integer state = null;
         for (InstockOrderResult datum : data) {
-
             Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
             if (instock > 0) {
-                datum.setState(1);
-            } else {
-                datum.setState(0);
-            }
-
-            Integer state = null;
-            if (ToolUtil.isNotEmpty(instockLists)) {
-                for (InstockList instockList : instockLists) {
-                    if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
-                        if (instockList.getNumber() == 0) {
-                            state = 3;
-                        } else {
-                            state = 1;
+                if (ToolUtil.isNotEmpty(instockLists)) {
+                    for (InstockList instockList : instockLists) {
+                        if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
+                            if (instockList.getNumber() == 0) {
+                                state = 2;
+                            } else {
+                                state = 1;
+                                break;
+                            }
                         }
                     }
+
                 }
-                datum.setState(state);
+
+            } else {
+                state = 0;
             }
+            datum.setState(state);
+
 
             for (User user : users) {
                 if (datum.getUserId().equals(user.getUserId())) {
