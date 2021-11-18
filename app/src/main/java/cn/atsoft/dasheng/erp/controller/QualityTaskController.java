@@ -140,15 +140,18 @@ public class QualityTaskController extends BaseController {
         for (QualityTaskBind bind : binds) {
             inkindIds.add(bind.getInkindId());
         }
-        List<FormData> formDatas = formDataService.lambdaQuery().in(FormData::getFormId, inkindIds).and(i -> i.eq(FormData::getDisplay, 1)).list();
+        List<FormData> formDatas = inkindIds.size() == 0 ? new ArrayList<>() : formDataService.lambdaQuery().in(FormData::getFormId, inkindIds).and(i -> i.eq(FormData::getDisplay, 1)).list();
         List<FormDataResult> formDataResults = new ArrayList<>();
-        for (FormData formData : formDatas) {
-            FormDataResult formDataResult = new FormDataResult();
-            ToolUtil.copyProperties(formData, formDataResult);
+        if (ToolUtil.isNotEmpty(formDatas)) {
+            for (FormData formData : formDatas) {
+                FormDataResult formDataResult = new FormDataResult();
+                ToolUtil.copyProperties(formData, formDataResult);
 //            qualityTaskService.formDataFormat(formDataResult);
-            formDataResults.add(formDataResult);
+                formDataResults.add(formDataResult);
+            }
+            qualityTaskService.formDataFormat1(formDataResults);
         }
-        qualityTaskService.formDataFormat1(formDataResults);
+
 
 
         return formDataResults;

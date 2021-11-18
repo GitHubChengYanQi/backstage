@@ -415,8 +415,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
-                    .eq("selling_price", inKindRequest.getSellingPrice())
-                    .eq("cost_price", inKindRequest.getCostPrice())
                     .one();
             if (ToolUtil.isEmpty(one)) {
                 return false;
