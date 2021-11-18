@@ -1,66 +1,43 @@
 package cn.atsoft.dasheng.erp.model.result;
 
-import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 质检任务
+ * 
  * </p>
  *
- * @author
- * @since 2021-11-16
+ * @author song
+ * @since 2021-11-17
  */
 @Data
 @ApiModel
-public class QualityTaskResult implements Serializable {
+public class QualityTaskBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private List<QualityTaskDetailResult> details;
-    private String userName;
 
-    private List<TaskCount> taskCounts;
 
-    @ApiModelProperty("")
+    /**
+     * 质检任务绑定id
+     */
+    @ApiModelProperty("质检任务绑定id")
+    private Long bingId;
+
+    /**
+     * 质检任务id
+     */
+    @ApiModelProperty("质检任务id")
     private Long qualityTaskId;
 
     /**
-     * 时间
+     * 实物id
      */
-    @ApiModelProperty("时间")
-    private Date time;
-
-    /**
-     * 负责人
-     */
-    @ApiModelProperty("负责人")
-    private Long userId;
-
-    /**
-     * 类型
-     */
-    @ApiModelProperty("类型")
-    private String type;
-
-    /**
-     * 编码
-     */
-    @ApiModelProperty("编码")
-    private String coding;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String remark;
+    @ApiModelProperty("实物id")
+    private Long inkindId;
 
     /**
      * 创建者
@@ -91,12 +68,6 @@ public class QualityTaskResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
-
-    /**
-     * 部门id
-     */
-    @ApiModelProperty("部门id")
-    private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

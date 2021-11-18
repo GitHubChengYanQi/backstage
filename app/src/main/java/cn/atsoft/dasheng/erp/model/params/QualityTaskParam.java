@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.erp.model.params;
 
+import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,18 +17,17 @@ import java.util.List;
  * 质检任务
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 @Data
 @ApiModel
-public class QualityTaskParam implements Serializable, BaseValidatingParam {
+public class QualityTaskParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailParam> details;
 
     private String url;
-
 
 
     @ApiModelProperty("")
@@ -107,4 +108,13 @@ public class QualityTaskParam implements Serializable, BaseValidatingParam {
         return null;
     }
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    protected void initBeWrapped() {
+
+    }
 }

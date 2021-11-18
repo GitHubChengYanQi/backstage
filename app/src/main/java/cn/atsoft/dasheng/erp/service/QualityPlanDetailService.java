@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,8 @@ public interface QualityPlanDetailService extends IService<QualityPlanDetail> {
      * @author Captain_Jazz
      * @Date 2021-10-28
      */
-     PageInfo<QualityPlanDetailResult> findPageBySpec(QualityPlanDetailParam param);
+    PageInfo<QualityPlanDetailResult> findPageBySpec(QualityPlanDetailParam param);
+
+
 
 }

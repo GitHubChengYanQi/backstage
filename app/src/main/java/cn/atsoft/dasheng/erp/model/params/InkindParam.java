@@ -29,6 +29,7 @@ public class InkindParam extends AbstractDictMap implements Serializable, BaseVa
     private Long outstockOrderId;
     private Long number;
     private Long spuId;
+    private Long formId;
     /**
      * 品牌
      */

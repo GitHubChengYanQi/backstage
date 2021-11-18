@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -84,5 +85,8 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @param formDataPojo
      */
     void addFormData(FormDataPojo formDataPojo);
+
+
+    List<TaskCount>  backIkind(Long id);
 
 }

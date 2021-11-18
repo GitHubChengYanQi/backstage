@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -85,8 +86,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private InstockService instockService;
     @Autowired
     private OutstockService outstockService;
-    @Autowired
-    private StockDetailsService detailsService;
     @Autowired
     private OutstockListingService outstockListingService;
     @Autowired
@@ -367,9 +366,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 bindParam.setOrCodeId(codeRequest.getCodeId());
                 bindParam.setFormId(aLong);
                 bindParam.setSource(codeRequest.getSource());
-
                 orCodeBindService.add(bindParam);
                 return codeRequest.getCodeId();
+
             default:
                 OrCodeBind one = orCodeBindService.query().in("form_id", codeRequest.getId()).in("source", codeRequest.getSource()).one();
                 if (ToolUtil.isNotEmpty(one)) {
@@ -628,13 +627,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
-                case "outstock":
-                    OutStockOrderRequest outStockOrderRequest = new OutStockOrderRequest();
-                    outStockOrderRequest.setType("outstock");
-                    OutstockOrderResult outstockOrderResult = new OutstockOrderResult();
-                    outstockOrderResult.setOutstockOrderId(codeBind.getFormId());
-                    outStockOrderRequest.setResult(outstockOrderResult);
-                    return outStockOrderRequest;
 
             }
         }

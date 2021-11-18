@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.erp.model.params;
 
-import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -13,50 +12,36 @@ import java.util.List;
 
 /**
  * <p>
- * 质检任务详情
+ * 
  * </p>
  *
- * @author 
- * @since 2021-11-16
+ * @author song
+ * @since 2021-11-17
  */
 @Data
 @ApiModel
-public class QualityTaskDetailParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class QualityTaskBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
-    @ApiModelProperty("")
-    private Long qualityTaskDetailId;
+    /**
+     * 质检任务绑定id
+     */
+    @ApiModelProperty("质检任务绑定id")
+    private Long bingId;
 
     /**
-     * 物料id
+     * 质检任务id
      */
-    @ApiModelProperty("物料id")
-    private Long skuId;
-
-    /**
-     * 主表id
-     */
-    @ApiModelProperty("主表id")
+    @ApiModelProperty("质检任务id")
     private Long qualityTaskId;
 
     /**
-     * 质检项
+     * 实物id
      */
-    @ApiModelProperty("质检项")
-    private Long qualityPlanId;
-    /**
-     * 品牌
-     */
-    @ApiModelProperty("品牌")
-    private Long brandId;
-
-    /**
-     * 数量
-     */
-    @ApiModelProperty("数量")
-    private Integer number;
+    @ApiModelProperty("实物id")
+    private Long inkindId;
 
     /**
      * 创建者
@@ -69,8 +54,6 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
-
 
     /**
      * 创建时间
@@ -90,12 +73,6 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     @ApiModelProperty("状态")
     private Integer display;
 
-    /**
-     * 部门id
-     */
-    @ApiModelProperty("部门id")
-    private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 
@@ -104,13 +81,4 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
         return null;
     }
 
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }
