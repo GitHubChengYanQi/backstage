@@ -387,6 +387,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
                                     map.put("standar", flag);
                                     map.put("field", planDetail);
+                                    map.put("type",qualityCheck.getType());
                                     maps.add(map);
                                 }
 
