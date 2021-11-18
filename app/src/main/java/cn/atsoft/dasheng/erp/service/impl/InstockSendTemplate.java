@@ -93,10 +93,8 @@ public class InstockSendTemplate {
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
-//                    wxCpService.getWxCpClient().getMessageService().send(wxCpMessage);
+
                     //添加代办信息
-
-
                     messageEntity.setType(MessageType.CP);
                     messageProducer.sendMessage(messageEntity, 500);
 

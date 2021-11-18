@@ -14,4 +14,5 @@ public class BackCodeRequest {
     private Integer sellingPrice;
     private Long brandId;
     private Long storehousePositionsId;
+    private Long number;
 }

@@ -24,6 +24,11 @@ public class Sku implements Serializable {
 
     private static final long serialVersionUID = 1L;
     /**
+     * 之间方案id
+     */
+    @TableField("quality_plan_id")
+    private Long qualityPlanId;
+    /**
      * 类型
      */
     @TableField("type")
@@ -108,6 +113,14 @@ public class Sku implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Long getQualityPlanId() {
+        return qualityPlanId;
+    }
+
+    public void setQualityPlanId(Long qualityPlanId) {
+        this.qualityPlanId = qualityPlanId;
     }
 
     /**

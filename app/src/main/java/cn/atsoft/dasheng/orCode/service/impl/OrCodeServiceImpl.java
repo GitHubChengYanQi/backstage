@@ -355,6 +355,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
                 inkindParam.setType("0");
+                inkindParam.setNumber(codeRequest.getNumber());
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
                 inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
@@ -414,8 +415,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
-                    .eq("selling_price", inKindRequest.getSellingPrice())
-                    .eq("cost_price", inKindRequest.getCostPrice())
                     .one();
             if (ToolUtil.isEmpty(one)) {
                 return false;

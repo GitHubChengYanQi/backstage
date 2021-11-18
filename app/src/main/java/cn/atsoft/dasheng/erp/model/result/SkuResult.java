@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -42,6 +43,11 @@ public class SkuResult implements Serializable {
     private Spu spu;
     private Unit unit;
 
+
+    /**
+     * 之间方案id
+     */
+    private Long qualityPlanId;
 
     /**
      * 编码

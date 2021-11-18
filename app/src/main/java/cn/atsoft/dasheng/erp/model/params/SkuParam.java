@@ -71,6 +71,11 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String standard;
 
     /**
+     * 之间方案id
+     */
+    private Long qualityPlanId;
+
+    /**
      * spu id
      */
     @ApiModelProperty("spu id")
