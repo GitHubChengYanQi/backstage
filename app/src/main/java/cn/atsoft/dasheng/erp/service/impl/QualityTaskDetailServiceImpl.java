@@ -77,6 +77,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     public PageInfo<QualityTaskDetailResult> findPageBySpec(QualityTaskDetailParam param) {
         Page<QualityTaskDetailResult> pageContext = getPageContext();
         IPage<QualityTaskDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 

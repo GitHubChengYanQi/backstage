@@ -94,6 +94,8 @@ public class QualityTaskParam extends AbstractDictMap implements Serializable, B
     @ApiModelProperty("状态")
     private Integer display;
 
+    private Integer state;
+
     /**
      * 部门id
      */

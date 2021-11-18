@@ -10,6 +10,7 @@
         <result column="type" property="type"/>
         <result column="coding" property="coding"/>
         <result column="remark" property="remark"/>
+        <result column="state" property="state"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -23,7 +24,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
     AS "type",user_id AS "userId",
-        quality_task_id AS "qualityTaskId", time AS "time", user_id AS "userId",type AS "type",coding AS "coding", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        quality_task_id AS "qualityTaskId", time AS "time",state AS "state", user_id AS "userId",type AS "type",coding AS "coding", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -140,6 +141,9 @@
         </if>
         <if test="paramCondition.userId != null">
             and user_id like CONCAT('%',#{paramCondition.userId},'%')
+        </if>
+        <if test="paramCondition.state != null">
+            and state = #{state}
         </if>
     </select>
 

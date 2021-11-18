@@ -142,9 +142,10 @@ public class QualityTaskController extends BaseController {
         for (FormData formData : formDatas) {
             FormDataResult formDataResult = new FormDataResult();
             ToolUtil.copyProperties(formData,formDataResult);
-            qualityTaskService.formDataFormat(formDataResult);
+//            qualityTaskService.formDataFormat(formDataResult);
             formDataResults.add(formDataResult);
         }
+        qualityTaskService.formDataFormat1(formDataResults);
 
 
 

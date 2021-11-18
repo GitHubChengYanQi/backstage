@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
@@ -39,6 +40,7 @@ public class SkuResult implements Serializable {
     @ApiModelProperty("")
     private Long skuId;
     private Spu spu;
+    private Unit unit;
 
 
     /**
