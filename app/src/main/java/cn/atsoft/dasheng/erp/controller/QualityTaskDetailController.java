@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -52,6 +54,7 @@ public class QualityTaskDetailController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改质检任务详情", key = "name", dict = QualityTaskDetailParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody QualityTaskDetailParam qualityTaskDetailParam) {
 
@@ -66,6 +69,7 @@ public class QualityTaskDetailController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除质检任务详情", key = "name", dict = QualityTaskDetailParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody QualityTaskDetailParam qualityTaskDetailParam)  {
         this.qualityTaskDetailService.delete(qualityTaskDetailParam);

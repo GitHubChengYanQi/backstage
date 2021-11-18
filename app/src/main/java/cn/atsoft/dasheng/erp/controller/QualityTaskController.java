@@ -1,12 +1,22 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.model.params.FormDataParam;
+import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +41,11 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private FormDataService formDataService;
+    @Autowired
+    private QualityTaskBindService qualityTaskBindService;
+
 
     /**
      * 新增接口
@@ -52,6 +67,7 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @BussinessLog(value = "修改质检任务", key = "name", dict = QualityTaskParam.class)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody QualityTaskParam qualityTaskParam) {
 
@@ -66,6 +82,7 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @BussinessLog(value = "删除质检任务", key = "name", dict = QualityTaskParam.class)
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody QualityTaskParam qualityTaskParam)  {
         this.qualityTaskService.delete(qualityTaskParam);
@@ -85,6 +102,7 @@ public class QualityTaskController extends BaseController {
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(detail, result);
 
+        qualityTaskService.detailFormat(result);
         return ResponseData.success(result);
     }
 
@@ -102,8 +120,49 @@ public class QualityTaskController extends BaseController {
         }
         return this.qualityTaskService.findPageBySpec(qualityTaskParam);
     }
+    /**
+     * 查询列表
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/formDetail", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<FormDataResult> formDetail(@RequestBody(required = false) QualityTaskParam param) {
+        if(ToolUtil.isEmpty(param)){
+            param = new QualityTaskParam();
+        }
+        List<QualityTaskBind> binds = qualityTaskBindService.lambdaQuery().eq(QualityTaskBind::getQualityTaskId, param.getQualityTaskId()).and(i->i.eq(QualityTaskBind::getDisplay, 1)).list();
+        List<Long> inkindIds = new ArrayList<>();
+        for (QualityTaskBind bind : binds) {
+            inkindIds.add(bind.getInkindId());
+        }
+        List<FormData> formDatas = formDataService.lambdaQuery().in(FormData::getFormId, inkindIds).and(i -> i.eq(FormData::getDisplay, 1)).list();
+        List<FormDataResult> formDataResults = new ArrayList<>();
+        for (FormData formData : formDatas) {
+            FormDataResult formDataResult = new FormDataResult();
+            ToolUtil.copyProperties(formData,formDataResult);
+            qualityTaskService.formDataFormat(formDataResult);
+            formDataResults.add(formDataResult);
+        }
 
 
+
+        return formDataResults;
+    }
+
+
+    /**
+     * 添加data
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/addData", method = RequestMethod.POST)
+    public ResponseData addData(@RequestBody FormDataPojo formDataPojo)  {
+        this.qualityTaskService.addFormData(formDataPojo);
+        return ResponseData.success();
+    }
 
 
 }

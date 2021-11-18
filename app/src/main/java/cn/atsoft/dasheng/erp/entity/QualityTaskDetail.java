@@ -31,6 +31,32 @@ public class QualityTaskDetail implements Serializable {
     private Long skuId;
 
     /**
+     * 质检项
+     */
+    @TableField("quality_plan_id")
+    private Long qualityPlanId;
+
+    /**
+     * 物料id
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    /**
+     * 数量
+     */
+    @TableField("number")
+    private Integer number;
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
+    /**
      * 主表id
      */
     @TableField("quality_task_id")
@@ -83,6 +109,22 @@ public class QualityTaskDetail implements Serializable {
 
     public Long getSkuId() {
         return skuId;
+    }
+
+    public Long getQualityPlanId() {
+        return qualityPlanId;
+    }
+
+    public void setQualityPlanId(Long qualityPlanId) {
+        this.qualityPlanId = qualityPlanId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public void setSkuId(Long skuId) {

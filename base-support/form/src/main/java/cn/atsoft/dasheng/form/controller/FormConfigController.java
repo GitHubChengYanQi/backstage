@@ -7,18 +7,12 @@ import cn.atsoft.dasheng.form.model.result.FormConfigResult;
 import cn.atsoft.dasheng.form.service.FormConfigService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.message.enmu.MessageType;
-import cn.atsoft.dasheng.message.entity.MessageEntity;
-import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 
 /**
@@ -35,8 +29,6 @@ public class FormConfigController extends BaseController {
     @Autowired
     private FormConfigService formConfigService;
 
-    @Autowired
-    private MessageProducer messageProducer;
     /**
      * 新增接口
      *

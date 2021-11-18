@@ -6,6 +6,8 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 自定义表单主表
@@ -19,6 +21,8 @@ import java.util.List;
 public class FormDataResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    List<Map<String ,Object>> valueResults;
+    private Object inkind;
 
 
     /**

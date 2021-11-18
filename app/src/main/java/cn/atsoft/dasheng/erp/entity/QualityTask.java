@@ -30,6 +30,22 @@ public class QualityTask implements Serializable {
     @TableField("time")
     private Date time;
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
     /**
      * 类型
      */

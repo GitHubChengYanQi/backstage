@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -96,6 +97,9 @@ public class OrCodeController extends BaseController {
     private OutstockListingService outstockListingService;
     @Autowired
     private OutstockService outstockService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
+
 
     /**
      * 新增接口
@@ -381,6 +385,26 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setType("outstock");
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
+                case "quality":
+                    QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(qualityTask)) {
+                        throw new ServiceException(500, "当前数据不存在");
+                    }
+
+                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+
+                    qualityTaskService.detailFormat(qualityTaskResult);
+
+                    QualityRequest qualityRequest = new QualityRequest();
+                    qualityRequest.setType("quality");
+
+                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
+                    qualityTaskResult.setTaskCounts(taskCounts);
+                    qualityRequest.setResult(qualityTaskResult);
+                    return ResponseData.success(qualityRequest);
+
+
             }
         }
         return ResponseData.success();

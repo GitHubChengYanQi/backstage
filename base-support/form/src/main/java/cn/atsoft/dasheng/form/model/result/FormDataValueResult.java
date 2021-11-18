@@ -1,14 +1,18 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 自定义表单各个字段数据	
+ * 自定义表单各个字段数据
  * </p>
  *
  * @author Sing
@@ -37,7 +41,7 @@ public class FormDataValueResult implements Serializable {
      * 字段
      */
     @ApiModelProperty("字段")
-    private String field;
+    private Long field;
 
     /**
      * 值

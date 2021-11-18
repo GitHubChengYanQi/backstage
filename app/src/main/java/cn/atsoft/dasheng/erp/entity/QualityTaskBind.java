@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.form.entity;
+package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -10,99 +10,88 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 自定义表单各个字段数据	
+ * 
  * </p>
  *
- * @author Sing
- * @since 2021-11-10
+ * @author song
+ * @since 2021-11-17
  */
-@TableName("form_data_value")
-public class FormDataValue implements Serializable {
+@TableName("daoxin_quality_task_bind")
+public class QualityTaskBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键Id
+     * 质检任务绑定id
      */
-      @TableId(value = "value_id", type = IdType.ID_WORKER)
-    private Long valueId;
+      @TableId(value = "bing_id", type = IdType.ID_WORKER)
+    private Long bingId;
 
     /**
-     * 数据Id
+     * 质检任务id
      */
-    @TableField("data_id")
-    private Long dataId;
+    @TableField("quality_task_id")
+    private Long qualityTaskId;
 
     /**
-     * 字段
+     * 实物id
      */
-    @TableField("field")
-    private Long field;
+    @TableField("inkind_id")
+    private Long inkindId;
 
     /**
-     * 值
+     * 创建者
      */
-    @TableField("value")
-    private String value;
+      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
 
     /**
-     * 删除状态
+     * 修改者
+     */
+      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
+
+    /**
+     * 状态
      */
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
-
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-
-    public Long getValueId() {
-        return valueId;
+    public Long getBingId() {
+        return bingId;
     }
 
-    public void setValueId(Long valueId) {
-        this.valueId = valueId;
+    public void setBingId(Long bingId) {
+        this.bingId = bingId;
     }
 
-    public Long getDataId() {
-        return dataId;
+    public Long getQualityTaskId() {
+        return qualityTaskId;
     }
 
-    public void setDataId(Long dataId) {
-        this.dataId = dataId;
+    public void setQualityTaskId(Long qualityTaskId) {
+        this.qualityTaskId = qualityTaskId;
     }
 
-
-    public Long getField() {
-        return field;
+    public Long getInkindId() {
+        return inkindId;
     }
 
-    public void setField(Long field) {
-        this.field = field;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Integer getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(Integer display) {
-        this.display = display;
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
     }
 
     public Long getCreateUser() {
@@ -137,18 +126,25 @@ public class FormDataValue implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Integer display) {
+        this.display = display;
+    }
+
     @Override
     public String toString() {
-        return "FormDataValue{" +
-        "valueId=" + valueId +
-        ", dataId=" + dataId +
-        ", field=" + field +
-        ", value=" + value +
-        ", display=" + display +
+        return "QualityTaskBind{" +
+        "bingId=" + bingId +
+        ", qualityTaskId=" + qualityTaskId +
+        ", inkindId=" + inkindId +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
+        ", display=" + display +
         "}";
     }
 }
