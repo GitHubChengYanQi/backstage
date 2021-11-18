@@ -131,28 +131,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public void update(QualityTaskParam param) {
-        //防止添加质检任务
-        List<Long> judge = new ArrayList<>();
-        for (QualityTaskDetailParam detail : param.getDetails()) {
-            judge.add(detail.getSkuId() + detail.getBrandId());
-        }
-        long count = judge.stream().distinct().count();
-        if (param.getDetails().size() > count) {
-            throw new ServiceException(500, "请勿添加重复物料");
-        }
-        //修改质检任务的物料
-        QueryWrapper<QualityTaskDetail> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("quality_task_id", param.getQualityTaskId());
-        detailService.remove(queryWrapper);
-
-        List<QualityTaskDetail> results = new ArrayList<>();
-        for (QualityTaskDetailParam detail : param.getDetails()) {
-            QualityTaskDetail result = new QualityTaskDetail();
-            ToolUtil.copyProperties(detail, result);
-            result.setQualityTaskId(param.getQualityTaskId());
-            results.add(result);
-        }
-        detailService.saveBatch(results);
+        QualityTask oldEntity = getOldEntity(param);
+        QualityTask newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
     }
 
     @Override
