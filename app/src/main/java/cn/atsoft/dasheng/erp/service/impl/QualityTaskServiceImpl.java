@@ -366,38 +366,38 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         }
     }
-    private Boolean mathData (String standardValue,Long operator,Long value){
-        Boolean flag = false;
-        switch (operator){
-            case 1L:
-                if (value == Long.valueOf(standardValue))
-                    flag = true;
-                break;
-            case 2L:
-                if (value >= Long.valueOf(standardValue) )
-                    flag = true;
-                break;
-            case 3L:
-                if (value <= Long.valueOf(standardValue) )
-                    flag = true;
-                break;
-            case 4L:
-                if (value > Long.valueOf(standardValue) )
-                    flag = true;
-                break;
-            case 5L:
-                if (value < Long.valueOf(standardValue) )
-                    flag = true;
-                break;
-            case 6L:
-                List<String> result = Arrays.asList(standardValue.split(","));
-                if (value < Long.valueOf(standardValue) )
-                    flag = true;
-                break;
-
-        }
-
-    }
+//    private Boolean mathData (String standardValue,Long operator,Long value){
+//        Boolean flag = false;
+//        switch (operator){
+//            case 1L:
+//                if (value == Long.valueOf(standardValue))
+//                    flag = true;
+//                break;
+//            case 2L:
+//                if (value >= Long.valueOf(standardValue) )
+//                    flag = true;
+//                break;
+//            case 3L:
+//                if (value <= Long.valueOf(standardValue) )
+//                    flag = true;
+//                break;
+//            case 4L:
+//                if (value > Long.valueOf(standardValue) )
+//                    flag = true;
+//                break;
+//            case 5L:
+//                if (value < Long.valueOf(standardValue) )
+//                    flag = true;
+//                break;
+//            case 6L:
+//                List<String> result = Arrays.asList(standardValue.split(","));
+//                if (value < Long.valueOf(standardValue) )
+//                    flag = true;
+//                break;
+//
+//        }
+//
+//    }
     @Override
     public void detailFormat(QualityTaskResult param) {
 //        List<String> skuIds = new ArrayList<>();
