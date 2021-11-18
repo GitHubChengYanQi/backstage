@@ -112,6 +112,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     spuEntity.setSpuClassificationId(param.getSpuClassificationId());
                     spuEntity.setCategoryId(categoryId);
                     spuEntity.setType(0);
+                    spuEntity.setUnitId(param.getUnitId());
                     spuService.save(spuEntity);
                     spuId = spuEntity.getSpuId();
                 }

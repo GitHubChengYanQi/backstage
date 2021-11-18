@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
@@ -52,6 +54,8 @@ public class SkuController extends BaseController {
     private SkuService skuService;
     @Autowired
     private SpuService spuService;
+    @Autowired
+    private UnitService unitService;
 
     /**
      * 新增接口
@@ -120,6 +124,10 @@ public class SkuController extends BaseController {
         JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
         if (ToolUtil.isNotEmpty(detail.getSpuId())) {
             Spu spu = spuService.getById(detail.getSpuId());
+            if (ToolUtil.isNotEmpty(spu.getUnitId())){
+                Unit unit = unitService.getById(spu.getUnitId());
+                result.setUnit(unit);
+            }
             result.setSpu(spu);
         }
 
