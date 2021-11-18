@@ -100,6 +100,17 @@ public class QualityTask implements Serializable {
     @TableField("display")
     private Integer display;
 
+    @TableField("state")
+    private Integer state;
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
     /**
      * 部门id
      */

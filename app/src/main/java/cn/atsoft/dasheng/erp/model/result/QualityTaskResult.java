@@ -92,6 +92,8 @@ public class QualityTaskResult implements Serializable {
     @ApiModelProperty("状态")
     private Integer display;
 
+    private Integer state;
+
     /**
      * 部门id
      */
