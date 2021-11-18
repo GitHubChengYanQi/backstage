@@ -273,8 +273,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }
         List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
 
-        List<Outstock> outstocks = orderIds.size() == 0 ? new ArrayList<>() : outstockService.query().eq("outstock_order_id", orderIds).list();
-
         List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().in("outstock_order_id", orderIds).list();
 
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
