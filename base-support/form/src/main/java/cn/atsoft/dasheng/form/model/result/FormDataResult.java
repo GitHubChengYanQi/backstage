@@ -24,6 +24,7 @@ public class FormDataResult implements Serializable {
     List<Map<String ,Object>> valueResults;
     private Object inkind;
     private Object sku;
+    private Object brand;
 
 
     /**

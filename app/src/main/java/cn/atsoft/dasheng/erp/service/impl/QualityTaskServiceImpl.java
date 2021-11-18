@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -74,7 +76,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private CodingRulesService rulesService;
     @Autowired
     private QualityTaskBindService taskBindService;
-
+    @Autowired
+    private BrandService brandService;
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
@@ -300,9 +303,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         List<Inkind> inkinds = inkindService.lambdaQuery().in(Inkind::getInkindId, formIds).and(i -> i.eq(Inkind::getDisplay, 1)).list();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (Inkind inkind : inkinds) {
             skuIds.add(inkind.getSkuId());
+            brandIds.add(inkind.getBrandId());
         }
+        List<Brand> brandList =brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
+
         List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
@@ -331,12 +338,19 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
         for (FormDataResult formDataResult : param) {
+
             for (Inkind inkind : inkinds) {
                 if (formDataResult.getFormId().equals(inkind.getInkindId())) {
                     formDataResult.setInkind(inkind);
                     for (SkuResult skuResult : skuResults) {
                         if (skuResult.getSkuId().equals(inkind.getSkuId())){
                             formDataResult.setSku(skuResult);
+
+                        }
+                    }
+                    for (Brand brand : brandList) {
+                        if (inkind.getBrandId().equals(brand.getBrandId())) {
+                            formDataResult.setBrand(brand);
                         }
                     }
                 }
