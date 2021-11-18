@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
+import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,20 @@ public class InstockOrderController extends BaseController {
         return ResponseData.success();
     }
 
+
+    /**
+     * 通过质检创建入库单
+     *
+     * @author song
+     * @Date 2021-10-06
+     */
+    @RequestMapping(value = "/addByQuality", method = RequestMethod.POST)
+    public ResponseData addByQuality(@RequestBody InstockParams instockParams) {
+        this.instockOrderService.addByQuality(instockParams);
+        return ResponseData.success();
+    }
+
+
     /**
      * 编辑接口
      *
@@ -71,7 +87,7 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @BussinessLog(value = "删除入库单", key = "name", dict = InstockOrderParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockOrderParam instockOrderParam)  {
+    public ResponseData delete(@RequestBody InstockOrderParam instockOrderParam) {
         this.instockOrderService.delete(instockOrderParam);
         return ResponseData.success();
     }
@@ -102,13 +118,11 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InstockOrderResult> list(@RequestBody(required = false) InstockOrderParam instockOrderParam) {
-        if(ToolUtil.isEmpty(instockOrderParam)){
+        if (ToolUtil.isEmpty(instockOrderParam)) {
             instockOrderParam = new InstockOrderParam();
         }
         return this.instockOrderService.findPageBySpec(instockOrderParam);
     }
-
-
 
 
 }

@@ -355,6 +355,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
                 inkindParam.setType("0");
+                inkindParam.setNumber(codeRequest.getNumber());
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
                 inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
