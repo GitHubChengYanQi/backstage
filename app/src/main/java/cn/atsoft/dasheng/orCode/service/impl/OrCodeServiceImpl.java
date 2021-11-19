@@ -645,7 +645,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
                     qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
-                    return ResponseData.success(qualityRequest);
+                    return qualityRequest;
             }
         }
         return null;
