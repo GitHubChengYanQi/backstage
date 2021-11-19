@@ -43,18 +43,18 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
 
-//        // 更新当前节点，及下级
-//        Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
-//        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-//        entity.setChildren(JSON.toJSONString(skuIds));
-//        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-//        partsQueryWrapper.eq("parts_id", entity.getPartsId());
-//        this.update(entity, partsQueryWrapper);
-//
-//        updateChildren(entity.getSkuId());
-//
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
+        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        entity.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        QueryWrapper<ActivitiSteps> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("setps_id", entity.getSetpsId());
+        this.update(entity, partsQueryWrapper);
+
+        updateChildren(entity.getSetpsId());
         return entity.getSetpsId();
     }
+
 
     /**
      * 递归
