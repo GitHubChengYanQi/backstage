@@ -78,6 +78,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityTaskBindService taskBindService;
     @Autowired
     private BrandService brandService;
+
+
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
@@ -99,15 +101,25 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask entity = getEntity(param);
         this.save(entity);
         if (ToolUtil.isNotEmpty(param.getDetails())) {
+            List<Long> skuIds = new ArrayList<>();
+            Map<Long, Long> maps = new HashMap<>();
             List<QualityTaskDetail> details = new ArrayList<>();
             for (QualityTaskDetailParam detailParam : param.getDetails()) {
+                skuIds.add(detailParam.getSkuId());
+                maps.put(detailParam.getSkuId(), detailParam.getQualityPlanId());
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
-
             detailService.saveBatch(details);
+            //回填sku质检项
+            List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
+            for (Sku sku : skus) {
+                Long plan = maps.get(sku.getSkuId());
+                sku.setQualityPlanId(plan);
+            }
+            skuService.updateBatchById(skus);
         }
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> userIds = new ArrayList<>();
@@ -293,6 +305,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 //        }
 //        param.setValueResults(maps);
     }
+
     @Override
     public void formDataFormat1(List<FormDataResult> param) {
         List<Long> formIds = new ArrayList<>();
@@ -308,13 +321,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             skuIds.add(inkind.getSkuId());
             brandIds.add(inkind.getBrandId());
         }
-        List<Brand> brandList =brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
 
         List<Sku> skus = skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku,skuResult);
+            ToolUtil.copyProperties(sku, skuResult);
             skuResults.add(skuResult);
         }
         skuService.format(skuResults);
@@ -343,7 +356,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 if (formDataResult.getFormId().equals(inkind.getInkindId())) {
                     formDataResult.setInkind(inkind);
                     for (SkuResult skuResult : skuResults) {
-                        if (skuResult.getSkuId().equals(inkind.getSkuId())){
+                        if (skuResult.getSkuId().equals(inkind.getSkuId())) {
                             formDataResult.setSku(skuResult);
 
                         }
@@ -398,7 +411,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         }
     }
-    private Boolean mathData (String standardValue,Long operator,Long value){
+
+    private Boolean mathData(String standardValue, Long operator, Long value) {
         Boolean flag = false;
         if (ToolUtil.isNotEmpty(standardValue)){
             switch (operator.toString()){
@@ -432,6 +446,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         return flag;
     }
+
     @Override
     public void detailFormat(QualityTaskResult param) {
 //        List<String> skuIds = new ArrayList<>();

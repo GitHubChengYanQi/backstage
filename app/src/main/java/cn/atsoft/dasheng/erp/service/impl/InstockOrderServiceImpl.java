@@ -187,22 +187,51 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param instockParams
      */
     @Override
+    @Transactional
     public void addByQuality(InstockParams instockParams) {
+        //生成入库编码
+        String coding = backCoding(instockParams.getCoding(), instockParams.getStoreHouseId());
+        //查询实物
         List<Inkind> inkinds = inkindService.query().in("inkind_id", instockParams.getInkinds()).list();
         //创建入库单
         InstockOrder instockOrder = new InstockOrder();
-        instockOrder.setCoding("质检生成入库单");
+        instockOrder.setCoding(coding);
+        instockOrder.setUserId(instockParams.getUserId());
+        instockOrder.setStoreHouseId(instockParams.getStoreHouseId());
         this.save(instockOrder);
         //通过实物id查询sku和brand  创建入库清单
         List<InstockList> instockLists = new ArrayList<>();
         for (Inkind inkind : inkinds) {
+            inkind.setInstockOrderId(instockOrder.getInstockOrderId());
+            inkind.setType("0");
+
+            //创建入库清单
             InstockList instockList = new InstockList();
             instockList.setSkuId(inkind.getSkuId());
             instockList.setBrandId(inkind.getBrandId());
+            instockList.setNumber(inkind.getNumber());
+            instockList.setInstockNumber(inkind.getNumber());
             instockList.setInstockOrderId(instockOrder.getInstockOrderId());
             instockLists.add(instockList);
         }
         instockListService.saveBatch(instockLists);
+        inkindService.updateBatchById(inkinds);
+        //推送消息
+        BusinessTrack businessTrack = new BusinessTrack();
+        businessTrack.setType("代办");
+        businessTrack.setMessage("入库");
+        businessTrack.setUserId(instockParams.getUserId());
+        businessTrack.setNote("有物料需要入库");
+        DateTime data = new DateTime();
+        businessTrack.setTime(data);
+        BackCodeRequest backCodeRequest = new BackCodeRequest();
+        backCodeRequest.setId(instockOrder.getInstockOrderId());
+        backCodeRequest.setSource("instock");
+        Long aLong = orCodeService.backCode(backCodeRequest);
+        String url = instockParams.getUrl().replace("codeId", aLong.toString());
+        instockSendTemplate.setBusinessTrack(businessTrack);
+        instockSendTemplate.setUrl(url);
+        instockSendTemplate.sendTemplate();
     }
 
 
@@ -217,6 +246,32 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         fields.add("userId");
         return PageFactory.defaultPage(fields);
 
+    }
+
+    /**
+     * 入库生成编码
+     *
+     * @param coding
+     * @return
+     */
+    String backCoding(Long coding, Long storeHouseId) {
+        String cod = null;
+        //添加编码
+        CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", coding).one();
+        if (ToolUtil.isNotEmpty(codingRules)) {
+            String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+            Storehouse storehouse = storehouseService.query().eq("storehouse_id", storeHouseId).one();
+            if (ToolUtil.isNotEmpty(storehouse)) {
+                String replace = "";
+                if (ToolUtil.isNotEmpty(storehouse.getCoding())) {
+                    replace = backCoding.replace("${storehouse}", storehouse.getCoding());
+                } else {
+                    replace = backCoding.replace("${storehouse}", "");
+                }
+                cod = replace;
+            }
+        }
+        return cod;
     }
 
     private InstockOrder getOldEntity(InstockOrderParam param) {
@@ -268,12 +323,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
             for (User user : users) {
-                if (datum.getUserId().equals(user.getUserId())) {
-                    UserResult userResult = new UserResult();
-                    ToolUtil.copyProperties(user, userResult);
-                    datum.setUserResult(userResult);
-                    break;
+                if(ToolUtil.isNotEmpty(datum.getUserId())){
+                    if (datum.getUserId().equals(user.getUserId())) {
+                        UserResult userResult = new UserResult();
+                        ToolUtil.copyProperties(user, userResult);
+                        datum.setUserResult(userResult);
+                        break;
+                    }
                 }
+
             }
             for (Storehouse storehouse : storehouses) {
                 if (storehouse.getStorehouseId().equals(datum.getStoreHouseId())) {

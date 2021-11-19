@@ -10,46 +10,25 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 流程日志表
+ * 流程任务表	
  * </p>
  *
- * @author Sing
- * @since 2021-11-10
+ * @author Jazz
+ * @since 2021-11-19
  */
-@TableName("activiti_process_log")
-public class ActivitiProcessLog implements Serializable {
+@TableName("activiti_process_task")
+public class ActivitiProcessTask implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
-      @TableId(value = "log_id", type = IdType.ID_WORKER)
-    private Long logId;
+      @TableId(value = "process_task_id", type = IdType.ID_WORKER)
+    private Long processTaskId;
 
-    /**
-     * 流程Id
-     */
-    @TableField("peocess_id")
-    private Long peocessId;
+    @TableField("process_id")
+    private Long processId;
 
-    /**
-     * 步骤Id
-     */
-    @TableField("setps_id")
-    private Long setpsId;
-/**
-     * 步骤Id
-     */
-    @TableField("task_id")
-    private Long taskId;
-
-    /**
-     * 0（拒绝），1（通过）
-     */
-    @TableField("status")
-    private Integer status;
-
+    @TableField("task_name")
+    private String taskName;
     /**
      * 删除状态
      */
@@ -69,43 +48,20 @@ public class ActivitiProcessLog implements Serializable {
     private Date updateTime;
 
 
-    public Long getLogId() {
-        return logId;
+    public Long getProcessTaskId() {
+        return processTaskId;
     }
 
-    public void setLogId(Long logId) {
-        this.logId = logId;
+    public void setProcessTaskId(Long processTaskId) {
+        this.processTaskId = processTaskId;
     }
 
-    public Long getPeocessId() {
-        return peocessId;
+    public Long getProcessId() {
+        return processId;
     }
 
-    public void setPeocessId(Long peocessId) {
-        this.peocessId = peocessId;
-    }
-
-    public Long getSetpsId() {
-        return setpsId;
-    }
-
-    public void setSetpsId(Long setpsId) {
-        this.setpsId = setpsId;
-    }
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setProcessId(Long processId) {
+        this.processId = processId;
     }
 
     public Integer getDisplay() {
@@ -148,13 +104,18 @@ public class ActivitiProcessLog implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
     @Override
     public String toString() {
-        return "ActivitiProcessLog{" +
-        "logId=" + logId +
-        ", peocessId=" + peocessId +
-        ", setpsId=" + setpsId +
-        ", status=" + status +
+        return "ActivitiProcessTask{" +
+        "processTaskId=" + processTaskId +
+        ", processId=" + processId +
         ", display=" + display +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +

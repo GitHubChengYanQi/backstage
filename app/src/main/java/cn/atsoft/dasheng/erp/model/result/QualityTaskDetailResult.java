@@ -39,6 +39,8 @@ public class QualityTaskDetailResult implements Serializable {
     @ApiModelProperty("主表id")
     private Long qualityTaskId;
 
+    private Integer batch;
+
     /**
      * 质检项
      */

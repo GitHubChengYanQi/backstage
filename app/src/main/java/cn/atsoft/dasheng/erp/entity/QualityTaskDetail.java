@@ -48,6 +48,9 @@ public class QualityTaskDetail implements Serializable {
     @TableField("number")
     private Integer number;
 
+    @TableField("batch")
+    private Integer batch;
+
     public Integer getNumber() {
         return number;
     }
@@ -141,6 +144,14 @@ public class QualityTaskDetail implements Serializable {
 
     public Long getCreateUser() {
         return createUser;
+    }
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
     }
 
     public void setCreateUser(Long createUser) {

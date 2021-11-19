@@ -27,6 +27,17 @@ public class ActivitiSteps implements Serializable {
       @TableId(value = "setps_id", type = IdType.AUTO)
     private Long setpsId;
 
+    @TableField("branch")
+    private String branch;
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
     /**
      * 流程ID
      */
