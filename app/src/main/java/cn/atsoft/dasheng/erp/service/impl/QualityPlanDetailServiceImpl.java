@@ -33,10 +33,7 @@ import java.util.List;
  */
 @Service
 public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailMapper, QualityPlanDetail> implements QualityPlanDetailService {
-    @Autowired
-    private QualityTaskDetailService detailService;
-    @Autowired
-    private FormDataValueService dataValueService;
+
 
 
     @Override
