@@ -632,18 +632,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     return itemRequest;
                 case "quality":
                     QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
-                    if (ToolUtil.isEmpty(qualityTask)) {
-                        throw new ServiceException(500, "当前数据不存在");
-                    }
                     QualityTaskResult qualityTaskResult = new QualityTaskResult();
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-                    qualityTaskService.detailFormat(qualityTaskResult);
-
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
-
-                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
-                    qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
                     return ResponseData.success(qualityRequest);
             }
