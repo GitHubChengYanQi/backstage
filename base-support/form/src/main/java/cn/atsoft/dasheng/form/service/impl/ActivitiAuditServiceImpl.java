@@ -40,19 +40,9 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
     @Override
     public void add(ActivitiAuditParam param) {
-        //添加流程步骤
-        param.getActivitiStepsParam().setProcessId(param.getProcessId());
-        Long stepsId = stepsService.add(param.getActivitiStepsParam());
-        param.setSetpsId(stepsId);
 
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
-        //修改流程主表
-        ActivitiProcess activitiProcess = new ActivitiProcess();
-        activitiProcess.setFormId(entity.getAuditId());
-        QueryWrapper<ActivitiProcess> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_id", param.getProcessId());
-        processService.update(activitiProcess, queryWrapper);
     }
 
     @Override
