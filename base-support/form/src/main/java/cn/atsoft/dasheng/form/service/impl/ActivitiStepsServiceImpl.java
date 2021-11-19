@@ -43,34 +43,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
 
     @Override
-    @Transactional
     public Long add(ActivitiStepsParam param) {
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
+//        if (ToolUtil.isEmpty(entity.getBranch())) {
+//            // 更新父级节点
+//            updateChildren(entity.getSupper());
+//        }
 
 
-        if (ToolUtil.isNotEmpty(param.getSupper()) && param.getSupper() != 0) {
-            List<ActivitiSteps> stepsList = this.query().in("setps_id", entity.getSetpsId()).eq("display", 1).list();
-            for (ActivitiSteps steps : stepsList) {
-                JSONArray jsonArray = JSONUtil.parseArray(steps.getChildrens());
-                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                for (Long aLong : longs) {
-                    if (param.getSupper().equals(aLong)) {
-                        throw new ServiceException(500, "请勿循环添加");
-                    }
-                }
-            }
-        }
-
-        // 更新当前节点，及下级
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
-        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        entity.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("setps_id", entity.getSetpsId());
-        this.update(entity, queryWrapper);
-
-//        updateChildren(entity.getSetpsId());
         return entity.getSetpsId();
     }
 
@@ -81,7 +62,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
             {
                 put("children", new ArrayList<>());
-                put("childrens", new ArrayList<>());
             }
         };
         List<Long> childrensSetpIds = new ArrayList<>();
@@ -93,10 +73,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 setpIds.add(detail.getSetpsId());
                 childrensSetpIds.add(detail.getSetpsId());
                 Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSetpsId());
-                childrensSetpIds.addAll(childrenMap.get("childrens"));
+
             }
             result.put("children", setpIds);
-            result.put("childrens", childrensSetpIds);
+
         }
         return result;
     }
@@ -104,17 +84,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     /**
      * 更新包含它的
      */
-    public void updateChildren(Long stepIds) {
-        List<ActivitiSteps> steps = this.query().like("children", stepIds).eq("display", 1).list();
-        for (ActivitiSteps step : steps) {
-            Map<String, List<Long>> childrenMap = getChildrens(stepIds);
-            step.setChildren(JSON.toJSONString(childrenMap.get("children")));
-            step.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+    public void updateChildren(Long supper) {
+        ActivitiSteps steps = this.query().eq("setps_id", supper).eq("display", 1).one();
+        if (ToolUtil.isNotEmpty(steps)) {
+            Map<String, List<Long>> childrenMap = getChildrens(steps.getSetpsId());
+            steps.setChildren(JSON.toJSONString(childrenMap.get("children")));
             // update
             QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("setps_id", step.getSetpsId());
-            this.update(step, queryWrapper);
-            updateChildren(step.getSetpsId());
+            queryWrapper.eq("setps_id", steps.getSetpsId());
+            this.update(steps, queryWrapper);
+            updateChildren(steps.getSupper());
         }
     }
 
@@ -149,10 +128,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
-            //添加流程步骤
-            Long id = this.add(stepsParam);
+            //存分支
+            if (ToolUtil.isNotEmpty(stepsParam.getConditionNodes())) {
+                for (ActivitiStepsParam param : stepsParam.getStepsParams()) {
 
-            if (ToolUtil.isNotEmpty(stepsParam.getStepsParams())) {
+                }
+            } else if (stepsParam.getStepsParams().size() == 1) {
+                //获取children
+                Long id = this.add(stepsParam);
                 recursiveAdd(stepsParam.getStepsParams(), id);
             }
         }

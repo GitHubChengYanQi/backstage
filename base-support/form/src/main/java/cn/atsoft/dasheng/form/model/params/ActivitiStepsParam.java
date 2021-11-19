@@ -26,6 +26,8 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<ActivitiStepsParam> stepsParams;
+
+    private List<ActivitiStepsParam> conditionNodes;
     /**
      * 步骤Id，主键
      */
