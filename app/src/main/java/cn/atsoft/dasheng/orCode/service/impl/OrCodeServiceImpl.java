@@ -418,8 +418,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
-                    .eq("selling_price", inKindRequest.getSellingPrice())
-                    .eq("cost_price", inKindRequest.getCostPrice())
                     .one();
             if (ToolUtil.isEmpty(one)) {
                 return false;
@@ -632,18 +630,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     return itemRequest;
                 case "quality":
                     QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
-                    if (ToolUtil.isEmpty(qualityTask)) {
-                        throw new ServiceException(500, "当前数据不存在");
-                    }
                     QualityTaskResult qualityTaskResult = new QualityTaskResult();
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-                    qualityTaskService.detailFormat(qualityTaskResult);
-
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
-
-                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
-                    qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
                     return qualityRequest;
             }

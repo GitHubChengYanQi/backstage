@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,22 +40,32 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     @Autowired
     private ActivitiStepsService stepsService;
 
+
     @Override
     public void add(ActivitiAuditParam param) {
-        //添加流程步骤
-        param.getActivitiStepsParam().setProcessId(param.getProcessId());
-        Long stepsId = stepsService.add(param.getActivitiStepsParam());
-        param.setSetpsId(stepsId);
 
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
-        //修改流程主表
-        ActivitiProcess activitiProcess = new ActivitiProcess();
-        activitiProcess.setFormId(entity.getAuditId());
-        QueryWrapper<ActivitiProcess> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("process_id", param.getProcessId());
-        processService.update(activitiProcess, queryWrapper);
+        recursiveAdd(param.getActivitiStepsParams());
     }
+
+    //递归添加
+    public List<ActivitiStepsParam> recursiveAdd(List<ActivitiStepsParam> stepsParams) {
+        List<ActivitiStepsParam> params = new ArrayList<>();
+        for (ActivitiStepsParam stepsParam : stepsParams) {
+            Long id = stepsService.add(stepsParam);
+            stepsParam.setSupper(id);
+            params.add(stepsParam);
+
+            if (ToolUtil.isNotEmpty(stepsParam.getStepsParams())) {
+                List<ActivitiStepsParam> activitiStepsParams = recursiveAdd(stepsParam.getStepsParams());
+                params.addAll(activitiStepsParams);
+            }
+        }
+
+        return params;
+    }
+
 
     @Override
     public void delete(ActivitiAuditParam param) {

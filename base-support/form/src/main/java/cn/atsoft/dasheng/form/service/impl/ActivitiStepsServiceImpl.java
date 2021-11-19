@@ -12,6 +12,9 @@ import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,6 +23,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,20 +43,34 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
 
     @Override
+    @Transactional
     public Long add(ActivitiStepsParam param) {
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
 
-//        // 更新当前节点，及下级
-//        Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
-//        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-//        entity.setChildren(JSON.toJSONString(skuIds));
-//        QueryWrapper<Parts> partsQueryWrapper = new QueryWrapper<>();
-//        partsQueryWrapper.eq("parts_id", entity.getPartsId());
-//        this.update(entity, partsQueryWrapper);
-//
-//        updateChildren(entity.getSkuId());
-//
+
+        if (ToolUtil.isNotEmpty(param.getSupper())) {
+            List<ActivitiSteps> stepsList = this.query().in("setps_id", param.getSetpsId()).eq("display", 1).list();
+            for (ActivitiSteps steps : stepsList) {
+                JSONArray jsonArray = JSONUtil.parseArray(steps.getChildrens());
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                for (Long aLong : longs) {
+                    if (param.getSupper().equals(aLong)) {
+                        throw new ServiceException(500, "请勿循环添加");
+                    }
+                }
+            }
+        }
+
+        // 更新当前节点，及下级
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
+        entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        entity.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        QueryWrapper<ActivitiSteps> partsQueryWrapper = new QueryWrapper<>();
+        partsQueryWrapper.eq("setps_id", entity.getSetpsId());
+        this.update(entity, partsQueryWrapper);
+
+        updateChildren(entity.getSetpsId());
         return entity.getSetpsId();
     }
 
@@ -87,7 +105,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * 更新包含它的
      */
     public void updateChildren(Long stepIds) {
-
         List<ActivitiSteps> steps = this.query().like("children", stepIds).eq("display", 1).list();
         for (ActivitiSteps step : steps) {
             Map<String, List<Long>> childrenMap = getChildrens(stepIds);
