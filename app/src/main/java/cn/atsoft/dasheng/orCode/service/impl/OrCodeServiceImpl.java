@@ -415,6 +415,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
+                    .eq("selling_price", inKindRequest.getSellingPrice())
+                    .eq("cost_price", inKindRequest.getCostPrice())
                     .one();
             if (ToolUtil.isEmpty(one)) {
                 return false;
@@ -440,25 +442,24 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long instockByCode(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
         InstockList instockList = null;
-        Long number = 0L;
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
-            number = one.getNumber();
             if (one.getType().equals("1")) {
                 throw new ServiceException(500, "已入库");
             }
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
+            inkind.setNumber(inKindRequest.getNumber());
             inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
-            inKindRequest.getInstockListParam().setNum(one.getNumber());
+            inKindRequest.getInstockListParam().setNum(inKindRequest.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
-                    if ((instockList.getNumber() - one.getNumber()) == 0) {
+                    if ((instockList.getNumber() - inKindRequest.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
                         } catch (Exception e) {
@@ -477,7 +478,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(instockList)) {
             return 0L;
         } else {
-            return instockList.getNumber() - number;
+            return instockList.getNumber() - inKindRequest.getNumber();
         }
     }
 

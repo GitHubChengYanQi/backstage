@@ -152,7 +152,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     public PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param) {
         Page<QualityPlanResult> pageContext = getPageContext();
         IPage<QualityPlanResult> page = this.baseMapper.customPageList(pageContext, param);
-
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -174,5 +174,9 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         return entity;
     }
 
+    public void format(List<QualityPlanResult> data) {
+        for (QualityPlanResult datum : data) {
 
+        }
+    }
 }

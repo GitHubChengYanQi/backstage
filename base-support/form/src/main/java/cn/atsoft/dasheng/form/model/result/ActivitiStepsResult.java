@@ -27,6 +27,9 @@ public class ActivitiStepsResult implements Serializable {
     @ApiModelProperty("步骤Id，主键")
     private Long setpsId;
 
+    private String branch;
+
+
     /**
      * 流程ID
      */
