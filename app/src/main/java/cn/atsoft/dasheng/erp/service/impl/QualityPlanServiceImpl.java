@@ -130,6 +130,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         for (QualityPlanDetailParam qualityPlanDetailParam : param.getQualityPlanDetailParams()) {
             QualityPlanDetail detail = new QualityPlanDetail();
             ToolUtil.copyProperties(qualityPlanDetailParam, detail);
+            detail.setPlanId(qualityPlan.getQualityPlanId());
             details.add(detail);
         }
         qualityPlanDetailService.saveBatch(details);
