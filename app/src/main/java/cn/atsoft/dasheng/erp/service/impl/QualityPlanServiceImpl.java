@@ -134,47 +134,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         }
         qualityPlanDetailService.saveBatch(details);
 
-//        List<QualityPlan> qualityPlans = this.query().list();
-//        for (QualityPlan qualityPlan : qualityPlans) {
-//            if (qualityPlan.getPlanName().equals(param.getPlanName())) {
-//                throw new ServiceException(500, "已有重复名");
-//            }
-//        }
-//
-//        Integer rulesId = codingRulesService.query().in("coding_rules_id", param.getPlanCoding()).count();
-//        if (rulesId > 0) {
-//            String coding = codingRulesService.backCoding(Long.valueOf(param.getPlanCoding()));
-//            param.setPlanCoding(coding);
-//        }
-//
-//        List<QualityPlanDetailParam> planDetailParams = param.getQualityPlanDetailParams();
-//        if (ToolUtil.isEmpty(planDetailParams)) {
-//            throw new ServiceException(500, "请确定质检项");
-//        }
-//
-//
-//        QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.in("plan_id", param.getQualityPlanId());
-//        qualityPlanDetailService.remove(queryWrapper);
-//
-//
-//        List<QualityPlanDetail> qualityPlanDetails = new ArrayList<>();
-//        for (QualityPlanDetailParam planDetailParam : planDetailParams) {
-//            if (ToolUtil.isEmpty(planDetailParam.getQualityCheckId())) {
-//                throw new ServiceException(500, "请选择质检项");
-//            }
-//            QualityPlanDetail qualityPlanDetail = new QualityPlanDetail();
-//            ToolUtil.copyProperties(planDetailParam, qualityPlanDetail);
-//            qualityPlanDetail.setPlanId(param.getQualityPlanId());
-//            qualityPlanDetails.add(qualityPlanDetail);
-//        }
-//        qualityPlanDetailService.saveBatch(qualityPlanDetails);
-//
-//
-//        QualityPlan oldEntity = getOldEntity(param);
-//        QualityPlan newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
+
     }
 
     @Override
@@ -191,7 +151,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     public PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param) {
         Page<QualityPlanResult> pageContext = getPageContext();
         IPage<QualityPlanResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
+
         return PageFactory.createPageInfo(page);
     }
 
@@ -213,9 +173,5 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         return entity;
     }
 
-    public void format(List<QualityPlanResult> data) {
-        for (QualityPlanResult datum : data) {
 
-        }
-    }
 }
