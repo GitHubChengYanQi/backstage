@@ -26,7 +26,6 @@ public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
-    private List<ActivitiStepsParam> activitiStepsParams;
 
     private Long processId;
     /**

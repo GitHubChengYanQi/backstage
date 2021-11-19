@@ -46,6 +46,22 @@ public class ActivitiStepsController extends BaseController {
     }
 
     /**
+     * 递归增加
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    @RequestMapping(value = "/addBatch", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addBatch(@RequestBody ActivitiStepsParam activitiStepsParam) {
+        this.activitiStepsService.addBatch(activitiStepsParam.getStepsParams());
+        return ResponseData.success();
+    }
+
+
+
+
+    /**
      * 编辑接口
      *
      * @author Sing

@@ -64,6 +64,14 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param);
+    PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param);
+
+    /**
+     * 递归添加
+     *
+     * @param params
+     */
+    void addBatch(List<ActivitiStepsParam> params);
+
 
 }

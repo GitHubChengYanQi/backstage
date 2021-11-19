@@ -49,8 +49,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         this.save(entity);
 
 
-        if (ToolUtil.isNotEmpty(param.getSupper())) {
-            List<ActivitiSteps> stepsList = this.query().in("setps_id", param.getSetpsId()).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(param.getSupper()) && param.getSupper() != 0) {
+            List<ActivitiSteps> stepsList = this.query().in("setps_id", entity.getSetpsId()).eq("display", 1).list();
             for (ActivitiSteps steps : stepsList) {
                 JSONArray jsonArray = JSONUtil.parseArray(steps.getChildrens());
                 List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
@@ -66,11 +66,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         Map<String, List<Long>> childrenMap = getChildrens(entity.getSupper());
         entity.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
         entity.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<ActivitiSteps> partsQueryWrapper = new QueryWrapper<>();
-        partsQueryWrapper.eq("setps_id", entity.getSetpsId());
-        this.update(entity, partsQueryWrapper);
+        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("setps_id", entity.getSetpsId());
+        this.update(entity, queryWrapper);
 
-        updateChildren(entity.getSetpsId());
+//        updateChildren(entity.getSetpsId());
         return entity.getSetpsId();
     }
 
@@ -132,21 +132,31 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         this.updateById(newEntity);
     }
 
-    @Override
-    public ActivitiStepsResult findBySpec(ActivitiStepsParam param) {
-        return null;
-    }
 
     @Override
-    public List<ActivitiStepsResult> findListBySpec(ActivitiStepsParam param) {
-        return null;
+    public void addBatch(List<ActivitiStepsParam> params) {
+        recursiveAdd(params, 0L);
     }
 
-    @Override
-    public PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param) {
-        Page<ActivitiStepsResult> pageContext = getPageContext();
-        IPage<ActivitiStepsResult> page = this.baseMapper.customPageList(pageContext, param);
-        return PageFactory.createPageInfo(page);
+    /**
+     * 递归添加
+     *
+     * @param stepsParams
+     * @param supper
+     */
+    public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper) {
+
+        for (ActivitiStepsParam stepsParam : stepsParams) {
+            //获取super
+            stepsParam.setSupper(supper);
+            //添加流程步骤
+            Long id = this.add(stepsParam);
+
+            if (ToolUtil.isNotEmpty(stepsParam.getStepsParams())) {
+                recursiveAdd(stepsParam.getStepsParams(), id);
+            }
+        }
+
     }
 
     private Serializable getKey(ActivitiStepsParam param) {
@@ -165,6 +175,23 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiSteps entity = new ActivitiSteps();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public ActivitiStepsResult findBySpec(ActivitiStepsParam param) {
+        return null;
+    }
+
+    @Override
+    public List<ActivitiStepsResult> findListBySpec(ActivitiStepsParam param) {
+        return null;
+    }
+
+    @Override
+    public PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param) {
+        Page<ActivitiStepsResult> pageContext = getPageContext();
+        IPage<ActivitiStepsResult> page = this.baseMapper.customPageList(pageContext, param);
+        return PageFactory.createPageInfo(page);
     }
 
 }
