@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
@@ -90,6 +91,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OutstockListingService outstockListingService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
 
     @Override
@@ -627,7 +630,22 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
+                case "quality":
+                    QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(qualityTask)) {
+                        throw new ServiceException(500, "当前数据不存在");
+                    }
+                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+                    qualityTaskService.detailFormat(qualityTaskResult);
 
+                    QualityRequest qualityRequest = new QualityRequest();
+                    qualityRequest.setType("quality");
+
+                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
+                    qualityTaskResult.setTaskCounts(taskCounts);
+                    qualityRequest.setResult(qualityTaskResult);
+                    return ResponseData.success(qualityRequest);
             }
         }
         return null;
