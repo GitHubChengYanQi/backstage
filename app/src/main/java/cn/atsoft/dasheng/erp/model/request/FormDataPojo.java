@@ -10,6 +10,8 @@ public class FormDataPojo {
     private Long formId;//表单id
     private List<FormValues> formValues;
     private Integer option;
+    private Long qualityTaskDetailId;
+    private Integer number;
 
     private Long taskId;
 }

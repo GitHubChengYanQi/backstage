@@ -59,6 +59,8 @@ public class QualityTaskDetailResult implements Serializable {
     @ApiModelProperty("数量")
     private Integer number;
 
+    private Integer remaining;
+
     /**
      * 创建者
      */
