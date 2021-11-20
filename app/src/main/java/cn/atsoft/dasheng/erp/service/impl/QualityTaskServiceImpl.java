@@ -109,6 +109,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 maps.put(detailParam.getSkuId(), detailParam.getQualityPlanId());
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
+                detailParam.setRemaining(detailParam.getNumber());
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }

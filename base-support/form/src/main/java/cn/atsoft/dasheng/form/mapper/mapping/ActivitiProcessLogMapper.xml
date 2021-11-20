@@ -7,6 +7,7 @@
         <id column="log_id" property="logId" />
         <result column="peocess_id" property="peocessId" />
         <result column="setps_id" property="setpsId" />
+        <result column="task_id" property="taskId"/>
         <result column="status" property="status" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
@@ -17,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        log_id AS "logId", peocess_id AS "peocessId", setps_id AS "setpsId", status AS "status", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        log_id AS "logId", peocess_id AS "peocessId",task_id AS "taskId", setps_id AS "setpsId", status AS "status", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 

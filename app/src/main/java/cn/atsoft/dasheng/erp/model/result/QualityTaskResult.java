@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,6 +26,7 @@ public class QualityTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailResult> details;
+    private List<FormDataResult> formDataResults;
     private String userName;
 
     private List<TaskCount> taskCounts;

@@ -39,6 +39,8 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
      */
     private Long skuId;
 
+    private Long inkindId;
+
     /**
      * 入库清单
      */

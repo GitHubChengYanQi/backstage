@@ -61,6 +61,18 @@ public class InstockList implements Serializable {
      */
     @TableField("storehouse_id")
     private Long storeHouseId;
+
+    @TableField("inkind_id")
+    private Long inkindId;
+
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
+    }
+
     /**
      * 品牌id
      */
