@@ -397,6 +397,11 @@ public class OrCodeController extends BaseController {
 
                     qualityTaskService.detailFormat(qualityTaskResult);
 
+                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                        User user1 = userService.getById(qualityTaskResult.getUserId());
+                        qualityTaskResult.setUserName(user1.getName());
+                    }
+
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
 

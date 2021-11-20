@@ -416,9 +416,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Boolean judgeBind(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
-            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
-                    .eq("brand_id", inKindRequest.getBrandId())
-                    .one();
+            Inkind one = null;
+            if (ToolUtil.isNotEmpty(inKindRequest.getInkindId())){
+                one = inkindService.query().eq("inkind_id", inKindRequest.getInkindId()).eq("sku_id", inKindRequest.getId())
+                        .eq("brand_id", inKindRequest.getBrandId())
+                        .one();
+            }else {
+                one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
+                        .eq("brand_id", inKindRequest.getBrandId())
+                        .one();
+            }
+
             if (ToolUtil.isEmpty(one)) {
                 return false;
             }
