@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -22,11 +25,10 @@ public class Unit implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-
     /**
      * 单位id
      */
-      @TableId(value = "unit_id", type = IdType.ID_WORKER)
+    @TableId(value = "unit_id", type = IdType.ID_WORKER)
     private Long unitId;
 
     /**
@@ -38,25 +40,25 @@ public class Unit implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -68,7 +70,7 @@ public class Unit implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
 
@@ -136,17 +138,18 @@ public class Unit implements Serializable {
         this.deptId = deptId;
     }
 
+
     @Override
     public String toString() {
         return "Unit{" +
-        "unitId=" + unitId +
-        ", unitName=" + unitName +
-        ", createUser=" + createUser +
-        ", createTime=" + createTime +
-        ", updateUser=" + updateUser +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "unitId=" + unitId +
+                ", unitName=" + unitName +
+                ", createUser=" + createUser +
+                ", createTime=" + createTime +
+                ", updateUser=" + updateUser +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

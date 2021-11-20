@@ -30,6 +30,9 @@ public class QualityPlanDetailResult implements Serializable {
      */
     private Long qualityPlanClassId;
 
+
+    private Long unitId;
+
     private QualityCheckResult qualityCheckResult;
 
     @ApiModelProperty("")

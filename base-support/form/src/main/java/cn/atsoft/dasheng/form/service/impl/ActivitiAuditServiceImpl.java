@@ -4,17 +4,25 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
+import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
-import  cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,20 +35,45 @@ import java.util.List;
  */
 @Service
 public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, ActivitiAudit> implements ActivitiAuditService {
+    @Autowired
+    private ActivitiProcessService processService;
+    @Autowired
+    private ActivitiStepsService stepsService;
+
 
     @Override
-    public void add(ActivitiAuditParam param){
+    public void add(ActivitiAuditParam param) {
+
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
+        recursiveAdd(param.getActivitiStepsParams());
     }
 
+    //递归添加
+    public List<ActivitiStepsParam> recursiveAdd(List<ActivitiStepsParam> stepsParams) {
+        List<ActivitiStepsParam> params = new ArrayList<>();
+        for (ActivitiStepsParam stepsParam : stepsParams) {
+            Long id = stepsService.add(stepsParam);
+            stepsParam.setSupper(id);
+            params.add(stepsParam);
+
+            if (ToolUtil.isNotEmpty(stepsParam.getStepsParams())) {
+                List<ActivitiStepsParam> activitiStepsParams = recursiveAdd(stepsParam.getStepsParams());
+                params.addAll(activitiStepsParams);
+            }
+        }
+
+        return params;
+    }
+
+
     @Override
-    public void delete(ActivitiAuditParam param){
+    public void delete(ActivitiAuditParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ActivitiAuditParam param){
+    public void update(ActivitiAuditParam param) {
         ActivitiAudit oldEntity = getOldEntity(param);
         ActivitiAudit newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +81,23 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     }
 
     @Override
-    public ActivitiAuditResult findBySpec(ActivitiAuditParam param){
+    public ActivitiAuditResult findBySpec(ActivitiAuditParam param) {
         return null;
     }
 
     @Override
-    public List<ActivitiAuditResult> findListBySpec(ActivitiAuditParam param){
+    public List<ActivitiAuditResult> findListBySpec(ActivitiAuditParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param){
+    public PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param) {
         Page<ActivitiAuditResult> pageContext = getPageContext();
         IPage<ActivitiAuditResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ActivitiAuditParam param){
+    private Serializable getKey(ActivitiAuditParam param) {
         return param.getAuditId();
     }
 

@@ -8,6 +8,7 @@ import lombok.Data;
 public class InKindRequest {
     private Long codeId;
     private Long Id;
+    private Long inkindId;
     private String type;
     private Long number;
     private InstockListParam instockListParam;

@@ -386,6 +386,7 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
                 case "quality":
+
                     QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
                     if (ToolUtil.isEmpty(qualityTask)) {
                         throw new ServiceException(500, "当前数据不存在");
@@ -395,6 +396,11 @@ public class OrCodeController extends BaseController {
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
 
                     qualityTaskService.detailFormat(qualityTaskResult);
+
+                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                        User user1 = userService.getById(qualityTaskResult.getUserId());
+                        qualityTaskResult.setUserName(user1.getName());
+                    }
 
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");

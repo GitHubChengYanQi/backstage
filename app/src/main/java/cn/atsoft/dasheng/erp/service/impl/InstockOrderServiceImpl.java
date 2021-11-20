@@ -209,6 +209,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             InstockList instockList = new InstockList();
             instockList.setSkuId(inkind.getSkuId());
             instockList.setBrandId(inkind.getBrandId());
+            instockList.setInkindId(inkind.getInkindId());
             instockList.setNumber(inkind.getNumber());
             instockList.setInstockNumber(inkind.getNumber());
             instockList.setInstockOrderId(instockOrder.getInstockOrderId());

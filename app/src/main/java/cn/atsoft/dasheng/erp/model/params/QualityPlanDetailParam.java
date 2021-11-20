@@ -26,6 +26,8 @@ public class QualityPlanDetailParam extends AbstractDictMap implements Serializa
 
     private static final long serialVersionUID = 1L;
 
+
+    private Long unitId;
     /**
      * 分类id
      */

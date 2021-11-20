@@ -24,6 +24,11 @@ public class QualityPlanDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 单位id
+     */
+    @TableField("unit_id")
+    private Long unitId;
 
     @TableId(value = "plan_detail_id", type = IdType.ID_WORKER)
     private Long planDetailId;
@@ -246,6 +251,14 @@ public class QualityPlanDetail implements Serializable {
 
     public void setSort(Long sort) {
         this.sort = sort;
+    }
+
+    public Long getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(Long unitId) {
+        this.unitId = unitId;
     }
 
     @Override

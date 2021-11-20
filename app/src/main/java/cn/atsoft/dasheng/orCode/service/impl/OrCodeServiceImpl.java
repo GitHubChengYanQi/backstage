@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.model.result.CategoryResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeMapper;
@@ -90,6 +91,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OutstockListingService outstockListingService;
     @Autowired
     private StockDetailsService stockDetailsService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
 
     @Override
@@ -413,11 +416,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Boolean judgeBind(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
-            Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
-                    .eq("brand_id", inKindRequest.getBrandId())
-                    .eq("selling_price", inKindRequest.getSellingPrice())
-                    .eq("cost_price", inKindRequest.getCostPrice())
-                    .one();
+            Inkind one = null;
+            if (ToolUtil.isNotEmpty(inKindRequest.getInkindId())){
+                one = inkindService.query().eq("inkind_id", inKindRequest.getInkindId()).eq("sku_id", inKindRequest.getId())
+                        .eq("brand_id", inKindRequest.getBrandId())
+                        .one();
+            }else {
+                one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
+                        .eq("brand_id", inKindRequest.getBrandId())
+                        .one();
+            }
+
             if (ToolUtil.isEmpty(one)) {
                 return false;
             }
@@ -442,24 +451,25 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long instockByCode(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).eq("source", inKindRequest.getType()).one();
         InstockList instockList = null;
+        Long number = 0L;
         if (ToolUtil.isNotEmpty(orCodeBind)) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).one();
+            number = one.getNumber();
             if (one.getType().equals("1")) {
                 throw new ServiceException(500, "已入库");
             }
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
-            inkind.setNumber(inKindRequest.getNumber());
             inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
-            inKindRequest.getInstockListParam().setNum(inKindRequest.getNumber());
+            inKindRequest.getInstockListParam().setNum(one.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
-                    if ((instockList.getNumber() - inKindRequest.getNumber()) == 0) {
+                    if ((instockList.getNumber() - one.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
                         } catch (Exception e) {
@@ -478,7 +488,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isEmpty(instockList)) {
             return 0L;
         } else {
-            return instockList.getNumber() - inKindRequest.getNumber();
+            return instockList.getNumber() - number;
         }
     }
 
@@ -627,7 +637,14 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
                     return itemRequest;
-
+                case "quality":
+                    QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
+                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+                    QualityRequest qualityRequest = new QualityRequest();
+                    qualityRequest.setType("quality");
+                    qualityRequest.setResult(qualityTaskResult);
+                    return qualityRequest;
             }
         }
         return null;
