@@ -24,7 +24,7 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      * @author Sing
      * @Date 2021-11-10
      */
-    Long add(ActivitiStepsParam param);
+    void add(ActivitiStepsParam param);
 
     /**
      * 删除

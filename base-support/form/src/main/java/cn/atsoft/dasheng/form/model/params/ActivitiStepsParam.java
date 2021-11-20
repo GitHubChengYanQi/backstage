@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,9 +26,9 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> stepsParams;
-
     private List<ActivitiStepsParam> conditionNodes;
+
+    private ActivitiSteps childNode;
     /**
      * 步骤Id，主键
      */
