@@ -344,21 +344,15 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 if (ToolUtil.isEmpty(orCode)) {
                     throw new ServiceException(500, "二维码不合法");
                 }
-
-                if (ToolUtil.isNotEmpty(codeRequest.getType()) && codeRequest.getType().equals("质检")) {
+                //判断相同物料绑定
+                Integer count = inkindService.query()
+                        .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())
+                        .eq("type", 0).count();
+                if (count > 0) {
                     throw new ServiceException(500, "物料已经绑定");
                 }
-                //判断相同物料绑定
-                Inkind inkind = inkindService.query()
-                        .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())
-                        .eq("type", 0).eq("source", codeRequest.getType())
-                        .one();
                 //判断相同二维码绑定
                 OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", codeRequest.getCodeId()).one();
-
-                if (ToolUtil.isNotEmpty(inkind)) {
-                    throw new ServiceException(500, "物料已经绑定");
-                }
                 if (ToolUtil.isNotEmpty(orCodeBind)) {
                     throw new ServiceException(500, "二维码已绑定");
                 }
@@ -367,7 +361,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setType("0");
                 inkindParam.setNumber(codeRequest.getNumber());
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
-                inkindParam.setType("入库");
                 inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
