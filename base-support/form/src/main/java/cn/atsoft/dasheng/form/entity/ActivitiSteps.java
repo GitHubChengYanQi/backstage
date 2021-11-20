@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,19 +27,14 @@ public class ActivitiSteps implements Serializable {
     /**
      * 步骤Id，主键
      */
-      @TableId(value = "setps_id", type = IdType.AUTO)
+    @TableId(value = "setps_id", type = IdType.AUTO)
     private Long setpsId;
+    /**
+     * 分支
+     */
+    @TableField("conditionNodes")
+    private String conditionNodes;
 
-    @TableField("branch")
-    private String branch;
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
 
     /**
      * 流程ID
@@ -80,16 +78,16 @@ public class ActivitiSteps implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -189,21 +187,29 @@ public class ActivitiSteps implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getConditionNodes() {
+        return conditionNodes;
+    }
+
+    public void setConditionNodes(String conditionNodes) {
+        this.conditionNodes = conditionNodes;
+    }
+
     @Override
     public String toString() {
         return "ActivitiSteps{" +
-        "setpsId=" + setpsId +
-        ", processId=" + processId +
-        ", type=" + type +
-        ", formId=" + formId +
-        ", supper=" + supper +
-        ", children=" + children +
-        ", childrens=" + childrens +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "setpsId=" + setpsId +
+                ", processId=" + processId +
+                ", type=" + type +
+                ", formId=" + formId +
+                ", supper=" + supper +
+                ", children=" + children +
+                ", childrens=" + childrens +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

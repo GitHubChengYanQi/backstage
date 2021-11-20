@@ -15,7 +15,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,25 +34,23 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     public void add(ActivitiStepsParam param) {
-        param.setType(param.getNodeName());
+
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //递归添加
-        recursiveAdd(param.getConditionNodes(), entity.getSetpsId());
+        recursiveAdd(param.getConditionNodeList(), entity.getSetpsId());
 
-        //添加子节点
-        ActivitiSteps childNode = param.getChildNode();
-
-        childNode.setType(childNode.getType());
-
-        childNode.setSupper(entity.getSetpsId());
-        this.save(childNode);
-
-        //修改顶级节点
-        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("setps_id", entity.getSetpsId());
-        entity.setChildren(childNode.getSetpsId().toString());
-        this.update(entity, queryWrapper);
+//        //添加子节点
+//        ActivitiSteps childNode = param.getChildNode();
+//
+//        childNode.setSupper(entity.getSetpsId());
+//        this.save(childNode);
+//
+//        //修改顶级节点
+//        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("setps_id", entity.getSetpsId());
+//        entity.setChildren(childNode.getSetpsId().toString());
+//        this.update(entity, queryWrapper);
 
 
     }
@@ -62,28 +62,44 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @param supper
      */
     public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper) {
-
+        //长度不唯一 就不是添加分支
+        if (stepsParams.size() == 1) {
+            ActivitiStepsParam stepsParam = stepsParams.get(0);
+            stepsParam.setSupper(supper);
+            ActivitiSteps activitiSteps = new ActivitiSteps();
+            ToolUtil.copyProperties(stepsParam, activitiSteps);
+            this.save(activitiSteps);
+            ActivitiSteps steps = this.query().eq("setps_id", activitiSteps.getSupper()).one();
+            activitiSteps.setChildren(steps.getSetpsId().toString());
+            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("setps_id", activitiSteps.getSetpsId());
+            this.update(activitiSteps, queryWrapper);
+            recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
+        }
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
-            stepsParam.setType(stepsParam.getNodeName());
+
             //存分支
             ActivitiSteps activitiSteps = new ActivitiSteps();
             ToolUtil.copyProperties(stepsParam, activitiSteps);
             this.save(activitiSteps);
             //修改父级节点
             ActivitiSteps steps = this.query().eq("setps_id", supper).one();
-            if (ToolUtil.isEmpty(steps.getBranch())) {
-                steps.setBranch(activitiSteps.getSetpsId() + ",");
+            if (ToolUtil.isEmpty(steps.getConditionNodes())) {
+                steps.setConditionNodes(activitiSteps.getSetpsId().toString());
             } else {
-                String branch = steps.getBranch();
-                steps.setBranch(branch + activitiSteps.getSetpsId() + ",");
+                String branch = steps.getConditionNodes();
+                List<String> branchs = new ArrayList<>();
+                branchs.add(activitiSteps.getSetpsId().toString());
+                steps.setConditionNodes(branch + "," + activitiSteps.getSetpsId());
             }
             QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("setps_id", supper);
+            steps.setConditionNodes(steps.getConditionNodes());
             this.update(steps, queryWrapper);
             if (ToolUtil.isNotEmpty(stepsParam.getConditionNodes())) {
-                recursiveAdd(stepsParam.getConditionNodes(), activitiSteps.getSetpsId());
+                recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
             }
 
         }

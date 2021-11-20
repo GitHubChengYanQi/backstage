@@ -26,7 +26,7 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> conditionNodes;
+    private List<ActivitiStepsParam> conditionNodeList;
 
     private ActivitiSteps childNode;
     /**
@@ -35,7 +35,7 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("步骤Id，主键")
     private Long setpsId;
 
-    private String branch;
+    private String conditionNodes;
 
     private String nodeName;
 

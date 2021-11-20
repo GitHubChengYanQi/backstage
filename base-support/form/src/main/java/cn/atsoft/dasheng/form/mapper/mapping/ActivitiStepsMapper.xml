@@ -8,7 +8,7 @@
         <result column="process_id" property="processId" />
         <result column="type" property="type" />
         <result column="form_id" property="formId" />
-        <result column="branch" property="branch"/>
+        <result column="conditionNodes" property="conditionNodes"/>
         <result column="supper" property="supper" />
         <result column="children" property="children" />
         <result column="childrens" property="childrens" />
@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        setps_id AS "setpsId", process_id AS "processId",branch AS "branch", type AS "type", form_id AS "formId", supper AS "supper", children AS "children", childrens AS "childrens", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        setps_id AS "setpsId", process_id AS "processId",conditionNodes AS "conditionNodes", type AS "type", form_id AS "formId", supper AS "supper", children AS "children", childrens AS "childrens", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
