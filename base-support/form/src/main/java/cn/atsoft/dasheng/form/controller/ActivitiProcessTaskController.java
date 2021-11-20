@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.form.controller;
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
@@ -98,10 +100,20 @@ public class ActivitiProcessTaskController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiProcessTaskResult> list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
+
+
         if(ToolUtil.isEmpty(activitiProcessTaskParam)){
             activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
-        return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
+        }else{
+            Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
+            Long userId = LoginContextHolder.getContext().getUserId();
+            activitiProcessTaskParam.setUserId(userId);
+            activitiProcessTaskParam.setDeptId(deptId);
+            return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
+        }
     }
 
 
