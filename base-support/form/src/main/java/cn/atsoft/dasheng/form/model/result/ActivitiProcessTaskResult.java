@@ -29,6 +29,9 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private String taskName;
 
+    private String deptIds;
+
+    private String userIds;
     /**
      * 删除状态
      */

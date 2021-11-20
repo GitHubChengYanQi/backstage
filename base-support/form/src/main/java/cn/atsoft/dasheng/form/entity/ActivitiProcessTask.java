@@ -29,6 +29,16 @@ public class ActivitiProcessTask implements Serializable {
 
     @TableField("task_name")
     private String taskName;
+
+
+
+    @TableField("deptIds")
+    private String deptIds;
+
+
+
+    @TableField("user_ids")
+    private String userIds;
     /**
      * 删除状态
      */
@@ -47,6 +57,21 @@ public class ActivitiProcessTask implements Serializable {
       @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+    public String getDeptIds() {
+        return deptIds;
+    }
+
+    public void setDeptIds(String deptIds) {
+        this.deptIds = deptIds;
+    }
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
+    }
 
     public Long getProcessTaskId() {
         return processTaskId;

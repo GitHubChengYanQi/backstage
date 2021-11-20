@@ -14,6 +14,8 @@ import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +45,9 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Autowired
     private CodingRulesService codingRulesService;
+
+    @Autowired
+    private FormDataService formDataService;
 
 
     @Transactional
@@ -121,9 +126,22 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
                 throw new ServiceException(500, "方案名称已存在");
             }
         }
+        qualityPlanDetailService.list();
+
         //修改质检项
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("plan_id", param.getQualityPlanId());
+        
+        List<QualityPlanDetail> list = qualityPlanDetailService.list(queryWrapper);
+        List<Long> inTask = new ArrayList<>();
+        for (QualityPlanDetail qualityPlanDetail : list) {
+            inTask.add(qualityPlanDetail.getPlanDetailId());
+        }
+        List<FormData> list1 = formDataService.lambdaQuery().in(FormData::getFormId, inTask).list();
+        if (ToolUtil.isNotEmpty(list1)) {
+            throw  new ServiceException(500,"此计划正在被使用中，无法进行更改");
+        }
+
         qualityPlanDetailService.remove(queryWrapper);
 
         List<QualityPlanDetail> details = new ArrayList<>();
