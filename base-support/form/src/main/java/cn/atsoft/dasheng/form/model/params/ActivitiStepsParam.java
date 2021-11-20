@@ -37,6 +37,8 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private String branch;
 
+    private String nodeName;
+
     /**
      * 流程ID
      */

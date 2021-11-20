@@ -32,6 +32,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     @Override
     public void add(ActivitiStepsParam param) {
+        param.setType(param.getNodeName());
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //递归添加
@@ -39,6 +40,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
         //添加子节点
         ActivitiSteps childNode = param.getChildNode();
+
+        childNode.setType(childNode.getType());
+
         childNode.setSupper(entity.getSetpsId());
         this.save(childNode);
 
@@ -62,10 +66,22 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
+            stepsParam.setType(stepsParam.getNodeName());
             //存分支
             ActivitiSteps activitiSteps = new ActivitiSteps();
             ToolUtil.copyProperties(stepsParam, activitiSteps);
             this.save(activitiSteps);
+            //修改父级节点
+            ActivitiSteps steps = this.query().eq("setps_id", supper).one();
+            if (ToolUtil.isEmpty(steps.getBranch())) {
+                steps.setBranch(activitiSteps.getSetpsId() + ",");
+            } else {
+                String branch = steps.getBranch();
+                steps.setBranch(branch + activitiSteps.getSetpsId() + ",");
+            }
+            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("setps_id", supper);
+            this.update(steps, queryWrapper);
             if (ToolUtil.isNotEmpty(stepsParam.getConditionNodes())) {
                 recursiveAdd(stepsParam.getConditionNodes(), activitiSteps.getSetpsId());
             }
