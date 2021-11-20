@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,27 +32,28 @@ import java.util.List;
 @Service
 public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiSteps> implements ActivitiStepsService {
 
-
+    @Transactional
     @Override
     public void add(ActivitiStepsParam param) {
 
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
-        //递归添加
-        recursiveAdd(param.getConditionNodeList(), entity.getSetpsId());
-
-//        //添加子节点
-//        ActivitiSteps childNode = param.getChildNode();
-//
-//        childNode.setSupper(entity.getSetpsId());
-//        this.save(childNode);
-//
-//        //修改顶级节点
-//        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("setps_id", entity.getSetpsId());
-//        entity.setChildren(childNode.getSetpsId().toString());
-//        this.update(entity, queryWrapper);
-
+        if (ToolUtil.isNotEmpty(param.getConditionNodeList()) && param.getConditionNodeList().size() == 1) {
+            ActivitiStepsParam stepsParam = param.getConditionNodeList().get(0);
+            ActivitiSteps activitiSteps = new ActivitiSteps();
+            ToolUtil.copyProperties(stepsParam, activitiSteps);
+            activitiSteps.setSupper(entity.getSetpsId());
+            this.save(activitiSteps);
+            //修改顶级节点
+            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("setps_id", entity.getSetpsId());
+            entity.setChildren(activitiSteps.getSetpsId().toString());
+            this.update(entity, queryWrapper);
+            //递归
+            recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
+        } else if (ToolUtil.isNotEmpty(param.getConditionNodeList()) && param.getConditionNodeList().size() > 1) {
+            recursiveAdd(param.getConditionNodeList(), entity.getSetpsId());
+        }
 
     }
 
@@ -63,7 +65,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper) {
         //长度不唯一 就不是添加分支
-        if (stepsParams.size() == 1) {
+        if (ToolUtil.isNotEmpty(stepsParams) && stepsParams.size() == 1) {
             ActivitiStepsParam stepsParam = stepsParams.get(0);
             stepsParam.setSupper(supper);
             ActivitiSteps activitiSteps = new ActivitiSteps();
@@ -74,8 +76,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("setps_id", activitiSteps.getSetpsId());
             this.update(activitiSteps, queryWrapper);
-            recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
+            if (ToolUtil.isNotEmpty(stepsParam.getConditionNodeList())) {
+                recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
+            }
+
         }
+
+
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
@@ -86,6 +93,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             this.save(activitiSteps);
             //修改父级节点
             ActivitiSteps steps = this.query().eq("setps_id", supper).one();
+            //修改父级分支
             if (ToolUtil.isEmpty(steps.getConditionNodes())) {
                 steps.setConditionNodes(activitiSteps.getSetpsId().toString());
             } else {
@@ -98,55 +106,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             queryWrapper.eq("setps_id", supper);
             steps.setConditionNodes(steps.getConditionNodes());
             this.update(steps, queryWrapper);
-            if (ToolUtil.isNotEmpty(stepsParam.getConditionNodes())) {
+            //继续递归添加
+            if (ToolUtil.isNotEmpty(stepsParam.getConditionNodeList())) {
                 recursiveAdd(stepsParam.getConditionNodeList(), activitiSteps.getSetpsId());
             }
 
         }
 
     }
-//
-//    /**
-//     * 递归
-//     */
-//    public Map<String, List<Long>> getChildrens(Long id) {
-//        Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
-//            {
-//                put("children", new ArrayList<>());
-//            }
-//        };
-//        List<Long> childrensSetpIds = new ArrayList<>();
-//        List<Long> setpIds = new ArrayList<>();
-//        ActivitiSteps steps = this.query().eq("setps_id", id).eq("display", 1).one();
-//        if (ToolUtil.isNotEmpty(steps)) {
-//            List<ActivitiSteps> activitiSteps = this.query().eq("supper", steps.getSetpsId()).eq("display", 1).list();
-//            for (ActivitiSteps detail : activitiSteps) {
-//                setpIds.add(detail.getSetpsId());
-//                childrensSetpIds.add(detail.getSetpsId());
-//                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getSetpsId());
-//
-//            }
-//            result.put("children", setpIds);
-//
-//        }
-//        return result;
-//    }
-//
-//    /**
-//     * 更新包含它的
-//     */
-//    public void updateChildren(Long supper) {
-//        ActivitiSteps steps = this.query().eq("setps_id", supper).eq("display", 1).one();
-//        if (ToolUtil.isNotEmpty(steps)) {
-//            Map<String, List<Long>> childrenMap = getChildrens(steps.getSetpsId());
-//            steps.setChildren(JSON.toJSONString(childrenMap.get("children")));
-//            // update
-//            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("setps_id", steps.getSetpsId());
-//            this.update(steps, queryWrapper);
-//            updateChildren(steps.getSupper());
-//        }
-//    }
 
 
     @Override
