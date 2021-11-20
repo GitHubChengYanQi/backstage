@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.Unit;
 import lombok.Data;
 
 import java.util.Date;
@@ -32,6 +33,8 @@ public class QualityPlanDetailResult implements Serializable {
 
 
     private Long unitId;
+
+    private Unit unit;
 
     private QualityCheckResult qualityCheckResult;
 
