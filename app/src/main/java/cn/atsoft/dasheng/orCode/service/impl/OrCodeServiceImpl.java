@@ -367,7 +367,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setType("0");
                 inkindParam.setNumber(codeRequest.getNumber());
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
-                inkindParam.setType("入库单");
+                inkindParam.setType("入库");
                 inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
@@ -754,6 +754,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Inkind newinKind = new Inkind();
             newinKind.setNumber(inKindRequest.getNumber());
             newinKind.setSkuId(inkind.getSkuId());
+            newinKind.setSource("出库");
             newinKind.setOutstockOrderId(inKindRequest.getOutstockOrderId());
             newinKind.setBrandId(inkind.getBrandId());
             inkindService.save(newinKind);
