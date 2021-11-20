@@ -203,8 +203,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<InstockList> instockLists = new ArrayList<>();
         for (Inkind inkind : inkinds) {
             inkind.setInstockOrderId(instockOrder.getInstockOrderId());
+            inkind.setSource("质检");
             inkind.setType("0");
-
             //创建入库清单
             InstockList instockList = new InstockList();
             instockList.setSkuId(inkind.getSkuId());
@@ -323,7 +323,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
             for (User user : users) {
-                if(ToolUtil.isNotEmpty(datum.getUserId())){
+                if (ToolUtil.isNotEmpty(datum.getUserId())) {
                     if (datum.getUserId().equals(user.getUserId())) {
                         UserResult userResult = new UserResult();
                         ToolUtil.copyProperties(user, userResult);
