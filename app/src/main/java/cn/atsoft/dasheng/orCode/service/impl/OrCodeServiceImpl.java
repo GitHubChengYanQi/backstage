@@ -345,9 +345,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     throw new ServiceException(500, "二维码不合法");
                 }
 
-                if (ToolUtil.isNotEmpty(codeRequest.getType()) && codeRequest.getType().equals("质检")) {
-                    throw new ServiceException(500, "物料已经绑定");
-                }
+//                if (ToolUtil.isNotEmpty(codeRequest.getType()) && codeRequest.getType().equals("质检")) {
+//                    throw new ServiceException(500, "物料已经绑定");
+//                }
                 //判断相同物料绑定
                 Inkind inkind = inkindService.query()
                         .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())

@@ -383,17 +383,31 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
                                     if (qualityCheck.getType()==1||qualityCheck.getType() == 5) {
                                         flag = false ;
-                                        if (ToolUtil.isNotEmpty(planDetail.getOperator())||ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                            flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
+                                        if (planDetail.getIsNull() == 0){
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                                if (ToolUtil.isNotEmpty(planDetail.getOperator())||ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
+                                                }
+                                            }else {
+                                                flag = true;
+                                            }
                                         }
+
                                     }else if (qualityCheck.getType() == 3){
-                                        if (formDataValue.getValue().equals("1")){
-                                            flag = true;
-                                        }else {
-                                            flag = false;
+                                        if (planDetail.getIsNull() == 0){
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                                if (formDataValue.getValue().equals("1")){
+                                                    flag = true;
+                                                }else {
+                                                    flag = false;
+                                                }
+                                            }else {
+                                                flag = true;
+                                            }
                                         }
+
                                     }else {
-                                        flag = true ;
+                                        flag = true;
                                     }
 
 
