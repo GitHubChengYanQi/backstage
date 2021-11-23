@@ -109,6 +109,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 maps.put(detailParam.getSkuId(), detailParam.getQualityPlanId());
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
+                detailParam.setRemaining(detailParam.getNumber());
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
@@ -380,25 +381,39 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                     map.put("value", formDataValue.getValue());
                                     Boolean flag = false;
 
-                                    if (qualityCheck.getType()==1||qualityCheck.getType() == 5) {
-                                        flag = false ;
-                                        if (ToolUtil.isNotEmpty(planDetail.getOperator())||ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                            flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
+                                    if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
+                                        flag = false;
+                                        if (planDetail.getIsNull() == 0 ||ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                                if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
+                                                }
+                                            }else {
+                                                flag = true;
+                                            }
+
                                         }
-                                    }else if (qualityCheck.getType() == 3){
-                                        if (formDataValue.getValue().equals("1")){
-                                            flag = true;
-                                        }else {
-                                            flag = false;
+                                    } else if (qualityCheck.getType() == 3) {
+                                        if (planDetail.getIsNull() == 0 ||ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                                if (formDataValue.getValue().equals("1")) {
+                                                    flag = true;
+                                                } else {
+                                                    flag = false;
+                                                }
+                                            }else {
+                                                flag = true;
+                                            }
+
                                         }
-                                    }else {
-                                        flag = true ;
+                                    } else {
+                                        flag = true;
                                     }
 
 
-                                    map.put("standar",flag);
+                                    map.put("standar", flag);
                                     map.put("field", planDetail);
-                                    map.put("type",qualityCheck.getType());
+                                    map.put("type", qualityCheck.getType());
                                     maps.add(map);
                                 }
 
@@ -414,32 +429,32 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     private Boolean mathData(String standardValue, Long operator, Long value) {
         Boolean flag = false;
-        if (ToolUtil.isNotEmpty(standardValue)){
-            if(ToolUtil.isNotEmpty(operator)){
-                switch (operator.toString()){
+        if (ToolUtil.isNotEmpty(standardValue)) {
+            if (ToolUtil.isNotEmpty(operator)) {
+                switch (operator.toString()) {
                     case "1":
                         if (value == Long.parseLong(standardValue))
                             flag = true;
                         break;
                     case "2":
-                        if (value >= Long.parseLong(standardValue) )
+                        if (value >= Long.parseLong(standardValue))
                             flag = true;
                         break;
                     case "3":
-                        if (value <= Long.valueOf(standardValue) )
+                        if (value <= Long.valueOf(standardValue))
                             flag = true;
                         break;
                     case "4":
-                        if (value > Long.parseLong(standardValue) )
+                        if (value > Long.parseLong(standardValue))
                             flag = true;
                         break;
                     case "5":
-                        if (value < Long.parseLong(standardValue) )
+                        if (value < Long.parseLong(standardValue))
                             flag = true;
                         break;
                     case "6":
                         List<String> result = Arrays.asList(standardValue.split(","));
-                        if (value >= Long.parseLong(result.get(0)) &&  value <= Long.parseLong(result.get(1)))
+                        if (value >= Long.parseLong(result.get(0)) && value <= Long.parseLong(result.get(1)))
                             flag = true;
                         break;
                 }

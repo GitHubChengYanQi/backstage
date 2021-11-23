@@ -2,15 +2,19 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
+import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
+import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -18,6 +22,7 @@ import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.model.params.FormDataParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +48,8 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private QualityTaskDetailService qualityTaskDetailService;
     @Autowired
     private FormDataService formDataService;
     @Autowired
@@ -153,7 +160,6 @@ public class QualityTaskController extends BaseController {
         }
 
 
-
         return formDataResults;
     }
 
@@ -166,6 +172,19 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/addData", method = RequestMethod.POST)
     public ResponseData addData(@RequestBody FormDataPojo formDataPojo) {
+        if (ToolUtil.isNotEmpty(formDataPojo.getQualityTaskDetailId())){
+            QualityTaskDetail qualityTaskDetail = qualityTaskDetailService.getById(formDataPojo.getQualityTaskDetailId());
+            QualityTaskDetailParam qualityTaskDetailParam = new QualityTaskDetailParam();
+            qualityTaskDetailParam.setQualityTaskDetailId(formDataPojo.getQualityTaskDetailId());
+            qualityTaskDetailParam.setRemaining(qualityTaskDetail.getRemaining() - formDataPojo.getNumber());
+            if ((qualityTaskDetail.getRemaining() - formDataPojo.getNumber()) >= 0){
+                qualityTaskDetailService.update(qualityTaskDetailParam);
+            }else {
+                throw new ServiceException(500,"质检失败!");
+            }
+
+        }
+
         this.qualityTaskService.addFormData(formDataPojo);
         return ResponseData.success();
     }

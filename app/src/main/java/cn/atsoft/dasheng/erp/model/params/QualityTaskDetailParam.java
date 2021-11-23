@@ -58,6 +58,8 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     @ApiModelProperty("数量")
     private Integer number;
 
+    private Integer remaining;
+
     private Integer batch;
 
     /**

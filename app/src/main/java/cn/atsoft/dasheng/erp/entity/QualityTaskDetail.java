@@ -47,6 +47,16 @@ public class QualityTaskDetail implements Serializable {
      */
     @TableField("number")
     private Integer number;
+    @TableField("remaining")
+    private Integer remaining;
+
+    public Integer getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(Integer remaining) {
+        this.remaining = remaining;
+    }
 
     @TableField("batch")
     private Integer batch;

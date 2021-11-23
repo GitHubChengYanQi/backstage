@@ -27,6 +27,9 @@ public class ActivitiProcessLogResult implements Serializable {
     @ApiModelProperty("主键")
     private Long logId;
 
+
+    private Long taskId;
+
     /**
      * 流程Id
      */

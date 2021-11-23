@@ -179,7 +179,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {
-                    if (datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
+                    if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && ToolUtil.isNotEmpty(storehouse.getStorehouseId()) &&  datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
                         ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);

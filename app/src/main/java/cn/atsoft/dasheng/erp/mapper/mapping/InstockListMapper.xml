@@ -12,6 +12,7 @@
         <result column="create_time" property="createTime"/>
         <result column="create_user" property="createUser"/>
         <result column="update_time" property="updateTime"/>
+        <result column="inkind_id" property="inkindId"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
         <result column="storehouse_id" property="storeHouseId"/>
@@ -29,7 +30,7 @@
         AS "instockNumber",
 storehouse_id
     AS "storeHouseId", selling_price AS "sellingPrice",cost_price AS "costPrice",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",
-        instock_list_id AS "instockListId", brand_id AS "brandId", item_id AS "itemId", number AS "number", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        instock_list_id AS "instockListId", brand_id AS "brandId",inkind_id AS "inkindId", item_id AS "itemId", number AS "number", instock_order_id AS "instockOrderId", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

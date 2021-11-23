@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,7 +25,7 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private static final long serialVersionUID = 1L;
 
-
+    private Long deptId;
     @ApiModelProperty("")
     private Long processTaskId;
 
@@ -32,6 +33,18 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
     private Long processId;
 
     private String taskName;
+
+    private String deptIds;
+
+    private String userIds;
+
+    private Long userId;
+
+    private String type;
+
+    private String remark;
+
+    private String cause;
 
     /**
      * 删除状态
