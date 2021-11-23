@@ -49,7 +49,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //添加配置
 
         String jsonStr = JSONUtil.toJsonStr(param.getRule());
-        addAudit("指定人", jsonStr, entity.getSetpsId());
+        addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
 
         if (ToolUtil.isNotEmpty(param.getLuYou())) {
             luYou(param.getLuYou(), entity.getSetpsId());
