@@ -25,9 +25,11 @@ public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsResult> luYou;
+    private ActivitiStepsResult luYou;
 
     private ActivitiStepsResult childNode;
+
+    private List<ActivitiStepsResult> conditionNodeList;
     /**
      * 步骤Id，主键
      */

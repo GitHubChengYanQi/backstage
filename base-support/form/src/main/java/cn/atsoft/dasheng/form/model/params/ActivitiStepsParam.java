@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.model.params;
 
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.model.result.StartUsers;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -31,6 +32,12 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     private ActivitiStepsParam childNode;
 
     private ActivitiStepsParam luYou;
+
+    private List<StartUsers> rule;
+
+    private String auditType;
+
+
     /**
      * 步骤Id，主键
      */
@@ -39,7 +46,6 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private String conditionNodes;
 
-    private String nodeName;
 
     /**
      * 流程ID
