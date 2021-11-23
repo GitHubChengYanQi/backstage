@@ -86,7 +86,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @param supper
      */
     public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper) {
-        //长度不唯一 就不是添加分支
+        //分支遍历
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
             stepsParam.setSupper(supper);
@@ -221,7 +221,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
             activitiStepsResult.setLuYou(conditionNodeLuYou);
         } else {
-
+            ActivitiStepsResult children = getConditionNodes(activitiSteps.getSetpsId());
+            activitiStepsResult.setChildNode(children);
         }
 
         return activitiStepsResult;
@@ -229,6 +230,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     public ActivitiStepsResult conditionNodeList(List<Long> stepIds) {
         ActivitiStepsResult luYou = new ActivitiStepsResult();
+        luYou.setType("4");
         List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
 
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
@@ -251,6 +253,28 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         luYou.setConditionNodeList(conditionNodeList);
         return luYou;
+    }
+
+    //查询自己下一级
+    public ActivitiStepsResult getConditionNodes(Long id) {
+        ActivitiSteps steps = this.query().eq("supper", id).isNotNull("conditionNodes").one();
+        ActivitiStepsResult conditionNodes = new ActivitiStepsResult();
+
+        ToolUtil.copyProperties(steps, conditionNodes);
+        if (ToolUtil.isNotEmpty(conditionNodes.getConditionNodes())) {
+            String[] split = conditionNodes.getConditionNodes().split(",");
+            List<Long> nodes = new ArrayList<>();
+            for (String s : split) {
+                nodes.add(Long.valueOf(s));
+            }
+            ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
+            conditionNodes.setLuYou(conditionNodeLuYou);
+        } else {
+            getConditionNodes(conditionNodes.getSetpsId());
+        }
+
+
+        return conditionNodes;
     }
 
 }
