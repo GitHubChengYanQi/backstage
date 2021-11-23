@@ -2,8 +2,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -44,6 +46,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private QualityPlanDetailService qualityPlanDetailService;
     @Autowired
     private QualityCheckService qualityCheckService;
+    @Autowired
+    private UnitService unitService;
     @Override
     public void add(QualityTaskDetailParam param) {
         QualityTaskDetail entity = getEntity(param);
@@ -88,6 +92,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         List<Long> brandIds = new ArrayList<>();
         //质检项id
         List<Long> planIds = new ArrayList<>();
+
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
             skuIds.add(qualityTaskDetailResult.getSkuId());
             brandIds.add(qualityTaskDetailResult.getBrandId());
@@ -117,6 +122,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
+
             //格式化sku数据
             for (SkuResult skuResult : skuResults) {
                 if (qualityTaskDetailResult.getSkuId().equals(skuResult.getSkuId())) {
@@ -146,6 +152,10 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                                     ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
                                     qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
                                 }
+                            }
+                            if (ToolUtil.isNotEmpty(qualityPlanDetailResult.getUnitId())){
+                                Unit unit = unitService.getById(qualityPlanDetailResult.getUnitId());
+                                qualityPlanDetailResult.setUnit(unit);
                             }
                             qualityPlanDetailResults.add(qualityPlanDetailResult);
                         }

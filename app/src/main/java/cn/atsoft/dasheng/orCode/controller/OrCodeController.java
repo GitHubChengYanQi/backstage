@@ -405,8 +405,8 @@ public class OrCodeController extends BaseController {
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
 
-                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
-                    qualityTaskResult.setTaskCounts(taskCounts);
+//                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
+//                    qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
                     return ResponseData.success(qualityRequest);
 

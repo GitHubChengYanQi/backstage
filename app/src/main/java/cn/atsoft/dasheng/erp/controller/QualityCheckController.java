@@ -105,7 +105,7 @@ public class QualityCheckController extends BaseController {
 
         JSONArray jsonArray = JSONUtil.parseArray(detail.getTool());
         List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-        List<Tool> tools = toolService.query().in("tool_id", longs).list();
+        List<Tool> tools = longs.size() > 0 ? toolService.query().in("tool_id", longs).list() : new ArrayList<>();
 
         QualityCheckClassification qualityCheckClassification = qualityCheckClassificationService.query()
                 .eq("quality_check_classification_id", detail.getQualityCheckClassificationId())

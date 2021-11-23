@@ -24,7 +24,7 @@ import java.util.List;
 public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private Long formId;
+    private String source;
     private Brand brand;
 
     private Long outstockOrderId;

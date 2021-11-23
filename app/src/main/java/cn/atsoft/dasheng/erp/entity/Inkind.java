@@ -23,11 +23,9 @@ import java.io.Serializable;
 public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    /**
-     * 表单id
-     */
-    @TableField("form_id")
-    private Long formId;
+
+    @TableField("source")
+    private String source;
 
     /**
      * 出库单
@@ -257,12 +255,12 @@ public class Inkind implements Serializable {
         this.outstockOrderId = outstockOrderId;
     }
 
-    public Long getFormId() {
-        return formId;
+    public String getSource() {
+        return source;
     }
 
-    public void setFormId(Long formId) {
-        this.formId = formId;
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

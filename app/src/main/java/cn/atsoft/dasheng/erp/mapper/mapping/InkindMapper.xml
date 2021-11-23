@@ -21,12 +21,12 @@
         <result column="brand_id" property="brandId"/>
         <result column="number" property="number"/>
         <result column="outstock_order_id" property="outstockOrderId"/>
-        <result column="form_id" property="formId"/>
+        <result column="source" property="source"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
-    AS "number",outstock_order_id AS "outstockOrderId",form_id AS "formId",
+    AS "number",outstock_order_id AS "outstockOrderId",source AS "source",
 spu_id
     AS "spuId",instock_order_id AS "instockOrderId", cost_price AS "costPrice" , selling_price AS "sellingPrice",storehouse_positions_id AS "storehousePositionsId" ,brand_id AS "brandId",
         inkind_id
