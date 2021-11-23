@@ -47,7 +47,7 @@
                 and deptIds like CONCAT('%',#{paramCondition.deptId},'%')
             </when>
             <otherwise >
-                and user_Ids like CONCAT('%',#{paramCondition.userId},'%')
+                or user_Ids like CONCAT('%',#{paramCondition.userId},'%')
             </otherwise>
         </choose>
     </select>
