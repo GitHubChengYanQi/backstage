@@ -63,8 +63,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
         this.updateById(newEntity);
     }
-
-    private int isAdmin(Long taskId) {
+    @Override
+    public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
         LoginContextHolder.getContext().getUserId();
         ActivitiProcessTask byId = this.getById(taskId);
