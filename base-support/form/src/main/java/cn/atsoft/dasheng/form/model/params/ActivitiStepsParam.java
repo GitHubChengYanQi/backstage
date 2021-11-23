@@ -28,7 +28,9 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private List<ActivitiStepsParam> conditionNodeList;
 
-    private ActivitiSteps childNode;
+    private ActivitiStepsParam childNode;
+
+    private ActivitiStepsParam luYou;
     /**
      * 步骤Id，主键
      */

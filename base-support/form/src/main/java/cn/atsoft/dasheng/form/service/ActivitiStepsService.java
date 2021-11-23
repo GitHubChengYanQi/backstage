@@ -66,12 +66,7 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
      */
     PageInfo<ActivitiStepsResult> findPageBySpec(ActivitiStepsParam param);
 
-    /**
-     * 递归添加
-     *
-     * @param params
-     */
-    void addBatch(List<ActivitiStepsParam> params);
 
+    ActivitiStepsResult backStepsResult(Long id);
 
 }

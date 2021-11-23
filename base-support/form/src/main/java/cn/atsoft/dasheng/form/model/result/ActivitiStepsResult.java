@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import java.util.List;
+
 /**
  * <p>
  * 流程步骤表
@@ -20,7 +25,9 @@ public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private List<ActivitiStepsResult> luYou;
 
+    private ActivitiStepsResult childNode;
     /**
      * 步骤Id，主键
      */
