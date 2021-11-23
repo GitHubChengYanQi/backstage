@@ -35,6 +35,16 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("deptIds")
     private String deptIds;
 
+    @TableField("type")
+    private String type;
+
+    @TableField("remark")
+    private String remark;
+
+
+    @TableField("cause")
+    private String cause;
+
 
 
     @TableField("user_ids")
@@ -63,6 +73,30 @@ public class ActivitiProcessTask implements Serializable {
 
     public void setDeptIds(String deptIds) {
         this.deptIds = deptIds;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getCause() {
+        return cause;
+    }
+
+    public void setCause(String cause) {
+        this.cause = cause;
     }
 
     public String getUserIds() {

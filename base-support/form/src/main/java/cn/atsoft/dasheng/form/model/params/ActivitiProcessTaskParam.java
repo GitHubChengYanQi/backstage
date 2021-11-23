@@ -40,6 +40,12 @@ public class ActivitiProcessTaskParam implements Serializable, BaseValidatingPar
 
     private Long userId;
 
+    private String type;
+
+    private String remark;
+
+    private String cause;
+
     /**
      * 删除状态
      */

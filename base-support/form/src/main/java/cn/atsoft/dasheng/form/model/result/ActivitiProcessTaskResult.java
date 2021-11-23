@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -32,6 +33,12 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String deptIds;
 
     private String userIds;
+
+    private String type;
+
+    private String remark;
+
+    private String cause;
     /**
      * 删除状态
      */
