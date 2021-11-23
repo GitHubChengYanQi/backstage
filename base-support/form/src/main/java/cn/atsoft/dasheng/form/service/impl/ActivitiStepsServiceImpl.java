@@ -61,28 +61,29 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     //路由
     public void luYou(ActivitiStepsParam node, Long supper) {
-        if (ToolUtil.isNotEmpty(node.getChildNode())) {
-            ActivitiSteps activitiSteps = new ActivitiSteps();
-            activitiSteps.setSupper(supper);
-            this.save(activitiSteps);
-            ActivitiSteps fatherSteps = new ActivitiSteps();
-            fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
-            QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("setps_id", supper);
-            this.update(fatherSteps, queryWrapper);
-
-            if (ToolUtil.isNotEmpty(node.getChildNode().getRule())) {
-                String jsonStr = JSONUtil.toJsonStr(node.getChildNode().getRule());
-                addAudit(node.getChildNode().getAuditType(), jsonStr, activitiSteps.getSetpsId());
-            }
-        }
+        ActivitiSteps activitiSteps = new ActivitiSteps();
+        activitiSteps.setType(node.getType());
+        activitiSteps.setSupper(supper);
+        activitiSteps.setStepType("路由");
+        this.save(activitiSteps);
+        //修改父级
+        ActivitiSteps fatherSteps = new ActivitiSteps();
+        fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
+        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("setps_id", supper);
+        this.update(fatherSteps, queryWrapper);
         //添加分支
-        if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
-            recursiveAdd(node.getConditionNodeList(), supper);
+        recursiveAdd(node.getConditionNodeList(), activitiSteps.getSetpsId());
+
+        //添加ChildNode
+        if (ToolUtil.isNotEmpty(node.getChildNode())) {
+            children(node.getChildNode(), activitiSteps.getSetpsId());
         }
+        //添加路由
         if (ToolUtil.isNotEmpty(node.getLuYou())) {
-            luYou(node.getLuYou(), supper);
+            luYou(node.getLuYou(), activitiSteps.getSetpsId());
         }
+
     }
 
     /**
