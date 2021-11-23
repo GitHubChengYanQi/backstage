@@ -386,7 +386,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                         if (planDetail.getIsNull() == 0 ||ToolUtil.isNotEmpty(formDataValue.getValue())) {
                                             if (ToolUtil.isNotEmpty(formDataValue.getValue())){
                                                 if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Long.valueOf(formDataValue.getValue()));
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(formDataValue.getValue()));
                                                 }
                                             }else {
                                                 flag = true;
@@ -427,34 +427,34 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
     }
 
-    private Boolean mathData(String standardValue, Long operator, Long value) {
+    private Boolean mathData(String standardValue, Long operator, Double value) {
         Boolean flag = false;
         if (ToolUtil.isNotEmpty(standardValue)) {
             if (ToolUtil.isNotEmpty(operator)) {
                 switch (operator.toString()) {
                     case "1":
-                        if (value == Long.parseLong(standardValue))
+                        if (value == Double.valueOf(standardValue))
                             flag = true;
                         break;
                     case "2":
-                        if (value >= Long.parseLong(standardValue))
+                        if (value >= Double.valueOf(standardValue))
                             flag = true;
                         break;
                     case "3":
-                        if (value <= Long.valueOf(standardValue))
+                        if (value <= Double.valueOf(standardValue))
                             flag = true;
                         break;
                     case "4":
-                        if (value > Long.parseLong(standardValue))
+                        if (value > Double.valueOf(standardValue))
                             flag = true;
                         break;
                     case "5":
-                        if (value < Long.parseLong(standardValue))
+                        if (value < Double.valueOf(standardValue))
                             flag = true;
                         break;
                     case "6":
                         List<String> result = Arrays.asList(standardValue.split(","));
-                        if (value >= Long.parseLong(result.get(0)) && value <= Long.parseLong(result.get(1)))
+                        if (value >= Double.valueOf(result.get(0)) && value <= Double.valueOf(result.get(1)))
                             flag = true;
                         break;
                 }
