@@ -30,6 +30,16 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("task_name")
     private String taskName;
 
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
+    }
+
+    @TableField("form_id")
+    private Long formId;
 
 
     @TableField("deptIds")

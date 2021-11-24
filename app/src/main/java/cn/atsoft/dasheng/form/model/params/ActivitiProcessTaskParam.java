@@ -1,12 +1,16 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.form.model.params;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
  * 流程任务表	
@@ -17,11 +21,11 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ActivitiProcessTaskResult implements Serializable {
+public class ActivitiProcessTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    private Long deptId;
     @ApiModelProperty("")
     private Long processTaskId;
 
@@ -33,6 +37,8 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String deptIds;
 
     private String userIds;
+
+    private Long userId;
 
     private String type;
 
@@ -58,6 +64,13 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }
