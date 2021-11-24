@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.model.result.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -39,12 +40,25 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     @Override
     public void add(ActivitiStepsParam param) {
 
+        //修改就删除
+        QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
+        stepsQueryWrapper.eq("process_id", param.getProcessId());
+        List<ActivitiSteps> activitiSteps = this.list(stepsQueryWrapper);
+        List<Long> ids = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            ids.add(activitiStep.getSetpsId());
+        }
+        this.remove(stepsQueryWrapper);
+        QueryWrapper<ActivitiAudit> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("setps_id", ids);
+        auditService.remove(queryWrapper);
+
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //添加配置
         String jsonStr = JSONUtil.toJsonStr(param.getRule());
         addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
-
+        //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
         }
@@ -125,7 +139,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             queryWrapper.eq("setps_id", supper);
             steps.setConditionNodes(steps.getConditionNodes());
             this.update(steps, queryWrapper);
-
             //继续递归添加
             if (ToolUtil.isNotEmpty(stepsParam.getChildNode())) {
                 luYou(stepsParam.getChildNode(), activitiSteps.getSetpsId(), processId);
@@ -134,34 +147,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
 
     }
-//
-//    //添加子节点
-//    public void children(ActivitiStepsParam children, Long supper, Long processId) {
-//        ActivitiSteps activitiSteps = new ActivitiSteps();
-//        ToolUtil.copyProperties(children, activitiSteps);
-//        activitiSteps.setSupper(supper);
-//        activitiSteps.setProcessId(processId);
-//        this.save(activitiSteps);
-//        //修改父级
-//        ActivitiSteps fatherSteps = new ActivitiSteps();
-//        fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
-//        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("setps_id", supper);
-//        this.update(fatherSteps, queryWrapper);
-//        //添加规则
-//        if (ToolUtil.isNotEmpty(children.getAuditType())) {
-//            if ("指定人".equals(children.getAuditType())) {
-//                String jsonStr = JSONUtil.toJsonStr(children.getRule());
-//                addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
-//            } else {
-//                addAudit(children.getAuditType(), null, activitiSteps.getSetpsId());
-//            }
-//        }
-//        //是否存节点
-//        if (ToolUtil.isNotEmpty(children.getChildNode())) {
-//            children(children.getChildNode(), activitiSteps.getSetpsId(), processId);
-//        }
-//    }
 
     //添加配置数据
     public void addAudit(String type, String Json, Long id) {
@@ -230,11 +215,20 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public ActivitiStepsResult backStepsResult(Long id) {
         //通过流程id查询
         ActivitiSteps activitiSteps = this.query().eq("process_id", id).eq("supper", 0).one();
-        //查询详情
-        ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
+        if (ToolUtil.isEmpty(activitiSteps)){
+            return null;
+        }
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
-        activitiStepsResult.setActivitiAudit(audit);
+        //查询详情
+        ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
+        if (ToolUtil.isNotEmpty(audit)) {
+            if (ToolUtil.isNotEmpty(audit.getRule())) {
+                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                activitiStepsResult.setAuditType(audit.getType());
+                activitiStepsResult.setRule(startUsers);
+            }
+        }
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
             ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
@@ -254,10 +248,19 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         List<ActivitiSteps> activitiSteps = this.query().in("setps_id", stepIds).list();
         List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {
-            ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
             ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
-            activitiStepsResult.setActivitiAudit(audit);
+
+            ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
+            if (ToolUtil.isNotEmpty(audit)) {
+                activitiStepsResult.setAuditType(audit.getType());
+                if (ToolUtil.isNotEmpty(audit.getRule())) {
+                    StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                    activitiStepsResult.setRule(startUsers);
+                }
+            }
+
+
             //查询节点
             if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
                 ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStep.getChildren()));
@@ -277,7 +280,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //查询配置
         if (ToolUtil.isNotEmpty(childrenNode)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
-            luyou.setActivitiAudit(audit);
+            if (ToolUtil.isNotEmpty(audit)) {
+                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                luyou.setAuditType(audit.getType());
+                if (ToolUtil.isNotEmpty(audit.getRule())) {
+                    luyou.setRule(startUsers);
+                }
+            }
+
         }
         //有分支走分支查询
         if (ToolUtil.isNotEmpty(luyou.getConditionNodes())) {

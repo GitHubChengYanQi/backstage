@@ -27,13 +27,13 @@ public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private ActivitiAudit activitiAudit;
-
-    private ActivitiStepsResult luYou;
+    private StartUsers rule;
 
     private ActivitiStepsResult childNode;
 
     private String stepType;
+
+    private String auditType;
 
     private List<ActivitiStepsResult> conditionNodeList;
     /**
