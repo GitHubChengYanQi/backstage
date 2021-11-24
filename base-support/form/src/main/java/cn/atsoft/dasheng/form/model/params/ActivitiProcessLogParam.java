@@ -33,7 +33,7 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
 
     private Long taskId;
 
-
+    private String url;
     /**
      * 流程Id
      */
