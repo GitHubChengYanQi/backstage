@@ -258,10 +258,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //查询配置
         if (ToolUtil.isNotEmpty(childrenNode)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
-            if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
+            if (ToolUtil.isNotEmpty(audit)) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
                 luyou.setAuditType(audit.getType());
-                luyou.setRule(startUsers);
+                if (ToolUtil.isNotEmpty(audit.getRule())){
+                    luyou.setRule(startUsers);
+                }
             }
         }
         //有分支走分支查询
