@@ -10,6 +10,7 @@
         <result column="type" property="type" />
         <result column="form_id" property="formId" />
         <result column="display" property="display" />
+        <result column="url" property="url" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
         <result column="create_time" property="createTime" />
@@ -18,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        process_id AS "processId", process_name AS "processName", category_id AS "categoryId", type AS "type", form_id AS "formId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        process_id AS "processId", process_name AS "processName",url AS "url", category_id AS "categoryId", type AS "type", form_id AS "formId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
