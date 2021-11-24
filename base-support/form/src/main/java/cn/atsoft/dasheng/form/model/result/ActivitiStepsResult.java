@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -25,6 +26,8 @@ import java.util.List;
 public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private ActivitiAudit activitiAudit;
 
     private ActivitiStepsResult luYou;
 
