@@ -215,6 +215,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public ActivitiStepsResult backStepsResult(Long id) {
         //通过流程id查询
         ActivitiSteps activitiSteps = this.query().eq("process_id", id).eq("supper", 0).one();
+        if (ToolUtil.isEmpty(activitiSteps)){
+            return null;
+        }
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
         //查询详情
