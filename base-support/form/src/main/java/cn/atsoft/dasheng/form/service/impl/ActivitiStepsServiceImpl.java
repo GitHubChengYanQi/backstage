@@ -143,12 +143,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("setps_id", supper);
         this.update(fatherSteps, queryWrapper);
-        if (ToolUtil.isNotEmpty(children.getRule())) {
-            String jsonStr = JSONUtil.toJsonStr(children.getRule());
-            addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
-        } else {
-            addAudit("supervisor", null, activitiSteps.getSetpsId());
+
+        if (ToolUtil.isNotEmpty(children.getAuditType())) {
+            if ("指定人".equals(children.getAuditType())) {
+                String jsonStr = JSONUtil.toJsonStr(children.getRule());
+                addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
+            } else {
+                addAudit(children.getAuditType(), null, activitiSteps.getSetpsId());
+            }
         }
+
         if (ToolUtil.isNotEmpty(children.getLuYou())) {
             luYou(children.getLuYou(), activitiSteps.getSetpsId(), processId);
         }
