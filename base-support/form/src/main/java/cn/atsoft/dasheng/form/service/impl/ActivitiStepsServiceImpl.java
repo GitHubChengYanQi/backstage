@@ -240,7 +240,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public List<ActivitiStepsResult> conditionNodeList(List<Long> stepIds) {
         //查询分支
         List<ActivitiSteps> activitiSteps = this.query().in("setps_id", stepIds).list();
-
         List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {
             ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
@@ -261,11 +260,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public ActivitiStepsResult getChildrenNode(Long id) {
         //可能是路由可能是节点
         ActivitiSteps childrenNode = this.query().eq("setps_id", id).one();
-        //查询配置
-        ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
         ActivitiStepsResult luyou = new ActivitiStepsResult();
         ToolUtil.copyProperties(childrenNode, luyou);
-        luyou.setActivitiAudit(audit);
+        //查询配置
+        if (ToolUtil.isNotEmpty(childrenNode)) {
+            ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
+            luyou.setActivitiAudit(audit);
+        }
         //有分支走分支查询
         if (ToolUtil.isNotEmpty(luyou.getConditionNodes())) {
             String[] split = luyou.getConditionNodes().split(",");
