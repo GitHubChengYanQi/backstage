@@ -60,9 +60,19 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         activitiSteps.setType(node.getType());
         activitiSteps.setSupper(supper);
+        activitiSteps.setStepType(node.getStepType());
         activitiSteps.setProcessId(processId);
-
         this.save(activitiSteps);
+
+        if (ToolUtil.isNotEmpty(node.getAuditType())) {
+            if ("指定人".equals(node.getAuditType())) {
+                String jsonStr = JSONUtil.toJsonStr(node.getRule());
+                addAudit(node.getAuditType(), jsonStr, activitiSteps.getSetpsId());
+            } else {
+                addAudit(node.getAuditType(), null, activitiSteps.getSetpsId());
+            }
+        }
+
         //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
         fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
@@ -124,32 +134,34 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
 
     }
-
-    //添加子节点
-    public void children(ActivitiStepsParam children, Long supper, Long processId) {
-        ActivitiSteps activitiSteps = new ActivitiSteps();
-        ToolUtil.copyProperties(children, activitiSteps);
-        activitiSteps.setSupper(supper);
-        activitiSteps.setProcessId(processId);
-        this.save(activitiSteps);
-        //修改父级
-        ActivitiSteps fatherSteps = new ActivitiSteps();
-        fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
-        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("setps_id", supper);
-        this.update(fatherSteps, queryWrapper);
-        //添加规则
-        if (ToolUtil.isNotEmpty(children.getRule())) {
-            String jsonStr = JSONUtil.toJsonStr(children.getRule());
-            addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
-        } else {
-            addAudit("supervisor", null, activitiSteps.getSetpsId());
-        }
-        //是否存节点
-        if (ToolUtil.isNotEmpty(children.getChildNode())) {
-            children(children.getChildNode(), activitiSteps.getSetpsId(), processId);
-        }
-    }
+//
+//    //添加子节点
+//    public void children(ActivitiStepsParam children, Long supper, Long processId) {
+//        ActivitiSteps activitiSteps = new ActivitiSteps();
+//        ToolUtil.copyProperties(children, activitiSteps);
+//        activitiSteps.setSupper(supper);
+//        activitiSteps.setProcessId(processId);
+//        this.save(activitiSteps);
+//        //修改父级
+//        ActivitiSteps fatherSteps = new ActivitiSteps();
+//        fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
+//        QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("setps_id", supper);
+//        this.update(fatherSteps, queryWrapper);
+//        //添加规则
+//        if (ToolUtil.isNotEmpty(children.getAuditType())) {
+//            if ("指定人".equals(children.getAuditType())) {
+//                String jsonStr = JSONUtil.toJsonStr(children.getRule());
+//                addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
+//            } else {
+//                addAudit(children.getAuditType(), null, activitiSteps.getSetpsId());
+//            }
+//        }
+//        //是否存节点
+//        if (ToolUtil.isNotEmpty(children.getChildNode())) {
+//            children(children.getChildNode(), activitiSteps.getSetpsId(), processId);
+//        }
+//    }
 
     //添加配置数据
     public void addAudit(String type, String Json, Long id) {
