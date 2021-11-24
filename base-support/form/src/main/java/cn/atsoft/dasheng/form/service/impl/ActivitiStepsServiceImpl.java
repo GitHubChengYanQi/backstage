@@ -249,7 +249,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiSteps activitiStep : activitiSteps) {
             ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
-            //是否有childrenNode
+            //查询节点
+            if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
+                ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStep.getChildren()));
+                activitiStepsResult.setChildNode(childrenNode);
+            }
             activitiStepsResults.add(activitiStepsResult);
         }
         return activitiStepsResults;
@@ -271,7 +275,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             }
             List<ActivitiStepsResult> activitiStepsResults = conditionNodeList(nodeIds);
             luyou.setConditionNodeList(activitiStepsResults);
-        } else if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
+        }
+        if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
             getChildrenNode(Long.valueOf(luyou.getChildren()));
         }
         return luyou;
