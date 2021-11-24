@@ -232,7 +232,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
-            getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
+            ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
+            if (ToolUtil.isNotEmpty(childrenNode.getConditionNodes())) {
+                activitiStepsResult.setLuYou(childrenNode);
+            } else {
+                activitiStepsResult.setChildNode(childrenNode);
+            }
         }
         return activitiStepsResult;
     }
@@ -254,7 +259,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             //查询节点
             if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
                 ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStep.getChildren()));
-                activitiStepsResult.setChildNode(childrenNode);
+                if (ToolUtil.isNotEmpty(childrenNode.getConditionNodes())) {
+                    activitiStepsResult.setLuYou(childrenNode);
+                } else {
+                    activitiStepsResult.setChildNode(childrenNode);
+                }
+
             }
             activitiStepsResults.add(activitiStepsResult);
         }
@@ -264,8 +274,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     public ActivitiStepsResult getChildrenNode(Long id) {
         //可能是路由可能是节点
-        ActivitiSteps childrenNode = this.query().eq("supper", id).one();
-
+        ActivitiSteps childrenNode = this.query().eq("setps_id", id).one();
+        childrenNode.getConditionNodes();
         ActivitiStepsResult luyou = new ActivitiStepsResult();
         ToolUtil.copyProperties(childrenNode, luyou);
         //有分支走分支查询
@@ -279,7 +289,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             luyou.setConditionNodeList(activitiStepsResults);
         }
         if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
-            getChildrenNode(Long.valueOf(luyou.getChildren()));
+            ActivitiStepsResult node = getChildrenNode(Long.valueOf(luyou.getChildren()));
+            if (ToolUtil.isNotEmpty(node.getConditionNodes())) {
+                luyou.setLuYou(node);
+            } else {
+                luyou.setChildNode(node);
+            }
         }
         return luyou;
     }
