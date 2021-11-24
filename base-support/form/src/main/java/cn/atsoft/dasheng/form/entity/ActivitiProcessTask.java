@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -29,6 +30,18 @@ public class ActivitiProcessTask implements Serializable {
 
     @TableField("task_name")
     private String taskName;
+
+    public String getUrl() {
+        return url;
+
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @TableField("url")
+    private String url;
 
     public Long getFormId() {
         return formId;

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
@@ -10,6 +11,7 @@ import cn.atsoft.dasheng.form.mapper.ActivitiAuditMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,6 +49,8 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     private ActivitiStepsService stepsService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private ActivitiAuditService auditService;
 
 
     @Override
@@ -54,8 +59,6 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
-        ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
-
     }
 
 

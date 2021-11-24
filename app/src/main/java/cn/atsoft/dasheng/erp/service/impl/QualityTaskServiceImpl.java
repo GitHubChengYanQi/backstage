@@ -16,7 +16,9 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -78,7 +80,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityTaskBindService taskBindService;
     @Autowired
     private BrandService brandService;
-
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Override
     @Transactional
@@ -134,8 +137,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("质检任务提醒");
         wxCpTemplate.setDescription("有新的质检任务");
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//        wxCpSendTemplate.sendTemplate();
+        ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+        activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
+        activitiProcessTaskParam.setUserId(param.getUserId());
+        activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+        activitiProcessTaskParam.setProcessId(4L);
+        activitiProcessTaskService.add(activitiProcessTaskParam);
     }
 
     @Override
