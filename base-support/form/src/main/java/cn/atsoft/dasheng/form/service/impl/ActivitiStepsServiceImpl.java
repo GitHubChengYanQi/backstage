@@ -249,8 +249,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiSteps activitiStep : activitiSteps) {
             ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
+            //是否有childrenNode
             activitiStepsResults.add(activitiStepsResult);
-
         }
         return activitiStepsResults;
     }
@@ -262,16 +262,17 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
         ActivitiStepsResult luyou = new ActivitiStepsResult();
         ToolUtil.copyProperties(childrenNode, luyou);
-
-        if (ToolUtil.isNotEmpty(luyou.getChildren())) {
-            String[] split = luyou.getChildren().split(",");
+        //有分支走分支查询
+        if (ToolUtil.isNotEmpty(luyou.getConditionNodes())) {
+            String[] split = luyou.getConditionNodes().split(",");
             List<Long> nodeIds = new ArrayList<>();
-
             for (String s : split) {
                 nodeIds.add(Long.valueOf(s));
             }
             List<ActivitiStepsResult> activitiStepsResults = conditionNodeList(nodeIds);
             luyou.setConditionNodeList(activitiStepsResults);
+        } else if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
+            getChildrenNode(Long.valueOf(luyou.getChildren()));
         }
         return luyou;
     }
