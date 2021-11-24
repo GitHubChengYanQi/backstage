@@ -208,7 +208,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
         if (ToolUtil.isNotEmpty(audit.getRule())) {
             StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-            activitiStepsResult.setStartUsers(startUsers);
+            activitiStepsResult.setRule(startUsers);
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
             ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
@@ -234,7 +234,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-                activitiStepsResult.setStartUsers(startUsers);
+                activitiStepsResult.setRule(startUsers);
             }
 
             //查询节点
@@ -258,7 +258,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-                luyou.setStartUsers(startUsers);
+                luyou.setRule(startUsers);
             }
         }
         //有分支走分支查询
