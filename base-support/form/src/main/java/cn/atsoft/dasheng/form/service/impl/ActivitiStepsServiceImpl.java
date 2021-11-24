@@ -40,6 +40,19 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     @Override
     public void add(ActivitiStepsParam param) {
 
+        //修改就删除
+        QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
+        stepsQueryWrapper.eq("process_id", param.getProcessId());
+        List<ActivitiSteps> activitiSteps = this.list(stepsQueryWrapper);
+        List<Long> ids = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            ids.add(activitiStep.getSetpsId());
+        }
+        this.remove(stepsQueryWrapper);
+        QueryWrapper<ActivitiAudit> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("setps_id", ids);
+        auditService.remove(queryWrapper);
+
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //添加配置
