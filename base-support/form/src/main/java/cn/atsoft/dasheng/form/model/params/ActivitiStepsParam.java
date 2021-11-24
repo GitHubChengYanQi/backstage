@@ -37,6 +37,8 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private String auditType;
 
+    private String stepType;
+
 
     /**
      * 步骤Id，主键

@@ -29,6 +29,8 @@ public class ActivitiStepsResult implements Serializable {
 
     private ActivitiStepsResult childNode;
 
+    private String stepType;
+
     private List<ActivitiStepsResult> conditionNodeList;
     /**
      * 步骤Id，主键

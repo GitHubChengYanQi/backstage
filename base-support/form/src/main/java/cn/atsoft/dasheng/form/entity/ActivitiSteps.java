@@ -23,7 +23,11 @@ import java.io.Serializable;
 public class ActivitiSteps implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    /**
+     * 步骤类型
+     */
+    @TableField("step_type")
+    private String stepType;
     /**
      * 步骤Id，主键
      */
@@ -193,6 +197,14 @@ public class ActivitiSteps implements Serializable {
 
     public void setConditionNodes(String conditionNodes) {
         this.conditionNodes = conditionNodes;
+    }
+
+    public String getStepType() {
+        return stepType;
+    }
+
+    public void setStepType(String stepType) {
+        this.stepType = stepType;
     }
 
     @Override

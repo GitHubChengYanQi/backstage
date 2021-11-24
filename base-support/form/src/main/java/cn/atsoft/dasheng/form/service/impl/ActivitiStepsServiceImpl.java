@@ -49,7 +49,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //添加配置
 
         String jsonStr = JSONUtil.toJsonStr(param.getRule());
-        addAudit("指定人", jsonStr, entity.getSetpsId());
+        addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
 
         if (ToolUtil.isNotEmpty(param.getLuYou())) {
             luYou(param.getLuYou(), entity.getSetpsId());
@@ -79,6 +79,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //添加分支
         if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
             recursiveAdd(node.getConditionNodeList(), supper);
+        }
+        if (ToolUtil.isNotEmpty(node.getLuYou())) {
+            luYou(node.getLuYou(), supper);
         }
     }
 
@@ -137,12 +140,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("setps_id", supper);
         this.update(fatherSteps, queryWrapper);
-        if (ToolUtil.isNotEmpty(children.getRule())) {
-            String jsonStr = JSONUtil.toJsonStr(children.getRule());
-            addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
-        } else {
-            addAudit("supervisor", null, activitiSteps.getSetpsId());
+
+        if (ToolUtil.isNotEmpty(children.getAuditType())) {
+            if ("指定人".equals(children.getAuditType())) {
+                String jsonStr = JSONUtil.toJsonStr(children.getRule());
+                addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
+            } else {
+                addAudit(children.getAuditType(), null, activitiSteps.getSetpsId());
+            }
         }
+
         if (ToolUtil.isNotEmpty(children.getLuYou())) {
             luYou(children.getLuYou(), activitiSteps.getSetpsId());
         }
@@ -208,6 +215,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 返回顶级
+     *
+     * @param id
+     * @return
+     */
     @Override
     public ActivitiStepsResult backStepsResult(Long id) {
         //通过流程id查询
@@ -231,15 +244,18 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return activitiStepsResult;
     }
 
+    /**
+     * 递归取分支
+     *
+     * @param stepIds
+     * @return
+     */
     public ActivitiStepsResult conditionNodeList(List<Long> stepIds) {
         ActivitiStepsResult luYou = new ActivitiStepsResult();
         luYou.setType("4");
         List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
-
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
-
         List<ActivitiSteps> activitiSteps = this.query().in("setps_id", stepIds).list();
-
         for (ActivitiSteps activitiStep : activitiSteps) {
             if (ToolUtil.isNotEmpty(activitiStep.getConditionNodes())) {
                 String[] split = activitiStep.getConditionNodes().split(",");
@@ -249,8 +265,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 }
                 ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
                 activitiStepsResult.setLuYou(conditionNodeLuYou);
+            } else {
+                getConditionNodes(activitiStep.getSetpsId());
             }
-
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
             conditionNodeList.add(activitiStepsResult);
         }
@@ -258,7 +275,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return luYou;
     }
 
-    //查询自己下一级
+    /**
+     * 递归取下一级
+     *
+     * @param id
+     * @return
+     */
     public ActivitiStepsResult getConditionNodes(Long id) {
         ActivitiSteps steps = this.query().eq("supper", id).isNotNull("conditionNodes").one();
         ActivitiStepsResult conditionNodes = new ActivitiStepsResult();
@@ -275,7 +297,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         } else {
             getConditionNodes(conditionNodes.getSetpsId());
         }
-
 
         return conditionNodes;
     }
