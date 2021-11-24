@@ -3,12 +3,23 @@ package cn.atsoft.dasheng.form.controller;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.results.SetpsDetailResult;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +44,12 @@ public class ActivitiProcessTaskController extends BaseController {
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
+    @Autowired
+    private ActivitiAuditService auditService;
 
     /**
      * 新增接口
@@ -116,7 +133,23 @@ public class ActivitiProcessTaskController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/auditDetail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<SetpsDetailResult> auditDetail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+        QualityTask detail = this.qualityTaskService.getById(activitiProcessTaskParam.getQTaskId());
+        QualityTaskResult result = new QualityTaskResult();
+        ToolUtil.copyProperties(detail, result);
+        qualityTaskService.detailFormat(result);
+        ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
+        ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
+        ToolUtil.copyProperties(audit,activitiAuditResult);
+        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
+        setpsDetailResult.setAuditResult(activitiAuditResult);
+        setpsDetailResult.setQualityTaskResult(result);
 
+
+        return ResponseData.success(setpsDetailResult);
+    }
 
 
 }

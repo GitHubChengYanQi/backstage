@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
@@ -65,6 +66,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         } else {
             this.save(entity);
             ActivitiSteps stepsNext = stepsService.query().eq("supper", param.getSetpsId()).one();
+            ActivitiProcess process = processService.getById(stepsNext.getProcessId());
             ActivitiAudit audit = auditService.query().eq("setps_id",stepsNext.getSetpsId()).one();
 
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -74,7 +76,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
                     users.add(bean.getValue());
                     wxCpTemplate.setUserIds(userIds);
-                    String url = param.getUrl().replace("setpsId",stepsNext.getSetpsId().toString());
+                    String url = process.getUrl().replace("setpsId",stepsNext.getSetpsId().toString());
                     wxCpTemplate.setUrl(url);
                     wxCpTemplate.setTitle("您有新的待审批任务");
                     wxCpTemplate.setDescription("您有新的待审批任务");

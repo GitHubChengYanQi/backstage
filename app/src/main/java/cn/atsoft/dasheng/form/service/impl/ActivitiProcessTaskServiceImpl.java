@@ -76,9 +76,9 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 wxCpTemplate.setUserIds(users);
 
 //                String url = param.getUrl().replace("codeId", aLong.toString());
-//                String url = param.getUrl().replace("setpsId",stepsNext.getSetpsId().toString());
-//                String url = param.getUrl().replace("setpsId",process.getUrl.toString());
-//                wxCpTemplate.setUrl(url);
+                String url = process.getUrl().replace("setpsValue",stepsNext.getSetpsId().toString());
+                String formValue = url.replace("formValue", param.getQTaskId().toString());
+                wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
                 wxCpTemplate.setDescription("您有新的待审批任务");
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);

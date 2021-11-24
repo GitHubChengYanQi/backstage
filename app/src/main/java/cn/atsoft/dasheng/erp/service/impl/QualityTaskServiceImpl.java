@@ -141,6 +141,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 //        wxCpSendTemplate.sendTemplate();
         ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
         activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
+        activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
         activitiProcessTaskParam.setUserId(param.getUserId());
         activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
         activitiProcessTaskParam.setProcessId(4L);
