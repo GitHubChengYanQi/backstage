@@ -61,6 +61,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     //路由
     public void luYou(ActivitiStepsParam node, Long supper) {
+        //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
         activitiSteps.setType(node.getType());
         activitiSteps.setSupper(supper);
@@ -136,20 +137,24 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ToolUtil.copyProperties(children, activitiSteps);
         activitiSteps.setSupper(supper);
         this.save(activitiSteps);
+        //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
         fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
         QueryWrapper<ActivitiSteps> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("setps_id", supper);
         this.update(fatherSteps, queryWrapper);
+        //添加规则
         if (ToolUtil.isNotEmpty(children.getRule())) {
             String jsonStr = JSONUtil.toJsonStr(children.getRule());
             addAudit(children.getAuditType(), jsonStr, activitiSteps.getSetpsId());
         } else {
             addAudit("supervisor", null, activitiSteps.getSetpsId());
         }
+        //是否存在路由
         if (ToolUtil.isNotEmpty(children.getLuYou())) {
             luYou(children.getLuYou(), activitiSteps.getSetpsId());
         }
+        //是否存节点
         if (ToolUtil.isNotEmpty(children.getChildNode())) {
             children(children.getChildNode(), activitiSteps.getSetpsId());
         }
@@ -224,20 +229,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiSteps activitiSteps = this.query().eq("process_id", id).eq("supper", 0).one();
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
-        //判断顶级是否有分支
-        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildrens())) {
-            String[] split = activitiStepsResult.getConditionNodes().split(",");
-            List<Long> nodes = new ArrayList<>();
-            for (String s : split) {
-                nodes.add(Long.valueOf(s));
-            }
-            ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
-            activitiStepsResult.setLuYou(conditionNodeLuYou);
-        } else {
-            ActivitiStepsResult children = getConditionNodes(activitiSteps.getSetpsId());
-            activitiStepsResult.setChildNode(children);
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
+            getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
         }
-
         return activitiStepsResult;
     }
 
@@ -247,55 +241,38 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @param stepIds
      * @return
      */
-    public ActivitiStepsResult conditionNodeList(List<Long> stepIds) {
-        ActivitiStepsResult luYou = new ActivitiStepsResult();
-        luYou.setType("4");
-        List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
-        ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
+    public List<ActivitiStepsResult> conditionNodeList(List<Long> stepIds) {
+        //查询分支
         List<ActivitiSteps> activitiSteps = this.query().in("setps_id", stepIds).list();
+
+        List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {
-            if (ToolUtil.isNotEmpty(activitiStep.getConditionNodes())) {
-                String[] split = activitiStep.getConditionNodes().split(",");
-                List<Long> nodes = new ArrayList<>();
-                for (String s : split) {
-                    nodes.add(Long.valueOf(s));
-                }
-                ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
-                activitiStepsResult.setLuYou(conditionNodeLuYou);
-            } else {
-                getConditionNodes(activitiStep.getSetpsId());
-            }
+            ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
-            conditionNodeList.add(activitiStepsResult);
+            activitiStepsResults.add(activitiStepsResult);
+
         }
-        luYou.setConditionNodeList(conditionNodeList);
-        return luYou;
+        return activitiStepsResults;
     }
 
-    /**
-     * 递归取下一级
-     *
-     * @param id
-     * @return
-     */
-    public ActivitiStepsResult getConditionNodes(Long id) {
-        ActivitiSteps steps = this.query().eq("supper", id).isNotNull("conditionNodes").one();
-        ActivitiStepsResult conditionNodes = new ActivitiStepsResult();
 
-        ToolUtil.copyProperties(steps, conditionNodes);
-        if (ToolUtil.isNotEmpty(conditionNodes.getConditionNodes())) {
-            String[] split = conditionNodes.getConditionNodes().split(",");
-            List<Long> nodes = new ArrayList<>();
+    public ActivitiStepsResult getChildrenNode(Long id) {
+        //可能是路由可能是节点
+        ActivitiSteps childrenNode = this.query().eq("supper", id).one();
+
+        ActivitiStepsResult luyou = new ActivitiStepsResult();
+        ToolUtil.copyProperties(childrenNode, luyou);
+
+        if (ToolUtil.isNotEmpty(luyou.getChildren())) {
+            String[] split = luyou.getChildren().split(",");
+            List<Long> nodeIds = new ArrayList<>();
+
             for (String s : split) {
-                nodes.add(Long.valueOf(s));
+                nodeIds.add(Long.valueOf(s));
             }
-            ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
-            conditionNodes.setLuYou(conditionNodeLuYou);
-        } else {
-            getConditionNodes(conditionNodes.getSetpsId());
+            List<ActivitiStepsResult> activitiStepsResults = conditionNodeList(nodeIds);
+            luyou.setConditionNodeList(activitiStepsResults);
         }
-
-        return conditionNodes;
+        return luyou;
     }
-
 }
