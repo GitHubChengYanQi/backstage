@@ -50,9 +50,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         this.remove(stepsQueryWrapper);
         QueryWrapper<ActivitiAudit> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("setps_id", ids);
-        auditService.remove(queryWrapper);
-
+        if (ToolUtil.isNotEmpty(ids)) {
+            queryWrapper.in("setps_id", ids);
+            auditService.remove(queryWrapper);
+        }
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //添加配置
@@ -215,7 +216,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public ActivitiStepsResult backStepsResult(Long id) {
         //通过流程id查询
         ActivitiSteps activitiSteps = this.query().eq("process_id", id).eq("supper", 0).one();
-        if (ToolUtil.isEmpty(activitiSteps)){
+        if (ToolUtil.isEmpty(activitiSteps)) {
             return null;
         }
         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
