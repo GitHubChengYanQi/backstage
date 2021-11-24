@@ -27,7 +27,7 @@ public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private StartUsers startUsers;
+    private StartUsers rule;
 
     private ActivitiStepsResult childNode;
 
