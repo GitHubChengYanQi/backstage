@@ -33,7 +33,7 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private ActivitiStepsParam luYou;
 
-    private List<StartUsers> rule;
+    private StartUsers rule;
 
     private String auditType;
 

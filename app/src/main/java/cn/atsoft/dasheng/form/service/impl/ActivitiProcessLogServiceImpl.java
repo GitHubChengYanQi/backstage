@@ -48,13 +48,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessLog entity = getEntity(param);
 
         ActivitiAudit audit = auditService.query().eq("setps_id", param.getSetpsId()).one();
-        JSONArray objects = JSONUtil.parseArray(audit.getRule());
-        List<StartUsers> startUsers = JSONUtil.toList(objects, StartUsers.class);
+    
+        StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
         List<Long> users = new ArrayList<>();
-        for (StartUsers startUser : startUsers) {
-            users.add(startUser.getKey());
-        }
-        boolean flag2 = users.contains( LoginContextHolder.getContext().getUserId());
+//        for (StartUsers startUser : startUsers) {
+//            users.add(startUser.getKey());
+//        }
+        boolean flag2 = users.contains(LoginContextHolder.getContext().getUserId());
         int admin = activitiProcessTaskService.isAdmin(param.getTaskId());
         if (admin == 0 && flag2 == false) {
             throw new ServiceException(500, "抱歉，您没有权限进行删除");
