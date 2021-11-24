@@ -33,6 +33,8 @@ public class ActivitiStepsResult implements Serializable {
 
     private String stepType;
 
+    private String auditType;
+
     private List<ActivitiStepsResult> conditionNodeList;
     /**
      * 步骤Id，主键

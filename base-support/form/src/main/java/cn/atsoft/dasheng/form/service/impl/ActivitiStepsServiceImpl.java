@@ -208,6 +208,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
         if (ToolUtil.isNotEmpty(audit.getRule())) {
             StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+            activitiStepsResult.setAuditType(audit.getType());
             activitiStepsResult.setRule(startUsers);
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
@@ -234,6 +235,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                activitiStepsResult.setAuditType(audit.getType());
                 activitiStepsResult.setRule(startUsers);
             }
 
@@ -258,6 +260,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                luyou.setAuditType(audit.getType());
                 luyou.setRule(startUsers);
             }
         }
