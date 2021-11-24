@@ -54,6 +54,7 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
+        ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
 
     }
 

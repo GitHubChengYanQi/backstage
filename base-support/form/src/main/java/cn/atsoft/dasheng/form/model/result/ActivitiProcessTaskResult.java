@@ -39,6 +39,8 @@ public class ActivitiProcessTaskResult implements Serializable {
     private String remark;
 
     private String cause;
+
+    private Long formId;
     /**
      * 删除状态
      */
