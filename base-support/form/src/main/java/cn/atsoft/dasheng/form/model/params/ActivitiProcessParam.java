@@ -51,6 +51,8 @@ public class ActivitiProcessParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("类型：ship（工艺），audit（审核）")
     private String type;
 
+    private String url;
+
     /**
      * 工艺表Id或表单Id
      */

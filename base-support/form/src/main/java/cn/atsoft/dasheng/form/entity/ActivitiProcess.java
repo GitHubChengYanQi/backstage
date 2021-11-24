@@ -51,6 +51,18 @@ public class ActivitiProcess implements Serializable {
     @TableField("form_id")
     private Long formId;
 
+    @TableField("url")
+    private String url;
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     /**
      * 删除状态
      */
