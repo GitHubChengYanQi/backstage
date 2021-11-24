@@ -269,7 +269,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
                 activitiStepsResult.setLuYou(conditionNodeLuYou);
             } else {
-                getConditionNodes(activitiStep.getSetpsId());
+                getConditionNodes(Long.valueOf(activitiStep.getChildren()));
             }
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
             conditionNodeList.add(activitiStepsResult);
@@ -285,7 +285,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @return
      */
     public ActivitiStepsResult getConditionNodes(Long id) {
-        ActivitiSteps steps = this.query().eq("supper", id).isNotNull("conditionNodes").one();
+        ActivitiSteps steps = this.query().eq("setps_id", id).one();
         ActivitiStepsResult conditionNodes = new ActivitiStepsResult();
 
         ToolUtil.copyProperties(steps, conditionNodes);
@@ -298,7 +298,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ActivitiStepsResult conditionNodeLuYou = conditionNodeList(nodes);
             conditionNodes.setLuYou(conditionNodeLuYou);
         } else {
-            getConditionNodes(conditionNodes.getSetpsId());
+            if (ToolUtil.isNotEmpty(conditionNodes.getChildren())) {
+                ActivitiStepsResult result = getConditionNodes(Long.valueOf(conditionNodes.getChildren()));
+                conditionNodes.setChildNode(result);
+            }
         }
 
         return conditionNodes;
