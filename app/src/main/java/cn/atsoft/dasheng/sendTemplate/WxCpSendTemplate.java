@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.sendTemplate;
 
 
+import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
+import cn.hutool.core.date.DateTime;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,16 @@ public class WxCpSendTemplate {
                     e.printStackTrace();
                 }
             }
+            Message message = new Message();
+            message.setTime(new DateTime());
+            message.setTitle(wxCpTemplate.getTitle());
+            message.setContent(wxCpTemplate.getDescription());
+            message.setType(3);
+            message.setSort(0L);
+//            message.setUrl("url");
+            messageEntity.setType(MessageType.MESSAGE);
+            messageEntity.setMessage(message);
+            messageProducer.sendMessage(messageEntity, 1000);
         }
 
     }

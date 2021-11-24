@@ -28,11 +28,9 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> conditionNodeList = new ArrayList<>();
+    private List<ActivitiStepsParam> conditionNodeList;
 
     private ActivitiStepsParam childNode;
-//
-//    private ActivitiStepsParam luYou;
 
     private StartUsers rule;
 

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.io.Serializable;
 
@@ -35,7 +36,7 @@ public class ActivitiStepsResult implements Serializable {
 
     private String auditType;
 
-    private List<ActivitiStepsResult> conditionNodeList;
+    private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
     /**
      * 步骤Id，主键
      */
