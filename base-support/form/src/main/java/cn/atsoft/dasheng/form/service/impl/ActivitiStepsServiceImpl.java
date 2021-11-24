@@ -52,18 +52,19 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
 
         if (ToolUtil.isNotEmpty(param.getLuYou())) {
-            luYou(param.getLuYou(), entity.getSetpsId());
+            luYou(param.getLuYou(), entity.getSetpsId(), entity.getProcessId());
         } else if (ToolUtil.isNotEmpty(param.getChildNode())) {
-            children(param.getChildNode(), entity.getSetpsId());
+            children(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
         }
 
     }
 
     //路由
-    public void luYou(ActivitiStepsParam node, Long supper) {
+    public void luYou(ActivitiStepsParam node, Long supper, Long processId) {
         if (ToolUtil.isNotEmpty(node.getChildNode())) {
             ActivitiSteps activitiSteps = new ActivitiSteps();
             activitiSteps.setSupper(supper);
+            activitiSteps.setProcessId(processId);
             this.save(activitiSteps);
             ActivitiSteps fatherSteps = new ActivitiSteps();
             fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
@@ -78,10 +79,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         //添加分支
         if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
-            recursiveAdd(node.getConditionNodeList(), supper);
+            recursiveAdd(node.getConditionNodeList(), supper, processId);
         }
         if (ToolUtil.isNotEmpty(node.getLuYou())) {
-            luYou(node.getLuYou(), supper);
+            luYou(node.getLuYou(), supper, processId);
         }
     }
 
@@ -91,7 +92,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @param stepsParams
      * @param supper
      */
-    public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper) {
+    public void recursiveAdd(List<ActivitiStepsParam> stepsParams, Long supper, Long processId) {
         //分支遍历
         for (ActivitiStepsParam stepsParam : stepsParams) {
             //获取super
@@ -99,6 +100,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             //存分支
             ActivitiSteps activitiSteps = new ActivitiSteps();
             ToolUtil.copyProperties(stepsParam, activitiSteps);
+            activitiSteps.setProcessId(processId);
             this.save(activitiSteps);
             //添加配置
             if (ToolUtil.isNotEmpty(stepsParam.getRule())) {
@@ -120,20 +122,21 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             this.update(steps, queryWrapper);
             //继续递归添加
             if (ToolUtil.isNotEmpty(stepsParam.getChildNode())) {
-                children(stepsParam.getChildNode(), activitiSteps.getSetpsId());
+                children(stepsParam.getChildNode(), activitiSteps.getSetpsId(), processId);
             }
             if (ToolUtil.isNotEmpty(stepsParam.getLuYou())) {
-                luYou(stepsParam.getLuYou(), activitiSteps.getSetpsId());
+                luYou(stepsParam.getLuYou(), activitiSteps.getSetpsId(), processId);
             }
         }
 
     }
 
     //添加子节点
-    public void children(ActivitiStepsParam children, Long supper) {
+    public void children(ActivitiStepsParam children, Long supper, Long processId) {
         ActivitiSteps activitiSteps = new ActivitiSteps();
         ToolUtil.copyProperties(children, activitiSteps);
         activitiSteps.setSupper(supper);
+        activitiSteps.setProcessId(processId);
         this.save(activitiSteps);
         ActivitiSteps fatherSteps = new ActivitiSteps();
         fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
@@ -147,10 +150,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             addAudit("supervisor", null, activitiSteps.getSetpsId());
         }
         if (ToolUtil.isNotEmpty(children.getLuYou())) {
-            luYou(children.getLuYou(), activitiSteps.getSetpsId());
+            luYou(children.getLuYou(), activitiSteps.getSetpsId(), processId);
         }
         if (ToolUtil.isNotEmpty(children.getChildNode())) {
-            children(children.getChildNode(), activitiSteps.getSetpsId());
+            children(children.getChildNode(), activitiSteps.getSetpsId(), processId);
         }
     }
 
