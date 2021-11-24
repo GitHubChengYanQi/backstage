@@ -219,11 +219,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
         //查询详情
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
-        if (ToolUtil.isNotEmpty(audit.getRule())) {
-            StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-            activitiStepsResult.setAuditType(audit.getType());
-            activitiStepsResult.setRule(startUsers);
+        if (ToolUtil.isNotEmpty(audit)) {
+            if (ToolUtil.isNotEmpty(audit.getRule())) {
+                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                activitiStepsResult.setAuditType(audit.getType());
+                activitiStepsResult.setRule(startUsers);
+            }
         }
+
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
             ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
             activitiStepsResult.setChildNode(childrenNode);
@@ -246,11 +249,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             ToolUtil.copyProperties(activitiStep, activitiStepsResult);
 
             ActivitiAudit audit = auditService.query().eq("setps_id", activitiStep.getSetpsId()).one();
-            if (ToolUtil.isNotEmpty(audit) && ToolUtil.isNotEmpty(audit.getRule())) {
-                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+            if (ToolUtil.isNotEmpty(audit)) {
                 activitiStepsResult.setAuditType(audit.getType());
-                activitiStepsResult.setRule(startUsers);
+                if (ToolUtil.isNotEmpty(audit.getRule())) {
+                    StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                    activitiStepsResult.setRule(startUsers);
+                }
             }
+
 
             //查询节点
             if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
@@ -274,10 +280,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             if (ToolUtil.isNotEmpty(audit)) {
                 StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
                 luyou.setAuditType(audit.getType());
-                if (ToolUtil.isNotEmpty(audit.getRule())){
+                if (ToolUtil.isNotEmpty(audit.getRule())) {
                     luyou.setRule(startUsers);
                 }
             }
+
         }
         //有分支走分支查询
         if (ToolUtil.isNotEmpty(luyou.getConditionNodes())) {
