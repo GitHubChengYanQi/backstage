@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -35,6 +36,7 @@ public class ActivitiStepsResult implements Serializable {
     /**
      * 步骤Id，主键
      */
+
     @ApiModelProperty("步骤Id，主键")
     private Long setpsId;
 
@@ -50,50 +52,57 @@ public class ActivitiStepsResult implements Serializable {
     /**
      * 步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）
      */
+
     @ApiModelProperty("步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）")
     private String type;
 
     /**
      * 分表Id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("分表Id")
     private Long formId;
 
     /**
      * 上一步
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("上一步")
     private Long supper;
 
     /**
      * 下级步骤
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("下级步骤")
     private String children;
 
     /**
      * 所有后续步骤
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("所有后续步骤")
     private String childrens;
 
     /**
      * 删除状态
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("删除状态")
     private Integer display;
-
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
-
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
-
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

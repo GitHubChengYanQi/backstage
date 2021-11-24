@@ -30,8 +30,8 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     private List<ActivitiStepsParam> conditionNodeList;
 
     private ActivitiStepsParam childNode;
-
-    private ActivitiStepsParam luYou;
+//
+//    private ActivitiStepsParam luYou;
 
     private StartUsers rule;
 

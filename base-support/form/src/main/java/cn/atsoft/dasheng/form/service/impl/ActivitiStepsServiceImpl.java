@@ -46,10 +46,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         String jsonStr = JSONUtil.toJsonStr(param.getRule());
         addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
 
-        if (ToolUtil.isNotEmpty(param.getLuYou())) {
-            luYou(param.getLuYou(), entity.getSetpsId(), entity.getProcessId());
-        } else if (ToolUtil.isNotEmpty(param.getChildNode())) {
-            children(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
+//        if (ToolUtil.isNotEmpty(param.getLuYou())) {
+//            luYou(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
+//        } else
+        if (ToolUtil.isNotEmpty(param.getChildNode())) {
+            luYou(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
         }
 
     }
@@ -58,10 +59,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public void luYou(ActivitiStepsParam node, Long supper, Long processId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
+        if (node.getType().equals("4")) {
+            activitiSteps.setStepType("路由");
+        }
         activitiSteps.setType(node.getType());
         activitiSteps.setSupper(supper);
         activitiSteps.setProcessId(processId);
-        activitiSteps.setStepType("路由");
+
         this.save(activitiSteps);
         //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
@@ -70,18 +74,18 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         queryWrapper.eq("setps_id", supper);
         this.update(fatherSteps, queryWrapper);
 
+        //添加ChildNode
+        if (ToolUtil.isNotEmpty(node.getChildNode())) {
+            luYou(node.getChildNode(), activitiSteps.getSetpsId(), processId);
+        }
         //添加分支
         if (ToolUtil.isNotEmpty(node.getConditionNodeList())) {
             recursiveAdd(node.getConditionNodeList(), activitiSteps.getSetpsId(), processId);
         }
-        //添加ChildNode
-        if (ToolUtil.isNotEmpty(node.getChildNode())) {
-            children(node.getChildNode(), activitiSteps.getSetpsId(), processId);
-        }
-        //添加路由
-        if (ToolUtil.isNotEmpty(node.getLuYou())) {
-            luYou(node.getLuYou(), activitiSteps.getSetpsId(), processId);
-        }
+//        //添加路由
+//        if (ToolUtil.isNotEmpty(node.getLuYou())) {
+//            luYou(node.getLuYou(), activitiSteps.getSetpsId(), processId);
+//        }
 
     }
 
@@ -120,14 +124,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             steps.setConditionNodes(steps.getConditionNodes());
             this.update(steps, queryWrapper);
 
-
             //继续递归添加
             if (ToolUtil.isNotEmpty(stepsParam.getChildNode())) {
-                children(stepsParam.getChildNode(), activitiSteps.getSetpsId(), processId);
+                luYou(stepsParam.getChildNode(), activitiSteps.getSetpsId(), processId);
             }
-            if (ToolUtil.isNotEmpty(stepsParam.getLuYou())) {
-                luYou(stepsParam.getLuYou(), activitiSteps.getSetpsId(), processId);
-            }
+//            if (ToolUtil.isNotEmpty(stepsParam.getLuYou())) {
+//                luYou(stepsParam.getLuYou(), activitiSteps.getSetpsId(), processId);
+//            }
         }
 
     }
@@ -153,9 +156,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             addAudit("supervisor", null, activitiSteps.getSetpsId());
         }
         //是否存在路由
-        if (ToolUtil.isNotEmpty(children.getLuYou())) {
-            luYou(children.getLuYou(), activitiSteps.getSetpsId(), processId);
-        }
+//        if (ToolUtil.isNotEmpty(children.getLuYou())) {
+//            luYou(children.getLuYou(), activitiSteps.getSetpsId(), processId);
+//        }
         //是否存节点
         if (ToolUtil.isNotEmpty(children.getChildNode())) {
             children(children.getChildNode(), activitiSteps.getSetpsId(), processId);
@@ -233,11 +236,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ToolUtil.copyProperties(activitiSteps, activitiStepsResult);
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildren())) {
             ActivitiStepsResult childrenNode = getChildrenNode(Long.valueOf(activitiStepsResult.getChildren()));
-            if (ToolUtil.isNotEmpty(childrenNode.getConditionNodes())) {
-                activitiStepsResult.setLuYou(childrenNode);
-            } else {
-                activitiStepsResult.setChildNode(childrenNode);
-            }
+            activitiStepsResult.setChildNode(childrenNode);
         }
         return activitiStepsResult;
     }
@@ -275,7 +274,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public ActivitiStepsResult getChildrenNode(Long id) {
         //可能是路由可能是节点
         ActivitiSteps childrenNode = this.query().eq("setps_id", id).one();
-        childrenNode.getConditionNodes();
+
         ActivitiStepsResult luyou = new ActivitiStepsResult();
         ToolUtil.copyProperties(childrenNode, luyou);
         //有分支走分支查询
@@ -290,11 +289,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
             ActivitiStepsResult node = getChildrenNode(Long.valueOf(luyou.getChildren()));
-            if (ToolUtil.isNotEmpty(node.getConditionNodes())) {
-                luyou.setLuYou(node);
-            } else {
-                luyou.setChildNode(node);
-            }
+            luyou.setChildNode(node);
+
         }
         return luyou;
     }
