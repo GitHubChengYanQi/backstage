@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,8 +27,20 @@ public class ActivitiProcess implements Serializable {
     /**
      * 流程ID，主键
      */
-      @TableId(value = "process_id", type = IdType.AUTO)
+    @TableId(value = "process_id", type = IdType.AUTO)
     private Long processId;
+
+    /**
+     * 模块
+     */
+    @TableField("module")
+    private String module;
+    /**
+     * 启用状态
+     */
+    @TableField("status")
+    private Integer status;
+
 
     /**
      * 名称
@@ -69,16 +84,16 @@ public class ActivitiProcess implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -162,19 +177,35 @@ public class ActivitiProcess implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
     @Override
     public String toString() {
         return "ActivitiProcess{" +
-        "processId=" + processId +
-        ", processName=" + processName +
-        ", categoryId=" + categoryId +
-        ", type=" + type +
-        ", formId=" + formId +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "processId=" + processId +
+                ", processName=" + processName +
+                ", categoryId=" + categoryId +
+                ", type=" + type +
+                ", formId=" + formId +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

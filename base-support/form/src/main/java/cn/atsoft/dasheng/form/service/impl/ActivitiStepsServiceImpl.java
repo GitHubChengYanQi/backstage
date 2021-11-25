@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
@@ -12,6 +13,7 @@ import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -40,11 +42,16 @@ import java.util.List;
 public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, ActivitiSteps> implements ActivitiStepsService {
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessService processService;
 
     @Override
     @Transactional
     public void add(ActivitiStepsParam param) {
-
+        ActivitiProcess process = processService.getById(param.getProcessId());
+        if (process.getStatus() >= 98) {
+            throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
+        }
         //修改就删除
         QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
         stepsQueryWrapper.eq("process_id", param.getProcessId());

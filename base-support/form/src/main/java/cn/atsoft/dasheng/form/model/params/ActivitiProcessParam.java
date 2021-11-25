@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.model.params;
 
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -27,6 +28,16 @@ public class ActivitiProcessParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private ActivitiAuditParam activitiAuditParam;
+    /**
+     * 模块
+     */
+    private String module;
+    /**
+     * 启用状态
+     */
+    private Integer status;
+
+
     /**
      * 流程ID，主键
      */

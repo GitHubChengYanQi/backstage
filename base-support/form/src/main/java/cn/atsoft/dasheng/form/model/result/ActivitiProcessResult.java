@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 流程主表
@@ -20,6 +25,14 @@ public class ActivitiProcessResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 模块
+     */
+    private String module;
+    /**
+     * 启用状态
+     */
+    private Integer status;
 
     /**
      * 流程ID，主键
