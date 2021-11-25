@@ -86,11 +86,12 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setDescription("您有新的待执行任务");
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
+                break;
             case "completeTask":
 
                 QualityTask updateEntity = new QualityTask();
-                qualityTask.setQualityTaskId(qualityTask.getQualityTaskId());
-                qualityTask.setState(2);
+                updateEntity.setQualityTaskId(qualityTask.getQualityTaskId());
+                updateEntity.setState(2);
                 qualityTaskService.updateById(updateEntity);
 
                 url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
@@ -100,6 +101,7 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setDescription("质检任务完成，待批准入库");
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
+                break;
         }
     }
 }
