@@ -64,7 +64,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
         ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper",0).one();
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
-        taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), param.getFormId());
+//        taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), param.getFormId());
     }
 
     @Override

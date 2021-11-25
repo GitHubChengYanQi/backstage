@@ -1,11 +1,18 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
+
 import java.util.List;
+
 /**
  * <p>
  * 审批配置表
@@ -16,6 +23,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
+
 public class ActivitiAuditResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,8 +49,9 @@ public class ActivitiAuditResult implements Serializable {
     /**
      * 审批规则
      */
+
     @ApiModelProperty("审批规则")
-    private String rule;
+    private AuditRule rule;
 
     /**
      * 删除状态

@@ -1,11 +1,18 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
 /**
@@ -16,7 +23,8 @@ import java.io.Serializable;
  * @author Sing
  * @since 2021-11-10
  */
-@TableName("activiti_audit")
+@TableName(autoResultMap = true)
+@Accessors(chain = true)
 public class ActivitiAudit implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +32,7 @@ public class ActivitiAudit implements Serializable {
     /**
      * 主键
      */
-      @TableId(value = "audit_id", type = IdType.ID_WORKER)
+    @TableId(value = "audit_id", type = IdType.ID_WORKER)
     private Long auditId;
 
     /**
@@ -39,11 +47,14 @@ public class ActivitiAudit implements Serializable {
     @TableField("type")
     private String type;
 
-    /**
-     * 审批规则
-     */
-    @TableField("rule")
-    private String rule;
+//    /**
+//     * 审批规则
+//     */
+//    @TableField("rule")
+//    private String rule;
+
+    @TableField(typeHandler = FastjsonTypeHandler.class)
+    private AuditRule rule;
 
     /**
      * 删除状态
@@ -51,16 +62,16 @@ public class ActivitiAudit implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -88,13 +99,13 @@ public class ActivitiAudit implements Serializable {
         this.type = type;
     }
 
-    public String getRule() {
-        return rule;
-    }
-
-    public void setRule(String rule) {
-        this.rule = rule;
-    }
+//    public String getRule() {
+//        return rule;
+//    }
+//
+//    public void setRule(String rule) {
+//        this.rule = rule;
+//    }
 
     public Integer getDisplay() {
         return display;
@@ -136,18 +147,26 @@ public class ActivitiAudit implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public AuditRule getRule() {
+        return rule;
+    }
+
+    public void setRule(AuditRule rule) {
+        this.rule = rule;
+    }
+
     @Override
     public String toString() {
         return "ActivitiAudit{" +
-        "auditId=" + auditId +
-        ", setpsId=" + setpsId +
-        ", type=" + type +
-        ", rule=" + rule +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "auditId=" + auditId +
+                ", setpsId=" + setpsId +
+                ", type=" + type +
+//                ", rule=" + rule +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

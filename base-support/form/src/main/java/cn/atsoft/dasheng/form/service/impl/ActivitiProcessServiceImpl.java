@@ -32,25 +32,35 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMapper, ActivitiProcess> implements ActivitiProcessService {
-    @Autowired
-    private ActivitiAuditService auditService;
+
 
     @Override
     public void add(ActivitiProcessParam param) {
+        ActivitiProcess process = this.query().eq("process_name", param.getProcessName()).eq("display", 1).one();
+        if (ToolUtil.isNotEmpty(process)) {
+            throw new ServiceException(500, "名字以重复");
+        }
         ActivitiProcess entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
     public void delete(ActivitiProcessParam param) {
-        this.removeById(getKey(param));
+        ActivitiProcess activitiProcess = new ActivitiProcess();
+        activitiProcess.setDisplay(0);
+        QueryWrapper<ActivitiProcess> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("process_id", param.getProcessId());
+        this.update(activitiProcess, queryWrapper);
+
     }
 
     @Override
     public void update(ActivitiProcessParam param) {
         if (param.getStatus() == 99) {
             ActivitiProcess process = this.query().eq("module", param.getModule())
-                    .eq("status", 99).one();
+                    .eq("status", 99)
+                    .eq("display", 1)
+                    .one();
             if (ToolUtil.isNotEmpty(process)) {
                 process.setStatus(98);
                 this.updateById(process);

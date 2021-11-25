@@ -45,7 +45,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessLog entity = getEntity(param);
 
         ActivitiAudit audit = auditService.query().eq("setps_id", param.getSetpsId()).one();
-        StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+//        StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
         List<Long> users = new ArrayList<>();
 
 
