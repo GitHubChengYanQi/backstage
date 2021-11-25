@@ -18,8 +18,9 @@ public class StartUsers {
     }
 
     @Data
-    private class Users {
+    public class Users {
         private String title;
         private String key;
     }
 }
+

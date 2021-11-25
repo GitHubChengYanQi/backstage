@@ -14,13 +14,11 @@ import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.FormData;
-import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.entity.*;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.FormDataService;
-import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
@@ -82,6 +80,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private BrandService brandService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
 
     @Override
     @Transactional
@@ -139,12 +141,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         wxCpTemplate.setDescription("有新的质检任务");
 //        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
 //        wxCpSendTemplate.sendTemplate();
+
+
         ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
         activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
         activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
         activitiProcessTaskParam.setUserId(param.getUserId());
         activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
-        activitiProcessTaskParam.setProcessId(4L);
+        activitiProcessTaskParam.setProcessId(10L);
         activitiProcessTaskService.add(activitiProcessTaskParam);
     }
 
@@ -162,6 +166,24 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+    }
+    @Transactional
+    @Override
+    public void checkOver(QualityTaskParam param){
+        QualityTask oldEntity = getOldEntity(param);
+        QualityTask newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
+        ActivitiProcessLog activitiProcessLog = activitiProcessLogService.query().eq("task_id", activitiProcessTask.getProcessTaskId()).apply("order By setps_id DESC  limit 0,1").one();
+        ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
+        ActivitiProcessLogParam newLog =  new ActivitiProcessLogParam();
+        newLog.setPeocessId(activitiProcessTask.getProcessId());
+        newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
+        newLog.setTaskId(activitiProcessTask.getProcessTaskId());
+        newLog.setStatus(1);
+        activitiProcessLogService.add(newLog);
+
     }
 
     @Override
@@ -517,6 +539,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         detailService.format(qualityTaskDetailResults);
         param.setDetails(qualityTaskDetailResults);
+        User byId = userService.getById(param.getUserId());
+        param.setUserName(byId.getName());
 
 
         //        for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {

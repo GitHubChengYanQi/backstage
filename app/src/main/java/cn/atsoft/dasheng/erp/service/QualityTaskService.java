@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -101,6 +102,9 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @Date 2021-11-16
      */
     void update(QualityTaskParam param);
+
+    @Transactional
+    void checkOver(QualityTaskParam param);
 
     /**
      * 查询单条数据，Specification模式
