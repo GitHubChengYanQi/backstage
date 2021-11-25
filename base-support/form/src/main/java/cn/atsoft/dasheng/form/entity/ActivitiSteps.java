@@ -23,6 +23,7 @@ import java.io.Serializable;
 public class ActivitiSteps implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     /**
      * 步骤类型
      */

@@ -10,4 +10,5 @@ public class WxCpTemplate {
     private String description;
     private String title;
     private List<Long> userIds;
+    private Integer type; //铃铛类型
 }
