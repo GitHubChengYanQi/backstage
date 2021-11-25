@@ -186,7 +186,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
         if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-//        activitiProcessLogService.query().apply("where task_id = "+activitiProcessTask.getProcessTaskId()+" limit 1").one();
             QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("task_id", activitiProcessTask.getProcessTaskId());
             queryWrapper.last("order by setps_id limit 1");
