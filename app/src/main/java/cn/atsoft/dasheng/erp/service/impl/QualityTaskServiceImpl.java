@@ -175,12 +175,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
-        ActivitiProcessLog activitiProcessLog = activitiProcessLogService.query().eq("task_id", activitiProcessTask.getProcessTaskId()).apply("order By setps_id DESC  limit 0,1").one();
+//        activitiProcessLogService.query().apply("where task_id = "+activitiProcessTask.getProcessTaskId()+" limit 1").one();
+        QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_id",activitiProcessTask.getProcessTaskId());
+        queryWrapper.last("order by setps_id limit 1");
+        ActivitiProcessLog activitiProcessLog =   activitiProcessLogService.getOne(queryWrapper);
         ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
         ActivitiProcessLogParam newLog =  new ActivitiProcessLogParam();
         newLog.setPeocessId(activitiProcessTask.getProcessId());
         newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
         newLog.setTaskId(activitiProcessTask.getProcessTaskId());
+        newLog.setFormId(param.getQualityTaskId());
         newLog.setStatus(1);
         activitiProcessLogService.add(newLog);
 

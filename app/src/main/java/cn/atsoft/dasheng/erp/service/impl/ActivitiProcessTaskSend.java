@@ -60,13 +60,14 @@ public class ActivitiProcessTaskSend{
         List<Long> users = new ArrayList<>();
         switch (type) {
             case "person":
-                StartUsers bean = JSONUtil.toBean(starUser, StartUsers.class);
-                for (StartUsers.Users user : bean.getUsers()) {
+                AuditRule bean = JSONUtil.toBean(starUser, AuditRule.class);
+                for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
                 wxCpTemplate.setUserIds(users);
-                url = url.replace("setpsId", stepsId.toString());
-                wxCpTemplate.setUrl(url);
+                String setpsValue = url.replace("setpsvalue", stepsId.toString());
+                String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
+                wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
                 wxCpTemplate.setDescription("您有新的待审批任务");
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
