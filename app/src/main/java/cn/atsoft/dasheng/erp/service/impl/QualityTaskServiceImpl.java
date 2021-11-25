@@ -181,22 +181,29 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask oldEntity = getOldEntity(param);
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
-//        activitiProcessLogService.query().apply("where task_id = "+activitiProcessTask.getProcessTaskId()+" limit 1").one();
-        QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("task_id",activitiProcessTask.getProcessTaskId());
-        queryWrapper.last("order by setps_id limit 1");
-        ActivitiProcessLog activitiProcessLog =   activitiProcessLogService.getOne(queryWrapper);
-        ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
-        ActivitiProcessLogParam newLog =  new ActivitiProcessLogParam();
-        newLog.setPeocessId(activitiProcessTask.getProcessId());
-        newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
-        newLog.setTaskId(activitiProcessTask.getProcessTaskId());
-        newLog.setFormId(param.getQualityTaskId());
-        newLog.setStatus(1);
-        activitiProcessLogService.add(newLog);
 
+
+
+        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
+        if (ToolUtil.isNotEmpty(activitiProcessTask)) {
+//        activitiProcessLogService.query().apply("where task_id = "+activitiProcessTask.getProcessTaskId()+" limit 1").one();
+            QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("task_id", activitiProcessTask.getProcessTaskId());
+            queryWrapper.last("order by setps_id limit 1");
+            ActivitiProcessLog activitiProcessLog = activitiProcessLogService.getOne(queryWrapper);
+            ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
+            ActivitiProcessLogParam newLog = new ActivitiProcessLogParam();
+            newLog.setPeocessId(activitiProcessTask.getProcessId());
+            newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
+            newLog.setTaskId(activitiProcessTask.getProcessTaskId());
+            newLog.setFormId(param.getQualityTaskId());
+            newLog.setStatus(1);
+            activitiProcessLogService.add(newLog);
+        }
+        else  {
+            newEntity.setState(2);
+        }
+        this.updateById(newEntity);
     }
 
     @Override
@@ -224,7 +231,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         for (QualityTaskResult qualityTaskResult : param) {
             userIds.add(qualityTaskResult.getUserId());
         }
-        List<User> users = userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
         for (QualityTaskResult qualityTaskResult : param) {
             for (User user : users) {
                 if (qualityTaskResult.getUserId().equals(user.getUserId())) {
