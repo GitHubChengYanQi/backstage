@@ -11,6 +11,8 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -46,6 +48,14 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
 
     @Override
     public void update(ActivitiProcessParam param) {
+        if (param.getStatus() == 99) {
+            ActivitiProcess process = this.query().eq("module", param.getModule())
+                    .eq("status", 99).one();
+            if (ToolUtil.isNotEmpty(process)) {
+                process.setStatus(98);
+                this.updateById(process);
+            }
+        }
         ActivitiProcess oldEntity = getOldEntity(param);
         ActivitiProcess newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
