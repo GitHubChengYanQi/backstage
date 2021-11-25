@@ -3,8 +3,10 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -25,6 +27,8 @@ public class ActivitiProcessTaskSend{
     private QualityTaskService qualityTaskService;
     @Autowired
     private OrCodeBindService bindService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
     public void send(String type, String starUser, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -101,5 +105,19 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
         }
+    }
+    public void vetoSend(String type, String url, String stepsId, Long qualityTaskId) {
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        List<Long> users = new ArrayList<>();
+        QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
+        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", qualityTaskId).one();
+        users.add(activitiProcessTask.getCreateUser());
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setUserIds(users);
+        wxCpTemplate.setTitle("您发起的流程已被否决");
+        wxCpTemplate.setDescription(qualityTask.getCoding()+"审批被否决");
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+
     }
 }

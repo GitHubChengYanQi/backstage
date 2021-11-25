@@ -80,6 +80,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (entity.getStatus() == 1) {
             taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+        }else {
+            taskSend.vetoSend(audit.getType(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
         }
 //
     }
