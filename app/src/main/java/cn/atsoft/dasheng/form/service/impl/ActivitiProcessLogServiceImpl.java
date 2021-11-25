@@ -1,16 +1,19 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
@@ -55,6 +58,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private ActivitiProcessTaskSend taskSend;
 
+    @Autowired
+    private QualityTaskService qualityTaskService;
 
 
     @Transactional
@@ -71,6 +76,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiSteps steps = stepsService.getById(param.getSetpsId());
         ActivitiProcess process = processService.getById(steps.getProcessId());
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        Long userId = LoginContextHolder.getContext().getUserId();
+        for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+            if (!user.getKey().equals(userId)) {
+                throw new ServiceException(500,"您没有权限操作该审批任务");
+            }
+        }
+
+
+
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();
         entity.setSetpsId(steps.getSetpsId());
@@ -79,7 +93,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         this.save(entity);
 
         if (entity.getStatus() == 1) {
-//            taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+            taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+        }else {
+
+            List<QualityTask> qualityTasks = qualityTaskService.query().eq("quality_task_id", activitiProcessTask.getFormId()).list();
+            if (qualityTasks.size()>0){
+                taskSend.vetoSend(audit.getType(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+            }
         }
 //
     }

@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -16,6 +17,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.results.SetpsDetailResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -51,6 +53,8 @@ public class ActivitiProcessTaskController extends BaseController {
     private QualityTaskService qualityTaskService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
 
     /**
      * 新增接口
@@ -147,8 +151,27 @@ public class ActivitiProcessTaskController extends BaseController {
         SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
         setpsDetailResult.setAuditResult(activitiAuditResult);
         setpsDetailResult.setQualityTaskResult(result);
-
-
+        ActivitiSteps setpsId = activitiStepsService.query().eq("setps_id", audit.getSetpsId()).one();
+        setpsId.getFormId();
+        List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, setpsId.getProcessId()).list();
+        List<Long> activitiStepsIds = new ArrayList<>();
+        for (ActivitiSteps activitiStep : activitiSteps) {
+            activitiStepsIds.add(activitiStep.getSetpsId());
+        }
+        List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
+        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcessTaskParam.getQTaskId())).list();
+        List<ActivitiAuditResult> logResult = new ArrayList<>();
+        for (ActivitiAudit activitiAudit : activitiAudits) {
+            for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
+                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiProcessLog.getTaskId().equals(activitiProcessTaskParam.getQTaskId())) {
+                    ActivitiAuditResult auditResult = new ActivitiAuditResult();
+                    ToolUtil.copyProperties(activitiAudit,auditResult);
+                    auditResult.setStatus(activitiProcessLog.getStatus());
+                    logResult.add(auditResult);
+                }
+            }
+        }
+        setpsDetailResult.setAuditResults(logResult);
         return ResponseData.success(setpsDetailResult);
     }
 

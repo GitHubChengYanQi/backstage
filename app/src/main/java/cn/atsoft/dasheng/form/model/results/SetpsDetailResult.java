@@ -4,8 +4,11 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class SetpsDetailResult {
     private ActivitiAuditResult auditResult;
     private QualityTaskResult qualityTaskResult;
+    private List<ActivitiAuditResult> auditResults;
 }

@@ -27,7 +27,7 @@ import java.util.List;
 public class ActivitiAuditResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private Integer status;
     /**
      * 主键
      */

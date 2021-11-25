@@ -84,6 +84,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiStepsService activitiStepsService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
 
     @Override
     @Transactional
@@ -127,29 +129,35 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             skuService.updateBatchById(skus);
         }
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(param.getUserId());
-        wxCpTemplate.setUserIds(userIds);
+
         BackCodeRequest backCodeRequest = new BackCodeRequest();
         backCodeRequest.setId(entity.getQualityTaskId());
         backCodeRequest.setSource("quality");
         Long aLong = orCodeService.backCode(backCodeRequest);
         String url = param.getUrl().replace("codeId", aLong.toString());
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("质检任务提醒");
-        wxCpTemplate.setDescription("有新的质检任务");
-//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//        wxCpSendTemplate.sendTemplate();
 
 
-        ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-        activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
-        activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
-        activitiProcessTaskParam.setUserId(param.getUserId());
-        activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
-        activitiProcessTaskParam.setProcessId(10L);
-        activitiProcessTaskService.add(activitiProcessTaskParam);
+        try {
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
+            activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            activitiProcessTaskService.add(activitiProcessTaskParam);
+        }catch (ServiceException e){
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            List<Long> userIds = new ArrayList<>();
+            userIds.add(param.getUserId());
+            wxCpTemplate.setUserIds(userIds);
+            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setTitle("质检任务提醒");
+            wxCpTemplate.setDescription("有新的质检任务");
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
+        }
+
     }
 
     @Override
@@ -173,17 +181,28 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask oldEntity = getOldEntity(param);
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
-        ActivitiProcessLog activitiProcessLog = activitiProcessLogService.query().eq("task_id", activitiProcessTask.getProcessTaskId()).apply("order By setps_id DESC  limit 0,1").one();
-        ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
-        ActivitiProcessLogParam newLog =  new ActivitiProcessLogParam();
-        newLog.setPeocessId(activitiProcessTask.getProcessId());
-        newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
-        newLog.setTaskId(activitiProcessTask.getProcessTaskId());
-        newLog.setStatus(1);
-        activitiProcessLogService.add(newLog);
 
+
+
+        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
+        if (ToolUtil.isNotEmpty(activitiProcessTask)) {
+            QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("task_id", activitiProcessTask.getProcessTaskId());
+            queryWrapper.last("order by setps_id limit 1");
+            ActivitiProcessLog activitiProcessLog = activitiProcessLogService.getOne(queryWrapper);
+            ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
+            ActivitiProcessLogParam newLog = new ActivitiProcessLogParam();
+            newLog.setPeocessId(activitiProcessTask.getProcessId());
+            newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
+            newLog.setTaskId(activitiProcessTask.getProcessTaskId());
+            newLog.setFormId(param.getQualityTaskId());
+            newLog.setStatus(1);
+            activitiProcessLogService.add(newLog);
+        }
+        else  {
+            newEntity.setState(2);
+        }
+        this.updateById(newEntity);
     }
 
     @Override
@@ -211,7 +230,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         for (QualityTaskResult qualityTaskResult : param) {
             userIds.add(qualityTaskResult.getUserId());
         }
-        List<User> users = userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
         for (QualityTaskResult qualityTaskResult : param) {
             for (User user : users) {
                 if (qualityTaskResult.getUserId().equals(user.getUserId())) {
