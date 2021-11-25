@@ -33,6 +33,9 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
 
     private Long taskId;
 
+    private String url;
+
+    private Long formId;
 
     /**
      * 流程Id
@@ -45,6 +48,7 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
      */
     @ApiModelProperty("步骤Id")
     private Long setpsId;
+
 
     /**
      * 0（拒绝），1（通过）

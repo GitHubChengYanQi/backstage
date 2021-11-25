@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class ActivitiStepsController extends BaseController {
         return ResponseData.success();
     }
 
+
     /**
      * 编辑接口
      *
@@ -67,7 +69,7 @@ public class ActivitiStepsController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiStepsParam activitiStepsParam)  {
+    public ResponseData delete(@RequestBody ActivitiStepsParam activitiStepsParam) {
         this.activitiStepsService.delete(activitiStepsParam);
         return ResponseData.success();
     }
@@ -81,12 +83,8 @@ public class ActivitiStepsController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ActivitiStepsResult> detail(@RequestBody ActivitiStepsParam activitiStepsParam) {
-        ActivitiSteps detail = this.activitiStepsService.getById(activitiStepsParam.getSetpsId());
-        ActivitiStepsResult result = new ActivitiStepsResult();
-        ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
-        return ResponseData.success(result);
+        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
+        return ResponseData.success(stepsResult);
     }
 
     /**
@@ -98,13 +96,11 @@ public class ActivitiStepsController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiStepsResult> list(@RequestBody(required = false) ActivitiStepsParam activitiStepsParam) {
-        if(ToolUtil.isEmpty(activitiStepsParam)){
+        if (ToolUtil.isEmpty(activitiStepsParam)) {
             activitiStepsParam = new ActivitiStepsParam();
         }
         return this.activitiStepsService.findPageBySpec(activitiStepsParam);
     }
-
-
 
 
 }

@@ -103,30 +103,35 @@ public class QualityCheckController extends BaseController {
     public ResponseData<QualityCheckResult> detail(@RequestBody QualityCheckParam qualityCheckParam) {
         QualityCheck detail = this.qualityCheckService.getById(qualityCheckParam.getQualityCheckId());
 
-        JSONArray jsonArray = JSONUtil.parseArray(detail.getTool());
-        List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-        List<Tool> tools = longs.size() > 0 ? toolService.query().in("tool_id", longs).list() : new ArrayList<>();
+        if (ToolUtil.isNotEmpty(detail)){
+            JSONArray jsonArray = JSONUtil.parseArray(detail.getTool());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            List<Tool> tools = longs.size() > 0 ? toolService.query().in("tool_id", longs).list() : new ArrayList<>();
 
-        QualityCheckClassification qualityCheckClassification = qualityCheckClassificationService.query()
-                .eq("quality_check_classification_id", detail.getQualityCheckClassificationId())
-                .one();
+            QualityCheckClassification qualityCheckClassification = qualityCheckClassificationService.query()
+                    .eq("quality_check_classification_id", detail.getQualityCheckClassificationId())
+                    .one();
 
-        QualityCheckClassificationResult qualityCheckClassificationResult = new QualityCheckClassificationResult();
-        if (ToolUtil.isNotEmpty(qualityCheckClassification)) {
-            ToolUtil.copyProperties(qualityCheckClassification, qualityCheckClassificationResult);
+            QualityCheckClassificationResult qualityCheckClassificationResult = new QualityCheckClassificationResult();
+            if (ToolUtil.isNotEmpty(qualityCheckClassification)) {
+                ToolUtil.copyProperties(qualityCheckClassification, qualityCheckClassificationResult);
+            }
+
+            List<ToolResult> toolResults = new ArrayList<>();
+            for (Tool tool : tools) {
+                ToolResult toolResult = new ToolResult();
+                ToolUtil.copyProperties(tool, toolResult);
+                toolResults.add(toolResult);
+            }
+            QualityCheckResult result = new QualityCheckResult();
+            ToolUtil.copyProperties(detail, result);
+            result.setTools(toolResults);
+            result.setQualityCheckClassificationResult(qualityCheckClassificationResult);
+            return ResponseData.success(result);
+        }else {
+            return null;
         }
 
-        List<ToolResult> toolResults = new ArrayList<>();
-        for (Tool tool : tools) {
-            ToolResult toolResult = new ToolResult();
-            ToolUtil.copyProperties(tool, toolResult);
-            toolResults.add(toolResult);
-        }
-        QualityCheckResult result = new QualityCheckResult();
-        ToolUtil.copyProperties(detail, result);
-        result.setTools(toolResults);
-        result.setQualityCheckClassificationResult(qualityCheckClassificationResult);
-        return ResponseData.success(result);
     }
 
     /**

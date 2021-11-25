@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -30,10 +31,30 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("task_name")
     private String taskName;
 
+    public Long getFormId() {
+        return formId;
+    }
+
+    public void setFormId(Long formId) {
+        this.formId = formId;
+    }
+
+    @TableField("form_id")
+    private Long formId;
 
 
     @TableField("deptIds")
     private String deptIds;
+
+    @TableField("type")
+    private String type;
+
+    @TableField("remark")
+    private String remark;
+
+
+    @TableField("cause")
+    private String cause;
 
 
 
@@ -63,6 +84,30 @@ public class ActivitiProcessTask implements Serializable {
 
     public void setDeptIds(String deptIds) {
         this.deptIds = deptIds;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getCause() {
+        return cause;
+    }
+
+    public void setCause(String cause) {
+        this.cause = cause;
     }
 
     public String getUserIds() {

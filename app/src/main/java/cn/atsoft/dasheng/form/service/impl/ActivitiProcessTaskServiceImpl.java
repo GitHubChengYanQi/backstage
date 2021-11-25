@@ -4,25 +4,36 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
+import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -34,11 +45,26 @@ import java.util.stream.Stream;
  */
 @Service
 public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessTaskMapper, ActivitiProcessTask> implements ActivitiProcessTaskService {
-
+    @Autowired
+    private ActivitiProcessService processService;
+    @Autowired
+    private ActivitiStepsService stepsService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private QualityTaskServiceImpl qualityTaskService;
+    @Autowired
+    private ActivitiProcessTaskSend taskSend;
     @Override
     public void add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
+        ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
+        ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper",0).one();
+        ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), param.getFormId());
     }
 
     @Override

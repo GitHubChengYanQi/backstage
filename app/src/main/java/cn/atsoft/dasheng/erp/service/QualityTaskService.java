@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,51 +32,7 @@ public interface QualityTaskService extends IService<QualityTask> {
 
     void formDataFormat(FormDataResult param);
 
-    //    @Override
-    //    public void formDataFormat(FormDataResult param) {
-    //        Long formId = param.getFormId();
-    //        Inkind one = inkindService.lambdaQuery().eq(Inkind::getInkindId, formId).and(i -> i.eq(Inkind::getDisplay, 1)).one();
-    //        param.setInkind(one);
-    //        Long dataId = param.getDataId();
-    //        List<FormDataValue> formDataValues = formDataValueService.lambdaQuery().eq(FormDataValue::getDataId, dataId).and(i -> i.eq(FormDataValue::getDisplay, 1)).list();
-    //        List<Long> planIds = new ArrayList<>();
-    //        for (FormDataValue formDataValue : formDataValues) {
-    //            planIds.add(formDataValue.getField());
-    //        }
-    //        List<QualityPlanDetail> planDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanDetailId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
-    //        List<Long> checkIds = new ArrayList<>();
-    //        for (QualityPlanDetail planDetail : planDetails) {
-    //            checkIds.add(planDetail.getQualityCheckId());
-    //        }
-    //
-    //
-    //        List<QualityCheck> qualityChecklist = checkIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, checkIds).eq(QualityCheck::getDisplay, 1).list();
-    //        List<QualityCheckResult> qualityCheckResults = new ArrayList<>();
-    //        for (QualityCheck qualityCheck : qualityChecklist) {
-    //            QualityCheckResult qualityCheckResult = new QualityCheckResult();
-    //            ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
-    //            qualityCheckResults.add(qualityCheckResult);
-    //        }
-    //        List<Map<String, Object>> maps = new ArrayList<>();
-    //        for (FormDataValue formDataValue : formDataValues) {
-    //            for (QualityPlanDetail planDetail : planDetails) {
-    //                if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
-    //                    for (QualityCheckResult qualityCheck : qualityCheckResults) {
-    //                        if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
-    //                            Map<String, Object> map = new HashMap<>();
-    //                            map.put("name", qualityCheck.getName());
-    //                            map.put("value", formDataValue.getValue());
-    //                            map.put("field", qualityCheck);
-    //                            maps.add(map);
-    //                        }
-    //
-    //                    }
-    //                }
-    //            }
-    //
-    //        }
-    //        param.setValueResults(maps);
-    //    }
+
     void formDataFormat1(List<FormDataResult> param);
 
     /**
@@ -101,6 +58,9 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @Date 2021-11-16
      */
     void update(QualityTaskParam param);
+
+    @Transactional
+    void checkOver(QualityTaskParam param);
 
     /**
      * 查询单条数据，Specification模式

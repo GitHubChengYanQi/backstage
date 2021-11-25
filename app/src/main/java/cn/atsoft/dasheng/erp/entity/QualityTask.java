@@ -52,6 +52,20 @@ public class QualityTask implements Serializable {
     @TableField("type")
     private String type;
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
+     * 类型
+     */
+    @TableField("url")
+    private String url;
+
     /**
      * 编码
      */

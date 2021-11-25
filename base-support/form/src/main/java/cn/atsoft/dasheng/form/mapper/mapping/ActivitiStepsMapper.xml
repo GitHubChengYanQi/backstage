@@ -4,28 +4,33 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiSteps">
-        <id column="setps_id" property="setpsId" />
-        <result column="process_id" property="processId" />
-        <result column="type" property="type" />
-        <result column="form_id" property="formId" />
-        <result column="branch" property="branch"/>
-        <result column="supper" property="supper" />
-        <result column="children" property="children" />
-        <result column="childrens" property="childrens" />
-        <result column="display" property="display" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="setps_id" property="setpsId"/>
+        <result column="process_id" property="processId"/>
+        <result column="type" property="type"/>
+        <result column="form_id" property="formId"/>
+        <result column="conditionNodes" property="conditionNodes"/>
+        <result column="supper" property="supper"/>
+        <result column="children" property="children"/>
+        <result column="childrens" property="childrens"/>
+        <result column="display" property="display"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="step_type" property="stepType"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        setps_id AS "setpsId", process_id AS "processId",branch AS "branch", type AS "type", form_id AS "formId", supper AS "supper", children AS "children", childrens AS "childrens", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    <sql id="Base_Column_List">step_type
+    AS "stepType",
+        setps_id
+        AS "setpsId", process_id AS "processId",conditionNodes AS "conditionNodes", type AS "type", form_id AS "formId", supper AS "supper", children AS "children", childrens AS "childrens", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where 1 = 1
@@ -37,13 +42,16 @@
         from activiti_steps where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiStepsResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
         select
         <include refid="Base_Column_List"/>
-        from activiti_steps where 1 = 1
+        from activiti_steps where display = 1
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_steps where 1 = 1

@@ -4,22 +4,33 @@ package cn.atsoft.dasheng.form.service.impl;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
+import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,24 +50,64 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private ActivitiProcessTaskServiceImpl activitiProcessTaskService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessService processService;
+    @Autowired
+    private ActivitiStepsService stepsService;
 
+    @Autowired
+    private ActivitiProcessTaskSend taskSend;
+
+    @Autowired
+    private QualityTaskService qualityTaskService;
+
+
+    @Transactional
     @Override
     public void add(ActivitiProcessLogParam param) {
         ActivitiProcessLog entity = getEntity(param);
-
-        ActivitiAudit audit = auditService.query().eq("setps_id", param.getSetpsId()).one();
-//        StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
         List<Long> users = new ArrayList<>();
+//        boolean flag2 = users.contains(LoginContextHolder.getContext().getUserId());
+//        int admin = activitiProcessTaskService.isAdmin(param.getTaskId());
+//        if (admin == 0 && flag2 == false) {
+//            throw new ServiceException(500, "抱歉，您没有权限进行删除");
+//        } else {
+//          }
+        ActivitiSteps steps = stepsService.getById(param.getSetpsId());
+        ActivitiProcess process = processService.getById(steps.getProcessId());
+
+        ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
+        Long userId = LoginContextHolder.getContext().getUserId();
+
+//        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+//            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+//
+//                if (!user.getKey()!=(userId)) {
+//                    throw new ServiceException(500,"您没有权限操作该审批任务");
+//                }
+//            }
+//        }
 
 
-        boolean flag2 = users.contains(LoginContextHolder.getContext().getUserId());
-        int admin = activitiProcessTaskService.isAdmin(param.getTaskId());
-        if (admin == 0 && flag2 == false) {
-            throw new ServiceException(500, "抱歉，您没有权限进行删除");
+        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();
+        entity.setSetpsId(steps.getSetpsId());
+        entity.setPeocessId(activitiProcessTask.getProcessId());
+        entity.setTaskId(activitiProcessTask.getProcessTaskId());
+        this.save(entity);
+
+        if (entity.getStatus() == 1) {
+            taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
         } else {
-            this.save(entity);
+
+            List<QualityTask> qualityTasks = qualityTaskService.query().eq("quality_task_id", activitiProcessTask.getFormId()).list();
+            if (qualityTasks.size() > 0) {
+                taskSend.vetoSend(audit.getType(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+            }
         }
+//
     }
+
 
     @Override
     public void delete(ActivitiProcessLogParam param) {

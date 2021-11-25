@@ -1,11 +1,10 @@
 package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.form.pojo.AuditRule;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -14,46 +13,45 @@ import java.util.List;
 
 /**
  * <p>
- * 审批配置表
+ * 流程任务表	
  * </p>
  *
- * @author Sing
- * @since 2021-11-10
+ * @author Jazz
+ * @since 2021-11-19
  */
 @Data
 @ApiModel
-public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
+public class ActivitiProcessTaskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+    private Long setpsId;
 
+    private Long deptId;
+    @ApiModelProperty("")
+    private Long processTaskId;
 
+    @ApiModelProperty("")
     private Long processId;
-    /**
-     * 主键
-     */
-    @ApiModelProperty("主键")
-    private Long auditId;
+
+    private String taskName;
+
+    private String deptIds;
+
+    private String userIds;
+
+    private Long userId;
+
+    private String type;
+
+    private String remark;
+
+    private String cause;
+
+    private Long formId;
 
     private String url;
 
-    /**
-     * 步骤Id
-     */
-    @ApiModelProperty("步骤Id")
-    private Long setpsId;
-
-    /**
-     * person（指定人），supervisor（主管），optional（自主选择）
-     */
-    @ApiModelProperty("person（指定人），supervisor（主管），optional（自主选择）")
-    private String type;
-
-    /**
-     * 审批规则
-     */
-    @ApiModelProperty("审批规则")
-    private AuditRule rule;
-
+    private Long qTaskId;
     /**
      * 删除状态
      */

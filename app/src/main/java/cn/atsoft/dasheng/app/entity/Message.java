@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 消息提醒
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-08-03
  */
 @TableName("daoxin_message")
@@ -24,8 +27,13 @@ public class Message implements Serializable {
     /**
      * 消息提醒id
      */
-      @TableId(value = "message_id", type = IdType.ID_WORKER)
+    @TableId(value = "message_id", type = IdType.ID_WORKER)
     private Long messageId;
+    /**
+     * 路径
+     */
+    @TableField("url")
+    private String url;
 
     /**
      * 提醒时间
@@ -60,25 +68,25 @@ public class Message implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -93,7 +101,7 @@ public class Message implements Serializable {
     @TableField("sort")
     private Long sort;
 
-    @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
@@ -200,21 +208,29 @@ public class Message implements Serializable {
         this.sort = sort;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
-        "messageId=" + messageId +
-        ", time=" + time +
-        ", state=" + state +
-        ", title=" + title +
-        ", content=" + content +
-        ", type=" + type +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", sort=" + sort +
-        "}";
+                "messageId=" + messageId +
+                ", time=" + time +
+                ", state=" + state +
+                ", title=" + title +
+                ", content=" + content +
+                ", type=" + type +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", sort=" + sort +
+                "}";
     }
 }

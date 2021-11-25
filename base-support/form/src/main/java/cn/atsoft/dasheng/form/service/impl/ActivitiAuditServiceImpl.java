@@ -14,6 +14,8 @@ import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +23,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,28 +45,12 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
 
     @Override
+    @Transactional
     public void add(ActivitiAuditParam param) {
 
         ActivitiAudit entity = getEntity(param);
         this.save(entity);
-        recursiveAdd(param.getActivitiStepsParams());
-    }
 
-    //递归添加
-    public List<ActivitiStepsParam> recursiveAdd(List<ActivitiStepsParam> stepsParams) {
-        List<ActivitiStepsParam> params = new ArrayList<>();
-        for (ActivitiStepsParam stepsParam : stepsParams) {
-            Long id = stepsService.add(stepsParam);
-            stepsParam.setSupper(id);
-            params.add(stepsParam);
-
-            if (ToolUtil.isNotEmpty(stepsParam.getStepsParams())) {
-                List<ActivitiStepsParam> activitiStepsParams = recursiveAdd(stepsParam.getStepsParams());
-                params.addAll(activitiStepsParams);
-            }
-        }
-
-        return params;
     }
 
 

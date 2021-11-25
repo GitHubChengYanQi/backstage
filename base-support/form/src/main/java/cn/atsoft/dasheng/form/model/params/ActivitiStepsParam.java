@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -25,14 +28,27 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<ActivitiStepsParam> stepsParams;
+    private List<ActivitiStepsParam> conditionNodeList;
+
+    private ActivitiStepsParam childNode;
+
+    private StartUsers rule;
+
+    private AuditType auditType;
+
+    private AuditRule auditRule;
+
+    private String stepType;
+
+
     /**
      * 步骤Id，主键
      */
     @ApiModelProperty("步骤Id，主键")
     private Long setpsId;
 
-    private String branch;
+    private String conditionNodes;
+
 
     /**
      * 流程ID
