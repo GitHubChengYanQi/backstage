@@ -1,7 +1,8 @@
 package cn.atsoft.dasheng.form.model.params;
 
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
-import cn.atsoft.dasheng.form.model.result.StartUsers;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -10,7 +11,6 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +34,9 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private StartUsers rule;
 
-    private String auditType;
+    private AuditType auditType;
+
+    private AuditRule auditRule;
 
     private String stepType;
 

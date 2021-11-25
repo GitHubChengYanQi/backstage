@@ -14,7 +14,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.model.result.StartUsers;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
@@ -74,7 +74,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             switch (audit.getType()){
                 case "指定人":
                     StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-                    users.add(bean.getValue());
+//                    users.add(bean.getValue());
                     wxCpTemplate.setUserIds(userIds);
                     String url = process.getUrl().replace("setpsId",stepsNext.getSetpsId().toString());
                     wxCpTemplate.setUrl(url);

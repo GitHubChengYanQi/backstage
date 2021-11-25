@@ -81,7 +81,7 @@ public class WxCpSendTemplate {
             message.setTime(new DateTime());
             message.setTitle(wxCpTemplate.getTitle());
             message.setContent(wxCpTemplate.getDescription());
-            message.setType(3);
+            message.setType(wxCpTemplate.getType());
             message.setSort(0L);
 //            message.setUrl("url");
             messageEntity.setType(MessageType.MESSAGE);

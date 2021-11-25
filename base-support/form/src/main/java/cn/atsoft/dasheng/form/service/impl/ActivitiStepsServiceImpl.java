@@ -8,10 +8,13 @@ import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.model.result.StartUsers;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,6 +23,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiAuditService auditService;
 
     @Override
+    @Transactional
     public void add(ActivitiStepsParam param) {
 
         //修改就删除
@@ -57,8 +62,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiSteps entity = getEntity(param);
         this.save(entity);
         //添加配置
-        String jsonStr = JSONUtil.toJsonStr(param.getRule());
-        addAudit(param.getAuditType(), jsonStr, entity.getSetpsId());
+        if (ToolUtil.isEmpty(param.getAuditType())) {
+            throw new ServiceException(500, "请设置正确的配置");
+        }
+        addAudit(param.getAuditType(), param.getAuditRule(), entity.getSetpsId());
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
@@ -79,14 +86,11 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         activitiSteps.setProcessId(processId);
         this.save(activitiSteps);
 
-        if (ToolUtil.isNotEmpty(node.getAuditType())) {
-            if ("指定人".equals(node.getAuditType())) {
-                String jsonStr = JSONUtil.toJsonStr(node.getRule());
-                addAudit(node.getAuditType(), jsonStr, activitiSteps.getSetpsId());
-            } else {
-                addAudit(node.getAuditType(), null, activitiSteps.getSetpsId());
-            }
+        //添加配置
+        if (ToolUtil.isEmpty(node.getAuditType())) {
+            throw new ServiceException(500, "请设置正确的配置");
         }
+        addAudit(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
 
         //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
@@ -123,10 +127,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             activitiSteps.setProcessId(processId);
             this.save(activitiSteps);
             //添加配置
-            if (ToolUtil.isNotEmpty(stepsParam.getRule())) {
-                String jsonStr = JSONUtil.toJsonStr(stepsParam.getRule());
-                addAudit(stepsParam.getAuditType(), jsonStr, activitiSteps.getSetpsId());
+            if (ToolUtil.isEmpty(stepsParam.getAuditType())) {
+                throw new ServiceException(500, "请设置正确的配置");
             }
+            addAudit(stepsParam.getAuditType(), stepsParam.getAuditRule(), activitiSteps.getSetpsId());
             //修改父级节点
             ActivitiSteps steps = this.query().eq("setps_id", supper).one();
             //修改父级分支
@@ -150,11 +154,22 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     //添加配置数据
-    public void addAudit(String type, String Json, Long id) {
+    public void addAudit(AuditType auditType, AuditRule auditRule, Long id) {
         ActivitiAudit activitiAudit = new ActivitiAudit();
-        activitiAudit.setRule(Json);
         activitiAudit.setSetpsId(id);
-        activitiAudit.setType(type);
+        switch (auditType) {
+            case start:
+            case person:
+            case optional:
+            case supervisor:
+                String str = JSONUtil.toJsonStr(auditRule);
+                activitiAudit.setRule(str);
+                break;
+            case performTask:
+            case completeTask:
+                break;
+        }
+        activitiAudit.setType(String.valueOf(auditType));
         auditService.save(activitiAudit);
     }
 
@@ -225,9 +240,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiSteps.getSetpsId()).one();
         if (ToolUtil.isNotEmpty(audit)) {
             if (ToolUtil.isNotEmpty(audit.getRule())) {
-                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+
                 activitiStepsResult.setAuditType(audit.getType());
-                activitiStepsResult.setRule(startUsers);
+                AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
+                activitiStepsResult.setAuditRule(auditRule);
             }
         }
 
@@ -256,8 +272,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             if (ToolUtil.isNotEmpty(audit)) {
                 activitiStepsResult.setAuditType(audit.getType());
                 if (ToolUtil.isNotEmpty(audit.getRule())) {
-                    StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-                    activitiStepsResult.setRule(startUsers);
+                    AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
+                    activitiStepsResult.setAuditRule(auditRule);
                 }
             }
 
@@ -282,10 +298,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isNotEmpty(childrenNode)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit)) {
-                StartUsers startUsers = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+                AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
                 luyou.setAuditType(audit.getType());
                 if (ToolUtil.isNotEmpty(audit.getRule())) {
-                    luyou.setRule(startUsers);
+                    luyou.setAuditRule(auditRule);
                 }
             }
 
@@ -307,4 +323,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return luyou;
     }
+
+
 }

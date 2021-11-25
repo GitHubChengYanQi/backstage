@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -10,7 +11,6 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.omg.CORBA.PRIVATE_MEMBER;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ActivitiStepsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private StartUsers rule;
+    private AuditRule auditRule;
 
     private ActivitiStepsResult childNode;
 
