@@ -10,6 +10,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,8 +31,6 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
     private List<ActivitiStepsParam> conditionNodeList;
 
     private ActivitiStepsParam childNode;
-//
-//    private ActivitiStepsParam luYou;
 
     private StartUsers rule;
 
