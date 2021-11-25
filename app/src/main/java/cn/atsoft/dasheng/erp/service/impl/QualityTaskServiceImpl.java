@@ -84,6 +84,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiStepsService activitiStepsService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
 
     @Override
     @Transactional
@@ -127,29 +129,35 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             skuService.updateBatchById(skus);
         }
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(param.getUserId());
-        wxCpTemplate.setUserIds(userIds);
+
         BackCodeRequest backCodeRequest = new BackCodeRequest();
         backCodeRequest.setId(entity.getQualityTaskId());
         backCodeRequest.setSource("quality");
         Long aLong = orCodeService.backCode(backCodeRequest);
         String url = param.getUrl().replace("codeId", aLong.toString());
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("质检任务提醒");
-        wxCpTemplate.setDescription("有新的质检任务");
-//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//        wxCpSendTemplate.sendTemplate();
 
 
-        ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-        activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
-        activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
-        activitiProcessTaskParam.setUserId(param.getUserId());
-        activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
-        activitiProcessTaskParam.setProcessId(10L);
-        activitiProcessTaskService.add(activitiProcessTaskParam);
+        try {
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
+            activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setUserId(param.getUserId());
+            activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            activitiProcessTaskService.add(activitiProcessTaskParam);
+        }catch (ServiceException e){
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            List<Long> userIds = new ArrayList<>();
+            userIds.add(param.getUserId());
+            wxCpTemplate.setUserIds(userIds);
+            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setTitle("质检任务提醒");
+            wxCpTemplate.setDescription("有新的质检任务");
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
+        }
+
     }
 
     @Override
