@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -56,45 +57,16 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiAuditService auditService;
     @Autowired
     private QualityTaskServiceImpl qualityTaskService;
+    @Autowired
+    private ActivitiProcessTaskSend taskSend;
     @Override
     public void add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
         ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
         ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper",0).one();
-        ActivitiSteps stepsNext = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 1).eq("supper",steps.getSetpsId()).one();
-        ActivitiAudit audit = auditService.query().eq("setps_id", stepsNext.getSetpsId()).one();
-
-
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> users = new ArrayList<>();
-
-        switch (audit.getType()){
-            case "指定人":
-                StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
-                users.add(bean.getValue());
-                wxCpTemplate.setUserIds(users);
-
-//                String url = param.getUrl().replace("codeId", aLong.toString());
-                String url = process.getUrl().replace("setpsValue",stepsNext.getSetpsId().toString());
-                String formValue = url.replace("formValue", param.getQTaskId().toString());
-                wxCpTemplate.setUrl(formValue);
-                wxCpTemplate.setTitle("您有新的待审批任务");
-                wxCpTemplate.setDescription("您有新的待审批任务");
-                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                wxCpSendTemplate.sendTemplate();
-                break;
-            case "执行任务":
-                QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", param.getFormId()).one();
-                users.add(qualityTask.getUserId());
-                String url1 = param.getUrl();
-                wxCpTemplate.setUrl(url1);
-
-                wxCpTemplate.setTitle("您有新的待执行任务");
-                wxCpTemplate.setDescription("您有新的待执行任务");
-                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                wxCpSendTemplate.sendTemplate();
-        }
+        ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), param.getFormId());
     }
 
     @Override

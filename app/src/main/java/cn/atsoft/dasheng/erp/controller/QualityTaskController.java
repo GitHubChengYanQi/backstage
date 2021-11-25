@@ -85,6 +85,21 @@ public class QualityTaskController extends BaseController {
     }
 
     /**
+     * 编辑接口
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/checkOver", method = RequestMethod.POST)
+    @BussinessLog(value = "修改质检任务", key = "name", dict = QualityTaskParam.class)
+    @ApiOperation("编辑")
+    public ResponseData checkOver(@RequestBody QualityTaskParam qualityTaskParam) {
+
+        this.qualityTaskService.checkOver(qualityTaskParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 删除接口
      *
      * @author
