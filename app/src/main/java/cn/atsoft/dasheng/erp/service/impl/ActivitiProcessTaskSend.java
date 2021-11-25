@@ -2,7 +2,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
-import cn.atsoft.dasheng.form.model.result.StartUsers;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -29,13 +30,14 @@ public class ActivitiProcessTaskSend{
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
-                StartUsers bean = JSONUtil.toBean(starUser, StartUsers.class);
-                for (StartUsers.Users user : bean.getUsers()) {
-                    users.add(user.getKey());
+                AuditRule bean = JSONUtil.toBean(starUser, AuditRule.class);
+                for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+                    users.add(Long.valueOf(user.getKey()));
                 }
+
                 wxCpTemplate.setUserIds(users);
-                url = url.replace("setpsValue",stepsId.toString());
-                String formValue = url.replace("formValue", qualityTaskId.toString());
+                String setpsValue = url.replace("setpsvalue", stepsId.toString());
+                String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
                 wxCpTemplate.setDescription("您有新的待审批任务");
@@ -57,10 +59,10 @@ public class ActivitiProcessTaskSend{
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         switch (type) {
-            case "指定人":
+            case "person":
                 StartUsers bean = JSONUtil.toBean(starUser, StartUsers.class);
                 for (StartUsers.Users user : bean.getUsers()) {
-                    users.add(user.getKey());
+                    users.add(Long.valueOf(user.getKey()));
                 }
                 wxCpTemplate.setUserIds(users);
                 url = url.replace("setpsId", stepsId.toString());
@@ -70,7 +72,7 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
-            case "执行任务":
+            case "performTask":
                 QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
                 users.add(qualityTask.getUserId());
                 OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
