@@ -38,6 +38,7 @@ public class ActivitiProcessTaskSend{
     public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
+
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
@@ -66,13 +67,18 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
-            case "performtask":
+            case "performTask":
+                OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
+                users = new ArrayList<>();
                 users.add(qualityTask.getUserId());
+                url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
                 wxCpTemplate.setUrl(url);
+                wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("您有新的待执行任务");
                 wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
+                break;
         }
     }
 

@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.appBase.config;
 
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
