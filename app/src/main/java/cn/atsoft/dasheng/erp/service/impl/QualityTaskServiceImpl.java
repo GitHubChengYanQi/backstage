@@ -87,6 +87,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private ActivitiProcessService processService;
+    @Autowired
+    private ActivitiStepsService stepsService;
 
     @Override
     @Transactional
@@ -139,6 +143,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+        ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper",0).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(param.getCoding() + "质检任务");
@@ -147,7 +152,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskService.add(activitiProcessTaskParam);
-        } else {
+        } else if (ToolUtil.isEmpty(steps)||ToolUtil.isEmpty(activitiProcess)){
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
             userIds.add(param.getUserId());
