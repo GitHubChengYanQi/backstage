@@ -392,6 +392,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             List<Map<String, Object>> maps = new ArrayList<>();
             for (FormDataValue formDataValue : formDataValues) {
+
                 if (formDataResult.getDataId().equals(formDataValue.getDataId())) {
                     for (QualityPlanDetail planDetail : planDetails) {
                         if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
@@ -406,19 +407,19 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
                                     if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
                                         flag = false;
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
                                                 if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(formDataValue.getValue()));
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(dataValues.getValue()));
                                                 }
                                             } else {
                                                 flag = true;
                                             }
                                         }
                                     } else if (qualityCheck.getType() == 3) {
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                                if (formDataValue.getValue().equals("1")) {
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                if (dataValues.getValue().equals("1")) {
                                                     flag = true;
                                                 } else {
                                                     flag = false;
