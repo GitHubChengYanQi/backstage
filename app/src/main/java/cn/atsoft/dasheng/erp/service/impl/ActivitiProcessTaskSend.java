@@ -35,12 +35,12 @@ public class ActivitiProcessTaskSend{
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private UserService userService;
-    public void send(String type, String starUser, String url, String stepsId, Long qualityTaskId) {
+    public void send(String type, StartUsers starUser, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
-                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+                for (StartUsers.Users user : starUser.getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
 

@@ -52,7 +52,6 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         QueryWrapper<ActivitiProcess> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("process_id", param.getProcessId());
         this.update(activitiProcess, queryWrapper);
-
     }
 
     @Override
