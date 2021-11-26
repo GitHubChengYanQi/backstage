@@ -155,32 +155,23 @@ public class ActivitiProcessTaskController extends BaseController {
         LoginUser loginUser = LoginContextHolder.getContext().getUser();
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
 
-        Boolean userFlag = false;
-        Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
-            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
-                if (user.getKey().equals(loginUser.getId().toString())) {
-                    userFlag = true;
-                }
-            }
+        Boolean userFlag = true;
+        Boolean deptFlag = true;
+        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
 
-        }
-        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts())) {
-            for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
-                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
-                    deptFlag = true;
-                }
-            }
-        }
-
+        QualityTaskResult result = new QualityTaskResult();
 
         QualityTask detail = this.qualityTaskService.getById(activitiProcessTaskParam.getQTaskId());
-        QualityTaskResult result = new QualityTaskResult();
+        if (ToolUtil.isNotEmpty(detail)) {
+            ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", detail.getQualityTaskId()).one();
+            setpsDetailResult.setTaskId(activitiProcessTask.getProcessTaskId());
+            setpsDetailResult.setTaskName(activitiProcessTask.getTaskName());
+        }
+
         ToolUtil.copyProperties(detail, result);
         qualityTaskService.detailFormat(result);
         ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
         ToolUtil.copyProperties(audit, activitiAuditResult);
-        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
         setpsDetailResult.setAuditResult(activitiAuditResult);
 
         if (ToolUtil.isNotEmpty(result.getCreateUser())) {

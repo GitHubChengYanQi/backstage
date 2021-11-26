@@ -26,8 +26,11 @@ public class QualityTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailResult> details;
+
     private List<FormDataResult> formDataResults;
+
     private String userName;
+
     private String createName;
 
     private List<TaskCount> taskCounts;

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,8 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param);
+    PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param);
+
+
 
 }
