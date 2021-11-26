@@ -189,7 +189,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case performTask:
             case completeTask:
             case luYou:
-            case type:
+            case branch:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));

@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,7 +34,8 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMapper, ActivitiProcess> implements ActivitiProcessService {
-
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
 
     @Override
     public void add(ActivitiProcessParam param) {
@@ -59,6 +61,10 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     public void update(ActivitiProcessParam param) {
         //确保有一个启用
         if (param.getStatus() == 98) {
+            Integer stepsCount = activitiStepsService.query().eq("process_id", param.getProcessId()).count();
+            if (stepsCount == 0) {
+                throw new ServiceException(500, "请先设置流程");
+            }
             Integer count = this.query().eq("module", param.getModule()).count();
             if (count > 0) {
                 ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
