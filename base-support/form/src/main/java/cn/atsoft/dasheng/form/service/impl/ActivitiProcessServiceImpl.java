@@ -59,23 +59,24 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     @Override
     @Transactional
     public void update(ActivitiProcessParam param) {
-        //确保有一个启用
+        //判断启用是否配置
         if (param.getStatus() == 98) {
             Integer stepsCount = activitiStepsService.query().eq("process_id", param.getProcessId()).count();
             if (stepsCount == 0) {
                 throw new ServiceException(500, "请先设置流程");
             }
+            //确保有流程启用
             Integer count = this.query().eq("module", param.getModule()).count();
             if (count > 0) {
                 ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
                         .ne("process_id", param.getProcessId())
                         .one();
                 if (ToolUtil.isEmpty(process)) {
-                    throw new ServiceException(500, "必须有一个流程以启用");
+                    throw new ServiceException(500, "不可全部停用");
                 }
             }
         }
-
+        //当前流程设为启用 其他流程设为停用
         if (param.getStatus() == 99) {
             ActivitiProcess process = this.query().eq("module", param.getModule())
                     .eq("status", 99)
