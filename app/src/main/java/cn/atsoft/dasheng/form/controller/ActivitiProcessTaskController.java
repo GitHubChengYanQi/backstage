@@ -189,14 +189,15 @@ public class ActivitiProcessTaskController extends BaseController {
         for (ActivitiSteps activitiStep : activitiSteps) {
             activitiStepsIds.add(activitiStep.getSetpsId());
         }
+        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTaskParam.getQTaskId()).one();
         List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
-        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcessTaskParam.getQTaskId())).list();
+        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcess.getProcessTaskId())).list();
         List<ActivitiAuditResult> logResult = new ArrayList<>();
         for (ActivitiAudit activitiAudit : activitiAudits) {
             ActivitiAuditResult auditResult = new ActivitiAuditResult();
             ToolUtil.copyProperties(activitiAudit, auditResult);
             for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
-                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiProcessLog.getTaskId().equals(activitiProcessTaskParam.getQTaskId())) {
+                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId())) {
                     auditResult.setStatus(activitiProcessLog.getStatus());
                 }
             }

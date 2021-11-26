@@ -20,7 +20,9 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -91,7 +93,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiProcessService processService;
     @Autowired
     private ActivitiStepsService stepsService;
-
+    @Autowired
+    private ActivitiAuditService auditService;
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
@@ -144,6 +147,26 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
         ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper", 0).one();
+//        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
+//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+//        Boolean userFlag = false;
+//        Boolean deptFlag = false;
+//        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+//            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
+//                if (user.getKey().equals(loginUser.getId().toString())) {
+//                    userFlag = true;
+//                }
+//            }
+//        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
+//            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
+//                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
+//                    deptFlag = true;
+//                }
+//            }
+//        }
+//        if (!userFlag && !deptFlag) {
+//            throw new ServiceException(500, "您没有权限操作审批");
+//        }
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
