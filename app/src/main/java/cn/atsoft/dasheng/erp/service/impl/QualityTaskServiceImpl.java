@@ -493,8 +493,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         detailService.format(qualityTaskDetailResults);
         param.setDetails(qualityTaskDetailResults);
         User byId = userService.getById(param.getUserId());
-        param.setUserName(byId.getName());
-
+        if (ToolUtil.isNotEmpty(byId)) {
+            param.setUserName(byId.getName());
+        }
 
     }
 

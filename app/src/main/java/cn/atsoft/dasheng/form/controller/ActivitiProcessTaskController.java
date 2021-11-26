@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class ActivitiProcessTaskController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam)  {
+    public ResponseData delete(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         this.activitiProcessTaskService.delete(activitiProcessTaskParam);
         return ResponseData.success();
     }
@@ -131,12 +132,12 @@ public class ActivitiProcessTaskController extends BaseController {
     public PageInfo<ActivitiProcessTaskResult> list(@RequestBody(required = false) ActivitiProcessTaskParam activitiProcessTaskParam) {
 
 
-        if(ToolUtil.isEmpty(activitiProcessTaskParam)){
+        if (ToolUtil.isEmpty(activitiProcessTaskParam)) {
             activitiProcessTaskParam = new ActivitiProcessTaskParam();
         }
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.activitiProcessTaskService.findPageBySpec(activitiProcessTaskParam);
-        }else{
+        } else {
             Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
             Long userId = LoginContextHolder.getContext().getUserId();
             activitiProcessTaskParam.setUserId(userId);
@@ -153,7 +154,7 @@ public class ActivitiProcessTaskController extends BaseController {
 
         Boolean userFlag = false;
         Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
+        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
             for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
                 if (user.getKey().equals(loginUser.getId().toString())) {
                     userFlag = true;
@@ -161,8 +162,7 @@ public class ActivitiProcessTaskController extends BaseController {
             }
 
         }
-        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts())) {
-
+        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts())) {
             for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
                 if (dept.getKey().equals(loginUser.getDeptId().toString())) {
                     deptFlag = true;
@@ -171,16 +171,15 @@ public class ActivitiProcessTaskController extends BaseController {
         }
 
 
-        if (!userFlag && !deptFlag){
-            throw new ServiceException(500,"抱歉该审批任务与您无关，您无权限查看");
-        }
+
+
 
         QualityTask detail = this.qualityTaskService.getById(activitiProcessTaskParam.getQTaskId());
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(detail, result);
         qualityTaskService.detailFormat(result);
         ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
-        ToolUtil.copyProperties(audit,activitiAuditResult);
+        ToolUtil.copyProperties(audit, activitiAuditResult);
         SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
         setpsDetailResult.setAuditResult(activitiAuditResult);
         setpsDetailResult.setQualityTaskResult(result);
@@ -195,7 +194,7 @@ public class ActivitiProcessTaskController extends BaseController {
         List<ActivitiAuditResult> logResult = new ArrayList<>();
         for (ActivitiAudit activitiAudit : activitiAudits) {
             ActivitiAuditResult auditResult = new ActivitiAuditResult();
-            ToolUtil.copyProperties(activitiAudit,auditResult);
+            ToolUtil.copyProperties(activitiAudit, auditResult);
             for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
                 if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiProcessLog.getTaskId().equals(activitiProcessTaskParam.getQTaskId())) {
                     auditResult.setStatus(activitiProcessLog.getStatus());
@@ -205,11 +204,15 @@ public class ActivitiProcessTaskController extends BaseController {
         }
         setpsDetailResult.setAuditResults(logResult);
 
-        if (ToolUtil.isNotEmpty(setpsId.getProcessId())){
+        if (ToolUtil.isNotEmpty(setpsId.getProcessId())) {
             ActivitiProcess process = activitiProcessService.getById(setpsId.getProcessId());
             setpsDetailResult.setActivitiProcess(process);
         }
-
+        if (!userFlag && !deptFlag) {
+            if (!detail.getUserId().equals(loginUser.getId())) {
+                throw new ServiceException(500, "抱歉该审批任务与您无关，您无权限查看");
+            }
+        }
         return ResponseData.success(setpsDetailResult);
     }
 
