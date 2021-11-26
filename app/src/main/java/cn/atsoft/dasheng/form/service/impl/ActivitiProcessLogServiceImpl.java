@@ -109,6 +109,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (entity.getStatus() == 1) {
             taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
+            if (audit.getType().equals("send")) {
+                ActivitiSteps children = stepsService.query().eq("children", steps.getChildren()).one();
+                ActivitiAudit nextAudit = auditService.query().eq("setps_id", children.getChildren()).one();
+                taskSend.send(nextAudit.getType(), nextAudit.getRule(), process.getUrl(), children.getChildren(), param.getFormId());
+            }
         } else {
 
             List<QualityTask> qualityTasks = qualityTaskService.query().eq("quality_task_id", activitiProcessTask.getFormId()).list();
