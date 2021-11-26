@@ -18,6 +18,7 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="step_type" property="stepType"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -45,8 +46,9 @@
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">
         select
         <include refid="Base_Column_List"/>
-        from activiti_steps where 1 = 1
+        from activiti_steps where display = 1
     </select>
+
 
     <select id="customPageMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.form.model.params.ActivitiStepsParam">

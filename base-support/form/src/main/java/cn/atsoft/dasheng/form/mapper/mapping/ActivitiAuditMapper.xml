@@ -4,24 +4,27 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiAudit">
-        <id column="audit_id" property="auditId" />
-        <result column="setps_id" property="setpsId" />
-        <result column="type" property="type" />
-        <result column="rule" property="rule" />
-        <result column="display" property="display" />
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="audit_id" property="auditId"/>
+        <result column="setps_id" property="setpsId"/>
+        <result column="type" property="type"/>
+        <result column="rule" property="rule" jdbcType="VARCHAR" javaType="cn.atsoft.dasheng.form.pojo.AuditRule"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
+        <result column="display" property="display"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        audit_id AS "auditId", setps_id AS "setpsId", type AS "type", rule AS "rule", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        audit_id
+        AS "auditId", setps_id AS "setpsId", type AS "type", rule AS "rule", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiAuditResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiAuditResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_audit where 1 = 1
@@ -33,13 +36,15 @@
         from activiti_audit where 1 = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiAuditResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
+    <select id="customPageList" resultMap="BaseResultMap"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_audit where 1 = 1
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiAuditParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_audit where 1 = 1

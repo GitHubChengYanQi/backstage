@@ -52,7 +52,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (process.getStatus() >= 98) {
             throw new ServiceException(500, "当前流程已经发布,不可以修改步骤");
         }
-        //修改就删除
+        //修改 删除之间数据
         QueryWrapper<ActivitiSteps> stepsQueryWrapper = new QueryWrapper<>();
         stepsQueryWrapper.eq("process_id", param.getProcessId());
         List<ActivitiSteps> activitiSteps = this.list(stepsQueryWrapper);
@@ -80,7 +80,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     }
 
-    //路由
+    /**
+     * 添加节点
+     *
+     * @param node
+     * @param supper
+     * @param processId
+     */
     public void luYou(ActivitiStepsParam node, Long supper, Long processId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
@@ -160,7 +166,13 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     }
 
-    //添加配置数据
+    /**
+     * 添加数据配置
+     *
+     * @param auditType
+     * @param auditRule
+     * @param id
+     */
     public void addAudit(AuditType auditType, AuditRule auditRule, Long id) {
         ActivitiAudit activitiAudit = new ActivitiAudit();
         activitiAudit.setSetpsId(id);
@@ -169,11 +181,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case person:
             case optional:
             case supervisor:
-                String str = JSONUtil.toJsonStr(auditRule);
-                activitiAudit.setRule(str);
+                if (ToolUtil.isEmpty(auditRule.getStartUsers())) {
+                    throw new ServiceException(500, "配置数据错误");
+                }
+                activitiAudit.setRule(auditRule);
                 break;
             case performTask:
             case completeTask:
+            case luYou:
+            case type:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));
@@ -249,8 +265,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             if (ToolUtil.isNotEmpty(audit.getRule())) {
 
                 activitiStepsResult.setAuditType(audit.getType());
-                AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
-                activitiStepsResult.setAuditRule(auditRule);
+                activitiStepsResult.setAuditRule(audit.getRule());
             }
         }
 
@@ -279,8 +294,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             if (ToolUtil.isNotEmpty(audit)) {
                 activitiStepsResult.setAuditType(audit.getType());
                 if (ToolUtil.isNotEmpty(audit.getRule())) {
-                    AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
-                    activitiStepsResult.setAuditRule(auditRule);
+                    activitiStepsResult.setAuditRule(audit.getRule());
                 }
             }
 
@@ -295,7 +309,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return activitiStepsResults;
     }
 
-
+    /**
+     * 查询节点
+     *
+     * @param id
+     * @return
+     */
     public ActivitiStepsResult getChildrenNode(Long id) {
         //可能是路由可能是节点
         ActivitiSteps childrenNode = this.query().eq("setps_id", id).one();
@@ -305,10 +324,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isNotEmpty(childrenNode)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", childrenNode.getSetpsId()).one();
             if (ToolUtil.isNotEmpty(audit)) {
-                AuditRule auditRule = JSONUtil.toBean(audit.getRule(), AuditRule.class);
                 luyou.setAuditType(audit.getType());
                 if (ToolUtil.isNotEmpty(audit.getRule())) {
-                    luyou.setAuditRule(auditRule);
+                    luyou.setAuditRule(audit.getRule());
                 }
             }
 

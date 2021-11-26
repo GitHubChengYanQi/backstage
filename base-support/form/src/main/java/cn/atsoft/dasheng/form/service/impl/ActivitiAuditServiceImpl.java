@@ -54,8 +54,6 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     }
 
 
-
-
     @Override
     public void delete(ActivitiAuditParam param) {
         this.removeById(getKey(param));

@@ -80,16 +80,22 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 //          }
         ActivitiSteps steps = stepsService.getById(param.getSetpsId());
         ActivitiProcess process = processService.getById(steps.getProcessId());
+
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
         Long userId = LoginContextHolder.getContext().getUserId();
-        AuditRule bean = JSONUtil.toBean(audit.getRule(), AuditRule.class);
-        if (ToolUtil.isNotEmpty(bean.getStartUsers().getUsers())) {
-            for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
-                if (!user.getKey().equals(userId)) {
-                    throw new ServiceException(500,"您没有权限操作该审批任务");
+        List<Long> in = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+                if (user.getKey().equals(userId.toString()) ) {
+                    in.add(Long.valueOf(user.getKey()));
                 }
             }
         }
+        if (in.size()<=0) {
+            throw  new ServiceException(500,"您没有权限操作审批");
+        }
+
 
 
 
@@ -101,16 +107,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (entity.getStatus() == 1) {
             taskSend.logAddSend(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
-        }else {
+        } else {
 
             List<QualityTask> qualityTasks = qualityTaskService.query().eq("quality_task_id", activitiProcessTask.getFormId()).list();
-            if (qualityTasks.size()>0){
+            if (qualityTasks.size() > 0) {
                 taskSend.vetoSend(audit.getType(), process.getUrl(), steps.getChildren(), activitiProcessTask.getFormId());
             }
         }
 //
     }
-
 
 
     @Override

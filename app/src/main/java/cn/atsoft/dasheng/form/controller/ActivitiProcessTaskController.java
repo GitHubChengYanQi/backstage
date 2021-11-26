@@ -9,10 +9,7 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
@@ -26,6 +23,9 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.form.service.*;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.hutool.core.convert.Convert;
@@ -60,6 +60,8 @@ public class ActivitiProcessTaskController extends BaseController {
     private ActivitiAuditService auditService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
 
     /**
      * 新增接口
@@ -184,7 +186,6 @@ public class ActivitiProcessTaskController extends BaseController {
         setpsDetailResult.setAuditResult(activitiAuditResult);
         setpsDetailResult.setQualityTaskResult(result);
         ActivitiSteps setpsId = activitiStepsService.query().eq("setps_id", audit.getSetpsId()).one();
-        setpsId.getFormId();
         List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, setpsId.getProcessId()).list();
         List<Long> activitiStepsIds = new ArrayList<>();
         for (ActivitiSteps activitiStep : activitiSteps) {
@@ -194,16 +195,22 @@ public class ActivitiProcessTaskController extends BaseController {
         List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcessTaskParam.getQTaskId())).list();
         List<ActivitiAuditResult> logResult = new ArrayList<>();
         for (ActivitiAudit activitiAudit : activitiAudits) {
+            ActivitiAuditResult auditResult = new ActivitiAuditResult();
+            ToolUtil.copyProperties(activitiAudit,auditResult);
             for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
                 if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiProcessLog.getTaskId().equals(activitiProcessTaskParam.getQTaskId())) {
-                    ActivitiAuditResult auditResult = new ActivitiAuditResult();
-                    ToolUtil.copyProperties(activitiAudit,auditResult);
                     auditResult.setStatus(activitiProcessLog.getStatus());
-                    logResult.add(auditResult);
                 }
             }
+            logResult.add(auditResult);
         }
         setpsDetailResult.setAuditResults(logResult);
+
+        if (ToolUtil.isNotEmpty(setpsId.getProcessId())){
+            ActivitiProcess process = activitiProcessService.getById(setpsId.getProcessId());
+            setpsDetailResult.setActivitiProcess(process);
+        }
+
         return ResponseData.success(setpsDetailResult);
     }
 

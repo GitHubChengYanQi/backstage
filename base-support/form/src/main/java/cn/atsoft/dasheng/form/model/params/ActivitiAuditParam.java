@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.params;
 
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,7 +25,6 @@ import java.util.List;
 public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
 
 
     private Long processId;
@@ -52,7 +52,7 @@ public class ActivitiAuditParam implements Serializable, BaseValidatingParam {
      * 审批规则
      */
     @ApiModelProperty("审批规则")
-    private String rule;
+    private AuditRule rule;
 
     /**
      * 删除状态

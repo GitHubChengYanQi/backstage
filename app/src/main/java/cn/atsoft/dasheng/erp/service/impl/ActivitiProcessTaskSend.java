@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -39,8 +40,7 @@ public class ActivitiProcessTaskSend{
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
-                AuditRule bean = JSONUtil.toBean(starUser, AuditRule.class);
-                for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
 
@@ -64,11 +64,10 @@ public class ActivitiProcessTaskSend{
         }
     }
 
-    public void logAddSend(String type, String starUser, String url, String stepsId, Long qualityTaskId) {
+    public void logAddSend(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
-
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         switch (type) {
             case "person":
@@ -110,7 +109,7 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.sendTemplate();
                 break;
             case "completeTask":
-
+                users = new ArrayList<>();
                 QualityTask updateEntity = new QualityTask();
                 updateEntity.setQualityTaskId(qualityTask.getQualityTaskId());
                 updateEntity.setState(2);
