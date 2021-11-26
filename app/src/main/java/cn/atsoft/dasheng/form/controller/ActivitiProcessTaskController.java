@@ -28,6 +28,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,8 @@ public class ActivitiProcessTaskController extends BaseController {
     private QualityTaskService qualityTaskService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
@@ -171,9 +174,6 @@ public class ActivitiProcessTaskController extends BaseController {
         }
 
 
-
-
-
         QualityTask detail = this.qualityTaskService.getById(activitiProcessTaskParam.getQTaskId());
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(detail, result);
@@ -182,6 +182,12 @@ public class ActivitiProcessTaskController extends BaseController {
         ToolUtil.copyProperties(audit, activitiAuditResult);
         SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
         setpsDetailResult.setAuditResult(activitiAuditResult);
+
+        if (ToolUtil.isNotEmpty(result.getCreateUser())) {
+            User user = userService.getById(result.getCreateUser());
+            result.setCreateName(user.getName());
+        }
+
         setpsDetailResult.setQualityTaskResult(result);
         ActivitiSteps setpsId = activitiStepsService.query().eq("setps_id", audit.getSetpsId()).one();
         List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, setpsId.getProcessId()).list();

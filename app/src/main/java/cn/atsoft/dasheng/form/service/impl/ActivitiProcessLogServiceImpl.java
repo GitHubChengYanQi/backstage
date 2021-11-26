@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.pojo.ChildAudit;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
@@ -180,4 +181,33 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return entity;
     }
 
+    /**
+     * 查询下一级配置
+     * @param id
+     * @return
+     */
+    public ChildAudit backChildAudit(Long id) {
+        ActivitiAudit audit = auditService.query().eq("setps_id", id).one();
+        if (ToolUtil.isNotEmpty(audit)) {
+            ChildAudit childAudit = new ChildAudit();
+            switch (audit.getType()) {
+                case "person":
+                case "supervisor":
+                case "start":
+
+                    childAudit.setType(audit.getType());
+                    childAudit.setAuditRule(audit.getRule());
+                    return childAudit;
+
+                case "optional":
+                case "performTask":
+                case "completeTask":
+
+                    childAudit.setType(audit.getType());
+                    childAudit.setAuditRule(null);
+                    return childAudit;
+            }
+        }
+        return null;
+    }
 }

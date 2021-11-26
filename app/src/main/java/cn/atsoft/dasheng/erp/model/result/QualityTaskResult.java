@@ -28,6 +28,7 @@ public class QualityTaskResult implements Serializable {
     private List<QualityTaskDetailResult> details;
     private List<FormDataResult> formDataResults;
     private String userName;
+    private String createName;
 
     private List<TaskCount> taskCounts;
 

@@ -181,6 +181,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case person:
             case optional:
             case supervisor:
+            case send:
                 if (ToolUtil.isEmpty(auditRule.getStartUsers())) {
                     throw new ServiceException(500, "配置数据错误");
                 }
