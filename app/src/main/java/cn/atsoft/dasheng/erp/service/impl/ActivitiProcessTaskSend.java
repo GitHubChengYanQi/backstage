@@ -36,29 +36,41 @@ public class ActivitiProcessTaskSend{
     @Autowired
     private UserService userService;
     public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
+        QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
-                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
-                    users.add(Long.valueOf(user.getKey()));
-                }
 
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
+                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+                        users.add(Long.valueOf(user.getKey()));
+                    }
+                }
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
+                    List<Long> deptIds = new ArrayList<>();
+                    for (StartUsers.Depts dept : starUser.getStartUsers().getDepts()) {
+                        deptIds.add(Long.valueOf(dept.getKey()));
+                    }
+                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
+                    for (User user : userList) {
+                        users.add(user.getUserId());
+                    }
+                }
                 wxCpTemplate.setUserIds(users);
                 String setpsValue = url.replace("setpsvalue", stepsId.toString());
                 String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
-                wxCpTemplate.setDescription("您有新的待审批任务");
+                wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
             case "performtask":
-                QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
                 users.add(qualityTask.getUserId());
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setTitle("您有新的待执行任务");
-                wxCpTemplate.setDescription("您有新的待执行任务");
+                wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
         }
@@ -92,7 +104,7 @@ public class ActivitiProcessTaskSend{
                 String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
-                wxCpTemplate.setDescription("您有新的待审批任务");
+                wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -103,7 +115,7 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("您有新的待执行任务");
-                wxCpTemplate.setDescription("您有新的待执行任务");
+                wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -118,7 +130,7 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("质检任务完成，待批准入库");
-                wxCpTemplate.setDescription("质检任务完成，待批准入库");
+                wxCpTemplate.setDescription(qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;

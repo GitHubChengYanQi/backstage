@@ -57,14 +57,16 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private QualityTaskServiceImpl qualityTaskService;
     @Autowired
     private ActivitiProcessTaskSend taskSend;
+
     @Override
     public void add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
         ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
-        ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper",0).one();
+        ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper", 0).one();
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
         taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), param.getFormId());
+
     }
 
     @Override
@@ -89,6 +91,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
         this.updateById(newEntity);
     }
+
     @Override
     public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
