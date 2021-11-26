@@ -143,7 +143,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
-        ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper",0).one();
+        ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper", 0).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(param.getCoding() + "质检任务");
@@ -152,7 +152,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskService.add(activitiProcessTaskParam);
-        } else if (ToolUtil.isEmpty(steps)||ToolUtil.isEmpty(activitiProcess)){
+        } else if (ToolUtil.isEmpty(steps) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
             userIds.add(param.getUserId());
@@ -394,7 +394,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                 if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("name", qualityCheck.getName());
-                                    map.put("value", formDataValue.getValue());
+                                    FormValues.DataValues dataValues = JSONUtil.toBean(formDataValue.getValue(), FormValues.DataValues.class);
+
+                                    map.put("value", dataValues);
                                     Boolean flag = false;
 
                                     if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
@@ -407,7 +409,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                             } else {
                                                 flag = true;
                                             }
-
                                         }
                                     } else if (qualityCheck.getType() == 3) {
                                         if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
@@ -420,7 +421,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                             } else {
                                                 flag = true;
                                             }
-
                                         }
                                     } else {
                                         flag = true;
