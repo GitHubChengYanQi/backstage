@@ -13,7 +13,12 @@ public class FormValues {
     @Data
     public class DataValues {
         private String value;
-        private List<Long> imgId;
+        private List<ImgValues> imgValues;
     }
 
+    @Data
+    public class ImgValues {
+        private Long id;
+        private String url;
+    }
 }
