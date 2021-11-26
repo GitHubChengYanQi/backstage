@@ -79,13 +79,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         LoginUser loginUser = LoginContextHolder.getContext().getUser();
         Boolean userFlag = false;
         Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
+        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
             for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
                 if (user.getKey().equals(loginUser.getId().toString())) {
                     userFlag = true;
                 }
             }
-        } else if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
+        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
             for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
                 if (dept.getKey().equals(loginUser.getDeptId().toString())) {
                     deptFlag = true;
