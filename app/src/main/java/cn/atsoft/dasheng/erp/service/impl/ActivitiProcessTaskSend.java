@@ -40,7 +40,7 @@ public class ActivitiProcessTaskSend{
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
-                for (StartUsers.Users user : starUser.getUsers()) {
+                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
 
