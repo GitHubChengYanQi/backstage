@@ -38,7 +38,7 @@ public class ActivitiProcessTaskSend{
     public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-
+        User byId = userService.getById(qualityTask.getCreateUser());
         List<Long> users = new ArrayList<>();
         switch (type){
             case "person":
@@ -63,7 +63,7 @@ public class ActivitiProcessTaskSend{
                 String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
-                wxCpTemplate.setDescription(qualityTask.getCoding());
+                wxCpTemplate.setDescription(byId.getName()+"已发起质检任务"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -75,7 +75,18 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("您有新的待执行任务");
-                wxCpTemplate.setDescription(qualityTask.getCoding());
+                wxCpTemplate.setDescription(byId.getName()+"已发起质检任务"+qualityTask.getCoding());
+                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+                wxCpSendTemplate.sendTemplate();
+                break;
+            case "send":
+                users = new ArrayList<>();
+                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+                    users.add(Long.valueOf(user.getKey()));
+                }
+                wxCpTemplate.setUserIds(users);
+                wxCpTemplate.setTitle("接收到新的流程审批抄送");
+                wxCpTemplate.setDescription(byId.getName()+"已发起质检任务"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -87,6 +98,7 @@ public class ActivitiProcessTaskSend{
         List<Long> users = new ArrayList<>();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
+        User byId = userService.getById(qualityTask.getCreateUser());
         switch (type) {
             case "person":
                 users = new ArrayList<>();
@@ -110,7 +122,7 @@ public class ActivitiProcessTaskSend{
                 String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
-                wxCpTemplate.setDescription(qualityTask.getCoding());
+                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -121,7 +133,7 @@ public class ActivitiProcessTaskSend{
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("您有新的待执行任务");
-                wxCpTemplate.setDescription(qualityTask.getCoding());
+                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
@@ -140,10 +152,23 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
                 break;
+            case "send":
+                users = new ArrayList<>();
+                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+                    users.add(Long.valueOf(user.getKey()));
+                }
+                wxCpTemplate.setUrl("www.baidu.com");
+                wxCpTemplate.setUserIds(users);
+                wxCpTemplate.setTitle("接收到新的流程审批抄送");
+                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
+                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+                wxCpSendTemplate.sendTemplate();
+                break;
         }
     }
     public void vetoSend(String type, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
+
         List<Long> users = new ArrayList<>();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", qualityTaskId).one();

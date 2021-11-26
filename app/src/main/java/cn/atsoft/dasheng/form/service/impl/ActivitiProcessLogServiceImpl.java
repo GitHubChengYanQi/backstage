@@ -77,25 +77,28 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
         ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-        Boolean userFlag = false;
-        Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
-            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
-                if (user.getKey().equals(loginUser.getId().toString())) {
-                    userFlag = true;
+        if (audit.getType().equals("person")) {
+            LoginUser loginUser = LoginContextHolder.getContext().getUser();
+            Boolean userFlag = false;
+            Boolean deptFlag = false;
+            if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+                for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
+                    if (user.getKey().equals(loginUser.getId().toString())) {
+                        userFlag = true;
+                    }
+                }
+            } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
+                for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
+                    if (dept.getKey().equals(loginUser.getDeptId().toString())) {
+                        deptFlag = true;
+                    }
                 }
             }
-        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
-            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
-                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
-                    deptFlag = true;
-                }
+            if (!userFlag && !deptFlag) {
+                throw new ServiceException(500, "您没有权限操作审批");
             }
         }
-        if (!userFlag && !deptFlag) {
-            throw new ServiceException(500, "您没有权限操作审批");
-        }
+
 
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();

@@ -76,7 +76,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //添加节点
         if (ToolUtil.isNotEmpty(param.getChildNode())) {
             luYou(param.getChildNode(), entity.getSetpsId(), entity.getProcessId());
+        } else {
+            throw new ServiceException(500, "配置流程有误");
         }
+
 
     }
 
@@ -93,6 +96,17 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (node.getType().equals("4")) {
             activitiSteps.setStepType("路由");
         }
+        //判断配置
+        if (ToolUtil.isEmpty(node.getAuditType())) {
+            throw new ServiceException(500, "请设置正确的配置");
+        }
+
+        if (node.getAuditType().toString().equals("send")) {
+            ActivitiSteps steps = this.getById(supper);
+            if (steps.getType().equals("0")) {
+                throw new ServiceException(500, "不可以直接抄送");
+            }
+        }
         activitiSteps.setType(node.getType());
         activitiSteps.setSupper(supper);
         activitiSteps.setStepType(node.getStepType());
@@ -100,11 +114,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         this.save(activitiSteps);
 
         //添加配置
-        if (ToolUtil.isEmpty(node.getAuditType())) {
-            throw new ServiceException(500, "请设置正确的配置");
+        if (!node.getAuditType().equals("luYou")) {
+            addAudit(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
         }
-        addAudit(node.getAuditType(), node.getAuditRule(), activitiSteps.getSetpsId());
-
         //修改父级
         ActivitiSteps fatherSteps = new ActivitiSteps();
         fatherSteps.setChildren(activitiSteps.getSetpsId().toString());
@@ -181,6 +193,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case person:
             case optional:
             case supervisor:
+            case send:
                 if (ToolUtil.isEmpty(auditRule.getStartUsers())) {
                     throw new ServiceException(500, "配置数据错误");
                 }
