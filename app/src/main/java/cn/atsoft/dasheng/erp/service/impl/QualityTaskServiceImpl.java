@@ -392,7 +392,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                 if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("name", qualityCheck.getName());
-                                    map.put("value", formDataValue.getValue());
+                                    FormValues.DataValues dataValues = JSONUtil.toBean(formDataValue.getValue(), FormValues.DataValues.class);
+
+                                    map.put("value", dataValues);
                                     Boolean flag = false;
 
                                     if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
@@ -405,7 +407,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                             } else {
                                                 flag = true;
                                             }
-
                                         }
                                     } else if (qualityCheck.getType() == 3) {
                                         if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
@@ -418,7 +419,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                             } else {
                                                 flag = true;
                                             }
-
                                         }
                                     } else {
                                         flag = true;
