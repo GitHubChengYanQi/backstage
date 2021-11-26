@@ -137,16 +137,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         String url = param.getUrl().replace("codeId", aLong.toString());
 
 
-        try {
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(param.getCoding()+"质检任务");
+            activitiProcessTaskParam.setTaskName(param.getCoding() + "质检任务");
             activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             activitiProcessTaskService.add(activitiProcessTaskParam);
-        }catch (ServiceException e){
+        } else {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
             userIds.add(param.getUserId());
@@ -158,7 +158,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             wxCpSendTemplate.sendTemplate();
         }
 
+
     }
+
 
     @Override
     public void delete(QualityTaskParam param) {
@@ -175,13 +177,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
+
     @Transactional
     @Override
-    public void checkOver(QualityTaskParam param){
+    public void checkOver(QualityTaskParam param) {
         QualityTask oldEntity = getOldEntity(param);
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-
 
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
@@ -198,8 +200,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             newLog.setFormId(param.getQualityTaskId());
             newLog.setStatus(1);
             activitiProcessLogService.add(newLog);
-        }
-        else  {
+        } else {
             newEntity.setState(2);
         }
         this.updateById(newEntity);
@@ -375,7 +376,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
 
-        List<Sku> skus =skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
@@ -434,25 +435,25 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
                                     if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
                                         flag = false;
-                                        if (planDetail.getIsNull() == 0 ||ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
                                                 if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
                                                     flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(formDataValue.getValue()));
                                                 }
-                                            }else {
+                                            } else {
                                                 flag = true;
                                             }
 
                                         }
                                     } else if (qualityCheck.getType() == 3) {
-                                        if (planDetail.getIsNull() == 0 ||ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())){
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
                                                 if (formDataValue.getValue().equals("1")) {
                                                     flag = true;
                                                 } else {
                                                     flag = false;
                                                 }
-                                            }else {
+                                            } else {
                                                 flag = true;
                                             }
 

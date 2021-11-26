@@ -64,11 +64,10 @@ public class ActivitiProcessTaskSend{
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
-        users.add(qualityTask.getUserId());
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         switch (type) {
             case "person":
-
+                users = new ArrayList<>();
                 for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
@@ -82,7 +81,8 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.sendTemplate();
                 break;
             case "performTask":
-
+                users = new ArrayList<>();
+                users.add(qualityTask.getUserId());
                 url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
@@ -92,7 +92,7 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.sendTemplate();
                 break;
             case "completeTask":
-
+                users = new ArrayList<>();
                 QualityTask updateEntity = new QualityTask();
                 updateEntity.setQualityTaskId(qualityTask.getQualityTaskId());
                 updateEntity.setState(2);
