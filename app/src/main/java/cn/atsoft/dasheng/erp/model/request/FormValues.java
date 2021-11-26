@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.request;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -11,14 +12,15 @@ public class FormValues {
     private DataValues dataValues;
 
     @Data
-    public class DataValues {
+    public  static class DataValues {
         private String value;
-        private List<ImgValues> imgValues;
+        private List<ImgValues> imgValues ;
+        @Data
+        public  static class ImgValues {
+            private Long id;
+            private String url;
+        }
     }
 
-    @Data
-    public class ImgValues {
-        private Long id;
-        private String url;
-    }
+
 }
