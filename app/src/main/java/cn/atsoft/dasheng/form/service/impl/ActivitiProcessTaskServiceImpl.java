@@ -71,7 +71,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             ActivitiAudit nextAudit = auditService.query().eq("setps_id", children.getChildren()).one();
             taskSend.send(nextAudit.getType(), nextAudit.getRule(), process.getUrl(), children.getChildren(), param.getFormId());
         }
-        return entity.getProcessId();
+        return entity.getProcessTaskId();
 
     }
 
