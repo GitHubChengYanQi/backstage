@@ -2,31 +2,24 @@ package cn.atsoft.dasheng.form.service.impl;
 
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
-import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
-import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
-import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -83,20 +76,25 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
         ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
-        Long userId = LoginContextHolder.getContext().getUserId();
-        List<Long> in = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        Boolean userFlag = false;
+        Boolean deptFlag = false;
+        if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
             for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
-                if (user.getKey().equals(userId.toString()) ) {
-                    in.add(Long.valueOf(user.getKey()));
+                if (user.getKey().equals(loginUser.getId().toString())) {
+                    userFlag = true;
+                }
+            }
+        } else if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
+            for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
+                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
+                    deptFlag = true;
                 }
             }
         }
-        if (in.size()<=0) {
-            throw  new ServiceException(500,"您没有权限操作审批");
+        if (!userFlag && !deptFlag) {
+            throw new ServiceException(500, "您没有权限操作审批");
         }
-
-
 
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();
