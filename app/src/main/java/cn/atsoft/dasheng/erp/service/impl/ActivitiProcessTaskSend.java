@@ -35,7 +35,7 @@ public class ActivitiProcessTaskSend{
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private UserService userService;
-    public void send(String type, StartUsers starUser, String url, String stepsId, Long qualityTaskId) {
+    public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         switch (type){
@@ -72,15 +72,14 @@ public class ActivitiProcessTaskSend{
         switch (type) {
             case "person":
                 users = new ArrayList<>();
-                AuditRule bean = JSONUtil.toBean(starUser, AuditRule.class);
-                if (ToolUtil.isNotEmpty(bean.getStartUsers().getUsers())) {
-                    for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
+                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                         users.add(Long.valueOf(user.getKey()));
                     }
                 }
-                if (ToolUtil.isNotEmpty(bean.getStartUsers().getDepts())) {
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
                     List<Long> deptIds = new ArrayList<>();
-                    for (StartUsers.Depts dept : bean.getStartUsers().getDepts()) {
+                    for (StartUsers.Depts dept : starUser.getStartUsers().getDepts()) {
                         deptIds.add(Long.valueOf(dept.getKey()));
                     }
                     List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
