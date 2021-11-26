@@ -80,13 +80,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         Boolean userFlag = false;
         Boolean deptFlag = false;
         if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
-            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
                 if (user.getKey().equals(loginUser.getId().toString())) {
                     userFlag = true;
                 }
             }
         } else if (ToolUtil.isNotEmpty(audit.getRule()) && ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
-            for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
+            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
                 if (dept.getKey().equals(loginUser.getDeptId().toString())) {
                     deptFlag = true;
                 }

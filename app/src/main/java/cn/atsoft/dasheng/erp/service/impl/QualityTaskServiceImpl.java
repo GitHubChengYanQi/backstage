@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -143,8 +145,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
         ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper", 0).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
+            LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(param.getCoding() + "质检任务");
+            activitiProcessTaskParam.setTaskName(user.getName()+"发起的质检任务 ("+param.getCoding() + ")");
             activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
