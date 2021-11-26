@@ -147,26 +147,26 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
         ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper", 0).one();
-//        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
-//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-//        Boolean userFlag = false;
-//        Boolean deptFlag = false;
-//        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
-//            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
-//                if (user.getKey().equals(loginUser.getId().toString())) {
-//                    userFlag = true;
-//                }
-//            }
-//        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
-//            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
-//                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
-//                    deptFlag = true;
-//                }
-//            }
-//        }
-//        if (!userFlag && !deptFlag) {
-//            throw new ServiceException(500, "您没有权限操作审批");
-//        }
+        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        Boolean userFlag = false;
+        Boolean deptFlag = false;
+        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
+                if (user.getKey().equals(loginUser.getId().toString())) {
+                    userFlag = true;
+                }
+            }
+        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
+            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
+                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
+                    deptFlag = true;
+                }
+            }
+        }
+        if (!userFlag && !deptFlag) {
+            throw new ServiceException(500, "您没有权限创建");
+        }
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
@@ -433,7 +433,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                         if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
                                             if (ToolUtil.isNotEmpty(dataValues.getValue())) {
                                                 if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(dataValues.getValue()));
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), dataValues.getValue());
                                                 }
                                             } else {
                                                 flag = true;
@@ -472,34 +472,34 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
     }
 
-    private Boolean mathData(String standardValue, Long operator, Double value) {
+    private Boolean mathData(String standardValue, Long operator, String value) {
         Boolean flag = false;
         if (ToolUtil.isNotEmpty(standardValue)) {
             if (ToolUtil.isNotEmpty(operator)) {
                 switch (operator.toString()) {
                     case "1":
-                        if (value == Double.valueOf(standardValue))
+                        if (Double.valueOf(value).equals(Double.valueOf(standardValue)))
                             flag = true;
                         break;
                     case "2":
-                        if (value >= Double.valueOf(standardValue))
+                        if (Double.parseDouble(value) >= Double.parseDouble(standardValue))
                             flag = true;
                         break;
                     case "3":
-                        if (value <= Double.valueOf(standardValue))
+                        if (Double.parseDouble(value) <= Double.parseDouble(standardValue))
                             flag = true;
                         break;
                     case "4":
-                        if (value > Double.valueOf(standardValue))
+                        if (Double.parseDouble(value) > Double.parseDouble(standardValue))
                             flag = true;
                         break;
                     case "5":
-                        if (value < Double.valueOf(standardValue))
+                        if (Double.parseDouble(value) < Double.parseDouble(standardValue))
                             flag = true;
                         break;
                     case "6":
                         List<String> result = Arrays.asList(standardValue.split(","));
-                        if (value >= Double.valueOf(result.get(0)) && value <= Double.valueOf(result.get(1)))
+                        if (Double.parseDouble(value) >= Double.parseDouble(result.get(0)) && Double.parseDouble(value) <= Double.parseDouble(result.get(1)))
                             flag = true;
                         break;
                 }
