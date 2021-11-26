@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -48,6 +49,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
 
     @Autowired
     private FormDataService formDataService;
+
 
 
     @Transactional
@@ -131,7 +133,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         //修改质检项
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("plan_id", param.getQualityPlanId());
-        
+
         List<QualityPlanDetail> list = qualityPlanDetailService.list(queryWrapper);
         List<Long> inTask = new ArrayList<>();
         for (QualityPlanDetail qualityPlanDetail : list) {
@@ -139,7 +141,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         }
         List<FormData> list1 = formDataService.lambdaQuery().in(FormData::getFormId, inTask).list();
         if (ToolUtil.isNotEmpty(list1)) {
-            throw  new ServiceException(500,"此计划正在被使用中，无法进行更改");
+            throw new ServiceException(500, "此计划正在被使用中，无法进行更改");
         }
 
         qualityPlanDetailService.remove(queryWrapper);
@@ -170,7 +172,7 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     public PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param) {
         Page<QualityPlanResult> pageContext = getPageContext();
         IPage<QualityPlanResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
+
         return PageFactory.createPageInfo(page);
     }
 
@@ -192,9 +194,5 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         return entity;
     }
 
-    public void format(List<QualityPlanResult> data) {
-        for (QualityPlanResult datum : data) {
 
-        }
-    }
 }

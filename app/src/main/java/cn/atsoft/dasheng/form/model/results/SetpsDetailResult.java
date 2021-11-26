@@ -9,8 +9,15 @@ import java.util.List;
 
 @Data
 public class SetpsDetailResult {
+
+    private Long taskId;
+    private String taskName;
+
     private ActivitiAuditResult auditResult;
+
     private ActivitiProcess activitiProcess;
+
     private QualityTaskResult qualityTaskResult;
+
     private List<ActivitiAuditResult> auditResults;
 }

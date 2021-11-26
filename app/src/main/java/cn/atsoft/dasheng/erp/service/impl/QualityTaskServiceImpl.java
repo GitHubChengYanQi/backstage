@@ -19,7 +19,9 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -85,20 +87,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private ActivitiStepsService activitiStepsService;
+
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+
     @Autowired
     private ActivitiProcessService activitiProcessService;
-    @Autowired
-    private ActivitiProcessService processService;
+
     @Autowired
     private ActivitiStepsService stepsService;
+
     @Autowired
     private ActivitiAuditService auditService;
+
+
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
-
 
         CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
         if (ToolUtil.isNotEmpty(rules)) {
@@ -115,6 +120,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         QualityTask entity = getEntity(param);
         this.save(entity);
+
+
         if (ToolUtil.isNotEmpty(param.getDetails())) {
             List<Long> skuIds = new ArrayList<>();
             Map<Long, Long> maps = new HashMap<>();
@@ -146,37 +153,26 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
-        ActivitiSteps steps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", 0).eq("supper", 0).one();
-        ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-        Boolean userFlag = false;
-        Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
-            for (StartUsers.Users user : nowAudit.getRule().getStartUsers().getUsers()) {
-                if (user.getKey().equals(loginUser.getId().toString())) {
-                    userFlag = true;
-                }
-            }
-        } else if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getDepts()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers())) {
-            for (StartUsers.Depts dept : nowAudit.getRule().getStartUsers().getDepts()) {
-                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
-                    deptFlag = true;
-                }
-            }
-        }
-        if (!userFlag && !deptFlag) {
-            throw new ServiceException(500, "您没有权限创建");
-        }
+
         if (ToolUtil.isNotEmpty(activitiProcess)) {
+
+
+            LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
+
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName()+"发起的质检任务 ("+param.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
             activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            activitiProcessTaskService.add(activitiProcessTaskParam);
-        } else if (ToolUtil.isEmpty(steps) || ToolUtil.isEmpty(activitiProcess)) {
+            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+            ToolUtil.copyProperties(activitiProcessTaskParam,activitiProcessTask);
+            activitiProcessTaskService.save(activitiProcessTask);
+            //添加log
+            ActivitiStepsResult activitiStepsResult = activitiProcessLogService.addLog(activitiProcess.getProcessId(), activitiProcessTask.getProcessTaskId());
+        } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
             userIds.add(param.getUserId());
@@ -230,8 +226,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 newLog.setTaskId(activitiProcessTask.getProcessTaskId());
                 newLog.setFormId(param.getQualityTaskId());
                 newLog.setStatus(1);
-                activitiProcessLogService.add(newLog);
-            }else {
+//                activitiProcessLogService.add(newLog);
+            } else {
                 newEntity.setState(2);
             }
         } else {

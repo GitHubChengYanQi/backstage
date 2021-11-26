@@ -35,6 +35,7 @@ public class ActivitiProcessTaskSend{
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private UserService userService;
+
     public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -93,9 +94,11 @@ public class ActivitiProcessTaskSend{
         }
     }
 
-    public void logAddSend(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
+    public void logAddSend(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+        Long qualityTaskId = task.getFormId();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         User byId = userService.getById(qualityTask.getCreateUser());
@@ -161,7 +164,7 @@ public class ActivitiProcessTaskSend{
                 String formValue1 = setpsValue1.replace("formvalue", qualityTaskId.toString());
                 wxCpTemplate.setUrl(formValue1);
                 wxCpTemplate.setUserIds(users);
-                wxCpTemplate.setTitle("接收到新的流程审批抄送");
+                wxCpTemplate.setTitle("抄送");
                 wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();

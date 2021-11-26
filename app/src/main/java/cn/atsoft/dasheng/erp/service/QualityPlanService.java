@@ -64,6 +64,8 @@ public interface QualityPlanService extends IService<QualityPlan> {
      * @author Captain_Jazz
      * @Date 2021-10-28
      */
-     PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param);
+    PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param);
+
+
 
 }
