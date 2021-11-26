@@ -36,8 +36,13 @@ public class ActivitiProcessTaskSend{
     @Autowired
     private UserService userService;
 
-    public void send(String type, AuditRule starUser, String url, String stepsId, Long qualityTaskId) {
+    public void send(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
+
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+        Long qualityTaskId = task.getFormId();
+
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
+
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         User byId = userService.getById(qualityTask.getCreateUser());
         List<Long> users = new ArrayList<>();
@@ -61,7 +66,7 @@ public class ActivitiProcessTaskSend{
                 }
                 wxCpTemplate.setUserIds(users);
                 String setpsValue = url.replace("setpsvalue", stepsId.toString());
-                String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
+                String formValue = setpsValue.replace("formvalue", taskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
                 wxCpTemplate.setDescription(byId.getName()+"已发起质检任务"+qualityTask.getCoding());
@@ -122,7 +127,7 @@ public class ActivitiProcessTaskSend{
                 }
                 wxCpTemplate.setUserIds(users);
                 String setpsValue = url.replace("setpsvalue", stepsId.toString());
-                String formValue = setpsValue.replace("formvalue", qualityTaskId.toString());
+                String formValue = setpsValue.replace("formvalue", taskId.toString());
                 wxCpTemplate.setUrl(formValue);
                 wxCpTemplate.setTitle("您有新的待审批任务");
                 wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
@@ -161,7 +166,7 @@ public class ActivitiProcessTaskSend{
                     users.add(Long.valueOf(user.getKey()));
                 }
                 String setpsValue1 = url.replace("setpsvalue", stepsId.toString());
-                String formValue1 = setpsValue1.replace("formvalue", qualityTaskId.toString());
+                String formValue1 = setpsValue1.replace("formvalue", taskId.toString());
                 wxCpTemplate.setUrl(formValue1);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("抄送");
