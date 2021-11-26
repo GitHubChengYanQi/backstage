@@ -151,20 +151,19 @@ public class ActivitiProcessTaskController extends BaseController {
         LoginUser loginUser = LoginContextHolder.getContext().getUser();
         ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
 
-        AuditRule bean = JSONUtil.toBean(audit.getRule(), AuditRule.class);
         Boolean userFlag = false;
         Boolean deptFlag = false;
-        if (ToolUtil.isNotEmpty(bean.getStartUsers().getUsers())) {
-            for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
+            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
                 if (user.getKey().equals(loginUser.getId().toString())) {
                     userFlag = true;
                 }
             }
 
         }
-        if (ToolUtil.isNotEmpty(bean.getStartUsers().getDepts())) {
+        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts())) {
 
-            for (StartUsers.Depts dept : bean.getStartUsers().getDepts()) {
+            for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
                 if (dept.getKey().equals(loginUser.getDeptId().toString())) {
                     deptFlag = true;
                 }
