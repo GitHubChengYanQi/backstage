@@ -169,9 +169,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam,activitiProcessTask);
-            activitiProcessTaskService.save(activitiProcessTask);
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
-            ActivitiStepsResult activitiStepsResult = activitiProcessLogService.addLog(activitiProcess.getProcessId(), activitiProcessTask.getProcessTaskId());
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();

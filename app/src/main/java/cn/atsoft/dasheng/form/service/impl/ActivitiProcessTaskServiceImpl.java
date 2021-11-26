@@ -59,7 +59,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiProcessTaskSend taskSend;
 
     @Override
-    public void add(ActivitiProcessTaskParam param) {
+    public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
         ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
@@ -71,6 +71,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
             ActivitiAudit nextAudit = auditService.query().eq("setps_id", children.getChildren()).one();
             taskSend.send(nextAudit.getType(), nextAudit.getRule(), process.getUrl(), children.getChildren(), param.getFormId());
         }
+        return entity.getProcessId();
 
     }
 
