@@ -199,14 +199,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             queryWrapper.eq("task_id", activitiProcessTask.getProcessTaskId());
             queryWrapper.last("order by setps_id limit 1");
             ActivitiProcessLog activitiProcessLog = activitiProcessLogService.getOne(queryWrapper);
-            ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
-            ActivitiProcessLogParam newLog = new ActivitiProcessLogParam();
-            newLog.setPeocessId(activitiProcessTask.getProcessId());
-            newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
-            newLog.setTaskId(activitiProcessTask.getProcessTaskId());
-            newLog.setFormId(param.getQualityTaskId());
-            newLog.setStatus(1);
-            activitiProcessLogService.add(newLog);
+            if (ToolUtil.isNotEmpty(activitiProcessLog)) {
+                ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
+                ActivitiProcessLogParam newLog = new ActivitiProcessLogParam();
+                newLog.setPeocessId(activitiProcessTask.getProcessId());
+                newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
+                newLog.setTaskId(activitiProcessTask.getProcessTaskId());
+                newLog.setFormId(param.getQualityTaskId());
+                newLog.setStatus(1);
+                activitiProcessLogService.add(newLog);
+            }else {
+                newEntity.setState(2);
+            }
         } else {
             newEntity.setState(2);
         }
@@ -388,6 +392,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             List<Map<String, Object>> maps = new ArrayList<>();
             for (FormDataValue formDataValue : formDataValues) {
+
                 if (formDataResult.getDataId().equals(formDataValue.getDataId())) {
                     for (QualityPlanDetail planDetail : planDetails) {
                         if (formDataValue.getField().equals(planDetail.getPlanDetailId())) {
@@ -402,19 +407,19 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
                                     if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
                                         flag = false;
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
                                                 if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(formDataValue.getValue()));
+                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), Double.valueOf(dataValues.getValue()));
                                                 }
                                             } else {
                                                 flag = true;
                                             }
                                         }
                                     } else if (qualityCheck.getType() == 3) {
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                            if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
-                                                if (formDataValue.getValue().equals("1")) {
+                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                if (dataValues.getValue().equals("1")) {
                                                     flag = true;
                                                 } else {
                                                     flag = false;
