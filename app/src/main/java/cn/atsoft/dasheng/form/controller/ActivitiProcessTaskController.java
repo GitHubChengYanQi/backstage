@@ -191,7 +191,7 @@ public class ActivitiProcessTaskController extends BaseController {
         for (ActivitiSteps activitiStep : activitiSteps) {
             activitiStepsIds.add(activitiStep.getSetpsId());
         }
-        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTaskParam.getQTaskId()).one();
+        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTask.getFormId()).one();
         List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
         List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcess.getProcessTaskId())).list();
         List<ActivitiAuditResult> logResult = new ArrayList<>();
