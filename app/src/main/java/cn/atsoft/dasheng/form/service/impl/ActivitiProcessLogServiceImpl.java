@@ -96,7 +96,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             return results;
         }
         String type = activitiStepsResult.getType();
-        if (type.equals("3")) {
+        if (type.equals("2")) {
+            results.add(activitiStepsResult);
+            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
+            results.addAll(resultList);
+            return results;
+        }else if (type.equals("3")) {
             List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
             results.addAll(resultList);
             return results;
