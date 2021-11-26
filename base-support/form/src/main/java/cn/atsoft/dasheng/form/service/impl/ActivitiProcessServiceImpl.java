@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -19,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -32,7 +34,8 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMapper, ActivitiProcess> implements ActivitiProcessService {
-
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
 
     @Override
     public void add(ActivitiProcessParam param) {
@@ -51,11 +54,29 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         QueryWrapper<ActivitiProcess> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("process_id", param.getProcessId());
         this.update(activitiProcess, queryWrapper);
-
     }
 
     @Override
+    @Transactional
     public void update(ActivitiProcessParam param) {
+        //判断启用是否配置
+        if (param.getStatus() == 98) {
+            Integer stepsCount = activitiStepsService.query().eq("process_id", param.getProcessId()).count();
+            if (stepsCount == 0) {
+                throw new ServiceException(500, "请先设置流程");
+            }
+            //确保有流程启用
+            Integer count = this.query().eq("module", param.getModule()).count();
+            if (count > 0) {
+                ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
+                        .ne("process_id", param.getProcessId())
+                        .one();
+                if (ToolUtil.isEmpty(process)) {
+                    throw new ServiceException(500, "不可全部停用");
+                }
+            }
+        }
+        //当前流程设为启用 其他流程设为停用
         if (param.getStatus() == 99) {
             ActivitiProcess process = this.query().eq("module", param.getModule())
                     .eq("status", 99)
@@ -66,10 +87,13 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
                 this.updateById(process);
             }
         }
+
         ActivitiProcess oldEntity = getOldEntity(param);
         ActivitiProcess newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+
     }
 
     @Override

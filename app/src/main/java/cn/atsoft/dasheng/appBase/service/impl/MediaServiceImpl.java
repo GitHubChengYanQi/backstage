@@ -149,6 +149,7 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             respMap.put("key", dir);
             respMap.put("host", host);
             respMap.put("expire", String.valueOf(expireEndTime / 1000));
+            respMap.put("mediaId", media.getMediaId());
 //             respMap.put("expire", formatISO8601Date(expiration));
 
             JSONObject jasonCallback = new JSONObject();

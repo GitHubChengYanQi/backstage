@@ -24,6 +24,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -61,6 +63,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private QualityTaskService qualityTaskService;
 
+    @Autowired
+    private UserService userService;
+
 
     @Transactional
     @Override
@@ -79,15 +84,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
         ActivitiAudit nowAudit = auditService.query().eq("setps_id", steps.getSetpsId()).one();
         Long userId = LoginContextHolder.getContext().getUserId();
+        List<Long> in = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
+            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+                if (user.getKey().equals(userId.toString()) ) {
+                    in.add(Long.valueOf(user.getKey()));
+                }
+            }
+        }
+        if (in.size()<=0) {
+            throw  new ServiceException(500,"您没有权限操作审批");
+        }
 
-//        if (ToolUtil.isNotEmpty(nowAudit.getRule()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers()) && ToolUtil.isNotEmpty(nowAudit.getRule().getStartUsers().getUsers())) {
-//            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
-//
-//                if (!user.getKey()!=(userId)) {
-//                    throw new ServiceException(500,"您没有权限操作该审批任务");
-//                }
-//            }
-//        }
+
 
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();

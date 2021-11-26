@@ -188,6 +188,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 break;
             case performTask:
             case completeTask:
+            case luYou:
+            case branch:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));
@@ -243,7 +245,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     }
 
     /**
-     * 返回顶级
+     * 返回发起人
      *
      * @param id
      * @return
@@ -342,7 +344,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         if (ToolUtil.isNotEmpty(luyou.getChildren())) {   //查节点
             ActivitiStepsResult node = getChildrenNode(Long.valueOf(luyou.getChildren()));
             luyou.setChildNode(node);
-
         }
         return luyou;
     }

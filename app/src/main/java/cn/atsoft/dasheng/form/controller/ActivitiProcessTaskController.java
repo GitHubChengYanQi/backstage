@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
@@ -13,10 +14,20 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.results.SetpsDetailResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,11 +148,37 @@ public class ActivitiProcessTaskController extends BaseController {
     @RequestMapping(value = "/auditDetail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<SetpsDetailResult> auditDetail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
+
+        Boolean userFlag = false;
+        Boolean deptFlag = false;
+        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getUsers())) {
+            for (StartUsers.Users user : audit.getRule().getStartUsers().getUsers()) {
+                if (user.getKey().equals(loginUser.getId().toString())) {
+                    userFlag = true;
+                }
+            }
+
+        }
+        if (ToolUtil.isNotEmpty(audit.getRule().getStartUsers().getDepts())) {
+
+            for (StartUsers.Depts dept : audit.getRule().getStartUsers().getDepts()) {
+                if (dept.getKey().equals(loginUser.getDeptId().toString())) {
+                    deptFlag = true;
+                }
+            }
+        }
+
+
+        if (!userFlag && !deptFlag){
+            throw new ServiceException(500,"抱歉该审批任务与您无关，您无权限查看");
+        }
+
         QualityTask detail = this.qualityTaskService.getById(activitiProcessTaskParam.getQTaskId());
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(detail, result);
         qualityTaskService.detailFormat(result);
-        ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
         ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
         ToolUtil.copyProperties(audit,activitiAuditResult);
         SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
@@ -175,7 +212,6 @@ public class ActivitiProcessTaskController extends BaseController {
 
         return ResponseData.success(setpsDetailResult);
     }
-
 
 }
 

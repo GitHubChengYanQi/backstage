@@ -38,7 +38,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.1.249/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
+    url: jdbc:mysql://192.168.1.248/daoxin?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&serverTimezone=CTT
     username: daoxin
     password: dZN5mJF8G7ErW4ah
     filters: wall,mergeStat
@@ -48,7 +48,7 @@ spring:
     max-pool-prepared-statement-per-connection-size: 20
 
   redis:
-    host: 192.168.1.249
+    host: 192.168.1.248
     password:
 
   # 邮件发送配置（改为自己的账号和密码）
@@ -59,7 +59,7 @@ spring:
     password: xxxpassword
 
   rabbitmq:
-    addresses: 192.168.1.249
+    addresses: 192.168.1.248
     username: guest
     password: guest
     port: 5672

@@ -12,7 +12,7 @@ public class StartUsers {
     private Boolean supervisor;
 
     @Data
-    private class Depts {
+    public class Depts {
         private String title;
         private String key;
     }
