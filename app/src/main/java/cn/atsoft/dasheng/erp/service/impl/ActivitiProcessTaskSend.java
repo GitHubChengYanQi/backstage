@@ -157,6 +157,7 @@ public class ActivitiProcessTaskSend{
                 for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
+                wxCpTemplate.setUrl("www.baidu.com");
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("接收到新的流程审批抄送");
                 wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
