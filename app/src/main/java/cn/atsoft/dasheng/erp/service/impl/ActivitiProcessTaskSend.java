@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
@@ -11,6 +12,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +32,8 @@ public class ActivitiProcessTaskSend{
     private OrCodeBindService bindService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
-
+    @Autowired
+    private UserService userService;
     public void send(String type, String starUser, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
@@ -64,13 +68,26 @@ public class ActivitiProcessTaskSend{
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
         QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
-        users.add(qualityTask.getUserId());
+
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         switch (type) {
             case "person":
+                users = new ArrayList<>();
                 AuditRule bean = JSONUtil.toBean(starUser, AuditRule.class);
-                for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
-                    users.add(Long.valueOf(user.getKey()));
+                if (ToolUtil.isNotEmpty(bean.getStartUsers().getUsers())) {
+                    for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+                        users.add(Long.valueOf(user.getKey()));
+                    }
+                }
+                if (ToolUtil.isNotEmpty(bean.getStartUsers().getDepts())) {
+                    List<Long> deptIds = new ArrayList<>();
+                    for (StartUsers.Depts dept : bean.getStartUsers().getDepts()) {
+                        deptIds.add(Long.valueOf(dept.getKey()));
+                    }
+                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
+                    for (User user : userList) {
+                        users.add(user.getUserId());
+                    }
                 }
                 wxCpTemplate.setUserIds(users);
                 String setpsValue = url.replace("setpsvalue", stepsId.toString());
@@ -82,7 +99,8 @@ public class ActivitiProcessTaskSend{
                 wxCpSendTemplate.sendTemplate();
                 break;
             case "performTask":
-
+                users = new ArrayList<>();
+                users.add(qualityTask.getUserId());
                 url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);

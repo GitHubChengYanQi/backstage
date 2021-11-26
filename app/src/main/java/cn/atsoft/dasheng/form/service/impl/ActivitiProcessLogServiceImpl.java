@@ -24,6 +24,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -61,6 +63,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private QualityTaskService qualityTaskService;
 
+    @Autowired
+    private UserService userService;
+
 
     @Transactional
     @Override
@@ -78,11 +83,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
         Long userId = LoginContextHolder.getContext().getUserId();
         AuditRule bean = JSONUtil.toBean(audit.getRule(), AuditRule.class);
-        for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
-            if (!user.getKey().equals(userId)) {
-                throw new ServiceException(500,"您没有权限操作该审批任务");
+        if (ToolUtil.isNotEmpty(bean.getStartUsers().getUsers())) {
+            for (StartUsers.Users user : bean.getStartUsers().getUsers()) {
+                if (!user.getKey().equals(userId)) {
+                    throw new ServiceException(500,"您没有权限操作该审批任务");
+                }
             }
         }
+
+
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getFormId()).one();
         entity.setSetpsId(steps.getSetpsId());
