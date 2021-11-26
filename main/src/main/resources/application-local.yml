@@ -150,3 +150,6 @@ wxcp:
   token:
   aesKey:
 
+#手机端跳转路径
+mobile:
+  url:
