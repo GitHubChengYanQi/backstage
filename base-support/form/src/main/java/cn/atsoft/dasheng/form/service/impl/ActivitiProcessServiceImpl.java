@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -55,7 +56,21 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     }
 
     @Override
+    @Transactional
     public void update(ActivitiProcessParam param) {
+        //确保有一个启用
+        if (param.getStatus() == 98) {
+            Integer count = this.query().eq("module", param.getModule()).count();
+            if (count > 0) {
+                ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
+                        .ne("process_id", param.getProcessId())
+                        .one();
+                if (ToolUtil.isEmpty(process)) {
+                    throw new ServiceException(500, "必须有一个流程以启用");
+                }
+            }
+        }
+
         if (param.getStatus() == 99) {
             ActivitiProcess process = this.query().eq("module", param.getModule())
                     .eq("status", 99)
@@ -66,10 +81,13 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
                 this.updateById(process);
             }
         }
+
         ActivitiProcess oldEntity = getOldEntity(param);
         ActivitiProcess newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+
     }
 
     @Override
