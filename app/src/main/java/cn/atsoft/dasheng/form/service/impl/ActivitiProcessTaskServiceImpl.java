@@ -8,18 +8,12 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.pojo.StartUsers;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessService;
-import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
-import cn.atsoft.dasheng.form.service.ActivitiStepsService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
@@ -57,6 +51,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private QualityTaskServiceImpl qualityTaskService;
     @Autowired
     private ActivitiProcessTaskSend taskSend;
+    @Autowired
+    private ActivitiProcessLogService logService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -65,6 +61,11 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
         ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper", 0).one();
         ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
+        //修改发亲人状态
+//        ActivitiProcessLog processLog = logService.query().eq("task_id", entity.getProcessTaskId()).eq("setps_id", steps.getSetpsId()).one();
+//        processLog.setStatus(1);
+//        logService.updateById(processLog);
+
         taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), entity.getProcessTaskId());
         if (audit.getType().equals("send")) {
             ActivitiSteps children = stepsService.query().eq("children", steps.getChildren()).one();

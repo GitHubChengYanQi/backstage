@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(MobileConfig.class)
 @ConfigurationProperties(prefix = "mobile")
 @Data
-public class MobileConfig {
+public  class MobileConfig {
 
-    private String url;
+    public static  String url;
 }

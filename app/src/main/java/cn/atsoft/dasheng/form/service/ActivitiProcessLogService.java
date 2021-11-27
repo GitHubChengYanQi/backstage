@@ -25,7 +25,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @author Sing
      * @Date 2021-11-10
      */
-    void add(Long param, Integer status);
+    void add(Long param, Integer status, Long stepId);
 
     /**
      * 删除
