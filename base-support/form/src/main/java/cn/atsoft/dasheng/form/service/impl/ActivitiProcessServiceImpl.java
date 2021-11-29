@@ -59,6 +59,21 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
     @Override
     @Transactional
     public void update(ActivitiProcessParam param) {
+        Integer module = this.query().eq("module", param.getModule()).count();
+        if (module == 1) {
+            ActivitiProcess process = this.getById(param.getProcessId());
+            if (process.getStatus()==99) {
+                if (!process.getStatus().equals(param.getStatus())) {
+                    throw new ServiceException(500, "不可全部停用");
+                }
+                ActivitiProcess oldEntity = getOldEntity(param);
+                ActivitiProcess newEntity = getEntity(param);
+                ToolUtil.copyProperties(newEntity, oldEntity);
+                this.updateById(newEntity);
+                return;
+            }
+        }
+
         //判断启用是否配置
         if (param.getStatus() == 98) {
             Integer stepsCount = activitiStepsService.query().eq("process_id", param.getProcessId()).count();
@@ -67,7 +82,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
             }
             //确保有流程启用
             Integer count = this.query().eq("module", param.getModule()).count();
-            if (count > 0) {
+            if (count > 1) {
                 ActivitiProcess process = this.query().eq("module", param.getModule()).eq("status", 99)
                         .ne("process_id", param.getProcessId())
                         .one();

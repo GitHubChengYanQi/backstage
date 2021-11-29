@@ -32,6 +32,8 @@ public class ActivitiStepsResult implements Serializable {
 
     private ActivitiStepsResult childNode;
 
+    private   ActivitiAuditResult serviceAudit;
+
     private String stepType;
 
     private String auditType;

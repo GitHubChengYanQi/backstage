@@ -168,7 +168,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-            ToolUtil.copyProperties(activitiProcessTaskParam,activitiProcessTask);
+            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
@@ -264,7 +264,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
         for (QualityTaskResult qualityTaskResult : param) {
             for (User user : users) {
-                if (qualityTaskResult.getUserId().equals(user.getUserId())) {
+                if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId()) && qualityTaskResult.getUserId().equals(user.getUserId())) {
                     qualityTaskResult.setUserName(user.getName());
                 }
             }

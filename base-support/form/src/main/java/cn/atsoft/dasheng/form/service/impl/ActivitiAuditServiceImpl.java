@@ -38,10 +38,6 @@ import java.util.List;
  */
 @Service
 public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, ActivitiAudit> implements ActivitiAuditService {
-    @Autowired
-    private ActivitiProcessService processService;
-    @Autowired
-    private ActivitiStepsService stepsService;
 
 
     @Override
@@ -57,6 +53,16 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
     @Override
     public void delete(ActivitiAuditParam param) {
         this.removeById(getKey(param));
+    }
+
+    @Override
+    public ActivitiAuditResult getAudit(Long id) {
+        ActivitiAudit audit = this.getOne(new QueryWrapper<ActivitiAudit>() {{
+            eq("setps_id", id);
+        }});
+        ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
+        ToolUtil.copyProperties(audit, activitiAuditResult);
+        return activitiAuditResult;
     }
 
     @Override

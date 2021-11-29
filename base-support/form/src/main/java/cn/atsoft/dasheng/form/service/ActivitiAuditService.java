@@ -34,6 +34,9 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
      */
     void delete(ActivitiAuditParam param);
 
+
+    ActivitiAuditResult getAudit(Long id);
+
     /**
      * 更新
      *
@@ -64,6 +67,6 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param);
+    PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param);
 
 }

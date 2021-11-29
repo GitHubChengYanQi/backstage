@@ -2,7 +2,10 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import lombok.Data;
 
@@ -32,6 +35,10 @@ public class QualityTaskResult implements Serializable {
     private List<FormDataResult> formDataResults;
 
     private List<ActivitiAudit> audits;
+
+    private List<ActivitiStepsResult> steps;
+
+    private ActivitiProcess process;
 
 
     private ActivitiProcessTaskResult activitiProcessTaskResult;
