@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -60,6 +61,26 @@ public class QualityTaskDetailResult implements Serializable {
     private Integer number;
 
     private Integer remaining;
+
+    /**
+     * 负责人s
+     */
+    private String userIds;
+
+    /**
+     * 时间
+     */
+    private Date time;
+
+    /**
+     * 地点
+     */
+    private String address;
+
+    /**
+     * 对接人
+     */
+    private Long person;
 
     /**
      * 创建者

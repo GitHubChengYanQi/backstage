@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -61,6 +62,26 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     private Integer remaining;
 
     private Integer batch;
+
+    /**
+     * 负责人s
+     */
+    private String userIds;
+
+    /**
+     * 时间
+     */
+    private Date time;
+
+    /**
+     * 地点
+     */
+    private String address;
+
+    /**
+     * 对接人
+     */
+    private Long person;
 
     /**
      * 创建者

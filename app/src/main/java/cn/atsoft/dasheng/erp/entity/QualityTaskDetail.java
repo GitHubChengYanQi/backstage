@@ -47,6 +47,31 @@ public class QualityTaskDetail implements Serializable {
      */
     @TableField("number")
     private Integer number;
+
+    /**
+     * 负责人s
+     */
+    @TableField("userIds")
+    private String userIds;
+
+    /**
+     * 时间
+     */
+    @TableField("time")
+    private Date time;
+
+    /**
+     * 地点
+     */
+    @TableField("address")
+    private String address;
+
+    /**
+     * 对接人
+     */
+    @TableField("number")
+    private Long person;
+
     @TableField("remaining")
     private Integer remaining;
 
@@ -67,6 +92,38 @@ public class QualityTaskDetail implements Serializable {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Long getPerson() {
+        return person;
+    }
+
+    public void setPerson(Long person) {
+        this.person = person;
     }
 
     /**
