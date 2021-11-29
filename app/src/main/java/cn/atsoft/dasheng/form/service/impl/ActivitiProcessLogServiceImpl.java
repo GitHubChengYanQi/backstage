@@ -161,7 +161,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 } else if (ToolUtil.isNotEmpty(rule)) {
                     if (inUsers(rule.getStartUsers().getUsers(), loginUser.getId()) || inDepts(rule.getStartUsers().getDepts(), loginUser.getDeptId())) {
                         this.updateById(entity);
-                        taskSend.logAddSend(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
+                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
                     }
                 }
@@ -181,7 +181,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 for (ActivitiStepsResult stepsResult : activitiStepsResults) {
                     ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
                     if (ToolUtil.isNotEmpty(activitiAudit)) {
-                        taskSend.logAddSend(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getChildren(), task.getProcessTaskId());
+                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getChildren(), task.getProcessTaskId());
                     }
                 }
             }
