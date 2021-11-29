@@ -264,8 +264,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
         for (QualityTaskResult qualityTaskResult : param) {
             for (User user : users) {
-                if (qualityTaskResult.getUserId().equals(user.getUserId())) {
-                    qualityTaskResult.setUserName(user.getName());
+                if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                    if (qualityTaskResult.getUserId().equals(user.getUserId())) {
+                        qualityTaskResult.setUserName(user.getName());
+                    }
                 }
             }
         }
