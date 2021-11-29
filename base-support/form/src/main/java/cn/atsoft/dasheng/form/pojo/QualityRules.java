@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class StartUsers {
+public class    QualityRules{
 
     private List<Depts> depts;
     private List<Users> users;

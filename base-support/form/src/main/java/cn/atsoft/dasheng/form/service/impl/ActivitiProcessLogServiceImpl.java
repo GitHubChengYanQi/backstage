@@ -12,7 +12,7 @@ import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -51,7 +51,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         ActivitiProcessLog entity = getEntity(param);
 
         ActivitiAudit audit = auditService.query().eq("setps_id", param.getSetpsId()).one();
-//        StartUsers bean = JSONUtil.toBean(audit.getRule(), StartUsers.class);
+//        QualityRules bean = JSONUtil.toBean(audit.getRule(), QualityRules.class);
         List<Long> users = new ArrayList<>();
 
 

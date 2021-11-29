@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -46,14 +46,14 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         switch (type) {
             case "person":
-                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
-                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
+                    for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
                         users.add(Long.valueOf(user.getKey()));
                     }
                 }
-                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
+                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
                     List<Long> deptIds = new ArrayList<>();
-                    for (StartUsers.Depts dept : starUser.getStartUsers().getDepts()) {
+                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
                         deptIds.add(Long.valueOf(dept.getKey()));
                     }
                     List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
@@ -75,9 +75,9 @@ public class ActivitiProcessTaskSend {
                 this.completeTaskSend(taskId);
                 break;
             case "send":
-                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
+                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
                     List<Long> deptIds = new ArrayList<>();
-                    for (StartUsers.Depts dept : starUser.getStartUsers().getDepts()) {
+                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
                         deptIds.add(Long.valueOf(dept.getKey()));
                     }
                     List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
@@ -180,14 +180,14 @@ public class ActivitiProcessTaskSend {
 //        switch (type) {
 //            case "person":
 //                users = new ArrayList<>();
-//                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
-//                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+//                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
+//                    for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
 //                        users.add(Long.valueOf(user.getKey()));
 //                    }
 //                }
-//                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
+//                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
 //                    List<Long> deptIds = new ArrayList<>();
-//                    for (StartUsers.Depts dept : starUser.getStartUsers().getDepts()) {
+//                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
 //                        deptIds.add(Long.valueOf(dept.getKey()));
 //                    }
 //                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
@@ -232,7 +232,7 @@ public class ActivitiProcessTaskSend {
 //                break;
 //            case "send":
 //                users = new ArrayList<>();
-//                for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
+//                for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
 //                    users.add(Long.valueOf(user.getKey()));
 //                }
 //                String setpsValue1 = url.replace("setpsvalue", stepsId.toString());

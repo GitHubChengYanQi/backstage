@@ -1,7 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 

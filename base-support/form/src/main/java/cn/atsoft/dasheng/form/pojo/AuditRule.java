@@ -8,5 +8,5 @@ import lombok.experimental.Accessors;
 @Data
 
 public class AuditRule {
-    private StartUsers startUsers;
+    private QualityRules qualityRules;
 }

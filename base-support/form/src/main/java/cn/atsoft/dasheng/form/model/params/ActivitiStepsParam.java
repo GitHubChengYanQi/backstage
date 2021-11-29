@@ -2,7 +2,7 @@ package cn.atsoft.dasheng.form.model.params;
 
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -32,7 +32,7 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
 
     private ActivitiStepsParam childNode;
 
-    private StartUsers rule;
+    private QualityRules rule;
 
     private AuditType auditType;
 

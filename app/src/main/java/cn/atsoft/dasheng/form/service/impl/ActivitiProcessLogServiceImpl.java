@@ -15,7 +15,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.ChildAudit;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
@@ -55,8 +55,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private ActivitiProcessTaskSend taskSend;
 
 
-    private Boolean inUsers(List<StartUsers.Users> users, Long userId) {
-        for (StartUsers.Users user : users) {
+    private Boolean inUsers(List<QualityRules.Users> users, Long userId) {
+        for (QualityRules.Users user : users) {
             if (user.getKey().equals(userId.toString())) {
                 return true;
             }
@@ -64,8 +64,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
-    private Boolean inDepts(List<StartUsers.Depts> depts, Long deptId) {
-        for (StartUsers.Depts dept : depts) {
+    private Boolean inDepts(List<QualityRules.Depts> depts, Long deptId) {
+        for (QualityRules.Depts dept : depts) {
             if (dept.getKey().equals(deptId.toString())) {
                 return true;
             }
@@ -148,7 +148,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 if (ToolUtil.isEmpty(activitiAudit)) {
                     continue;
                 }
-                AuditRule rule = activitiAudit.getRule(); // activitiStepsResult.getAuditRule().getStartUsers();
+                AuditRule rule = activitiAudit.getRule(); // activitiStepsResult.getAuditRule().getQualityRules();
                 String type = activitiAudit.getType();
 
                 Long logId = activitiProcessLog.getLogId();
@@ -159,7 +159,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     this.updateById(entity);
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
-                    if (inUsers(rule.getStartUsers().getUsers(), loginUser.getId()) || inDepts(rule.getStartUsers().getDepts(), loginUser.getDeptId())) {
+                    if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
                         this.updateById(entity);
                         taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());

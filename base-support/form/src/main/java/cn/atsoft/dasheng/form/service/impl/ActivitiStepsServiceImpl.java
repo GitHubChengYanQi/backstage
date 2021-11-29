@@ -11,7 +11,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
-import cn.atsoft.dasheng.form.pojo.StartUsers;
+import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -192,7 +192,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case quality_task_start:
             case quality_task_person:
             case quality_task_send:
-                if (ToolUtil.isEmpty(auditRule.getStartUsers())) {
+                if (ToolUtil.isEmpty(auditRule.getQualityRules())) {
                     throw new ServiceException(500, "配置数据错误");
                 }
                 activitiAudit.setRule(auditRule);
