@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.sys.modular.system.controller;
 
 import cn.atsoft.dasheng.base.enums.CommonStatus;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
+import cn.atsoft.dasheng.sys.modular.rest.wrapper.PositionSelectWrapper;
 import cn.atsoft.dasheng.sys.modular.system.entity.Position;
 import cn.atsoft.dasheng.sys.modular.system.model.params.PositionParam;
 import cn.atsoft.dasheng.sys.modular.system.service.PositionService;
@@ -11,9 +12,13 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.RequestEmptyException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.model.response.SuccessResponseData;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -173,6 +178,21 @@ public class PositionController extends BaseController {
     @RequestMapping("/listPositions")
     public LayuiPageInfo listlistPositionsTypes(@RequestParam(value = "userId", required = false) Long userId) {
         return this.positionService.listPositions(userId);
+    }
+
+    /**
+     * 选择列表
+     *
+     * @author jazz
+     * @Date 2021-10-18
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        List<Map<String, Object>> list = this.positionService.listMaps();
+        PositionSelectWrapper factory = new PositionSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
     }
 
 

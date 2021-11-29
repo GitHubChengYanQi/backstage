@@ -15,6 +15,13 @@ public class StartUsers {
     public class Depts {
         private String title;
         private String key;
+        private List<Positions> positions;
+
+        @Data
+        private class Positions {
+            private String label;
+            private String value;
+        }
     }
 
     @Data
