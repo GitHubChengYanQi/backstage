@@ -192,6 +192,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case quality_task_start:
             case quality_task_person:
             case quality_task_send:
+            case quality_task_dispatch:
                 if (ToolUtil.isEmpty(auditRule.getQualityRules())) {
                     throw new ServiceException(500, "配置数据错误");
                 }
@@ -201,7 +202,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case quality_task_complete:
             case route:
             case branch:
-            case quality_task_dispatch:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));

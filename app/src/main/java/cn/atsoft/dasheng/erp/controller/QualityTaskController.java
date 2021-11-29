@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileConfig;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
@@ -57,14 +59,12 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
-
-    @Autowired
-    private ActivitiStepsService stepsService;
-
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
     private ActivitiProcessTaskService taskService;
+    @Autowired
+    private MobileService mobileService;
 
 
     /**
@@ -214,6 +214,8 @@ public class QualityTaskController extends BaseController {
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData<QualityTaskResult> detail(@Param("taskId") Long taskId) {
+
+
 
         //流程任务
         ActivitiProcessTask processTask = taskService.getById(taskId);
