@@ -2,29 +2,27 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
-import cn.atsoft.dasheng.erp.model.params.ProductOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
-import cn.atsoft.dasheng.erp.service.QualityPlanDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.FormData;
-import cn.atsoft.dasheng.form.model.params.FormDataParam;
+import cn.atsoft.dasheng.form.entity.*;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
-import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -32,7 +30,6 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -48,12 +45,26 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+
     @Autowired
     private QualityTaskDetailService qualityTaskDetailService;
+
     @Autowired
     private FormDataService formDataService;
+
     @Autowired
     private QualityTaskBindService qualityTaskBindService;
+
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+
+    @Autowired
+    private ActivitiStepsService stepsService;
+
+    @Autowired
+    private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
 
     /**
@@ -113,22 +124,6 @@ public class QualityTaskController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 查看详情接口
-     *
-     * @author
-     * @Date 2021-11-16
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<QualityTaskResult> detail(@RequestBody QualityTaskParam qualityTaskParam) {
-        QualityTask detail = this.qualityTaskService.getById(qualityTaskParam.getQualityTaskId());
-        QualityTaskResult result = new QualityTaskResult();
-        ToolUtil.copyProperties(detail, result);
-
-        qualityTaskService.detailFormat(result);
-        return ResponseData.success(result);
-    }
 
     /**
      * 查询列表
@@ -187,15 +182,15 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/addData", method = RequestMethod.POST)
     public ResponseData addData(@RequestBody FormDataPojo formDataPojo) {
-        if (ToolUtil.isNotEmpty(formDataPojo.getQualityTaskDetailId())){
+        if (ToolUtil.isNotEmpty(formDataPojo.getQualityTaskDetailId())) {
             QualityTaskDetail qualityTaskDetail = qualityTaskDetailService.getById(formDataPojo.getQualityTaskDetailId());
             QualityTaskDetailParam qualityTaskDetailParam = new QualityTaskDetailParam();
             qualityTaskDetailParam.setQualityTaskDetailId(formDataPojo.getQualityTaskDetailId());
             qualityTaskDetailParam.setRemaining(qualityTaskDetail.getRemaining() - formDataPojo.getNumber());
-            if ((qualityTaskDetail.getRemaining() - formDataPojo.getNumber()) >= 0){
+            if ((qualityTaskDetail.getRemaining() - formDataPojo.getNumber()) >= 0) {
                 qualityTaskDetailService.update(qualityTaskDetailParam);
-            }else {
-                throw new ServiceException(500,"质检失败!");
+            } else {
+                throw new ServiceException(500, "质检失败!");
             }
 
         }
@@ -214,6 +209,39 @@ public class QualityTaskController extends BaseController {
     public ResponseData backInkind(@RequestParam Long id) {
         List<TaskCount> taskCounts = this.qualityTaskService.backIkind(id);
         return ResponseData.success(taskCounts);
+    }
+
+
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    public ResponseData<QualityTaskResult> detail(@Param("taskId") Long taskId) {
+
+        //流程任务
+        ActivitiProcessTask processTask = taskService.getById(taskId);
+        ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
+        ToolUtil.copyProperties(processTask, taskResult);
+
+        //质检任务
+        QualityTask qualityTask = this.qualityTaskService.getById(taskResult.getFormId());
+        QualityTaskResult qualityTaskResult = new QualityTaskResult();
+        ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+
+        qualityTaskResult.setActivitiProcessTaskResult(taskResult);
+
+        List<ActivitiProcessLog> logs = this.activitiProcessLogService.getAudit(taskId);
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            stepIds.add(activitiProcessLog.getSetpsId());
+        }
+
+
+        if (ToolUtil.isNotEmpty(stepIds)) {
+            List<ActivitiAudit> audits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
+                in("setps_id", stepIds);
+            }});
+            qualityTaskResult.setAudits(audits);
+        }
+
+        return ResponseData.success(qualityTaskResult);
     }
 
 }

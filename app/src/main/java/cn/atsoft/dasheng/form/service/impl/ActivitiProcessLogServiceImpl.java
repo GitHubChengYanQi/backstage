@@ -175,7 +175,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
              */
             List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
             for (Long passSetpId : passSetpIds) {
-                activitiStepsResults = getNextNode (activitiStepsResult, passSetpId);
+                activitiStepsResults = getNextNode(activitiStepsResult, passSetpId);
             }
             if (ToolUtil.isNotEmpty(activitiStepsResults)) {
                 for (ActivitiStepsResult stepsResult : activitiStepsResults) {
@@ -223,7 +223,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         if (ToolUtil.isEmpty(task)) {
             return new ArrayList<>();
         }
-
+        //查询当前流程所有流程步骤
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(task.getProcessId());
         /**
          * 把所有log取出
@@ -231,6 +231,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         List<ActivitiProcessLog> activitiProcessLogs = this.list(new QueryWrapper<ActivitiProcessLog>() {{
             eq("task_id", taskId);
         }});
+
         return loopAudit(activitiStepsResult, activitiProcessLogs);
     }
 
@@ -240,6 +241,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         if (ToolUtil.isEmpty(activitiStepsResult)) {
             return activitiStepsResultList;
         }
+
         ActivitiProcessLog log = getLog(activitiStepsResult.getSetpsId(), activitiProcessLogs);
         switch (activitiStepsResult.getType()) {
             case "0":
@@ -283,7 +285,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public ActivitiStepsResult addLog(Long processId, Long taskId) {
-//        ActivitiSteps steps = stepsService.query().eq("process_id", processId).eq("supper", 0).one();
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId);
         return activitiStepsResult;
@@ -300,7 +301,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
-        processLog.setStatus(-1);
+        if (activitiStepsResult.getType().equals("0")) {
+            processLog.setStatus(1);
+        } else {
+            processLog.setStatus(-1);
+        }
         this.save(processLog);
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
@@ -309,9 +314,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-//            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
             loopAdd(activitiStepsResult.getChildNode(), taskId);
-//            }
         }
 
     }
