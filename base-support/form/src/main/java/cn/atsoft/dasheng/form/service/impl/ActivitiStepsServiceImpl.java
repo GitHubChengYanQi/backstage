@@ -189,20 +189,19 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiAudit activitiAudit = new ActivitiAudit();
         activitiAudit.setSetpsId(id);
         switch (auditType) {
-            case start:
-            case person:
-            case optional:
-            case supervisor:
-            case send:
+            case quality_task_start:
+            case quality_task_person:
+            case quality_task_send:
                 if (ToolUtil.isEmpty(auditRule.getStartUsers())) {
                     throw new ServiceException(500, "配置数据错误");
                 }
                 activitiAudit.setRule(auditRule);
                 break;
-            case performTask:
-            case completeTask:
-            case luYou:
+            case quality_task_perform:
+            case quality_task_complete:
+            case route:
             case branch:
+            case quality_task_dispatch:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));
