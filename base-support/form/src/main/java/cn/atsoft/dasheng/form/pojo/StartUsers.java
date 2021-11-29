@@ -9,7 +9,6 @@ public class StartUsers {
 
     private List<Depts> depts;
     private List<Users> users;
-    private Boolean supervisor;
 
     @Data
     public class Depts {
