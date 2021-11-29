@@ -126,10 +126,9 @@ public class ActivitiProcessTaskSend{
                     }
                 }
                 wxCpTemplate.setUserIds(users);
-                String setpsValue = url.replace("setpsvalue", stepsId.toString());
-                String formValue = setpsValue.replace("formvalue", taskId.toString());
+                String formValue = url.replace("taskId", taskId.toString());
                 wxCpTemplate.setUrl(formValue);
-                wxCpTemplate.setTitle("您有新的待审批任务");
+                wxCpTemplate.setTitle("审批");
                 wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
@@ -140,7 +139,7 @@ public class ActivitiProcessTaskSend{
                 url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setUserIds(users);
-                wxCpTemplate.setTitle("您有新的待执行任务");
+                wxCpTemplate.setTitle("执行质检");
                 wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
                 wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
                 wxCpSendTemplate.sendTemplate();
@@ -165,8 +164,7 @@ public class ActivitiProcessTaskSend{
                 for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                     users.add(Long.valueOf(user.getKey()));
                 }
-                String setpsValue1 = url.replace("setpsvalue", stepsId.toString());
-                String formValue1 = setpsValue1.replace("formvalue", taskId.toString());
+                String formValue1 = url.replace("taskId", taskId.toString());
                 wxCpTemplate.setUrl(formValue1);
                 wxCpTemplate.setUserIds(users);
                 wxCpTemplate.setTitle("抄送");

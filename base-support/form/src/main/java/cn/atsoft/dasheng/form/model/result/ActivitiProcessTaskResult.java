@@ -22,6 +22,7 @@ public class ActivitiProcessTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+
     @ApiModelProperty("")
     private Long processTaskId;
 
