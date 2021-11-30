@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -40,28 +41,49 @@ public class ActivitiProcessTaskSend {
     @Autowired
     private UserService userService;
 
+    private List<Long> selectUsers(AuditRule starUser) {
+        List<Long> users = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
+            for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
+                users.add(Long.valueOf(user.getKey()));
+            }
+        }
+        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
+            List<Long> deptIds = new ArrayList<>();
+            List<Long> roleIds = new ArrayList<>();
+            for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
+                deptIds.add(Long.valueOf(dept.getKey()));
+
+                for (QualityRules.Depts.Positions position : dept.getPositions()) {
+                    roleIds.add(Long.valueOf(position.getValue()));
+                }
+            }
+            List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
+            List<User> userList1 = userService.query().in("role_id", roleIds).eq("status", "ENABLE").list();
+            userList.addAll(userList1);
+            for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
+                for (QualityRules.Depts.Positions position : dept.getPositions()) {
+                    for (User user : userList) {
+                        if (user.getRoleId().toString().equals(position.getValue()) && user.getDeptId().toString().equals(dept.getKey())) {
+                            users.add(user.getUserId());
+                        }
+                    }
+                }
+            }
+        }
+        return users;
+
+    }
 
     public void send(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
         List<Long> users = new ArrayList<>();
+        List<Long> collect = new ArrayList<>();
         switch (type) {
             case "quality_task_person":
-                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
-                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
-                        users.add(Long.valueOf(user.getKey()));
-                    }
-                }
-                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
-                    List<Long> deptIds = new ArrayList<>();
-                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-                        deptIds.add(Long.valueOf(dept.getKey()));
-                    }
-                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
-                    for (User user : userList) {
-                        users.add(user.getUserId());
-                    }
-                }
-                activitiTaskSend.setUsers(users);
+                users = this.selectUsers(starUser);
+                collect = users.stream().distinct().collect(Collectors.toList());
+                activitiTaskSend.setUsers(collect);
                 activitiTaskSend.setUrl(url);
                 activitiTaskSend.setTaskId(taskId);
                 activitiTaskSend.setStepsId(stepsId);
@@ -75,16 +97,7 @@ public class ActivitiProcessTaskSend {
                 this.completeTaskSend(taskId);
                 break;
             case "quality_task_send":
-                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
-                    List<Long> deptIds = new ArrayList<>();
-                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-                        deptIds.add(Long.valueOf(dept.getKey()));
-                    }
-                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
-                    for (User user : userList) {
-                        users.add(user.getUserId());
-                    }
-                }
+                users = this.selectUsers(starUser);
                 activitiTaskSend.setUsers(users);
                 activitiTaskSend.setUrl(url);
                 activitiTaskSend.setTaskId(taskId);
@@ -92,10 +105,11 @@ public class ActivitiProcessTaskSend {
                 this.personSend(activitiTaskSend);
                 break;
             case "quality_task_dispatch":
-                    
+
                 break;
         }
     }
+
 
     private Map<String, String> getAboutSend(Long taskId) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);

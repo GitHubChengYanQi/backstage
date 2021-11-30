@@ -17,7 +17,7 @@ public class    QualityRules{
         private List<Positions> positions;
 
         @Data
-        private class Positions {
+        public class Positions {
             private String label;
             private String value;
         }
