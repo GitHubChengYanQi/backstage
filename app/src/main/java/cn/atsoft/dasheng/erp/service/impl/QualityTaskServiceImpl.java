@@ -33,6 +33,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.lang.Dict;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -282,6 +283,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public void addFormData(FormDataPojo formDataPojo) {
+        Dict.create();
+
+
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
         if (codeId.getSource().equals("item")) {
             FormData formData = new FormData();
@@ -305,13 +309,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             formDataValueService.saveBatch(formValuesList);
         }
-
-
     }
 
     @Override
     public List<TaskCount> backIkind(Long id) {
-        //通过绑定找出ikinds
+        //通过二维码找出ikinds
         List<QualityTaskBind> taskBindList = taskBindService.query().eq("quality_task_id", id).list();
         List<Long> iKinds = new ArrayList<>();
         for (QualityTaskBind taskBind : taskBindList) {

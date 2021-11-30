@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ public class WxCpSendTemplate {
         List<String> uuIds = new ArrayList<>();
         List<WxuserInfo> wxuserInfos = wxuserInfoService.query().in("user_id", wxCpTemplate.getUserIds()).eq("source", "wxCp").list();
 
+
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {
             for (WxuserInfo wxuserInfo : wxuserInfos) {
@@ -58,7 +60,6 @@ public class WxCpSendTemplate {
     public void sendTemplate() {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
-
         WxCpMessage wxCpMessage = new WxCpMessage();
         wxCpMessage.setUrl(wxCpTemplate.getUrl());
         wxCpMessage.setTitle(wxCpTemplate.getTitle());
