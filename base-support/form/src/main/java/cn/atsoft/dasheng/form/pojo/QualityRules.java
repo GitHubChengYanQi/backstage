@@ -9,7 +9,6 @@ public class    QualityRules{
 
     private List<Depts> depts;
     private List<Users> users;
-    private String url;
 
     @Data
     public class Depts {
