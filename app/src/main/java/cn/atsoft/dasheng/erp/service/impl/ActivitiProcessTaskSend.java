@@ -112,7 +112,13 @@ public class ActivitiProcessTaskSend {
                 this.personSend(activitiTaskSend);
                 break;
             case "quality_task_dispatch":
-
+                users = this.selectUsers(starUser);
+                collect = users.stream().distinct().collect(Collectors.toList());
+                activitiTaskSend.setUsers(collect);
+                activitiTaskSend.setUrl(url);
+                activitiTaskSend.setTaskId(taskId);
+                activitiTaskSend.setStepsId(stepsId);
+                this.dispatch(activitiTaskSend);
                 break;
         }
     }
