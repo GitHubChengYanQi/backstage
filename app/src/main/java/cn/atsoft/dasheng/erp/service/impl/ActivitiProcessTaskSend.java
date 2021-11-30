@@ -1,14 +1,17 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ActivitiTaskSend;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
@@ -40,6 +43,10 @@ public class ActivitiProcessTaskSend {
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ActivitiStepsService activitiStepsService;
+    @Autowired
+    private MobileService mobileService;
 
     private List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
@@ -127,25 +134,48 @@ public class ActivitiProcessTaskSend {
         map.put("byIdName", byId.getName());
         return map;
     }
+    public void findchildren(Long processId,Long setpsId){
+        List<ActivitiSteps> steps = activitiStepsService.query().eq("process_id", processId).list();
+        for (ActivitiSteps step : steps) {
+            if (step.getSetpsId().equals(setpsId)) {
+                if (step.getChildren().isEmpty()) {
+                    findchildren(step.getProcessId(),step.getSetpsId());
+                }
+            }
+        }
+    }
 
     private void personSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
-        String setpsValue = param.getUrl().replace("setpsvalue", param.getStepsId().toString());
-        String formValue = setpsValue.replace("formvalue", param.getTaskId().toString());
-        wxCpTemplate.setUrl(formValue);
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"Work/Workflow?"+ "formId="+param.getTaskId().toString()+"&setpsId="+param.getStepsId().toString();
+        wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("您有新的待审批任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
-
+    private void dispatch(ActivitiTaskSend param) {
+        Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUserIds(param.getUsers());
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"Work/Workflow?"+ "formId="+param.getTaskId().toString()+"&setpsId="+param.getStepsId().toString();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("被分派新的执行任务任务");
+        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被分派到您"+ aboutSend.get("coding"));
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
+//    https://wx.daoxin.gf2025.com/cp/#/OrCode?id=codeId
     private void performTask(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
         List<Long> users = new ArrayList<>();
         users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
-        String url = aboutSend.get("url").replace("codeId", aboutSend.get("orcodeId").toString());
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
@@ -162,7 +192,8 @@ public class ActivitiProcessTaskSend {
         updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
         updateEntity.setState(2);
         qualityTaskService.updateById(updateEntity);
-        String url = aboutSend.get("url").replace("codeId", aboutSend.get("orcodeId"));
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
@@ -175,10 +206,10 @@ public class ActivitiProcessTaskSend {
     private void sendSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
 
-        String setpsValue1 = param.getUrl().replace("setpsvalue", param.getStepsId().toString());
-        String formValue1 = setpsValue1.replace("formvalue", param.getTaskId().toString());
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"Work/Workflow?"+ "formId="+param.getTaskId().toString()+"&setpsId="+param.getStepsId().toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(formValue1);
+        wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(param.getUsers());
         wxCpTemplate.setTitle("抄送");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
