@@ -45,9 +45,9 @@ public class ActivitiProcessTaskSend {
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
         List<Long> users = new ArrayList<>();
         switch (type) {
-            case "person":
-                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
-                    for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
+            case "quality_task_person":
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getUsers())) {
+                    for (StartUsers.Users user : starUser.getStartUsers().getUsers()) {
                         users.add(Long.valueOf(user.getKey()));
                     }
                 }
@@ -68,14 +68,14 @@ public class ActivitiProcessTaskSend {
                 this.personSend(activitiTaskSend);
 
                 break;
-            case "performTask":
+            case "quality_task_perform":
                 this.performTask(taskId);
                 break;
-            case "completeTask":
+            case "quality_task_complete":
                 this.completeTaskSend(taskId);
                 break;
-            case "send":
-                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
+            case "quality_task_send":
+                if (ToolUtil.isNotEmpty(starUser.getStartUsers().getDepts())) {
                     List<Long> deptIds = new ArrayList<>();
                     for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
                         deptIds.add(Long.valueOf(dept.getKey()));
@@ -90,6 +90,9 @@ public class ActivitiProcessTaskSend {
                 activitiTaskSend.setTaskId(taskId);
                 activitiTaskSend.setStepsId(stepsId);
                 this.personSend(activitiTaskSend);
+                break;
+            case "quality_task_dispatch":
+                    
                 break;
         }
     }
