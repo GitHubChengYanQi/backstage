@@ -151,8 +151,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         Long aLong = orCodeService.backCode(backCodeRequest);
         String url = param.getUrl().replace("codeId", aLong.toString());
 
-
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", "quality").one();
+        String type2Activiti = null;
+        if (param.getType().equals("出厂")) {
+            type2Activiti = "outQuality";
+        } else if (param.getType().equals("入厂")) {
+            type2Activiti = "inQuality";
+        }
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
 
         if (ToolUtil.isNotEmpty(activitiProcess)) {
 
@@ -264,7 +269,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).and(i -> i.eq(User::getStatus, "ENABLE")).list();
         for (QualityTaskResult qualityTaskResult : param) {
             for (User user : users) {
-                if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())) {
                     if (qualityTaskResult.getUserId().equals(user.getUserId())) {
                         qualityTaskResult.setUserName(user.getName());
                     }
@@ -279,7 +284,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void addFormData(FormDataPojo formDataPojo) {
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
         if (codeId.getSource().equals("item")) {
-
             FormData formData = new FormData();
             formData.setModule(formDataPojo.getModule());
             formData.setFormId(codeId.getFormId());
@@ -290,7 +294,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             taskBind.setQualityTaskId(formDataPojo.getTaskId());
             taskBind.setInkindId(codeId.getFormId());
             taskBindService.save(taskBind);
-
             List<FormValues> formValues = formDataPojo.getFormValues();
             List<FormDataValue> formValuesList = new ArrayList<>();
             for (FormValues formValue : formValues) {

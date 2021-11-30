@@ -77,6 +77,7 @@ public class WxCpSendTemplate {
                     e.printStackTrace();
                 }
             }
+            messageEntity.setType(MessageType.MESSAGE);
             Message message = new Message();
             message.setTime(new DateTime());
             message.setTitle(wxCpTemplate.getTitle());
