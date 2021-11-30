@@ -112,7 +112,12 @@ public class ActivitiProcessTaskSend {
                 this.personSend(activitiTaskSend);
                 break;
             case "quality_task_dispatch":
-
+                users = this.selectUsers(starUser);
+                activitiTaskSend.setUsers(users);
+                activitiTaskSend.setUrl(url);
+                activitiTaskSend.setTaskId(taskId);
+                activitiTaskSend.setStepsId(stepsId);
+                this.dispatch(activitiTaskSend);
                 break;
         }
     }
@@ -134,19 +139,7 @@ public class ActivitiProcessTaskSend {
         map.put("byIdName", byId.getName());
         return map;
     }
-    public String findchildren(Long processId,Long setpsId){
-        List<ActivitiSteps> steps = activitiStepsService.query().eq("process_id", processId).eq("setps_id",setpsId).list();
-        for (ActivitiSteps step : steps) {
-            if (step.getSetpsId().equals(setpsId)) {
-                if (step.getChildren().isEmpty()) {
-                    findchildren(step.getProcessId(),step.getSetpsId());
-                }else{
-                    return step.getChildren();
-                }
-            }
-        }
-        return null;
-    }
+
 
     private void personSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
@@ -162,10 +155,12 @@ public class ActivitiProcessTaskSend {
     }
     private void dispatch(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
+        ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
+        param.setTaskId(byId.getFormId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
+        url = url +"Work/Workflow/DispatchTask?id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("被分派新的执行任务任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被分派到您"+ aboutSend.get("coding"));
