@@ -13,7 +13,7 @@ import java.util.List;
  * 质检任务详情 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
@@ -21,7 +21,7 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
     void add(QualityTaskDetailParam param);
@@ -31,15 +31,23 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
     void delete(QualityTaskDetailParam param);
 
+
+    /**
+     * 添加详情
+     *
+     * @param param
+     */
+    void addDetails(QualityTaskDetailParam param);
+
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
     void update(QualityTaskDetailParam param);
@@ -47,7 +55,7 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
     QualityTaskDetailResult findBySpec(QualityTaskDetailParam param);
@@ -55,7 +63,7 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
     List<QualityTaskDetailResult> findListBySpec(QualityTaskDetailParam param);
@@ -63,9 +71,9 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-11-16
      */
-     PageInfo<QualityTaskDetailResult> findPageBySpec(QualityTaskDetailParam param);
+    PageInfo<QualityTaskDetailResult> findPageBySpec(QualityTaskDetailParam param);
 
 }

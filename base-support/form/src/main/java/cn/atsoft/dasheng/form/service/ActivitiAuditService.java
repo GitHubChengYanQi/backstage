@@ -69,4 +69,6 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
      */
     PageInfo<ActivitiAuditResult> findPageBySpec(ActivitiAuditParam param);
 
+
+    List<ActivitiAuditResult> backAudits(List<Long> ids);
 }

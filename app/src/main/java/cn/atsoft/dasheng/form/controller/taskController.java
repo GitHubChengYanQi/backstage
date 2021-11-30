@@ -8,10 +8,13 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,16 +34,27 @@ public class taskController extends BaseController {
 
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+
     @Autowired
     private ActivitiAuditService auditService;
+
     @Autowired
     private ActivitiProcessTaskService taskService;
+
     @Autowired
     private ActivitiStepsService stepsService;
+
     @Autowired
     private ActivitiProcessService processService;
+
     @Autowired
     private QualityTaskService qualityTaskService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ActivitiProcessLogService logService;
 
     @RequestMapping(value = "/post", method = RequestMethod.GET)
     @ApiOperation("新增")
@@ -52,7 +66,6 @@ public class taskController extends BaseController {
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData<QualityTaskResult> detail(@Param("taskId") Long taskId) {
-
         //流程任务
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
@@ -62,42 +75,47 @@ public class taskController extends BaseController {
         QualityTask qualityTask = this.qualityTaskService.getById(taskResult.getFormId());
         QualityTaskResult qualityTaskResult = new QualityTaskResult();
         ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-
+        User user = userService.getOne(new QueryWrapper<User>() {{
+            eq("user_id", qualityTaskResult.getCreateUser());
+        }});
+        qualityTaskResult.setCreateName(user.getName());
         qualityTaskResult.setActivitiProcessTaskResult(taskResult);
 
-        List<ActivitiProcessLog> logs = this.activitiProcessLogService.getAudit(taskId);
-        List<Long> stepIds = new ArrayList<>();
-        for (ActivitiProcessLog activitiProcessLog : logs) {
-            stepIds.add(activitiProcessLog.getSetpsId());
-        }
-
-        List<ActivitiSteps> steps = stepsService.list(new QueryWrapper<ActivitiSteps>() {{
-            eq("process_id", processTask.getProcessId());
-        }});
-
-        List<ActivitiStepsResult> stepsResults = new ArrayList<>();
-        for (ActivitiSteps step : steps) {
-            ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
-            ToolUtil.copyProperties(step, activitiStepsResult);
-            ActivitiAuditResult serviceAudit = auditService.getAudit(activitiStepsResult.getSetpsId());
-            activitiStepsResult.setServiceAudit(serviceAudit);
-            stepsResults.add(activitiStepsResult);
-        }
-        qualityTaskResult.setSteps(stepsResults);
 
         ActivitiProcess process = processService.getOne(new QueryWrapper<ActivitiProcess>() {{
             eq("process_id", processTask.getProcessId());
         }});
         qualityTaskResult.setProcess(process);
 
-        if (ToolUtil.isNotEmpty(stepIds)) {
-            List<ActivitiAudit> audits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", stepIds);
-            }});
+        List<ActivitiProcessLog> processLogList = logService.list(new QueryWrapper<ActivitiProcessLog>() {{
+            eq("task_id", taskId);
+        }});
 
 
-            qualityTaskResult.setAudits(audits);
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiProcessLog activitiProcessLog : processLogList) {
+            stepIds.add(activitiProcessLog.getSetpsId());
         }
+
+        List<ActivitiStepsResult> resultList = stepsService.backSteps(stepIds);
+
+        List<ActivitiProcessLogResult> processLogResults = new ArrayList<>();
+
+        for (ActivitiProcessLog activitiProcessLog : processLogList) {
+
+            for (ActivitiStepsResult activitiStepsResult : resultList) {
+
+                if (activitiProcessLog.getSetpsId().equals(activitiStepsResult.getSetpsId())) {
+
+                    ActivitiProcessLogResult activitiProcessLogResult = new ActivitiProcessLogResult();
+                    ToolUtil.copyProperties(activitiProcessLog, activitiProcessLogResult);
+                    activitiProcessLogResult.setStepsResult(activitiStepsResult);
+                    processLogResults.add(activitiProcessLogResult);
+                }
+            }
+
+        }
+        qualityTaskResult.setLogResults(processLogResults);
 
         return ResponseData.success(qualityTaskResult);
     }

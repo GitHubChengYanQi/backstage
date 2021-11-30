@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 流程日志表
@@ -20,6 +24,7 @@ public class ActivitiProcessLogResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ActivitiStepsResult stepsResult;
 
     /**
      * 主键

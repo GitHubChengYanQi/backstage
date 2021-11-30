@@ -6,6 +6,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * 质检任务详情
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 @Data
@@ -26,6 +27,10 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
 
     private static final long serialVersionUID = 1L;
 
+
+    private List<Long> detailsIds;
+
+    private List<Long> users;
 
     @ApiModelProperty("")
     private Long qualityTaskDetailId;
@@ -94,7 +99,6 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
-
 
 
     /**

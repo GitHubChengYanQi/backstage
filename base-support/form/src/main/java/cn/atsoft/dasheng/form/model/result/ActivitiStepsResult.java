@@ -26,13 +26,16 @@ import java.util.List;
 @ApiModel
 public class ActivitiStepsResult implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
 
     private AuditRule auditRule;
 
     private ActivitiStepsResult childNode;
 
-    private   ActivitiAuditResult serviceAudit;
+    private ActivitiAuditResult serviceAudit;
+
+    private ActivitiProcessLogResult logResult;
 
     private String stepType;
 

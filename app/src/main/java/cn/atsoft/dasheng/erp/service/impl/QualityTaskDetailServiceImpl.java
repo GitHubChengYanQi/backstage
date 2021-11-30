@@ -14,13 +14,14 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.ws.Action;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private QualityCheckService qualityCheckService;
     @Autowired
     private UnitService unitService;
+
     @Override
     public void add(QualityTaskDetailParam param) {
         QualityTaskDetail entity = getEntity(param);
@@ -57,6 +59,24 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Override
     public void delete(QualityTaskDetailParam param) {
         this.removeById(getKey(param));
+    }
+
+    @Override
+    public void addDetails(QualityTaskDetailParam param) {
+
+        List<QualityTaskDetail> taskDetails = this.list(new QueryWrapper<QualityTaskDetail>() {{
+            in("quality_task_detail_id", param.getDetailsIds());
+        }});
+
+        for (QualityTaskDetail taskDetail : taskDetails) {
+            String jsonStr = JSONUtil.toJsonStr(param.getUsers());
+            taskDetail.setUserIds(jsonStr);
+            taskDetail.setAddress(param.getAddress());
+            taskDetail.setPerson(param.getPerson());
+            taskDetail.setTime(param.getTime());
+        }
+
+        this.updateBatchById(taskDetails);
     }
 
     @Override
@@ -107,18 +127,18 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku,skuResult);
+            ToolUtil.copyProperties(sku, skuResult);
             skuResults.add(skuResult);
         }
         skuService.format(skuResults);
-        List<QualityPlanDetail> qualityPlanDetails =planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
+        List<QualityPlanDetail> qualityPlanDetails = planIds.size() == 0 ? new ArrayList<>() : qualityPlanDetailService.lambdaQuery().in(QualityPlanDetail::getPlanId, planIds).and(i -> i.eq(QualityPlanDetail::getDisplay, 1)).list();
 
         //取出qualityPlanDetails 中的 checkId
         List<Long> qualityCheckIds = new ArrayList<>();
         for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
             qualityCheckIds.add(qualityPlanDetail.getQualityCheckId());
         }
-        List<QualityCheck> qualityChecks =qualityCheckIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, qualityCheckIds).and(i -> i.eq(QualityCheck::getDisplay, 1)).list();
+        List<QualityCheck> qualityChecks = qualityCheckIds.size() == 0 ? new ArrayList<>() : qualityCheckService.lambdaQuery().in(QualityCheck::getQualityCheckId, qualityCheckIds).and(i -> i.eq(QualityCheck::getDisplay, 1)).list();
 
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
@@ -140,20 +160,20 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             for (QualityPlan qualityPlan : qualityPlanList) {
                 if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
                     QualityPlanResult qualityPlanResult = new QualityPlanResult();
-                    ToolUtil.copyProperties(qualityPlan,qualityPlanResult);
+                    ToolUtil.copyProperties(qualityPlan, qualityPlanResult);
                     List<QualityPlanDetailResult> qualityPlanDetailResults = new ArrayList<>();
                     for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
                         if (qualityPlanDetail.getPlanId().equals(qualityPlan.getQualityPlanId())) {
                             QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
-                            ToolUtil.copyProperties(qualityPlanDetail,qualityPlanDetailResult);
+                            ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
                             for (QualityCheck qualityCheck : qualityChecks) {
                                 if (qualityPlanDetail.getQualityCheckId().equals(qualityCheck.getQualityCheckId())) {
                                     QualityCheckResult qualityCheckResult = new QualityCheckResult();
-                                    ToolUtil.copyProperties(qualityCheck,qualityCheckResult);
+                                    ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
                                     qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
                                 }
                             }
-                            if (ToolUtil.isNotEmpty(qualityPlanDetailResult.getUnitId())){
+                            if (ToolUtil.isNotEmpty(qualityPlanDetailResult.getUnitId())) {
                                 Unit unit = unitService.getById(qualityPlanDetailResult.getUnitId());
                                 qualityPlanDetailResult.setUnit(unit);
                             }

@@ -69,4 +69,10 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
 
     ActivitiStepsResult backStepsResult(Long id);
 
+
+    ActivitiStepsResult getSteps(Long id);
+
+
+    List<ActivitiStepsResult> backSteps(List<Long> ids);
+
 }

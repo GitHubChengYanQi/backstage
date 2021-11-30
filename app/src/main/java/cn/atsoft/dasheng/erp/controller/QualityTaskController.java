@@ -179,9 +179,9 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<QualityTaskDetailResult> detail(@RequestBody QualityTaskParam qualityTaskParam) {
+    public ResponseData<QualityTaskResult> detail(@RequestBody QualityTaskParam qualityTaskParam) {
         QualityTask details = this.qualityTaskService.getById(qualityTaskParam.getQualityTaskId());
-        QualityTaskDetailResult result = new QualityTaskDetailResult();
+        QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(details, result);
         return ResponseData.success(result);
     }
@@ -223,6 +223,7 @@ public class QualityTaskController extends BaseController {
         List<TaskCount> taskCounts = this.qualityTaskService.backIkind(id);
         return ResponseData.success(taskCounts);
     }
+
 
 
 

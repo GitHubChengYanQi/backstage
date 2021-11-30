@@ -90,6 +90,24 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public List<ActivitiAuditResult> backAudits(List<Long> ids) {
+        List<ActivitiAuditResult> auditResults = new ArrayList<>();
+        if (ids.size() > 0) {
+            List<ActivitiAudit> audits = this.list(new QueryWrapper<ActivitiAudit>() {{
+                in("setps_id", ids);
+            }});
+
+            for (ActivitiAudit audit : audits) {
+                ActivitiAuditResult auditResult = new ActivitiAuditResult();
+                ToolUtil.copyProperties(audit, auditResult);
+                auditResults.add(auditResult);
+            }
+        }
+
+        return auditResults;
+    }
+
     private Serializable getKey(ActivitiAuditParam param) {
         return param.getAuditId();
     }

@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
@@ -39,6 +40,8 @@ public class QualityTaskResult implements Serializable {
     private List<ActivitiStepsResult> steps;
 
     private ActivitiProcess process;
+
+    private List<ActivitiProcessLogResult> logResults;
 
 
     private ActivitiProcessTaskResult activitiProcessTaskResult;

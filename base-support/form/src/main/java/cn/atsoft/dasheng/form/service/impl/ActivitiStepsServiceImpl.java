@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
@@ -288,6 +289,16 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return activitiStepsResult;
     }
 
+    @Override
+    public ActivitiStepsResult getSteps(Long id) {
+        ActivitiSteps steps = this.getById(id);
+        ActivitiStepsResult stepsResult = new ActivitiStepsResult();
+        ToolUtil.copyProperties(steps, stepsResult);
+        ActivitiAuditResult auditResult = auditService.getAudit(stepsResult.getSetpsId());
+        stepsResult.setServiceAudit(auditResult);
+        return stepsResult;
+    }
+
     /**
      * 递归取分支
      *
@@ -360,5 +371,34 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return luyou;
     }
 
+    @Override
+    public List<ActivitiStepsResult> backSteps(List<Long> ids) {
+        List<ActivitiStepsResult> stepsResults = new ArrayList<>();
+        if (ids.size() > 0) {
+            List<ActivitiSteps> steps = this.list(new QueryWrapper<ActivitiSteps>() {{
+                in("setps_id", ids);
+            }});
 
+            List<Long> stepIds = new ArrayList<>();
+            for (ActivitiSteps step : steps) {
+                stepIds.add(step.getSetpsId());
+            }
+
+
+            List<ActivitiAuditResult> resultList = auditService.backAudits(stepIds);
+
+            for (ActivitiSteps step : steps) {
+                for (ActivitiAuditResult activitiAuditResult : resultList) {
+                    if (step.getSetpsId().equals(activitiAuditResult.getSetpsId())) {
+                        ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
+                        ToolUtil.copyProperties(step, activitiStepsResult);
+                        activitiStepsResult.setServiceAudit(activitiAuditResult);
+                        stepsResults.add(activitiStepsResult);
+                    }
+                }
+
+            }
+        }
+        return stepsResults;
+    }
 }
