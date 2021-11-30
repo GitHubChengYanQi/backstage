@@ -153,7 +153,7 @@ public class ActivitiProcessTaskSend {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"Work/Workflow?"+ "id=="+param.getTaskId().toString();
+        url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("您有新的待审批任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
@@ -165,7 +165,7 @@ public class ActivitiProcessTaskSend {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"Work/Workflow?"+ "id=="+param.getTaskId().toString();
+        url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("被分派新的执行任务任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被分派到您"+ aboutSend.get("coding"));
@@ -210,7 +210,7 @@ public class ActivitiProcessTaskSend {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
 
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"Work/Workflow?"+ "formId="+param.getTaskId().toString()+"&setpsId="+param.getStepsId().toString();
+        url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(param.getUsers());
