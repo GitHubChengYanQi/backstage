@@ -158,31 +158,34 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                 }
             }
             for (QualityPlan qualityPlan : qualityPlanList) {
-                if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
-                    QualityPlanResult qualityPlanResult = new QualityPlanResult();
-                    ToolUtil.copyProperties(qualityPlan, qualityPlanResult);
-                    List<QualityPlanDetailResult> qualityPlanDetailResults = new ArrayList<>();
-                    for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
-                        if (qualityPlanDetail.getPlanId().equals(qualityPlan.getQualityPlanId())) {
-                            QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
-                            ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
-                            for (QualityCheck qualityCheck : qualityChecks) {
-                                if (qualityPlanDetail.getQualityCheckId().equals(qualityCheck.getQualityCheckId())) {
-                                    QualityCheckResult qualityCheckResult = new QualityCheckResult();
-                                    ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
-                                    qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
+                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())){
+                    if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
+                        QualityPlanResult qualityPlanResult = new QualityPlanResult();
+                        ToolUtil.copyProperties(qualityPlan, qualityPlanResult);
+                        List<QualityPlanDetailResult> qualityPlanDetailResults = new ArrayList<>();
+                        for (QualityPlanDetail qualityPlanDetail : qualityPlanDetails) {
+                            if (qualityPlanDetail.getPlanId().equals(qualityPlan.getQualityPlanId())) {
+                                QualityPlanDetailResult qualityPlanDetailResult = new QualityPlanDetailResult();
+                                ToolUtil.copyProperties(qualityPlanDetail, qualityPlanDetailResult);
+                                for (QualityCheck qualityCheck : qualityChecks) {
+                                    if (qualityPlanDetail.getQualityCheckId().equals(qualityCheck.getQualityCheckId())) {
+                                        QualityCheckResult qualityCheckResult = new QualityCheckResult();
+                                        ToolUtil.copyProperties(qualityCheck, qualityCheckResult);
+                                        qualityPlanDetailResult.setQualityCheckResult(qualityCheckResult);
+                                    }
                                 }
+                                if (ToolUtil.isNotEmpty(qualityPlanDetailResult.getUnitId())) {
+                                    Unit unit = unitService.getById(qualityPlanDetailResult.getUnitId());
+                                    qualityPlanDetailResult.setUnit(unit);
+                                }
+                                qualityPlanDetailResults.add(qualityPlanDetailResult);
                             }
-                            if (ToolUtil.isNotEmpty(qualityPlanDetailResult.getUnitId())) {
-                                Unit unit = unitService.getById(qualityPlanDetailResult.getUnitId());
-                                qualityPlanDetailResult.setUnit(unit);
-                            }
-                            qualityPlanDetailResults.add(qualityPlanDetailResult);
                         }
+                        qualityPlanResult.setQualityPlanDetailParams(qualityPlanDetailResults);
+                        qualityTaskDetailResult.setQualityPlanResult(qualityPlanResult);
                     }
-                    qualityPlanResult.setQualityPlanDetailParams(qualityPlanDetailResults);
-                    qualityTaskDetailResult.setQualityPlanResult(qualityPlanResult);
                 }
+
             }
 
         }
