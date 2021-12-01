@@ -221,11 +221,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
                 case 1:
-
                     // 主任务完成状态
                     ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
                     if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-                        activitiProcessLogService.add(oldEntity.getQualityTaskId(), 1);
+                        activitiProcessLogService.add(activitiProcessTask.getProcessTaskId(), 1);
                         newEntity.setState(1);
                     } else {
                         newEntity.setState(2);

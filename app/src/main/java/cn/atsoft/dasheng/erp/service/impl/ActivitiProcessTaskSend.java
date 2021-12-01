@@ -4,7 +4,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ActivitiTaskSend;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
@@ -24,10 +26,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +46,8 @@ public class ActivitiProcessTaskSend {
     private ActivitiStepsService activitiStepsService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private QualityTaskDetailService qualityTaskDetailService;
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
@@ -185,12 +186,21 @@ public class ActivitiProcessTaskSend {
     private void completeTaskSend(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
         List<Long> users = new ArrayList<>();
-
+        QualityTask updateEntity = new QualityTask();
+        updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
+        updateEntity.setState(2);
+        qualityTaskService.updateById(updateEntity);
+        List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
+        for (QualityTaskDetail detail : list) {
+            List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            users.addAll(userIds);
+        }
+        List<Long> collect = users.stream().distinct().collect(Collectors.toList());
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(users);
+        wxCpTemplate.setUserIds(collect);
         wxCpTemplate.setTitle("质检任务完成，待批准入库");
         wxCpTemplate.setDescription(aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
