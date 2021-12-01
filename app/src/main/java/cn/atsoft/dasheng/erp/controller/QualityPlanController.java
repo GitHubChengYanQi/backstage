@@ -147,7 +147,15 @@ public class QualityPlanController extends BaseController {
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) QualityPlanParam qualityPlanParam) {
 
+
         QueryWrapper<QualityPlan> qualityCheckQueryWrapper = new QueryWrapper<>();
+
+        if (ToolUtil.isNotEmpty(qualityPlanParam)){
+            if (ToolUtil.isNotEmpty(qualityPlanParam.getTestingType())){
+                qualityCheckQueryWrapper.eq("testing_type",qualityPlanParam.getTestingType());
+            }
+        }
+
 
         List<Map<String, Object>> list = this.qualityPlanService.listMaps(qualityCheckQueryWrapper);
         QualityPlanSelectWrapper factory = new QualityPlanSelectWrapper(list);

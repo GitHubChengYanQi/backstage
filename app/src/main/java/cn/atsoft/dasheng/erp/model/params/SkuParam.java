@@ -42,6 +42,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private Long unitId;
 
+    private Integer batch;
+
     /**
      * 编码
      */
