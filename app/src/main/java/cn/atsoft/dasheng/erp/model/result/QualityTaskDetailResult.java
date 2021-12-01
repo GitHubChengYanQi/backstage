@@ -28,6 +28,9 @@ public class QualityTaskDetailResult implements Serializable {
     @ApiModelProperty("")
     private Long qualityTaskDetailId;
 
+    private String status;
+
+    private String inkindId;
     /**
      * 物料id
      */

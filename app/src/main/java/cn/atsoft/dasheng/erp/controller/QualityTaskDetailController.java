@@ -8,11 +8,15 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 
 
 /**
@@ -116,7 +120,17 @@ public class QualityTaskDetailController extends BaseController {
         return ResponseData.success();
     }
 
+    /**
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/backValue", method = RequestMethod.GET)
+    @ApiOperation("详情")
+    public ResponseData backValue(@Param("inkind") Long inkind) {
+        List<FormDataValueResult> dataValueResults = this.qualityTaskDetailService.backData(inkind);
 
+        return ResponseData.success(dataValueResults);
+    }
 }
 
 

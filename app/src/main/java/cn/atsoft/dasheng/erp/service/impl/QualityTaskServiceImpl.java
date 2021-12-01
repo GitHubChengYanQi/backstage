@@ -19,10 +19,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -39,6 +36,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,6 +98,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private ActivitiAuditService auditService;
 
+    @Autowired
+    private QualityTaskDetailService taskDetailService;
 
     @Override
     @Transactional
@@ -179,7 +179,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.add(taskId,1);
+            activitiProcessLogService.add(taskId, 1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
@@ -220,11 +220,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
 
 
-
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
                 case 1:
+
                     // 主任务完成状态
+                    ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
+                    if (ToolUtil.isNotEmpty(activitiProcessTask)) {
+                        activitiProcessLogService.add(oldEntity.getQualityTaskId(), 1);
+                        newEntity.setState(1);
+                    } else {
+                        newEntity.setState(2);
+                    }
                     break;
                 case 2:
                     // 质检审批完成状态
@@ -232,12 +239,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
 
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
-        if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-             activitiProcessLogService.add(oldEntity.getQualityTaskId(),1);
-        } else {
-            newEntity.setState(2);
-        }
 
         ToolUtil.copyProperties(newEntity, oldEntity);
 
@@ -285,37 +286,161 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
     @Override
-    public void addFormData(FormDataPojo formDataPojo) {
+    @Transactional
+    public Boolean addFormData(FormDataPojo formDataPojo) {
+        //通过二维码查询实物id
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
-        if (codeId.getSource().equals("item")) {
-            FormData formData = new FormData();
-            formData.setModule(formDataPojo.getModule());
-            formData.setFormId(codeId.getFormId());
-            formData.setMainId(0L);
-            formDataService.save(formData);
-            //添加绑定关系
-            QualityTaskBind taskBind = new QualityTaskBind();
-            taskBind.setQualityTaskId(formDataPojo.getTaskId());
-            taskBind.setInkindId(codeId.getFormId());
-            taskBindService.save(taskBind);
-            List<FormValues> formValues = formDataPojo.getFormValues();
-            List<FormDataValue> formValuesList = new ArrayList<>();
-            for (FormValues formValue : formValues) {
-                FormDataValue formDataValue = new FormDataValue();
-                formDataValue.setValue(JSONUtil.toJsonStr(formValue.getDataValues()));
-                formDataValue.setDataId(formData.getDataId());
-                formDataValue.setField(formValue.getField());
-                formValuesList.add(formDataValue);
+        FormData data = formDataService.query().eq("form_id", codeId.getFormId()).one();
+
+        Boolean t = true;
+        if (ToolUtil.isNotEmpty(data)) {
+            formDataValueService.remove(new QueryWrapper<FormDataValue>() {{
+                eq("data_id", data.getDataId());
+            }});
+            formDataService.removeById(data);
+        }
+
+        FormData formData = new FormData();
+        formData.setModule(formDataPojo.getModule());
+        formData.setFormId(codeId.getFormId());
+        formData.setMainId(0L);
+        formDataService.save(formData);
+        //添加绑定关系
+        QualityTaskBind taskBind = new QualityTaskBind();
+        taskBind.setQualityTaskId(formDataPojo.getTaskId());
+        taskBind.setInkindId(codeId.getFormId());
+        taskBindService.save(taskBind);
+
+        List<FormValues> formValues = formDataPojo.getFormValues();
+        List<FormDataValue> formValuesList = new ArrayList<>();
+
+        //查询是否绑定
+        QualityTaskDetail TaskDetail = taskDetailService.getOne(new QueryWrapper<QualityTaskDetail>() {{
+            eq("quality_task_detail_id", formDataPojo.getQualityTaskDetailId());
+        }});
+        if (ToolUtil.isEmpty(TaskDetail)) {
+            throw new ServiceException(500, "请确定质检任务详情");
+        }
+
+        if (ToolUtil.isEmpty(TaskDetail.getInkindId())) {
+            t = false;
+        }
+        Integer number = TaskDetail.getNumber();
+        //判断绑定数量
+        List<String> inkinds = new ArrayList<>();
+
+        if (TaskDetail.getBatch() == 0) {
+            String[] strings = TaskDetail.getInkindId().split(",");
+            int length = strings.length;
+            if (number != length) {
+                t = false;
+            } else {
+                for (String inkind : strings) {
+                    inkinds.add(inkind);
+                }
+
             }
-            formDataValueService.saveBatch(formValuesList);
+        }
+
+        //查询质检项详情
+        List<QualityPlanDetail> details = qualityPlanDetailService.list(new QueryWrapper<QualityPlanDetail>() {{
+            eq("is_null", 1);
+        }});
+
+
+        for (FormValues formValue : formValues) {
+            Boolean aBoolean = backBoolean(details, formValue);
+            if (!aBoolean) {
+                t = false;
+            }
+            FormDataValue formDataValue = new FormDataValue();
+            formDataValue.setValue(JSONUtil.toJsonStr(formValue.getDataValues()));
+            formDataValue.setDataId(formData.getDataId());
+            formDataValue.setField(formValue.getField());
+            formValuesList.add(formDataValue);
+        }
+
+        List<OrCodeBind> qrCodeId = bindService.list(new QueryWrapper<OrCodeBind>() {{
+            in("qr_code_id", inkinds);
+        }});
+
+        List<Long> formIds = new ArrayList<>();
+        for (OrCodeBind orCodeBind : qrCodeId) {
+            formIds.add(orCodeBind.getFormId());
+        }
+
+        List<FormData> dataList = formDataService.list(new QueryWrapper<FormData>() {{
+            in("form_id", formIds);
+        }});
+
+        formDataValueService.saveBatch(formValuesList);
+
+        if (t) {
+            Boolean judge = judge(dataList, details);
+            if (!judge) {
+                t = false;
+            }
         }
 
 
+        if (t) {
+            TaskDetail.setStatus("完成");
+            taskDetailService.updateById(TaskDetail);
+        }
+        return t;
     }
+
+    /**
+     * 判断质检是否必填
+     *
+     * @param details
+     * @param formValue
+     * @return
+     */
+    public Boolean backBoolean(List<QualityPlanDetail> details, FormValues formValue) {
+        Boolean t = true;
+        for (QualityPlanDetail detail : details) {
+            if (formValue.getField().equals(detail.getPlanDetailId())) {
+                if (ToolUtil.isEmpty(formValue.getDataValues())) {
+                    return false;
+                }
+            }
+        }
+        return t;
+    }
+
+    /**
+     * 判断多个实物是否添加完成
+     *
+     * @param data
+     * @param details
+     * @return
+     */
+    public Boolean judge(List<FormData> data, List<QualityPlanDetail> details) {
+        List<Long> dataIds = new ArrayList<>();
+        for (FormData datum : data) {
+            dataIds.add(datum.getDataId());
+        }
+        List<FormDataValue> values = formDataValueService.list(new QueryWrapper<FormDataValue>() {{
+            in("data_id", dataIds);
+        }});
+
+        for (QualityPlanDetail detail : details) {
+            for (FormDataValue value : values) {
+                if (detail.getPlanDetailId().equals(value.getField())) {
+                    if (ToolUtil.isEmpty(value.getValue())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
 
     @Override
     public List<TaskCount> backIkind(Long id) {
-        //通过绑定找出ikinds
+        //通过二维码找出ikinds
         List<QualityTaskBind> taskBindList = taskBindService.query().eq("quality_task_id", id).list();
         List<Long> iKinds = new ArrayList<>();
         for (QualityTaskBind taskBind : taskBindList) {
@@ -428,43 +553,44 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                 if (qualityCheck.getQualityCheckId().equals(planDetail.getQualityCheckId())) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("name", qualityCheck.getName());
-                                    FormValues.DataValues dataValues = JSONUtil.toBean(formDataValue.getValue(), FormValues.DataValues.class);
 
-                                    map.put("value", dataValues);
-                                    Boolean flag = false;
+                                    if (ToolUtil.isNotEmpty(formDataValue.getValue())) {
+                                        FormValues.DataValues dataValues = JSONUtil.toBean(formDataValue.getValue(), FormValues.DataValues.class);
+                                        map.put("value", dataValues);
+                                        Boolean flag = false;
 
-                                    if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
-                                        flag = false;
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
-                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
-                                                if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
-                                                    flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), dataValues.getValue());
-                                                }
-                                            } else {
-                                                flag = true;
-                                            }
-                                        }
-                                    } else if (qualityCheck.getType() == 3) {
-                                        if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
-                                            if (ToolUtil.isNotEmpty(dataValues.getValue())) {
-                                                if (dataValues.getValue().equals("1")) {
-                                                    flag = true;
+                                        if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
+                                            flag = false;
+                                            if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                if (ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                    if (ToolUtil.isNotEmpty(planDetail.getOperator()) || ToolUtil.isNotEmpty(planDetail.getStandardValue())) {
+                                                        flag = this.mathData(planDetail.getStandardValue(), planDetail.getOperator(), dataValues.getValue());
+                                                    }
                                                 } else {
-                                                    flag = false;
+                                                    flag = true;
                                                 }
-                                            } else {
-                                                flag = true;
                                             }
+                                        } else if (qualityCheck.getType() == 3) {
+                                            if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                if (ToolUtil.isNotEmpty(dataValues.getValue())) {
+                                                    if (dataValues.getValue().equals("1")) {
+                                                        flag = true;
+                                                    } else {
+                                                        flag = false;
+                                                    }
+                                                } else {
+                                                    flag = true;
+                                                }
+                                            }
+                                        } else {
+                                            flag = true;
                                         }
-                                    } else {
-                                        flag = true;
+                                        map.put("standar", flag);
+                                        map.put("field", planDetail);
+                                        map.put("type", qualityCheck.getType());
+                                        maps.add(map);
+
                                     }
-
-
-                                    map.put("standar", flag);
-                                    map.put("field", planDetail);
-                                    map.put("type", qualityCheck.getType());
-                                    maps.add(map);
                                 }
 
                             }
@@ -517,13 +643,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public void detailFormat(QualityTaskResult param) {
 
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
         List<QualityTaskDetail> qualityTaskDetails = detailService.lambdaQuery().in(QualityTaskDetail::getQualityTaskId, param.getQualityTaskId()).and(i -> i.eq(QualityTaskDetail::getDisplay, 1)).list();
         List<QualityTaskDetailResult> qualityTaskDetailResults = new ArrayList<>();
         for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
             QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
             ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
-            qualityTaskDetailResults.add(qualityTaskDetailResult);
+            String[] strings = qualityTaskDetail.getUserIds().split(",");
+            for (String id : strings) {
+                if (loginUser.getId().toString().equals(id)) {
+                    qualityTaskDetailResults.add(qualityTaskDetailResult);
+                }
+            }
         }
+
         detailService.format(qualityTaskDetailResults);
         param.setDetails(qualityTaskDetailResults);
         User byId = userService.getById(param.getUserId());

@@ -8,12 +8,25 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
+import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,7 +37,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,6 +64,16 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private QualityCheckService qualityCheckService;
     @Autowired
     private UnitService unitService;
+    @Autowired
+    private FormDataService dataService;
+    @Autowired
+    private FormDataValueService valueService;
+    @Autowired
+    private OrCodeBindService bindService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -78,6 +103,19 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
 
         this.updateBatchById(taskDetails);
+
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
+        wxCpTemplate.setUserIds(users);
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"OrCode?id="+formId.getOrCodeId();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setDescription("点击查看新质检任务");
+        wxCpTemplate.setTitle("您被分派新的任务");
+        wxCpTemplate.setType(1);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -104,6 +142,41 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         IPage<QualityTaskDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<FormDataValueResult> backData(Long qrcodeId) {
+        List<FormDataValueResult> dataValueResults = new ArrayList<>();
+
+        OrCodeBind codeId = bindService.query().eq("qr_code_id", qrcodeId).one();
+        if (ToolUtil.isNotEmpty(codeId)) {
+            FormData formData = dataService.getOne(new QueryWrapper<FormData>() {{
+                eq("form_id", codeId.getFormId());
+            }});
+
+            if (ToolUtil.isNotEmpty(formData)) {
+                List<FormDataValue> dataValues = valueService.list(new QueryWrapper<FormDataValue>() {{
+                    eq("data_id", formData.getDataId());
+                }});
+
+
+                for (FormDataValue dataValue : dataValues) {
+                    FormDataValueResult valueResult = new FormDataValueResult();
+                    ToolUtil.copyProperties(dataValue, valueResult);
+                    dataValueResults.add(valueResult);
+                }
+                return dataValueResults;
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void updateDataValue(Long inkind) {
+
+         dataService.list(new QueryWrapper<FormData>(){{
+         }});
     }
 
     @Override
@@ -159,7 +232,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                 }
             }
             for (QualityPlan qualityPlan : qualityPlanList) {
-                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())){
+                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())) {
                     if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
                         QualityPlanResult qualityPlanResult = new QualityPlanResult();
                         ToolUtil.copyProperties(qualityPlan, qualityPlanResult);

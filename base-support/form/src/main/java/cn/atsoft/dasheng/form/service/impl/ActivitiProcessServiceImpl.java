@@ -62,7 +62,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         Integer module = this.query().eq("module", param.getModule()).count();
         if (module == 1) {
             ActivitiProcess process = this.getById(param.getProcessId());
-            if (process.getStatus()==99) {
+            if (process.getStatus() == 99) {
                 if (!process.getStatus().equals(param.getStatus())) {
                     throw new ServiceException(500, "不可全部停用");
                 }
@@ -87,7 +87,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
                         .ne("process_id", param.getProcessId())
                         .one();
                 if (ToolUtil.isEmpty(process)) {
-                    throw new ServiceException(500, "不可全部停用");
+                    throw new ServiceException(500, "必须有一个启用的流程");
                 }
             }
         }

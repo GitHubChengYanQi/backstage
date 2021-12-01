@@ -164,14 +164,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          * 判断操作权限
                          */
                         this.checkUser(activitiAudit.getRule());
-
-
                         this.updateById(entity);
                         audit = this.getAudit(taskId);
 //                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
-                    }else {
-                        throw new ServiceException(500,"您流程没有操作权限");
                     }
                 }
             }
