@@ -11,12 +11,11 @@
         <result column="brand_id" property="brandId"/>
         <result column="number" property="number"/>
         <result column="batch" property="batch"/>
-
         <result column="userIds" property="userIds"/>
         <result column="time" property="time"/>
         <result column="address" property="address"/>
         <result column="person" property="person"/>
-
+        <result column="inkind_id" property="inkindId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -24,12 +23,13 @@
         <result column="display" property="display"/>
         <result column="remaining" property="remaining"/>
         <result column="deptId" property="deptId"/>
+        <result column="status" property="status"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        time AS "time",
+        time AS "time",inkind_id AS "inkindId",status AS "status",
 userIds AS "userIds",
 address AS "address",
 person AS "person",

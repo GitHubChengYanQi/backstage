@@ -62,8 +62,6 @@ public class QualityTaskController extends BaseController {
     private QualityTaskBindService qualityTaskBindService;
 
 
-
-
     /**
      * 新增接口
      *
@@ -84,7 +82,7 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改质检任务", key = "name", dict = QualityTaskParam.class)
+
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody QualityTaskParam qualityTaskParam) {
 
@@ -99,7 +97,7 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/checkOver", method = RequestMethod.POST)
-    @BussinessLog(value = "修改质检任务", key = "name", dict = QualityTaskParam.class)
+
     @ApiOperation("编辑")
     public ResponseData checkOver(@RequestBody QualityTaskParam qualityTaskParam) {
 
@@ -114,7 +112,7 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除质检任务", key = "name", dict = QualityTaskParam.class)
+
     @ApiOperation("删除")
     public ResponseData delete(@RequestBody QualityTaskParam qualityTaskParam) {
         this.qualityTaskService.delete(qualityTaskParam);
@@ -195,21 +193,10 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/addData", method = RequestMethod.POST)
     public ResponseData addData(@RequestBody FormDataPojo formDataPojo) {
-        if (ToolUtil.isNotEmpty(formDataPojo.getQualityTaskDetailId())) {
-            QualityTaskDetail qualityTaskDetail = qualityTaskDetailService.getById(formDataPojo.getQualityTaskDetailId());
-            QualityTaskDetailParam qualityTaskDetailParam = new QualityTaskDetailParam();
-            qualityTaskDetailParam.setQualityTaskDetailId(formDataPojo.getQualityTaskDetailId());
-            qualityTaskDetailParam.setRemaining(qualityTaskDetail.getRemaining() - formDataPojo.getNumber());
-            if ((qualityTaskDetail.getRemaining() - formDataPojo.getNumber()) >= 0) {
-                qualityTaskDetailService.update(qualityTaskDetailParam);
-            } else {
-                throw new ServiceException(500, "质检失败!");
-            }
 
-        }
 
-        this.qualityTaskService.addFormData(formDataPojo);
-        return ResponseData.success();
+        Boolean data = this.qualityTaskService.addFormData(formDataPojo);
+        return ResponseData.success(data);
     }
 
     /**
@@ -223,8 +210,6 @@ public class QualityTaskController extends BaseController {
         List<TaskCount> taskCounts = this.qualityTaskService.backIkind(id);
         return ResponseData.success(taskCounts);
     }
-
-
 
 
 }

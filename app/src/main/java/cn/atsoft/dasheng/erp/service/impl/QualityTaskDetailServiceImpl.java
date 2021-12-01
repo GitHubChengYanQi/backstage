@@ -8,12 +8,20 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.entity.FormData;
+import cn.atsoft.dasheng.form.entity.FormDataValue;
+import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
+import cn.atsoft.dasheng.form.service.FormDataService;
+import cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -49,6 +57,12 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private QualityCheckService qualityCheckService;
     @Autowired
     private UnitService unitService;
+    @Autowired
+    private FormDataService dataService;
+    @Autowired
+    private FormDataValueService valueService;
+    @Autowired
+    private OrCodeBindService bindService;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -106,6 +120,41 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     }
 
     @Override
+    public List<FormDataValueResult> backData(Long qrcodeId) {
+        List<FormDataValueResult> dataValueResults = new ArrayList<>();
+
+        OrCodeBind codeId = bindService.query().eq("qr_code_id", qrcodeId).one();
+        if (ToolUtil.isNotEmpty(codeId)) {
+            FormData formData = dataService.getOne(new QueryWrapper<FormData>() {{
+                eq("form_id", codeId.getFormId());
+            }});
+
+            if (ToolUtil.isNotEmpty(formData)) {
+                List<FormDataValue> dataValues = valueService.list(new QueryWrapper<FormDataValue>() {{
+                    eq("data_id", formData.getDataId());
+                }});
+
+
+                for (FormDataValue dataValue : dataValues) {
+                    FormDataValueResult valueResult = new FormDataValueResult();
+                    ToolUtil.copyProperties(dataValue, valueResult);
+                    dataValueResults.add(valueResult);
+                }
+                return dataValueResults;
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void updateDataValue(Long inkind) {
+
+         dataService.list(new QueryWrapper<FormData>(){{
+         }});
+    }
+
+    @Override
     public void format(List<QualityTaskDetailResult> param) {
         List<Long> skuIds = new ArrayList<>();
         //品牌id
@@ -158,7 +207,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                 }
             }
             for (QualityPlan qualityPlan : qualityPlanList) {
-                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())){
+                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())) {
                     if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
                         QualityPlanResult qualityPlanResult = new QualityPlanResult();
                         ToolUtil.copyProperties(qualityPlan, qualityPlanResult);

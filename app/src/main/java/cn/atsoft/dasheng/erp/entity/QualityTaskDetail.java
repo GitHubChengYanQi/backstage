@@ -26,7 +26,16 @@ public class QualityTaskDetail implements Serializable {
 
     @TableId(value = "quality_task_detail_id", type = IdType.ID_WORKER)
     private Long qualityTaskDetailId;
-
+    /**
+     * 实物id
+     */
+    @TableField("inkind_id")
+    private String inkindId;
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private String status;
     /**
      * 物料id
      */
@@ -127,6 +136,22 @@ public class QualityTaskDetail implements Serializable {
 
     public void setPerson(Long person) {
         this.person = person;
+    }
+
+    public String getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(String inkindId) {
+        this.inkindId = inkindId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     /**

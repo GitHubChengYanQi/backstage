@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
+import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -75,5 +76,14 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
      * @Date 2021-11-16
      */
     PageInfo<QualityTaskDetailResult> findPageBySpec(QualityTaskDetailParam param);
+
+
+    /**
+     * @param inkind
+     * @return
+     */
+    List<FormDataValueResult> backData(Long inkind);
+
+    void updateDataValue(Long inkind);
 
 }
