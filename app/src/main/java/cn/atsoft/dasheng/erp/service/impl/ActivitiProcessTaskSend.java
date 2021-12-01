@@ -146,7 +146,7 @@ public class ActivitiProcessTaskSend {
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("您有新的待审批任务");
+        wxCpTemplate.setTitle("您有新的审批流程抄送");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();

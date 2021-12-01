@@ -193,6 +193,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
                 in("setps_id", setpsIds1);
             }});
+
             List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
 
             for (Long passSetpId : passSetpIds) {
@@ -201,13 +202,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             if (ToolUtil.isNotEmpty(activitiStepsResults)) {
                 for (ActivitiStepsResult stepsResult : activitiStepsResults) {
                     ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
-                    if (ToolUtil.isEmpty(activitiAudit)) {
-                        //不做任何操作
-                    } else {
-                        if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
-                            taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getChildren(), task.getProcessTaskId());
-                        }
-
+                    if (ToolUtil.isNotEmpty(activitiAudit)) {
+                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getSetpsId().toString(), task.getProcessTaskId());
                     }
                 }
             }

@@ -104,13 +104,13 @@ public class QualityTaskDetailController extends BaseController {
 
 
     /**
-     * 添加详情接口
+     * 分派任务
      *
      * @author
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/addDetails", method = RequestMethod.POST)
-    @ApiOperation("删除")
+    @ApiOperation("分派任务")
     public ResponseData addDetails(@RequestBody QualityTaskDetailParam qualityTaskDetailParam) {
         this.qualityTaskDetailService.addDetails(qualityTaskDetailParam);
         return ResponseData.success();
