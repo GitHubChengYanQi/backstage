@@ -36,6 +36,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,7 +177,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.add(taskId,1);
+            activitiProcessLogService.add(taskId, 1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
@@ -217,11 +218,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
 
 
-
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
                 case 1:
+
                     // 主任务完成状态
+                    ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
+                    if (ToolUtil.isNotEmpty(activitiProcessTask)) {
+                        activitiProcessLogService.add(oldEntity.getQualityTaskId(), 1);
+                        newEntity.setState(1);
+                    } else {
+                        newEntity.setState(2);
+                    }
                     break;
                 case 2:
                     // 质检审批完成状态
@@ -229,12 +237,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
 
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
-        if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-             activitiProcessLogService.add(oldEntity.getQualityTaskId(),1);
-        } else {
-            newEntity.setState(2);
-        }
 
         ToolUtil.copyProperties(newEntity, oldEntity);
 
@@ -639,13 +641,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public void detailFormat(QualityTaskResult param) {
 
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
         List<QualityTaskDetail> qualityTaskDetails = detailService.lambdaQuery().in(QualityTaskDetail::getQualityTaskId, param.getQualityTaskId()).and(i -> i.eq(QualityTaskDetail::getDisplay, 1)).list();
         List<QualityTaskDetailResult> qualityTaskDetailResults = new ArrayList<>();
         for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
             QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
             ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
-            qualityTaskDetailResults.add(qualityTaskDetailResult);
+            String[] strings = qualityTaskDetail.getUserIds().split(",");
+            for (String id : strings) {
+                if (loginUser.getId().toString().equals(id)) {
+                    qualityTaskDetailResults.add(qualityTaskDetailResult);
+                }
+            }
         }
+
         detailService.format(qualityTaskDetailResults);
         param.setDetails(qualityTaskDetailResults);
         User byId = userService.getById(param.getUserId());
