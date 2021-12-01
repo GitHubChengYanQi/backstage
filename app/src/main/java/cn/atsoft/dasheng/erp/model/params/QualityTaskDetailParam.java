@@ -30,7 +30,6 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
 
     private List<Long> detailsIds;
 
-    private List<Long> users;
 
     @ApiModelProperty("")
     private Long qualityTaskDetailId;
@@ -82,6 +81,10 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
      * 地点
      */
     private String address;
+
+    private String phone;
+
+    private String note;
 
     /**
      * 对接人

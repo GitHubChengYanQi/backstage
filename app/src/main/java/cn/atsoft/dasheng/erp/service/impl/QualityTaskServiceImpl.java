@@ -217,6 +217,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
 
 
+
+        if (ToolUtil.isNotEmpty(param.getState())) {
+            switch (param.getState()) {
+                case 1:
+                    // 主任务完成状态
+                    break;
+                case 2:
+                    // 质检审批完成状态
+                    break;
+            }
+        }
+
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
         if (ToolUtil.isNotEmpty(activitiProcessTask)) {
             QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();

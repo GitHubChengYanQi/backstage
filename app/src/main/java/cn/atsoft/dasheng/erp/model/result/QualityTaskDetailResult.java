@@ -82,6 +82,10 @@ public class QualityTaskDetailResult implements Serializable {
      */
     private Long person;
 
+    private String phone;
+
+    private String note;
+
     /**
      * 创建者
      */

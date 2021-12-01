@@ -16,6 +16,8 @@
         <result column="time" property="time"/>
         <result column="address" property="address"/>
         <result column="person" property="person"/>
+        <result column="phone" property="phone"/>
+        <result column="note" property="note"/>
 
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
@@ -33,6 +35,8 @@
 userIds AS "userIds",
 address AS "address",
 person AS "person",
+note AS "note",
+phone AS "phone",
         quality_task_detail_id
         AS "qualityTaskDetailId", sku_id AS "skuId",remaining AS "remaining",batch AS "batch", quality_plan_id AS "qualityPlanId",number AS "number",brand_id AS "brandId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

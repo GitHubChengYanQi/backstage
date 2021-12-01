@@ -70,6 +70,18 @@ public class QualityTaskDetail implements Serializable {
     private String address;
 
     /**
+     * 联系电话
+     */
+    @TableField("phone")
+    private String phone;
+
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+
+    /**
      * 对接人
      */
     @TableField("person")
@@ -88,6 +100,22 @@ public class QualityTaskDetail implements Serializable {
 
     @TableField("batch")
     private Integer batch;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 
     public Integer getNumber() {
         return number;

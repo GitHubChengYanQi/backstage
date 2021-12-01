@@ -69,8 +69,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }});
 
         for (QualityTaskDetail taskDetail : taskDetails) {
-            String jsonStr = JSONUtil.toJsonStr(param.getUsers());
-            taskDetail.setUserIds(jsonStr);
+            taskDetail.setUserIds(param.getUserIds());
             taskDetail.setAddress(param.getAddress());
             taskDetail.setPerson(param.getPerson());
             taskDetail.setTime(param.getTime());
