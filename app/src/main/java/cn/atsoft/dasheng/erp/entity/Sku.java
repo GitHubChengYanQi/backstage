@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 
@@ -28,6 +29,21 @@ public class Sku implements Serializable {
      */
     @TableField("quality_plan_id")
     private Long qualityPlanId;
+
+    /**
+     * 批量
+     */
+    @TableField("batch")
+    private Integer batch;
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
+    }
+
     /**
      * 类型
      */

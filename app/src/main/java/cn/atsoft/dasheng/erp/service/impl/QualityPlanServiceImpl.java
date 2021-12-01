@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.QualityPlanDetail;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.mapper.QualityPlanMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanParam;
@@ -154,6 +155,11 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
             details.add(detail);
         }
         qualityPlanDetailService.saveBatch(details);
+
+        QualityPlan oldEntity = getOldEntity(param);
+        QualityPlan newEntity = getEntity(param);
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
 
 
     }

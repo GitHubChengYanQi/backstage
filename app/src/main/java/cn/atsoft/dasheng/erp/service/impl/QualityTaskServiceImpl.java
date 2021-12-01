@@ -122,14 +122,15 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         if (ToolUtil.isNotEmpty(param.getDetails())) {
             List<Long> skuIds = new ArrayList<>();
-            Map<Long, Long> maps = new HashMap<>();
+            Map<Long, QualityTaskDetailParam> maps = new HashMap<>();
             List<QualityTaskDetail> details = new ArrayList<>();
             for (QualityTaskDetailParam detailParam : param.getDetails()) {
                 skuIds.add(detailParam.getSkuId());
-                maps.put(detailParam.getSkuId(), detailParam.getQualityPlanId());
+
+                maps.put(detailParam.getSkuId(), detailParam);
+
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
-                detailParam.setRemaining(detailParam.getNumber());
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
@@ -137,8 +138,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             //回填sku质检项
             List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
             for (Sku sku : skus) {
-                Long plan = maps.get(sku.getSkuId());
-                sku.setQualityPlanId(plan);
+                QualityTaskDetailParam qualityTaskDetailParam = maps.get(sku.getSkuId());
+                sku.setQualityPlanId(qualityTaskDetailParam.getQualityPlanId());
+                sku.setBatch(qualityTaskDetailParam.getBatch());
             }
             skuService.updateBatchById(skus);
         }
