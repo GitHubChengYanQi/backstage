@@ -3,17 +3,21 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 质检任务详情
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-11-16
  */
 @Data
@@ -83,7 +87,7 @@ public class QualityTaskDetailResult implements Serializable {
     /**
      * 对接人
      */
-    private Long person;
+    private String person;
 
     private String phone;
 

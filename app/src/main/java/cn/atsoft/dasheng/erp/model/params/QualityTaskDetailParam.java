@@ -92,7 +92,7 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     /**
      * 对接人
      */
-    private Long person;
+    private String person;
 
     /**
      * 创建者

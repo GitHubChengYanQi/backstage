@@ -158,12 +158,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             type2Activiti = "inQuality";
         }
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
-
         if (ToolUtil.isNotEmpty(activitiProcess)) {
 
-
-            LoginUser loginUser = LoginContextHolder.getContext().getUser();
-
+            this.checkUser(activitiProcess.getProcessId()); //判断是否有权限操作
 
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
@@ -193,6 +190,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     }
 
+    private void checkUser(Long processId) {
+        ActivitiSteps one1 = stepsService.query().eq("process_id", processId).eq("type", 0).one();
+        ActivitiAudit one = auditService.query().eq("setps_id", one1.getSetpsId()).one();
+        activitiProcessLogService.checkUser(one.getRule());
+    }
 
     @Override
     public void delete(QualityTaskParam param) {
@@ -221,11 +223,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
                 case 1:
-
                     // 主任务完成状态
                     ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
                     if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-                        activitiProcessLogService.add(oldEntity.getQualityTaskId(), 1);
+                        activitiProcessLogService.add(activitiProcessTask.getProcessTaskId(), 1);
                         newEntity.setState(1);
                     } else {
                         newEntity.setState(2);
