@@ -156,7 +156,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 entity.setStatus(status);
                 entity.setLogId(logId);
                 if (type.equals("luYou") || type.equals("branch")) {
-                    this.updateById(entity);
+                    this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
+                        eq("log_id", entity.getLogId());
+                    }});
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
                     if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
@@ -164,8 +166,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          * 判断操作权限
                          */
                         this.checkUser(activitiAudit.getRule());
-                        this.baseMapper.update(entity,new QueryWrapper<ActivitiProcessLog>(){{
-                            eq("log_id",entity.getLogId());
+                        this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
+                            eq("log_id", entity.getLogId());
                         }});
                         audit = this.getAudit(taskId);
 //                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
@@ -208,6 +210,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         }
     }
+
     @Override
     public void checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
