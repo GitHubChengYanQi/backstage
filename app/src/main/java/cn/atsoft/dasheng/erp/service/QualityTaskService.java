@@ -90,9 +90,8 @@ public interface QualityTaskService extends IService<QualityTask> {
      * 添加formData
      *
      * @param formDataPojo
-     * @return
      */
-    Boolean addFormData(FormDataPojo formDataPojo);
+    void addFormData(FormDataPojo formDataPojo);
 
 
     List<TaskCount>  backIkind(Long id);

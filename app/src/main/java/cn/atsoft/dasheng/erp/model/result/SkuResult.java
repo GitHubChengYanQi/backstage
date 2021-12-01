@@ -43,6 +43,8 @@ public class SkuResult implements Serializable {
     private Spu spu;
     private Unit unit;
 
+    private Integer batch;
+
 
     /**
      * 之间方案id

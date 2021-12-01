@@ -70,7 +70,7 @@ public class ActivitiProcessTaskSend {
             for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
                 for (QualityRules.Depts.Positions position : dept.getPositions()) {
                     for (User user : userList) {
-                        if (user.getRoleId().toString().equals(position.getValue()) && user.getDeptId().toString().equals(dept.getKey())) {
+                        if (ToolUtil.isNotEmpty(user.getRoleId()) && user.getRoleId().toString().equals(position.getValue()) && user.getDeptId().toString().equals(dept.getKey())) {
                             users.add(user.getUserId());
                         }
                     }
@@ -107,7 +107,7 @@ public class ActivitiProcessTaskSend {
                 activitiTaskSend.setUrl(url);
                 activitiTaskSend.setTaskId(taskId);
                 activitiTaskSend.setStepsId(stepsId);
-                this.personSend(activitiTaskSend);
+                this.sendSend(activitiTaskSend);
                 break;
             case "quality_task_dispatch":
                 users = this.selectUsers(starUser);
@@ -147,21 +147,21 @@ public class ActivitiProcessTaskSend {
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("您有新的审批流程抄送");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
+        wxCpTemplate.setTitle("您有新的审批流程");
+        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起了任务"+ aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
     private void dispatch(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
-        param.setTaskId(byId.getFormId());
+//        param.setTaskId(byId.getFormId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"Work/Workflow/DispatchTask?id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("被分派新的执行任务任务");
+        wxCpTemplate.setTitle("分派新的执行任务任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被分派到您"+ aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();

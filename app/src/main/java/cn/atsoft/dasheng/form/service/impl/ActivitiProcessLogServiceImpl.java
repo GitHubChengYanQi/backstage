@@ -129,8 +129,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
 
         List<Long> setpsIds = new ArrayList<>();
-
-
         for (ActivitiProcessLog processLog : audit) {
             setpsIds.add(processLog.getSetpsId());
         }
@@ -143,7 +141,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
                 in("setps_id", setpsIds);
             }});
-
 
             List<Long> passSetpIds = new ArrayList<>();
             for (ActivitiProcessLog activitiProcessLog : audit) {
@@ -158,54 +155,72 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog entity = new ActivitiProcessLog();
                 entity.setStatus(status);
                 entity.setLogId(logId);
-                if (type.equals("route") || type.equals("branch")) {
+                if (type.equals("luYou") || type.equals("branch")) {
                     this.updateById(entity);
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
                     if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
+                        /**
+                         * 判断操作权限
+                         */
+                        this.checkUser(activitiAudit.getRule());
                         this.updateById(entity);
+                        audit = this.getAudit(taskId);
 //                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
                     }
                 }
             }
+            /**
+             * 当前节点发送消息
+             */
 
             /**
              * 所有下一节点送消息的节点
              */
-            List<Long> childSetpsIds = new ArrayList<>();
-            audit = this.getAudit(taskId);
-            if (ToolUtil.isNotEmpty(audit)) {
-                for (ActivitiProcessLog activitiProcessLog : audit) {
-                    childSetpsIds.add(activitiProcessLog.getSetpsId());
-                }
+            List<Long> setpsIds1 = new ArrayList<>();
+
+            passSetpIds = new ArrayList<>();
+            for (ActivitiProcessLog activitiProcessLog : audit) {
+                passSetpIds.add(activitiProcessLog.getSetpsId());
+                setpsIds1.add(activitiProcessLog.getSetpsId());
             }
-            List<ActivitiAudit> childActivitiAudits = null;
-            if (ToolUtil.isNotEmpty(childSetpsIds)) {
-                childActivitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                    in("setps_id", childSetpsIds);
-                }});
-            }
+
+            activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+                in("setps_id", setpsIds1);
+            }});
+
             List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
+
             for (Long passSetpId : passSetpIds) {
                 activitiStepsResults = getNextNode(activitiStepsResult, passSetpId);
             }
             if (ToolUtil.isNotEmpty(activitiStepsResults)) {
                 for (ActivitiStepsResult stepsResult : activitiStepsResults) {
-                    if (ToolUtil.isNotEmpty(activitiAudits)) {
-                        ActivitiAudit activitiAudit = getRule(childActivitiAudits, stepsResult.getSetpsId());
-                        if (ToolUtil.isEmpty(activitiAudit)) {
-                        } else {
-                            taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
-                        }
+                    ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
+                    if (ToolUtil.isNotEmpty(activitiAudit)) {
+                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getSetpsId().toString(), task.getProcessTaskId());
                     }
-
                 }
             }
 
         }
     }
-
+    private void checkUser(AuditRule starUser) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        Long userId = user.getId();
+        Long deptId = user.getDeptId();
+        Boolean flag =false;
+        List<Long> users = taskSend.selectUsers(starUser);
+        for (Long aLong : users) {
+            if (aLong.equals(userId)){
+                flag =  true;
+            }
+        }
+        if (!flag) {
+            throw new ServiceException(500,"您没有操作权限");
+        }
+    }
 
     @Override
     public void delete(ActivitiProcessLogParam param) {
@@ -318,11 +333,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
-        if (activitiStepsResult.getType().equals("0")) {
-            processLog.setStatus(1);
-        } else {
-            processLog.setStatus(-1);
-        }
+//        if (activitiStepsResult.getType().equals("0")) {
+//            processLog.setStatus(1);
+//        } else {
+        processLog.setStatus(-1);
+//        }
         this.save(processLog);
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {

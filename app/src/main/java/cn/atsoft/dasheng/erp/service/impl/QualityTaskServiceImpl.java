@@ -17,7 +17,6 @@ import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.*;
@@ -36,7 +35,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,14 +122,15 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         if (ToolUtil.isNotEmpty(param.getDetails())) {
             List<Long> skuIds = new ArrayList<>();
-            Map<Long, Long> maps = new HashMap<>();
+            Map<Long, QualityTaskDetailParam> maps = new HashMap<>();
             List<QualityTaskDetail> details = new ArrayList<>();
             for (QualityTaskDetailParam detailParam : param.getDetails()) {
                 skuIds.add(detailParam.getSkuId());
-                maps.put(detailParam.getSkuId(), detailParam.getQualityPlanId());
+
+                maps.put(detailParam.getSkuId(), detailParam);
+
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
-                detailParam.setRemaining(detailParam.getNumber());
                 ToolUtil.copyProperties(detailParam, detail);
                 details.add(detail);
             }
@@ -139,8 +138,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             //回填sku质检项
             List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
             for (Sku sku : skus) {
-                Long plan = maps.get(sku.getSkuId());
-                sku.setQualityPlanId(plan);
+                QualityTaskDetailParam qualityTaskDetailParam = maps.get(sku.getSkuId());
+                sku.setQualityPlanId(qualityTaskDetailParam.getQualityPlanId());
+                sku.setBatch(qualityTaskDetailParam.getBatch());
             }
             skuService.updateBatchById(skus);
         }
@@ -285,7 +285,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     @Transactional
-    public Boolean addFormData(FormDataPojo formDataPojo) {
+    public void addFormData(FormDataPojo formDataPojo) {
         //通过二维码查询实物id
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
         FormData data = formDataService.query().eq("form_id", codeId.getFormId()).one();
@@ -345,7 +345,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             eq("is_null", 1);
         }});
 
-
         for (FormValues formValue : formValues) {
             Boolean aBoolean = backBoolean(details, formValue);
             if (!aBoolean) {
@@ -380,12 +379,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
 
-
         if (t) {
             TaskDetail.setStatus("完成");
             taskDetailService.updateById(TaskDetail);
         }
-        return t;
     }
 
     /**
@@ -396,7 +393,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @return
      */
     public Boolean backBoolean(List<QualityPlanDetail> details, FormValues formValue) {
-        Boolean t = true;
         for (QualityPlanDetail detail : details) {
             if (formValue.getField().equals(detail.getPlanDetailId())) {
                 if (ToolUtil.isEmpty(formValue.getDataValues())) {
@@ -404,7 +400,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 }
             }
         }
-        return t;
+        return true;
     }
 
     /**

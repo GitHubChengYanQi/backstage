@@ -195,8 +195,8 @@ public class QualityTaskController extends BaseController {
     public ResponseData addData(@RequestBody FormDataPojo formDataPojo) {
 
 
-        Boolean data = this.qualityTaskService.addFormData(formDataPojo);
-        return ResponseData.success(data);
+    this.qualityTaskService.addFormData(formDataPojo);
+        return ResponseData.success();
     }
 
     /**
