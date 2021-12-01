@@ -155,7 +155,7 @@ public class ActivitiProcessTaskSend {
     private void dispatch(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
-        param.setTaskId(byId.getFormId());
+//        param.setTaskId(byId.getFormId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
