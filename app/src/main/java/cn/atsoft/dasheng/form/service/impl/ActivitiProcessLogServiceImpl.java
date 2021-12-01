@@ -206,7 +206,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         }
     }
-    private void checkUser(AuditRule starUser) {
+    @Override
+    public void checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
         Long deptId = user.getDeptId();

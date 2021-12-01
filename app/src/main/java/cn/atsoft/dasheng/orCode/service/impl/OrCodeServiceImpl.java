@@ -310,13 +310,13 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             throw new ServiceException(500, "请传入绑定类型");
         }
         OrCode code = this.query().eq("qr_code_id", codeRequest.getCodeId()).one();
-        if (ToolUtil.isNotEmpty(code)) {
-            code.setType(codeRequest.getSource());
-            code.setState(1);
-            QueryWrapper<OrCode> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("qr_code_id", code.getOrCodeId());
-            this.update(code, queryWrapper);
+        if (ToolUtil.isEmpty(code)) {
+            throw new ServiceException(500, "二维码不存在");
         }
+        code.setType(codeRequest.getSource());
+        code.setState(1);
+        this.updateById(code);
+
         switch (codeRequest.getSource()) {
             case "sku":
                 OrCodeBindParam orCodeBindParam = new OrCodeBindParam();
@@ -347,7 +347,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 //判断相同物料绑定
                 Integer count = inkindService.query()
                         .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())
-                        .eq("type", 0).eq("source","入库").count();
+                        .eq("type", 0).eq("source", "入库").count();
                 if (count > 0) {
                     throw new ServiceException(500, "物料已经绑定");
                 }
