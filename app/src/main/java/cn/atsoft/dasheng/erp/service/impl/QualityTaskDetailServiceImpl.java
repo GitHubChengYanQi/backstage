@@ -73,6 +73,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             taskDetail.setAddress(param.getAddress());
             taskDetail.setPerson(param.getPerson());
             taskDetail.setTime(param.getTime());
+            taskDetail.setPhone(param.getPhone());
+            taskDetail.setNote(param.getNote());
         }
 
         this.updateBatchById(taskDetails);
