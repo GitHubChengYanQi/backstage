@@ -70,7 +70,7 @@ public class ActivitiProcessTaskSend {
             for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
                 for (QualityRules.Depts.Positions position : dept.getPositions()) {
                     for (User user : userList) {
-                        if (user.getRoleId().toString().equals(position.getValue()) && user.getDeptId().toString().equals(dept.getKey())) {
+                        if (ToolUtil.isNotEmpty(user.getRoleId()) && user.getRoleId().toString().equals(position.getValue()) && user.getDeptId().toString().equals(dept.getKey())) {
                             users.add(user.getUserId());
                         }
                     }
