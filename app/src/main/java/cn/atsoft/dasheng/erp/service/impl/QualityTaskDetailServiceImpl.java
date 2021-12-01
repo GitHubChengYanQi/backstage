@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
@@ -22,6 +23,10 @@ import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,7 +37,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -64,6 +71,11 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Autowired
     private OrCodeBindService bindService;
 
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private OrCodeBindService bindService;
     @Override
     public void add(QualityTaskDetailParam param) {
         QualityTaskDetail entity = getEntity(param);
@@ -92,6 +104,18 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
 
         this.updateBatchById(taskDetails);
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
+        wxCpTemplate.setUserIds(users);
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"OrCode?id="+formId.getOrCodeId();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setDescription("点击查看新质检任务");
+        wxCpTemplate.setTitle("您被分派新的任务");
+
+        wxCpSendTemplate.getWxCpTemplate();
+        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
