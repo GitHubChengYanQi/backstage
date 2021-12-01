@@ -128,7 +128,7 @@ public class ActivitiProcessTaskSend {
         OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         User byId = userService.getById(qualityTask.getCreateUser());
         Map<String, String> map = new HashMap<>();
-        map.put("qualityTaskUserId", qualityTask.getUserId().toString());
+//        map.put("qualityTaskUserId", qualityTask.getUserId().toString());
         map.put("url", qualityTask.getUrl());
         map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
         if (ToolUtil.isNotEmpty(formId)) {

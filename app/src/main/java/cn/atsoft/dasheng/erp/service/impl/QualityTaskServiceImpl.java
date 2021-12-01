@@ -356,28 +356,30 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             formDataValue.setField(formValue.getField());
             formValuesList.add(formDataValue);
         }
-
-        List<OrCodeBind> qrCodeId = bindService.list(new QueryWrapper<OrCodeBind>() {{
-            in("qr_code_id", inkinds);
-        }});
-
-        List<Long> formIds = new ArrayList<>();
-        for (OrCodeBind orCodeBind : qrCodeId) {
-            formIds.add(orCodeBind.getFormId());
-        }
-
-        List<FormData> dataList = formDataService.list(new QueryWrapper<FormData>() {{
-            in("form_id", formIds);
-        }});
-
-        formDataValueService.saveBatch(formValuesList);
-
+        //为真  判断是否必填
         if (t) {
+            List<OrCodeBind> qrCodeId = inkinds.size() == 0 ? new ArrayList<>() : bindService.list(new QueryWrapper<OrCodeBind>() {{
+                in("qr_code_id", inkinds);
+            }});
+            List<Long> formIds = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(qrCodeId)) {
+                for (OrCodeBind orCodeBind : qrCodeId) {
+                    formIds.add(orCodeBind.getFormId());
+                }
+            }
+            List<FormData> dataList = formIds.size() == 0 ? new ArrayList<>() : formDataService.list(new QueryWrapper<FormData>() {{
+                in("form_id", formIds);
+            }});
+
             Boolean judge = judge(dataList, details);
             if (!judge) {
                 t = false;
             }
+
         }
+
+        formDataValueService.saveBatch(formValuesList);
+
 
         if (t) {
             TaskDetail.setStatus("完成");
@@ -644,10 +646,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
             QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
             ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
-            String[] strings = qualityTaskDetail.getUserIds().split(",");
-            for (String id : strings) {
-                if (loginUser.getId().toString().equals(id)) {
-                    qualityTaskDetailResults.add(qualityTaskDetailResult);
+            if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIds())) {
+                String[] strings = qualityTaskDetailResult.getUserIds().split(",");
+                for (String id : strings) {
+                    if (loginUser.getId().toString().equals(id)) {
+                        qualityTaskDetailResults.add(qualityTaskDetailResult);
+                    }
                 }
             }
         }
