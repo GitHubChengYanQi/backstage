@@ -155,7 +155,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog entity = new ActivitiProcessLog();
                 entity.setStatus(status);
                 entity.setLogId(logId);
-                if (type.equals("luYou") || type.equals("branch")) {
+                if (type.equals("route") || type.equals("branch")) {
                     this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
                         eq("log_id", entity.getLogId());
                     }});
