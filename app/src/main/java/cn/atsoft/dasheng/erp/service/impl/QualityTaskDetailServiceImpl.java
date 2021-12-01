@@ -159,7 +159,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                     eq("data_id", formData.getDataId());
                 }});
 
-
                 for (FormDataValue dataValue : dataValues) {
                     FormDataValueResult valueResult = new FormDataValueResult();
                     ToolUtil.copyProperties(dataValue, valueResult);
@@ -174,8 +173,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
     @Override
     public void updateDataValue(Long inkind) {
-
-         dataService.list(new QueryWrapper<FormData>(){{
+        dataService.list(new QueryWrapper<FormData>(){{
          }});
     }
 

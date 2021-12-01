@@ -17,7 +17,6 @@ import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.*;
@@ -36,7 +35,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -285,7 +283,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     @Transactional
-    public Boolean addFormData(FormDataPojo formDataPojo) {
+    public void addFormData(FormDataPojo formDataPojo) {
         //通过二维码查询实物id
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
         FormData data = formDataService.query().eq("form_id", codeId.getFormId()).one();
@@ -345,7 +343,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             eq("is_null", 1);
         }});
 
-
         for (FormValues formValue : formValues) {
             Boolean aBoolean = backBoolean(details, formValue);
             if (!aBoolean) {
@@ -380,12 +377,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
 
-
         if (t) {
             TaskDetail.setStatus("完成");
             taskDetailService.updateById(TaskDetail);
         }
-        return t;
     }
 
     /**
@@ -396,7 +391,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @return
      */
     public Boolean backBoolean(List<QualityPlanDetail> details, FormValues formValue) {
-        Boolean t = true;
         for (QualityPlanDetail detail : details) {
             if (formValue.getField().equals(detail.getPlanDetailId())) {
                 if (ToolUtil.isEmpty(formValue.getDataValues())) {
@@ -404,7 +398,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 }
             }
         }
-        return t;
+        return true;
     }
 
     /**
