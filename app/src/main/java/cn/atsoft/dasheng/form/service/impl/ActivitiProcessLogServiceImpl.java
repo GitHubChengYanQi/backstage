@@ -164,7 +164,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          * 判断操作权限
                          */
                         this.checkUser(activitiAudit.getRule());
-                        this.updateById(entity);
+                        this.baseMapper.update(entity,new QueryWrapper<ActivitiProcessLog>(){{
+                            eq("log_id",entity.getLogId());
+                        }});
                         audit = this.getAudit(taskId);
 //                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
