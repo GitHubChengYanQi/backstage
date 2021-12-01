@@ -70,12 +70,11 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private FormDataValueService valueService;
     @Autowired
     private OrCodeBindService bindService;
-
+    @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private MobileService mobileService;
-    @Autowired
-    private OrCodeBindService bindService;
+
     @Override
     public void add(QualityTaskDetailParam param) {
         QualityTaskDetail entity = getEntity(param);
@@ -104,6 +103,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
 
         this.updateBatchById(taskDetails);
+
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
@@ -113,8 +113,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");
-
-        wxCpSendTemplate.getWxCpTemplate();
+        wxCpTemplate.setType(1);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
 
