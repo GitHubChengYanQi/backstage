@@ -95,9 +95,9 @@ public class ActivitiProcessTaskSend {
                 this.personSend(activitiTaskSend);
 
                 break;
-            case "quality_task_perform":
-                this.performTask(taskId);
-                break;
+//            case "quality_task_perform":
+//                this.performTask(taskId);
+//                break;
             case "quality_task_complete":
                 this.completeTaskSend(taskId);
                 break;
@@ -168,27 +168,24 @@ public class ActivitiProcessTaskSend {
     }
 //    https://wx.daoxin.gf2025.com/cp/#/OrCode?id=codeId
     private void performTask(Long taskId) {
-        Map<String, String> aboutSend = this.getAboutSend(taskId);
-        List<Long> users = new ArrayList<>();
-        users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setTitle("您有新的待执行任务");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+//        Map<String, String> aboutSend = this.getAboutSend(taskId);
+//        List<Long> users = new ArrayList<>();
+//        users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
+//        String url = mobileService.getMobileConfig().getUrl();
+//        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
+//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//        wxCpTemplate.setUrl(url);
+//        wxCpTemplate.setUserIds(users);
+//        wxCpTemplate.setTitle("您有新的待执行任务");
+//        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
+//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//        wxCpSendTemplate.sendTemplate();
     }
 
     private void completeTaskSend(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
         List<Long> users = new ArrayList<>();
-        QualityTask updateEntity = new QualityTask();
-        updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
-        updateEntity.setState(2);
-        qualityTaskService.updateById(updateEntity);
+
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
