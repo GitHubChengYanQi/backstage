@@ -149,8 +149,13 @@ public class ActivitiProcessTaskController extends BaseController {
 
 //        ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
 
-        Boolean userFlag = true;
-        Boolean deptFlag = true;
+//        Boolean userFlag = true;
+//        Boolean deptFlag = true;
+//        if (!userFlag && !deptFlag) {
+//            if (!detail.getUserId().equals(loginUser.getId())) {
+//                throw new ServiceException(500, "抱歉该审批任务与您无关，您无权限查看");
+//            }
+//        }
         SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
 
         setpsDetailResult.setTaskId(activitiProcessTask.getProcessTaskId());
@@ -200,11 +205,7 @@ public class ActivitiProcessTaskController extends BaseController {
             ActivitiProcess process = activitiProcessService.getById(activitiProcessTask.getProcessId());
             setpsDetailResult.setActivitiProcess(process);
         }
-        if (!userFlag && !deptFlag) {
-            if (!detail.getUserId().equals(loginUser.getId())) {
-                throw new ServiceException(500, "抱歉该审批任务与您无关，您无权限查看");
-            }
-        }
+
         return ResponseData.success(setpsDetailResult);
     }
 

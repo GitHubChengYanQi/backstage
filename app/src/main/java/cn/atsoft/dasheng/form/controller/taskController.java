@@ -70,7 +70,6 @@ public class taskController extends BaseController {
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);
-
         //质检任务
         QualityTask qualityTask = this.qualityTaskService.getById(taskResult.getFormId());
         QualityTaskResult qualityTaskResult = new QualityTaskResult();

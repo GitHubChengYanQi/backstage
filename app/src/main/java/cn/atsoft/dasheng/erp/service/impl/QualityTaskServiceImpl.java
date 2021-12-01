@@ -177,6 +177,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.add(taskId,1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
@@ -231,25 +232,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
         if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-            QueryWrapper<ActivitiProcessLog> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("task_id", activitiProcessTask.getProcessTaskId());
-            queryWrapper.last("order by setps_id limit 1");
-            ActivitiProcessLog activitiProcessLog = activitiProcessLogService.getOne(queryWrapper);
-            if (ToolUtil.isNotEmpty(activitiProcessLog)) {
-                ActivitiSteps activitiSteps = activitiStepsService.getById(activitiProcessLog.getSetpsId());
-                ActivitiProcessLogParam newLog = new ActivitiProcessLogParam();
-                newLog.setPeocessId(activitiProcessTask.getProcessId());
-                newLog.setSetpsId(Long.valueOf(activitiSteps.getChildren()));
-                newLog.setTaskId(activitiProcessTask.getProcessTaskId());
-                newLog.setFormId(param.getQualityTaskId());
-                newLog.setStatus(1);
-//                activitiProcessLogService.add(newLog);
-            } else {
-                newEntity.setState(2);
-            }
+             activitiProcessLogService.add(oldEntity.getQualityTaskId(),1);
         } else {
             newEntity.setState(2);
         }
+
+        ToolUtil.copyProperties(newEntity, oldEntity);
+
+
         this.updateById(newEntity);
     }
 

@@ -160,9 +160,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
                     if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
+                        /**
+                         * 判断操作权限
+                         */
+                        this.checkUser(activitiAudit.getRule());
+
+
                         this.updateById(entity);
-                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
+                        audit = this.getAudit(taskId);
+//                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
+                    }else {
+                        throw new ServiceException(500,"您流程没有操作权限");
                     }
                 }
             }
@@ -173,22 +182,53 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             /**
              * 所有下一节点送消息的节点
              */
+            List<Long> setpsIds1 = new ArrayList<>();
+
+            passSetpIds = new ArrayList<>();
+            for (ActivitiProcessLog activitiProcessLog : audit) {
+                passSetpIds.add(activitiProcessLog.getSetpsId());
+                setpsIds1.add(activitiProcessLog.getSetpsId());
+            }
+
+            activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+                in("setps_id", setpsIds1);
+            }});
             List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
+
             for (Long passSetpId : passSetpIds) {
                 activitiStepsResults = getNextNode(activitiStepsResult, passSetpId);
             }
             if (ToolUtil.isNotEmpty(activitiStepsResults)) {
                 for (ActivitiStepsResult stepsResult : activitiStepsResults) {
                     ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
-                    if (ToolUtil.isNotEmpty(activitiAudit)) {
-                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getChildren(), task.getProcessTaskId());
+                    if (ToolUtil.isEmpty(activitiAudit)) {
+                        //不做任何操作
+                    } else {
+                        if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+                            taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getChildren(), task.getProcessTaskId());
+                        }
+
                     }
                 }
             }
 
         }
     }
-
+    private void checkUser(AuditRule starUser) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        Long userId = user.getId();
+        Long deptId = user.getDeptId();
+        Boolean flag =false;
+        List<Long> users = taskSend.selectUsers(starUser);
+        for (Long aLong : users) {
+            if (aLong.equals(userId)){
+                flag =  true;
+            }
+        }
+        if (!flag) {
+            throw new ServiceException(500,"您没有操作权限");
+        }
+    }
 
     @Override
     public void delete(ActivitiProcessLogParam param) {
@@ -301,11 +341,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setPeocessId(processId);
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
-        if (activitiStepsResult.getType().equals("0")) {
-            processLog.setStatus(1);
-        } else {
-            processLog.setStatus(-1);
-        }
+//        if (activitiStepsResult.getType().equals("0")) {
+//            processLog.setStatus(1);
+//        } else {
+        processLog.setStatus(-1);
+//        }
         this.save(processLog);
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {

@@ -47,8 +47,7 @@ public class ActivitiProcessTaskSend {
     private ActivitiStepsService activitiStepsService;
     @Autowired
     private MobileService mobileService;
-
-    private List<Long> selectUsers(AuditRule starUser) {
+    public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
             for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
@@ -79,7 +78,6 @@ public class ActivitiProcessTaskSend {
             }
         }
         return users;
-
     }
 
     public void send(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
