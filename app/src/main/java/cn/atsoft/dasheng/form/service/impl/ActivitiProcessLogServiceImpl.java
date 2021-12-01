@@ -206,19 +206,20 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         }
     }
+
     private void checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
         Long deptId = user.getDeptId();
-        Boolean flag =false;
+        Boolean flag = false;
         List<Long> users = taskSend.selectUsers(starUser);
         for (Long aLong : users) {
-            if (aLong.equals(userId)){
-                flag =  true;
+            if (aLong.equals(userId)) {
+                flag = true;
             }
         }
         if (!flag) {
-            throw new ServiceException(500,"您没有操作权限");
+            throw new ServiceException(500, "您没有操作权限");
         }
     }
 
