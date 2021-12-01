@@ -47,8 +47,7 @@ public class ActivitiProcessTaskSend {
     private ActivitiStepsService activitiStepsService;
     @Autowired
     private MobileService mobileService;
-
-    private List<Long> selectUsers(AuditRule starUser) {
+    public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
             for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
@@ -79,7 +78,6 @@ public class ActivitiProcessTaskSend {
             }
         }
         return users;
-
     }
 
     public void send(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
@@ -149,7 +147,7 @@ public class ActivitiProcessTaskSend {
         String url = mobileService.getMobileConfig().getUrl();
         url = url +"Work/Workflow?"+ "id="+param.getTaskId().toString();
         wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("您有新的待审批任务");
+        wxCpTemplate.setTitle("您有新的审批流程抄送");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();

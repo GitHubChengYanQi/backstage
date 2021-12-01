@@ -29,7 +29,6 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     private String inkindId;
     private List<Long> detailsIds;
 
-    private List<Long> users;
 
 
 
@@ -85,6 +84,10 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
      * 地点
      */
     private String address;
+
+    private String phone;
+
+    private String note;
 
     /**
      * 对接人
