@@ -220,6 +220,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(newEntity, oldEntity);
 
 
+        ToolUtil.copyProperties(newEntity, oldEntity);
+
+        this.updateById(newEntity);
+
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
                 case 1:
@@ -239,10 +243,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
 
-        ToolUtil.copyProperties(newEntity, oldEntity);
-
-
-        this.updateById(newEntity);
     }
 
     @Override
