@@ -82,36 +82,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return null;
     }
 
-    private List<ActivitiStepsResult> getNextNode(ActivitiStepsResult activitiStepsResult, Long stepsId) {
-        List<ActivitiStepsResult> results = new ArrayList<>();
-        if (ToolUtil.isEmpty(activitiStepsResult)) {
-            return results;
-        }
-        String type = activitiStepsResult.getType();
-        if (type.equals("1") || type.equals("2") || type.equals("4")) {
-            results.add(activitiStepsResult);
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
-
-            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                List<ActivitiStepsResult> resultNodeList = getNextNode(stepsResult, stepsResult.getSetpsId());
-                results.addAll(resultNodeList);
-            }
-
-            return results;
-        } else if (type.equals("3")) {
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
-            return results;
-        } else if (!activitiStepsResult.getSetpsId().equals(stepsId)) {
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), stepsId);
-            results.addAll(resultList);
-            return results;
-        } else {
-            results.add(activitiStepsResult);
-            return results;
-        }
-    }
 
     @Override
     public void add(Long taskId, Integer status) {
@@ -164,8 +134,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
                             eq("log_id", entity.getLogId());
                         }});
-                        audit = this.getAudit(taskId);
-//                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
                         passSetpIds.add(activitiProcessLog.getSetpsId());
                     }
                 }
@@ -177,32 +145,24 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             /**
              * 所有下一节点送消息的节点
              */
-            List<Long> setpsIds1 = new ArrayList<>();
+
+            audit = this.getAudit(taskId);
+            List<Long> nextStepsIds = new ArrayList<>();
 
             passSetpIds = new ArrayList<>();
             for (ActivitiProcessLog activitiProcessLog : audit) {
                 passSetpIds.add(activitiProcessLog.getSetpsId());
-                setpsIds1.add(activitiProcessLog.getSetpsId());
+                nextStepsIds.add(activitiProcessLog.getSetpsId());
             }
 
             activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", setpsIds1);
+                in("setps_id", nextStepsIds);
             }});
-
-            List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
-
-            for (Long passSetpId : passSetpIds) {
-                activitiStepsResults = getNextNode(activitiStepsResult, passSetpId);
-            }
-            if (ToolUtil.isNotEmpty(activitiStepsResults)) {
-                for (ActivitiStepsResult stepsResult : activitiStepsResults) {
-                    ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
-                    if (ToolUtil.isNotEmpty(activitiAudit)) {
-                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getSetpsId().toString(), task.getProcessTaskId());
-                    }
+            for (ActivitiAudit activitiAudit : activitiAudits) {
+                if (ToolUtil.isNotEmpty(activitiAudit)) {
+                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(),  task.getProcessTaskId());
                 }
             }
-
         }
     }
 

@@ -48,6 +48,7 @@ public class ActivitiProcessTaskSend {
     private MobileService mobileService;
     @Autowired
     private QualityTaskDetailService qualityTaskDetailService;
+
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
@@ -81,20 +82,18 @@ public class ActivitiProcessTaskSend {
         return users;
     }
 
-    public void send(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
+    public void send(String type, AuditRule starUser, Long taskId) {
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
-        List<Long> users = new ArrayList<>();
+        List<Long> users = this.selectUsers(starUser);
         List<Long> collect = new ArrayList<>();
+
+        collect = users.stream().distinct().collect(Collectors.toList());
+        activitiTaskSend.setUsers(collect);
+        activitiTaskSend.setTaskId(taskId);
+
         switch (type) {
             case "quality_task_person":
-                users = this.selectUsers(starUser);
-                collect = users.stream().distinct().collect(Collectors.toList());
-                activitiTaskSend.setUsers(collect);
-                activitiTaskSend.setUrl(url);
-                activitiTaskSend.setTaskId(taskId);
-                activitiTaskSend.setStepsId(stepsId);
                 this.personSend(activitiTaskSend);
-
                 break;
 //            case "quality_task_perform":
 //                this.performTask(taskId);
@@ -103,20 +102,9 @@ public class ActivitiProcessTaskSend {
                 this.completeTaskSend(taskId);
                 break;
             case "quality_task_send":
-                users = this.selectUsers(starUser);
-                activitiTaskSend.setUsers(users);
-                activitiTaskSend.setUrl(url);
-                activitiTaskSend.setTaskId(taskId);
-                activitiTaskSend.setStepsId(stepsId);
                 this.sendSend(activitiTaskSend);
                 break;
             case "quality_task_dispatch":
-                users = this.selectUsers(starUser);
-                collect = users.stream().distinct().collect(Collectors.toList());
-                activitiTaskSend.setUsers(collect);
-                activitiTaskSend.setUrl(url);
-                activitiTaskSend.setTaskId(taskId);
-                activitiTaskSend.setStepsId(stepsId);
                 this.dispatch(activitiTaskSend);
                 break;
         }
