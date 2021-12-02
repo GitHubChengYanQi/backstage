@@ -26,12 +26,14 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+        user_id
+        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
     </sql>
 
     <sql id="Base_Column_List_With_Pwd">
-		 user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
-	</sql>
+        user_id
+        AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", password AS "password", name AS "name", birthday AS "birthday", sex AS "sex", email AS "email", phone AS "phone", role_id AS "roleId", dept_id AS "deptId", status AS "status", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", version AS "version"
+    </sql>
 
     <select id="selectUsers" resultType="map">
         select
@@ -44,7 +46,8 @@
             or name like CONCAT('%',#{name},'%'))
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[', #{deptId}, '$]%') escape '$' ))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[',
+            #{deptId}, '$]%') escape '$' ))
         </if>
         <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             and (create_time between CONCAT(#{beginTime},' 00:00:00') and CONCAT(#{endTime},' 23:59:59'))
@@ -62,7 +65,8 @@
             or name like CONCAT('%',#{name},'%'))
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[', #{deptId}, '$]%') escape '$' ))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like CONCAT('%$[',
+            #{deptId}, '$]%') escape '$' ))
         </if>
         <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             and (create_time between CONCAT(#{beginTime},' 00:00:00') and CONCAT(#{endTime},' 23:59:59'))
@@ -80,7 +84,8 @@
             or name like '%' || #{name} || '%')
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} || ']%'))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} ||
+            ']%'))
         </if>
         <if test="beginTime != null and beginTime != ''">
             and create_time &gt;= to_timestamp(#{beginTime}||' 00:00:00','yyyy-mm-dd hh24:mi:ss')
@@ -101,7 +106,8 @@
             or name like '%' || #{name} || '%')
         </if>
         <if test="deptId != null and deptId != 0">
-            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} || ']%'))
+            and (dept_id = #{deptId} or dept_id in ( select dept_id from sys_dept where pids like '%[' || #{deptId} ||
+            ']%'))
         </if>
         <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             and create_time &gt;= to_date(#{beginTime}||'00:00:00','yyyy-mm-dd hh24:mi:ss')
@@ -111,9 +117,12 @@
 
     <select id="selectUsersByRole" resultType="map">
         select
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS "birthday"
-        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS "status"
-        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS "updateUser", u.version AS "version"
+        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS
+        "birthday"
+        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS
+        "status"
+        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS
+        "updateUser", u.version AS "version"
         from sys_user u
         where u.status != 'DELETED'
         <if test="name != null and name != ''">
@@ -131,9 +140,12 @@
 
     <select id="selectUsersByRole" resultType="map" databaseId="sqlserver">
         select
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS "birthday"
-        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS "status"
-        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS "updateUser", u.version AS "version"
+        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS
+        "birthday"
+        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS
+        "status"
+        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS
+        "updateUser", u.version AS "version"
         from sys_user u
         where u.status != 'DELETED'
         <if test="name != null and name != ''">
@@ -151,9 +163,12 @@
 
     <select id="selectUsersByRole" resultType="map" databaseId="pgsql">
         select
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS "birthday"
-        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS "status"
-        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS "updateUser", u.version AS "version"
+        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS
+        "birthday"
+        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS
+        "status"
+        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS
+        "updateUser", u.version AS "version"
         from sys_user u
         where u.status != 'DELETED'
         <if test="name != null and name != ''">
@@ -175,9 +190,12 @@
 
     <select id="selectUsersByRole" resultType="map" databaseId="oracle">
         select
-        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS "birthday"
-        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS "status"
-        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS "updateUser", u.version AS "version"
+        user_id AS "userId", avatar AS "avatar", account AS "account", salt AS "salt", u.name AS "name", birthday AS
+        "birthday"
+        , sex AS "sex", email AS "email", phone AS "phone", u.role_id AS "roleId", dept_id AS "deptId", u.status AS
+        "status"
+        , u.create_time AS "createTime", u.create_user AS "createUser", u.update_time AS "updateTime", u.update_user AS
+        "updateUser", u.version AS "version"
         from sys_user u
         where u.status != 'DELETED'
         <if test="name != null and name != ''">
@@ -198,17 +216,23 @@
     </select>
 
     <update id="setStatus">
-		update sys_user set status = #{status} where user_id = #{userId}
-	</update>
+        update sys_user
+        set status = #{status}
+        where user_id = #{userId}
+    </update>
 
     <update id="changePwd">
-		update sys_user set password = #{pwd} where user_id = #{userId}
-	</update>
+        update sys_user
+        set password = #{pwd}
+        where user_id = #{userId}
+    </update>
 
     <update id="setRoles">
-		update sys_user set role_id = #{roleIds} where user_id =
-		#{userId}
-	</update>
+        update sys_user
+        set role_id = #{roleIds}
+        where user_id =
+              #{userId}
+    </update>
 
     <select id="getByAccount" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
         select
@@ -217,39 +241,58 @@
     </select>
 
     <select id="listUserAndRoleExpectAdmin" resultType="map">
-        select
-        user.account as account,
-        user.name as name,
-        dept.simple_name as simpleName
+        select user.account     as account,
+               user.name        as name,
+               dept.simple_name as simpleName
         from sys_user user
-        left join sys_dept dept on user.dept_id = dept.dept_id
+        left join sys_dept dept
+        on user.dept_id = dept.dept_id
     </select>
 
     <select id="listUserAndRoleExpectAdmin" resultType="map" databaseId="pgsql">
-        select
-        user.account as account,
-        user.name as name,
-        dept.simple_name as simpleName
+        select user.account     as account,
+               user.name        as name,
+               dept.simple_name as simpleName
         from sys_user user
-        left join sys_dept dept on user.dept_id = dept.dept_id
+        left join sys_dept dept
+        on user.dept_id = dept.dept_id
     </select>
 
     <select id="listUserAndRoleExpectAdmin" resultType="map" databaseId="sqlserver">
-        select
-        user.account as account,
-        user.name as name,
-        dept.simple_name as simpleName
+        select user.account     as account,
+               user.name        as name,
+               dept.simple_name as simpleName
         from sys_user user
-        left join sys_dept dept on user.dept_id = dept.dept_id
+        left join sys_dept dept
+        on user.dept_id = dept.dept_id
     </select>
 
     <select id="listUserAndRoleExpectAdmin" resultType="map" databaseId="oracle">
-        select
-        u.account as account,
-        u.name as name,
-        dept.simple_name as simpleName
+        select u.account        as account,
+               u.name           as name,
+               dept.simple_name as simpleName
         from sys_user u
-        left join sys_dept dept on u.dept_id = dept.dept_id
+                 left join sys_dept dept on u.dept_id = dept.dept_id
+    </select>
+
+    <select id="listUserByPositionAndDept" resultType="map" databaseId="sqlserver">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user left join sys_position
+        on sys_user.user_id = sys_position.user_id
+        where status != 'ENABLE'
+        <if test="deptId != null">
+            and sys_user.dept_id in
+            <foreach collection="list" index="deptId" item="dept_id">
+                #{deptId}
+            </foreach>
+        </if>
+        <if test="positionId != null">
+            and sys_position.position_id in
+            <foreach item="positionId" index="positionId" collection="list" open="(" separator="," close=")">
+            #{positionId}
+            </foreach>
+        </if>
     </select>
 
 </mapper>

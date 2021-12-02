@@ -53,9 +53,6 @@ public class QualityTaskController extends BaseController {
     private QualityTaskService qualityTaskService;
 
     @Autowired
-    private QualityTaskDetailService qualityTaskDetailService;
-
-    @Autowired
     private FormDataService formDataService;
 
     @Autowired
