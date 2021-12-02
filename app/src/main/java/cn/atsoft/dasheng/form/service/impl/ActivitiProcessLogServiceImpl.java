@@ -45,8 +45,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     public final static String START = "0";
     public final static String AUDIT = "1";
     public final static String SEND = "2";
-    public final static String ROUTE = "3";
-    public final static String BRANCH = "4";
+    public final static String BRANCH = "3";
+    public final static String ROUTE = "4";
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
@@ -177,7 +177,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
 
             for (ActivitiProcessLog activitiProcessLog : audit) {
-
                 nextStepsIds.add(activitiProcessLog.getSetpsId());
             }
 
@@ -195,7 +194,29 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
         }
     }
+    private void sendNext(Long taskId){
+        List<ActivitiProcessLog> audit = this.getAudit(taskId);
 
+        List<Long> nextStepsIds = new ArrayList<>();
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+
+        for (ActivitiProcessLog activitiProcessLog : audit) {
+            nextStepsIds.add(activitiProcessLog.getSetpsId());
+        }
+
+
+        List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", nextStepsIds);
+        }});
+
+
+        for (ActivitiAudit activitiAudit : activitiAudits) {
+
+            if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
+                taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
+            }
+        }
+    }
 
     private List<ActivitiProcessLog> updataSupper(List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
         List<ActivitiProcessLog> logs = new ArrayList<>();
@@ -357,18 +378,23 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 }
                 break;
-            case ROUTE:
+            case BRANCH:
                 activitiStepsResultList.add(log);
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
                     activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
                 }
-
-            case BRANCH:
+                break;
+            case ROUTE:
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
-                    activitiStepsResultList.add(log);
-                    for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                        activitiStepsResultList.addAll(loopAudit(stepsResult, activitiProcessLogs));
+                    if (log.getStatus().equals(1)) {
+                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
+                    }else{
+                        activitiStepsResultList.add(log);
+                        for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                            activitiStepsResultList.addAll(loopAudit(stepsResult, activitiProcessLogs));
+                        }
                     }
+
                 }
                 break;
         }

@@ -8,10 +8,12 @@ import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -49,6 +51,8 @@ public class ActivitiProcessTaskSend {
     private MobileService mobileService;
     @Autowired
     private QualityTaskDetailService qualityTaskDetailService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
 
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
@@ -75,9 +79,15 @@ public class ActivitiProcessTaskSend {
     }
 
     public void send(String type, AuditRule starUser, Long taskId) {
+        List<Long> users = new ArrayList<>();
+        List<Long> collect = new ArrayList<>();
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
-        List<Long> users = this.selectUsers(starUser);
-        List<Long> collect = users.stream().distinct().collect(Collectors.toList());
+        if (ToolUtil.isNotEmpty(starUser)) {
+            users = this.selectUsers(starUser);
+        }
+        if (ToolUtil.isNotEmpty(users)) {
+            collect = users.stream().distinct().collect(Collectors.toList());
+        }
         activitiTaskSend.setUsers(collect);
         activitiTaskSend.setTaskId(taskId);
 
@@ -195,6 +205,8 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
+        activitiProcessLogService.add(param.getTaskId(), 1);
+
     }
 
     //        public void logAddSend(String type, AuditRule starUser, String url, String stepsId, Long taskId) {

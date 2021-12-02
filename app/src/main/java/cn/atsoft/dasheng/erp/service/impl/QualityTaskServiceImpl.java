@@ -556,7 +556,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                         map.put("value", dataValues);
                                         Boolean flag = false;
 
-                                        if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
+                                        if (qualityCheck.getType() == 1 || qualityCheck.getType() == 4) {
                                             flag = false;
                                             if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
                                                 if (ToolUtil.isNotEmpty(dataValues.getValue())) {
