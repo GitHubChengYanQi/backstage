@@ -88,25 +88,20 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             return results;
         }
         String type = activitiStepsResult.getType();
-        if (type.equals("1")) {
+        if (type.equals("1") || type.equals("2") || type.equals("4")) {
             results.add(activitiStepsResult);
             List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
             results.addAll(resultList);
-            return results;
-        } else if (type.equals("2")) {
-            results.add(activitiStepsResult);
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
+
+            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                List<ActivitiStepsResult> resultNodeList = getNextNode(stepsResult, stepsResult.getSetpsId());
+                results.addAll(resultNodeList);
+            }
+
             return results;
         } else if (type.equals("3")) {
             List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
             results.addAll(resultList);
-            return results;
-        } else if (type.equals("4")) {
-            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                List<ActivitiStepsResult> resultList = getNextNode(stepsResult, stepsResult.getSetpsId());
-                results.addAll(resultList);
-            }
             return results;
         } else if (!activitiStepsResult.getSetpsId().equals(stepsId)) {
             List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), stepsId);
@@ -155,7 +150,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog entity = new ActivitiProcessLog();
                 entity.setStatus(status);
                 entity.setLogId(logId);
-                if (type.equals("luYou") || type.equals("branch")) {
+                if (type.equals("route") || type.equals("branch")) {
                     this.updateById(entity);
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
@@ -206,19 +201,20 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         }
     }
+
     private void checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
         Long deptId = user.getDeptId();
-        Boolean flag =false;
+        Boolean flag = false;
         List<Long> users = taskSend.selectUsers(starUser);
         for (Long aLong : users) {
-            if (aLong.equals(userId)){
-                flag =  true;
+            if (aLong.equals(userId)) {
+                flag = true;
             }
         }
         if (!flag) {
-            throw new ServiceException(500,"您没有操作权限");
+            throw new ServiceException(500, "您没有操作权限");
         }
     }
 
