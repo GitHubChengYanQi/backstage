@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -14,6 +16,7 @@ import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -45,6 +48,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiAuditService auditService;
     @Autowired
     private ActivitiProcessService processService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+
 
     @Override
     @Transactional
@@ -371,8 +377,20 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return luyou;
     }
 
+    private Boolean inUsers(List<QualityRules.Users> users, Long userId) {
+        for (QualityRules.Users user : users) {
+            if (user.getKey().equals(userId.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public List<ActivitiStepsResult> backSteps(List<Long> ids) {
+
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+
         List<ActivitiStepsResult> stepsResults = new ArrayList<>();
         if (ids.size() > 0) {
             List<ActivitiSteps> steps = this.list(new QueryWrapper<ActivitiSteps>() {{
@@ -393,6 +411,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                         ActivitiStepsResult activitiStepsResult = new ActivitiStepsResult();
                         ToolUtil.copyProperties(step, activitiStepsResult);
                         activitiStepsResult.setServiceAudit(activitiAuditResult);
+                        // 判断权限
+                        if (ToolUtil.isNotEmpty(activitiAuditResult.getRule())) {
+                            activitiStepsResult.setPermissions(inUsers(activitiAuditResult.getRule().getQualityRules().getUsers(), loginUser.getId()));
+                        }
                         stepsResults.add(activitiStepsResult);
                     }
                 }
