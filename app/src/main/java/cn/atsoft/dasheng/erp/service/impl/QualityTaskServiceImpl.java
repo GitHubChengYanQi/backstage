@@ -291,7 +291,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getFormId()).one();
         FormData data = formDataService.query().eq("form_id", codeId.getFormId()).one();
 
-        Boolean t = true;
+        boolean t = true;
         if (ToolUtil.isNotEmpty(data)) {
             formDataValueService.remove(new QueryWrapper<FormDataValue>() {{
                 eq("data_id", data.getDataId());
@@ -313,35 +313,29 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<FormValues> formValues = formDataPojo.getFormValues();
         List<FormDataValue> formValuesList = new ArrayList<>();
 
-        //查询是否绑定
+        //查询任务质检详情 判断绑定的
         QualityTaskDetail TaskDetail = taskDetailService.getOne(new QueryWrapper<QualityTaskDetail>() {{
             eq("quality_task_detail_id", formDataPojo.getQualityTaskDetailId());
         }});
         if (ToolUtil.isEmpty(TaskDetail)) {
             throw new ServiceException(500, "请确定质检任务详情");
         }
-
         if (ToolUtil.isEmpty(TaskDetail.getInkindId())) {
             t = false;
         }
-        Integer number = TaskDetail.getNumber();
         //判断绑定数量
-        List<String> inkinds = new ArrayList<>();
-
+        List<String> inKinds = new ArrayList<>();
+        Integer number = TaskDetail.getNumber();
         if (TaskDetail.getBatch() == 0) {
             String[] strings = TaskDetail.getInkindId().split(",");
             int length = strings.length;
-            if (number != length) {
+            if (number != length) {  //判断绑定的实物 是否和方案详情数量相等  如果不等 就是没填全
                 t = false;
             } else {
-                for (String inkind : strings) {
-                    inkinds.add(inkind);
-                }
-
+                inKinds.addAll(Arrays.asList(strings));
             }
         }
-
-        //查询质检项详情
+        //查询方案必填项
         List<QualityPlanDetail> details = qualityPlanDetailService.list(new QueryWrapper<QualityPlanDetail>() {{
             eq("is_null", 1);
         }});
@@ -359,8 +353,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         //为真  判断是否必填
         if (t) {
-            List<OrCodeBind> qrCodeId = inkinds.size() == 0 ? new ArrayList<>() : bindService.list(new QueryWrapper<OrCodeBind>() {{
-                in("qr_code_id", inkinds);
+            List<OrCodeBind> qrCodeId = inKinds.size() == 0 ? new ArrayList<>() : bindService.list(new QueryWrapper<OrCodeBind>() {{
+                in("qr_code_id", inKinds);
             }});
             List<Long> formIds = new ArrayList<>();
             if (ToolUtil.isNotEmpty(qrCodeId)) {
@@ -376,12 +370,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             if (!judge) {
                 t = false;
             }
-
         }
-
         formDataValueService.saveBatch(formValuesList);
-
-
         if (t) {
             TaskDetail.setStatus("完成");
             taskDetailService.updateById(TaskDetail);
