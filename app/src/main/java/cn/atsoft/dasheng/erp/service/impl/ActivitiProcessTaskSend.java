@@ -178,7 +178,7 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         QualityTask updateEntity = new QualityTask();
         updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
-        updateEntity.setState(22);
+        updateEntity.setState(2);
         qualityTaskService.updateById(updateEntity);
         logger.info(updateEntity.toString());
 
