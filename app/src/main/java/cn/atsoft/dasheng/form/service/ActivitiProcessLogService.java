@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @Date 2021-11-10
      */
     void add(Long param, Integer status);
+
+    void checkUser(AuditRule starUser);
 
     /**
      * 删除

@@ -94,7 +94,7 @@ public class QualityTaskDetail implements Serializable {
      * 对接人
      */
     @TableField("person")
-    private Long person;
+    private String person;
 
     @TableField("remaining")
     private Integer remaining;
@@ -158,11 +158,11 @@ public class QualityTaskDetail implements Serializable {
         this.address = address;
     }
 
-    public Long getPerson() {
+    public String getPerson() {
         return person;
     }
 
-    public void setPerson(Long person) {
+    public void setPerson(String person) {
         this.person = person;
     }
 
