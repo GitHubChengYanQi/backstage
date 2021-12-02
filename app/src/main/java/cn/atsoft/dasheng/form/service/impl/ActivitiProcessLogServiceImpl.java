@@ -100,8 +100,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (ToolUtil.isNotEmpty(setpsIds)) {
 
-            ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(task.getProcessId());
-            ActivitiProcess activitiProcess = processService.getById(task.getProcessId());
+//            ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(task.getProcessId());
+//            ActivitiProcess activitiProcess = processService.getById(task.getProcessId());
 
             List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
                 in("setps_id", setpsIds);
@@ -147,6 +147,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
              */
 
             audit = this.getAudit(taskId);
+
             List<Long> nextStepsIds = new ArrayList<>();
 
             passSetpIds = new ArrayList<>();
@@ -159,7 +160,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 in("setps_id", nextStepsIds);
             }});
             for (ActivitiAudit activitiAudit : activitiAudits) {
-                if (ToolUtil.isNotEmpty(activitiAudit)) {
+                if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch") ) {
                     taskSend.send(activitiAudit.getType(), activitiAudit.getRule(),  task.getProcessTaskId());
                 }
             }
