@@ -26,6 +26,8 @@ import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,8 @@ public class ActivitiProcessTaskSend {
     private QualityTaskDetailService qualityTaskDetailService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+
+    private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
@@ -174,8 +178,10 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         QualityTask updateEntity = new QualityTask();
         updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
-        updateEntity.setState(2);
+        updateEntity.setState(22);
         qualityTaskService.updateById(updateEntity);
+        logger.info(updateEntity.toString());
+
         List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
         for (QualityTaskDetail detail : list) {
             List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
