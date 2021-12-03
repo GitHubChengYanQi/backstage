@@ -37,6 +37,11 @@ import java.util.stream.Collectors;
 @Service
 @Data
 public class ActivitiProcessTaskSend {
+    private static final String PERSON="quality_task_person";
+    private static final String COMPLETE="quality_task_complete";
+    private static final String SEND="quality_task_send";
+    private static final String DISPATCH="quality_task_dispatch";
+//    private static final String PERSON="quality_task_person";
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
@@ -96,16 +101,16 @@ public class ActivitiProcessTaskSend {
         activitiTaskSend.setTaskId(taskId);
 
         switch (type) {
-            case "quality_task_person":
+            case PERSON:
                 this.personSend(activitiTaskSend);
                 break;
-            case "quality_task_complete":
+            case COMPLETE:
                 this.completeTaskSend(taskId);
                 break;
-            case "quality_task_send":
+            case SEND:
                 this.sendSend(activitiTaskSend);
                 break;
-            case "quality_task_dispatch":
+            case DISPATCH:
                 this.dispatch(activitiTaskSend);
                 break;
         }
@@ -146,7 +151,6 @@ public class ActivitiProcessTaskSend {
     private void dispatch(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
-//        param.setTaskId(byId.getFormId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUserIds(param.getUsers());
         String url = mobileService.getMobileConfig().getUrl();
@@ -157,21 +161,6 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
-
-//    private void performTask(Long taskId) {
-//        Map<String, String> aboutSend = this.getAboutSend(taskId);
-//        List<Long> users = new ArrayList<>();
-//        users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
-//        String url = mobileService.getMobileConfig().getUrl();
-//        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
-//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        wxCpTemplate.setUrl(url);
-//        wxCpTemplate.setUserIds(users);
-//        wxCpTemplate.setTitle("您有新的待执行任务");
-//        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
-//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//        wxCpSendTemplate.sendTemplate();
-//    }
 
     private void completeTaskSend(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
@@ -215,83 +204,6 @@ public class ActivitiProcessTaskSend {
 
     }
 
-    //        public void logAddSend(String type, AuditRule starUser, String url, String stepsId, Long taskId) {
-//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        List<Long> users = new ArrayList<>();
-//        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-//        Long qualityTaskId = task.getFormId();
-//        QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
-//        OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
-//        User byId = userService.getById(qualityTask.getCreateUser());
-//        switch (type) {
-//            case "person":
-//                users = new ArrayList<>();
-//                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
-//                    for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
-//                        users.add(Long.valueOf(user.getKey()));
-//                    }
-//                }
-//                if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
-//                    List<Long> deptIds = new ArrayList<>();
-//                    for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-//                        deptIds.add(Long.valueOf(dept.getKey()));
-//                    }
-//                    List<User> userList = userService.query().in("dept_id", deptIds).eq("status", "ENABLE").list();
-//                    for (User user : userList) {
-//                        users.add(user.getUserId());
-//                    }
-//                }
-//                wxCpTemplate.setUserIds(users);
-//                String setpsValue = url.replace("setpsvalue", stepsId.toString());
-//                String formValue = setpsValue.replace("formvalue", taskId.toString());
-//                wxCpTemplate.setUrl(formValue);
-//                wxCpTemplate.setTitle("您有新的待审批任务");
-//                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
-//                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//                wxCpSendTemplate.sendTemplate();
-//                break;
-//            case "performTask":
-//                users = new ArrayList<>();
-//                users.add(qualityTask.getUserId());
-//                url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
-//                wxCpTemplate.setUrl(url);
-//                wxCpTemplate.setUserIds(users);
-//                wxCpTemplate.setTitle("您有新的待执行任务");
-//                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
-//                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//                wxCpSendTemplate.sendTemplate();
-//                break;
-//            case "completeTask":
-//                users = new ArrayList<>();
-//                QualityTask updateEntity = new QualityTask();
-//                updateEntity.setQualityTaskId(qualityTask.getQualityTaskId());
-//                updateEntity.setState(2);
-//                qualityTaskService.updateById(updateEntity);
-//
-//                url = qualityTask.getUrl().replace("codeId", formId.getOrCodeId().toString());
-//                wxCpTemplate.setUrl(url);
-//                wxCpTemplate.setUserIds(users);
-//                wxCpTemplate.setTitle("质检任务完成，待批准入库");
-//                wxCpTemplate.setDescription(qualityTask.getCoding());
-//                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//                wxCpSendTemplate.sendTemplate();
-//                break;
-//            case "send":
-//                users = new ArrayList<>();
-//                for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
-//                    users.add(Long.valueOf(user.getKey()));
-//                }
-//                String setpsValue1 = url.replace("setpsvalue", stepsId.toString());
-//                String formValue1 = setpsValue1.replace("formvalue", taskId.toString());
-//                wxCpTemplate.setUrl(formValue1);
-//                wxCpTemplate.setUserIds(users);
-//                wxCpTemplate.setTitle("抄送");
-//                wxCpTemplate.setDescription(byId.getName()+"发起的任务"+"已被上一级批准"+qualityTask.getCoding());
-//                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//                wxCpSendTemplate.sendTemplate();
-//                break;
-//        }
-//    }
     public void vetoSend(String type, String url, String stepsId, Long qualityTaskId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
 

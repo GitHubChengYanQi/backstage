@@ -57,32 +57,42 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     SkuService skuService;
     @Autowired
     private FormDataService formDataService;
+
     @Autowired
     private FormDataValueService formDataValueService;
+
     @Autowired
     private QualityCheckService qualityCheckService;
+
     @Autowired
     private OrCodeBindService bindService;
+
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+
     @Autowired
     private OrCodeService orCodeService;
+
     @Autowired
     private InkindService inkindService;
+
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private CodingRulesService rulesService;
+
     @Autowired
     private QualityTaskBindService taskBindService;
+
     @Autowired
     private BrandService brandService;
+
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
-    @Autowired
-    private ActivitiStepsService activitiStepsService;
 
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
@@ -217,9 +227,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void checkOver(QualityTaskParam param) {
         QualityTask oldEntity = getOldEntity(param);
         QualityTask newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-
-
         ToolUtil.copyProperties(newEntity, oldEntity);
 
         this.updateById(newEntity);
