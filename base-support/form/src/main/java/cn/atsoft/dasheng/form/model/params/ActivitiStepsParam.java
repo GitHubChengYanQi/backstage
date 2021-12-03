@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.model.params;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -60,7 +61,7 @@ public class ActivitiStepsParam implements Serializable, BaseValidatingParam {
      * 步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）
      */
     @ApiModelProperty("步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）")
-    private String type;
+    private StepsType type;
 
     /**
      * 分表Id

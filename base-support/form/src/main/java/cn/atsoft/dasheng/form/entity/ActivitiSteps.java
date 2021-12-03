@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
@@ -51,7 +52,7 @@ public class ActivitiSteps implements Serializable {
      * 步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）
      */
     @TableField("type")
-    private String type;
+    private StepsType type;
 
     /**
      * 分表Id
@@ -112,11 +113,11 @@ public class ActivitiSteps implements Serializable {
         this.processId = processId;
     }
 
-    public String getType() {
+    public StepsType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(StepsType type) {
         this.type = type;
     }
 
