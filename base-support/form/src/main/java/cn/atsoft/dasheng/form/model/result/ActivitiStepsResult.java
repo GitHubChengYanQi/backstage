@@ -41,6 +41,8 @@ public class ActivitiStepsResult implements Serializable {
 
     private String auditType;
 
+    private Boolean permissions;
+
     private List<ActivitiStepsResult> conditionNodeList = new ArrayList<>();
     /**
      * 步骤Id，主键

@@ -123,7 +123,7 @@ public class ItemsController extends BaseController {
         }
     }
 
-    @Permission
+//    @Permission
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<Items> itemsQueryWrapper = new QueryWrapper<>();

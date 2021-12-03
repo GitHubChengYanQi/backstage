@@ -6,19 +6,20 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
-import cn.atsoft.dasheng.form.entity.*;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
+import cn.atsoft.dasheng.form.model.formTypeEnum.AuditType;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.ChildAudit;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,6 +42,11 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessLogService {
+    public final static String START = "0";
+    public final static String AUDIT = "1";
+    public final static String SEND = "2";
+    public final static String BRANCH = "3";
+    public final static String ROUTE = "4";
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
@@ -82,41 +89,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return null;
     }
 
-    private List<ActivitiStepsResult> getNextNode(ActivitiStepsResult activitiStepsResult, Long stepsId) {
-        List<ActivitiStepsResult> results = new ArrayList<>();
-        if (ToolUtil.isEmpty(activitiStepsResult)) {
-            return results;
-        }
-        String type = activitiStepsResult.getType();
-        if (type.equals("1")) {
-            results.add(activitiStepsResult);
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
-            return results;
-        } else if (type.equals("2")) {
-            results.add(activitiStepsResult);
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
-            return results;
-        } else if (type.equals("3")) {
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), activitiStepsResult.getSetpsId());
-            results.addAll(resultList);
-            return results;
-        } else if (type.equals("4")) {
-            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                List<ActivitiStepsResult> resultList = getNextNode(stepsResult, stepsResult.getSetpsId());
-                results.addAll(resultList);
-            }
-            return results;
-        } else if (!activitiStepsResult.getSetpsId().equals(stepsId)) {
-            List<ActivitiStepsResult> resultList = getNextNode(activitiStepsResult.getChildNode(), stepsId);
-            results.addAll(resultList);
-            return results;
-        } else {
-            results.add(activitiStepsResult);
-            return results;
-        }
-    }
 
     @Override
     public void add(Long taskId, Integer status) {
@@ -135,14 +107,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (ToolUtil.isNotEmpty(setpsIds)) {
 
-            ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(task.getProcessId());
-            ActivitiProcess activitiProcess = processService.getById(task.getProcessId());
 
             List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
                 in("setps_id", setpsIds);
             }});
 
             List<Long> passSetpIds = new ArrayList<>();
+
+            List<ActivitiSteps> steps = stepsService.listByIds(setpsIds);
+
+
             for (ActivitiProcessLog activitiProcessLog : audit) {
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
                 if (ToolUtil.isEmpty(activitiAudit)) {
@@ -153,62 +127,218 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 Long logId = activitiProcessLog.getLogId();
                 ActivitiProcessLog entity = new ActivitiProcessLog();
+                entity.setSetpsId(activitiProcessLog.getSetpsId());
                 entity.setStatus(status);
                 entity.setLogId(logId);
-                if (type.equals("luYou") || type.equals("branch")) {
-                    this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
-                        eq("log_id", entity.getLogId());
-                    }});
+                //TODO 未知的 合拼
+                List<ActivitiProcessLog> processLogs = new ArrayList<>();
+
+                if (type.equals(AuditType.ROUTE.toString()) || type.equals(AuditType.BRANCH.toString())) {
+
                     passSetpIds.add(activitiProcessLog.getSetpsId());
                 } else if (ToolUtil.isNotEmpty(rule)) {
-                    if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
-                        /**
-                         * 判断操作权限
-                         */
-                        this.checkUser(activitiAudit.getRule());
-                        this.update(entity, new QueryWrapper<ActivitiProcessLog>() {{
-                            eq("log_id", entity.getLogId());
-                        }});
-                        audit = this.getAudit(taskId);
-//                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), activitiAudit.getSetpsId().toString(), task.getProcessTaskId());
-                        passSetpIds.add(activitiProcessLog.getSetpsId());
+
+
+//                    if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
+
+                    for (ActivitiSteps step : steps) {
+                        if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                            processLogs = updataSupper(steps, audit, step);
+                        }
                     }
+                    for (ActivitiProcessLog processLog : processLogs) {
+                        processLog.setStatus(1);
+                    }
+                    this.updateBatchById(processLogs);
+                    /**
+                     * 判断操作权限
+                     */
+                    this.checkUser(activitiAudit.getRule());
+                    entity.setStatus(status);
+                    /**
+                     * 当前节点更新
+                     */
+                    this.updateById(entity);
+
+
+                    passSetpIds.add(activitiProcessLog.getSetpsId());
+
                 }
             }
-            /**
-             * 当前节点发送消息
-             */
 
             /**
              * 所有下一节点送消息的节点
              */
-            List<Long> setpsIds1 = new ArrayList<>();
 
-            passSetpIds = new ArrayList<>();
+            audit = this.getAudit(taskId);
+
+            List<Long> nextStepsIds = new ArrayList<>();
+
+
             for (ActivitiProcessLog activitiProcessLog : audit) {
-                passSetpIds.add(activitiProcessLog.getSetpsId());
-                setpsIds1.add(activitiProcessLog.getSetpsId());
+                nextStepsIds.add(activitiProcessLog.getSetpsId());
             }
+
 
             activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", setpsIds1);
+                in("setps_id", nextStepsIds);
             }});
 
-            List<ActivitiStepsResult> activitiStepsResults = new ArrayList<>();
 
-            for (Long passSetpId : passSetpIds) {
-                activitiStepsResults = getNextNode(activitiStepsResult, passSetpId);
-            }
-            if (ToolUtil.isNotEmpty(activitiStepsResults)) {
-                for (ActivitiStepsResult stepsResult : activitiStepsResults) {
-                    ActivitiAudit activitiAudit = getRule(activitiAudits, stepsResult.getSetpsId());
-                    if (ToolUtil.isNotEmpty(activitiAudit)) {
-                        taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), activitiProcess.getUrl(), stepsResult.getSetpsId().toString(), task.getProcessTaskId());
-                    }
+            for (ActivitiAudit activitiAudit : activitiAudits) {
+
+                if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
+                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
                 }
             }
-
         }
+    }
+
+    private void sendNext(Long taskId) {
+        List<ActivitiProcessLog> audit = this.getAudit(taskId);
+
+        List<Long> nextStepsIds = new ArrayList<>();
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+
+        for (ActivitiProcessLog activitiProcessLog : audit) {
+            nextStepsIds.add(activitiProcessLog.getSetpsId());
+        }
+
+
+        List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", nextStepsIds);
+        }});
+
+
+        for (ActivitiAudit activitiAudit : activitiAudits) {
+
+            if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
+                taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
+            }
+        }
+    }
+
+    private List<ActivitiProcessLog> updataSupper(List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
+        List<ActivitiProcessLog> logs = new ArrayList<>();
+
+
+        for (ActivitiSteps step : steps) {
+            // 取当前步骤上级
+            if (step.getSetpsId().equals(activitiSteps.getSupper())) {
+
+
+                ActivitiProcessLog log = getLog(processLogs, activitiSteps);
+
+                switch (step.getType()) {
+                    case "1":
+                    case "2":
+                    case "3":
+                        // 添加当前步骤log
+                        logs.add(log);
+                        if (judgeNext(processLogs, steps, step)) {
+                            // 下级完成递归传入当前步骤判断上一级
+                            List<ActivitiProcessLog> newLogs = updataSupper(steps, processLogs, step);
+                            logs.addAll(newLogs);
+                        }
+                        return logs;
+                    case "4":
+                        String[] split = step.getConditionNodes().split(",");
+
+                        List<String> noUpdate = new ArrayList<>();
+                        List<String> update = new ArrayList<>();
+
+                        for (String s : split) {
+                            if (!activitiSteps.getSetpsId().toString().equals(s)) {
+                                for (ActivitiProcessLog processLog : processLogs) {
+                                    if (processLog.getSetpsId().toString().equals(s) && processLog.getStatus() == 1) {
+                                        update.add(s);
+                                    }
+                                }
+                            } else {
+                                noUpdate.add(s);
+                            }
+                        }
+                        if ((update.size() == split.length - noUpdate.size())) {
+                            logs.add(log);
+                            List<ActivitiProcessLog> routeLog = updataSupper(steps, processLogs, step);
+                            logs.addAll(routeLog);
+
+                            return logs;
+                        } else {
+                            return logs;
+                        }
+
+                }
+
+            }
+        }
+
+        return logs;
+
+    }
+
+    /**
+     * 比对processLog
+     *
+     * @param processLogs
+     * @param activitiSteps
+     * @return
+     */
+    private ActivitiProcessLog getLog(List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
+
+        for (ActivitiProcessLog processLog : processLogs) {
+            // 取当前步骤log
+            if (processLog.getSetpsId().equals(activitiSteps.getSupper())) {
+                return processLog;
+
+            }
+        }
+        return new ActivitiProcessLog();
+    }
+
+
+    /**
+     * @return
+     */
+    private Boolean judgeNext(List<ActivitiProcessLog> processLogs, List<ActivitiSteps> steps, ActivitiSteps activitiSteps) {
+
+        if (ToolUtil.isEmpty(activitiSteps)) {
+            return true;
+        }
+        ActivitiProcessLog processLog = getLog(processLogs, activitiSteps);
+
+        switch (activitiSteps.getType()) {
+            case "1":
+            case "2":
+                if (processLog.getStatus() == 1) {
+                    ActivitiSteps step = getchildStep(steps, activitiSteps);
+                    return judgeNext(processLogs, steps, step);
+                } else {
+                    return false;
+                }
+            case "4":
+                return processLog.getStatus() == 1;
+            default:
+                return true;
+        }
+
+
+    }
+
+    /**
+     * 取下一级
+     *
+     * @param steps
+     * @param activitiSteps
+     * @return
+     */
+    private ActivitiSteps getchildStep(List<ActivitiSteps> steps, ActivitiSteps activitiSteps) {
+        for (ActivitiSteps step : steps) {
+            if (activitiSteps.getChildren().equals(step.getChildren())) {
+                return step;
+            }
+        }
+        return new ActivitiSteps();
     }
 
     @Override
@@ -282,9 +412,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         ActivitiProcessLog log = getLog(activitiStepsResult.getSetpsId(), activitiProcessLogs);
         switch (activitiStepsResult.getType()) {
-            case "0":
-            case "1":
-            case "2":
+//            case StempType.StempType():
+            case START:
+            case AUDIT:
+            case SEND:
                 if (ToolUtil.isNotEmpty(log)) {
                     if (log.getStatus().equals(1)) {
                         activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
@@ -293,17 +424,21 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 }
                 break;
-            case "3":
+            case BRANCH:
                 activitiStepsResultList.add(log);
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
                     activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
                 }
-
-            case "4":
+                break;
+            case ROUTE:
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
-                    activitiStepsResultList.add(log);
-                    for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                        activitiStepsResultList.addAll(loopAudit(stepsResult, activitiProcessLogs));
+                    if (log.getStatus().equals(1)) {
+                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
+                    } else {
+                        activitiStepsResultList.add(log);
+                        for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                            activitiStepsResultList.addAll(loopAudit(stepsResult, activitiProcessLogs));
+                        }
                     }
 
                 }

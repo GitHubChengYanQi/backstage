@@ -36,7 +36,7 @@ public class WxCpSendTemplate {
     private List<String> userIds() {
         //获取uuid
         List<String> uuIds = new ArrayList<>();
-        List<WxuserInfo> wxuserInfos = wxuserInfoService.query().in("user_id", wxCpTemplate.getUserIds()).eq("source", "wxCp").list();
+        List<WxuserInfo> wxuserInfos = wxCpTemplate.getUserIds().size() == 0 ? new ArrayList<>() : wxuserInfoService.query().in("user_id", wxCpTemplate.getUserIds()).eq("source", "wxCp").list();
 
         List<Long> memberIds = new ArrayList<>();
         if (ToolUtil.isNotEmpty(wxuserInfos)) {

@@ -57,32 +57,42 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     SkuService skuService;
     @Autowired
     private FormDataService formDataService;
+
     @Autowired
     private FormDataValueService formDataValueService;
+
     @Autowired
     private QualityCheckService qualityCheckService;
+
     @Autowired
     private OrCodeBindService bindService;
+
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
+
     @Autowired
     private OrCodeService orCodeService;
+
     @Autowired
     private InkindService inkindService;
+
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private CodingRulesService rulesService;
+
     @Autowired
     private QualityTaskBindService taskBindService;
+
     @Autowired
     private BrandService brandService;
+
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
-    @Autowired
-    private ActivitiStepsService activitiStepsService;
 
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
@@ -219,6 +229,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
+        this.updateById(newEntity);
 
         if (ToolUtil.isNotEmpty(param.getState())) {
             switch (param.getState()) {
@@ -239,10 +250,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
 
-        ToolUtil.copyProperties(newEntity, oldEntity);
-
-
-        this.updateById(newEntity);
     }
 
     @Override
@@ -546,7 +553,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                                         map.put("value", dataValues);
                                         Boolean flag = false;
 
-                                        if (qualityCheck.getType() == 1 || qualityCheck.getType() == 5) {
+                                        if (qualityCheck.getType() == 1 || qualityCheck.getType() == 4) {
                                             flag = false;
                                             if (planDetail.getIsNull() == 0 || ToolUtil.isNotEmpty(dataValues.getValue())) {
                                                 if (ToolUtil.isNotEmpty(dataValues.getValue())) {
