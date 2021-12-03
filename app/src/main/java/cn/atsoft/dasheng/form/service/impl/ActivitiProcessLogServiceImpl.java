@@ -10,7 +10,6 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
-import cn.atsoft.dasheng.form.model.formTypeEnum.AuditType;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -19,7 +18,6 @@ import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 
-import com.baomidou.mybatisplus.core.conditions.SharedString;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,11 +40,7 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessLogService {
-    public final static String START = "0";
-    public final static String AUDIT = "1";
-    public final static String SEND = "2";
-    public final static String BRANCH = "3";
-    public final static String ROUTE = "4";
+
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
@@ -135,12 +129,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 //TODO 未知的 合拼
                 List<ActivitiProcessLog> processLogs = new ArrayList<>();
 
-                if (type.equals(AuditType.ROUTE.toString()) || type.equals(AuditType.BRANCH.toString())) {
+                if (type.equals("route") || type.equals("branch")) {
 //                    entity.setStatus(1);
 //                    this.updateById(entity);
 
                     passSetpIds.add(activitiProcessLog.getSetpsId());
-                } else if (ToolUtil.isNotEmpty(rule)) {
+                } else if (ToolUtil.isNotEmpty(rule)) { //判断条件  更新log状态
                     if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
                         for (ActivitiSteps step : steps) {
                             if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
@@ -155,7 +149,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                          * 判断操作权限
                          */
                         this.checkUser(activitiAudit.getRule());
-                        entity.setStatus(1);
+                        entity.setStatus(status);
                         /**
                          * 当前节点更新
                          */
@@ -229,16 +223,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog log = getLog(processLogs, activitiSteps);
 
                 switch (step.getType()) {
-                    case "1":
-                    case "2":
-                    case "3":
+                    case AUDIT:
+                    case SEND:
+                    case ROUTE:
                         // 添加当前步骤log
                         logs.add(log);
                         // 递归传入当前步骤
                         List<ActivitiProcessLog> newLogs = updataSupper(steps, processLogs, step);
                         logs.addAll(newLogs);
                         return logs;
-                    case "4":
+                    case BRANCH:
                         String[] split = step.getConditionNodes().split(",");
                         List<String> nodes = new ArrayList<>(Arrays.asList(split));
 

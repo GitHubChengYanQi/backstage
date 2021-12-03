@@ -64,5 +64,5 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 查询部门负责人
      */
-    List<User> listUserByPositionAndDept(@Param("positionId") List<Long> positionId,@Param("deptId") List<Long> deptId);
+    List<User> listUserByPositionAndDept(@Param("position") List<Long> positionId,@Param("dept") List<Long> deptId);
 }
