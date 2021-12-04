@@ -140,23 +140,44 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 if (activitiSteps.getType().equals(AUDIT)) {
 
-                    if (this.checkUser(activitiAudit.getRule())) {
-                        /**
-                         * 当前节点更新
-                         */
-                        entity.setStatus(status);
-                        this.updateById(entity);
 
-                        for (ActivitiSteps step : Allsteps) {
-                            if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
-                                processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                    switch (activitiSteps.getStepType()){
+                        case "quality":
+                            entity.setStatus(status);
+                            this.updateById(entity);
+
+                            for (ActivitiSteps step : Allsteps) {
+                                if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                                    processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                                }
                             }
-                        }
-                        for (ActivitiProcessLog processLog : processLogs) {
-                            processLog.setStatus(status);
-                        }
-                        this.updateBatchById(processLogs);
+                            for (ActivitiProcessLog processLog : processLogs) {
+                                processLog.setStatus(status);
+                            }
+                            this.updateBatchById(processLogs);
+                            break;
+                        case "audit":
+                            if (this.checkUser(activitiAudit.getRule())) {
+                                /**
+                                 * 当前节点更新
+                                 */
+                                entity.setStatus(status);
+                                this.updateById(entity);
+
+                                for (ActivitiSteps step : Allsteps) {
+                                    if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                                        processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                                    }
+                                }
+                                for (ActivitiProcessLog processLog : processLogs) {
+                                    processLog.setStatus(status);
+                                }
+                                this.updateBatchById(processLogs);
+                            }
+                            break;
                     }
+
+
 
                 } else if (activitiSteps.getType().equals(SEND)) {
                     entity.setStatus(status);
