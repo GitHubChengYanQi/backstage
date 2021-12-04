@@ -92,7 +92,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * 判断status
          */
+        Boolean flag = true;
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
 
         List<Long> setpsIds = new ArrayList<>();
         for (ActivitiProcessLog processLog : audit) {
@@ -164,15 +166,21 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 entity.setStatus(status);
                                 this.updateById(entity);
 
-                                for (ActivitiSteps step : Allsteps) {
-                                    if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
-                                        processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                                if (status.equals(1)){
+                                    for (ActivitiSteps step : Allsteps) {
+                                        if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                                            processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                                        }
                                     }
+                                    for (ActivitiProcessLog processLog : processLogs) {
+                                        processLog.setStatus(status);
+                                    }
+                                    this.updateBatchById(processLogs);
+                                }else {
+                                    flag = false;
+                                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId(),0);
                                 }
-                                for (ActivitiProcessLog processLog : processLogs) {
-                                    processLog.setStatus(status);
-                                }
-                                this.updateBatchById(processLogs);
+
                             }
                             break;
                     }
@@ -203,7 +211,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * 所有下一节点送消息的节点
          */
-        this.sendNext(taskId);
+        if (flag) {
+            this.sendNext(taskId);
+        }
     }
 
 
@@ -230,7 +240,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         for (ActivitiAudit activitiAudit : activitiAudits) {
 
             if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
-                taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
+                taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId(),1);
             }
         }
 //        }

@@ -87,7 +87,7 @@ public class ActivitiProcessTaskSend {
         return users;
     }
 
-    public void send(String type, AuditRule starUser, Long taskId) {
+    public void send(String type, AuditRule starUser, Long taskId,int status) {
         List<Long> users = new ArrayList<>();
         List<Long> collect = new ArrayList<>();
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
@@ -102,7 +102,12 @@ public class ActivitiProcessTaskSend {
 
         switch (type) {
             case PERSON:
-                this.personSend(activitiTaskSend);
+                if (status == 1){
+                    this.personSend(activitiTaskSend);
+                }else {
+                    vetoSend(taskId);
+                }
+
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
@@ -204,13 +209,15 @@ public class ActivitiProcessTaskSend {
 
     }
 
-    public void vetoSend(String type, String url, String stepsId, Long qualityTaskId) {
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+    public void vetoSend(Long taskId) {
 
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
-        QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", qualityTaskId).one();
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", qualityTaskId).one();
-        users.add(activitiProcessTask.getCreateUser());
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+        users.add(task.getCreateUser());
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url + "Work/Workflow?" + "id=" + taskId.toString();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
         wxCpTemplate.setTitle("您发起的流程已被否决");
