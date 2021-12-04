@@ -41,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
+import static cn.atsoft.dasheng.form.pojo.StepsType.START;
+
 /**
  * <p>
  * 质检任务 服务实现类
@@ -169,8 +171,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
-
-
+            this.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
             activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
@@ -197,6 +198,15 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
 
+    }
+    private void power(ActivitiProcess activitiProcess){
+        ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
+        if (ToolUtil.isNotEmpty(startSteps)){
+            ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();
+            if (!stepsService.checkUser(audit.getRule())) {
+                throw  new ServiceException(500,"您没有权限创建任务");
+            }
+        }
     }
 
 //    private void checkUser(Long processId) {

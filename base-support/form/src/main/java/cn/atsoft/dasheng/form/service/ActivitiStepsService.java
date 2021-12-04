@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -75,4 +76,5 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
 
     List<ActivitiStepsResult> backSteps(List<Long> ids);
 
+    Boolean checkUser(AuditRule starUser);
 }
