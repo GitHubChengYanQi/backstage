@@ -105,7 +105,7 @@ public class ActivitiProcessTaskSend {
                 if (status == 1){
                     this.personSend(activitiTaskSend);
                 }else {
-                    vetoSend(activitiTaskSend);
+                    vetoSend(taskId);
                 }
 
                 break;
@@ -209,15 +209,15 @@ public class ActivitiProcessTaskSend {
 
     }
 
-    public void vetoSend(ActivitiTaskSend param) {
+    public void vetoSend(Long taskId) {
 
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> users = new ArrayList<>();
-        QualityTask qualityTask = qualityTaskService.getById(param.getTaskId());
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", param.getTaskId()).one();
-        users.add(activitiProcessTask.getCreateUser());
+        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+        users.add(task.getCreateUser());
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Workflow?" + "id=" + param.getTaskId().toString();
+        url = url + "Work/Workflow?" + "id=" + taskId.toString();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
         wxCpTemplate.setTitle("您发起的流程已被否决");
