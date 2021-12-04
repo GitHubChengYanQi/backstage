@@ -275,22 +275,21 @@
                  left join sys_dept dept on u.dept_id = dept.dept_id
     </select>
 
-    <select id="listUserByPositionAndDept" resultType="map" databaseId="sqlserver">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user left join sys_position
-        on sys_user.user_id = sys_position.user_id
-        where status != 'ENABLE'
-        <if test="deptId != null">
+    <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
+        select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id
+        from sys_user left join sys_user_pos
+        on sys_user.user_id = sys_user_pos.user_id
+        where status = 'ENABLE'
+        <if test="dept!=null and dept.size()>0">
             and sys_user.dept_id in
-            <foreach collection="list" index="deptId" item="dept_id">
-                #{deptId}
+            <foreach collection="dept" index="index" item="j" open="(" separator="," close=")">
+                #{j}
             </foreach>
         </if>
-        <if test="positionId != null">
-            and sys_position.position_id in
-            <foreach item="positionId" index="positionId" collection="list" open="(" separator="," close=")">
-            #{positionId}
+        <if test="position!=null and position.size()>0">
+            and sys_user_pos.pos_id in
+            <foreach item="i" index="index" collection="position" open="(" separator="," close=")">
+                #{i}
             </foreach>
         </if>
     </select>
