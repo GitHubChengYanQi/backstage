@@ -22,6 +22,8 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -57,6 +59,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     private ActivitiProcessService processService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private UserService userService;
 
 
     @Override
@@ -434,7 +438,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                         activitiStepsResult.setServiceAudit(activitiAuditResult);
                         // 判断权限
                         if (ToolUtil.isNotEmpty(activitiAuditResult.getRule())) {
-                            activitiStepsResult.setPermissions(inUsers(activitiAuditResult.getRule().getQualityRules().getUsers(), loginUser.getId()));
+
+                            activitiStepsResult.setPermissions(this.checkUser(activitiAuditResult.getRule()));
                         }
                         stepsResults.add(activitiStepsResult);
                     }
@@ -444,4 +449,41 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         }
         return stepsResults;
     }
+
+
+    public List<Long> selectUsers(AuditRule starUser) {
+        List<Long> users = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
+            for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
+                users.add(Long.valueOf(user.getKey()));
+            }
+        }
+        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
+            List<Long> deptIds = new ArrayList<>();
+            List<Long> positionIds = new ArrayList<>();
+            for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
+                deptIds.add(Long.valueOf(dept.getKey()));
+                for (QualityRules.Depts.Positions position : dept.getPositions()) {
+                    positionIds.add(Long.valueOf(position.getValue()));
+                }
+            }
+            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(deptIds, positionIds);
+            for (User user : userList) {
+                users.add(user.getUserId());
+            }
+        }
+        return users;
+    }
+    public Boolean checkUser(AuditRule starUser) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        Long userId = user.getId();
+        List<Long> users = this.selectUsers(starUser);
+        for (Long aLong : users) {
+            if (aLong.equals(userId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

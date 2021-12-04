@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
+import static cn.atsoft.dasheng.form.pojo.StepsType.*;
 
 /**
  * <p>
@@ -92,9 +92,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * 判断status
          */
-        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
 
         List<Long> setpsIds = new ArrayList<>();
@@ -109,7 +106,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 in("setps_id", setpsIds);
             }});
 
-            List<ActivitiSteps> steps = stepsService.listByIds(setpsIds);
+
 
             List<ActivitiProcessLog> logs = this.list(new QueryWrapper<ActivitiProcessLog>() {{
                 eq("task_id", taskId);
@@ -125,11 +122,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             for (ActivitiProcessLog activitiProcessLog : audit) {
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-                if (ToolUtil.isEmpty(activitiAudit)) {
+                ActivitiSteps activitiSteps = getSteps(Allsteps, activitiProcessLog.getSetpsId());
+
+                if (ToolUtil.isEmpty(activitiAudit) || ToolUtil.isEmpty(activitiSteps)) {
                     continue;
                 }
-                AuditRule rule = activitiAudit.getRule(); // activitiStepsResult.getAuditRule().getQualityRules();
-                String type = activitiAudit.getType();
 
                 Long logId = activitiProcessLog.getLogId();
                 ActivitiProcessLog entity = new ActivitiProcessLog();
@@ -142,7 +139,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
 //                    if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
 
-                if (activitiAudit.getType().equals("quality_task_person")) {
+                if (activitiSteps.getType().equals(AUDIT)) {
 
                     if (this.checkUser(activitiAudit.getRule())) {
                         /**
@@ -162,7 +159,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         this.updateBatchById(processLogs);
                     }
 
-                } else if (activitiAudit.getType().equals("quality_task_send")) {
+                } else if (activitiSteps.getType().equals(SEND)) {
                     entity.setStatus(status);
                     this.updateById(entity);
                     for (ActivitiSteps step : Allsteps) {
@@ -170,11 +167,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
                         }
                     }
-                    for (ActivitiProcessLog processLog : processLogs) {
-                        processLog.setStatus(status);
-                    }
                     this.updateBatchById(processLogs);
-                } else if (activitiAudit.getType().equals("quality_task_start")) {
+                } else if (activitiSteps.getType().equals(START)) {
                     entity.setStatus(status);
                     this.updateById(entity);
                 }
@@ -336,29 +330,36 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         ActivitiProcessLog processLog = getLog(processLogs, activitiStepsChild);
 
+        if (ToolUtil.isNotEmpty(processLog)) {
+            switch (activitiStepsChild.getType()) {
+                case AUDIT:
+                case SEND:
+                    if (stepId.equals(processLog.getSetpsId())) {
+                        return true;
+                    } else {
+                        return processLog.getStatus() == 1;
+                    }
 
-        switch (activitiStepsChild.getType()) {
-            case AUDIT:
-            case SEND:
-                if (stepId.equals(processLog.getSetpsId())) {
-                    return true;
-                } else {
+                case ROUTE:
                     return processLog.getStatus() == 1;
-                }
+                default:
+                    return true;
+            }
 
-            case ROUTE:
-                return processLog.getStatus() == 1;
-            default:
-                return true;
         }
 
-
+        return true;
     }
 
-//
-//    private ActivitiSteps getsteps(List<ActivitiSteps> steps, ActivitiAudit audit) {
-//
-//    }
+
+    private ActivitiSteps getSteps(List<ActivitiSteps> steps, Long stepId) {
+        for (ActivitiSteps step : steps) {
+            if (step.getSetpsId().toString().equals(stepId.toString())) {
+                return step;
+            }
+        }
+        return null;
+    }
 
     ;
 
