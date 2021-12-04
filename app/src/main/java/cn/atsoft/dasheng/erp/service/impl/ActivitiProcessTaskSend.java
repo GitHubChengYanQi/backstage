@@ -71,15 +71,15 @@ public class ActivitiProcessTaskSend {
             }
         }
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
-            List<Long> deptIds = new ArrayList<>();
+            Long deptIds = 0L;
             List<Long> positionIds = new ArrayList<>();
             for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-                deptIds.add(Long.valueOf(dept.getKey()));
+                deptIds=Long.valueOf(dept.getKey());
                 for (QualityRules.Depts.Positions position : dept.getPositions()) {
                     positionIds.add(Long.valueOf(position.getValue()));
                 }
             }
-            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(deptIds, positionIds);
+            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds,deptIds);
             for (User user : userList) {
                 users.add(user.getUserId());
             }

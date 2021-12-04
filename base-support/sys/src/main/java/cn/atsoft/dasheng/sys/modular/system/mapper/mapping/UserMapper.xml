@@ -280,11 +280,8 @@
         from sys_user left join sys_user_pos
         on sys_user.user_id = sys_user_pos.user_id
         where status = 'ENABLE'
-        <if test="dept!=null and dept.size()>0">
-            and sys_user.dept_id in
-            <foreach collection="dept" index="index" item="j" open="(" separator="," close=")">
-                #{j}
-            </foreach>
+        <if test="dept!=null and dept != 0">
+            and sys_user.dept_id = #{dept}
         </if>
         <if test="position!=null and position.size()>0">
             and sys_user_pos.pos_id in
