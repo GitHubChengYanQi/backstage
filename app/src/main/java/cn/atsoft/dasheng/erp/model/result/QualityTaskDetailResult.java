@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -29,6 +30,9 @@ public class QualityTaskDetailResult implements Serializable {
     private BrandResult brand;
     private QualityPlanResult qualityPlanResult;
 
+    private List<Long> userIdList;
+
+    private List<String> users;
     @ApiModelProperty("")
     private Long qualityTaskDetailId;
 

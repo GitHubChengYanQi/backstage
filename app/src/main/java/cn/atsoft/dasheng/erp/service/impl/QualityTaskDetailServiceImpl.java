@@ -27,6 +27,8 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -74,6 +76,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private MobileService mobileService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -109,7 +113,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"OrCode?id="+formId.getOrCodeId();
+        url = url + "OrCode?id=" + formId.getOrCodeId();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");
@@ -173,8 +177,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
     @Override
     public void updateDataValue(Long inkind) {
-        dataService.list(new QueryWrapper<FormData>(){{
-         }});
+        dataService.list(new QueryWrapper<FormData>() {{
+        }});
     }
 
     @Override
@@ -184,12 +188,24 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         List<Long> brandIds = new ArrayList<>();
         //质检项id
         List<Long> planIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
             skuIds.add(qualityTaskDetailResult.getSkuId());
             brandIds.add(qualityTaskDetailResult.getBrandId());
             planIds.add(qualityTaskDetailResult.getQualityPlanId());
+            if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIds())) {
+                qualityTaskDetailResult.setUserIdList(Arrays.asList(qualityTaskDetailResult.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+                userIds.addAll(qualityTaskDetailResult.getUserIdList());
+            }
+
         }
+        //查询用户
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.list(new QueryWrapper<User>() {{
+            in("user_id", userIds);
+        }});
+
         //查询品牌
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
         //查询质检项目
@@ -214,6 +230,18 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
+            List<String> usersName = new ArrayList<>();
+            if(ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIdList())){
+                for (Long aLong : qualityTaskDetailResult.getUserIdList()) {
+                    for (User user : users) {
+                        if (aLong.equals(user.getUserId())) {
+                            usersName.add(user.getName());
+                        }
+                    }
+                }
+            }
+            qualityTaskDetailResult.setUsers(usersName);
+
 
             //格式化sku数据
             for (SkuResult skuResult : skuResults) {
@@ -229,6 +257,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                     qualityTaskDetailResult.setBrand(brandResult);
                 }
             }
+
             for (QualityPlan qualityPlan : qualityPlanList) {
                 if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getQualityPlanId())) {
                     if (qualityTaskDetailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {

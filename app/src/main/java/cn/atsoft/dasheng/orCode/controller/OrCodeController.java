@@ -402,6 +402,8 @@ public class OrCodeController extends BaseController {
                         qualityTaskResult.setUserName(user1.getName());
                     }
 
+
+
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
 
