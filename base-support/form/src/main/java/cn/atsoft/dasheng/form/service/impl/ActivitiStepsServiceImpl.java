@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
@@ -33,6 +34,12 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
+import static cn.atsoft.dasheng.form.pojo.StepsType.START;
+import static cn.atsoft.dasheng.form.pojo.StepsType.SEND;
+import static cn.atsoft.dasheng.form.pojo.StepsType.BRANCH;
+import static cn.atsoft.dasheng.form.pojo.StepsType.ROUTE;
 
 /**
  * <p>
@@ -74,6 +81,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             auditService.remove(queryWrapper);
         }
         ActivitiSteps entity = getEntity(param);
+        entity.setType(START);
         this.save(entity);
         //添加配置
         if (ToolUtil.isEmpty(param.getAuditType())) {
@@ -100,7 +108,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     public void luYou(ActivitiStepsParam node, Long supper, Long processId) {
         //添加路由
         ActivitiSteps activitiSteps = new ActivitiSteps();
-        if (node.getType().equals("4")) {
+        if (node.getType().toString().equals("4")) {
             activitiSteps.setStepType("路由");
         }
         //判断配置
@@ -110,11 +118,23 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
         if (node.getAuditType().toString().equals("send")) {
             ActivitiSteps steps = this.getById(supper);
-            if (steps.getType().equals("0")) {
+            if (steps.getType().toString().equals("0")) {
                 throw new ServiceException(500, "不可以直接抄送");
             }
         }
-        activitiSteps.setType(node.getType());
+        switch (node.getType()) {
+            case "1":
+                activitiSteps.setType(AUDIT);
+                break;
+            case "2":
+                activitiSteps.setType(SEND);
+                break;
+            case "4":
+                activitiSteps.setType(ROUTE);
+                break;
+        }
+
+
         activitiSteps.setSupper(supper);
         activitiSteps.setStepType(node.getStepType());
         activitiSteps.setProcessId(processId);
@@ -153,6 +173,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             //存分支
             ActivitiSteps activitiSteps = new ActivitiSteps();
             ToolUtil.copyProperties(stepsParam, activitiSteps);
+            activitiSteps.setType(BRANCH);
             activitiSteps.setProcessId(processId);
             this.save(activitiSteps);
             //添加配置

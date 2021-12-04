@@ -170,7 +170,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
 
-            this.checkUser(activitiProcess.getProcessId()); //判断是否有权限操作
 
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
@@ -200,11 +199,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     }
 
-    private void checkUser(Long processId) {
-        ActivitiSteps one1 = stepsService.query().eq("process_id", processId).eq("type", 0).one();
-        ActivitiAudit one = auditService.query().eq("setps_id", one1.getSetpsId()).one();
-        activitiProcessLogService.checkUser(one.getRule());
-    }
+//    private void checkUser(Long processId) {
+//        ActivitiSteps one1 = stepsService.query().eq("process_id", processId).eq("type", START).one();
+//        ActivitiAudit one = auditService.query().eq("setps_id", one1.getSetpsId()).one();
+//        activitiProcessLogService.checkUser(one.getRule());
+//    }
 
     @Override
     public void delete(QualityTaskParam param) {

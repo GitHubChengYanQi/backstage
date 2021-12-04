@@ -28,7 +28,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      */
     void add(Long param, Integer status);
 
-    void checkUser(AuditRule starUser);
+    Boolean checkUser(AuditRule starUser);
 
     /**
      * 删除

@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -65,7 +67,8 @@ public class ActivitiStepsResult implements Serializable {
      */
 
     @ApiModelProperty("步骤类型：ship（工艺），setp（工序），audit（审核），audit_process（审核流程）")
-    private String type;
+    @JSONField(serialzeFeatures= SerializerFeature.WriteEnumUsingToString)
+    private StepsType type;
 
     /**
      * 分表Id

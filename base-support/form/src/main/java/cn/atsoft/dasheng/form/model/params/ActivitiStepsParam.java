@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.form.model.params;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 

@@ -29,8 +29,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
 
 /**
  * <p>
@@ -42,11 +43,7 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessLogService {
-    public final static String START = "0";
-    public final static String AUDIT = "1";
-    public final static String SEND = "2";
-    public final static String BRANCH = "3";
-    public final static String ROUTE = "4";
+
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
@@ -112,9 +109,18 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 in("setps_id", setpsIds);
             }});
 
-            List<Long> passSetpIds = new ArrayList<>();
-
             List<ActivitiSteps> steps = stepsService.listByIds(setpsIds);
+
+            List<ActivitiProcessLog> logs = this.list(new QueryWrapper<ActivitiProcessLog>() {{
+                eq("task_id", taskId);
+            }});
+
+            List<Long> AllStepdsByLog = new ArrayList<>();
+            for (ActivitiProcessLog activitiProcessLog : logs) {
+                AllStepdsByLog.add(activitiProcessLog.getSetpsId());
+            }
+
+            List<ActivitiSteps> Allsteps = stepsService.listByIds(AllStepdsByLog);
 
 
             for (ActivitiProcessLog activitiProcessLog : audit) {
@@ -133,76 +139,70 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 //TODO 未知的 合拼
                 List<ActivitiProcessLog> processLogs = new ArrayList<>();
 
-                if (type.equals(AuditType.ROUTE.toString()) || type.equals(AuditType.BRANCH.toString())) {
-
-                    passSetpIds.add(activitiProcessLog.getSetpsId());
-                } else if (ToolUtil.isNotEmpty(rule)) {
-
 
 //                    if (inUsers(rule.getQualityRules().getUsers(), loginUser.getId()) || inDepts(rule.getQualityRules().getDepts(), loginUser.getDeptId())) {
 
-                    for (ActivitiSteps step : steps) {
+                if (activitiAudit.getType().equals("quality_task_person")) {
+
+                    if (this.checkUser(activitiAudit.getRule())) {
+                        /**
+                         * 当前节点更新
+                         */
+                        entity.setStatus(status);
+                        this.updateById(entity);
+
+                        for (ActivitiSteps step : Allsteps) {
+                            if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                                processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
+                            }
+                        }
+                        for (ActivitiProcessLog processLog : processLogs) {
+                            processLog.setStatus(status);
+                        }
+                        this.updateBatchById(processLogs);
+                    }
+
+                } else if (activitiAudit.getType().equals("quality_task_send")) {
+                    entity.setStatus(status);
+                    this.updateById(entity);
+                    for (ActivitiSteps step : Allsteps) {
                         if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
-                            processLogs = updataSupper(steps, audit, step);
+                            processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
                         }
                     }
                     for (ActivitiProcessLog processLog : processLogs) {
-                        processLog.setStatus(1);
+                        processLog.setStatus(status);
                     }
                     this.updateBatchById(processLogs);
-                    /**
-                     * 判断操作权限
-                     */
-                    this.checkUser(activitiAudit.getRule());
+                } else if (activitiAudit.getType().equals("quality_task_start")) {
                     entity.setStatus(status);
-                    /**
-                     * 当前节点更新
-                     */
                     this.updateById(entity);
-
-
-                    passSetpIds.add(activitiProcessLog.getSetpsId());
-
                 }
             }
 
-            /**
-             * 所有下一节点送消息的节点
-             */
 
-            audit = this.getAudit(taskId);
-
-            List<Long> nextStepsIds = new ArrayList<>();
-
-
-            for (ActivitiProcessLog activitiProcessLog : audit) {
-                nextStepsIds.add(activitiProcessLog.getSetpsId());
-            }
-
-
-            activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", nextStepsIds);
-            }});
-
-
-            for (ActivitiAudit activitiAudit : activitiAudits) {
-
-                if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
-                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
-                }
-            }
         }
+
+        /**
+         * 所有下一节点送消息的节点
+         */
+        this.sendNext(taskId);
     }
+
 
     private void sendNext(Long taskId) {
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
 
-        List<Long> nextStepsIds = new ArrayList<>();
+        List<Long> nextStepsIds = new ArrayList<Long>() {{
+            add(0L);
+        }};
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
 
         for (ActivitiProcessLog activitiProcessLog : audit) {
             nextStepsIds.add(activitiProcessLog.getSetpsId());
         }
+
+//        if (ToolUtil.isNotEmpty(nextStepsIds)) {
 
 
         List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
@@ -216,9 +216,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId());
             }
         }
+//        }
     }
 
-    private List<ActivitiProcessLog> updataSupper(List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
+    private List<ActivitiProcessLog> updataSupper
+            (List<ActivitiSteps> steps, List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps, Long stepId) {
         List<ActivitiProcessLog> logs = new ArrayList<>();
 
 
@@ -227,21 +229,21 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             if (step.getSetpsId().equals(activitiSteps.getSupper())) {
 
 
-                ActivitiProcessLog log = getLog(processLogs, activitiSteps);
+                ActivitiProcessLog log = getLastLog(processLogs, activitiSteps);
 
                 switch (step.getType()) {
-                    case "1":
-                    case "2":
-                    case "3":
+                    case AUDIT:
+                    case SEND:
+                    case BRANCH:
                         // 添加当前步骤log
-                        logs.add(log);
-                        if (judgeNext(processLogs, steps, step)) {
+                        if (judgeNext(processLogs, steps, activitiSteps, stepId)) {
+                            logs.add(log);
                             // 下级完成递归传入当前步骤判断上一级
-                            List<ActivitiProcessLog> newLogs = updataSupper(steps, processLogs, step);
+                            List<ActivitiProcessLog> newLogs = updataSupper(steps, processLogs, step, stepId);
                             logs.addAll(newLogs);
                         }
                         return logs;
-                    case "4":
+                    case ROUTE:
                         String[] split = step.getConditionNodes().split(",");
 
                         List<String> noUpdate = new ArrayList<>();
@@ -255,14 +257,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                     }
                                 }
                             } else {
-                                noUpdate.add(s);
+                                if (judgeNext(processLogs, steps, activitiSteps, stepId)) {
+                                    noUpdate.add(s);
+                                }
                             }
                         }
                         if ((update.size() == split.length - noUpdate.size())) {
                             logs.add(log);
-                            List<ActivitiProcessLog> routeLog = updataSupper(steps, processLogs, step);
+                            List<ActivitiProcessLog> routeLog = updataSupper(steps, processLogs, step, stepId);
                             logs.addAll(routeLog);
-
                             return logs;
                         } else {
                             return logs;
@@ -278,13 +281,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     /**
-     * 比对processLog
+     * 取上级log
      *
      * @param processLogs
      * @param activitiSteps
      * @return
      */
-    private ActivitiProcessLog getLog(List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
+    private ActivitiProcessLog getLastLog(List<ActivitiProcessLog> processLogs, ActivitiSteps
+            activitiSteps) {
 
         for (ActivitiProcessLog processLog : processLogs) {
             // 取当前步骤log
@@ -298,25 +302,51 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
 
     /**
+     * 取当前log
+     *
+     * @param processLogs
+     * @param activitiSteps
      * @return
      */
-    private Boolean judgeNext(List<ActivitiProcessLog> processLogs, List<ActivitiSteps> steps, ActivitiSteps activitiSteps) {
+    private ActivitiProcessLog getLog(List<ActivitiProcessLog> processLogs, ActivitiSteps activitiSteps) {
 
-        if (ToolUtil.isEmpty(activitiSteps)) {
+        for (ActivitiProcessLog processLog : processLogs) {
+            // 取当前步骤log
+            if (processLog.getSetpsId().equals(activitiSteps.getSetpsId())) {
+                return processLog;
+
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    private Boolean judgeNext(List<ActivitiProcessLog> processLogs, List<ActivitiSteps> steps, ActivitiSteps activitiSteps, Long stepId) {
+
+        if (ToolUtil.isEmpty(activitiSteps.getChildren())) {
             return true;
         }
-        ActivitiProcessLog processLog = getLog(processLogs, activitiSteps);
+        ActivitiSteps activitiStepsChild = getchildStep(steps, activitiSteps);
 
-        switch (activitiSteps.getType()) {
-            case "1":
-            case "2":
-                if (processLog.getStatus() == 1) {
-                    ActivitiSteps step = getchildStep(steps, activitiSteps);
-                    return judgeNext(processLogs, steps, step);
+        if (ToolUtil.isEmpty(activitiStepsChild)) {
+            return true;
+        }
+
+        ActivitiProcessLog processLog = getLog(processLogs, activitiStepsChild);
+
+
+        switch (activitiStepsChild.getType()) {
+            case AUDIT:
+            case SEND:
+                if (stepId.equals(processLog.getSetpsId())) {
+                    return true;
                 } else {
-                    return false;
+                    return processLog.getStatus() == 1;
                 }
-            case "4":
+
+            case ROUTE:
                 return processLog.getStatus() == 1;
             default:
                 return true;
@@ -324,6 +354,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
 
     }
+
+//
+//    private ActivitiSteps getsteps(List<ActivitiSteps> steps, ActivitiAudit audit) {
+//
+//    }
+
+    ;
 
     /**
      * 取下一级
@@ -334,28 +371,29 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      */
     private ActivitiSteps getchildStep(List<ActivitiSteps> steps, ActivitiSteps activitiSteps) {
         for (ActivitiSteps step : steps) {
-            if (activitiSteps.getChildren().equals(step.getChildren())) {
+            if (activitiSteps.getChildren().equals(step.getSetpsId().toString())) {
                 return step;
             }
         }
-        return new ActivitiSteps();
+        return null;
     }
 
     @Override
-    public void checkUser(AuditRule starUser) {
+    public Boolean checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
         Long userId = user.getId();
-        Long deptId = user.getDeptId();
-        Boolean flag = false;
+//        Boolean flag = false;
         List<Long> users = taskSend.selectUsers(starUser);
         for (Long aLong : users) {
             if (aLong.equals(userId)) {
-                flag = true;
+//                flag = true;
+                return true;
             }
         }
-        if (!flag) {
-            throw new ServiceException(500, "您没有操作权限");
-        }
+        return false;
+//        if (!flag) {
+//            throw new ServiceException(500, "您没有操作权限");
+//        }
     }
 
     @Override
@@ -403,7 +441,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return loopAudit(activitiStepsResult, activitiProcessLogs);
     }
 
-    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult activitiStepsResult, List<ActivitiProcessLog> activitiProcessLogs) {
+    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult
+                                                       activitiStepsResult, List<ActivitiProcessLog> activitiProcessLogs) {
         List<ActivitiProcessLog> activitiStepsResultList = new ArrayList<>();
 
         if (ToolUtil.isEmpty(activitiStepsResult)) {
@@ -412,7 +451,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         ActivitiProcessLog log = getLog(activitiStepsResult.getSetpsId(), activitiProcessLogs);
         switch (activitiStepsResult.getType()) {
-//            case StempType.StempType():
             case START:
             case AUDIT:
             case SEND:

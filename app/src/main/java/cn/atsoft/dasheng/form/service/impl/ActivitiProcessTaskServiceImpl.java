@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * <p>
  * 流程任务表	 服务实现类
@@ -57,17 +58,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public Long add(ActivitiProcessTaskParam param) {
         ActivitiProcessTask entity = getEntity(param);
         this.save(entity);
-//        ActivitiProcess process = processService.query().eq("process_id", param.getProcessId()).one();
-        ActivitiSteps steps = stepsService.query().eq("process_id", param.getProcessId()).eq("type", 0).eq("supper", 0).one();
-//        ActivitiAudit audit = auditService.query().eq("setps_id", steps.getChildren()).one();
-//        taskSend.send(audit.getType(), audit.getRule(), process.getUrl(), steps.getChildren(), entity.getProcessTaskId());
-//        if (audit.getType().equals("send")) {
-//            ActivitiSteps children = stepsService.query().eq("children", steps.getChildren()).one();
-//            ActivitiAudit nextAudit = auditService.query().eq("setps_id", children.getChildren()).one();
-//            taskSend.send(nextAudit.getType(), nextAudit.getRule(), process.getUrl(), children.getChildren(), entity.getProcessTaskId());
-//        }
-        activitiProcessLogService.add(param.getProcessId(),1);
-
         return entity.getProcessTaskId();
 
     }
