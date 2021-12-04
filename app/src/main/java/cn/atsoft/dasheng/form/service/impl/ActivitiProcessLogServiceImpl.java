@@ -107,7 +107,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }});
 
 
-
             List<ActivitiProcessLog> logs = this.list(new QueryWrapper<ActivitiProcessLog>() {{
                 eq("task_id", taskId);
             }});
@@ -166,6 +165,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
                             processLogs = updataSupper(Allsteps, logs, step, step.getSetpsId());
                         }
+                    }
+                    for (ActivitiProcessLog processLog : processLogs) {
+                        processLog.setStatus(status);
                     }
                     this.updateBatchById(processLogs);
                 } else if (activitiSteps.getType().equals(START)) {
