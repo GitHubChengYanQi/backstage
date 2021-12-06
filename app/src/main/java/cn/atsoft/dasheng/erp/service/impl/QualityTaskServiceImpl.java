@@ -184,7 +184,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.add(taskId, 1);
+            activitiProcessLogService.audit(taskId, 1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
@@ -246,7 +246,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     // 主任务完成状态
                     ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
                     if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-                        activitiProcessLogService.add(activitiProcessTask.getProcessTaskId(), 1);
+                        activitiProcessLogService.audit(activitiProcessTask.getProcessTaskId(), 1);
                         newEntity.setState(1);
                     } else {
                         newEntity.setState(2);
