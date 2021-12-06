@@ -150,7 +150,7 @@ public class ActivitiProcessTaskSend {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setTitle("您有新的待执行任务");
+        wxCpTemplate.setTitle("已被分派新的待执行任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
@@ -220,7 +220,7 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.audit(param.getTaskId(), 1);
+        activitiProcessLogService.audit(param.getTaskId(), 1,false);
 
     }
 

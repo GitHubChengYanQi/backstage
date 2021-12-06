@@ -27,7 +27,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @Date 2021-11-10
      */
 //    void add(Long param, Integer status);
-    void audit(Long param, Integer status);
+    void audit(Long param, Integer status,Boolean autoAudit);
     Boolean checkUser(AuditRule starUser);
 
     /**
