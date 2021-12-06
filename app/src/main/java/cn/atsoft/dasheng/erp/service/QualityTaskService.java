@@ -6,8 +6,11 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
+import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
+import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,7 +103,7 @@ public interface QualityTaskService extends IService<QualityTask> {
     /**
      * 添加子任务
      *
-     * @param param
+     * @param
      */
     void addChild(QualityTaskChild child);
 
@@ -112,4 +115,15 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     QualityTaskResult backChildTask(Long id);
 
+
+    List<FormDataValueResult> valueResults(Long qrcodeId);
+
+    void updateDataValue(Long id, String value);
+
+    /**
+     * 质检完成
+     *
+     * @param id
+     */
+    void taskComplete(TaskComplete taskComplete);
 }

@@ -448,6 +448,59 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     }
 
+    @Override
+    public SkuResult getSku(Long id) {
+        Sku sku = this.getById(id);
+        SkuResult skuResult = new SkuResult();
+        ToolUtil.copyProperties(sku, skuResult);
+
+
+        Spu spu = spuService.getById(skuResult.getSpuId());
+        SpuResult spuResult = new SpuResult();
+        ToolUtil.copyProperties(spu, spuResult);
+
+        skuResult.setSpuResult(spuResult);
+
+        JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+
+
+        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+
+        List<Long> attIds = new ArrayList<>();
+        List<Long> valueIds = new ArrayList<>();
+        for (AttributeValues valuesRequest : valuesRequests) {
+            attIds.add(valuesRequest.getAttributeId());
+            valueIds.add(valuesRequest.getAttributeValuesId());
+        }
+
+        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).list();
+
+        List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).list();
+        List<AttributeValuesResult> valuesResults = new ArrayList<>();
+
+
+        for (AttributeValues valuesRequest : valuesList) {
+            for (ItemAttribute itemAttribute : itemAttributes) {
+                if (valuesRequest.getAttributeId().equals(itemAttribute.getAttributeId())) {
+
+                    AttributeValuesResult valuesResult = new AttributeValuesResult();
+                    ToolUtil.copyProperties(valuesRequest, valuesResult);
+
+                    ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
+                    ToolUtil.copyProperties(itemAttribute, itemAttributeResult);
+
+                    valuesResult.setItemAttributeResult(itemAttributeResult);
+
+                    valuesResults.add(valuesResult);
+                }
+            }
+        }
+
+        skuResult.setList(valuesResults);
+
+        return skuResult;
+    }
+
     private Serializable getKey(SkuParam param) {
         return param.getSkuId();
     }
@@ -507,7 +560,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     @Override
     public List<SkuResult> backSkuList(List<Long> skuIds) {
-        List<Sku> skuList =skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
+        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).list();
         List<Long> attIds = new ArrayList<>();
         List<SkuResult> results = new ArrayList<>();
         for (Sku sku : skuList) {

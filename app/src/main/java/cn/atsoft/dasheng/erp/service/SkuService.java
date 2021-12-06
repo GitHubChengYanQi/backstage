@@ -82,7 +82,6 @@ public interface SkuService extends IService<Sku> {
     SpuResult backSpu(Long spuId);
 
     /**
-     *
      * @param skuiIds
      * @return
      */
@@ -90,4 +89,6 @@ public interface SkuService extends IService<Sku> {
 
     void format(List<SkuResult> param);
 
+
+    SkuResult getSku(Long id);
 }

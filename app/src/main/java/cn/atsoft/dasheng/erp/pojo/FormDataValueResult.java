@@ -1,13 +1,12 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.erp.pojo;
 
-import lombok.Data;
-
-import java.util.Date;
-import java.io.Serializable;
-
+import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +23,9 @@ public class FormDataValueResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+
+    private QualityPlanDetailResult qualityPlanDetailResult;
     /**
      * 主键Id
      */

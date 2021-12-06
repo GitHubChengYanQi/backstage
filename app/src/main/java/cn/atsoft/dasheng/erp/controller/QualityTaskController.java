@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
+import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
 
@@ -24,6 +25,7 @@ import cn.atsoft.dasheng.form.service.*;
 
 import cn.atsoft.dasheng.model.response.ResponseData;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -64,6 +66,20 @@ public class QualityTaskController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody QualityTaskParam qualityTaskParam) {
         this.qualityTaskService.add(qualityTaskParam);
+        return ResponseData.success();
+    }
+
+
+    /**
+     * 修改dataValue
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/updateDataValue", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData updateDataValue(@Param("id") Long id, @Param("value") String value) {
+        this.qualityTaskService.updateDataValue(id, value);
         return ResponseData.success();
     }
 
@@ -124,6 +140,35 @@ public class QualityTaskController extends BaseController {
     public ResponseData addChild(@RequestBody QualityTaskChild child) {
         this.qualityTaskService.addChild(child);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 查询子任务
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/backDataValue", method = RequestMethod.GET)
+
+    @ApiOperation("查询子任务")
+    public ResponseData backDataValue(@Param("id") Long id) {
+        List<FormDataValueResult> dataValues = this.qualityTaskService.valueResults(id);
+        return ResponseData.success(dataValues);
+    }
+
+    /**
+     * 返回子任务
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/backChildTask", method = RequestMethod.GET)
+
+    @ApiOperation("查询子任务")
+    public ResponseData backChildTask(@Param("id") Long id) {
+        QualityTaskResult childTask = this.qualityTaskService.backChildTask(id);
+        return ResponseData.success(childTask);
     }
 
 

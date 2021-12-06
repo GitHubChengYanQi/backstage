@@ -30,6 +30,8 @@ public class QualityTaskDetailResult implements Serializable {
     private BrandResult brand;
     private QualityPlanResult qualityPlanResult;
 
+    private List<BackSku> backSkus;
+
     private List<Long> userIdList;
 
     private List<String> users;

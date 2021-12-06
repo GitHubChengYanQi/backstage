@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
@@ -8,6 +9,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -43,6 +45,7 @@ public class QualityTaskResult implements Serializable {
 
     private List<ActivitiProcessLogResult> logResults;
 
+    private QualityTask fatherTask;
 
     private ActivitiProcessTaskResult activitiProcessTaskResult;
 
@@ -51,6 +54,10 @@ public class QualityTaskResult implements Serializable {
     private String createName;
 
     private List<TaskCount> taskCounts;
+
+    private List<User> users;
+
+    private List<String> names;
 
     /**
      * 多个人负责人
