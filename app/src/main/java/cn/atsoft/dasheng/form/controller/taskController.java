@@ -59,7 +59,7 @@ public class taskController extends BaseController {
     @RequestMapping(value = "/post", method = RequestMethod.GET)
     @ApiOperation("新增")
     public ResponseData audit(@Param("taskId") Long taskId, @Param("status") Integer status) {
-        this.activitiProcessLogService.add(taskId, status);
+        this.activitiProcessLogService.audit(taskId, status,false);
         return ResponseData.success();
     }
 

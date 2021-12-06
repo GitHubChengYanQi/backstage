@@ -41,7 +41,7 @@ public class ActivitiProcessTaskSend {
     private static final String COMPLETE="quality_task_complete";
     private static final String SEND="quality_task_send";
     private static final String DISPATCH="quality_task_dispatch";
-//    private static final String PERSON="quality_task_person";
+    private static final String PERFORM="quality_task_perform";
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
@@ -107,7 +107,9 @@ public class ActivitiProcessTaskSend {
                 }else {
                     vetoSend(taskId);
                 }
-
+                break;
+            case PERFORM:
+                this.performTask(taskId);
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
@@ -139,7 +141,20 @@ public class ActivitiProcessTaskSend {
         return map;
     }
 
-
+    private void performTask(Long taskId) {
+        Map<String, String> aboutSend = this.getAboutSend(taskId);
+        List<Long> users = new ArrayList<>();
+        users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setUserIds(users);
+        wxCpTemplate.setTitle("已被分派新的待执行任务");
+        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
     private void personSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -205,7 +220,7 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.add(param.getTaskId(), 1);
+        activitiProcessLogService.audit(param.getTaskId(), 1,false);
 
     }
 
