@@ -88,7 +88,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
 
     @Override
-    public void add(Long taskId, Integer status) {
+    public void audit(Long taskId, Integer status) {
         /**
          * 判断status
          */
@@ -205,7 +205,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
             }
 
-
         }
 
         /**
@@ -215,7 +214,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             this.sendNext(taskId);
         }
     }
-
+    private void autoAudit(Long taskId){
+        this.audit(taskId,1);
+    }
 
     private void sendNext(Long taskId) {
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
