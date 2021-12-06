@@ -26,28 +26,42 @@ public class QualityTask implements Serializable {
 
     @TableId(value = "quality_task_id", type = IdType.ID_WORKER)
     private Long qualityTaskId;
-
+    /**
+     * 多个人负责人
+     */
+    @TableField("userIds")
+    private String userIds;
     /**
      * 时间
      */
     @TableField("time")
     private Date time;
+    /**
+     * 地点
+     */
+    @TableField("address")
+    private String address;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getCoding() {
-        return coding;
-    }
-
-    public void setCoding(String coding) {
-        this.coding = coding;
-    }
+    /**
+     * 接头人
+     */
+    @TableField("person")
+    private String person;
+    /**
+     * 电话
+     */
+    @TableField("phone")
+    private String phone;
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+    /**
+     * 父级id
+     */
+    @TableField("parent_id")
+    private Long parentId;
 
     /**
      * 类型
@@ -55,13 +69,6 @@ public class QualityTask implements Serializable {
     @TableField("type")
     private String type;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     /**
      * 类型
@@ -120,13 +127,6 @@ public class QualityTask implements Serializable {
     @TableField("state")
     private Integer state;
 
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
 
     /**
      * 部门id
@@ -134,6 +134,22 @@ public class QualityTask implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
     public Long getQualityTaskId() {
         return qualityTaskId;
@@ -213,6 +229,70 @@ public class QualityTask implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPerson() {
+        return person;
+    }
+
+    public void setPerson(String person) {
+        this.person = person;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
     }
 
     @Override

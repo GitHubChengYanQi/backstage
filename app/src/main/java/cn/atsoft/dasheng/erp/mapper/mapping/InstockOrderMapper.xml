@@ -17,11 +17,14 @@
         <result column="storehouse_id" property="storeHouseId"/>
         <result column="register_time" property="time"/>
         <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">storehouse_id
-    AS "storeHouseId",register_time AS "time",storehouse_positions_id AS "storehousePositionsId",
+    AS "storeHouseId",register_time AS "time",storehouse_positions_id AS "storehousePositionsId",source AS "source",
+          source_id AS "sourceId",
         instock_order_id AS "instockOrderId", user_id AS "userId", coding AS "coding", create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display", deptId AS "deptId", state AS "state"
     </sql>
 

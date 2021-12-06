@@ -30,6 +30,7 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     private List<Long> detailsIds;
 
 
+    private Integer newNumber;
 
 
     @ApiModelProperty("")

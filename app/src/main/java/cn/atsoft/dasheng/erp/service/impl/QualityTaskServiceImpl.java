@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
@@ -144,6 +146,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 QualityTaskDetail detail = new QualityTaskDetail();
                 detailParam.setQualityTaskId(entity.getQualityTaskId());
                 ToolUtil.copyProperties(detailParam, detail);
+                detail.setRemaining(detailParam.getNumber());
                 details.add(detail);
             }
             detailService.saveBatch(details);
@@ -199,12 +202,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
     }
-    private void power(ActivitiProcess activitiProcess){
+
+    private void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
-        if (ToolUtil.isNotEmpty(startSteps)){
+        if (ToolUtil.isNotEmpty(startSteps)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();
             if (!stepsService.checkUser(audit.getRule())) {
-                throw  new ServiceException(500,"您没有权限创建任务");
+                throw new ServiceException(500, "您没有权限创建任务");
             }
         }
     }
@@ -479,6 +483,54 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         return null;
     }
 
+    /**
+     * 添加子任务
+     *
+     * @param
+     */
+    @Override
+    public void addChild(QualityTaskChild child) {
+
+        QualityTaskParam params = child.getTaskParams();
+        params.setParentId(params.getQualityTaskId());
+        params.setQualityTaskId(null);
+
+        QualityTask qualityTask = new QualityTask();
+        ToolUtil.copyProperties(params, qualityTask);
+
+        this.save(qualityTask);
+
+        List<QualityTaskDetail> details = new ArrayList<>();
+
+        List<QualityTaskDetail> ChildDetails = new ArrayList<>();
+
+        for (QualityTaskDetailParam detail : params.getDetails()) {
+            QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
+            ToolUtil.copyProperties(detail, qualityTaskDetail);
+            qualityTaskDetail.setRemaining(qualityTaskDetail.getRemaining() - detail.getNewNumber());
+            details.add(qualityTaskDetail);
+
+            //添加子任务
+            QualityTaskDetail childDetail = new QualityTaskDetail();
+            childDetail.setSkuId(detail.getSkuId());
+            childDetail.setBrandId(detail.getBrandId());
+            childDetail.setQualityTaskId(qualityTask.getQualityTaskId());
+            childDetail.setBatch(detail.getBatch());
+            childDetail.setNumber(detail.getNewNumber());
+            ChildDetails.add(childDetail);
+
+        }
+        detailService.updateBatchById(details);
+
+        detailService.saveBatch(ChildDetails);
+
+    }
+
+    @Override
+    public QualityTaskResult backChildTask(Long id) {
+        return null;
+    }
+
     @Override
     public void formDataFormat(FormDataResult param) {
 
@@ -644,31 +696,36 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public void detailFormat(QualityTaskResult param) {
+    public void detailFormat(QualityTaskResult result) {
 
         LoginUser loginUser = LoginContextHolder.getContext().getUser();
 
-        List<QualityTaskDetail> qualityTaskDetails = detailService.lambdaQuery().in(QualityTaskDetail::getQualityTaskId, param.getQualityTaskId()).and(i -> i.eq(QualityTaskDetail::getDisplay, 1)).list();
-        List<QualityTaskDetailResult> qualityTaskDetailResults = new ArrayList<>();
-        for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
-            QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
-            ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
-            if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIds())) {
-                String[] strings = qualityTaskDetailResult.getUserIds().split(",");
-                for (String id : strings) {
-                    if (loginUser.getId().toString().equals(id)) {
-                        qualityTaskDetailResults.add(qualityTaskDetailResult);
-                    }
-                }
-            }
-        }
+        List<QualityTask> tasks = this.query().eq("parent_id", result.getQualityTaskId()).list();
 
-        detailService.format(qualityTaskDetailResults);
-        param.setDetails(qualityTaskDetailResults);
-        User byId = userService.getById(param.getUserId());
-        if (ToolUtil.isNotEmpty(byId)) {
-            param.setUserName(byId.getName());
-        }
+
+
+
+//        List<QualityTaskDetail> qualityTaskDetails = detailService.lambdaQuery().in(QualityTaskDetail::getQualityTaskId, param.getQualityTaskId()).and(i -> i.eq(QualityTaskDetail::getDisplay, 1)).list();
+//        List<QualityTaskDetailResult> qualityTaskDetailResults = new ArrayList<>();
+//        for (QualityTaskDetail qualityTaskDetail : qualityTaskDetails) {
+//            QualityTaskDetailResult qualityTaskDetailResult = new QualityTaskDetailResult();
+//            ToolUtil.copyProperties(qualityTaskDetail, qualityTaskDetailResult);
+//            if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIds())) {
+//                String[] strings = qualityTaskDetailResult.getUserIds().split(",");
+//                for (String id : strings) {
+//                    if (loginUser.getId().toString().equals(id)) {
+//                        qualityTaskDetailResults.add(qualityTaskDetailResult);
+//                    }
+//                }
+//            }
+//        }
+
+//        detailService.format(qualityTaskDetailResults);
+//        param.setDetails(qualityTaskDetailResults);
+//        User byId = userService.getById(param.getUserId());
+//        if (ToolUtil.isNotEmpty(byId)) {
+//            param.setUserName(byId.getName());
+//        }
 
     }
 

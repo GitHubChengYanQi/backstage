@@ -25,8 +25,17 @@ import java.io.Serializable;
 public class InstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
 
-
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
 
     /**
      * 库位id
@@ -81,7 +90,7 @@ public class InstockOrder implements Serializable {
     /**
      * 部门编号
      */
-    @TableField(value = "deptId",fill =FieldFill.INSERT)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
@@ -89,6 +98,22 @@ public class InstockOrder implements Serializable {
      */
     @TableField("state")
     private Boolean state;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
 
     public Date getTime() {
         return time;

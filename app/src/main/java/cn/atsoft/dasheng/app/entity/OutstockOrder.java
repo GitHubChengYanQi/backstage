@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -23,19 +25,25 @@ public class OutstockOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
+
     /**
      * 出库详细id
      */
-      @TableId(value = "outstock_order_id", type = IdType.ID_WORKER)
+    @TableId(value = "outstock_order_id", type = IdType.ID_WORKER)
     private Long outstockOrderId;
 
-    public Long getStorehouseId() {
-        return storehouseId;
-    }
-
-    public void setStorehouseId(Long storehouseId) {
-        this.storehouseId = storehouseId;
-    }
 
     @TableField("storehouse_id")
     private Long storehouseId;
@@ -45,8 +53,96 @@ public class OutstockOrder implements Serializable {
      */
     @TableField("outstock_apply_id")
     private Long outstockApplyId;
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
+
+
+    /**
+     * 出库状态
+     */
+    @TableField("state")
+    private Integer state;
+    /**
+     * 经手人
+     */
+    @TableField("user_id")
+    private Long userId;
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+
+
+    @TableField("coding")
+    private String coding;
+    /**
+     * 计划出库时间
+     */
+    @TableField("time")
+    private Date time;
+
+    /**
+     * 创建者
+     */
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    public Long getStorehouseId() {
+        return storehouseId;
+    }
+
+    public void setStorehouseId(Long storehouseId) {
+        this.storehouseId = storehouseId;
+    }
 
     public Long getUserId() {
         return userId;
@@ -71,69 +167,6 @@ public class OutstockOrder implements Serializable {
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
     }
-
-    /**
-     * 出库状态
-     */
-    @TableField("state")
-    private Integer state;
-    /**
-     * 经手人
-     */
-    @TableField("user_id")
-    private Long userId;
-    /**
-     * 备注
-     */
-    @TableField("note")
-    private String note;
-
-    public String getCoding() {
-        return coding;
-    }
-
-    public void setCoding(String coding) {
-        this.coding = coding;
-    }
-
-    @TableField("coding")
-    private String coding;
-    /**
-     * 计划出库时间
-     */
-    @TableField("time")
-    private Date time;
-
-    /**
-     * 创建者
-     */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
-
-    /**
-     * 创建时间
-     */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
-
 
     public Long getOutstockOrderId() {
         return outstockOrderId;
@@ -198,6 +231,7 @@ public class OutstockOrder implements Serializable {
     public void setDisplay(Integer display) {
         this.display = display;
     }
+
     public Long getOutstockApplyId() {
         return outstockApplyId;
     }
@@ -205,17 +239,18 @@ public class OutstockOrder implements Serializable {
     public void setOutstockApplyId(Long outstockApplyId) {
         this.outstockApplyId = outstockApplyId;
     }
+
     @Override
     public String toString() {
         return "OutstockOrder{" +
-        "outstockOrderId=" + outstockOrderId +
-        ", state=" + state +
-        ", time=" + time +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "outstockOrderId=" + outstockOrderId +
+                ", state=" + state +
+                ", time=" + time +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

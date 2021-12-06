@@ -177,8 +177,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
     @Override
     public void updateDataValue(Long inkind) {
-        dataService.list(new QueryWrapper<FormData>() {{
-        }});
     }
 
     @Override

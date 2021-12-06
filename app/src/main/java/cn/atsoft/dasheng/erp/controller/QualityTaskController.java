@@ -1,34 +1,29 @@
 package cn.atsoft.dasheng.erp.controller;
 
-import cn.atsoft.dasheng.base.log.BussinessLog;
+
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.config.MobileConfig;
-import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.OutstockListing;
+
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
-import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
-import cn.atsoft.dasheng.erp.model.params.OutstockListingParam;
-import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
+
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
-import cn.atsoft.dasheng.erp.model.result.OutstockListingResult;
-import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
+
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
+import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
-import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
+
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.*;
-import cn.atsoft.dasheng.model.exception.ServiceException;
+
 import cn.atsoft.dasheng.model.response.ResponseData;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.ibatis.annotations.Param;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -118,6 +113,21 @@ public class QualityTaskController extends BaseController {
 
 
     /**
+     * 添加子任务
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/addChild", method = RequestMethod.POST)
+
+    @ApiOperation("添加子任务")
+    public ResponseData addChild(@RequestBody QualityTaskChild child) {
+        this.qualityTaskService.addChild(child);
+        return ResponseData.success();
+    }
+
+
+    /**
      * 查询列表
      *
      * @author
@@ -192,7 +202,7 @@ public class QualityTaskController extends BaseController {
     public ResponseData addData(@RequestBody FormDataPojo formDataPojo) {
 
 
-    this.qualityTaskService.addFormData(formDataPojo);
+        this.qualityTaskService.addFormData(formDataPojo);
         return ResponseData.success();
     }
 

@@ -28,6 +28,16 @@ public class OutstockOrderResult implements Serializable {
 
 
     /**
+     * 来源
+     */
+    private String source;
+
+    /**
+     * 来源id
+     */
+    private Long sourceId;
+
+    /**
      * 出库详细id
      */
     @ApiModelProperty("出库详细id")

@@ -86,4 +86,6 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
 
     void updateDataValue(Long inkind);
 
+
+
 }

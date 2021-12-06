@@ -20,11 +20,20 @@
         <result column="deptId" property="deptId"/>
         <result column="type" property="type"/>
         <result column="user_id" property="userId"/>
+        <result column="userIds" property="userIds"/>
+        <result column="address" property="address"/>
+        <result column="person" property="person"/>
+        <result column="phone" property="phone"/>
+        <result column="note" property="note"/>
+        <result column="parent_id" property="parentId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">type
-    AS "type",user_id AS "userId",
+    <sql id="Base_Column_List">
+        userIds
+        AS "userIds",
+type
+    AS "type",user_id AS "userId",address AS "address", person AS "person", phone AS "phone",note AS "note",parent_id AS "parentId",
         quality_task_id AS "qualityTaskId", time AS "time",state AS "state",url AS "url", user_id AS "userId",type AS "type",coding AS "coding", remark AS "remark", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
@@ -106,7 +115,8 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.QualityTaskParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_quality_task where 1 = 1
+        from daoxin_erp_quality_task where parent_id = 0
+        and display = 1
         <if test="paramCondition.qualityTaskId != null">
             and quality_task_id like CONCAT('%',#{paramCondition.qualityTaskId},'%')
         </if>

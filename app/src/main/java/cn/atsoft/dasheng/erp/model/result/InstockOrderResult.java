@@ -26,7 +26,15 @@ import java.util.List;
 public class InstockOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 来源
+     */
+    private String source;
 
+    /**
+     * 来源id
+     */
+    private Long sourceId;
 
     private UserResult userResult;
 

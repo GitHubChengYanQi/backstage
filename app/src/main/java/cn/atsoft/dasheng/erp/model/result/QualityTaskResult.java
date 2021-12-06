@@ -52,6 +52,35 @@ public class QualityTaskResult implements Serializable {
 
     private List<TaskCount> taskCounts;
 
+    /**
+     * 多个人负责人
+     */
+    private String userIds;
+
+
+    /**
+     * 地点
+     */
+    private String address;
+
+    /**
+     * 接头人
+     */
+    private String person;
+    /**
+     * 电话
+     */
+    private String phone;
+    /**
+     * 备注
+     */
+    private String note;
+    /**
+     * 父级id
+     */
+    private Long parentId;
+
+
     @ApiModelProperty("")
     private Long qualityTaskId;
 
