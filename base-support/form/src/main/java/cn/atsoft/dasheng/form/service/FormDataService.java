@@ -64,6 +64,14 @@ public interface FormDataService extends IService<FormData> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<FormDataResult> findPageBySpec(FormDataParam param);
+    PageInfo<FormDataResult> findPageBySpec(FormDataParam param);
+
+    /**
+     * 查询dataId
+     *
+     * @param formId
+     * @return
+     */
+    List<FormDataResult> getDataIds(List<Long> formId);
 
 }

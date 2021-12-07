@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,6 +89,23 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrand(brand);
         inkindResult.setBackSku(backSku);
         return inkindResult;
+    }
+
+    @Override
+    public List<InkindResult> getInKinds(List<Long> inKindIds) {
+        if (ToolUtil.isEmpty(inKindIds)) {
+            return new ArrayList<>();
+        }
+        List<Inkind> inKinds = this.listByIds(inKindIds);
+
+        List<InkindResult> inKindResults = new ArrayList<>();
+        for (Inkind inKind : inKinds) {
+            InkindResult inkindResult = new InkindResult();
+            ToolUtil.copyProperties(inKind, inkindResult);
+            inKindResults.add(inkindResult);
+        }
+
+        return inKindResults;
     }
 
     private Serializable getKey(InkindParam param) {

@@ -69,4 +69,7 @@ public interface InkindService extends IService<Inkind> {
 
     InkindResult backInKindgetById(Long id);
 
+
+    List<InkindResult> getInKinds(List<Long> inKindIds);
+
 }

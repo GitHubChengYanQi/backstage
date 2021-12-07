@@ -64,6 +64,8 @@ public interface QualityCheckService extends IService<QualityCheck> {
      * @author song
      * @Date 2021-10-27
      */
-     PageInfo<QualityCheckResult> findPageBySpec(QualityCheckParam param);
+    PageInfo<QualityCheckResult> findPageBySpec(QualityCheckParam param);
+
+    List<QualityCheckResult> getChecks(List<Long> ids);
 
 }

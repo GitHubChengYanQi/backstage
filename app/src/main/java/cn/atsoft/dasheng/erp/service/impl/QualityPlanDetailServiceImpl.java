@@ -35,7 +35,6 @@ import java.util.List;
 public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailMapper, QualityPlanDetail> implements QualityPlanDetailService {
 
 
-
     @Override
     public void add(QualityPlanDetailParam param) {
         QualityPlanDetail entity = getEntity(param);
@@ -73,6 +72,28 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
         Page<QualityPlanDetailResult> pageContext = getPageContext();
         IPage<QualityPlanDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    /**
+     * 返回集合
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<QualityPlanDetailResult> getPlanDetail(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return  new ArrayList<>();
+        }
+        List<QualityPlanDetail> details = this.listByIds(ids);
+
+        List<QualityPlanDetailResult> results = new ArrayList<>();
+        for (QualityPlanDetail detail : details) {
+            QualityPlanDetailResult detailResult = new QualityPlanDetailResult();
+            ToolUtil.copyProperties(detail, detailResult);
+            results.add(detailResult);
+        }
+        return results;
     }
 
 

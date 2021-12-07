@@ -30,7 +30,7 @@ public class InkindResult implements Serializable {
     private Long outstockOrderId;
 
     private List<BackSku> backSku;
-
+    private SkuResult skuResult;
     private Long number;
     /**
      * 品牌

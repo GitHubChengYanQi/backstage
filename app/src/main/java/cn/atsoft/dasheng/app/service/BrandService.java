@@ -65,6 +65,9 @@ public interface BrandService extends IService<Brand> {
      * @author 1
      * @Date 2021-07-14
      */
-     PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope );
+    PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope);
+
+
+//    List<BrandResult> getBrands(List<Long> brandIds);
 
 }

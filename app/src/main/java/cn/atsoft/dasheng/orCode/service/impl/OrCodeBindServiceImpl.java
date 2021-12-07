@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.orCode.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.BindParam;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.mapper.OrCodeBindMapper;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,6 +68,19 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
         Page<OrCodeBindResult> pageContext = getPageContext();
         IPage<OrCodeBindResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<Long> backValue(List<Long> qrcodeIds) {
+        if (ToolUtil.isEmpty(qrcodeIds)) {
+            new ArrayList<>();
+        }
+        List<OrCodeBind> binds = this.query().in("qr_code_id", qrcodeIds).list();
+        List<Long> formIds = new ArrayList<>();
+        for (OrCodeBind bind : binds) {
+            formIds.add(bind.getFormId());
+        }
+        return formIds;
     }
 
     private Serializable getKey(OrCodeBindParam param) {

@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 
+import cn.atsoft.dasheng.orCode.BindParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,4 +134,17 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @param taskId
      */
     void updateChildTask(Long taskId);
+
+    /**
+     * 查询主任务和子任务
+     *
+     * @param id
+     * @return
+     */
+    QualityTaskResult getTask(Long id);
+
+    List<FormDataResult> getDetail(BindParam bindParam);
+
+    List<FormDataResult>  inStockDetail (BindParam bindParam);
+
 }

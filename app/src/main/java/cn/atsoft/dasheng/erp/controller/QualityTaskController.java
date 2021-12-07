@@ -12,7 +12,6 @@ import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
-import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
@@ -21,12 +20,12 @@ import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.BindParam;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +66,18 @@ public class QualityTaskController extends BaseController {
 
 
     /**
+     * 查询task
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/getTask", method = RequestMethod.GET)
+    public ResponseData getTask(@Param("id") Long id) {
+        QualityTaskResult qualityTaskResult = this.qualityTaskService.getTask(id);
+        return ResponseData.success(qualityTaskResult);
+    }
+
+    /**
      * 修改dataValue
      *
      * @author
@@ -77,6 +88,32 @@ public class QualityTaskController extends BaseController {
     public ResponseData updateDataValue(@RequestBody FormValues formValues) {
         this.qualityTaskService.updateDataValue(formValues);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 入库显示
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/inStockDetail", method = RequestMethod.POST)
+    public ResponseData inStockDetail(@RequestBody BindParam bindParam) {
+        List<FormDataResult> dataResults = this.qualityTaskService.inStockDetail(bindParam);
+        return ResponseData.success(dataResults);
+    }
+
+    /**
+     * 详情
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData getDetail(@RequestBody BindParam bindParam) {
+        List<FormDataResult> dataResults = this.qualityTaskService.getDetail(bindParam);
+        return ResponseData.success(dataResults);
     }
 
     /**
@@ -213,7 +250,6 @@ public class QualityTaskController extends BaseController {
             for (FormData formData : formDatas) {
                 FormDataResult formDataResult = new FormDataResult();
                 ToolUtil.copyProperties(formData, formDataResult);
-//            qualityTaskService.formDataFormat(formDataResult);
                 formDataResults.add(formDataResult);
             }
             qualityTaskService.formDataFormat1(formDataResults);

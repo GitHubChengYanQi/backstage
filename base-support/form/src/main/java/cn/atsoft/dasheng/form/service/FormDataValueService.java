@@ -64,6 +64,9 @@ public interface FormDataValueService extends IService<FormDataValue> {
      * @author Sing
      * @Date 2021-11-10
      */
-     PageInfo<FormDataValueResult> findPageBySpec(FormDataValueParam param);
+    PageInfo<FormDataValueResult> findPageBySpec(FormDataValueParam param);
+
+
+    List<FormDataValueResult> getDataValuesByDataId(List<Long> dataId);
 
 }

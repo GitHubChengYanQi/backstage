@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.orCode.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.orCode.BindParam;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeBindResult;
@@ -64,6 +65,13 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      * @author song
      * @Date 2021-10-29
      */
-     PageInfo<OrCodeBindResult> findPageBySpec(OrCodeBindParam param);
+    PageInfo<OrCodeBindResult> findPageBySpec(OrCodeBindParam param);
+
+    /**
+     * 返回datavalue
+     *
+     * @return
+     */
+    List<Long> backValue(List<Long> qrcodeIds);
 
 }

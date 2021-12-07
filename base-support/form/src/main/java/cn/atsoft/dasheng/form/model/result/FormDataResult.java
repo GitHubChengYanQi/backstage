@@ -1,10 +1,13 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +24,12 @@ import java.util.Map;
 public class FormDataResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    List<Map<String ,Object>> valueResults;
+    List<Map<String, Object>> valueResults;
     private Object inkind;
     private Object sku;
     private Object brand;
+    private List<Object> values;
+    private Long qrcodeId;
 
 
     /**

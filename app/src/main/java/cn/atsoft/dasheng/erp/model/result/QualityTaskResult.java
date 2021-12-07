@@ -35,6 +35,8 @@ public class QualityTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailResult> details;
 
+    private List<QualityTaskResult> childTasks;
+
     private List<FormDataResult> formDataResults;
 
     private List<ActivitiAudit> audits;
@@ -58,6 +60,8 @@ public class QualityTaskResult implements Serializable {
     private List<User> users;
 
     private List<String> names;
+
+    private User user;
 
     /**
      * 多个人负责人

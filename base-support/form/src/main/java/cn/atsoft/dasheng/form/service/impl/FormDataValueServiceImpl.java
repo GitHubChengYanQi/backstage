@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.form.mapper.FormDataValueMapper;
 import cn.atsoft.dasheng.form.model.params.FormDataValueParam;
 import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
-import  cn.atsoft.dasheng.form.service.FormDataValueService;
+import cn.atsoft.dasheng.form.service.FormDataValueService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,18 +30,18 @@ import java.util.List;
 public class FormDataValueServiceImpl extends ServiceImpl<FormDataValueMapper, FormDataValue> implements FormDataValueService {
 
     @Override
-    public void add(FormDataValueParam param){
+    public void add(FormDataValueParam param) {
         FormDataValue entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(FormDataValueParam param){
+    public void delete(FormDataValueParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(FormDataValueParam param){
+    public void update(FormDataValueParam param) {
         FormDataValue oldEntity = getOldEntity(param);
         FormDataValue newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +49,37 @@ public class FormDataValueServiceImpl extends ServiceImpl<FormDataValueMapper, F
     }
 
     @Override
-    public FormDataValueResult findBySpec(FormDataValueParam param){
+    public FormDataValueResult findBySpec(FormDataValueParam param) {
         return null;
     }
 
     @Override
-    public List<FormDataValueResult> findListBySpec(FormDataValueParam param){
+    public List<FormDataValueResult> findListBySpec(FormDataValueParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<FormDataValueResult> findPageBySpec(FormDataValueParam param){
+    public PageInfo<FormDataValueResult> findPageBySpec(FormDataValueParam param) {
         Page<FormDataValueResult> pageContext = getPageContext();
         IPage<FormDataValueResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(FormDataValueParam param){
+    @Override
+    public List<FormDataValueResult> getDataValuesByDataId(List<Long> dataId) {
+        List<FormDataValue> dataValues = this.query().in("data_id", dataId).list();
+
+        List<FormDataValueResult> results = new ArrayList<>();
+
+        for (FormDataValue dataValue : dataValues) {
+            FormDataValueResult dataValueResult = new FormDataValueResult();
+            ToolUtil.copyProperties(dataValue, dataValueResult);
+            results.add(dataValueResult);
+        }
+        return results;
+    }
+
+    private Serializable getKey(FormDataValueParam param) {
         return param.getValueId();
     }
 

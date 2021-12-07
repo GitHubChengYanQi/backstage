@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,13 +79,13 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
 //            throw new ServiceException(500, "已有相同质检");
 //        }
         QueryWrapper<QualityPlanDetail> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("quality_check_id",param.getQualityCheckId());
+        queryWrapper.in("quality_check_id", param.getQualityCheckId());
         int count = qualityPlanDetailService.count(queryWrapper);
 
         QualityCheck oldEntity = getOldEntity(param);
         QualityCheck newEntity = getEntity(param);
-        if (count>0 && oldEntity != newEntity){
-            throw new ServiceException(500,"该方案已被使用无法修改");
+        if (count > 0 && oldEntity != newEntity) {
+            throw new ServiceException(500, "该方案已被使用无法修改");
         }
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
@@ -106,6 +107,22 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
         IPage<QualityCheckResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<QualityCheckResult> getChecks(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<QualityCheck> checks = this.listByIds(ids);
+        List<QualityCheckResult> checkResults = new ArrayList<>();
+
+        for (QualityCheck check : checks) {
+            QualityCheckResult checkResult = new QualityCheckResult();
+            ToolUtil.copyProperties(check, checkResult);
+            checkResults.add(checkResult);
+        }
+        return checkResults;
     }
 
     private Serializable getKey(QualityCheckParam param) {
