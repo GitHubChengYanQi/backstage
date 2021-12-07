@@ -393,6 +393,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param
      */
     @Override
+    @Transactional
     public void addChild(QualityTaskChild child) {
 
         QualityTaskParam params = child.getTaskParams();
@@ -431,10 +432,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         String userIds = child.getTaskParams().getUserIds();
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + formId.getOrCodeId();
+        url = url + "Work/Quality?id=" + qualityTask.getQualityTaskId();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");

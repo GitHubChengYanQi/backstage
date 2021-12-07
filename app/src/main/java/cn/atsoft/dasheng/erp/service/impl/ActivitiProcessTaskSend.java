@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ActivitiTaskSend;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
@@ -121,7 +122,7 @@ public class ActivitiProcessTaskSend {
                 }
                 break;
             case PERFORM:
-                this.performTask(taskId);
+//                this.performTask(taskId);
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
@@ -143,15 +144,11 @@ public class ActivitiProcessTaskSend {
     private Map<String, String> getAboutSend(Long taskId) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
         QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
         User byId = userService.getById(qualityTask.getCreateUser());
         Map<String, String> map = new HashMap<>();
 //        map.put("qualityTaskUserId", qualityTask.getUserId().toString());
         map.put("url", qualityTask.getUrl());
         map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
-        if (ToolUtil.isNotEmpty(formId)) {
-            map.put("orcodeId", formId.getOrCodeId().toString());
-        }
         map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
         return map;
@@ -224,14 +221,20 @@ public class ActivitiProcessTaskSend {
         qualityTaskService.updateById(updateEntity);
         logger.info(updateEntity.toString());
 
-        List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
-        for (QualityTaskDetail detail : list) {
-            List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            users.addAll(userIds);
+//        List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
+        List<QualityTask> qualityTaskList = qualityTaskService.query().eq("parent_id",aboutSend.get("qualityTaskId")).list();
+        if (ToolUtil.isNotEmpty(qualityTaskList)) {
+            for (QualityTask detail : qualityTaskList) {
+                List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                users.addAll(userIds);
+                detail.setState(2);
+            }
+            qualityTaskService.updateBatchById(qualityTaskList);
         }
         List<Long> collect = users.stream().distinct().collect(Collectors.toList());
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + aboutSend.get("orcodeId").toString();
+
+        url = url + "Work/Quality?id=" + aboutSend.get("qualityTaskId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(collect);
