@@ -63,6 +63,11 @@ public class ActivitiProcessTaskSend {
 
     private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
+    /**
+     * 根据传入参数换取 节点里面包含人的条件规则 找到人
+     * @param starUser
+     * @return
+     */
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
@@ -87,6 +92,13 @@ public class ActivitiProcessTaskSend {
         return users;
     }
 
+    /**
+     * 推送方法
+     * @param type
+     * @param starUser
+     * @param taskId
+     * @param status
+     */
     public void send(String type, AuditRule starUser, Long taskId,int status) {
         List<Long> users = new ArrayList<>();
         List<Long> collect = new ArrayList<>();
@@ -123,7 +135,11 @@ public class ActivitiProcessTaskSend {
         }
     }
 
-
+    /**
+     * 关于质检任务的map
+     * @param taskId
+     * @return
+     */
     private Map<String, String> getAboutSend(Long taskId) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
         QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
@@ -141,6 +157,10 @@ public class ActivitiProcessTaskSend {
         return map;
     }
 
+    /**
+     * 开始质检任务推送
+     * @param taskId
+     */
     private void performTask(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
         List<Long> users = new ArrayList<>();
@@ -155,6 +175,11 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
+
+    /**
+     * 审批节点推送
+     * @param param
+     */
     private void personSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
@@ -168,6 +193,10 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.sendTemplate();
     }
 
+    /**
+     * 分派任务节点推送
+     * @param param
+     */
     private void dispatch(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
         ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
@@ -182,6 +211,10 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.sendTemplate();
     }
 
+    /**
+     * 任务完完成节点推送
+     * @param taskId
+     */
     private void completeTaskSend(Long taskId) {
         Map<String, String> aboutSend = this.getAboutSend(taskId);
         List<Long> users = new ArrayList<>();
@@ -208,6 +241,10 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.sendTemplate();
     }
 
+    /**
+     * 抄送人节点推送
+     * @param param
+     */
     private void sendSend(ActivitiTaskSend param) {
         Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
 
@@ -220,10 +257,14 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.audit(param.getTaskId(), 1,false);
+        activitiProcessLogService.audit(param.getTaskId(), 1);
 
     }
 
+    /**
+     * 审批节点拒绝 推送
+     * @param taskId
+     */
     public void vetoSend(Long taskId) {
 
         WxCpTemplate wxCpTemplate = new WxCpTemplate();

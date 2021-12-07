@@ -27,7 +27,10 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @Date 2021-11-10
      */
 //    void add(Long param, Integer status);
-    void audit(Long param, Integer status,Boolean autoAudit);
+    void audit(Long param, Integer status);
+
+    void autoAudit(Long taskId);
+
     Boolean checkUser(AuditRule starUser);
 
     /**
@@ -46,7 +49,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      */
     void update(ActivitiProcessLogParam param);
 
-    List<ActivitiProcessLog> getAudit(Long taskId);
+    List<ActivitiProcessLog> getAudit(Long taskId,List<ActivitiProcessLog> activitiProcessLogs);
 
     ActivitiStepsResult addLog(Long processId, Long taskId);
 
