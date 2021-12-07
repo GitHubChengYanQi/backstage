@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.MessageService;
 import cn.atsoft.dasheng.appBase.service.WxCpService;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -40,6 +41,7 @@ public class TopicMessage {
             case CP:
                 try {
                     wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
+                    logger.info("接收"+ JSONUtil.toJsonStr(JSON.toJSONString(messageEntity)));
                 } catch (WxErrorException e) {
                     e.printStackTrace();
                 }

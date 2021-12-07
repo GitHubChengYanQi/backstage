@@ -1,8 +1,12 @@
 package cn.atsoft.dasheng.message.producer;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,7 @@ import static cn.atsoft.dasheng.message.config.DirectQueueConfig.*;
 
 @Component
 public class MessageProducer {
+    private Logger logger = LoggerFactory.getLogger(MessageEntity.class);
 
     @Autowired
     private RabbitTemplate rabbitTemplate;

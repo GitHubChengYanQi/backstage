@@ -64,24 +64,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private QualityTaskService qualityTaskService;
 
 
-    private Boolean inUsers(List<QualityRules.Users> users, Long userId) {
-        for (QualityRules.Users user : users) {
-            if (user.getKey().equals(userId.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Boolean inDepts(List<QualityRules.Depts> depts, Long deptId) {
-        for (QualityRules.Depts dept : depts) {
-            if (dept.getKey().equals(deptId.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
             if (activitiAudit.getSetpsId().equals(stepId)) {
@@ -185,7 +167,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 this.updateById(entity);
                                 this.updateState(allSteps, processLogs, activitiProcessLog, logs, status);
                             }
-
+//TODO 测试流程成功后可以删除 上面已封装方法 updateState()
 //                            for (ActivitiSteps step : allSteps) {
 //                                if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
 //                                    processLogs = updateSupper(allSteps, logs, step, step.getSetpsId());
@@ -207,6 +189,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                                 if (status.equals(1)) {
                                     this.updateState(allSteps, processLogs, activitiProcessLog, logs, status);
+//TODO 测试流程成功后可以删除 上面已封装方法 updateState()
 //                                    for (ActivitiSteps step : allSteps) {
 //                                        if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
 //                                            processLogs = updateSupper(allSteps, logs, step, step.getSetpsId());
@@ -248,7 +231,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 所有下一节点送消息的节点
          */
         if (auditCheck) {
-            this.sendByTask(task);
+            this.sendNextStepsByTask(task);
 
 //                this.sendNext(taskId,logs);
         }
@@ -302,7 +285,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
 
         }
-        this.sendByTask(task);
+        this.sendNextStepsByTask(task);
     }
 
 
@@ -651,7 +634,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
 
-    public void sendByTask(ActivitiProcessTask task) {
+    public void sendNextStepsByTask(ActivitiProcessTask task) {
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500,"未找到相关流程任务");
         }

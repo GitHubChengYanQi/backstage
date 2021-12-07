@@ -5,15 +5,19 @@ import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.binding.wxUser.entity.WxuserInfo;
 import cn.atsoft.dasheng.binding.wxUser.service.WxuserInfoService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +33,8 @@ public class WxCpSendTemplate {
     private UcOpenUserInfoService ucOpenUserInfoService;
     @Autowired
     MessageProducer messageProducer;
+
+    private Logger logger = LoggerFactory.getLogger(MessageEntity.class);
 
     private WxCpTemplate wxCpTemplate;
 
@@ -73,6 +79,8 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 try {
                     messageProducer.sendMessage(messageEntity);
+                    logger.info("发送"+JSONUtil.toJsonStr(messageEntity));
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
