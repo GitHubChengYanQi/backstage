@@ -267,6 +267,17 @@ public class QualityTaskController extends BaseController {
     }
 
 
+    /**
+     * 更新子任务
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/updateChildTask", method = RequestMethod.GET)
+    public ResponseData updateChildTask(@Param("id") Long id) {
+        this.qualityTaskService.updateChildTask(id);
+        return ResponseData.success();
+    }
 }
 
 

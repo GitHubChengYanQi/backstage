@@ -36,8 +36,6 @@ public interface QualityTaskService extends IService<QualityTask> {
     void add(QualityTaskParam param);
 
 
-
-
     void formDataFormat1(List<FormDataResult> param);
 
     /**
@@ -120,7 +118,6 @@ public interface QualityTaskService extends IService<QualityTask> {
     FormDataRequest valueResults(Long qrcodeId);
 
 
-
     void updateDataValue(FormValues formValues);
 
     /**
@@ -129,4 +126,11 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @param
      */
     void taskComplete(TaskComplete taskComplete);
+
+    /**
+     * 更新子任务
+     *
+     * @param taskId
+     */
+    void updateChildTask(Long taskId);
 }

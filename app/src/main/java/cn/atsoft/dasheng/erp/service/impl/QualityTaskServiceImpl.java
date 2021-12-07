@@ -633,9 +633,36 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }});
         //修改质检任务详情
         QualityTaskDetail detail = detailService.query().eq("quality_task_detail_id", taskComplete.getTaskDetailId()).one();
-        detail.setRemaining(detail.getRemaining() + 1);
+
         if (detail.getNumber() > detail.getRemaining()) {
+            detail.setRemaining(detail.getRemaining() + 1);
             detailService.updateById(detail);
+        }
+    }
+
+    @Override
+    public void updateChildTask(Long taskId) {
+        //更新当前子任务
+        QualityTask task = this.query().eq("quality_task_id", taskId).one();
+        task.setState(1);
+        this.updateById(task);
+        //判断所有子任务
+        List<QualityTask> tasks = this.query().eq("parent_id", task.getParentId()).list();
+
+        boolean t = true;
+        for (QualityTask qualityTask : tasks) {
+            if (qualityTask.getState() != 1) {
+                t = false;
+            }
+        }
+        //子任务完成更新父级任务
+        if (t) {
+            QualityTask fathTask = new QualityTask();
+            fathTask.setState(1);
+            this.update(fathTask, new QueryWrapper<QualityTask>() {{
+                eq("quality_task_id", task.getParentId());
+            }});
+
         }
     }
 
