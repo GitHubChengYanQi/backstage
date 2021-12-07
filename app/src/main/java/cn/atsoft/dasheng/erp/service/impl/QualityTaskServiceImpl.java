@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
@@ -682,6 +683,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
+            activitiProcessLogService.autoAudit(task.getParentId());
 
         }
     }
