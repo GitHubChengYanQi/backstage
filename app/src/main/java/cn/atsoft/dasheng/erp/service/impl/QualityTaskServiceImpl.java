@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
@@ -115,6 +116,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private ActivitiAuditService auditService;
 
     @Autowired
+    private QualityTaskDetailService taskDetailService;
+    @Autowired
+    private MobileService mobileService;
     private QualityPlanService planService;
 
     @Autowired
@@ -170,8 +174,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         BackCodeRequest backCodeRequest = new BackCodeRequest();
         backCodeRequest.setId(entity.getQualityTaskId());
         backCodeRequest.setSource("quality");
-        Long aLong = orCodeService.backCode(backCodeRequest);
-        String url = param.getUrl().replace("codeId", aLong.toString());
+        Long orcodeId = orCodeService.backCode(backCodeRequest);
+        String url = param.getUrl().replace("codeId", orcodeId.toString());
 
         String type2Activiti = null;
         if (param.getType().equals("出厂")) {
@@ -179,6 +183,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         } else if (param.getType().equals("入厂")) {
             type2Activiti = "inQuality";
         }
+
+
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
         if (ToolUtil.isNotEmpty(activitiProcess)) {
             this.power(activitiProcess);//检查创建权限
@@ -194,7 +200,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.audit(taskId, 1, false);
+            activitiProcessLogService.audit(taskId, 1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
             List<Long> userIds = new ArrayList<>();
@@ -251,7 +257,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     // 主任务完成状态
                     ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.query().eq("form_id", oldEntity.getQualityTaskId()).one();
                     if (ToolUtil.isNotEmpty(activitiProcessTask)) {
-                        activitiProcessLogService.audit(activitiProcessTask.getProcessTaskId(), 1, false);
+                        activitiProcessLogService.audit(activitiProcessTask.getProcessTaskId(), 1);
                         newEntity.setState(1);
                     } else {
                         newEntity.setState(2);
@@ -438,8 +444,22 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         }
         detailService.updateBatchById(details);
-
         detailService.saveBatch(ChildDetails);
+
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        String userIds = child.getTaskParams().getUserIds();
+        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        OrCodeBind formId = bindService.query().eq("form_id", params.getQualityTaskId()).one();
+        wxCpTemplate.setUserIds(users);
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url + "OrCode?id=" + formId.getOrCodeId();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setDescription("点击查看新质检任务");
+        wxCpTemplate.setTitle("您被分派新的任务");
+        wxCpTemplate.setType(1);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+
 
     }
 
