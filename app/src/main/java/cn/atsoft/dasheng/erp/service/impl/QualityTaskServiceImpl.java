@@ -646,8 +646,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
-        task.setState(1);
-        this.updateById(task);
+        if (task.getState()==0) {
+            task.setState(1);
+            this.updateById(task);
+        }
         //判断所有子任务
         List<QualityTask> tasks = this.query().eq("parent_id", task.getParentId()).list();
 
