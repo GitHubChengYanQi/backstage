@@ -2,34 +2,30 @@ package cn.atsoft.dasheng.erp.controller;
 
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-
-import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
-
-import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
-import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
-
-import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
-import cn.atsoft.dasheng.erp.model.result.TaskCount;
-import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
-import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
-import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
-
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.form.entity.*;
-
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
+import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
+import cn.atsoft.dasheng.erp.model.request.FormValues;
+import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
+import cn.atsoft.dasheng.erp.model.result.TaskCount;
+import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
+import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
+import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
+import cn.atsoft.dasheng.erp.pojo.TaskComplete;
+import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
-import cn.atsoft.dasheng.form.service.*;
-
+import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,10 +72,10 @@ public class QualityTaskController extends BaseController {
      * @author
      * @Date 2021-11-16
      */
-    @RequestMapping(value = "/updateDataValue", method = RequestMethod.GET)
+    @RequestMapping(value = "/updateDataValue", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData updateDataValue(@Param("id") Long id, @Param("value") String value) {
-        this.qualityTaskService.updateDataValue(id, value);
+    public ResponseData updateDataValue(@RequestBody FormValues formValues) {
+        this.qualityTaskService.updateDataValue(formValues);
         return ResponseData.success();
     }
 
@@ -128,6 +124,13 @@ public class QualityTaskController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/taskComplete", method = RequestMethod.POST)
+    @ApiOperation("质检完成接口")
+    public ResponseData taskComplete(@RequestBody TaskComplete taskComplete) {
+        this.qualityTaskService.taskComplete(taskComplete);
+        return ResponseData.success();
+    }
+
     /**
      * 添加子任务
      *
@@ -153,8 +156,8 @@ public class QualityTaskController extends BaseController {
 
     @ApiOperation("查询子任务")
     public ResponseData backDataValue(@Param("id") Long id) {
-        List<FormDataValueResult> dataValues = this.qualityTaskService.valueResults(id);
-        return ResponseData.success(dataValues);
+        FormDataRequest formDataRequest = this.qualityTaskService.valueResults(id);
+        return ResponseData.success(formDataRequest);
     }
 
     /**
@@ -165,7 +168,7 @@ public class QualityTaskController extends BaseController {
      */
     @RequestMapping(value = "/backChildTask", method = RequestMethod.GET)
 
-    @ApiOperation("查询子任务")
+    @ApiOperation("返回子任务")
     public ResponseData backChildTask(@Param("id") Long id) {
         QualityTaskResult childTask = this.qualityTaskService.backChildTask(id);
         return ResponseData.success(childTask);

@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.form.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,11 +24,18 @@ public class FormData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 数据主键
      */
-      @TableId(value = "data_id", type = IdType.ID_WORKER)
+    @TableId(value = "data_id", type = IdType.ID_WORKER)
     private Long dataId;
+
+    /**
+     * 是否完成
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 所属模块
@@ -51,16 +61,16 @@ public class FormData implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
 
@@ -136,18 +146,26 @@ public class FormData implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "FormData{" +
-        "dataId=" + dataId +
-        ", module=" + module +
-        ", formId=" + formId +
-        ", mainId=" + mainId +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        "}";
+                "dataId=" + dataId +
+                ", module=" + module +
+                ", formId=" + formId +
+                ", mainId=" + mainId +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                "}";
     }
 }

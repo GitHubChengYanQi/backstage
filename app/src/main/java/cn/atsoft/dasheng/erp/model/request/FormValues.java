@@ -8,15 +8,18 @@ import java.util.List;
 
 @Data
 public class FormValues {
-    private Long field; //字段
+    private Long id;
     private DataValues dataValues;
 
+
     @Data
-    public  static class DataValues {
+    public static class DataValues {
+        private Integer judge;
         private String value;
-        private List<ImgValues> imgValues ;
+        private List<ImgValues> imgValues;
+
         @Data
-        public  static class ImgValues {
+        public static class ImgValues {
             private Long id;
             private String url;
         }

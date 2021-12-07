@@ -31,6 +31,8 @@ public class FormDataParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("数据主键")
     private Long dataId;
 
+    private Integer status;
+
     /**
      * 所属模块
      */

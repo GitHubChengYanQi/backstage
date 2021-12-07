@@ -4,9 +4,10 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
+import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
-import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
+import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
@@ -34,7 +35,7 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     void add(QualityTaskParam param);
 
-    void formDataFormat(FormDataResult param);
+
 
 
     void formDataFormat1(List<FormDataResult> param);
@@ -116,14 +117,16 @@ public interface QualityTaskService extends IService<QualityTask> {
     QualityTaskResult backChildTask(Long id);
 
 
-    List<FormDataValueResult> valueResults(Long qrcodeId);
+    FormDataRequest valueResults(Long qrcodeId);
 
-    void updateDataValue(Long id, String value);
+
+
+    void updateDataValue(FormValues formValues);
 
     /**
      * 质检完成
      *
-     * @param id
+     * @param
      */
     void taskComplete(TaskComplete taskComplete);
 }

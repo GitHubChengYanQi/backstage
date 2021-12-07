@@ -9,7 +9,6 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
@@ -17,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.FormDataValueResult;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
@@ -337,24 +336,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     /**
-     * 判断质检是否必填
-     *
-     * @param details
-     * @param formValue
-     * @return
-     */
-    public Boolean backBoolean(List<QualityPlanDetail> details, FormValues formValue) {
-        for (QualityPlanDetail detail : details) {
-            if (formValue.getField().equals(detail.getPlanDetailId())) {
-                if (ToolUtil.isEmpty(formValue.getDataValues())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
      * 判断多个实物是否添加完成
      *
      * @param data
@@ -367,6 +348,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             for (FormDataValue value : data) {
                 if (detail.getPlanDetailId().equals(value.getField())) {
                     if (ToolUtil.isEmpty(value.getValue())) {
+                        return false;
+                    }
+                    FormValues.DataValues dataValues = JSONUtil.toBean(value.getValue(), FormValues.DataValues.class);
+                    if (ToolUtil.isEmpty(dataValues.getValue())) {
                         return false;
                     }
                 }
@@ -538,7 +523,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public List<FormDataValueResult> valueResults(Long qrcodeId) {
+    public FormDataRequest valueResults(Long qrcodeId) {
+        FormDataRequest formDataRequest = new FormDataRequest();
+
         //通过二维码找到实物id
         OrCodeBind codeId = bindService.query().eq("qr_code_id", qrcodeId).one();
         if (ToolUtil.isEmpty(codeId)) {
@@ -595,41 +582,63 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
 
-        return formDataValueResults;
+        for (FormDataValueResult formDataValueResult : formDataValueResults) {
+            FormValues.DataValues values = JSONUtil.toBean(formDataValueResult.getValue(), FormValues.DataValues.class);
+            formDataValueResult.setDataValues(values);
+        }
+        formDataRequest.setData(formData);
+        formDataRequest.setDataValueResults(formDataValueResults);
+        return formDataRequest;
     }
 
     @Override
-    public void updateDataValue(Long id, String value) {
+    public void updateDataValue(FormValues formValues) {
+        FormDataValue value = formDataValueService.query().eq("value_id", formValues.getId()).one();
+        if (ToolUtil.isEmpty(value)) {
+            throw new ServiceException(500, "参数不正确");
+        }
+        FormData data = formDataService.query().eq("data_id", value.getDataId()).one();
+        if (ToolUtil.isNotEmpty(data) && data.getStatus() == 99) {
+            throw new ServiceException(500, "当前质检已完成，不可以修改");
+        }
+
+        //TODO 修改datavalue
         FormDataValue dataValue = new FormDataValue();
-        dataValue.setValue(value);
+        dataValue.setValue(JSONUtil.toJsonStr(formValues.getDataValues()));
         formDataValueService.update(dataValue, new QueryWrapper<FormDataValue>() {{
-            eq("value_id", id);
+            eq("value_id", formValues.getId());
         }});
     }
 
     @Override
     public void taskComplete(TaskComplete taskComplete) {
+        //TODO 质检项 完成接口
         List<FormDataValue> valueList = formDataValueService.query().in("value_id", taskComplete.getValueIds()).list();
 
         List<Long> planIds = new ArrayList<>();
         for (FormDataValue formDataValue : valueList) {
             planIds.add(formDataValue.getField());
         }
-        List<QualityPlanDetail> details = qualityPlanDetailService.query().in("plan_detail_id", planIds).list();
+        List<QualityPlanDetail> details = qualityPlanDetailService.query().in("plan_detail_id", planIds).eq("is_null", 1).list();
 
         Boolean t = judge(valueList, details);
 
         if (!t) {
             throw new ServiceException(500, "请检查必填项");
         }
-
+        FormData formData = new FormData();
+        formData.setStatus(taskComplete.getStatus());
+        formDataService.update(formData, new QueryWrapper<FormData>() {{
+            eq("data_id", valueList.get(0).getDataId());
+        }});
+        //修改质检任务详情
+        QualityTaskDetail detail = detailService.query().eq("quality_task_detail_id", taskComplete.getTaskDetailId()).one();
+        detail.setRemaining(detail.getRemaining() + 1);
+        if (detail.getNumber() > detail.getRemaining()) {
+            detailService.updateById(detail);
+        }
     }
 
-
-    @Override
-    public void formDataFormat(FormDataResult param) {
-
-    }
 
     @Override
     public void formDataFormat1(List<FormDataResult> param) {
@@ -793,9 +802,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public void detailFormat(QualityTaskResult result) {
 
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-
-        List<QualityTask> tasks = this.query().eq("parent_id", result.getQualityTaskId()).list();
+//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+//
+//        List<QualityTask> tasks = this.query().eq("parent_id", result.getQualityTaskId()).list();
 
 
 //        List<QualityTaskDetail> qualityTaskDetails = detailService.lambdaQuery().in(QualityTaskDetail::getQualityTaskId, param.getQualityTaskId()).and(i -> i.eq(QualityTaskDetail::getDisplay, 1)).list();

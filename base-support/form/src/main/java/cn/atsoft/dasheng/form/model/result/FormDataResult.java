@@ -33,6 +33,8 @@ public class FormDataResult implements Serializable {
     @ApiModelProperty("数据主键")
     private Long dataId;
 
+    private Integer status;
+
     /**
      * 所属模块
      */
