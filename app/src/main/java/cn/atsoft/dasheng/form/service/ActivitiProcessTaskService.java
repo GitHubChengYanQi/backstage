@@ -43,6 +43,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      */
     void update(ActivitiProcessTaskParam param);
 
+    ActivitiProcessTask getByFormId(Long formId);
+
     int isAdmin(Long taskId);
 
     /**

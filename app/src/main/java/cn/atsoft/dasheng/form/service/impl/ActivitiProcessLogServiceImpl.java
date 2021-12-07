@@ -248,7 +248,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          * 所有下一节点送消息的节点
          */
         if (auditCheck) {
-            this.sendByTask(taskId);
+            this.sendByTask(task);
 
 //                this.sendNext(taskId,logs);
         }
@@ -269,13 +269,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Override
     public void autoAudit(Long taskId) {
         //根据任务id 获取流程任务
-        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+        QualityTask qualityTask =  qualityTaskService.getById(taskId);
+        ActivitiProcessTask task = activitiProcessTaskService.getByFormId(taskId);
         //获取流程所有节点
-        List<ActivitiProcessLog> logs = listByTaskId(taskId);
+        List<ActivitiProcessLog> logs = listByTaskId(task.getProcessTaskId());
         //获取当前步骤
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
         //获取质检任务
-        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         //获取所有步骤id 通过审批流程所有步骤
         List<Long> allStepsByLog = new ArrayList<>();
         for (ActivitiProcessLog activitiProcessLog : logs) {
@@ -301,7 +302,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
 
         }
-        this.sendByTask(taskId);
+        this.sendByTask(task);
     }
 
 
@@ -650,12 +651,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
 
-    public void sendByTask(Long taskId) {
-        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+    public void sendByTask(ActivitiProcessTask task) {
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500,"未找到相关流程任务");
         }
-        List<ActivitiProcessLog> logs = this.listByTaskId(taskId);
+        List<ActivitiProcessLog> logs = this.listByTaskId(task.getProcessTaskId());
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
 
         List<Long> nextStepsIds = new ArrayList<Long>() {{
@@ -674,7 +674,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             for (ActivitiAudit activitiAudit : activitiAudits) {
 
                 if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
-                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), taskId, 1);
+                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId(), 1);
                 }
             }
         }

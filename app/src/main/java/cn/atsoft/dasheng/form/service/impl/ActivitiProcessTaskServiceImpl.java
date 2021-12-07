@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -84,7 +85,13 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
         this.updateById(newEntity);
     }
+    @Override
+    public ActivitiProcessTask getByFormId(Long formId){
+        return this.baseMapper.selectOne(new QueryWrapper<ActivitiProcessTask>(){{
+            eq("form_id",formId);
+        }});
 
+    }
     @Override
     public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();

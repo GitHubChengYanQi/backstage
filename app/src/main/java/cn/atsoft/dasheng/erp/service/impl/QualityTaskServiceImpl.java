@@ -120,6 +120,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityTaskDetailService taskDetailService;
     @Autowired
     private MobileService mobileService;
+    @Autowired
     private QualityPlanService planService;
 
     @Autowired
