@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.pojo;
 
+import cn.atsoft.dasheng.erp.model.request.FormValues;
 import cn.atsoft.dasheng.erp.model.result.QualityPlanDetailResult;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,6 +25,7 @@ public class FormDataValueResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private FormValues.DataValues dataValues;
 
     private QualityPlanDetailResult qualityPlanDetailResult;
     /**
