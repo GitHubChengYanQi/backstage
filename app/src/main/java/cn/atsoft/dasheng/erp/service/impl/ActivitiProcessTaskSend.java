@@ -226,22 +226,24 @@ public class ActivitiProcessTaskSend {
         if (ToolUtil.isNotEmpty(qualityTaskList)) {
             for (QualityTask detail : qualityTaskList) {
                 List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                users.addAll(userIds);
+
                 detail.setState(2);
+
+                List<Long> collect = userIds.stream().distinct().collect(Collectors.toList());
+                String url = mobileService.getMobileConfig().getUrl();
+
+                url = url + "Work/Quality?id=" + detail.getQualityTaskId().toString();
+                WxCpTemplate wxCpTemplate = new WxCpTemplate();
+                wxCpTemplate.setUrl(url);
+                wxCpTemplate.setUserIds(collect);
+                wxCpTemplate.setTitle("质检任务完成，待批准入库");
+                wxCpTemplate.setDescription(aboutSend.get("coding"));
+                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+                wxCpSendTemplate.sendTemplate();
             }
             qualityTaskService.updateBatchById(qualityTaskList);
         }
-        List<Long> collect = users.stream().distinct().collect(Collectors.toList());
-        String url = mobileService.getMobileConfig().getUrl();
 
-        url = url + "Work/Quality?id=" + aboutSend.get("qualityTaskId").toString();
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(collect);
-        wxCpTemplate.setTitle("质检任务完成，待批准入库");
-        wxCpTemplate.setDescription(aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
     }
 
     /**
