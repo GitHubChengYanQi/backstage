@@ -5,10 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class    QualityRules{
+public class QualityRules {
 
     private List<Depts> depts;
     private List<Users> users;
+    private boolean perform;
 
     @Data
     public class Depts {
