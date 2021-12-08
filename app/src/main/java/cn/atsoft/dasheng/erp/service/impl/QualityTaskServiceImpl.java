@@ -304,6 +304,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         FormData data = new FormData();
         data.setModule(formDataPojo.getModule());
         data.setFormId(codeId.getFormId());
+        //判断抽检
+        FormData formData = formDataService.query().eq("form_id", codeId.getFormId()).eq("status", 0).one();
+        if (ToolUtil.isNotEmpty(formData)) {
+            throw new ServiceException(500, "data数据错误");
+        }
         formDataService.save(data);
 
         //通过质检项详情添加dataValue
@@ -354,7 +359,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<Long> iKinds = new ArrayList<>();
         for (QualityTaskBind taskBind : taskBindList) {
             iKinds.add(taskBind.getInkindId());
-
         }
         if (ToolUtil.isNotEmpty(iKinds)) {
             //通过inkind获取sku
@@ -444,8 +448,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         wxCpTemplate.setType(1);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-
-
     }
 
     @Override
@@ -528,7 +530,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     }
 
     @Override
-    public FormDataRequest valueResults(Long qrcodeId) {
+    public FormDataRequest valueResults(Long qrcodeId, String type) {
         FormDataRequest formDataRequest = new FormDataRequest();
 
         //通过二维码找到实物id
@@ -537,10 +539,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             throw new ServiceException(500, "二维码不正确");
         }
         //通过实物id找到data
-        FormData formData = formDataService.query().eq("form_id", codeId.getFormId()).one();
+        FormData formData = new FormData();
+        switch (type) {
+            case "sampling":
+                formData = formDataService.query().eq("form_id", codeId.getFormId()).eq("status", 0).one();
+                break;
+            case "fixed":
+                formData = formDataService.query().eq("form_id", codeId.getFormId()).one();
+                break;
+        }
         //通过data找value
         List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
-
 
         List<Long> planId = new ArrayList<>();
         for (FormDataValue dataValue : dataValues) {
@@ -649,7 +658,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
-        if (task.getState()==0) {
+        if (task.getState() == 0) {
             task.setState(1);
             this.updateById(task);
         }

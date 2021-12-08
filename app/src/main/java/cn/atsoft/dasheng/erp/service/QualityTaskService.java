@@ -116,7 +116,7 @@ public interface QualityTaskService extends IService<QualityTask> {
     QualityTaskResult backChildTask(Long id);
 
 
-    FormDataRequest valueResults(Long qrcodeId);
+    FormDataRequest valueResults(Long qrcodeId, String type);
 
 
     void updateDataValue(FormValues formValues);
@@ -145,6 +145,6 @@ public interface QualityTaskService extends IService<QualityTask> {
 
     List<FormDataResult> getDetail(BindParam bindParam);
 
-    List<FormDataResult>  inStockDetail (BindParam bindParam);
+    List<FormDataResult> inStockDetail(BindParam bindParam);
 
 }

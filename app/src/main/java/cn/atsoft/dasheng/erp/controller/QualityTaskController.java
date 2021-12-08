@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,8 +193,8 @@ public class QualityTaskController extends BaseController {
     @RequestMapping(value = "/backDataValue", method = RequestMethod.GET)
 
     @ApiOperation("查询子任务")
-    public ResponseData backDataValue(@Param("id") Long id) {
-        FormDataRequest formDataRequest = this.qualityTaskService.valueResults(id);
+    public ResponseData backDataValue(@Param("id") Long id, @Param("type") String type) {
+        FormDataRequest formDataRequest = this.qualityTaskService.valueResults(id, type);
         return ResponseData.success(formDataRequest);
     }
 
@@ -207,6 +208,7 @@ public class QualityTaskController extends BaseController {
 
     @ApiOperation("返回子任务")
     public ResponseData backChildTask(@Param("id") Long id) {
+
         QualityTaskResult childTask = this.qualityTaskService.backChildTask(id);
         return ResponseData.success(childTask);
     }
