@@ -9,7 +9,7 @@ public class QualityRules {
 
     private List<Depts> depts;
     private List<Users> users;
-    private boolean perform;
+    public boolean perform;
 
     @Data
     public class Depts {

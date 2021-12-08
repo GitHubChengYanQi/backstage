@@ -75,6 +75,12 @@ public class ActivitiProcessTaskSend {
                 users.add(Long.valueOf(user.getKey()));
             }
         }
+        if (starUser.getQualityRules().perform) {
+            List<User> allUser = userService.list();
+            for (User user : allUser) {
+                users.add(user.getUserId());
+            }
+        }
         if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
             Long deptIds = 0L;
             List<Long> positionIds = new ArrayList<>();
@@ -226,8 +232,10 @@ public class ActivitiProcessTaskSend {
 
         List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
         for (QualityTaskDetail detail : list) {
-            List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            users.addAll(userIds);
+            if (ToolUtil.isNotEmpty(detail.getUserIds())) {
+                List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                users.addAll(userIds);
+            }
         }
         List<Long> collect = users.stream().distinct().collect(Collectors.toList());
         String url = mobileService.getMobileConfig().getUrl();
