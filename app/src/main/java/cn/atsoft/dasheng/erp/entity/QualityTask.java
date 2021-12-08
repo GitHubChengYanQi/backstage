@@ -31,6 +31,12 @@ public class QualityTask implements Serializable {
      */
     @TableField("userIds")
     private String userIds;
+
+    /**
+     * 主任务分派状态
+     */
+    @TableField("status")
+    private String status;
     /**
      * 时间
      */
@@ -134,6 +140,13 @@ public class QualityTask implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getUrl() {
         return url;

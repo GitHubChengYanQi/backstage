@@ -68,6 +68,8 @@ public class QualityTaskResult implements Serializable {
      */
     private String userIds;
 
+    private Integer status;
+
 
     /**
      * 地点
