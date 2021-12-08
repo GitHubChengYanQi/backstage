@@ -153,12 +153,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             skuService.updateBatchById(skus);
         }
 
-        BackCodeRequest backCodeRequest = new BackCodeRequest();
-        backCodeRequest.setId(entity.getQualityTaskId());
-        backCodeRequest.setSource("quality");
-        Long orcodeId = orCodeService.backCode(backCodeRequest);
-        String url = param.getUrl().replace("codeId", orcodeId.toString());
-
         String type2Activiti = null;
         if (param.getType().equals("出厂")) {
             type2Activiti = "outQuality";
@@ -183,16 +177,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.audit(taskId, 1);
-        } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            List<Long> userIds = new ArrayList<>();
-            userIds.add(param.getUserId());
-            wxCpTemplate.setUserIds(userIds);
-            wxCpTemplate.setUrl(url);
-            wxCpTemplate.setTitle("质检任务提醒");
-            wxCpTemplate.setDescription("有新的质检任务");
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+        }else {
+            throw new ServiceException(500,"请创建质检流程！");
         }
 
     }
