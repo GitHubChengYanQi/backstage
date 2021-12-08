@@ -293,4 +293,16 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.sendTemplate();
 
     }
+    public void noProcessQualityTaskSend(QualityTaskParam param,Long orcodeId){
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(param.getUserId());
+        wxCpTemplate.setUserIds(userIds);
+        String url = param.getUrl().replace("codeId", orcodeId.toString());
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("质检任务提醒");
+        wxCpTemplate.setDescription("有新的质检任务");
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
 }
