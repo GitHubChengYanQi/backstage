@@ -170,6 +170,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
             activitiProcessTaskParam.setUserId(param.getUserId());
             activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+            activitiProcessTaskParam.setType("quality_task");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
             ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);

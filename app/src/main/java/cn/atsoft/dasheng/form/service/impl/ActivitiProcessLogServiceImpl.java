@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -248,14 +249,22 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public void autoAudit(Long taskId) {
+    public void autoAudit(Long activitiTaskId) {
         //根据任务id 获取流程任务
-        QualityTask qualityTask =  qualityTaskService.getById(taskId);
-        ActivitiProcessTask task = activitiProcessTaskService.getByFormId(taskId);
+        ActivitiProcessTask processTask = activitiProcessTaskService.getById(activitiTaskId);
+        if (processTask.getType().equals("quality")) {
+            this.autoProcessTaskAudit(processTask);
+        }
+
+
+        this.sendNextStepsByTask(processTask);
+    }
+    private void autoProcessTaskAudit(ActivitiProcessTask processTask, ){
+        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
         //获取流程所有节点
-        List<ActivitiProcessLog> logs = listByTaskId(task.getProcessTaskId());
+        List<ActivitiProcessLog> logs = listByTaskId(processTask.getProcessTaskId());
         //获取当前步骤
-        List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
+        List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessId(), logs);
         //获取质检任务
 //        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         //获取所有步骤id 通过审批流程所有步骤
@@ -283,7 +292,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
 
         }
-        this.sendNextStepsByTask(task);
     }
 
 
