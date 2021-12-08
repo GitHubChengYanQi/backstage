@@ -232,8 +232,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
          */
         if (auditCheck) {
             this.sendNextStepsByTask(task);
-
-//                this.sendNext(taskId,logs);
         }
     }
 
