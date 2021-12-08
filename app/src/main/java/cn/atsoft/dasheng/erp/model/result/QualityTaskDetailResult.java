@@ -55,6 +55,12 @@ public class QualityTaskDetailResult implements Serializable {
 
     private Integer batch;
 
+
+    /**
+     * 百分比
+     */
+    private Double percentum;
+
     /**
      * 质检项
      */

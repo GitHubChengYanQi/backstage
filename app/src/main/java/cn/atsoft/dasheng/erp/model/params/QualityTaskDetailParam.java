@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -28,6 +29,11 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
 
     private String inkindId;
     private List<Long> detailsIds;
+
+    /**
+     * 百分比
+     */
+    private Double percentum;
 
 
     private Integer newNumber;

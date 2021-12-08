@@ -32,6 +32,11 @@ public class QualityTaskDetail implements Serializable {
     @TableField("inkind_id")
     private String inkindId;
     /**
+     * 百分比
+     */
+    @TableField("percentum")
+    private Double percentum;
+    /**
      * 状态
      */
     @TableField("status")
@@ -180,6 +185,14 @@ public class QualityTaskDetail implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Double getPercentum() {
+        return percentum;
+    }
+
+    public void setPercentum(Double percentum) {
+        this.percentum = percentum;
     }
 
     /**

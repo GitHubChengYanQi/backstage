@@ -17,7 +17,7 @@
         <result column="person" property="person"/>
         <result column="phone" property="phone"/>
         <result column="note" property="note"/>
-
+        <result column="percentum" property="percentum"/>
         <result column="inkind_id" property="inkindId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
@@ -32,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        time AS "time",inkind_id AS "inkindId",status AS "status",
+        time AS "time",inkind_id AS "inkindId",status AS "status",percentum AS "percentum",
 userIds AS "userIds",
 address AS "address",
 person AS "person",

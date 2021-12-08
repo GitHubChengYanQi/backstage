@@ -309,7 +309,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         //通过质检项详情添加dataValue
         List<QualityPlanDetail> details = qualityPlanDetailService.query().eq("plan_id", formDataPojo.getPlanId()).list();
         if (ToolUtil.isNotEmpty(details)) {
-
             List<FormDataValue> dataValues = new ArrayList<>();
             for (QualityPlanDetail detail : details) {
                 FormDataValue dataValue = new FormDataValue();
@@ -319,7 +318,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
             formDataValueService.saveBatch(dataValues);
         }
-
 
     }
 
@@ -411,6 +409,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         for (QualityTaskDetailParam detail : params.getDetails()) {
             QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
             ToolUtil.copyProperties(detail, qualityTaskDetail);
+
+            if (detail.getNumber() - detail.getRemaining() < 0) {
+                throw new ServiceException(500, "请确定数量");
+            }
             qualityTaskDetail.setRemaining(qualityTaskDetail.getRemaining() - detail.getNewNumber());
             details.add(qualityTaskDetail);
 
@@ -646,7 +648,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
-        task.setState(1);
+        if (task.getState() == 0) {
+            task.setState(1);
+        }
         this.updateById(task);
         //判断所有子任务
         List<QualityTask> tasks = this.query().eq("parent_id", task.getParentId()).list();
