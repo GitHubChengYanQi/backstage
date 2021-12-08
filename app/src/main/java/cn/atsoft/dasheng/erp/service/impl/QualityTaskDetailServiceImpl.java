@@ -180,6 +180,29 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     }
 
     @Override
+    public List<QualityTaskDetailResult> getTaskDetailResults(Long taskId) {
+        List<QualityTaskDetailResult> detailResults = new ArrayList<>();
+
+        if (ToolUtil.isEmpty(taskId)) {
+            return detailResults;
+        }
+
+        List<QualityTaskDetail> taskDetails = this.query().eq("quality_task_id", taskId).list();
+
+        if (ToolUtil.isEmpty(taskDetails)) {
+            return detailResults;
+        }
+
+        for (QualityTaskDetail taskDetail : taskDetails) {
+            QualityTaskDetailResult detailResult = new QualityTaskDetailResult();
+            ToolUtil.copyProperties(taskDetail, detailResult);
+            detailResults.add(detailResult);
+        }
+
+        return detailResults;
+    }
+
+    @Override
     public void format(List<QualityTaskDetailResult> param) {
         List<Long> skuIds = new ArrayList<>();
         //品牌id
@@ -229,7 +252,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
             List<String> usersName = new ArrayList<>();
-            if(ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIdList())){
+            if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIdList())) {
                 for (Long aLong : qualityTaskDetailResult.getUserIdList()) {
                     for (User user : users) {
                         if (aLong.equals(user.getUserId())) {

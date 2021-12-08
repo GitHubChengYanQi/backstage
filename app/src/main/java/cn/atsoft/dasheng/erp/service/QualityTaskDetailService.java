@@ -84,8 +84,19 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
      */
     List<FormDataValueResult> backData(Long inkind);
 
+    /**
+     * 修改
+     *
+     * @param inkind
+     */
     void updateDataValue(Long inkind);
 
-
+    /**
+     * 返回当前质检任务所有详情
+     *
+     * @param taskId
+     * @return
+     */
+    List<QualityTaskDetailResult> getTaskDetailResults(Long taskId);
 
 }

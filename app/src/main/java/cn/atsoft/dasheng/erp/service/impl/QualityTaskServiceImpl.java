@@ -296,16 +296,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public void addFormData(FormDataPojo formDataPojo) {
         //通过二维码查询实物id
-        OrCodeBind codeId = bindService.query().eq("qr_code_id", formDataPojo.getQrCodeId()).one();
-        if (ToolUtil.isEmpty(codeId)) {
+        Long formId = bindService.getFormId(formDataPojo.getQrCodeId());
+        if (formId == 0L) {
             throw new ServiceException(500, "二维码不正确");
         }
         //添加data
         FormData data = new FormData();
         data.setModule(formDataPojo.getModule());
-        data.setFormId(codeId.getFormId());
+        data.setFormId(formId);
         //判断抽检
-        FormData formData = formDataService.query().eq("form_id", codeId.getFormId()).eq("status", 0).one();
+        FormData formData = formDataService.query().eq("form_id", formId).eq("status", 0).one();
         if (ToolUtil.isNotEmpty(formData)) {
             throw new ServiceException(500, "data数据错误");
         }
@@ -453,58 +453,42 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public QualityTaskResult backChildTask(Long id) {
         //子任务
-        QualityTask qualityTask = this.query().eq("quality_task_id", id).one();
+        QualityTask qualityTask = this.getById(id);
         if (ToolUtil.isEmpty(qualityTask)) {
             throw new ServiceException(500, "参数不正确");
         }
-
         QualityTaskResult taskResult = new QualityTaskResult();
         ToolUtil.copyProperties(qualityTask, taskResult);
 
+        QualityTask fatherTask = this.getById(qualityTask.getParentId());
 
-        QualityTask fatherTask = this.query().eq("quality_task_id", qualityTask.getParentId()).one();
-
-
-        List<QualityTaskDetail> taskDetails = detailService.query().eq("quality_task_id", qualityTask.getQualityTaskId()).list();
+        List<QualityTaskDetailResult> taskDetailResults = detailService.getTaskDetailResults(qualityTask.getQualityTaskId());
 
         List<Long> brandIds = new ArrayList<>();
         List<Long> planIds = new ArrayList<>();
-        for (QualityTaskDetail taskDetail : taskDetails) {
+        for (QualityTaskDetailResult taskDetail : taskDetailResults) {
             brandIds.add(taskDetail.getBrandId());
             planIds.add(taskDetail.getQualityPlanId());
         }
 
-        List<Brand> brands = brandService.query().in("brand_id", brandIds).list();
-        List<QualityPlan> qualityPlans = planService.query().in("quality_plan_id", planIds).list();
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
-        List<QualityTaskDetailResult> detailResults = new ArrayList<>();
+        List<QualityPlanResult> planResults = planService.getPlanResults(planIds);
 
-
-        for (QualityTaskDetail taskDetail : taskDetails) {
-            for (Brand brand : brands) {
-                if (taskDetail.getBrandId().equals(brand.getBrandId())) {
-
-                    BrandResult brandResult = new BrandResult();
-                    ToolUtil.copyProperties(brand, brandResult);
-
-                    QualityTaskDetailResult detailResult = new QualityTaskDetailResult();
-                    ToolUtil.copyProperties(taskDetail, detailResult);
+        //组合数据
+        for (QualityTaskDetailResult taskDetail : taskDetailResults) {
+            for (BrandResult brandResult : brandResults) {
+                if (taskDetail.getBrandId().equals(brandResult.getBrandId())) {
                     SkuResult skuResult = skuService.getSku(taskDetail.getSkuId());
-                    detailResult.setSkuResult(skuResult);
-                    detailResult.setBrand(brandResult);
-                    detailResults.add(detailResult);
-
+                    taskDetail.setSkuResult(skuResult);
+                    taskDetail.setBrand(brandResult);
                 }
             }
-
         }
-
-        for (QualityTaskDetailResult detailResult : detailResults) {
-            for (QualityPlan qualityPlan : qualityPlans) {
+        for (QualityTaskDetailResult detailResult : taskDetailResults) {
+            for (QualityPlanResult qualityPlan : planResults) {
                 if (detailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
-                    QualityPlanResult qualityPlanResult = new QualityPlanResult();
-                    ToolUtil.copyProperties(qualityPlan, qualityPlanResult);
-                    detailResult.setQualityPlanResult(qualityPlanResult);
+                    detailResult.setQualityPlanResult(qualityPlan);
                 }
             }
 
@@ -522,7 +506,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         taskResult.setNames(userName);
 
-        taskResult.setDetails(detailResults);
+        taskResult.setDetails(taskDetailResults);
 
         taskResult.setFatherTask(fatherTask);
 
@@ -658,6 +642,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
+
+
         if (task.getState() == 0) {
             task.setState(1);
             this.updateById(task);
@@ -668,6 +654,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         boolean t = true;
         for (QualityTask qualityTask : tasks) {
             if (qualityTask.getState() != 1) {
+                t = false;
+            }
+        }
+
+        //判断父级任务分配数量
+        List<QualityTaskDetail> taskDetails =  detailService.query()
+                .eq("quality_task_id", task.getParentId()).list();
+
+        for (QualityTaskDetail taskDetail : taskDetails) {
+            if (taskDetail.getRemaining()!=0) {
                 t = false;
             }
         }
@@ -751,7 +747,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             planIds.add(result.getField());
         }
         //查询质检方案详情
-        List<QualityPlanDetailResult> planDetailResults = qualityPlanDetailService.getPlanDetail(planIds);
+        List<QualityPlanDetailResult> planDetailResults = qualityPlanDetailService.getPlanDetailResults(planIds);
 
         List<Long> checkIds = new ArrayList<>();
         for (QualityPlanDetailResult planDetailResult : planDetailResults) {

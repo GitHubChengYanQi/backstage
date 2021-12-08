@@ -81,7 +81,7 @@ public class QualityPlanDetailServiceImpl extends ServiceImpl<QualityPlanDetailM
      * @return
      */
     @Override
-    public List<QualityPlanDetailResult> getPlanDetail(List<Long> ids) {
+    public List<QualityPlanDetailResult> getPlanDetailResults(List<Long> ids) {
         if (ToolUtil.isEmpty(ids)) {
             return  new ArrayList<>();
         }

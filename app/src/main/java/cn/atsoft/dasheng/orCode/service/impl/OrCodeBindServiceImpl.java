@@ -102,6 +102,19 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
 
     }
 
+    @Override
+    public Long getFormId(Long qrcodeId) {
+        Long l = 0L;
+        if (ToolUtil.isEmpty(qrcodeId)) {
+            return l;
+        }
+        OrCodeBind codeBind = this.query().eq("qr_code_id", qrcodeId).one();
+        if (ToolUtil.isEmpty(codeBind)) {
+            return l;
+        }
+        return codeBind.getFormId();
+    }
+
     private Serializable getKey(OrCodeBindParam param) {
         return param.getOrCodeBindId();
     }

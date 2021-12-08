@@ -21,12 +21,14 @@ import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.BindParam;
+import cn.hutool.core.util.NumberUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 

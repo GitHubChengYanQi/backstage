@@ -52,7 +52,6 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
     private FormDataService formDataService;
 
 
-
     @Transactional
     @Override
     public void add(QualityPlanParam param) {
@@ -180,6 +179,26 @@ public class QualityPlanServiceImpl extends ServiceImpl<QualityPlanMapper, Quali
         IPage<QualityPlanResult> page = this.baseMapper.customPageList(pageContext, param);
 
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<QualityPlanResult> getPlanResults(List<Long> planIds) {
+
+        List<QualityPlanResult> planResults = new ArrayList<>();
+        if (ToolUtil.isEmpty(planIds)) {
+            return planResults;
+        }
+        List<QualityPlan> qualityPlans = this.query().in("quality_plan_id", planIds).list();
+        if (ToolUtil.isEmpty(qualityPlans)) {
+            return planResults;
+        }
+
+        for (QualityPlan qualityPlan : qualityPlans) {
+            QualityPlanResult planResult = new QualityPlanResult();
+            ToolUtil.copyProperties(qualityPlan, planResult);
+            planResults.add(planResult);
+        }
+        return planResults;
     }
 
     private Serializable getKey(QualityPlanParam param) {

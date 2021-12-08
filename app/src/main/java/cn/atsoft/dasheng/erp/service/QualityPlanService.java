@@ -67,5 +67,5 @@ public interface QualityPlanService extends IService<QualityPlan> {
     PageInfo<QualityPlanResult> findPageBySpec(QualityPlanParam param);
 
 
-
+    List<QualityPlanResult> getPlanResults(List<Long> planIds);
 }

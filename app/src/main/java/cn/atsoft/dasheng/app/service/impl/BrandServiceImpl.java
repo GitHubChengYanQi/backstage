@@ -47,13 +47,13 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public void delete(BrandParam param) {
-      Brand byId = this.getById(param.getBrandId());
-      if (ToolUtil.isEmpty(byId)){
-        throw new ServiceException(500,"所删除目标不存在");
-      }else {
-        param.setDisplay(0);
-        this.update(param);
-      }
+        Brand byId = this.getById(param.getBrandId());
+        if (ToolUtil.isEmpty(byId)) {
+            throw new ServiceException(500, "所删除目标不存在");
+        } else {
+            param.setDisplay(0);
+            this.update(param);
+        }
     }
 
     @Override
@@ -75,11 +75,29 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     @Override
-    public PageInfo<BrandResult> findPageBySpec(BrandParam param,DataScope dataScope) {
+    public PageInfo<BrandResult> findPageBySpec(BrandParam param, DataScope dataScope) {
         Page<BrandResult> pageContext = getPageContext();
-        IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<BrandResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
 //        format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<BrandResult> getBrandResults(List<Long> brandIds) {
+        List<BrandResult> brandResults = new ArrayList<>();
+        if (ToolUtil.isEmpty(brandIds)) {
+            return brandResults;
+        }
+        List<Brand> brands = this.query().in("brand_id", brandIds).list();
+        if (ToolUtil.isEmpty(brands)) {
+            return brandResults;
+        }
+        for (Brand brand : brands) {
+            BrandResult brandResult = new BrandResult();
+            ToolUtil.copyProperties(brand, brandResult);
+            brandResults.add(brandResult);
+        }
+        return brandResults;
     }
 
     private Serializable getKey(BrandParam param) {
@@ -87,7 +105,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
     }
 
     private Page<BrandResult> getPageContext() {
-        List<String> fields = new ArrayList<String>(){{
+        List<String> fields = new ArrayList<String>() {{
             add("brandName");
         }};
         return PageFactory.defaultPage(fields);

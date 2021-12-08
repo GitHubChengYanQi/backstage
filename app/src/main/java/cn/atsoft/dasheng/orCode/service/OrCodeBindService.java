@@ -82,4 +82,12 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      */
     Long getQrcodeId(Long formId);
 
+    /**
+     * 通过二维码扫描 formId
+     *
+     * @param qrcodeId
+     * @return
+     */
+    Long getFormId(Long qrcodeId);
+
 }
