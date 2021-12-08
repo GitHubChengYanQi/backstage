@@ -132,6 +132,8 @@ public class ActivitiProcessTaskSend {
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
+                activitiProcessLogService.autoAudit(taskId);
+
                 break;
             case SEND:
                 this.sendSend(activitiTaskSend);
