@@ -178,8 +178,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.audit(taskId, 1);
-        }else {
-            throw new ServiceException(500,"请创建质检流程！");
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
         }
 
     }
@@ -391,7 +391,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         QualityTask qualityTask = new QualityTask();
         ToolUtil.copyProperties(params, qualityTask);
-
+        qualityTask.setState(1);
         this.save(qualityTask);
 
         List<QualityTaskDetail> details = new ArrayList<>();
@@ -631,8 +631,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
 
 
-        if (task.getState() == 0) {
-            task.setState(1);
+        if (task.getState() == 1) {
+            task.setState(2);
             this.updateById(task);
         }
         //判断所有子任务
@@ -640,24 +640,24 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         boolean t = true;
         for (QualityTask qualityTask : tasks) {
-            if (qualityTask.getState() != 1) {
+            if (qualityTask.getState() != 2) {
                 t = false;
             }
         }
 
         //判断父级任务分配数量
-        List<QualityTaskDetail> taskDetails =  detailService.query()
+        List<QualityTaskDetail> taskDetails = detailService.query()
                 .eq("quality_task_id", task.getParentId()).list();
 
         for (QualityTaskDetail taskDetail : taskDetails) {
-            if (taskDetail.getRemaining()!=0) {
+            if (taskDetail.getRemaining() != 0) {
                 t = false;
             }
         }
         //子任务完成更新父级任务
         if (t) {
             QualityTask fathTask = new QualityTask();
-            fathTask.setState(1);
+            fathTask.setState(2);
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
