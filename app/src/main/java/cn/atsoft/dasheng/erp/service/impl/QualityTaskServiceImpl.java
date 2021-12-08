@@ -424,6 +424,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             childDetail.setBatch(detail.getBatch());
             childDetail.setQualityPlanId(detail.getQualityPlanId());
             childDetail.setNumber(detail.getNewNumber());
+            childDetail.setPercentum(detail.getPercentum());
             ChildDetails.add(childDetail);
 
         }
@@ -433,10 +434,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         String userIds = child.getTaskParams().getUserIds();
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        OrCodeBind formId = bindService.query().eq("form_id", qualityTask.getQualityTaskId()).one();
+        Long orCodeId = bindService.getQrcodeId(qualityTask.getQualityTaskId());
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + formId.getOrCodeId();
+        url = url + "OrCode?id=" + orCodeId;
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");

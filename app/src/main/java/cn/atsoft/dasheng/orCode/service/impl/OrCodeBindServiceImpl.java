@@ -83,6 +83,25 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
         return formIds;
     }
 
+    /**
+     * 返回绑定二维码
+     *
+     * @param formId
+     * @return
+     */
+    @Override
+    public Long getQrcodeId(Long formId) {
+        if (ToolUtil.isEmpty(formId)) {
+            return null;
+        }
+        OrCodeBind bind = this.query().eq("form_id", formId).one();
+        if (ToolUtil.isEmpty(bind)) {
+            return null;
+        }
+        return bind.getOrCodeId();
+
+    }
+
     private Serializable getKey(OrCodeBindParam param) {
         return param.getOrCodeBindId();
     }

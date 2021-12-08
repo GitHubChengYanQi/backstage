@@ -74,4 +74,12 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      */
     List<Long> backValue(List<Long> qrcodeIds);
 
+    /**
+     * 返回二维码
+     *
+     * @param formId
+     * @return
+     */
+    Long getQrcodeId(Long formId);
+
 }
