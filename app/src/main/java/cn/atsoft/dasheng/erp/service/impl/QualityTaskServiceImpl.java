@@ -106,6 +106,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private QualityCheckService checkService;
 
+    @Autowired
+    private ActivitiProcessTaskSend taskSend;
+
 
     @Override
     @Transactional
@@ -184,15 +187,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.audit(taskId, 1);
         } else if (ToolUtil.isEmpty(activitiProcess) || ToolUtil.isEmpty(activitiProcess)) {
-            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-            List<Long> userIds = new ArrayList<>();
-            userIds.add(param.getUserId());
-            wxCpTemplate.setUserIds(userIds);
-            wxCpTemplate.setUrl(url);
-            wxCpTemplate.setTitle("质检任务提醒");
-            wxCpTemplate.setDescription("有新的质检任务");
-            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-            wxCpSendTemplate.sendTemplate();
+            taskSend.noProcessQualityTaskSend(param,orcodeId);
         }
 
     }
