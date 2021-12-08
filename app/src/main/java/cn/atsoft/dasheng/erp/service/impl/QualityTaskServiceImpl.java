@@ -391,6 +391,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param
      */
     @Override
+    @Transactional
     public void addChild(QualityTaskChild child) {
 
         QualityTaskParam params = child.getTaskParams();
@@ -434,10 +435,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         String userIds = child.getTaskParams().getUserIds();
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        Long orCodeId = bindService.getQrcodeId(qualityTask.getQualityTaskId());
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + orCodeId;
+        url = url + "Work/Quality?id=" + qualityTask.getQualityTaskId();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");
@@ -649,10 +649,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
-        if (task.getState() == 0) {
+        if (task.getState()==0) {
             task.setState(1);
+            this.updateById(task);
         }
-        this.updateById(task);
         //判断所有子任务
         List<QualityTask> tasks = this.query().eq("parent_id", task.getParentId()).list();
 

@@ -34,7 +34,6 @@ public class WxCpSendTemplate {
     @Autowired
     MessageProducer messageProducer;
 
-    private Logger logger = LoggerFactory.getLogger(MessageEntity.class);
 
     private WxCpTemplate wxCpTemplate;
 
@@ -79,7 +78,6 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 try {
                     messageProducer.sendMessage(messageEntity);
-                    logger.info("发送"+JSONUtil.toJsonStr(messageEntity));
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -93,7 +91,6 @@ public class WxCpSendTemplate {
             message.setType(wxCpTemplate.getType());
             message.setSort(0L);
 //            message.setUrl("url");
-            messageEntity.setType(MessageType.MESSAGE);
             messageEntity.setMessage(message);
             messageProducer.sendMessage(messageEntity, 1000);
         }

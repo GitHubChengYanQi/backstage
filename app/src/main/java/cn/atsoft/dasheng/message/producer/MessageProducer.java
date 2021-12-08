@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.message.producer;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
@@ -29,6 +30,11 @@ public class MessageProducer {
         messageEntity.setTimes(1+ messageEntity.getTimes());
         if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
             rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
+            DateUtil.now().toString();
+            messageEntity.setKey(DateUtil.now());
+            //TODO 测试加入唯一key
+            logger.info("发送"+JSONUtil.toJsonStr(messageEntity));
+
         }
     }
 
