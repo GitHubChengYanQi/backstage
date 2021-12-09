@@ -503,8 +503,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @return
      */
     ActivitiStepsResult groupSteps(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
-        //获取当前规则
-        getAudit(auditResults, stepsResult);
         //判断顶级
         if (ToolUtil.isEmpty(stepsResult)) {
             ActivitiStepsResult Top = new ActivitiStepsResult();
@@ -512,17 +510,18 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             for (ActivitiStepsResult step : steps) {
                 if (step.getSupper() == 0) {
                     ToolUtil.copyProperties(step, Top);
+                    //递归下一级
+                    if (ToolUtil.isNotEmpty(Top.getChildren())) {
+                        ActivitiStepsResult result = groupSteps(steps, auditResults, step);
+                        Top.setChildNode(result);
+                        getAudit(auditResults, Top);
+                        return Top;
+                    }
                 }
             }
-            //递归下一级
-            for (ActivitiStepsResult step : steps) {
-                if (step.getSetpsId().toString().equals(Top.getChildren())) {
-                    ActivitiStepsResult result = groupSteps(steps, auditResults, step);
-                    step.setChildNode(result);
-                }
-            }
-            return Top;
         } else {
+            //获取当前规则
+            getAudit(auditResults, stepsResult);
             //判断路由或节点
             if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
                 for (ActivitiStepsResult step : steps) {
@@ -552,9 +551,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 }
                 stepsResult.setConditionNodeList(childList);
             }
-            return stepsResult;
-        }
 
+        }
+        return stepsResult;
     }
 
     /**
