@@ -13,7 +13,6 @@ public  class DeptPosition{
     private String key;
 
 
-
     /**
      * 职位
      */

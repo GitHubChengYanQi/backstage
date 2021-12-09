@@ -20,7 +20,11 @@ public class AuditRule {
         private List<AppointUser> appointUsers;  //指定人
 
         private List<DeptPosition> deptPositions;  //部门+职位
+
+
     }
+
+
 
 }
 
