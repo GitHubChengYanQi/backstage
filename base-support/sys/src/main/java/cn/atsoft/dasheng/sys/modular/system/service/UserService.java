@@ -344,4 +344,15 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public IPage listUserAndRoleExpectAdmin(Page pageContext) {
         return baseMapper.listUserAndRoleExpectAdmin(pageContext);
     }
+    public List<Long> getAllUsersId()   {
+        List<User> list = this.list();
+        List<Long>  userIds = new ArrayList<>();
+        for (User user : list) {
+            userIds.add(user.getUserId());
+        }
+        return userIds;
+    }
+//    public List<User> getUserByPositionAndDept(){
+////       return this.baseMapper.listUserByPositionAndDept();
+//    }
 }

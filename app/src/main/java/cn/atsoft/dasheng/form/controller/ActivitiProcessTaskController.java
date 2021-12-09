@@ -6,7 +6,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.form.entity.*;
+import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
@@ -55,7 +57,10 @@ public class ActivitiProcessTaskController extends BaseController {
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private ActivitiProcessService activitiProcessService;
-
+    @Autowired
+    private ActivitiProcessTaskSend taskSend;
+    @Autowired
+    private ActivitiAuditService activitiAuditService;
     /**
      * 新增接口
      *
@@ -67,6 +72,13 @@ public class ActivitiProcessTaskController extends BaseController {
     public ResponseData addItem(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
         this.activitiProcessTaskService.add(activitiProcessTaskParam);
         return ResponseData.success();
+    }
+    @RequestMapping(value = "/getUsers", method = RequestMethod.POST)
+    @ApiOperation("")
+    public ResponseData getUsers(@RequestBody ActivitiAuditParam activitiAuditParam) {
+        ActivitiAudit audit = this.activitiAuditService.getById(activitiAuditParam.getAuditId());
+        List<Long> longs = taskSend.selectUsers(audit.getRule());
+        return ResponseData.success(longs);
     }
 
     /**

@@ -4,28 +4,23 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.ActivitiTaskSend;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
-import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.DepstPositions;
+import cn.atsoft.dasheng.form.pojo.DeptsPositions;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,35 +68,30 @@ public class ActivitiProcessTaskSend {
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
 
-//        if (ToolUtil.isNotEmpty(starUser.getUsers())) {
-//            for (AuditRule.Users user : starUser.getUsers()) {
-//                users.add(Long.valueOf(user.getKey()));
-//            }
-//        }
-//        if (starUser.perform) {
-//            List<User> allUser = userService.list();
-//            for (User user : allUser) {
-//                users.add(user.getUserId());
-//            }
-//        }
-//        if (ToolUtil.isNotEmpty(starUser.getDepts())) {
-//
-//            List<Long> positionIds = new ArrayList<>();
-//
-//            for (AuditRule.Depts dept : starUser.getDepts()) {
-//                deptIds = Long.valueOf(dept.getKey());
-//                for (AuditRule.Depts.Positions position : dept.getPositions()) {
-//                    positionIds.add(Long.valueOf(position.getValue()));
-//                }
-//            }
-//
-//            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds, deptIds);
-//            for (User user : userList) {
-//                users.add(user.getUserId());
-//            }
-//        }
+        for (AuditRule.Rule rule : starUser.getRules()) {
+            switch (rule.getType()) {
+                case AppointUser:
+                  
+                    break;
+                case AllPeople:
+                    List<Long> allUsersId = userService.getAllUsersId();
+                    users.addAll(allUsersId);
+                    break;
+                case DepstPositions:
+
+
+
+                    break;
+            }
+        }
+
         return users;
     }
+
+//    private List<DepstPositions>  getDeptData(AuditRule starUser) {
+//
+//
+//    }
 
     /**
      * 推送方法
@@ -137,7 +127,7 @@ public class ActivitiProcessTaskSend {
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
-                activitiProcessLogService.autoAudit(taskId,COMPLETE);
+                activitiProcessLogService.autoAudit(taskId, COMPLETE);
 
                 break;
             case SEND:
