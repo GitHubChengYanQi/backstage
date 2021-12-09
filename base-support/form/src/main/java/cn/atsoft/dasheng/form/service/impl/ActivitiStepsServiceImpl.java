@@ -509,8 +509,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     ActivitiStepsResult groupSteps(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
         //获取当前规则
-        AuditRule rule = getAudit(auditResults, stepsResult);
-        stepsResult.setAuditRule(rule);
+        ActivitiAuditResult audit = getAudit(auditResults, stepsResult);
+        stepsResult.setAuditRule(audit.getRule());
+        stepsResult.setAuditType(audit.getType());
         //顶级
         if (stepsResult.getSupper() == 0) {
             for (ActivitiStepsResult step : steps) {
@@ -570,8 +571,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiStepsResult step : steps) {
             if (branchStep.getSetpsId().equals(step.getSetpsId())) {
                 branch = step;
-                AuditRule rule = getAudit(auditResults, branch);
-                step.setAuditRule(rule);
+                ActivitiAuditResult audit = getAudit(auditResults, branch);
+                step.setAuditRule(audit.getRule());
+                step.setAuditType(audit.getType());
                 branchs.add(step);
                 break;
             }
@@ -592,10 +594,10 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
     /**
      * 取出当前规则
      */
-    AuditRule getAudit(List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
+    ActivitiAuditResult getAudit(List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
         for (ActivitiAuditResult auditResult : auditResults) {
             if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
-                return auditResult.getRule();
+                return auditResult;
             }
         }
         return null;
