@@ -10,8 +10,8 @@ import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.DepstPositions;
-import cn.atsoft.dasheng.form.pojo.DeptsPositions;
+import cn.atsoft.dasheng.form.pojo.DeptPosition;
+import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
+import org.beetl.ext.fn.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.form.pojo.RuleType.quality_complete;
 
 @Service
 @Data
@@ -38,6 +41,8 @@ public class ActivitiProcessTaskSend {
     private static final String SEND = "quality_task_send";
     private static final String DISPATCH = "quality_task_dispatch";
     private static final String PERFORM = "quality_task_perform";
+    private static final String PROCESS = "process";
+
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
@@ -71,15 +76,28 @@ public class ActivitiProcessTaskSend {
         for (AuditRule.Rule rule : starUser.getRules()) {
             switch (rule.getType()) {
                 case AppointUser:
-                  
+                    for (AppointUser appointUser : rule.getAppointUsers()) {
+                        users.add(Long.valueOf(appointUser.getKey()));
+                    }
                     break;
                 case AllPeople:
                     List<Long> allUsersId = userService.getAllUsersId();
                     users.addAll(allUsersId);
                     break;
                 case DeptPosition:
-            
-
+                    Map<String,List> map = new HashMap<>();
+                    for (DeptPosition deptPosition : rule.getDeptPositions()) {
+                        List<Long> positionIds = new ArrayList<>();
+                        for (DeptPosition.Position position : deptPosition.getPositions()) {
+                            if (ToolUtil.isNotEmpty(position.getValue())) {
+                                positionIds.add(Long.valueOf(position.getValue()));
+                            }
+                        }
+                        List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                        for (User user : userByPositionAndDept) {
+                            users.add(user.getUserId());
+                        }
+                    }
 
                     break;
             }
@@ -101,7 +119,7 @@ public class ActivitiProcessTaskSend {
      * @param taskId
      * @param status
      */
-    public void send(String type, AuditRule starUser, Long taskId, int status) {
+    public void send(RuleType type, AuditRule starUser, Long taskId, int status) {
         List<Long> users = new ArrayList<>();
         List<Long> collect = new ArrayList<>();
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
@@ -115,28 +133,30 @@ public class ActivitiProcessTaskSend {
         activitiTaskSend.setTaskId(taskId);
 
         switch (type) {
-            case PERSON:
+            case audit:
                 if (status == 1) {
                     this.personSend(activitiTaskSend);
                 } else {
                     vetoSend(taskId);
                 }
                 break;
-            case PERFORM:
-//                this.performTask(taskId);
+            case quality_perform:
+                this.performTask(taskId);
                 break;
-            case COMPLETE:
+            case quality_complete:
                 this.completeTaskSend(taskId);
-                activitiProcessLogService.autoAudit(taskId, COMPLETE);
+                activitiProcessLogService.autoAudit(taskId, quality_complete);
 
                 break;
-            case SEND:
+            case send:
                 this.sendSend(activitiTaskSend);
                 break;
-            case DISPATCH:
+            case quality_dispatch:
                 this.dispatch(activitiTaskSend);
                 break;
+
         }
+
     }
 
     /**
@@ -172,7 +192,7 @@ public class ActivitiProcessTaskSend {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setTitle("已被分派新的待执行任务");
+        wxCpTemplate.setTitle("已被分派新的任务");
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
@@ -271,7 +291,7 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.autoAudit(param.getTaskId(), "sned");
+        activitiProcessLogService.autoAudit(param.getTaskId(), RuleType.send);
 
     }
 

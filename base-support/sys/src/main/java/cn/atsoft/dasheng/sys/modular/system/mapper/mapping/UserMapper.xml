@@ -275,15 +275,28 @@
                  left join sys_dept dept on u.dept_id = dept.dept_id
     </select>
 
+<!--    <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">-->
+<!--        select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id-->
+<!--        from sys_user left join sys_user_pos-->
+<!--        on sys_user.user_id = sys_user_pos.user_id-->
+<!--        where status = 'ENABLE'-->
+<!--        <if test="position!=null and position.size()>0">-->
+<!--          and sys_user.dept_id = #{position.key}-->
+<!--            and sys_user_pos.pos_id in-->
+<!--            <foreach item="i" index="index" collection="position.positions" open="(" separator="," close=")">-->
+<!--                #{i}-->
+<!--            </foreach>-->
+<!--        </if>-->
+<!--    </select>-->
     <select id="listUserByPositionAndDept" resultType="cn.atsoft.dasheng.sys.modular.system.entity.User">
         select sys_user.user_id,sys_user.name,sys_user.dept_id , sys_user_pos.pos_id
         from sys_user left join sys_user_pos
         on sys_user.user_id = sys_user_pos.user_id
         where status = 'ENABLE'
-        <if test="position!=null and position.size()>0">
-          and sys_user.dept_id = #{position.key}
+        <if test="deptId!=null and positionIds.size()>0">
+            and sys_user.dept_id = #{deptId}
             and sys_user_pos.pos_id in
-            <foreach item="i" index="index" collection="position.positions" open="(" separator="," close=")">
+            <foreach item="i" index="index" collection="positionIds" open="(" separator="," close=")">
                 #{i}
             </foreach>
         </if>

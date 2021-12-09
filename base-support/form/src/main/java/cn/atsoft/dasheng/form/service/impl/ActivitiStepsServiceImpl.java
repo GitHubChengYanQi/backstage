@@ -12,10 +12,7 @@ import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
-import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.AuditType;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
-import cn.atsoft.dasheng.form.pojo.StepsType;
+import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
@@ -35,7 +32,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.atsoft.dasheng.form.pojo.StepsType.AUDIT;
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
@@ -443,26 +442,37 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
-//        if (ToolUtil.isNotEmpty(starUser.getUsers())) {
-//            for (AuditRule.Users user : starUser.getUsers()) {
-//                users.add(Long.valueOf(user.getKey()));
-//            }
-//        }
-//        if (ToolUtil.isNotEmpty(starUser.getDepts())) {
-//            Long deptIds = 0L;
-//            List<Long> positionIds = new ArrayList<>();
-//            for (AuditRule.Depts dept : starUser.getDepts()) {
-//                deptIds=Long.valueOf(dept.getKey());
-//                for (AuditRule.Depts.Positions position : dept.getPositions()) {
-//                    positionIds.add(Long.valueOf(position.getValue()));
-//                }
-//            }
-//
-//            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds,deptIds);
-//            for (User user : userList) {
-//                users.add(user.getUserId());
-//            }
-//        }
+
+        for (AuditRule.Rule rule : starUser.getRules()) {
+            switch (rule.getType()) {
+                case AppointUser:
+                    for (AppointUser appointUser : rule.getAppointUsers()) {
+                        users.add(Long.valueOf(appointUser.getKey()));
+                    }
+                    break;
+                case AllPeople:
+                    List<Long> allUsersId = userService.getAllUsersId();
+                    users.addAll(allUsersId);
+                    break;
+                case DeptPosition:
+                    Map<String,List> map = new HashMap<>();
+                    for (DeptPosition deptPosition : rule.getDeptPositions()) {
+                        List<Long> positionIds = new ArrayList<>();
+                        for (DeptPosition.Position position : deptPosition.getPositions()) {
+                            if (ToolUtil.isNotEmpty(position.getValue())) {
+                                positionIds.add(Long.valueOf(position.getValue()));
+                            }
+                        }
+                        List<User> userByPositionAndDept = userService.getUserByPositionAndDept(Long.valueOf(deptPosition.getKey()), positionIds);
+                        for (User user : userByPositionAndDept) {
+                            users.add(user.getUserId());
+                        }
+                    }
+
+                    break;
+            }
+        }
+
         return users;
     }
 

@@ -352,7 +352,10 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         }
         return userIds;
     }
-//    public List<User> getUserByPositionAndDept(){
-////       return this.baseMapper.listUserByPositionAndDept();
+    public List<User> getUserByPositionAndDept(Long deptId,List<Long> positionIds){
+       return this.baseMapper.listUserByPositionAndDept(deptId,positionIds);
+    }
+//    public List<User> getUserByPositionAndDept(Map<String,List> param){
+//        return this.baseMapper.listUserByPositionAndDept(param.get("position"),);
 //    }
 }

@@ -48,6 +48,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.atsoft.dasheng.form.pojo.RuleType.quality_dispatch;
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
 
@@ -177,7 +178,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.audit(taskId, 1);
+            activitiProcessLogService.autoAudit(taskId, null);
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -663,7 +664,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
-            activitiProcessLogService.autoAudit(task.getParentId(),"dispatch");
+            activitiProcessLogService.autoAudit(task.getParentId(),quality_dispatch);
 
         }
     }

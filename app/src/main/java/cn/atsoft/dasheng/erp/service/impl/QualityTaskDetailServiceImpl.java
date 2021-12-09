@@ -19,6 +19,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.form.model.result.FormDataValueResult;
+import cn.atsoft.dasheng.form.pojo.AppointUser;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
+import cn.atsoft.dasheng.form.pojo.AuditType;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.form.service.FormDataValueService;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
@@ -27,6 +30,7 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.Role;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.json.JSONUtil;
@@ -42,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static cn.atsoft.dasheng.form.pojo.RuleType.quality_perform;
 
 /**
  * <p>
@@ -78,6 +84,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private MobileService mobileService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ActivitiProcessTaskSend activitiTaskSend;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -108,18 +116,24 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
         this.updateBatchById(taskDetails);
 
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+
         List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
-        wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + formId.getOrCodeId();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setDescription("点击查看新质检任务");
-        wxCpTemplate.setTitle("您被分派新的任务");
-        wxCpTemplate.setType(1);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+
+        AuditRule auditRule = new AuditRule();
+        List<AuditRule.Rule> roleList = new ArrayList<>();
+        AuditRule.Rule role = new AuditRule.Rule();
+        List<AppointUser> appointUsers = new ArrayList<>();
+        for (Long user : users) {
+            AppointUser appointUser = new AppointUser();
+            appointUser.setKey(user.toString());
+            appointUsers.add(appointUser);
+            role.setAppointUsers(appointUsers);
+            roleList.add(role);
+        }
+        auditRule.setRules(roleList);
+        activitiTaskSend.send(quality_perform,auditRule,param.getQualityTaskId(),1);
+
     }
 
     @Override
