@@ -1,6 +1,5 @@
 package cn.atsoft.dasheng.form.pojo;
 
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.List;
@@ -14,12 +13,13 @@ public class AuditRule {
     private RuleType type;
 
     @Data
-    public class Rule<T> {
+    public static class Rule {
 
         private DataType type;         //类型
 
-        private List<T> data;
+        private List<AppointUser> appointUsers;  //指定人
 
+        private List<DeptPosition> deptPositions;  //部门+职位
     }
 
 }

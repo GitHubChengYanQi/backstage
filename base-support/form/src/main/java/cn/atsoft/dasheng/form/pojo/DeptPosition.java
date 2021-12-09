@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class DepstPositions<T> implements RuleInterface {
+public  class DeptPosition<T> implements RuleInterface {
 
     private List<Positions> positions;
-    private String label;
-    private String value;
+    private String title;
+    private String key;
 
     @Override
     public DataType getType() {
-        return DataType.DepstPositions;
+        return DataType.DeptPosition;
     }
 
     @Override
