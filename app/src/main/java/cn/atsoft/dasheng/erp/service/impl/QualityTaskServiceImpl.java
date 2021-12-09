@@ -391,7 +391,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         QualityTask qualityTask = new QualityTask();
         ToolUtil.copyProperties(params, qualityTask);
-
+        qualityTask.setState(1);
         this.save(qualityTask);
 
         List<QualityTaskDetail> details = new ArrayList<>();
@@ -633,8 +633,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
 
 
-        if (task.getState() == 0) {
-            task.setState(1);
+        if (task.getState() == 1) {
+            task.setState(2);
             this.updateById(task);
         }
         //判断所有子任务
@@ -642,7 +642,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         boolean t = true;
         for (QualityTask qualityTask : tasks) {
-            if (qualityTask.getState() != 1) {
+            if (qualityTask.getState() != 2) {
                 t = false;
             }
         }
@@ -659,7 +659,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         //子任务完成更新父级任务
         if (t) {
             QualityTask fathTask = new QualityTask();
-            fathTask.setState(1);
+            fathTask.setState(2);
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});

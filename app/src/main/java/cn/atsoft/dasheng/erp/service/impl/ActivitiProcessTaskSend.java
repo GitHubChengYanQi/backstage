@@ -235,7 +235,7 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         QualityTask updateEntity = new QualityTask();
         updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
-        updateEntity.setState(2);
+        updateEntity.setState(3);
         qualityTaskService.updateById(updateEntity);
         logger.info(updateEntity.toString());
 
@@ -245,7 +245,7 @@ public class ActivitiProcessTaskSend {
             for (QualityTask detail : qualityTaskList) {
                 List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
 
-                detail.setState(2);
+                detail.setState(3);
 
                 List<Long> collect = userIds.stream().distinct().collect(Collectors.toList());
                 String url = mobileService.getMobileConfig().getUrl();
