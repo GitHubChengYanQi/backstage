@@ -485,19 +485,14 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //TODO  查询步骤
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
 
-        ActivitiStepsResult stepsResult = new ActivitiStepsResult();
         List<Long> stepIds = new ArrayList<>();
-        //取出顶级
         for (ActivitiStepsResult step : steps) {
             stepIds.add(step.getSetpsId());
-            if (step.getSupper() == 0) {
-                ToolUtil.copyProperties(step, stepsResult);
-            }
         }
         //取出所有规则
         List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
 
-        ActivitiStepsResult result = groupSteps(steps, auditResults, stepsResult);
+        ActivitiStepsResult result = groupSteps(steps, auditResults, null);
         return result;
     }
 
@@ -509,51 +504,55 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     ActivitiStepsResult groupSteps(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
         //获取当前规则
-        ActivitiAuditResult audit = getAudit(auditResults, stepsResult);
-        stepsResult.setAuditRule(audit.getRule());
-        stepsResult.setAuditType(audit.getType());
-        //顶级
-        if (stepsResult.getSupper() == 0) {
+        getAudit(auditResults, stepsResult);
+        //判断顶级
+        if (ToolUtil.isEmpty(stepsResult)) {
+            ActivitiStepsResult Top = new ActivitiStepsResult();
+            //取出顶级
             for (ActivitiStepsResult step : steps) {
-                //对比下一级
-                if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
-                    ActivitiStepsResult result = groupSteps(steps, auditResults, step);
-                    stepsResult.setChildNode(result);
-                    return stepsResult;
+                if (step.getSupper() == 0) {
+                    ToolUtil.copyProperties(step, Top);
                 }
             }
-        }
-        //判断路由或节点
-        if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+            //递归下一级
             for (ActivitiStepsResult step : steps) {
-                //对比下一级
-                if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
+                if (step.getSetpsId().toString().equals(Top.getChildren())) {
                     ActivitiStepsResult result = groupSteps(steps, auditResults, step);
-                    stepsResult.setChildNode(result);
+                    step.setChildNode(result);
                 }
             }
-        }
-        //判断分支
-        if (ToolUtil.isNotEmpty(stepsResult.getConditionNodes())) {
-            String[] branchStepId = stepsResult.getConditionNodes().split(",");
-            List<ActivitiStepsResult> branchSteps = new ArrayList<>();
-            //取出当前分支集合
-            for (ActivitiStepsResult step : steps) {
-                for (String s : branchStepId) {
-                    if (step.getSetpsId().toString().equals(s)) {
-                        branchSteps.add(step);
+
+        } else {
+            //判断路由或节点
+            if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+                for (ActivitiStepsResult step : steps) {
+                    //对比下一级
+                    if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
+                        ActivitiStepsResult result = groupSteps(steps, auditResults, step);
+                        stepsResult.setChildNode(result);
                     }
                 }
             }
-            List<ActivitiStepsResult> childList = new ArrayList<>();
-            for (ActivitiStepsResult branchStep : branchSteps) {
-                List<ActivitiStepsResult> branch = getBranch(steps, auditResults, branchStep);
-                childList.addAll(branch);
+            //判断分支
+            if (ToolUtil.isNotEmpty(stepsResult.getConditionNodes())) {
+                String[] branchStepId = stepsResult.getConditionNodes().split(",");
+                List<ActivitiStepsResult> branchSteps = new ArrayList<>();
+                //取出当前分支集合
+                for (ActivitiStepsResult step : steps) {
+                    for (String s : branchStepId) {
+                        if (step.getSetpsId().toString().equals(s)) {
+                            branchSteps.add(step);
+                        }
+                    }
+                }
+                List<ActivitiStepsResult> childList = new ArrayList<>();
+                for (ActivitiStepsResult branchStep : branchSteps) {
+                    List<ActivitiStepsResult> branch = getBranch(steps, auditResults, branchStep);
+                    childList.addAll(branch);
+                }
+                stepsResult.setConditionNodeList(childList);
             }
-            stepsResult.setConditionNodeList(childList);
         }
-
-
         return stepsResult;
     }
 
@@ -571,9 +570,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         for (ActivitiStepsResult step : steps) {
             if (branchStep.getSetpsId().equals(step.getSetpsId())) {
                 branch = step;
-                ActivitiAuditResult audit = getAudit(auditResults, branch);
-                step.setAuditRule(audit.getRule());
-                step.setAuditType(audit.getType());
+                getAudit(auditResults, branch);
                 branchs.add(step);
                 break;
             }
@@ -592,15 +589,17 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
 
     /**
-     * 取出当前规则
+     * 获取当前规则
      */
-    ActivitiAuditResult getAudit(List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
-        for (ActivitiAuditResult auditResult : auditResults) {
-            if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
-                return auditResult;
+    void getAudit(List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
+        if (ToolUtil.isNotEmpty(stepsResult)) {
+            for (ActivitiAuditResult auditResult : auditResults) {
+                if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
+                    stepsResult.setAuditRule(auditResult.getRule());
+                    stepsResult.setAuditType(auditResult.getType());
+                }
             }
         }
-        return null;
     }
 
     /**
