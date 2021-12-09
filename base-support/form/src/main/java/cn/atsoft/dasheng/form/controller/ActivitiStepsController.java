@@ -83,12 +83,13 @@ public class ActivitiStepsController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<ActivitiStepsResult> detail(@RequestBody ActivitiStepsParam activitiStepsParam) {
-        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
-        return ResponseData.success(stepsResult);
+        ActivitiStepsResult steps = activitiStepsService.getStepResult(activitiStepsParam.getProcessId());
+//        ActivitiStepsResult stepsResult = this.activitiStepsService.backStepsResult(activitiStepsParam.getProcessId());
+        return ResponseData.success(steps);
     }
 
     /**
-     * 查询列表
+     * 查询列表,
      *
      * @author Sing
      * @Date 2021-11-10

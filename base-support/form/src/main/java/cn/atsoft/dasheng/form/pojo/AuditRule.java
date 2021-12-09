@@ -1,12 +1,26 @@
 package cn.atsoft.dasheng.form.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
-import lombok.experimental.Accessors;
+
+import java.util.List;
+
 
 @Data
-
 public class AuditRule {
-    private QualityRules qualityRules;
+
+    private List<Rule> rules;     //规则
+
+    private RuleType type;
+
+    @Data
+    public class Rule<T> {
+
+        private DataType type;         //类型
+
+        private List<T> data;
+
+    }
+
 }
+

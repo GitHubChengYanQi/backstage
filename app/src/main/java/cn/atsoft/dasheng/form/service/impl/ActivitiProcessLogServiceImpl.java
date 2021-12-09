@@ -259,7 +259,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         this.sendNextStepsByTask(processTask);
     }
-    private void autoProcessTaskAudit(ActivitiProcessTask processTask, ){
+    private void autoProcessTaskAudit(ActivitiProcessTask processTask){
         QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
         //获取流程所有节点
         List<ActivitiProcessLog> logs = listByTaskId(processTask.getProcessTaskId());

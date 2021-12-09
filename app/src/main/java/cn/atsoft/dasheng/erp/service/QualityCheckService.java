@@ -66,6 +66,11 @@ public interface QualityCheckService extends IService<QualityCheck> {
      */
     PageInfo<QualityCheckResult> findPageBySpec(QualityCheckParam param);
 
+    /**
+     * 返回多个check
+     * @param ids
+     * @return
+     */
     List<QualityCheckResult> getChecks(List<Long> ids);
 
 }

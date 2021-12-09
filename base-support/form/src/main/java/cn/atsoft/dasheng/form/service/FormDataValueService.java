@@ -66,7 +66,14 @@ public interface FormDataValueService extends IService<FormDataValue> {
      */
     PageInfo<FormDataValueResult> findPageBySpec(FormDataValueParam param);
 
-
+    /**
+     * 多个dataId返回
+     *
+     * @param dataId
+     * @return
+     */
     List<FormDataValueResult> getDataValuesByDataId(List<Long> dataId);
+
+    List<FormDataValueResult> getDataValuesResults (Long dataId);
 
 }

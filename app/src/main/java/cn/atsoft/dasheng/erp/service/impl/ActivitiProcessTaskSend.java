@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 @Service
 @Data
 public class ActivitiProcessTaskSend {
-    private static final String PERSON="quality_task_person";
-    private static final String COMPLETE="quality_task_complete";
-    private static final String SEND="quality_task_send";
-    private static final String DISPATCH="quality_task_dispatch";
-    private static final String PERFORM="quality_task_perform";
+    private static final String PERSON = "quality_task_person";
+    private static final String COMPLETE = "quality_task_complete";
+    private static final String SEND = "quality_task_send";
+    private static final String DISPATCH = "quality_task_dispatch";
+    private static final String PERFORM = "quality_task_perform";
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
@@ -66,47 +66,52 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 根据传入参数换取 节点里面包含人的条件规则 找到人
+     *
      * @param starUser
      * @return
      */
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
-            for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
-                users.add(Long.valueOf(user.getKey()));
-            }
-        }
-        if (starUser.getQualityRules().perform) {
-            List<User> allUser = userService.list();
-            for (User user : allUser) {
-                users.add(user.getUserId());
-            }
-        }
-        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
-            Long deptIds = 0L;
-            List<Long> positionIds = new ArrayList<>();
-            for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-                deptIds=Long.valueOf(dept.getKey());
-                for (QualityRules.Depts.Positions position : dept.getPositions()) {
-                    positionIds.add(Long.valueOf(position.getValue()));
-                }
-            }
-            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds,deptIds);
-            for (User user : userList) {
-                users.add(user.getUserId());
-            }
-        }
+
+//        if (ToolUtil.isNotEmpty(starUser.getUsers())) {
+//            for (AuditRule.Users user : starUser.getUsers()) {
+//                users.add(Long.valueOf(user.getKey()));
+//            }
+//        }
+//        if (starUser.perform) {
+//            List<User> allUser = userService.list();
+//            for (User user : allUser) {
+//                users.add(user.getUserId());
+//            }
+//        }
+//        if (ToolUtil.isNotEmpty(starUser.getDepts())) {
+//
+//            List<Long> positionIds = new ArrayList<>();
+//
+//            for (AuditRule.Depts dept : starUser.getDepts()) {
+//                deptIds = Long.valueOf(dept.getKey());
+//                for (AuditRule.Depts.Positions position : dept.getPositions()) {
+//                    positionIds.add(Long.valueOf(position.getValue()));
+//                }
+//            }
+//
+//            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds, deptIds);
+//            for (User user : userList) {
+//                users.add(user.getUserId());
+//            }
+//        }
         return users;
     }
 
     /**
      * 推送方法
+     *
      * @param type
      * @param starUser
      * @param taskId
      * @param status
      */
-    public void send(String type, AuditRule starUser, Long taskId,int status) {
+    public void send(String type, AuditRule starUser, Long taskId, int status) {
         List<Long> users = new ArrayList<>();
         List<Long> collect = new ArrayList<>();
         ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
@@ -121,9 +126,9 @@ public class ActivitiProcessTaskSend {
 
         switch (type) {
             case PERSON:
-                if (status == 1){
+                if (status == 1) {
                     this.personSend(activitiTaskSend);
-                }else {
+                } else {
                     vetoSend(taskId);
                 }
                 break;
@@ -146,6 +151,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 关于质检任务的map
+     *
      * @param taskId
      * @return
      */
@@ -164,6 +170,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 开始质检任务推送
+     *
      * @param taskId
      */
     private void performTask(Long taskId) {
@@ -171,7 +178,7 @@ public class ActivitiProcessTaskSend {
         List<Long> users = new ArrayList<>();
         users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
         String url = mobileService.getMobileConfig().getUrl();
-        url = url +"OrCode?id="+aboutSend.get("orcodeId").toString();
+        url = url + "OrCode?id=" + aboutSend.get("orcodeId").toString();
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setUserIds(users);
@@ -183,6 +190,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 审批节点推送
+     *
      * @param param
      */
     private void personSend(ActivitiTaskSend param) {
@@ -200,6 +208,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 分派任务节点推送
+     *
      * @param param
      */
     private void dispatch(ActivitiTaskSend param) {
@@ -218,6 +227,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 任务完完成节点推送
+     *
      * @param taskId
      */
     private void completeTaskSend(Long taskId) {
@@ -230,7 +240,7 @@ public class ActivitiProcessTaskSend {
         logger.info(updateEntity.toString());
 
 //        List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
-        List<QualityTask> qualityTaskList = qualityTaskService.query().eq("parent_id",aboutSend.get("qualityTaskId")).list();
+        List<QualityTask> qualityTaskList = qualityTaskService.query().eq("parent_id", aboutSend.get("qualityTaskId")).list();
         if (ToolUtil.isNotEmpty(qualityTaskList)) {
             for (QualityTask detail : qualityTaskList) {
                 List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -256,6 +266,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 抄送人节点推送
+     *
      * @param param
      */
     private void sendSend(ActivitiTaskSend param) {
@@ -276,6 +287,7 @@ public class ActivitiProcessTaskSend {
 
     /**
      * 审批节点拒绝 推送
+     *
      * @param taskId
      */
     public void vetoSend(Long taskId) {
@@ -295,7 +307,8 @@ public class ActivitiProcessTaskSend {
         wxCpSendTemplate.sendTemplate();
 
     }
-    public void noProcessQualityTaskSend(QualityTaskParam param,Long orcodeId){
+
+    public void noProcessQualityTaskSend(QualityTaskParam param, Long orcodeId) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         List<Long> userIds = new ArrayList<>();
         userIds.add(param.getUserId());

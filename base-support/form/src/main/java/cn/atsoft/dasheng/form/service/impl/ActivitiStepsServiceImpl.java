@@ -222,17 +222,15 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         ActivitiAudit activitiAudit = new ActivitiAudit();
         activitiAudit.setSetpsId(id);
         switch (auditType) {
-            case quality_task_start:
-            case quality_task_person:
-            case quality_task_send:
-            case quality_task_dispatch:
-                if (ToolUtil.isEmpty(auditRule.getQualityRules())) {
+            case start:
+            case process:
+            case send:
+                if (ToolUtil.isEmpty(auditRule)) {
                     throw new ServiceException(500, "配置数据错误");
                 }
                 activitiAudit.setRule(auditRule);
                 break;
-            case quality_task_perform:
-            case quality_task_complete:
+
             case route:
             case branch:
                 break;
@@ -402,14 +400,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return luyou;
     }
 
-    private Boolean inUsers(List<QualityRules.Users> users, Long userId) {
-        for (QualityRules.Users user : users) {
-            if (user.getKey().equals(userId.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public List<ActivitiStepsResult> backSteps(List<Long> ids) {
@@ -453,27 +443,30 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
 
     public List<Long> selectUsers(AuditRule starUser) {
         List<Long> users = new ArrayList<>();
-        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getUsers())) {
-            for (QualityRules.Users user : starUser.getQualityRules().getUsers()) {
-                users.add(Long.valueOf(user.getKey()));
-            }
-        }
-        if (ToolUtil.isNotEmpty(starUser.getQualityRules().getDepts())) {
-            Long deptIds = 0L;
-            List<Long> positionIds = new ArrayList<>();
-            for (QualityRules.Depts dept : starUser.getQualityRules().getDepts()) {
-                deptIds=Long.valueOf(dept.getKey());
-                for (QualityRules.Depts.Positions position : dept.getPositions()) {
-                    positionIds.add(Long.valueOf(position.getValue()));
-                }
-            }
-            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds,deptIds);
-            for (User user : userList) {
-                users.add(user.getUserId());
-            }
-        }
+//        if (ToolUtil.isNotEmpty(starUser.getUsers())) {
+//            for (AuditRule.Users user : starUser.getUsers()) {
+//                users.add(Long.valueOf(user.getKey()));
+//            }
+//        }
+//        if (ToolUtil.isNotEmpty(starUser.getDepts())) {
+//            Long deptIds = 0L;
+//            List<Long> positionIds = new ArrayList<>();
+//            for (AuditRule.Depts dept : starUser.getDepts()) {
+//                deptIds=Long.valueOf(dept.getKey());
+//                for (AuditRule.Depts.Positions position : dept.getPositions()) {
+//                    positionIds.add(Long.valueOf(position.getValue()));
+//                }
+//            }
+//
+//            List<User> userList = userService.getBaseMapper().listUserByPositionAndDept(positionIds,deptIds);
+//            for (User user : userList) {
+//                users.add(user.getUserId());
+//            }
+//        }
         return users;
     }
+
+
     @Override
     public Boolean checkUser(AuditRule starUser) {
         LoginUser user = LoginContextHolder.getContext().getUser();
@@ -485,6 +478,144 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             }
         }
         return false;
+    }
+
+    @Override
+    public ActivitiStepsResult getStepResult(Long processId) {
+        //TODO  查询步骤
+        List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
+
+        ActivitiStepsResult stepsResult = new ActivitiStepsResult();
+        List<Long> stepIds = new ArrayList<>();
+        //取出顶级
+        for (ActivitiStepsResult step : steps) {
+            stepIds.add(step.getSetpsId());
+            if (step.getSupper() == 0) {
+                ToolUtil.copyProperties(step, stepsResult);
+            }
+        }
+        //取出所有规则
+        List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
+
+        ActivitiStepsResult result = groupSteps(steps, auditResults, stepsResult);
+        return result;
+    }
+
+    /**
+     * 组合数据
+     *
+     * @param steps
+     * @return
+     */
+    ActivitiStepsResult groupSteps(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
+        //获取当前规则
+        AuditRule rule = getAudit(auditResults, stepsResult);
+        stepsResult.setAuditRule(rule);
+        //顶级
+        if (stepsResult.getSupper() == 0) {
+            for (ActivitiStepsResult step : steps) {
+                //对比下一级
+                if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
+                    ActivitiStepsResult result = groupSteps(steps, auditResults, step);
+                    stepsResult.setChildNode(result);
+                    return stepsResult;
+                }
+            }
+        }
+        //判断路由或节点
+        if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+            for (ActivitiStepsResult step : steps) {
+                //对比下一级
+                if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
+                    ActivitiStepsResult result = groupSteps(steps, auditResults, step);
+                    stepsResult.setChildNode(result);
+                }
+            }
+        }
+        //判断分支
+        if (ToolUtil.isNotEmpty(stepsResult.getConditionNodes())) {
+            String[] branchStepId = stepsResult.getConditionNodes().split(",");
+            List<ActivitiStepsResult> branchSteps = new ArrayList<>();
+            //取出当前分支集合
+            for (ActivitiStepsResult step : steps) {
+                for (String s : branchStepId) {
+                    if (step.getSetpsId().toString().equals(s)) {
+                        branchSteps.add(step);
+                    }
+                }
+            }
+            List<ActivitiStepsResult> childList = new ArrayList<>();
+            for (ActivitiStepsResult branchStep : branchSteps) {
+                List<ActivitiStepsResult> branch = getBranch(steps, auditResults, branchStep);
+                childList.addAll(branch);
+            }
+            stepsResult.setConditionNodeList(childList);
+        }
+
+
+        return stepsResult;
+    }
+
+    /**
+     * 取分支
+     *
+     * @param steps
+     * @param auditResults
+     * @param branchStep
+     * @return
+     */
+    List<ActivitiStepsResult> getBranch(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult branchStep) {
+        List<ActivitiStepsResult> branchs = new ArrayList<>();
+        ActivitiStepsResult branch = new ActivitiStepsResult();
+        for (ActivitiStepsResult step : steps) {
+            if (branchStep.getSetpsId().equals(step.getSetpsId())) {
+                branch = step;
+                AuditRule rule = getAudit(auditResults, branch);
+                step.setAuditRule(rule);
+                branchs.add(step);
+                break;
+            }
+        }
+        //判断节点是否有下一级
+        for (ActivitiStepsResult step : steps) {
+            if (step.getSetpsId().toString().equals(branch.getChildren())) {
+                ActivitiStepsResult result = groupSteps(steps, auditResults, step);
+                branch.setChildNode(result);
+                break;
+            }
+        }
+
+        return branchs;
+    }
+
+
+    /**
+     * 取出当前规则
+     */
+    AuditRule getAudit(List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
+        for (ActivitiAuditResult auditResult : auditResults) {
+            if (auditResult.getSetpsId().equals(stepsResult.getSetpsId())) {
+                return auditResult.getRule();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 返回当前processId 所有steps
+     *
+     * @param processId
+     * @return
+     */
+    List<ActivitiStepsResult> getStepsByProcessId(Long processId) {
+        List<ActivitiStepsResult> stepsResults = new ArrayList<>();
+        List<ActivitiSteps> steps = this.query().eq("process_id", processId).list();
+        for (ActivitiSteps step : steps) {
+            ActivitiStepsResult stepsResult = new ActivitiStepsResult();
+            ToolUtil.copyProperties(step, stepsResult);
+            stepsResults.add(stepsResult);
+        }
+        return stepsResults;
     }
 
 }

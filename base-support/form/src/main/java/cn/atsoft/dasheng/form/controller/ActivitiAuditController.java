@@ -4,15 +4,18 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,8 @@ public class ActivitiAuditController extends BaseController {
         return ResponseData.success();
     }
 
+
+
     /**
      * 编辑接口
      *
@@ -67,7 +72,7 @@ public class ActivitiAuditController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiAuditParam activitiAuditParam)  {
+    public ResponseData delete(@RequestBody ActivitiAuditParam activitiAuditParam) {
         this.activitiAuditService.delete(activitiAuditParam);
         return ResponseData.success();
     }
@@ -98,13 +103,11 @@ public class ActivitiAuditController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiAuditResult> list(@RequestBody(required = false) ActivitiAuditParam activitiAuditParam) {
-        if(ToolUtil.isEmpty(activitiAuditParam)){
+        if (ToolUtil.isEmpty(activitiAuditParam)) {
             activitiAuditParam = new ActivitiAuditParam();
         }
         return this.activitiAuditService.findPageBySpec(activitiAuditParam);
     }
-
-
 
 
 }

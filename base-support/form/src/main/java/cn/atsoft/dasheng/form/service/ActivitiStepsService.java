@@ -77,4 +77,8 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
     List<ActivitiStepsResult> backSteps(List<Long> ids);
 
     Boolean checkUser(AuditRule starUser);
+
+
+    ActivitiStepsResult getStepResult(Long processId);
+
 }

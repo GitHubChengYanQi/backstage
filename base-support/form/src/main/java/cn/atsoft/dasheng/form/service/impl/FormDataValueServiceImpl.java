@@ -79,6 +79,24 @@ public class FormDataValueServiceImpl extends ServiceImpl<FormDataValueMapper, F
         return results;
     }
 
+    @Override
+    public List<FormDataValueResult> getDataValuesResults(Long dataId) {
+        List<FormDataValueResult> valueResults = new ArrayList<>();
+        if (ToolUtil.isEmpty(dataId)) {
+            return valueResults;
+        }
+        List<FormDataValue> dataValues = this.query().eq("data_id", dataId).list();
+        if (ToolUtil.isEmpty(dataValues)) {
+            return valueResults;
+        }
+        for (FormDataValue dataValue : dataValues) {
+            FormDataValueResult dataValueResult = new FormDataValueResult();
+            ToolUtil.copyProperties(dataValue, dataValueResult);
+            valueResults.add(dataValueResult);
+        }
+        return valueResults;
+    }
+
     private Serializable getKey(FormDataValueParam param) {
         return param.getValueId();
     }

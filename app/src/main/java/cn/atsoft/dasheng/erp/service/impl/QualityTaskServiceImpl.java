@@ -178,8 +178,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.audit(taskId, 1);
-        }else {
-            throw new ServiceException(500,"请创建质检流程！");
+        } else {
+            throw new ServiceException(500, "请创建质检流程！");
         }
 
     }
@@ -505,22 +505,24 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         FormDataRequest formDataRequest = new FormDataRequest();
 
         //通过二维码找到实物id
-        OrCodeBind codeId = bindService.query().eq("qr_code_id", qrcodeId).one();
-        if (ToolUtil.isEmpty(codeId)) {
+        Long formId = bindService.getFormId(qrcodeId);
+        if (formId == 0L) {
             throw new ServiceException(500, "二维码不正确");
         }
         //通过实物id找到data
         FormData formData = new FormData();
         switch (type) {
             case "sampling":
-                formData = formDataService.query().eq("form_id", codeId.getFormId()).eq("status", 0).one();
+                formData = formDataService.query().eq("form_id", formId).eq("status", 0).one();
                 break;
             case "fixed":
-                formData = formDataService.query().eq("form_id", codeId.getFormId()).one();
+                formData = formDataService.query().eq("form_id", formId).one();
                 break;
         }
         //通过data找value
         List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
+
+
 
         List<Long> planId = new ArrayList<>();
         for (FormDataValue dataValue : dataValues) {
@@ -646,11 +648,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
         //判断父级任务分配数量
-        List<QualityTaskDetail> taskDetails =  detailService.query()
+        List<QualityTaskDetail> taskDetails = detailService.query()
                 .eq("quality_task_id", task.getParentId()).list();
 
         for (QualityTaskDetail taskDetail : taskDetails) {
-            if (taskDetail.getRemaining()!=0) {
+            if (taskDetail.getRemaining() != 0) {
                 t = false;
             }
         }
