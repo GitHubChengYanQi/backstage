@@ -455,7 +455,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                     users.addAll(allUsersId);
                     break;
                 case DeptPositions:
-                    Map<String,List> map = new HashMap<>();
+                    Map<String, List> map = new HashMap<>();
                     for (DeptPosition deptPosition : rule.getDeptPositions()) {
                         List<Long> positionIds = new ArrayList<>();
                         for (DeptPosition.Position position : deptPosition.getPositions()) {
@@ -498,8 +498,12 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      */
     @Override
     public ActivitiStepsResult getStepResult(Long processId) {
+
         //TODO  查询步骤
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
+        if (ToolUtil.isEmpty(steps)) {
+            return  null;
+        }
         List<Long> stepIds = new ArrayList<>();
         ActivitiStepsResult top = new ActivitiStepsResult();
         for (ActivitiStepsResult step : steps) {
