@@ -75,7 +75,7 @@ public class ActivitiProcessTaskSend {
 
         for (AuditRule.Rule rule : starUser.getRules()) {
             switch (rule.getType()) {
-                case AppointUser:
+                case AppointUsers:
                     for (AppointUser appointUser : rule.getAppointUsers()) {
                         users.add(Long.valueOf(appointUser.getKey()));
                     }
@@ -84,7 +84,7 @@ public class ActivitiProcessTaskSend {
                     List<Long> allUsersId = userService.getAllUsersId();
                     users.addAll(allUsersId);
                     break;
-                case DeptPosition:
+                case DeptPositions:
                     Map<String,List> map = new HashMap<>();
                     for (DeptPosition deptPosition : rule.getDeptPositions()) {
                         List<Long> positionIds = new ArrayList<>();
