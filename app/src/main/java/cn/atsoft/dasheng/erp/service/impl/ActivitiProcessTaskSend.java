@@ -77,8 +77,8 @@ public class ActivitiProcessTaskSend {
                     List<Long> allUsersId = userService.getAllUsersId();
                     users.addAll(allUsersId);
                     break;
-                case DepstPositions:
-
+                case DeptPosition:
+            
 
 
                     break;
