@@ -480,19 +480,27 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return false;
     }
 
+    /**
+     * 树形结构
+     *
+     * @param processId
+     * @return
+     */
     @Override
     public ActivitiStepsResult getStepResult(Long processId) {
         //TODO  查询步骤
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
-
         List<Long> stepIds = new ArrayList<>();
+        ActivitiStepsResult top = new ActivitiStepsResult();
         for (ActivitiStepsResult step : steps) {
             stepIds.add(step.getSetpsId());
+            if (step.getSupper() == 0) {
+                top = step;
+            }
         }
-        //取出所有规则
+        //取出所有步骤
         List<ActivitiAuditResult> auditResults = auditService.backAudits(stepIds);
-
-        ActivitiStepsResult result = groupSteps(steps, auditResults, null);
+        ActivitiStepsResult result = groupSteps(steps, auditResults, top);
         return result;
     }
 
@@ -503,57 +511,56 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @return
      */
     ActivitiStepsResult groupSteps(List<ActivitiStepsResult> steps, List<ActivitiAuditResult> auditResults, ActivitiStepsResult stepsResult) {
-        //判断顶级
-        if (ToolUtil.isEmpty(stepsResult)) {
-            ActivitiStepsResult Top = new ActivitiStepsResult();
-            //取出顶级
-            for (ActivitiStepsResult step : steps) {
-                if (step.getSupper() == 0) {
-                    ToolUtil.copyProperties(step, Top);
-                    //递归下一级
-                    if (ToolUtil.isNotEmpty(Top.getChildren())) {
-                        ActivitiStepsResult result = groupSteps(steps, auditResults, step);
-                        Top.setChildNode(result);
-                        getAudit(auditResults, Top);
-                        return Top;
-                    }
-                }
-            }
-        } else {
-            //获取当前规则
-            getAudit(auditResults, stepsResult);
-            //判断路由或节点
-            if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
-                for (ActivitiStepsResult step : steps) {
-                    //对比下一级
-                    if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
-                        ActivitiStepsResult result = groupSteps(steps, auditResults, step);
-                        stepsResult.setChildNode(result);
-                    }
-                }
-            }
-            //判断分支
-            if (ToolUtil.isNotEmpty(stepsResult.getConditionNodes())) {
-                String[] branchStepId = stepsResult.getConditionNodes().split(",");
-                List<ActivitiStepsResult> branchSteps = new ArrayList<>();
-                //取出当前分支集合
-                for (ActivitiStepsResult step : steps) {
-                    for (String s : branchStepId) {
-                        if (step.getSetpsId().toString().equals(s)) {
-                            branchSteps.add(step);
-                        }
-                    }
-                }
-                List<ActivitiStepsResult> childList = new ArrayList<>();
-                for (ActivitiStepsResult branchStep : branchSteps) {
-                    List<ActivitiStepsResult> branch = getBranch(steps, auditResults, branchStep);
-                    childList.addAll(branch);
-                }
-                stepsResult.setConditionNodeList(childList);
-            }
 
+        //获取当前规则
+        getAudit(auditResults, stepsResult);
+        //路由或节点
+        if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
+            //获取下一级
+            ActivitiStepsResult childStep = getChildStep(steps, stepsResult);
+            ActivitiStepsResult result = groupSteps(steps, auditResults, childStep);
+            stepsResult.setChildNode(result);
+        }
+        //分支
+        if (ToolUtil.isNotEmpty(stepsResult.getConditionNodes())) {
+            //取下级分支
+            List<ActivitiStepsResult> childBranch = getChildBranch(steps, stepsResult);
+            List<ActivitiStepsResult> childList = new ArrayList<>();
+            for (ActivitiStepsResult branchStep : childBranch) {
+                List<ActivitiStepsResult> branch = getBranch(steps, auditResults, branchStep);
+                childList.addAll(branch);
+            }
+            stepsResult.setConditionNodeList(childList);
         }
         return stepsResult;
+    }
+
+    /**
+     * 取出下一级
+     */
+    ActivitiStepsResult getChildStep(List<ActivitiStepsResult> steps, ActivitiStepsResult stepsResult) {
+        for (ActivitiStepsResult step : steps) {
+            if (step.getSetpsId().toString().equals(stepsResult.getChildren())) {
+                return step;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 取出下级分支
+     */
+    List<ActivitiStepsResult> getChildBranch(List<ActivitiStepsResult> steps, ActivitiStepsResult stepsResult) {
+        List<ActivitiStepsResult> childBranch = new ArrayList<>();
+        String[] ids = stepsResult.getConditionNodes().split(",");
+        for (ActivitiStepsResult step : steps) {
+            for (String id : ids) {
+                if (step.getSetpsId().toString().equals(id)) {
+                    childBranch.add(step);
+                }
+            }
+        }
+        return childBranch;
     }
 
     /**
