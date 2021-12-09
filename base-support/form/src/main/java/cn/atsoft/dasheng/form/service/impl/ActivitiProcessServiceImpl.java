@@ -55,7 +55,12 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         queryWrapper.eq("process_id", param.getProcessId());
         this.update(activitiProcess, queryWrapper);
     }
-
+    @Override
+    public ActivitiProcess getByFromId(Long fromId){
+        return this.getOne(new QueryWrapper<ActivitiProcess>(){{
+            eq("from_id",fromId);
+        }});
+    }
     @Override
     @Transactional
     public void update(ActivitiProcessParam param) {

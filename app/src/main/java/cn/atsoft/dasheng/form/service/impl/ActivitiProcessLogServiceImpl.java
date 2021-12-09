@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.Tool.TypeFromService;
 import cn.atsoft.dasheng.Tool.WxCpSend;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -11,10 +12,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
@@ -22,12 +20,14 @@ import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.QualityRules;
+import cn.atsoft.dasheng.form.pojo.StepsType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,6 @@ import static cn.atsoft.dasheng.form.pojo.StepsType.*;
  */
 @Service
 public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLogMapper, ActivitiProcessLog> implements ActivitiProcessLogService {
-
 
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
@@ -82,30 +81,27 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public void audit(Long taskId, Integer status) {
+    public void audit(Long taskId,Integer status){
+        this.auditperson(taskId,status,null,0);
+    }
 
+    @Override
+    public void autoAudit(Long taskId, String type) {
+        this.auditperson(taskId,1,type,0);
+    }
+
+    public void auditperson(Long taskId, Integer status, String type, Integer auto) {
+        if (auto != 1) {
+            auto = 0;
+        }
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
         if (ToolUtil.isEmpty(task)) {
-            task = new ActivitiProcessTask();
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
+
         QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        /**
-         * TODO task 判断
-         * 状态的判断
-         */
-
-        /**
-         * 是否审批通过flag
-         * 如果为false 则不向下进行推送
-         */
-        Boolean auditCheck = true;
-
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
-
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
-
-
         /**
          * 流程中审核节点
          */
@@ -113,61 +109,95 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         for (ActivitiProcessLog processLog : audit) {
             setpsIds.add(processLog.getSetpsId());
         }
+        /**
+         * 取出所有步骤配置
+         */
+        List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", setpsIds);
+        }});
 
+        List<Long> allStepsByLog = new ArrayList<>();
+        for (ActivitiProcessLog activitiProcessLog : logs) {
+            allStepsByLog.add(activitiProcessLog.getSetpsId());
+        }
+        List<ActivitiSteps> allSteps = stepsService.listByIds(allStepsByLog);
 
-        if (ToolUtil.isNotEmpty(setpsIds)) {
-
+        /**
+         * 是否审批通过flag
+         * 如果为false 则不向下进行推送
+         */
+        Boolean auditCheck = true;
+        ActivitiProcessLog entity = new ActivitiProcessLog();
+        //循环流程下步骤
+        for (ActivitiProcessLog activitiProcessLog : audit) {
+            /**
+             * 取节点规则
+             */
+            ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
 
             /**
-             * 取出所有步骤配置
+             * 取log步骤
              */
-            List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
-                in("setps_id", setpsIds);
-            }});
+            ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
 
-
-            List<Long> allStepsByLog = new ArrayList<>();
-            for (ActivitiProcessLog activitiProcessLog : logs) {
-                allStepsByLog.add(activitiProcessLog.getSetpsId());
+            if (ToolUtil.isEmpty(activitiAudit) || ToolUtil.isEmpty(activitiSteps)) {
+                continue;
+            }
+            if (auto == 0) {
+                this.manual(task, activitiProcessLog, allSteps, status, logs, qualityTask, auditCheck, activitiAudit, activitiSteps);
+            } else if (auto == 1) {
+                this.auto(activitiAudits, activitiProcessLog, task, allSteps, logs, type);
+                auditCheck = true;
             }
 
-            List<ActivitiSteps> allSteps = stepsService.listByIds(allStepsByLog);
+        }
+        if (auditCheck) {
+            this.sendNextStepsByTask(task);
+        }
+    }
 
-            //循环流程下步骤
-            for (ActivitiProcessLog activitiProcessLog : audit) {
-                /**
-                 * 取节点规则
-                 */
-                ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
-
-                /**
-                 * 取log步骤
-                 */
-                ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
-
-                if (ToolUtil.isEmpty(activitiAudit) || ToolUtil.isEmpty(activitiSteps)) {
-                    continue;
-                }
-
-                //创建log对象  赋值更新审批状态
-                ActivitiProcessLog entity = new ActivitiProcessLog();
-                entity.setSetpsId(activitiProcessLog.getSetpsId());
-                entity.setStatus(status);
+    public void auto(List<ActivitiAudit> activitiAudits, ActivitiProcessLog activitiProcessLog, ActivitiProcessTask processTask, List<ActivitiSteps> allSteps, List<ActivitiProcessLog> logs, String type) {
+        ActivitiAudit nowAudit = this.getRule(activitiAudits, activitiProcessLog.getSetpsId());
+        ActivitiSteps activitiSteps = this.getSteps(allSteps, activitiProcessLog.getSetpsId());
+        //当前执行节点里判断 是否满足更新条件
+        ActivitiProcessLog entity = new ActivitiProcessLog();
+        entity.setSetpsId(activitiProcessLog.getSetpsId());
+        entity.setLogId(activitiProcessLog.getLogId());
+        if (ToolUtil.isNotEmpty(activitiSteps) && activitiSteps.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiSteps.getType().equals(AUDIT) && type.equals(nowAudit.getType())) {
+            if (type.equals("process") && checkTask(processTask.getFormId())) {
                 entity.setLogId(activitiProcessLog.getLogId());
+                entity.setStatus(1);
+            } else if (!type.equals("process")) {
+                entity.setLogId(activitiProcessLog.getLogId());
+                entity.setStatus(1);
+            }
+        }
+        this.updateById(entity);
+        this.updateState(allSteps, activitiProcessLog, logs, 1);
 
-                List<ActivitiProcessLog> processLogs = new ArrayList<>();
+    }
+
+    public void manual(ActivitiProcessTask task, ActivitiProcessLog activitiProcessLog, List<ActivitiSteps> allSteps, Integer status, List<ActivitiProcessLog> logs, QualityTask qualityTask, Boolean auditCheck, ActivitiAudit activitiAudit, ActivitiSteps activitiSteps) {
+
+        //创建log对象  赋值更新审批状态
+        ActivitiProcessLog entity = new ActivitiProcessLog();
+        entity.setSetpsId(activitiProcessLog.getSetpsId());
+        entity.setStatus(status);
+        entity.setLogId(activitiProcessLog.getLogId());
+
+        List<ActivitiProcessLog> processLogs = new ArrayList<>();
 
 
-                if (activitiSteps.getType().equals(AUDIT)) {
-                    //判断当前步骤
-                    switch (activitiSteps.getStepType()) {
-                        //当前状态为执行质检
-                        case "quality":
-                            if (qualityTask.getState().equals(0)) {
-                                entity.setStatus(status);
-                                this.updateById(entity);
-                                this.updateState(allSteps, processLogs, activitiProcessLog, logs, status);
-                            }
+        if (activitiSteps.getType().equals(AUDIT)) {
+            //判断当前步骤
+            switch (activitiSteps.getStepType()) {
+                //当前状态为执行质检
+                case "quality":
+                    if (qualityTask.getState().equals(0)) {
+                        entity.setStatus(status);
+                        this.updateById(entity);
+                        this.updateState(allSteps, activitiProcessLog, logs, status);
+                    }
 //TODO 测试流程成功后可以删除 上面已封装方法 updateState()
 //                            for (ActivitiSteps step : allSteps) {
 //                                if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
@@ -178,18 +208,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 //                                processLog.setStatus(status);
 //                            }
 //                            this.updateBatchById(processLogs);
-                            break;
-                        //当前状态为审批
-                        case "audit":
-                            if (this.checkUser(activitiAudit.getRule())) {
-                                /**
-                                 * 当前节点更新
-                                 */
-                                entity.setStatus(status);
-                                this.updateById(entity);
-                                //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
-                                if (status.equals(1)) {
-                                    this.updateState(allSteps, processLogs, activitiProcessLog, logs, status);
+                    break;
+                //当前状态为审批
+                case "audit":
+                    if (this.checkUser(activitiAudit.getRule())) {
+                        /**
+                         * 当前节点更新
+                         */
+                        entity.setStatus(status);
+                        this.updateById(entity);
+                        //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
+                        if (status.equals(1)) {
+                            this.updateState(allSteps, activitiProcessLog, logs, status);
+                            auditCheck = true;
 //TODO 测试流程成功后可以删除 上面已封装方法 updateState()
 //                                    for (ActivitiSteps step : allSteps) {
 //                                        if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
@@ -200,43 +231,86 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 //                                        processLog.setStatus(status);
 //                                    }
 //                                    this.updateBatchById(processLogs);
-                                } else {
-                                    auditCheck = false;
-                                    taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId(), 0);
-                                }
-                            }
-                            break;
-                    }
-                    //如果状态为抄送 更新本级状态  更新上级状态  推送抄送人
-                } else if (activitiSteps.getType().equals(SEND)) {
-                    entity.setStatus(status);
-                    this.updateById(entity);
-                    for (ActivitiSteps step : allSteps) {
-                        if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
-                            processLogs = updateSupper(allSteps, logs, step, step.getSetpsId());
+                        } else {
+                            auditCheck = false;
+                            taskSend.send(activitiAudit.getType(), activitiAudit.getRule(), task.getProcessTaskId(), 0);
                         }
                     }
-                    for (ActivitiProcessLog processLog : processLogs) {
-                        processLog.setStatus(status);
-                    }
-                    this.updateBatchById(processLogs);
-                } else if (activitiSteps.getType().equals(START)) {
-                    entity.setStatus(status);
-                    this.updateById(entity);
+                    break;
+            }
+            //如果状态为抄送 更新本级状态  更新上级状态  推送抄送人
+        } else if (activitiSteps.getType().equals(SEND)) {
+            entity.setStatus(status);
+            this.updateById(entity);
+            for (ActivitiSteps step : allSteps) {
+                if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
+                    processLogs = updateSupper(allSteps, logs, step, step.getSetpsId());
                 }
             }
-
-        }
-
-        /**
-         * 所有下一节点送消息的节点
-         */
-        if (auditCheck) {
-            this.sendNextStepsByTask(task);
+            for (ActivitiProcessLog processLog : processLogs) {
+                processLog.setStatus(status);
+            }
+            this.updateBatchById(processLogs);
+        } else if (activitiSteps.getType().equals(START)) {
+            entity.setStatus(status);
+            this.updateById(entity);
         }
     }
 
-    private void updateState(List<ActivitiSteps> allSteps, List<ActivitiProcessLog> processLogs, ActivitiProcessLog activitiProcessLog, List<ActivitiProcessLog> logs, Integer status) {
+
+//    @Override
+//    public void audit(Long taskId, Integer status) {
+//
+//        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
+//        if (ToolUtil.isEmpty(task)) {
+//            throw new ServiceException(500, "没有找到该任务，无法进行审批");
+//        }
+//
+//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+//        List<ActivitiProcessLog> logs = listByTaskId(taskId);
+//        List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
+//        /**
+//         * 流程中审核节点
+//         */
+//        List<Long> setpsIds = new ArrayList<>();
+//        for (ActivitiProcessLog processLog : audit) {
+//            setpsIds.add(processLog.getSetpsId());
+//        }
+//        /**
+//         * 取出所有步骤配置
+//         */
+//        List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+//            in("setps_id", setpsIds);
+//        }});
+//
+//        List<Long> allStepsByLog = new ArrayList<>();
+//        for (ActivitiProcessLog activitiProcessLog : logs) {
+//            allStepsByLog.add(activitiProcessLog.getSetpsId());
+//        }
+//        List<ActivitiSteps> allSteps = stepsService.listByIds(allStepsByLog);
+//
+//        /**
+//         * 是否审批通过flag
+//         * 如果为false 则不向下进行推送
+//         */
+//        Boolean auditCheck = true;
+//
+//        //循环流程下步骤
+//        for (ActivitiProcessLog activitiProcessLog : audit) {
+//
+//        }
+//        /**
+//         * 所有下一节点送消息的节点
+//         */
+//        if (auditCheck) {
+//            this.sendNextStepsByTask(task);
+//        }
+//    }
+//    private void is(Long taskId)
+
+    private void updateState(List<ActivitiSteps> allSteps, ActivitiProcessLog
+            activitiProcessLog, List<ActivitiProcessLog> logs, Integer status) {
+        List<ActivitiProcessLog> processLogs = new ArrayList<>();
         for (ActivitiSteps step : allSteps) {
             if (activitiProcessLog.getSetpsId().toString().equals(step.getSetpsId().toString())) {
                 processLogs = updateSupper(allSteps, logs, step, step.getSetpsId());
@@ -248,50 +322,89 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         this.updateBatchById(processLogs);
     }
 
-    @Override
-    public void autoAudit(Long activitiTaskId) {
-        //根据任务id 获取流程任务
-        ActivitiProcessTask processTask = activitiProcessTaskService.getById(activitiTaskId);
-        if (processTask.getType().equals("quality")) {
-            this.autoProcessTaskAudit(processTask);
+//    @Override
+//    public void autoAudit(Long activitiTaskId, String type) {//String type
+//        //根据任务id 获取流程任务
+//        ActivitiProcessTask processTask = activitiProcessTaskService.getById(activitiTaskId);
+//        if (ToolUtil.isNotEmpty(processTask) && ToolUtil.isNotEmpty(type) && processTask.getType().equals(QUALITY)) {
+//            this.autoProcessTaskAudit(processTask, type);
+//        }
+//    }
+
+
+//    private void autoProcessTaskAudit(ActivitiProcessTask processTask, String type) {
+//        //获取所有审批记录
+//        List<ActivitiProcessLog> logs = listByTaskId(processTask.getProcessTaskId());
+//        //获取当前需要执行步骤
+//        List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessId(), logs);
+//
+//        List<Long> allStepsByLog = new ArrayList<>();
+//        for (ActivitiProcessLog activitiProcessLog : logs) {
+//            allStepsByLog.add(activitiProcessLog.getSetpsId());
+//        }
+//        List<ActivitiSteps> allSteps = stepsService.listByIds(allStepsByLog);
+//        List<ActivitiAudit> activitiAudits = auditService.getListByStepsId(allStepsByLog);
+//        ActivitiProcessLog entity = new ActivitiProcessLog();
+//        for (ActivitiProcessLog activitiProcessLog : audit) {
+//            ActivitiAudit nowAudit = this.getRule(activitiAudits, activitiProcessLog.getSetpsId());
+//            ActivitiSteps activitiSteps = this.getSteps(allSteps, activitiProcessLog.getSetpsId());
+//            //当前执行节点里判断 是否满足更新条件
+//            if (ToolUtil.isNotEmpty(activitiSteps) && activitiSteps.getSetpsId().equals(activitiProcessLog.getSetpsId()) && activitiSteps.getType().equals(AUDIT) && type.equals(nowAudit.getType())) {
+//                if (type.equals("complete") && checkTask(processTask.getFormId())) {
+//                    entity.setLogId(activitiProcessLog.getLogId());
+//                    entity.setStatus(1);
+//                } else if (!type.equals("complete")) {
+//                    entity.setLogId(activitiProcessLog.getLogId());
+//                    entity.setStatus(1);
+//                }
+//            }
+//        }
+//        //如果质检任务完成 则更新 质检完成节点 状态为（完成）
+//        this.updateById(entity);
+//        this.updateState(allSteps, completeAuditLog, logs, 1);
+//        //如果完成向下推送
+//        this.sendNextStepsByTask(processTask);
+//    }
+
+    /**
+     * 确认质检任务状态 （未完成 0）/（完成 1）/（待入库 2）
+     *
+     * @param qualityTaskId
+     * @return
+     */
+    private Boolean checkTask(Long qualityTaskId) {
+        QualityTask qualityTask = qualityTaskService.getById(qualityTaskId);
+        if (qualityTask.getState().equals(1)) {
+            return true;
+        } else {
+            return false;
         }
-
-
-        this.sendNextStepsByTask(processTask);
     }
-    private void autoProcessTaskAudit(ActivitiProcessTask processTask){
-        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
-        //获取流程所有节点
-        List<ActivitiProcessLog> logs = listByTaskId(processTask.getProcessTaskId());
-        //获取当前步骤
-        List<ActivitiProcessLog> audit = this.getAudit(processTask.getProcessId(), logs);
-        //获取质检任务
-//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        //获取所有步骤id 通过审批流程所有步骤
-        List<Long> allStepsByLog = new ArrayList<>();
-        for (ActivitiProcessLog activitiProcessLog : logs) {
-            allStepsByLog.add(activitiProcessLog.getSetpsId());
-        }
-        //获取所有步骤
-        List<ActivitiSteps> allSteps = stepsService.listByIds(allStepsByLog);
-        //循环当前步骤返回值  筛选需要更新的点
-        for (ActivitiProcessLog activitiProcessLog : audit) {
-            //通用方法 此List 本操作不需要
-            List<ActivitiProcessLog> processLogs = new ArrayList<>();
 
-            ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
-            //判断当前节点类型 && 判断当前步骤类型
-            if (activitiSteps.getType().equals(AUDIT) && activitiSteps.getStepType().equals("quality")) {
-                if (qualityTask.getState().equals(1)) {
-                    ActivitiProcessLog entity = new ActivitiProcessLog();
-                    entity.setLogId(activitiProcessLog.getLogId());
-                    entity.setStatus(1);
-                    this.updateById(entity);
-                    this.updateState(allSteps, processLogs, activitiProcessLog, logs, 1);
-                }
+
+    private ActivitiAudit getNowAuditBySteps(List<ActivitiAudit> audits, Long auditId) {
+        for (ActivitiAudit audit : audits) {
+            if (audit.getSetpsId().equals(auditId)) {
+                return audit;
             }
-
         }
+        return null;
+    }
+
+    /**
+     * 获取流程中完成任务节点
+     *
+     * @param audit
+     * @return
+     */
+    private ActivitiProcessLog getCompleteAuditLog(List<ActivitiProcessLog> audit) {
+        for (ActivitiProcessLog activitiProcessLog : audit) {
+
+            if (activitiProcessLog.getSetpsId().equals("complete")) {
+                return activitiProcessLog;
+            }
+        }
+        return null;
     }
 
 
@@ -399,7 +512,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     /**
      * @return
      */
-    private Boolean judgeNext(List<ActivitiProcessLog> processLogs, List<ActivitiSteps> steps, ActivitiSteps activitiSteps, Long stepId) {
+    private Boolean judgeNext(List<ActivitiProcessLog> processLogs, List<ActivitiSteps> steps, ActivitiSteps
+            activitiSteps, Long stepId) {
 
         if (ToolUtil.isEmpty(activitiSteps.getChildren())) {
             return true;
@@ -515,7 +629,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return loopAudit(activitiStepsResult, activitiProcessLogs);
     }
 
-    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult activitiStepsResult, List<ActivitiProcessLog> activitiProcessLogs) {
+    private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult
+                                                       activitiStepsResult, List<ActivitiProcessLog> activitiProcessLogs) {
         List<ActivitiProcessLog> activitiStepsResultList = new ArrayList<>();
 
         if (ToolUtil.isEmpty(activitiStepsResult)) {
@@ -642,7 +757,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     public void sendNextStepsByTask(ActivitiProcessTask task) {
         if (ToolUtil.isEmpty(task)) {
-            throw new ServiceException(500,"未找到相关流程任务");
+            throw new ServiceException(500, "未找到相关流程任务");
         }
         List<ActivitiProcessLog> logs = this.listByTaskId(task.getProcessTaskId());
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);

@@ -34,6 +34,8 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      */
     void delete(ActivitiProcessParam param);
 
+    ActivitiProcess getByFromId(Long fromId);
+
     /**
      * 更新
      *

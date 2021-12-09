@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.params.ActivitiAuditParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,6 +27,9 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
      */
     void add(ActivitiAuditParam param);
 
+    List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps);
+
+    List<ActivitiAudit> getListByStepsId(List<Long> stepsId);
     /**
      * 删除
      *

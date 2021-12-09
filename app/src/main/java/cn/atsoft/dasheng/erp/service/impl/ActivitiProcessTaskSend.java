@@ -137,7 +137,7 @@ public class ActivitiProcessTaskSend {
                 break;
             case COMPLETE:
                 this.completeTaskSend(taskId);
-                activitiProcessLogService.autoAudit(taskId);
+                activitiProcessLogService.autoAudit(taskId,COMPLETE);
 
                 break;
             case SEND:
@@ -281,7 +281,7 @@ public class ActivitiProcessTaskSend {
         wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.audit(param.getTaskId(), 1);
+        activitiProcessLogService.autoAudit(param.getTaskId(), "sned");
 
     }
 

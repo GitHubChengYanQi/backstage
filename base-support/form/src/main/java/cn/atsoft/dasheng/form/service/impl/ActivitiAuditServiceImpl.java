@@ -48,7 +48,23 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
         this.save(entity);
 
     }
+    @Override
+    public List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps){
+        List<Long> stepsId = new ArrayList<>();
+        for (ActivitiSteps step : steps) {
+            stepsId.add(step.getSetpsId());
+        }
+       return this.list(new QueryWrapper<ActivitiAudit>(){{
+            in("setps_id",stepsId);
+        }});
+    }
 
+    @Override
+    public List<ActivitiAudit> getListByStepsId(List<Long> stepsIds) {
+        return this.list(new QueryWrapper<ActivitiAudit>(){{
+            in("setps_id",stepsIds);
+        }});
+    }
 
     @Override
     public void delete(ActivitiAuditParam param) {

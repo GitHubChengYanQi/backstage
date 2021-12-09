@@ -663,7 +663,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
-            activitiProcessLogService.autoAudit(task.getParentId());
+            activitiProcessLogService.autoAudit(task.getParentId(),"dispatch");
 
         }
     }
