@@ -10,8 +10,7 @@ import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.pojo.AppointUser;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.DepstPositions;
-import cn.atsoft.dasheng.form.pojo.DeptsPositions;
+
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -70,15 +69,14 @@ public class ActivitiProcessTaskSend {
 
         for (AuditRule.Rule rule : starUser.getRules()) {
             switch (rule.getType()) {
-                case AppointUser:
-                  
+                case AppointUsers:
+
                     break;
                 case AllPeople:
                     List<Long> allUsersId = userService.getAllUsersId();
                     users.addAll(allUsersId);
                     break;
-                case DepstPositions:
-
+                case DeptPositions:
 
 
                     break;
