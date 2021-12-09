@@ -521,7 +521,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                     step.setChildNode(result);
                 }
             }
-
+            return Top;
         } else {
             //判断路由或节点
             if (ToolUtil.isNotEmpty(stepsResult.getChildren())) {
@@ -552,8 +552,9 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 }
                 stepsResult.setConditionNodeList(childList);
             }
+            return stepsResult;
         }
-        return stepsResult;
+
     }
 
     /**
