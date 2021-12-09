@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.app.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +16,7 @@ import java.io.Serializable;
  * 合同表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
 @TableName("daoxin_crm_contract")
@@ -24,7 +27,7 @@ public class Contract implements Serializable {
     /**
      * 合同id
      */
-      @TableId(value = "contract_id", type = IdType.ID_WORKER)
+    @TableId(value = "contract_id", type = IdType.ID_WORKER)
     private Long contractId;
 
     /**
@@ -33,43 +36,122 @@ public class Contract implements Serializable {
     @TableField("name")
     private String name;
 
-    public Long getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(Long templateId) {
-        this.templateId = templateId;
-    }
 
     @TableField("template_id")
     private Long templateId;
 
-    public Integer getAudit() {
-        return audit;
-    }
-
-    public void setAudit(Integer audit) {
-        this.audit = audit;
-    }
 
     @TableField("audit")
     private Integer audit;
-
-
-
+    /**
+     * 合同分类
+     */
+    @TableField("contract_class_id")
+    private Long contractClassId;
 
     @TableField("party_a")
     private Long partyA;
-   @TableField("party_a_adress_id")
+
+    @TableField("party_a_adress_id")
     private Long partyAAdressId;
-   @TableField("party_b_adress_id")
+
+    @TableField("party_b_adress_id")
     private Long partyBAdressId;
-   @TableField("party_a_contacts_id")
+
+    @TableField("party_a_contacts_id")
     private Long partyAContactsId;
-   @TableField("party_a_phone")
+
+    @TableField("party_a_phone")
     private Long partyAPhone;
-   @TableField("party_b_phone")
+
+    @TableField("party_b_phone")
     private Long partyBPhone;
+
+
+    @TableField("party_b_contacts_id")
+    private Long partyBContactsId;
+
+
+    @TableField("party_b")
+    private Long partyB;
+
+    /**
+     * 负责人id
+     */
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
+
+    /**
+     * 创建时间
+     */
+    @TableField("time")
+    private Date time;
+
+    /**
+     * 内容
+     */
+    @TableField("content")
+    private String content;
+
+    /**
+     * 创建者
+     */
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
+    private Long createUser;
+
+    /**
+     * 修改者
+     */
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    private Date updateTime;
+
+    /**
+     * 状态
+     */
+    @TableField("display")
+    private Integer display;
+
+    public Long getContractClassId() {
+        return contractClassId;
+    }
+
+    public void setContractClassId(Long contractClassId) {
+        this.contractClassId = contractClassId;
+    }
+
+    public Long getPartyA() {
+        return partyA;
+    }
+
+    public void setPartyA(Long partyA) {
+        this.partyA = partyA;
+    }
+
+    public Long getPartyB() {
+        return partyB;
+    }
+
+    public void setPartyB(Long partyB) {
+        this.partyB = partyB;
+    }
 
     public Long getPartyAAdressId() {
         return partyAAdressId;
@@ -103,81 +185,21 @@ public class Contract implements Serializable {
         this.partyBContactsId = partyBContactsId;
     }
 
-    @TableField("party_b_contacts_id")
-    private Long partyBContactsId;
-
-    public Long getPartyA() {
-        return partyA;
+    public Long getTemplateId() {
+        return templateId;
     }
 
-    public void setPartyA(Long partyA) {
-        this.partyA = partyA;
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
     }
 
-    public Long getPartyB() {
-        return partyB;
+    public Integer getAudit() {
+        return audit;
     }
 
-    public void setPartyB(Long partyB) {
-        this.partyB = partyB;
+    public void setAudit(Integer audit) {
+        this.audit = audit;
     }
-
-    @TableField("party_b")
-    private Long partyB;
-
-    /**
-     * 负责人id
-     */
-    @TableField("user_id")
-    private Long userId;
-
-    /**
-     * 备注
-     */
-    @TableField("note")
-    private String note;
-
-    /**
-     * 创建时间
-     */
-    @TableField("time")
-    private Date time;
-
-    /**
-     * 内容
-     */
-    @TableField("content")
-    private String content;
-
-    /**
-     * 创建者
-     */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
-    private Long createUser;
-
-    /**
-     * 修改者
-     */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
-    private Long updateUser;
-
-    /**
-     * 创建时间
-     */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
-    private Date updateTime;
-
-    /**
-     * 状态
-     */
-    @TableField("display")
-    private Integer display;
 
     public Long getPartyAPhone() {
         return partyAPhone;
@@ -286,17 +308,17 @@ public class Contract implements Serializable {
     @Override
     public String toString() {
         return "Contract{" +
-        "contractId=" + contractId +
-        ", name=" + name +
-        ", userId=" + userId +
-        ", note=" + note +
-        ", time=" + time +
-        ", content=" + content +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "contractId=" + contractId +
+                ", name=" + name +
+                ", userId=" + userId +
+                ", note=" + note +
+                ", time=" + time +
+                ", content=" + content +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

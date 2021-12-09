@@ -1,83 +1,66 @@
-package cn.atsoft.dasheng.app.model.result;
+package cn.atsoft.dasheng.crm.model.params;
 
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 合同模板
+ * 合同分类
  * </p>
  *
- * @author
- * @since 2021-07-21
+ * @author song
+ * @since 2021-12-09
  */
 @Data
 @ApiModel
-public class TemplateResult implements Serializable {
+public class ContractClassParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 合同分类id
      */
+    @ApiModelProperty("合同分类id")
     private Long contractClassId;
-    /**
-     * 合同模板id
-     */
-    @ApiModelProperty("合同模板id")
-    private Long templateId;
 
     /**
-     * 合同姓名
+     * 名称
      */
-    @ApiModelProperty("合同姓名")
+    @ApiModelProperty("名称")
     private String name;
 
     /**
-     * 合同内容
+     * 删除状态
      */
-    @ApiModelProperty("合同内容")
-    private String content;
+    @ApiModelProperty("删除状态")
+    private Integer display;
 
-    /**
-     * 创建者
-     */
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
-
-
-    /**
-     * 修改者
-     */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
-    /**
-     * 创建时间
-     */
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
-    /**
-     * 修改时间
-     */
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
-    /**
-     * 状态
-     */
-    @ApiModelProperty("状态")
-    private Integer display;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-    private Long deptId;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

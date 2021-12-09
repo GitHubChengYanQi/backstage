@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import org.omg.CORBA.LongHolder;
 
 import java.io.Serializable;
 
@@ -23,6 +24,11 @@ import java.io.Serializable;
 public class Template implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 合同分类id
+     */
+    @TableField("contract_class_id")
+    private Long contractClassId;
 
     /**
      * 合同模板id
@@ -30,7 +36,7 @@ public class Template implements Serializable {
     @TableId(value = "template_id", type = IdType.ID_WORKER)
     private Long templateId;
 
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
     public Long getDeptId() {
@@ -83,6 +89,13 @@ public class Template implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Long getContractClassId() {
+        return contractClassId;
+    }
+
+    public void setContractClassId(Long contractClassId) {
+        this.contractClassId = contractClassId;
+    }
 
     public Long getTemplateId() {
         return templateId;
