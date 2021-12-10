@@ -133,7 +133,7 @@ public interface QualityTaskService extends IService<QualityTask> {
      *
      * @param taskId
      */
-    void updateChildTask(Long taskId);
+    void updateChildTask(Long taskId,Integer state);
 
     /**
      * 查询主任务和子任务

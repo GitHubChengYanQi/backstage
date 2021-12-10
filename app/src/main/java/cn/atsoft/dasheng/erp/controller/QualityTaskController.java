@@ -218,7 +218,6 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/backChildTask", method = RequestMethod.GET)
-
     @ApiOperation("返回子任务")
     public ResponseData backChildTask(@Param("id") Long id) {
 
@@ -325,8 +324,8 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/updateChildTask", method = RequestMethod.GET)
-    public ResponseData updateChildTask(@Param("id") Long id) {
-        this.qualityTaskService.updateChildTask(id);
+    public ResponseData updateChildTask(@Param("id") Long id,@Param("state") Integer state) {
+        this.qualityTaskService.updateChildTask(id,state);
         return ResponseData.success();
     }
 

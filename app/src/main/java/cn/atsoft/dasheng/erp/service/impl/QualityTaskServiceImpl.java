@@ -522,6 +522,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         taskResult.setFatherTask(fatherTask);
 
+        User createUser = userService.getById(taskResult.getCreateUser());
+        taskResult.setCreateName(createUser.getName());
+
         return taskResult;
     }
 
@@ -659,12 +662,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param taskId
      */
     @Override
-    public void updateChildTask(Long taskId) {
+    public void updateChildTask(Long taskId,Integer state) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
 
-        if (task.getState() == 1) {
-            task.setState(2);
+        if (task.getState() == (state-1)) {
+            task.setState(state);
             this.updateById(task);
         }
         //判断所有子任务
@@ -672,24 +675,29 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         boolean t = true;
         for (QualityTask qualityTask : tasks) {
-            if (qualityTask.getState() != 2) {
+            if (!qualityTask.getState().equals(state)) {
                 t = false;
             }
         }
 
-        //判断父级任务分配数量
-        List<QualityTaskDetail> taskDetails = detailService.query()
-                .eq("quality_task_id", task.getParentId()).list();
-
-        for (QualityTaskDetail taskDetail : taskDetails) {
-            if (taskDetail.getRemaining() != 0) {
-                t = false;
-            }
+        List<QualityTaskDetail> taskDetails = detailService.query().eq("quality_task_id", task.getParentId()).list();
+        switch (state){
+            case 2:
+                //判断父级任务分配数量
+                for (QualityTaskDetail taskDetail : taskDetails) {
+                    if (taskDetail.getRemaining() != 0) {
+                        t = false;
+                    }
+                }
+                break;
+            default:
+                break;
         }
+
         //子任务完成更新父级任务
         if (t) {
             QualityTask fathTask = new QualityTask();
-            fathTask.setState(2);
+            fathTask.setState(state);
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
