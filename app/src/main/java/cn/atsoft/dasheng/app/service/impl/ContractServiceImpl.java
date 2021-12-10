@@ -13,7 +13,10 @@ import cn.atsoft.dasheng.app.mapper.ContractMapper;
 import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.CompanyRoleService;
+import cn.atsoft.dasheng.crm.service.ContractClassService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -51,6 +54,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private ContractService contractService;
     @Autowired
     private OrderDetailsService orderDetailsService;
+    @Autowired
+    private ContractClassService contractClassService;
 
 
     @Override
@@ -71,7 +76,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
 
-        }else {
+        } else {
             Contract entity = getEntity(param);
             this.save(entity);
             Contract contract = this.getById(entity.getContractId());
@@ -91,7 +96,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Customer customer = customerService.getById(param.getPartyA());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Contract entity = getEntity(param);
             this.save(entity);
             return entity;
@@ -111,8 +116,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 param.setDisplay(0);
                 this.update(param);
                 return entity;
-            }else {
-                throw  new ServiceException(500,"当前合同不可删除");
+            } else {
+                throw new ServiceException(500, "当前合同不可删除");
             }
 
         }
@@ -125,7 +130,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Contract oldEntity = getOldEntity(param);
         if (ToolUtil.isEmpty(oldEntity)) {
             throw new ServiceException(500, "数据不存在");
-        }else {
+        } else {
             Contract contract = this.contractService.getById(param.getContractId());
             Contract newEntity = getEntity(param);
             if (contract.getAudit() == 1) {
@@ -157,7 +162,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                     orderParam.setOrderTime(contract.getCreateTime());
                     orderParam.setState("已审核");
 
-                    ErpOrder erpOrder= this.orderService.add(orderParam);
+                    ErpOrder erpOrder = this.orderService.add(orderParam);
 
 
                     OrderDetailsParam orderDetailsParam = new OrderDetailsParam();
@@ -185,7 +190,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     @Override
     public PageInfo<ContractResult> findPageBySpec(ContractParam param, DataScope dataScope) {
         Page<ContractResult> pageContext = getPageContext();
-        IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<ContractResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
@@ -199,6 +204,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         List<Long> adressIdsB = new ArrayList<>();
         List<Long> phoneAIds = new ArrayList<>();
         List<Long> phoneBIds = new ArrayList<>();
+        List<Long> classIds = new ArrayList<>();
 
         for (ContractResult record : data) {
             partA.add(record.getPartyA());
@@ -209,8 +215,10 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
             adressIdsB.add(record.getPartyBAdressId());
             phoneAIds.add(record.getPartyAPhone());
             phoneBIds.add(record.getPartyBPhone());
-
+            classIds.add(record.getContractClassId());
         }
+
+        List<ContractClass> contractClassList = classIds.size() == 0 ? new ArrayList<>() : contractClassService.query().in("contract_class_id", classIds).list();
 
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         QueryWrapper<Customer> partAWapper = customerQueryWrapper.in("customer_id", partA);
@@ -227,29 +235,35 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         QueryWrapper<Contacts> contactsB = new QueryWrapper<>();
         contactsB.in("contacts_id", contactsIdsB);
-        List<Contacts> contactsBList = contactsIdsB.size() == 0 ? new ArrayList<>() :  contactsService.list(contactsB);
+        List<Contacts> contactsBList = contactsIdsB.size() == 0 ? new ArrayList<>() : contactsService.list(contactsB);
 
         QueryWrapper<Adress> adressA = new QueryWrapper<>();
         adressA.in("adress_id", adressIdsA);
-        List<Adress> adressAList = adressIdsA.size() == 0 ? new ArrayList<>() :  adressService.list(adressA);
+        List<Adress> adressAList = adressIdsA.size() == 0 ? new ArrayList<>() : adressService.list(adressA);
 
         QueryWrapper<Adress> adressB = new QueryWrapper<>();
         adressB.in("adress_id", adressIdsB);
-        List<Adress> adressBList = adressIdsB.size() == 0 ? new ArrayList<>() :  adressService.list(adressB);
+        List<Adress> adressBList = adressIdsB.size() == 0 ? new ArrayList<>() : adressService.list(adressB);
 
         QueryWrapper<Phone> phoneAwapper = new QueryWrapper<>();
         phoneAwapper.in("phone_id", phoneAIds);
-        List<Phone> phoneAlist = phoneAIds.size() == 0 ? new ArrayList<>() :  phoneService.list(phoneAwapper);
+        List<Phone> phoneAlist = phoneAIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneAwapper);
 
         QueryWrapper<Phone> phoneBwapper = new QueryWrapper<>();
         phoneBwapper.in("phone_id", phoneBIds);
-        List<Phone> phoneBlist = phoneBIds.size() == 0 ? new ArrayList<>() :  phoneService.list(phoneBwapper);
-
-
-
+        List<Phone> phoneBlist = phoneBIds.size() == 0 ? new ArrayList<>() : phoneService.list(phoneBwapper);
 
 
         for (ContractResult record : data) {
+
+            for (ContractClass contractClass : contractClassList) {
+                if (ToolUtil.isNotEmpty(record.getContractClassId()) && record.getContractClassId().equals(contractClass.getContractClassId())) {
+                    ContractClassResult classResult = new ContractClassResult();
+                    ToolUtil.copyProperties(contractClass, classResult);
+                    record.setClassResult(classResult);
+                }
+            }
+
 
             for (Customer customer : partAList) {
                 if (customer.getCustomerId().equals(record.getPartyA())) {
@@ -321,7 +335,7 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         return param.getContractId();
     }
 
-//    private Page<ContractResult> getPageContext() {
+    //    private Page<ContractResult> getPageContext() {
 //        return PageFactory.defaultPage();
 //    }
     private Page<ContractResult> getPageContext() {

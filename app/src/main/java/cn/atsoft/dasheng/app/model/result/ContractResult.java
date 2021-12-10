@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.pojo.Payment;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,7 +28,7 @@ public class ContractResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private ContractClassResult classResult;
     /**
      * 合同id
      */
@@ -61,6 +64,7 @@ public class ContractResult implements Serializable {
     private PhoneResult phoneA;
     private PhoneResult phoneB;
 
+    @TableField(typeHandler = FastjsonTypeHandler.class)
     private Payment payment;
 
 

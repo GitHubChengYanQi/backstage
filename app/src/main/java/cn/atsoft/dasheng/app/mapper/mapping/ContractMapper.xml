@@ -27,14 +27,15 @@
         <result column="update_time" property="updateTime"/>
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
-        <result column="percent" property="percent" jdbcType="VARCHAR" javaType="cn.atsoft.dasheng.crm.pojo.Payment"
+        <result column="contract_class_id" property="contractClassId"/>
+        <result column="payment" property="payment" jdbcType="VARCHAR" javaType="cn.atsoft.dasheng.crm.pojo.Payment"
                 typeHandler="com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">   party_a_phone
-AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",percent AS "percent",
-,contract_class_id AS "contractClassId",party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit
+    <sql id="Base_Column_List">  contract_class_id AS "contractClassId",payment AS "payment" ,party_a_phone
+    AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",contract_class_id AS "contractClassId",
+        party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit
         AS "audit" ,template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
@@ -70,7 +71,7 @@ AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",percent AS
         </if>
     </select>
 
-    <select id="customPageList" resultMap="BaseResultMap"
+    <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.ContractResult"
             parameterType="cn.atsoft.dasheng.app.model.params.ContractParam">
         select
         <include refid="Base_Column_List"/>

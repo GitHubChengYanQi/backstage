@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @since 2021-07-21
  */
 
-@TableName(autoResultMap = true)
+@TableName("daoxin_crm_contract")
 @Accessors(chain = true)
 public class Contract implements Serializable {
 
@@ -52,7 +52,7 @@ public class Contract implements Serializable {
      * 付款信息
      */
     @TableField(typeHandler = FastjsonTypeHandler.class)
-    private Payment percent;
+    private Payment payment;
 
     @TableField("party_a")
     private Long partyA;
@@ -297,13 +297,15 @@ public class Contract implements Serializable {
         this.display = display;
     }
 
-    public Payment getPercent() {
-        return percent;
+    public Payment getPayment() {
+        return payment;
     }
 
-    public void setPercent(Payment percent) {
-        this.percent = percent;
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
+
+
 
     @Override
     public String toString() {
