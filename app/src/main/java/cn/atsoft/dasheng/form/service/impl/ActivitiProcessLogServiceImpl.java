@@ -591,8 +591,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }});
 
             for (ActivitiAudit activitiAudit : activitiAudits) {
-                RuleType ruleType = activitiAudit.getRule().getType();
+
                 if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
+                    RuleType ruleType = activitiAudit.getRule().getType();
                     taskSend.send(ruleType, activitiAudit.getRule(), task.getProcessTaskId(), 1);
                 }
             }

@@ -386,7 +386,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Transactional
     public void addChild(QualityTaskChild child) {
 
+
         QualityTaskParam params = child.getTaskParams();
+        Long FatherTaskId = child.getTaskParams().getQualityTaskId();
         params.setParentId(params.getQualityTaskId());
         params.setQualityTaskId(null);
 
@@ -425,12 +427,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         detailService.saveBatch(ChildDetails);
 
         //主任务详情
-        List<QualityTaskDetail> fatherTaskDetail = detailService.query().eq("quality_task_id", params.getQualityTaskId()).list();
+        List<QualityTaskDetail> fatherTaskDetail = detailService.query().eq("quality_task_id", FatherTaskId).list();
         //判断任务是否分配完成
-        Boolean fatherDetail = true;
+        boolean fatherDetail = true;
         for (QualityTaskDetail qualityTaskDetail : fatherTaskDetail) {
-            if (qualityTaskDetail.getRemaining() != 0) {
+            if (qualityTaskDetail.getRemaining() > 0) {
                 fatherDetail = false;
+                break;
             }
         }
         //分派数量完成  更新主任务状态
@@ -438,25 +441,25 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             QualityTask task = new QualityTask();
             task.setState(1);
             this.update(task, new QueryWrapper<QualityTask>() {{
-                eq("quality_task_id", params.getQualityTaskId());
+                eq("quality_task_id", FatherTaskId);
             }});
         }
-        ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(params.getQualityTaskId());
+        ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(params.getParentId());
         activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
 
 //        activitiProcessLogService.autoAudit(taskId);
-//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//        String userIds = child.getTaskParams().getUserIds();
-//        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-//        wxCpTemplate.setUserIds(users);
-//        String url = mobileService.getMobileConfig().getUrl();
-//        url = url + "Work/Quality?id=" + qualityTask.getQualityTaskId();
-//        wxCpTemplate.setUrl(url);
-//        wxCpTemplate.setDescription("点击查看新质检任务");
-//        wxCpTemplate.setTitle("您被分派新的任务");
-//        wxCpTemplate.setType(1);
-//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//        wxCpSendTemplate.sendTemplate();
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        String userIds = child.getTaskParams().getUserIds();
+        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        wxCpTemplate.setUserIds(users);
+        String url = mobileService.getMobileConfig().getUrl();
+        url = url + "/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
+        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setDescription("点击查看新质检任务");
+        wxCpTemplate.setTitle("您被分派新的任务");
+        wxCpTemplate.setType(1);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -543,7 +546,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         //通过data找value
         List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
-
 
 
         List<Long> planId = new ArrayList<>();

@@ -139,9 +139,11 @@ public class ActivitiProcessTaskSend {
 
         switch (type) {
             case audit:
-
+                auditMessageSend.send(taskId,type,users,url,createName);
+                break;
             case send:
                 auditMessageSend.send(taskId,type,users,url,createName);
+                activitiProcessLogService.autoAudit(taskId);
                 break;
             case quality_complete:
             case quality_perform:
