@@ -65,6 +65,11 @@ public class ContractResult implements Serializable {
 
 
     /**
+     * 合同分类
+     */
+    private Long contractClassId;
+
+    /**
      * 合同名称
      */
     @ApiModelProperty("合同名称")

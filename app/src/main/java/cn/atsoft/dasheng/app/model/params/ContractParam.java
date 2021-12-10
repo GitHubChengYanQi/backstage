@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import cn.atsoft.dasheng.crm.pojo.Payment;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -26,6 +27,12 @@ public class ContractParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+
+
+    /**
+     * 合同分类
+     */
+    private Long contractClassId;
 
     /**
      * 合同id

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 import java.util.Date;
@@ -22,7 +23,10 @@ public class TemplateParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    /**
+     * 合同分类id
+     */
+    private Long contractClassId;
     /**
      * 合同模板id
      */

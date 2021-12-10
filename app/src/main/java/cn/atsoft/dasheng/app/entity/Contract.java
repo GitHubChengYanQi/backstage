@@ -67,81 +67,9 @@ public class Contract implements Serializable {
     @TableField("party_b_phone")
     private Long partyBPhone;
 
-
-    public Long getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(Long templateId) {
-        this.templateId = templateId;
-    }
-
-    public Integer getAudit() {
-        return audit;
-    }
-
-    public void setAudit(Integer audit) {
-        this.audit = audit;
-    }
-
-    public Payment getPercent() {
-        return percent;
-    }
-
-    public void setPercent(Payment percent) {
-        this.percent = percent;
-    }
-
-    public Long getPartyAAdressId() {
-        return partyAAdressId;
-    }
-
-    public void setPartyAAdressId(Long partyAAdressId) {
-        this.partyAAdressId = partyAAdressId;
-    }
-
-    public Long getPartyBAdressId() {
-        return partyBAdressId;
-    }
-
-    public void setPartyBAdressId(Long partyBAdressId) {
-        this.partyBAdressId = partyBAdressId;
-    }
-
-    public Long getPartyAContactsId() {
-        return partyAContactsId;
-    }
-
-    public void setPartyAContactsId(Long partyAContactsId) {
-        this.partyAContactsId = partyAContactsId;
-    }
-
-    public Long getPartyBContactsId() {
-        return partyBContactsId;
-    }
-
-    public void setPartyBContactsId(Long partyBContactsId) {
-        this.partyBContactsId = partyBContactsId;
-    }
-
     @TableField("party_b_contacts_id")
     private Long partyBContactsId;
 
-    public Long getPartyA() {
-        return partyA;
-    }
-
-    public void setPartyA(Long partyA) {
-        this.partyA = partyA;
-    }
-
-    public Long getPartyB() {
-        return partyB;
-    }
-
-    public void setPartyB(Long partyB) {
-        this.partyB = partyB;
-    }
 
     @TableField("party_b")
     private Long partyB;
@@ -199,6 +127,71 @@ public class Contract implements Serializable {
      */
     @TableField("display")
     private Integer display;
+
+
+    public Long getPartyA() {
+        return partyA;
+    }
+
+    public void setPartyA(Long partyA) {
+        this.partyA = partyA;
+    }
+
+    public Long getPartyB() {
+        return partyB;
+    }
+
+    public void setPartyB(Long partyB) {
+        this.partyB = partyB;
+    }
+
+    public Long getPartyAAdressId() {
+        return partyAAdressId;
+    }
+
+    public void setPartyAAdressId(Long partyAAdressId) {
+        this.partyAAdressId = partyAAdressId;
+    }
+
+    public Long getPartyBAdressId() {
+        return partyBAdressId;
+    }
+
+    public void setPartyBAdressId(Long partyBAdressId) {
+        this.partyBAdressId = partyBAdressId;
+    }
+
+    public Long getPartyAContactsId() {
+        return partyAContactsId;
+    }
+
+    public void setPartyAContactsId(Long partyAContactsId) {
+        this.partyAContactsId = partyAContactsId;
+    }
+
+    public Long getPartyBContactsId() {
+        return partyBContactsId;
+    }
+
+    public void setPartyBContactsId(Long partyBContactsId) {
+        this.partyBContactsId = partyBContactsId;
+    }
+
+    public Long getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(Long templateId) {
+        this.templateId = templateId;
+    }
+
+    public Integer getAudit() {
+        return audit;
+    }
+
+    public void setAudit(Integer audit) {
+        this.audit = audit;
+    }
 
     public Long getPartyAPhone() {
         return partyAPhone;
@@ -302,6 +295,14 @@ public class Contract implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Payment getPercent() {
+        return percent;
+    }
+
+    public void setPercent(Payment percent) {
+        this.percent = percent;
     }
 
     @Override
