@@ -55,6 +55,8 @@ public class QualityTaskDetailResult implements Serializable {
 
     private Integer batch;
 
+    private Long instockNumber;
+
 
     /**
      * 百分比

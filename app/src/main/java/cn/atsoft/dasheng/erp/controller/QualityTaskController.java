@@ -6,15 +6,20 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskBind;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
+import cn.atsoft.dasheng.erp.model.result.InstockRequest;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.model.result.TaskCount;
 import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.QualityTaskBindService;
+import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.FormData;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
@@ -46,6 +51,12 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskService qualityTaskService;
+
+    @Autowired
+    private QualityTaskDetailService qualityTaskDetailService;
+
+    @Autowired
+    private InstockOrderService instockOrderService;
 
     @Autowired
     private FormDataService formDataService;
@@ -318,6 +329,28 @@ public class QualityTaskController extends BaseController {
         this.qualityTaskService.updateChildTask(id);
         return ResponseData.success();
     }
+
+    /**
+     * 质检入库
+     */
+    @RequestMapping(value = "/qualityDetailInstock", method = RequestMethod.POST)
+    public ResponseData qualityDetailInstock(@RequestBody InstockOrderParam instockOrderParam) {
+
+        List<QualityTaskDetail> qualityTaskDetails = new ArrayList<>();
+        // 记录已经入库的数量
+        for (InstockRequest instockRequest : instockOrderParam.getInstockRequest()) {
+            QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
+            qualityTaskDetail.setQualityTaskDetailId(instockRequest.getQualityTaskDetailId());
+            qualityTaskDetail.setInstockNumber(instockRequest.getInstockNumber()+instockRequest.getNumber());
+            qualityTaskDetails.add(qualityTaskDetail);
+        }
+        qualityTaskDetailService.updateBatchById(qualityTaskDetails);
+
+        instockOrderService.add(instockOrderParam);
+
+        return ResponseData.success();
+    }
+
 }
 
 
