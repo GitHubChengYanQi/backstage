@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
+import cn.atsoft.dasheng.crm.pojo.Payment;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -48,6 +49,7 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private Long partyBContactsId;
 
     private Long partyB;
+    private Payment payment;
 
     /**
      * 合同名称
@@ -116,5 +118,6 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     public String checkParam() {
         return null;
     }
+
     private Long deptId;
 }

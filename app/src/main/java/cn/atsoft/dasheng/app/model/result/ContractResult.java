@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.pojo.Payment;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,8 +31,8 @@ public class ContractResult implements Serializable {
      */
     @ApiModelProperty("合同id")
     private Long contractId;
-    private  CustomerResult partA;
-    private  CustomerResult partB;
+    private CustomerResult partA;
+    private CustomerResult partB;
 
     private String partAName;
     private String partBName;
@@ -59,6 +60,8 @@ public class ContractResult implements Serializable {
 
     private PhoneResult phoneA;
     private PhoneResult phoneB;
+
+    private Payment payment;
 
 
     /**

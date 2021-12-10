@@ -524,7 +524,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
 
 
-
         List<Long> planId = new ArrayList<>();
         for (FormDataValue dataValue : dataValues) {
             planId.add(dataValue.getField());
@@ -664,7 +663,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
-            activitiProcessLogService.autoAudit(task.getParentId(),quality_dispatch);
+            activitiProcessLogService.autoAudit(task.getParentId(), quality_dispatch);
 
         }
     }
@@ -700,7 +699,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             userIds.add(childTask.getCreateUser());
         }
 
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (QualityTaskResult taskResult : taskResults) {
             for (User createUser : users) {

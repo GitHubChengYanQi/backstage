@@ -1,11 +1,17 @@
 package cn.atsoft.dasheng.app.entity;
 
+import cn.atsoft.dasheng.crm.pojo.Payment;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.extension.handlers.FastjsonTypeHandler;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
 /**
@@ -13,10 +19,12 @@ import java.io.Serializable;
  * 合同表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-21
  */
-@TableName("daoxin_crm_contract")
+
+@TableName(autoResultMap = true)
+@Accessors(chain = true)
 public class Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +32,7 @@ public class Contract implements Serializable {
     /**
      * 合同id
      */
-      @TableId(value = "contract_id", type = IdType.ID_WORKER)
+    @TableId(value = "contract_id", type = IdType.ID_WORKER)
     private Long contractId;
 
     /**
@@ -32,6 +40,33 @@ public class Contract implements Serializable {
      */
     @TableField("name")
     private String name;
+
+
+    @TableField("template_id")
+    private Long templateId;
+
+
+    @TableField("audit")
+    private Integer audit;
+    /**
+     * 付款信息
+     */
+    @TableField(typeHandler = FastjsonTypeHandler.class)
+    private Payment percent;
+
+    @TableField("party_a")
+    private Long partyA;
+    @TableField("party_a_adress_id")
+    private Long partyAAdressId;
+    @TableField("party_b_adress_id")
+    private Long partyBAdressId;
+    @TableField("party_a_contacts_id")
+    private Long partyAContactsId;
+    @TableField("party_a_phone")
+    private Long partyAPhone;
+    @TableField("party_b_phone")
+    private Long partyBPhone;
+
 
     public Long getTemplateId() {
         return templateId;
@@ -41,9 +76,6 @@ public class Contract implements Serializable {
         this.templateId = templateId;
     }
 
-    @TableField("template_id")
-    private Long templateId;
-
     public Integer getAudit() {
         return audit;
     }
@@ -52,24 +84,13 @@ public class Contract implements Serializable {
         this.audit = audit;
     }
 
-    @TableField("audit")
-    private Integer audit;
+    public Payment getPercent() {
+        return percent;
+    }
 
-
-
-
-    @TableField("party_a")
-    private Long partyA;
-   @TableField("party_a_adress_id")
-    private Long partyAAdressId;
-   @TableField("party_b_adress_id")
-    private Long partyBAdressId;
-   @TableField("party_a_contacts_id")
-    private Long partyAContactsId;
-   @TableField("party_a_phone")
-    private Long partyAPhone;
-   @TableField("party_b_phone")
-    private Long partyBPhone;
+    public void setPercent(Payment percent) {
+        this.percent = percent;
+    }
 
     public Long getPartyAAdressId() {
         return partyAAdressId;
@@ -152,25 +173,25 @@ public class Contract implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -286,17 +307,17 @@ public class Contract implements Serializable {
     @Override
     public String toString() {
         return "Contract{" +
-        "contractId=" + contractId +
-        ", name=" + name +
-        ", userId=" + userId +
-        ", note=" + note +
-        ", time=" + time +
-        ", content=" + content +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "contractId=" + contractId +
+                ", name=" + name +
+                ", userId=" + userId +
+                ", note=" + note +
+                ", time=" + time +
+                ", content=" + content +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }
