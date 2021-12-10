@@ -178,7 +178,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId, null);
+            activitiProcessLogService.autoAudit(taskId);
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -424,20 +424,39 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         detailService.updateBatchById(details);
         detailService.saveBatch(ChildDetails);
 
+        //主任务详情
+        List<QualityTaskDetail> fatherTaskDetail = detailService.query().eq("quality_task_id", params.getQualityTaskId()).list();
+        //判断任务是否分配完成
+        Boolean fatherDetail = true;
+        for (QualityTaskDetail qualityTaskDetail : fatherTaskDetail) {
+            if (qualityTaskDetail.getRemaining() != 0) {
+                fatherDetail = false;
+            }
+        }
+        //分派数量完成  更新主任务状态
+        if (fatherDetail) {
+            QualityTask task = new QualityTask();
+            task.setState(1);
+            this.update(task, new QueryWrapper<QualityTask>() {{
+                eq("quality_task_id", params.getQualityTaskId());
+            }});
+        }
+        ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(params.getQualityTaskId());
+        activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
 
-
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        String userIds = child.getTaskParams().getUserIds();
-        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Quality?id=" + qualityTask.getQualityTaskId();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setDescription("点击查看新质检任务");
-        wxCpTemplate.setTitle("您被分派新的任务");
-        wxCpTemplate.setType(1);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+//        activitiProcessLogService.autoAudit(taskId);
+//        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//        String userIds = child.getTaskParams().getUserIds();
+//        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+//        wxCpTemplate.setUserIds(users);
+//        String url = mobileService.getMobileConfig().getUrl();
+//        url = url + "Work/Quality?id=" + qualityTask.getQualityTaskId();
+//        wxCpTemplate.setUrl(url);
+//        wxCpTemplate.setDescription("点击查看新质检任务");
+//        wxCpTemplate.setTitle("您被分派新的任务");
+//        wxCpTemplate.setType(1);
+//        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -524,6 +543,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         //通过data找value
         List<FormDataValue> dataValues = formDataValueService.query().eq("data_id", formData.getDataId()).list();
+
 
 
         List<Long> planId = new ArrayList<>();
@@ -671,8 +691,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             this.update(fathTask, new QueryWrapper<QualityTask>() {{
                 eq("quality_task_id", task.getParentId());
             }});
-            activitiProcessLogService.autoAudit(task.getParentId(), quality_dispatch);
-
+            /**
+             * TODO id错误
+             */
+            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(task.getParentId());
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
         }
     }
 
@@ -713,7 +736,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             userIds.add(childTask.getCreateUser());
         }
 
-        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<User> users = userService.listByIds(userIds);
 
         for (QualityTaskResult taskResult : taskResults) {
             for (User createUser : users) {

@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.RuleType.quality_complete;
+import static cn.atsoft.dasheng.form.pojo.RuleType.send;
 
 @Service
 @Data
@@ -61,6 +62,11 @@ public class ActivitiProcessTaskSend {
     private QualityTaskDetailService qualityTaskDetailService;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+
+    @Autowired
+    private QualityMessageSend qualityMessageSend;
+    @Autowired
+    private AuditMessageSendImpl auditMessageSend;
 
     private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
@@ -115,219 +121,104 @@ public class ActivitiProcessTaskSend {
      * 推送方法
      *
      * @param type
-     * @param starUser
+     * @param auditRule
      * @param taskId
      * @param status
      */
-    public void send(RuleType type, AuditRule starUser, Long taskId, int status) {
+    public void send(RuleType type, AuditRule auditRule, Long taskId, int status) {
         List<Long> users = new ArrayList<>();
-        List<Long> collect = new ArrayList<>();
-        ActivitiTaskSend activitiTaskSend = new ActivitiTaskSend();
-        if (ToolUtil.isNotEmpty(starUser)) {
-            users = this.selectUsers(starUser);
+
+        Map<String, String> aboutSend = this.getAboutSend(taskId,type);//获取任务关联
+        String url = aboutSend.get("url");//进入switch 拼装不同阶段使用不同的url
+        String createName = aboutSend.get("byIdName");
+
+        if (ToolUtil.isNotEmpty(auditRule)) {
+            users = this.selectUsers(auditRule);
+            users = users.stream().distinct().collect(Collectors.toList());
         }
-        if (ToolUtil.isNotEmpty(users)) {
-            collect = users.stream().distinct().collect(Collectors.toList());
-        }
-        activitiTaskSend.setUsers(collect);
-        activitiTaskSend.setTaskId(taskId);
 
         switch (type) {
             case audit:
-                if (status == 1) {
-                    this.personSend(activitiTaskSend);
-                } else {
-                    vetoSend(taskId);
-                }
-                break;
-            case quality_perform:
-                this.performTask(taskId);
+
+            case send:
+                auditMessageSend.send(taskId,type,users,url,createName);
                 break;
             case quality_complete:
-                this.completeTaskSend(taskId);
-                activitiProcessLogService.autoAudit(taskId, quality_complete);
-
-                break;
-            case send:
-                this.sendSend(activitiTaskSend);
-                break;
+            case quality_perform:
             case quality_dispatch:
-                this.dispatch(activitiTaskSend);
+                qualityMessageSend.send(taskId,type,users,url,createName);
                 break;
-
         }
 
     }
 
+    /**
+     * 审批拒绝更新
+     * @param taskId
+     */
+    public void refuseTask(Long taskId){
+        ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
+        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
+        //否决更新质检任务状态
+        qualityTask.setState(4);
+        qualityTaskService.updateById(qualityTask);
+        //创建消息推送 推送给发起人
+
+        //找到发起质检任务的人
+        User createUser = userService.getById(qualityTask.getCreateUser());
+        //获取推送人
+        List<Long> users = new ArrayList<>();
+        users.add(createUser.getUserId());
+
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setTitle("审批被否决");
+        wxCpTemplate.setDescription(createUser.getName() + "创建的任务" + qualityTask.getCoding());
+        wxCpTemplate.setUserIds(users);
+        //获取url
+        Map<String, String> aboutSend = this.getAboutSend(taskId, send);
+        wxCpTemplate.setUrl(aboutSend.get("url"));
+
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+    }
     /**
      * 关于质检任务的map
      *
      * @param taskId
      * @return
      */
-    private Map<String, String> getAboutSend(Long taskId) {
+    private Map<String, String> getAboutSend(Long taskId,RuleType type) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
         QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         User byId = userService.getById(qualityTask.getCreateUser());
         Map<String, String> map = new HashMap<>();
-//        map.put("qualityTaskUserId", qualityTask.getUserId().toString());
-        map.put("url", qualityTask.getUrl());
+        map.put("taskId",taskId.toString());
         map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
         map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
+        String url = this.changeUrl(type, map);//组装url
+        map.put("url",url);
         return map;
     }
 
-    /**
-     * 开始质检任务推送
-     *
-     * @param taskId
-     */
-    private void performTask(Long taskId) {
-        Map<String, String> aboutSend = this.getAboutSend(taskId);
-        List<Long> users = new ArrayList<>();
-        users.add(Long.valueOf(aboutSend.get("qualityTaskUserId")));
+    private String changeUrl (RuleType type,Map<String, String> map){
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "OrCode?id=" + aboutSend.get("orcodeId").toString();
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setTitle("已被分派新的任务");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "已发起质检任务" + aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-    }
+        switch (type) {
+            case audit:
+            case send:
+                url = url + "/cp/#/Work/Workflow?" + "id=" + map.get("taskId");
+                break;
+            case quality_complete:
+                url = url + "/cp/#/Work/Quality?id=" + map.get("qualityTaskId");
+                break;
+            case quality_perform:
+                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
+                break;
+            case quality_dispatch:
+                url = url + "/cp/#/Work/Workflow/DispatchTask?id=" + map.get("taskId");
+                break;
 
-    /**
-     * 审批节点推送
-     *
-     * @param param
-     */
-    private void personSend(ActivitiTaskSend param) {
-        Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUserIds(param.getUsers());
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Workflow?" + "id=" + param.getTaskId().toString();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("您有新的审批流程");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起了任务" + aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-    }
-
-    /**
-     * 分派任务节点推送
-     *
-     * @param param
-     */
-    private void dispatch(ActivitiTaskSend param) {
-        Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
-        ActivitiProcessTask byId = activitiProcessTaskService.getById(param.getTaskId());
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUserIds(param.getUsers());
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Workflow/DispatchTask?id=" + param.getTaskId().toString();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("分派新的执行任务任务");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被分派到您" + aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-    }
-
-    /**
-     * 任务完完成节点推送
-     *
-     * @param taskId
-     */
-    private void completeTaskSend(Long taskId) {
-        Map<String, String> aboutSend = this.getAboutSend(taskId);
-        List<Long> users = new ArrayList<>();
-        QualityTask updateEntity = new QualityTask();
-        updateEntity.setQualityTaskId(Long.valueOf(aboutSend.get("qualityTaskId")));
-        updateEntity.setState(3);
-        qualityTaskService.updateById(updateEntity);
-        logger.info(updateEntity.toString());
-
-//        List<QualityTaskDetail> list = qualityTaskDetailService.query().eq("quality_task_id", aboutSend.get("qualityTaskId")).list();
-        List<QualityTask> qualityTaskList = qualityTaskService.query().eq("parent_id", aboutSend.get("qualityTaskId")).list();
-        if (ToolUtil.isNotEmpty(qualityTaskList)) {
-            for (QualityTask detail : qualityTaskList) {
-                List<Long> userIds = Arrays.asList(detail.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-
-                detail.setState(3);
-
-                List<Long> collect = userIds.stream().distinct().collect(Collectors.toList());
-                String url = mobileService.getMobileConfig().getUrl();
-
-                url = url + "Work/Quality?id=" + detail.getQualityTaskId().toString();
-                WxCpTemplate wxCpTemplate = new WxCpTemplate();
-                wxCpTemplate.setUrl(url);
-                wxCpTemplate.setUserIds(collect);
-                wxCpTemplate.setTitle("质检任务完成，待批准入库");
-                wxCpTemplate.setDescription(aboutSend.get("coding"));
-                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                wxCpSendTemplate.sendTemplate();
-            }
-            qualityTaskService.updateBatchById(qualityTaskList);
         }
-
-    }
-
-    /**
-     * 抄送人节点推送
-     *
-     * @param param
-     */
-    private void sendSend(ActivitiTaskSend param) {
-        Map<String, String> aboutSend = this.getAboutSend(param.getTaskId());
-
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Workflow?" + "id=" + param.getTaskId().toString();
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(param.getUsers());
-        wxCpTemplate.setTitle("抄送");
-        wxCpTemplate.setDescription(aboutSend.get("byIdName") + "发起的任务" + "已被上一级批准" + aboutSend.get("coding"));
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-        activitiProcessLogService.autoAudit(param.getTaskId(), RuleType.send);
-
-    }
-
-    /**
-     * 审批节点拒绝 推送
-     *
-     * @param taskId
-     */
-    public void vetoSend(Long taskId) {
-
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> users = new ArrayList<>();
-        ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        users.add(task.getCreateUser());
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "Work/Workflow?" + "id=" + taskId.toString();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setUserIds(users);
-        wxCpTemplate.setTitle("您发起的流程已被否决");
-        wxCpTemplate.setDescription(qualityTask.getCoding() + "审批被否决");
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-
-    }
-
-    public void noProcessQualityTaskSend(QualityTaskParam param, Long orcodeId) {
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(param.getUserId());
-        wxCpTemplate.setUserIds(userIds);
-        String url = param.getUrl().replace("codeId", orcodeId.toString());
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setTitle("质检任务提醒");
-        wxCpTemplate.setDescription("有新的质检任务");
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
+        return url;
     }
 }

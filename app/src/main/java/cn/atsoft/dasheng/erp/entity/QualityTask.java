@@ -36,7 +36,7 @@ public class QualityTask implements Serializable {
      * 主任务分派状态
      */
     @TableField("status")
-    private String status;
+    private Integer status;
     /**
      * 时间
      */
@@ -140,11 +140,11 @@ public class QualityTask implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
