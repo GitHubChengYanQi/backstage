@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.model.params.ContractClassParam;
@@ -7,8 +9,10 @@ import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.ContractClassSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -102,6 +106,24 @@ public class ContractClassController extends BaseController {
         }
         return this.contractClassService.findPageBySpec(contractClassParam);
     }
+
+    /**
+     * 选择列表
+     *
+     * @author 1
+     * @Date 2021-07-14
+     */
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<ContractClass> contractClassQueryWrapper = new QueryWrapper<>();
+        contractClassQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.contractClassService.listMaps(contractClassQueryWrapper);
+        ContractClassSelectWrapper factory = new ContractClassSelectWrapper(list);
+        List<Map<String, Object>> result = factory.wrap();
+        return ResponseData.success(result);
+    }
+
 
 
 
