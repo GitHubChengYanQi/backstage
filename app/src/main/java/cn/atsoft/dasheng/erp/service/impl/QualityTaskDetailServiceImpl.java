@@ -118,7 +118,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
 
         List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        OrCodeBind formId = bindService.query().eq("form_id", param.getQualityTaskId()).one();
 
         AuditRule auditRule = new AuditRule();
         List<AuditRule.Rule> roleList = new ArrayList<>();

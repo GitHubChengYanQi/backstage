@@ -424,6 +424,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         detailService.updateBatchById(details);
         detailService.saveBatch(ChildDetails);
 
+
+
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         String userIds = child.getTaskParams().getUserIds();
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -597,9 +599,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }});
     }
 
+    /**
+     * 质检完成
+     *
+     * @param taskComplete
+     */
     @Override
     public void taskComplete(TaskComplete taskComplete) {
-        //TODO 质检项 完成接口
         List<FormDataValue> valueList = formDataValueService.query().in("value_id", taskComplete.getValueIds()).list();
 
         List<Long> planIds = new ArrayList<>();
@@ -607,9 +613,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             planIds.add(formDataValue.getField());
         }
         List<QualityPlanDetail> details = qualityPlanDetailService.query().in("plan_detail_id", planIds).eq("is_null", 1).list();
-
+        //判断必填项
         Boolean t = judge(valueList, details);
-
         if (!t) {
             throw new ServiceException(500, "请检查必填项");
         }
@@ -620,18 +625,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }});
         //修改质检任务详情
         QualityTaskDetail detail = detailService.query().eq("quality_task_detail_id", taskComplete.getTaskDetailId()).one();
-
         if (detail.getNumber() > detail.getRemaining()) {
             detail.setRemaining(detail.getRemaining() + 1);
             detailService.updateById(detail);
         }
     }
 
+    /**
+     * 更新子任务
+     *
+     * @param taskId
+     */
     @Override
     public void updateChildTask(Long taskId) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
-
 
         if (task.getState() == 1) {
             task.setState(2);
@@ -668,6 +676,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
     }
 
+    /**
+     * 返回主任务
+     *
+     * @param id
+     * @return
+     */
     @Override
     public QualityTaskResult getTask(Long id) {
         QualityTask task = this.getById(id);
@@ -719,6 +733,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         return qualityTaskResult;
     }
 
+    /**
+     * 返回当前data
+     *
+     * @param bindParam
+     * @return
+     */
     @Override
     public List<FormDataResult> getDetail(BindParam bindParam) {
         //查询绑定信息
@@ -777,6 +797,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         return dataResults;
     }
 
+    /**
+     * 返回可以入库data
+     *
+     * @param bindParam
+     * @return
+     */
     @Override
     public List<FormDataResult> inStockDetail(BindParam bindParam) {
         //查询绑定信息
@@ -852,7 +878,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      */
     private List<User> getusers(List<User> users, String[] userIds) {
         List<User> userList = new ArrayList<>();
-
         for (User user : users) {
             for (String userId : userIds) {
                 if (user.getUserId().toString().equals(userId)) {

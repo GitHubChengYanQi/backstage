@@ -46,8 +46,6 @@ public class ApplyDetailsServiceImpl extends ServiceImpl<ApplyDetailsMapper, App
     @Autowired
     private BrandService brandService;
     @Autowired
-    private ItemsService itemsService;
-    @Autowired
     private SkuService skuService;
 
     @Override
