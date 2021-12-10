@@ -56,7 +56,16 @@ public class ActivitiProcessTask implements Serializable {
     @TableField("cause")
     private String cause;
 
+    @TableField("status")
+    private Integer status;
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     @TableField("user_ids")
     private String userIds;
