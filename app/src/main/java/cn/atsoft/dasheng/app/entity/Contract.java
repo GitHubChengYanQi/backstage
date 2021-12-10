@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @since 2021-07-21
  */
 
-@TableName("daoxin_crm_contract")
+@TableName(value = "daoxin_crm_contract", autoResultMap = true)
 @Accessors(chain = true)
 public class Contract implements Serializable {
 
@@ -304,7 +304,6 @@ public class Contract implements Serializable {
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
-
 
 
     @Override
