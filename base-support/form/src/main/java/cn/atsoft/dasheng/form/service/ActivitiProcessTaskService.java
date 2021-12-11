@@ -67,6 +67,8 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      * @author Jazz
      * @Date 2021-11-19
      */
-     PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
+    PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
+
+
 
 }

@@ -15,14 +15,21 @@ public class CheckQualityTask implements CheckTask {
     public Boolean checkTask(Long qualityTaskId, RuleType ruleType) {
         QualityTask qualityTask = qualityTaskService.getById(qualityTaskId);
         switch (ruleType) {
-            case quality_complete:
+
+            case quality_dispatch:
+                if (qualityTask.getState().equals(1)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            case quality_perform:
                 if (qualityTask.getState().equals(2)) {
                     return true;
                 } else {
                     return false;
                 }
-            case quality_dispatch:
-                if (qualityTask.getState().equals(1)) {
+            case quality_complete:
+                if (qualityTask.getState().equals(3)) {
                     return true;
                 } else {
                     return false;

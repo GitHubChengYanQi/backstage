@@ -30,6 +30,7 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
     List<ActivitiAudit> getListBySteps(List<ActivitiSteps> steps);
 
     List<ActivitiAudit> getListByStepsId(List<Long> stepsId);
+
     /**
      * 删除
      *
@@ -75,4 +76,7 @@ public interface ActivitiAuditService extends IService<ActivitiAudit> {
 
 
     List<ActivitiAuditResult> backAudits(List<Long> ids);
+
+
+
 }

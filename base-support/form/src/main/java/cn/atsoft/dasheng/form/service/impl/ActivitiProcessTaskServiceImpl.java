@@ -100,6 +100,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return PageFactory.createPageInfo(page);
     }
 
+
+
     private Serializable getKey(ActivitiProcessTaskParam param) {
         return param.getProcessTaskId();
     }
@@ -117,5 +119,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+
+
 
 }

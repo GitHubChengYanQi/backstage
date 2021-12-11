@@ -7,13 +7,13 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
-import cn.atsoft.dasheng.form.entity.ActivitiProcess;
-import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
-import cn.atsoft.dasheng.form.entity.ActivitiSteps;
+import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessTaskMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -54,6 +54,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     private ActivitiProcessTaskSend taskSend;
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessLogService logService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -85,13 +87,15 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
         this.updateById(newEntity);
     }
+
     @Override
-    public ActivitiProcessTask getByFormId(Long formId){
-        return this.baseMapper.selectOne(new QueryWrapper<ActivitiProcessTask>(){{
-            eq("form_id",formId);
+    public ActivitiProcessTask getByFormId(Long formId) {
+        return this.baseMapper.selectOne(new QueryWrapper<ActivitiProcessTask>() {{
+            eq("form_id", formId);
         }});
 
     }
+
     @Override
     public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
@@ -147,4 +151,8 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return entity;
     }
 
+
 }
+
+
+

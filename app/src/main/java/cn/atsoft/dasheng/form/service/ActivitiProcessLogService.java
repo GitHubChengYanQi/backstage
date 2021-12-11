@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.form.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -52,7 +53,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      */
     void update(ActivitiProcessLogParam param);
 
-    List<ActivitiProcessLog> getAudit(Long taskId,List<ActivitiProcessLog> activitiProcessLogs);
+    List<ActivitiProcessLog> getAudit(Long taskId, List<ActivitiProcessLog> activitiProcessLogs);
 
     ActivitiStepsResult addLog(Long processId, Long taskId);
 
@@ -79,5 +80,12 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @Date 2021-11-10
      */
     PageInfo<ActivitiProcessLogResult> findPageBySpec(ActivitiProcessLogParam param);
+
+    /**
+     * 判断状态
+     *
+     * @return
+     */
+    Boolean judgeStatus(ActivitiProcessTask task, RuleType ruleType);
 
 }

@@ -63,6 +63,8 @@ public class QualityTaskResult implements Serializable {
 
     private User user;
 
+    private Boolean isNext;
+
     /**
      * 多个人负责人
      */

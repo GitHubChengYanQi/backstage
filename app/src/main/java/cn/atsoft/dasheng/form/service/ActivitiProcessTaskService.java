@@ -2,9 +2,13 @@ package cn.atsoft.dasheng.form.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.RuleType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -69,6 +73,6 @@ public interface ActivitiProcessTaskService extends IService<ActivitiProcessTask
      * @author Jazz
      * @Date 2021-11-19
      */
-     PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
+    PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param);
 
 }

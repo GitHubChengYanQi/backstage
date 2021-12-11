@@ -23,7 +23,9 @@ import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
+import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.BindParam;
@@ -48,7 +50,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static cn.atsoft.dasheng.form.pojo.RuleType.quality_dispatch;
+import static cn.atsoft.dasheng.form.pojo.RuleType.*;
 import static cn.atsoft.dasheng.form.pojo.StepsType.START;
 
 
@@ -106,6 +108,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityPlanService planService;
     @Autowired
     private QualityCheckService checkService;
+    @Autowired
+    private ActivitiProcessTaskService processTaskService;
 
 
     @Override
@@ -522,6 +526,39 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         taskResult.setFatherTask(fatherTask);
 
+
+        //判断是否可以入库
+        QualityTask FatherTask = this.getById(taskResult.getParentId());
+        ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fatherTask.getQualityTaskId()).one();
+
+
+        RuleType ruleType = quality_dispatch;
+        Boolean isNext = true;
+        switch (taskResult.getState()) {
+            case 0:
+                ruleType = quality_dispatch;
+                break;
+            case 1:
+                ruleType = quality_perform;
+                break;
+            case 2:
+                ruleType = quality_complete;
+                break;
+            default:
+                isNext = false;
+        }
+
+        if (isNext) {
+            ActivitiProcessTask one = activitiProcessTaskService.getOne(new QueryWrapper<ActivitiProcessTask>() {{
+                eq("form_id", taskResult.getParentId());
+                eq("type", "quality_task");
+            }});
+            ActivitiProcessTask Task = activitiProcessTaskService.getById(one.getProcessTaskId());
+            isNext = activitiProcessLogService.judgeStatus(Task, ruleType);
+
+        }
+
+        taskResult.setIsNext(isNext);
         return taskResult;
     }
 
@@ -752,7 +789,30 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 taskResult.setUsers(persons);
             }
         }
-
+//        RuleType ruleType = quality_dispatch;
+//        Long taskId = 0L;
+//        Boolean isNext = true;
+//        switch (qualityTaskResult.getState()) {
+//            case 0:
+//                ruleType = quality_dispatch;
+//                break;
+//            case 1:
+//                ruleType = quality_perform;
+//                break;
+//            case 2:
+//                ruleType = quality_complete;
+//                break;
+//            default:
+//                isNext =false;
+//        }
+//        if(isNext){
+//            ActivitiProcessTask one = activitiProcessTaskService.getOne(new QueryWrapper<ActivitiProcessTask>() {{
+//                eq("form_id", task.getQualityTaskId());
+//                eq("type", "quality_task");
+//            }});
+//            ActivitiProcessTask processTask = activitiProcessTaskService.getById(one.getProcessTaskId());
+//            isNext = activitiProcessLogService.judgeStatus(processTask, ruleType);
+//        }
 
         qualityTaskResult.setChildTasks(taskResults);
         return qualityTaskResult;
@@ -1098,6 +1158,5 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
 
 }
