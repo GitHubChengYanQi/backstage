@@ -14,4 +14,6 @@ public class InstockRequest {
     private Integer costprice;
     private Integer sellingPrice;
     private Long skuId;
+    private Long qualityTaskDetailId;
+    private Long instockNumber;
 }

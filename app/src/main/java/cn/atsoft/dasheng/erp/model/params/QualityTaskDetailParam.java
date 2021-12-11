@@ -77,6 +77,8 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
 
     private Integer batch;
 
+    private Long instockNumber;
+
     /**
      * 负责人s
      */

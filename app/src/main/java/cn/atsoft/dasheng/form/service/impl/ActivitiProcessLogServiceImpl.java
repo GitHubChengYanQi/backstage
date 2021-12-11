@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
+import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 
@@ -63,11 +64,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private ActivitiProcessTaskSend taskSend;
-    @Autowired
-    private QualityTaskService qualityTaskService;
 
     @Autowired
     private CheckQualityTask checkQualityTask;
+
+    @Autowired
+    private ProcessTaskEndSend endSend;
 
 
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -199,11 +201,22 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             this.updateBatchById(processLogs);
         }
 
-
+        audit = this.getAudit(task.getProcessId(), logs);
+        if(ToolUtil.isEmpty(audit)){
+            /**
+             * 流程结束
+             */
+            ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
+            endProcessTask.setProcessTaskId(taskId);
+            endProcessTask.setStatus(1);
+            activitiProcessTaskService.updateById(endProcessTask);
+            endSend.endSend(endProcessTask.getProcessId());
+        }
         if (auditCheck) {
-            this.sendNextStepsByTask(task);
+            this.sendNextStepsByTask(task,audit);
         }
     }
+
 
     private void updateStatus(Long logId, Integer status) {
         ActivitiProcessLog entity = new ActivitiProcessLog();
@@ -331,16 +344,16 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         if (ToolUtil.isEmpty(activitiSteps.getChildren())) {
             return true;
         }
-        ActivitiSteps activitiStepsChild = getchildStep(steps, activitiSteps);
+        ActivitiSteps activityStepsChild = getchildStep(steps, activitiSteps);
 
-        if (ToolUtil.isEmpty(activitiStepsChild)) {
+        if (ToolUtil.isEmpty(activityStepsChild)) {
             return true;
         }
 
-        ActivitiProcessLog processLog = getLog(processLogs, activitiStepsChild);
+        ActivitiProcessLog processLog = getLog(processLogs, activityStepsChild);
 
         if (ToolUtil.isNotEmpty(processLog)) {
-            switch (activitiStepsChild.getType()) {
+            switch (activityStepsChild.getType()) {
                 case AUDIT:
                 case SEND:
                     if (stepId.equals(processLog.getSetpsId())) {
@@ -433,28 +446,28 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      * @return
      */
     @Override
-    public List<ActivitiProcessLog> getAudit(Long processId, List<ActivitiProcessLog> activitiProcessLogs) {
+    public List<ActivitiProcessLog> getAudit(Long processId, List<ActivitiProcessLog> activityProcessLog) {
 
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
 
-        return loopAudit(activitiStepsResult, activitiProcessLogs);
+        return loopAudit(activitiStepsResult, activityProcessLog);
     }
 
     private List<ActivitiProcessLog> loopAudit(ActivitiStepsResult
-                                                       activitiStepsResult, List<ActivitiProcessLog> activitiProcessLogs) {
+                                                       activitiStepsResult, List<ActivitiProcessLog> activityProcessLog) {
         List<ActivitiProcessLog> activitiStepsResultList = new ArrayList<>();
 
         if (ToolUtil.isEmpty(activitiStepsResult)) {
             return activitiStepsResultList;
         }
 
-        ActivitiProcessLog log = getLog(activitiStepsResult.getSetpsId(), activitiProcessLogs);
+        ActivitiProcessLog log = getLog(activitiStepsResult.getSetpsId(), activityProcessLog);
         switch (activitiStepsResult.getType()) {
             case START:
             case AUDIT:
                 if (ToolUtil.isNotEmpty(log)) {
                     if (log.getStatus().equals(1)) {
-                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
+                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
                     } else {
                         activitiStepsResultList.add(log);
                     }
@@ -464,17 +477,17 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case BRANCH:
                 activitiStepsResultList.add(log);
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-                    activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
+                    activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
                 }
                 break;
             case ROUTE:
                 if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
                     if (ToolUtil.isNotEmpty(log) && log.getStatus().equals(1)) {
-                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activitiProcessLogs));
+                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
                     } else {
                         activitiStepsResultList.add(log);
                         for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                            activitiStepsResultList.addAll(loopAudit(stepsResult, activitiProcessLogs));
+                            activitiStepsResultList.addAll(loopAudit(stepsResult, activityProcessLog));
                         }
                     }
 
@@ -484,8 +497,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return activitiStepsResultList;
     }
 
-    private ActivitiProcessLog getLog(Long setpsId, List<ActivitiProcessLog> activitiProcessLogs) {
-        for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
+    private ActivitiProcessLog getLog(Long setpsId, List<ActivitiProcessLog> activityProcessLog) {
+        for (ActivitiProcessLog activitiProcessLog : activityProcessLog) {
             if (activitiProcessLog.getSetpsId().equals(setpsId)) {
                 return activitiProcessLog;
             }
@@ -567,12 +580,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
 
-    public void sendNextStepsByTask(ActivitiProcessTask task) {
+    public void sendNextStepsByTask(ActivitiProcessTask task,List<ActivitiProcessLog> audit) {
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500, "未找到相关流程任务");
         }
         List<ActivitiProcessLog> logs = this.listByTaskId(task.getProcessTaskId());
-        List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
+//        List<ActivitiProcessLog> audit = this.getAudit(task.getProcessId(), logs);
 
         List<Long> nextStepsIds = new ArrayList<Long>() {{
             add(0L);

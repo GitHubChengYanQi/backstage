@@ -66,6 +66,20 @@ public class QualityTaskDetail implements Serializable {
     private Integer number;
 
     /**
+     * 入库数量
+     */
+    @TableField("instockNumber")
+    private Long instockNumber;
+
+    public Long getInstockNumber() {
+        return instockNumber;
+    }
+
+    public void setInstockNumber(Long instockNumber) {
+        this.instockNumber = instockNumber;
+    }
+
+    /**
      * 负责人s
      */
     @TableField("userIds")
