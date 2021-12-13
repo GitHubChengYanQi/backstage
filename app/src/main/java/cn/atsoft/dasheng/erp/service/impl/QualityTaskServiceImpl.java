@@ -776,7 +776,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             userIds.add(childTask.getCreateUser());
         }
 
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userIds.size() > 0 ? userService.listByIds(userIds) : new ArrayList<>();
 
         for (QualityTaskResult taskResult : taskResults) {
             for (User createUser : users) {
