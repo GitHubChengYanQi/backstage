@@ -545,9 +545,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 if (ToolUtil.isNotEmpty(log)) {
                     if (!log.getStatus().equals(1)) {
                         activitiStepsResultList.add(log);
-                        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-                            activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
-                        }
+                    }
+                    if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+                        activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
                     }
                 }
                 break;

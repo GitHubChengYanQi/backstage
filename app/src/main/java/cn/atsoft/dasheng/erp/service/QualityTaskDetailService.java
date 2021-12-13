@@ -99,4 +99,12 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
      */
     List<QualityTaskDetailResult> getTaskDetailResults(Long taskId);
 
+    /**
+     * 返回主任务应分配剩余数量
+     *
+     * @param taskId
+     * @return
+     */
+    Long getDetails(Long taskId);
+
 }

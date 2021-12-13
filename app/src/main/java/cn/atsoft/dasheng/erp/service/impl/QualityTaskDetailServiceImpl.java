@@ -131,7 +131,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             roleList.add(role);
         }
         auditRule.setRules(roleList);
-        activitiTaskSend.send(quality_perform,auditRule,param.getQualityTaskId(),1);
+        activitiTaskSend.send(quality_perform, auditRule, param.getQualityTaskId(), 1);
 
     }
 
@@ -213,6 +213,18 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
 
         return detailResults;
+    }
+
+    @Override
+    public Long getDetails(Long taskId) {
+        Long number = 0L;
+        List<QualityTaskDetail> details = this.query().eq("quality_task_id", taskId).list();
+        if (ToolUtil.isNotEmpty(details)) {
+            for (QualityTaskDetail detail : details) {
+                number = number + detail.getRemaining();
+            }
+        }
+        return number;
     }
 
     @Override

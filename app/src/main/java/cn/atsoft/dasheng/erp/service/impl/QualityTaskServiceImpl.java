@@ -115,76 +115,155 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
-        //创建编码规则
-        CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
-        if (ToolUtil.isNotEmpty(rules)) {
-            String backCoding = rulesService.backCoding(Long.valueOf(param.getCoding()));
-            String replace = "";
-            if (param.getType().equals("入厂")) {
-                replace = backCoding.replace("${type}", "in");
+        if (ToolUtil.isEmpty(param.getParentId())) {  //主任务添加
+            //创建编码规则
+            CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
+            if (ToolUtil.isNotEmpty(rules)) {
+                String backCoding = rulesService.backCoding(Long.valueOf(param.getCoding()));
+                String replace = "";
+                if (param.getType().equals("入厂")) {
+                    replace = backCoding.replace("${type}", "in");
+                }
+                if (param.getType().equals("出厂")) {
+                    replace = backCoding.replace("${type}", "out");
+                }
+                param.setCoding(replace);
             }
-            if (param.getType().equals("出厂")) {
-                replace = backCoding.replace("${type}", "out");
+        } else {   //子任务添加
+            QualityTask task = this.getById(param.getParentId());
+            if (ToolUtil.isEmpty(task)) {
+                throw new ServiceException(500, "任务不存在");
             }
-            param.setCoding(replace);
+
+            //主任务应分配的数量
+            Long detailNumber = detailService.getDetails(param.getParentId());
+            if (detailNumber == 0) {
+                throw new ServiceException(500, "已分派完成!");
+            }
+            param.setState(1);
+
+
         }
 
         QualityTask entity = getEntity(param);
         this.save(entity);
+        //主任务
+        if (ToolUtil.isEmpty(param.getParentId())) {
+            String type2Activiti = null;
+            if (param.getType().equals("出厂")) {
+                type2Activiti = "outQuality";
+            } else if (param.getType().equals("入厂")) {
+                type2Activiti = "inQuality";
+            }
+
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
+            if (ToolUtil.isNotEmpty(activitiProcess)) {
+                this.power(activitiProcess);//检查创建权限
+                LoginUser user = LoginContextHolder.getContext().getUser();
+                ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+                activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
+                activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
+                activitiProcessTaskParam.setUserId(param.getUserId());
+                activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
+                activitiProcessTaskParam.setType("quality_task");
+                activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+                ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+                ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
+                Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+                //添加log
+                activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+                activitiProcessLogService.autoAudit(taskId);
+            } else {
+                throw new ServiceException(500, "请创建质检流程！");
+            }
+        }
 
         if (ToolUtil.isNotEmpty(param.getDetails())) {
-            List<Long> skuIds = new ArrayList<>();
-            Map<Long, QualityTaskDetailParam> maps = new HashMap<>();
-            List<QualityTaskDetail> details = new ArrayList<>();
-            for (QualityTaskDetailParam detailParam : param.getDetails()) {
-                skuIds.add(detailParam.getSkuId());
+            if (ToolUtil.isEmpty(param.getParentId())) {    //主任务
+                List<Long> skuIds = new ArrayList<>();
+                Map<Long, QualityTaskDetailParam> maps = new HashMap<>();
+                List<QualityTaskDetail> details = new ArrayList<>();
+                for (QualityTaskDetailParam detailParam : param.getDetails()) {
+                    skuIds.add(detailParam.getSkuId());
+                    maps.put(detailParam.getSkuId(), detailParam);
+                    QualityTaskDetail detail = new QualityTaskDetail();
+                    detailParam.setQualityTaskId(entity.getQualityTaskId());
+                    ToolUtil.copyProperties(detailParam, detail);
+                    detail.setRemaining(detailParam.getNumber());
+                    details.add(detail);
+                }
+                detailService.saveBatch(details);
 
-                maps.put(detailParam.getSkuId(), detailParam);
+                //回填sku质检项
+                List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
+                for (Sku sku : skus) {
+                    QualityTaskDetailParam qualityTaskDetailParam = maps.get(sku.getSkuId());
+                    sku.setQualityPlanId(qualityTaskDetailParam.getQualityPlanId());
+                    sku.setBatch(qualityTaskDetailParam.getBatch());
+                }
+                skuService.updateBatchById(skus);
+            } else {
+                List<QualityTaskDetail> details = new ArrayList<>();
+                List<QualityTaskDetail> ChildDetails = new ArrayList<>();
+                for (QualityTaskDetailParam detail : param.getDetails()) {
+                    QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
+                    ToolUtil.copyProperties(detail, qualityTaskDetail);
 
-                QualityTaskDetail detail = new QualityTaskDetail();
-                detailParam.setQualityTaskId(entity.getQualityTaskId());
-                ToolUtil.copyProperties(detailParam, detail);
-                detail.setRemaining(detailParam.getNumber());
-                details.add(detail);
+                    if (detail.getNumber() - detail.getRemaining() < 0) {
+                        throw new ServiceException(500, "请确定数量");
+                    }
+                    qualityTaskDetail.setRemaining(qualityTaskDetail.getRemaining() - detail.getNewNumber());
+                    details.add(qualityTaskDetail);
+
+                    //添加子任务
+                    QualityTaskDetail childDetail = new QualityTaskDetail();
+                    childDetail.setSkuId(detail.getSkuId());
+                    childDetail.setBrandId(detail.getBrandId());
+                    childDetail.setQualityTaskId(entity.getQualityTaskId());
+                    childDetail.setBatch(detail.getBatch());
+                    childDetail.setQualityPlanId(detail.getQualityPlanId());
+                    childDetail.setNumber(detail.getNewNumber());
+                    childDetail.setPercentum(detail.getPercentum());
+                    ChildDetails.add(childDetail);
+                }
+
+                detailService.updateBatchById(details);
+                detailService.saveBatch(ChildDetails);
+                //主任务详情
+                List<QualityTaskDetail> fatherTaskDetail = detailService.query().eq("quality_task_id", param.getParentId()).list();
+                //判断任务是否分配完成
+                boolean fatherDetail = true;
+                for (QualityTaskDetail qualityTaskDetail : fatherTaskDetail) {
+                    if (qualityTaskDetail.getRemaining() > 0) {
+                        fatherDetail = false;
+                        break;
+                    }
+                }
+                //分派数量完成  更新主任务状态
+                if (fatherDetail) {
+                    QualityTask task = new QualityTask();
+                    task.setState(1);
+                    this.update(task, new QueryWrapper<QualityTask>() {{
+                        eq("quality_task_id", param.getParentId());
+                    }});
+
+                    ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
+                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
+                }
+
+                WxCpTemplate wxCpTemplate = new WxCpTemplate();
+                String userIds = param.getUserIds();
+                List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                wxCpTemplate.setUserIds(users);
+                String url = mobileService.getMobileConfig().getUrl();
+                url = url + "/#/Work/Quality?id=" + param.getParentId();
+                wxCpTemplate.setUrl(url);
+                wxCpTemplate.setDescription("点击查看新质检任务");
+                wxCpTemplate.setTitle("您被分派新的任务");
+                wxCpTemplate.setType(1);
+                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+                wxCpSendTemplate.sendTemplate();
             }
-            detailService.saveBatch(details);
-            //回填sku质检项
-            List<Sku> skus = skuService.query().in("sku_id", skuIds).list();
-            for (Sku sku : skus) {
-                QualityTaskDetailParam qualityTaskDetailParam = maps.get(sku.getSkuId());
-                sku.setQualityPlanId(qualityTaskDetailParam.getQualityPlanId());
-                sku.setBatch(qualityTaskDetailParam.getBatch());
-            }
-            skuService.updateBatchById(skus);
-        }
-
-        String type2Activiti = null;
-        if (param.getType().equals("出厂")) {
-            type2Activiti = "outQuality";
-        } else if (param.getType().equals("入厂")) {
-            type2Activiti = "inQuality";
-        }
-
-
-        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
-        if (ToolUtil.isNotEmpty(activitiProcess)) {
-            this.power(activitiProcess);//检查创建权限
-            LoginUser user = LoginContextHolder.getContext().getUser();
-            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
-            activitiProcessTaskParam.setQTaskId(entity.getQualityTaskId());
-            activitiProcessTaskParam.setUserId(param.getUserId());
-            activitiProcessTaskParam.setFormId(entity.getQualityTaskId());
-            activitiProcessTaskParam.setType("quality_task");
-            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-            ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-            ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
-            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-            //添加log
-            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.autoAudit(taskId);
-        } else {
-            throw new ServiceException(500, "请创建质检流程！");
         }
 
     }
@@ -387,83 +466,10 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param
      */
     @Override
-    @Transactional
+
     public void addChild(QualityTaskChild child) {
 
 
-        QualityTaskParam params = child.getTaskParams();
-        Long FatherTaskId = child.getTaskParams().getQualityTaskId();
-        params.setParentId(params.getQualityTaskId());
-        params.setQualityTaskId(null);
-
-        QualityTask qualityTask = new QualityTask();
-        ToolUtil.copyProperties(params, qualityTask);
-        qualityTask.setState(1);
-        this.save(qualityTask);
-
-        List<QualityTaskDetail> details = new ArrayList<>();
-
-        List<QualityTaskDetail> ChildDetails = new ArrayList<>();
-
-        for (QualityTaskDetailParam detail : params.getDetails()) {
-            QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
-            ToolUtil.copyProperties(detail, qualityTaskDetail);
-
-            if (detail.getNumber() - detail.getRemaining() < 0) {
-                throw new ServiceException(500, "请确定数量");
-            }
-            qualityTaskDetail.setRemaining(qualityTaskDetail.getRemaining() - detail.getNewNumber());
-            details.add(qualityTaskDetail);
-
-            //添加子任务
-            QualityTaskDetail childDetail = new QualityTaskDetail();
-            childDetail.setSkuId(detail.getSkuId());
-            childDetail.setBrandId(detail.getBrandId());
-            childDetail.setQualityTaskId(qualityTask.getQualityTaskId());
-            childDetail.setBatch(detail.getBatch());
-            childDetail.setQualityPlanId(detail.getQualityPlanId());
-            childDetail.setNumber(detail.getNewNumber());
-            childDetail.setPercentum(detail.getPercentum());
-            ChildDetails.add(childDetail);
-
-        }
-        detailService.updateBatchById(details);
-        detailService.saveBatch(ChildDetails);
-
-        //主任务详情
-        List<QualityTaskDetail> fatherTaskDetail = detailService.query().eq("quality_task_id", FatherTaskId).list();
-        //判断任务是否分配完成
-        boolean fatherDetail = true;
-        for (QualityTaskDetail qualityTaskDetail : fatherTaskDetail) {
-            if (qualityTaskDetail.getRemaining() > 0) {
-                fatherDetail = false;
-                break;
-            }
-        }
-        //分派数量完成  更新主任务状态
-        if (fatherDetail) {
-            QualityTask task = new QualityTask();
-            task.setState(1);
-            this.update(task, new QueryWrapper<QualityTask>() {{
-                eq("quality_task_id", FatherTaskId);
-            }});
-        }
-        ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(params.getParentId());
-        activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
-
-//        activitiProcessLogService.autoAudit(taskId);
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        String userIds = child.getTaskParams().getUserIds();
-        List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setDescription("点击查看新质检任务");
-        wxCpTemplate.setTitle("您被分派新的任务");
-        wxCpTemplate.setType(1);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
     }
 
     @Override
@@ -699,11 +705,11 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param taskId
      */
     @Override
-    public void updateChildTask(Long taskId,Integer state) {
+    public void updateChildTask(Long taskId, Integer state) {
         //更新当前子任务
         QualityTask task = this.query().eq("quality_task_id", taskId).one();
 
-        if (task.getState() == (state-1)) {
+        if (task.getState() == (state - 1)) {
             task.setState(state);
             this.updateById(task);
         }
@@ -718,7 +724,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
 
         List<QualityTaskDetail> taskDetails = detailService.query().eq("quality_task_id", task.getParentId()).list();
-        switch (state){
+        switch (state) {
             case 2:
                 //判断父级任务分配数量
                 for (QualityTaskDetail taskDetail : taskDetails) {

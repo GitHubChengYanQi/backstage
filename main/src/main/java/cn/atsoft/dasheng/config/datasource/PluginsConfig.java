@@ -39,6 +39,7 @@ public class PluginsConfig {
                     return -100L;
                 }
             }
+
             @Override
             protected Long getUserUniqueId() {
                 try {
@@ -62,37 +63,27 @@ public class PluginsConfig {
                     //没有此字段，则不处理
                 }
 
-                Object createTime = null;
                 try {
-                    createTime = getFieldValByName(getCreateTimeFieldName(), metaObject);
-                    if (createTime == null) {
-                        setFieldValByName(getCreateTimeFieldName(), new Date(), metaObject);
-                    }
+                    setFieldValByName(getCreateTimeFieldName(), new Date(), metaObject);
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
 
-                Object createUser = null;
                 try {
-                    createUser = getFieldValByName(getCreateUserFieldName(), metaObject);
-                    if (createUser == null) {
-
-                        //获取当前登录用户
-                        Object accountId = getUserUniqueId();
-
-                        setFieldValByName(getCreateUserFieldName(), accountId, metaObject);
-                    }
+                    //获取当前登录用户
+                    Object accountId = getUserUniqueId();
+                    setFieldValByName(getCreateUserFieldName(), accountId, metaObject);
                 } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
                 Object deptId = null;
                 try {
                     deptId = getFieldValByName(getDeptIdFieldName(), metaObject);
-                    if (deptId == null){
-                        Long userDeptId  = this.getUserDeptId();
-                        setFieldValByName(getDeptIdFieldName(),userDeptId,metaObject);
+                    if (deptId == null) {
+                        Long userDeptId = this.getUserDeptId();
+                        setFieldValByName(getDeptIdFieldName(), userDeptId, metaObject);
                     }
-                }catch (ReflectionException e) {
+                } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
                 Object userId = null;
@@ -101,14 +92,19 @@ public class PluginsConfig {
                     IConstantFactory iConstantFactory = new ConstantFactory();
                     Long deptId1 = iConstantFactory.getDeptId((Long) userId);
 
-                    if (userId != null){
-                        setFieldValByName(getDeptIdFieldName(),deptId1,metaObject);
+                    if (userId != null) {
+                        setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                     }
-                }catch (ReflectionException e) {
+                } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
-
+                try {
+                    setFieldValByName(getUpdateTimeFieldName(),null, metaObject);
+                } catch (ReflectionException e) {
+                    //没有此字段，则不处理
+                }
             }
+
             @Override
             public void updateFill(MetaObject metaObject) {
                 try {
@@ -130,16 +126,16 @@ public class PluginsConfig {
                 Object userId = null;
                 try {
                     userId = getFieldValByName(getUserIdFieldName(), metaObject);
-                    if (!(metaObject.getOriginalObject() instanceof User) && !(metaObject.getOriginalObject() instanceof RestUser)){
+                    if (!(metaObject.getOriginalObject() instanceof User) && !(metaObject.getOriginalObject() instanceof RestUser)) {
                         IConstantFactory iConstantFactory = new ConstantFactory();
                         Long deptId1 = iConstantFactory.getDeptId((Long) userId);
 
-                        if (userId != null){
-                            setFieldValByName(getDeptIdFieldName(),deptId1,metaObject);
+                        if (userId != null) {
+                            setFieldValByName(getDeptIdFieldName(), deptId1, metaObject);
                         }
                     }
 
-                }catch (ReflectionException e) {
+                } catch (ReflectionException e) {
                     //没有此字段，则不处理
                 }
             }
