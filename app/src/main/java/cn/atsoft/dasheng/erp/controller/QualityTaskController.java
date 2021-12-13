@@ -135,6 +135,13 @@ public class QualityTaskController extends BaseController {
         return ResponseData.success(dataResults);
     }
 
+
+    @RequestMapping(value = "/getChilds", method = RequestMethod.GET)
+    public ResponseData getChilds(@Param("id") Long id) {
+        List<QualityTaskResult> childs = qualityTaskService.getChilds(id);
+        return ResponseData.success(childs);
+    }
+
     /**
      * 编辑接口
      *
@@ -183,8 +190,8 @@ public class QualityTaskController extends BaseController {
     @RequestMapping(value = "/taskComplete", method = RequestMethod.POST)
     @ApiOperation("质检完成接口")
     public ResponseData taskComplete(@RequestBody TaskComplete taskComplete) {
-        this.qualityTaskService.taskComplete(taskComplete);
-        return ResponseData.success();
+        List<Long> longs = this.qualityTaskService.taskComplete(taskComplete);
+        return ResponseData.success(longs);
     }
 
     /**

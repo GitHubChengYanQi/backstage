@@ -23,14 +23,14 @@ import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.BindParam;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
-import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
@@ -142,7 +142,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             if (detailNumber == 0) {
                 throw new ServiceException(500, "已分派完成!");
             }
-            param.setState(1);
             if (task.getType().equals("出厂")) {
                 type2Activiti = "outQuality";
             } else if (task.getType().equals("入厂")) {
@@ -250,19 +249,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
                     activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
                 }
+                if (ToolUtil.isEmpty(param.getParentId())) {
+                    WxCpTemplate wxCpTemplate = new WxCpTemplate();
+                    String userIds = param.getUserIds();
+                    List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                    wxCpTemplate.setUserIds(users);
+                    String url = mobileService.getMobileConfig().getUrl();
+                    url = url + "/#/Work/Quality?id=" + entity.getQualityTaskId();
+                    wxCpTemplate.setUrl(url);
+                    wxCpTemplate.setDescription("点击查看新质检任务");
+                    wxCpTemplate.setTitle("您被分派新的任务");
+                    wxCpTemplate.setType(1);
+                    wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+                    wxCpSendTemplate.sendTemplate();
+                }
 
-                WxCpTemplate wxCpTemplate = new WxCpTemplate();
-                String userIds = param.getUserIds();
-                List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                wxCpTemplate.setUserIds(users);
-                String url = mobileService.getMobileConfig().getUrl();
-                url = url + "/#/Work/Quality?id=" + entity.getQualityTaskId();
-                wxCpTemplate.setUrl(url);
-                wxCpTemplate.setDescription("点击查看新质检任务");
-                wxCpTemplate.setTitle("您被分派新的任务");
-                wxCpTemplate.setType(1);
-                wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                wxCpSendTemplate.sendTemplate();
             }
         }
 
@@ -404,22 +405,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param details
      * @return
      */
-    public Boolean judge(List<FormDataValue> data, List<QualityPlanDetail> details) {
-
+    public List<Long> judge(List<FormDataValue> data, List<QualityPlanDetail> details) {
+        List<Long> valueIds = new ArrayList<>();
         for (QualityPlanDetail detail : details) {
             for (FormDataValue value : data) {
                 if (detail.getPlanDetailId().equals(value.getField())) {
                     if (ToolUtil.isEmpty(value.getValue())) {
-                        return false;
+                        valueIds.add(value.getValueId());
+
                     }
                     FormValues.DataValues dataValues = JSONUtil.toBean(value.getValue(), FormValues.DataValues.class);
                     if (ToolUtil.isEmpty(dataValues.getValue())) {
-                        return false;
+                        valueIds.add(value.getValueId());
                     }
                 }
             }
         }
-        return true;
+        return valueIds;
     }
 
 
@@ -474,8 +476,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     @Override
     public QualityTaskResult backChildTask(Long id) {
-        //子任务
         QualityTask qualityTask = this.getById(id);
+        //判断权限
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        for (String s : qualityTask.getUserIds().split(",")) {
+            if (!s.equals(loginUser.getId().toString())) {
+                throw new ServiceException(500, "你没有权限");
+            }
+        }
+        //子任务
+
         if (ToolUtil.isEmpty(qualityTask)) {
             throw new ServiceException(500, "参数不正确");
         }
@@ -660,7 +670,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param taskComplete
      */
     @Override
-    public void taskComplete(TaskComplete taskComplete) {
+    public List<Long> taskComplete(TaskComplete taskComplete) {
         List<FormDataValue> valueList = formDataValueService.query().in("value_id", taskComplete.getValueIds()).list();
 
         List<Long> planIds = new ArrayList<>();
@@ -669,9 +679,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         List<QualityPlanDetail> details = qualityPlanDetailService.query().in("plan_detail_id", planIds).eq("is_null", 1).list();
         //判断必填项
-        Boolean t = judge(valueList, details);
-        if (!t) {
-            throw new ServiceException(500, "请检查必填项");
+        List<Long> judge = judge(valueList, details);
+        if (judge.size() > 0) {
+            return judge;
         }
         FormData formData = new FormData();
         formData.setStatus(taskComplete.getStatus());
@@ -684,6 +694,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             detail.setRemaining(detail.getRemaining() + 1);
             detailService.updateById(detail);
         }
+        return judge;
     }
 
     /**
@@ -758,7 +769,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         User user = userService.getById(qualityTaskResult.getCreateUser());
         qualityTaskResult.setUser(user);
         //查询子任务
-        List<QualityTask> childTasks = this.query().eq("parent_id", task.getQualityTaskId()).list();
+        List<QualityTask> childTasks = this.query().eq("parent_id", id).list();
 
         List<QualityTaskResult> taskResults = new ArrayList<>();
 
@@ -769,11 +780,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             QualityTaskResult childTaskResult = new QualityTaskResult();
             ToolUtil.copyProperties(childTask, childTaskResult);
             taskResults.add(childTaskResult);
-            String[] userId = childTask.getUserIds().split(",");
-            for (String uId : userId) {
-                userIds.add(Long.valueOf(uId));
+            if (ToolUtil.isNotEmpty(childTask.getUserIds())) {
+                String[] userId = childTask.getUserIds().split(",");
+                for (String uId : userId) {
+                    userIds.add(Long.valueOf(uId));
+                }
+                userIds.add(childTask.getCreateUser());
             }
-            userIds.add(childTask.getCreateUser());
         }
 
         List<User> users = userService.listByIds(userIds);
@@ -785,35 +798,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 }
 
                 //比对多个负责人
-                String[] userId = taskResult.getUserIds().split(",");
-                List<User> persons = getusers(users, userId);
-                taskResult.setUsers(persons);
+                if (ToolUtil.isNotEmpty(taskResult.getUserIds())) {
+                    String[] userId = taskResult.getUserIds().split(",");
+                    List<User> persons = getusers(users, userId);
+                    taskResult.setUsers(persons);
+                }
             }
         }
-//        RuleType ruleType = quality_dispatch;
-//        Long taskId = 0L;
-//        Boolean isNext = true;
-//        switch (qualityTaskResult.getState()) {
-//            case 0:
-//                ruleType = quality_dispatch;
-//                break;
-//            case 1:
-//                ruleType = quality_perform;
-//                break;
-//            case 2:
-//                ruleType = quality_complete;
-//                break;
-//            default:
-//                isNext =false;
-//        }
-//        if(isNext){
-//            ActivitiProcessTask one = activitiProcessTaskService.getOne(new QueryWrapper<ActivitiProcessTask>() {{
-//                eq("form_id", task.getQualityTaskId());
-//                eq("type", "quality_task");
-//            }});
-//            ActivitiProcessTask processTask = activitiProcessTaskService.getById(one.getProcessTaskId());
-//            isNext = activitiProcessLogService.judgeStatus(processTask, ruleType);
-//        }
+
 
         qualityTaskResult.setChildTasks(taskResults);
         return qualityTaskResult;
@@ -933,6 +925,61 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             dataResult.setValues(dataValueResults);
         }
         return dataResults;
+    }
+
+    /**
+     * 返回当前所有子任务的数据
+     *
+     * @param fatherTaskId
+     * @return
+     */
+    @Override
+    public List<QualityTaskResult> getChilds(Long fatherTaskId) {
+        List<QualityTask> tasks = this.query().eq("parent_id", fatherTaskId).list();
+        List<Long> detailIds = new ArrayList<>();
+        List<QualityTaskResult> taskResults = new ArrayList<>();
+        for (QualityTask task : tasks) {
+            detailIds.add(task.getQualityTaskId());
+            QualityTaskResult taskResult = new QualityTaskResult();
+            ToolUtil.copyProperties(task, taskResult);
+            taskResults.add(taskResult);
+        }
+        List<QualityTaskDetail> taskDetails = detailIds.size() == 0 ? new ArrayList<>() : detailService.query().in("quality_task_id", detailIds).list();
+
+
+        List<String> userIds = new ArrayList<>();
+        for (QualityTaskResult taskResult : taskResults) {
+            if (ToolUtil.isNotEmpty(taskResult.getUserIds())) {
+                String[] split = taskResult.getUserIds().split(",");
+                for (String s : split) {
+                    userIds.add(s);
+                }
+            }
+        }
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+
+        for (QualityTaskResult taskResult : taskResults) {
+            if (ToolUtil.isNotEmpty(taskResult.getUserIds())) {
+                String[] split = taskResult.getUserIds().split(",");
+                List<User> getusers = getusers(users, split);
+                taskResult.setUsers(getusers);
+            }
+        }
+
+
+        for (QualityTaskResult task : taskResults) {
+            List<QualityTaskDetailResult> detailResults = new ArrayList<>();
+            for (QualityTaskDetail taskDetail : taskDetails) {
+                if (task.getQualityTaskId().equals(taskDetail.getQualityTaskId())) {
+                    QualityTaskDetailResult detailResult = new QualityTaskDetailResult();
+                    ToolUtil.copyProperties(taskDetail, detailResult);
+                    detailResults.add(detailResult);
+                }
+            }
+            task.setDetails(detailResults);
+        }
+        return taskResults;
     }
 
 

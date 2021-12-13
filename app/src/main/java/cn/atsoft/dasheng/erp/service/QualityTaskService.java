@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.request.FormDataPojo;
 import cn.atsoft.dasheng.erp.model.request.FormValues;
@@ -131,14 +133,15 @@ public interface QualityTaskService extends IService<QualityTask> {
      *
      * @param
      */
-    void taskComplete(TaskComplete taskComplete);
+
+    List<Long> taskComplete(TaskComplete taskComplete);
 
     /**
      * 更新子任务
      *
      * @param taskId
      */
-    void updateChildTask(Long taskId,Integer state);
+    void updateChildTask(Long taskId, Integer state);
 
     /**
      * 查询主任务和子任务
@@ -151,5 +154,16 @@ public interface QualityTaskService extends IService<QualityTask> {
     List<FormDataResult> getDetail(BindParam bindParam);
 
     List<FormDataResult> inStockDetail(BindParam bindParam);
+
+    /**
+     * 返回当前所有子任务
+     *
+     * @param fatherTaskId
+     * @return
+     */
+    List<QualityTaskResult> getChilds(Long fatherTaskId);
+
+
+
 
 }

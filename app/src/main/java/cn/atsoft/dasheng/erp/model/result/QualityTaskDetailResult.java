@@ -41,6 +41,8 @@ public class QualityTaskDetailResult implements Serializable {
     private String status;
 
     private String inkindId;
+
+    private List<User> userList;
     /**
      * 物料id
      */
