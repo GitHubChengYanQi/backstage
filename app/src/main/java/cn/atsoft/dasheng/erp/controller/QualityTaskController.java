@@ -26,6 +26,8 @@ import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.service.FormDataService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.BindParam;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.util.NumberUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -63,6 +65,9 @@ public class QualityTaskController extends BaseController {
 
     @Autowired
     private QualityTaskBindService qualityTaskBindService;
+
+    @Autowired
+    private UserService userService;
 
 
     /**
@@ -284,8 +289,25 @@ public class QualityTaskController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<QualityTaskResult> detail(@RequestBody QualityTaskParam qualityTaskParam) {
         QualityTask details = this.qualityTaskService.getById(qualityTaskParam.getQualityTaskId());
+        if (ToolUtil.isEmpty(details)) {
+            return null;
+        }
         QualityTaskResult result = new QualityTaskResult();
         ToolUtil.copyProperties(details, result);
+        User createUser = userService.getById(result.getCreateUser());
+        result.setCreateName(createUser.getName());
+        if (ToolUtil.isNotEmpty(result.getUserIds()) && !result.getUserIds().equals("")) {
+            String[] split = result.getUserIds().split(",");
+
+            List<User> users = userService.query().in("user_id", split).list();
+            List<String> userName = new ArrayList<>();
+
+            for (User user : users) {
+                userName.add(user.getName());
+            }
+
+            result.setNames(userName);
+        }
         return ResponseData.success(result);
     }
 
@@ -324,8 +346,8 @@ public class QualityTaskController extends BaseController {
      * @Date 2021-11-16
      */
     @RequestMapping(value = "/updateChildTask", method = RequestMethod.GET)
-    public ResponseData updateChildTask(@Param("id") Long id,@Param("state") Integer state) {
-        this.qualityTaskService.updateChildTask(id,state);
+    public ResponseData updateChildTask(@Param("id") Long id, @Param("state") Integer state) {
+        this.qualityTaskService.updateChildTask(id, state);
         return ResponseData.success();
     }
 
@@ -340,7 +362,7 @@ public class QualityTaskController extends BaseController {
         for (InstockRequest instockRequest : instockOrderParam.getInstockRequest()) {
             QualityTaskDetail qualityTaskDetail = new QualityTaskDetail();
             qualityTaskDetail.setQualityTaskDetailId(instockRequest.getQualityTaskDetailId());
-            qualityTaskDetail.setInstockNumber(instockRequest.getInstockNumber()+instockRequest.getNumber());
+            qualityTaskDetail.setInstockNumber(instockRequest.getInstockNumber() + instockRequest.getNumber());
             qualityTaskDetails.add(qualityTaskDetail);
         }
         qualityTaskDetailService.updateBatchById(qualityTaskDetails);

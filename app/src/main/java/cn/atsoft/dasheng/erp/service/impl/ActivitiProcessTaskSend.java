@@ -208,14 +208,12 @@ public class ActivitiProcessTaskSend {
             case send:
                 url = url + "/cp/#/Work/Workflow?" + "id=" + map.get("taskId");
                 break;
+//                case quality_perform:
+//                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
+//                break;
             case quality_complete:
-                url = url + "/cp/#/Work/Quality?id=" + map.get("qualityTaskId");
-                break;
-            case quality_perform:
-                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
-                break;
             case quality_dispatch:
-                url = url + "/cp/#/Work/Workflow/DispatchTask?id=" + map.get("taskId");
+                url = url + "/cp/#/Work/Quality?id=" + map.get("qualityTaskId");
                 break;
 
         }
