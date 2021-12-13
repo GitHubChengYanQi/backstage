@@ -43,7 +43,7 @@ public class QualityMessageSend implements AuditMessageSend {
                 wxCpTemplate.setTitle("已分派待执行");
                 break;
         }
-        wxCpTemplate.setDescription(createName+"创建的任务"+qualityTask.getCoding());
+        wxCpTemplate.setDescription("发出"+createName+"创建的任务"+qualityTask.getCoding());
         wxCpTemplate.setUserIds(users);
         wxCpTemplate.setUrl(url);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);

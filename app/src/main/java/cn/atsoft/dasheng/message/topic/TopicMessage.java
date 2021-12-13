@@ -25,8 +25,7 @@ import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QU
 public class TopicMessage {
     @Autowired
     private WxCpService wxCpService;
-    @Autowired
-    private BusinessTrackService businessTrackService;
+
     @Autowired
     private MessageService messageService;
 
@@ -41,7 +40,7 @@ public class TopicMessage {
             case CP:
                 try {
                     wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
-                    logger.info("接收"+ JSONUtil.toJsonStr(JSON.toJSONString(messageEntity)));
+                    logger.info("接收"+ JSONUtil.toJsonStr(JSON.toJSONString(messageEntity.getCpData().getDescription())));
                 } catch (WxErrorException e) {
                     e.printStackTrace();
                 }
