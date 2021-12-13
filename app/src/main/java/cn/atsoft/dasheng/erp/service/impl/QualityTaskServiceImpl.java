@@ -115,7 +115,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
-        String type2Activiti = null;
+
 
         if (ToolUtil.isEmpty(param.getParentId())) {  //主任务添加
             //创建编码规则
@@ -142,11 +142,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             if (detailNumber == 0) {
                 throw new ServiceException(500, "已分派完成!");
             }
-            if (task.getType().equals("出厂")) {
-                type2Activiti = "outQuality";
-            } else if (task.getType().equals("入厂")) {
-                type2Activiti = "inQuality";
-            }
+
         }
 
         QualityTask entity = getEntity(param);
@@ -154,6 +150,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         //主任务
 
         if (ToolUtil.isEmpty(param.getParentId())) {
+            String type2Activiti = null;
+            if (param.getType().equals("出厂")) {
+                type2Activiti = "outQuality";
+            } else if (param.getType().equals("入厂")) {
+                type2Activiti = "inQuality";
+            }
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
                 this.power(activitiProcess);//检查创建权限
