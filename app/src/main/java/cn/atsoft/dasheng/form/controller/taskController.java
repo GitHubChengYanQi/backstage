@@ -72,6 +72,9 @@ public class taskController extends BaseController {
         ToolUtil.copyProperties(processTask, taskResult);
         //质检任务
         QualityTask qualityTask = this.qualityTaskService.getById(taskResult.getFormId());
+        if (ToolUtil.isEmpty(qualityTask) || ToolUtil.isEmpty(processTask)){
+            return null;
+        }
         QualityTaskResult qualityTaskResult = new QualityTaskResult();
         ToolUtil.copyProperties(qualityTask, qualityTaskResult);
         User user = userService.getOne(new QueryWrapper<User>() {{

@@ -509,19 +509,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
 
         }
-        String[] split = taskResult.getUserIds().split(",");
-
-        List<User> users = userService.query().in("user_id", split).list();
-        List<String> userName = new ArrayList<>();
-
-        for (User user : users) {
-            userName.add(user.getName());
-        }
-
-        taskResult.setUsers(users);
-
-        taskResult.setNames(userName);
-
         taskResult.setDetails(taskDetailResults);
 
         taskResult.setFatherTask(fatherTask);
