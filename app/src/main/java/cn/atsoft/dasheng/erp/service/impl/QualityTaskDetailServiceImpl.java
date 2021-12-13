@@ -79,10 +79,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Autowired
     private OrCodeBindService bindService;
     @Autowired
-    private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
-    private MobileService mobileService;
-    @Autowired
     private UserService userService;
     @Autowired
     private ActivitiProcessTaskSend activitiTaskSend;
@@ -226,6 +222,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
         return number;
     }
+
+
 
     @Override
     public void format(List<QualityTaskDetailResult> param) {

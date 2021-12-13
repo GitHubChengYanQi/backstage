@@ -30,6 +30,7 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     private String inkindId;
     private List<Long> detailsIds;
 
+
     /**
      * 百分比
      */

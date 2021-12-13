@@ -107,4 +107,8 @@ public interface QualityTaskDetailService extends IService<QualityTaskDetail> {
      */
     Long getDetails(Long taskId);
 
+
+
+
+
 }
