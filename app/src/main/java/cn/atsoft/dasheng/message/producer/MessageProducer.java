@@ -33,7 +33,7 @@ public class MessageProducer {
             DateUtil.now().toString();
             messageEntity.setKey(DateUtil.now());
             //TODO 测试加入唯一key
-            logger.info("发送"+JSONUtil.toJsonStr(messageEntity));
+            logger.info("sendMessage"+JSONUtil.toJsonStr(messageEntity.getCpData().getDescription()));
 
         }
     }

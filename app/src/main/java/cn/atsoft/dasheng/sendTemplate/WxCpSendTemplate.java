@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
@@ -59,9 +60,10 @@ public class WxCpSendTemplate {
 
         return uuIds;
     }
-
+    private Logger logger = LoggerFactory.getLogger(MessageEntity.class);
     //发送模板消息
     public void sendTemplate() {
+
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
         WxCpMessage wxCpMessage = new WxCpMessage();
@@ -78,7 +80,7 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 try {
                     messageProducer.sendMessage(messageEntity);
-
+                    logger.info("发起推送"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
