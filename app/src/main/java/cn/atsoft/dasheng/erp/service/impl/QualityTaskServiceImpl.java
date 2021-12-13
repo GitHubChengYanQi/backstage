@@ -115,6 +115,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     @Transactional
     public void add(QualityTaskParam param) {
+        String type2Activiti = null;
+
         if (ToolUtil.isEmpty(param.getParentId())) {  //主任务添加
             //创建编码规则
             CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
@@ -141,21 +143,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 throw new ServiceException(500, "已分派完成!");
             }
             param.setState(1);
-
-
+            if (task.getType().equals("出厂")) {
+                type2Activiti = "outQuality";
+            } else if (task.getType().equals("入厂")) {
+                type2Activiti = "inQuality";
+            }
         }
 
         QualityTask entity = getEntity(param);
         this.save(entity);
         //主任务
-        if (ToolUtil.isEmpty(param.getParentId())) {
-            String type2Activiti = null;
-            if (param.getType().equals("出厂")) {
-                type2Activiti = "outQuality";
-            } else if (param.getType().equals("入厂")) {
-                type2Activiti = "inQuality";
-            }
 
+        if (ToolUtil.isEmpty(param.getParentId())) {
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
                 this.power(activitiProcess);//检查创建权限
@@ -177,6 +176,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 throw new ServiceException(500, "请创建质检流程！");
             }
         }
+
 
         if (ToolUtil.isNotEmpty(param.getDetails())) {
             if (ToolUtil.isEmpty(param.getParentId())) {    //主任务
@@ -256,7 +256,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                 wxCpTemplate.setUserIds(users);
                 String url = mobileService.getMobileConfig().getUrl();
-                url = url + "/#/Work/Quality?id=" + param.getParentId();
+                url = url + "/#/Work/Quality?id=" + entity.getQualityTaskId();
                 wxCpTemplate.setUrl(url);
                 wxCpTemplate.setDescription("点击查看新质检任务");
                 wxCpTemplate.setTitle("您被分派新的任务");
