@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -225,6 +226,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     childDetail.setBatch(detail.getBatch());
                     childDetail.setQualityPlanId(detail.getQualityPlanId());
                     childDetail.setNumber(detail.getNewNumber());
+                    childDetail.setParentId(detail.getQualityTaskDetailId());
                     childDetail.setPercentum(detail.getPercentum());
                     ChildDetails.add(childDetail);
                 }
@@ -243,6 +245,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 }
                 //分派数量完成  更新主任务状态
                 if (fatherDetail) {
+
                     QualityTask task = new QualityTask();
                     task.setState(1);
                     this.update(task, new QueryWrapper<QualityTask>() {{
@@ -704,8 +707,21 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      */
     @Override
     public void updateChildTask(Long taskId, Integer state) {
+
         //更新当前子任务
-        QualityTask task = this.query().eq("quality_task_id", taskId).one();
+        QualityTask task = this.getById(taskId);
+        //判断权限
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        String[] split = task.getUserIds().split(",");
+        boolean f = false;
+        for (String s : split) {
+            if (s.equals(loginUser.getId().toString())) {
+                f = true;
+            }
+        }
+        if (!f) {
+            throw new ServiceException(500, "没有操作质检的权限");
+        }
 
         if (task.getState() == (state - 1)) {
             task.setState(state);
@@ -716,7 +732,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         boolean t = true;
         for (QualityTask qualityTask : tasks) {
-            if (!qualityTask.getState().equals(state)) {
+            if (!qualityTask.getState().equals(state) && !qualityTask.getState().equals(-1)) {
                 t = false;
             }
         }
@@ -945,7 +961,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             taskResults.add(taskResult);
         }
         List<QualityTaskDetail> taskDetails = detailIds.size() == 0 ? new ArrayList<>() : detailService.query().in("quality_task_id", detailIds).list();
-
 
 
         List<String> userIds = new ArrayList<>();
