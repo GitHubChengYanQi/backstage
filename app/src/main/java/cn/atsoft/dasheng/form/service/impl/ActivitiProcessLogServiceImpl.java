@@ -100,13 +100,15 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         this.auditPerson(taskId, status);
     }
 
-    private void setStatus(List<ActivitiProcessLog> logs,Long logId){
+
+    private void setStatus(List<ActivitiProcessLog> logs, Long logId) {
         for (ActivitiProcessLog activitiProcessLog : logs) {
-            if(logId.equals(activitiProcessLog.getLogId())){
+            if (logId.equals(activitiProcessLog.getLogId())) {
                 activitiProcessLog.setStatus(1);
             }
         }
     }
+
     public void auditPerson(Long taskId, Integer status) {
         if (ToolUtil.isEmpty(status)) {
             throw new ServiceException(500, "请填写审核状态");
@@ -177,8 +179,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "quality_task":
                             if (checkQualityTask.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
-                                setStatus(logs,activitiProcessLog.getLogId());
-                                if (status.equals(0)){
+                                setStatus(logs, activitiProcessLog.getLogId());
+                                if (status.equals(0)) {
                                     taskSend.refuseTask(taskId);
                                     auditCheck = false;
                                 }
@@ -193,12 +195,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     }
                 } else {
                     updateStatus(activitiProcessLog.getLogId(), status);
-                    setStatus(logs,activitiProcessLog.getLogId());
+                    setStatus(logs, activitiProcessLog.getLogId());
                 }
             } else {
                 if (this.checkUser(activitiAudit.getRule())) {
                     updateStatus(activitiProcessLog.getLogId(), status);
-                    setStatus(logs,activitiProcessLog.getLogId());
+                    setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                     if (status.equals(0)) {
                         taskSend.refuseTask(taskId);
@@ -306,6 +308,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog log = getLog(processLogs, activitiSteps);
                 switch (step.getType()) {
                     case AUDIT:
+                        break;
                     case SEND:
                         if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {

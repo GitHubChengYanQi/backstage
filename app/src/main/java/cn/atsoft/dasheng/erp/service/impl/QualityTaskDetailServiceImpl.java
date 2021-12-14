@@ -86,6 +86,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Autowired
     private QualityTaskRefuseService refuseService;
 
+
     @Override
     public void add(QualityTaskDetailParam param) {
         QualityTaskDetail entity = getEntity(param);
@@ -208,9 +209,9 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
         //查看拒绝
         List<QualityTaskRefuseResult> refuseResults = refuseService.getRefuseByDetailId(id);
-        for (QualityTaskRefuseResult refuseResult : refuseResults) {
-            userIds.add(refuseResult.getCreateUser().toString());
-        }
+
+
+
 //查看子任务详情
 
         for (QualityTaskDetail detail : taskDetails) {
@@ -220,7 +221,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             detailResults.add(detailResult);
         }
 
-        List<QualityTask> tasks = taskService.listByIds(taskIds);
+        List<QualityTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
 
         List<QualityTaskResult> taskResults = new ArrayList<>();
         for (QualityTask task : tasks) {

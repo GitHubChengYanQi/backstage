@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -12,13 +14,17 @@ import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskRefuseParam;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskRefuseResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskRefuseService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -50,6 +56,12 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
     private ActivitiProcessLogService activitiProcessLogService;
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(QualityTaskRefuseParam param) {
@@ -94,7 +106,6 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
      * @param param
      */
     @Override
-    @Transactional
     public void refuse(QualityTaskRefuseParam param) {
         //TODO 拒绝检查
         List<QualityTaskRefuse> refuses = new ArrayList<>();
@@ -136,7 +147,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                 }});
                 //TODO  全部拒绝推送
                 ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
-                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),0);
+                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 0);
             }
         }
     }
@@ -147,10 +158,49 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
 
         List<QualityTaskRefuse> taskRefuses = this.query().eq("quality_task_detail_id", detailId).list();
 
+
         for (QualityTaskRefuse taskRefus : taskRefuses) {
             QualityTaskRefuseResult taskRefuseResult = new QualityTaskRefuseResult();
             ToolUtil.copyProperties(taskRefus, taskRefuseResult);
+
             refuseResults.add(taskRefuseResult);
+        }
+
+
+        return refuseResults;
+    }
+
+    @Override
+    public List<QualityTaskRefuseResult> getRefuseByTaskId(Long taskId) {
+        List<QualityTaskRefuseResult> refuseResults = new ArrayList<>();
+        List<QualityTaskRefuse> taskRefuses = this.query().eq("quality_task_id", taskId).list();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (QualityTaskRefuse taskRefus : taskRefuses) {
+            QualityTaskRefuseResult taskRefuseResult = new QualityTaskRefuseResult();
+            ToolUtil.copyProperties(taskRefus, taskRefuseResult);
+            brandIds.add(taskRefus.getBrandId());
+            userIds.add(taskRefus.getCreateUser());
+            refuseResults.add(taskRefuseResult);
+
+        }
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<User> users = userService.listByIds(userIds);
+
+
+        for (QualityTaskRefuseResult refuseResult : refuseResults) {
+            SkuResult skuResult = skuService.getSku(refuseResult.getSkuId());
+            refuseResult.setSkuResult(skuResult);
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(refuseResult.getBrandId())) {
+                    refuseResult.setBrandResult(brandResult);
+                }
+            }
+            for (User user : users) {
+                if (user.getUserId().equals(refuseResult.getCreateUser())) {
+                    refuseResult.setUser(user);
+                }
+            }
         }
         return refuseResults;
     }

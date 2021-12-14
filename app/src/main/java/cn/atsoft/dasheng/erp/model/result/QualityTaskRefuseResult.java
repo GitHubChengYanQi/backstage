@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
@@ -25,11 +26,16 @@ public class QualityTaskRefuseResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     private User user;
 
     @ApiModelProperty("")
     private Long refuseId;
 
+
+    private BrandResult brandResult;
+
+    private SkuResult skuResult;
 
     private String note;
 

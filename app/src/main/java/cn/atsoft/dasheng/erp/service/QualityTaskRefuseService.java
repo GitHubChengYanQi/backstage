@@ -75,4 +75,6 @@ public interface QualityTaskRefuseService extends IService<QualityTaskRefuse> {
 
     List<QualityTaskRefuseResult> getRefuseByDetailId(Long detailId);
 
+    List<QualityTaskRefuseResult> getRefuseByTaskId(Long taskId);
+
 }

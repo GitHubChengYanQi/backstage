@@ -35,6 +35,8 @@ public class QualityTaskResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private List<QualityTaskDetailResult> details;
 
+    private List<QualityTaskRefuseResult> refuse;
+
     private List<QualityTaskResult> childTasks;
 
     private List<FormDataResult> formDataResults;
