@@ -15,6 +15,9 @@ import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskRefuseService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +46,10 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
     private QualityTaskDetailService taskDetailService;
     @Autowired
     private QualityTaskService taskService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
 
     @Override
     public void add(QualityTaskRefuseParam param) {
@@ -127,6 +134,8 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                     eq("quality_task_id", param.getQualityTaskId());
                 }});
                 //TODO  全部拒绝推送
+                ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
+                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),0);
             }
         }
     }

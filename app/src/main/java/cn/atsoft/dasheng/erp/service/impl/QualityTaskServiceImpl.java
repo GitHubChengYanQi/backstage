@@ -175,7 +175,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId);
+                activitiProcessLogService.autoAudit(taskId,1);
             } else {
                 throw new ServiceException(500, "请创建质检流程！");
             }
@@ -254,7 +254,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     }});
 
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
-                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
+                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),1);
                 }
 
                 if (param.getState().equals(-1)) {
@@ -783,7 +783,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
              * TODO id错误
              */
             ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(task.getParentId());
-            activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),1);
         }
     }
 
