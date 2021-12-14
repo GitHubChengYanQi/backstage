@@ -473,13 +473,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Override
     public QualityTaskResult backChildTask(Long id) {
         QualityTask qualityTask = this.getById(id);
-        //判断权限
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-        for (String s : qualityTask.getUserIds().split(",")) {
-            if (!s.equals(loginUser.getId().toString())) {
-                throw new ServiceException(500, "你没有权限");
-            }
-        }
+
         //子任务
 
         if (ToolUtil.isEmpty(qualityTask)) {
@@ -558,6 +552,16 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             ActivitiProcessTask Task = activitiProcessTaskService.getById(one.getProcessTaskId());
             isNext = activitiProcessLogService.judgeStatus(Task, ruleType);
 
+        }
+
+        //判断权限
+        taskResult.setPermission(true);
+        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+        for (String s : qualityTask.getUserIds().split(",")) {
+            if (!s.equals(loginUser.getId().toString())) {
+                taskResult.setPermission(false);
+                break;
+            }
         }
 
         taskResult.setIsNext(isNext);
