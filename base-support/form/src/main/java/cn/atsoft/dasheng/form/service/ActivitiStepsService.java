@@ -82,5 +82,5 @@ public interface ActivitiStepsService extends IService<ActivitiSteps> {
     ActivitiStepsResult getStepResult(Long processId);
 
 
-
+    List<ActivitiStepsResult> getStepsByProcessId(Long processId);
 }

@@ -629,7 +629,8 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
      * @param processId
      * @return
      */
-    List<ActivitiStepsResult> getStepsByProcessId(Long processId) {
+    @Override
+    public List<ActivitiStepsResult> getStepsByProcessId(Long processId) {
         List<ActivitiStepsResult> stepsResults = new ArrayList<>();
         List<ActivitiSteps> steps = this.query().eq("process_id", processId).list();
         for (ActivitiSteps step : steps) {
