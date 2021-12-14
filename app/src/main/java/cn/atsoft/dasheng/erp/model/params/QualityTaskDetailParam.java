@@ -110,6 +110,8 @@ public class QualityTaskDetailParam extends AbstractDictMap implements Serializa
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
+    private Long parentId;
+
     /**
      * 修改者
      */

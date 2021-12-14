@@ -95,6 +95,8 @@ public class QualityTaskDetailResult implements Serializable {
      */
     private Date time;
 
+    private Long parentId;
+
     /**
      * 地点
      */

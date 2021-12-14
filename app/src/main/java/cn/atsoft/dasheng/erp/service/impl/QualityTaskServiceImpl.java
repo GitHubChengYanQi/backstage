@@ -104,13 +104,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
-    private MobileService mobileService;
-    @Autowired
     private QualityPlanService planService;
     @Autowired
     private QualityCheckService checkService;
     @Autowired
     private ActivitiProcessTaskService processTaskService;
+
+    @Autowired
+    private QualityMessageSend qualityMessageSend;
 
 
     @Override
@@ -253,25 +254,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
                     activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
                 }
-                if (ToolUtil.isEmpty(param.getParentId())) {
-                    WxCpTemplate wxCpTemplate = new WxCpTemplate();
-                    String userIds = param.getUserIds();
-                    List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                    wxCpTemplate.setUserIds(users);
-                    String url = mobileService.getMobileConfig().getUrl();
-                    url = url + "/#/Work/Quality?id=" + entity.getQualityTaskId();
-                    wxCpTemplate.setUrl(url);
-                    wxCpTemplate.setDescription("点击查看新质检任务");
-                    wxCpTemplate.setTitle("您被分派新的任务");
-                    wxCpTemplate.setType(1);
-                    wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                    wxCpSendTemplate.sendTemplate();
+
+                if (param.getState().equals(-1)) {
+
+                } else {
+                    qualityMessageSend.dispatchSend(entity.getQualityTaskId(), param);
                 }
 
             }
         }
 
     }
+
 
     private void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
@@ -964,13 +958,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         List<QualityTaskDetail> taskDetails = detailIds.size() == 0 ? new ArrayList<>() : detailService.query().in("quality_task_id", detailIds).list();
 
 
+
         List<String> userIds = new ArrayList<>();
         for (QualityTaskResult taskResult : taskResults) {
+            userIds.add(String.valueOf(taskResult.getCreateUser()));
             if (ToolUtil.isNotEmpty(taskResult.getUserIds())) {
                 String[] split = taskResult.getUserIds().split(",");
-                for (String s : split) {
-                    userIds.add(s);
-                }
+                userIds.addAll(Arrays.asList(split));
             }
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
@@ -981,6 +975,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 String[] split = taskResult.getUserIds().split(",");
                 List<User> getusers = getusers(users, split);
                 taskResult.setUsers(getusers);
+            }
+        }
+
+        for (QualityTaskResult taskResult : taskResults) {
+            for (User user : users) {
+                if (user.getUserId().equals(taskResult.getCreateUser()))
+                    taskResult.setCreateName(user.getName());
             }
         }
 
