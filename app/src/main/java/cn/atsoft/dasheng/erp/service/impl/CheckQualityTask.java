@@ -17,7 +17,7 @@ public class CheckQualityTask implements CheckTask {
         switch (ruleType) {
 
             case quality_dispatch:
-                if (qualityTask.getState().equals(1)) {
+                if (qualityTask.getState().equals(1)||qualityTask.getState().equals(-1)) {
                     return true;
                 } else {
                     return false;

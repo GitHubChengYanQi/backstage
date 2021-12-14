@@ -93,8 +93,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public void autoAudit(Long taskId) {
-        this.auditPerson(taskId, 1);
+    public void autoAudit(Long taskId, Integer status) {
+        if (ToolUtil.isEmpty(status)) {
+            status = 1;
+        }
+        this.auditPerson(taskId, status);
     }
 
     private void setStatus(List<ActivitiProcessLog> logs,Long logId){
@@ -172,10 +175,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 if (activitiAudit.getType().equals("process")) {
                     switch (task.getType()) {
                         case "quality_task":
-//
                             if (checkQualityTask.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
-                                updateStatus(activitiProcessLog.getLogId(), 1);
+                                updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs,activitiProcessLog.getLogId());
+                                if (status.equals(0)){
+                                    taskSend.refuseTask(taskId);
+                                    auditCheck = false;
+                                }
                             } else {
                                 auditCheck = false;
                             }
@@ -681,7 +687,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 if (ToolUtil.isNotEmpty(activitiAudit) && !activitiAudit.getType().equals("route") && !activitiAudit.getType().equals("branch")) {
                     RuleType ruleType = activitiAudit.getRule().getType();
-                    taskSend.send(ruleType, activitiAudit.getRule(), task.getProcessTaskId(), 1);
+                    taskSend.send(ruleType, activitiAudit.getRule(), task.getProcessTaskId());
                 }
             }
         }

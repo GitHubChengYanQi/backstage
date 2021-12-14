@@ -195,6 +195,20 @@ public class QualityTaskController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
 
     @ApiOperation("删除")
+    public ResponseData refuseQuality(@RequestBody QualityTaskParam qualityTaskParam) {
+        this.qualityTaskService.refuseQuality(qualityTaskParam.getQualityTaskId());
+        return ResponseData.success();
+    }
+
+    /**
+     * 拒绝质检
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+
+    @ApiOperation("拒绝质检")
     public ResponseData delete(@RequestBody QualityTaskParam qualityTaskParam) {
         this.qualityTaskService.delete(qualityTaskParam);
         return ResponseData.success();

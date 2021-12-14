@@ -124,9 +124,8 @@ public class ActivitiProcessTaskSend {
      * @param type
      * @param auditRule
      * @param taskId
-     * @param status
      */
-    public void send(RuleType type, AuditRule auditRule, Long taskId, int status) {
+    public void send(RuleType type, AuditRule auditRule, Long taskId) {
         List<Long> users = new ArrayList<>();
 
         Map<String, String> aboutSend = this.getAboutSend(taskId, type);//获取任务关联

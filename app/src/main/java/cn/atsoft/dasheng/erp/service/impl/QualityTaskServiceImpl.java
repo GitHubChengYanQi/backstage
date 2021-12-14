@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 
+import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.model.result.FormDataResult;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
@@ -108,7 +109,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private QualityCheckService checkService;
     @Autowired
-    private ActivitiProcessTaskService processTaskService;
+    private ActivitiProcessTaskSend processTaskSendService;
 
     @Autowired
     private QualityMessageSend qualityMessageSend;
@@ -173,7 +174,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-                activitiProcessLogService.autoAudit(taskId);
+                activitiProcessLogService.autoAudit(taskId,1);
             } else {
                 throw new ServiceException(500, "请创建质检流程！");
             }
@@ -252,7 +253,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     }});
 
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
-                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
+                    activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),1);
                 }
 
                 if (param.getState().equals(-1)) {
@@ -276,7 +277,27 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             }
         }
     }
+    @Override
+    public void refuseQuality(Long qualityTaskId){
+        QualityTask qualityTask = new QualityTask();
+        qualityTask.setQualityTaskId(qualityTaskId);
+        qualityTask.setStatus(1);
+        this.updateById(qualityTask);
+        QualityTask childrenTask = this.getById(qualityTaskId);
+        QualityTask parentTask = this.getById(childrenTask.getParentId());
+        ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(parentTask.getQualityTaskId());
+        List<ActivitiStepsResult> stepsResultList = stepsService.getStepsByProcessId(processTask.getProcessId());
+        List<Long> stepsIds = new ArrayList<>();
+        for (ActivitiStepsResult activitiStepsResult : stepsResultList) {
+            stepsIds.add(activitiStepsResult.getSetpsId());
+        }
+        ActivitiAudit dispathAudit = auditService.getOne(new QueryWrapper<ActivitiAudit>() {{
+            like("rule", "quality_dispatch");
+            in("setps_id", stepsIds);
+        }});
 
+        processTaskSendService.send(quality_dispatch,dispathAudit.getRule(),processTask.getProcessTaskId());
+    }
 
     @Override
     public void delete(QualityTaskParam param) {
@@ -527,7 +548,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         //判断是否可以入库
         QualityTask FatherTask = this.getById(taskResult.getParentId());
-        ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fatherTask.getQualityTaskId()).one();
+        ActivitiProcessTask processTask = activitiProcessTaskService.query().eq("form_id", fatherTask.getQualityTaskId()).one();
 
 
         RuleType ruleType = quality_dispatch;
@@ -761,7 +782,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
              * TODO id错误
              */
             ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(task.getParentId());
-            activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(),1);
         }
     }
 
