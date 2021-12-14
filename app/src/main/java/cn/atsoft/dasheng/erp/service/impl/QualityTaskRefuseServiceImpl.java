@@ -128,6 +128,29 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
         this.saveBatch(refuses);
         taskDetailService.updateBatchById(details);
 
+
+        //判断任务是否分配完成
+        List<QualityTaskDetailResult> taskDetailResults = taskDetailService.getTaskDetailResults(param.getQualityTaskId());
+        boolean fatherDetail = true;
+        for (QualityTaskDetailResult qualityTaskDetailResult : taskDetailResults) {
+            if (qualityTaskDetailResult.getRemaining() > 0) {
+                fatherDetail = false;
+                break;
+            }
+        }
+        //  更新主任务状态
+        if (fatherDetail) {
+
+            QualityTask task = new QualityTask();
+            task.setState(1);
+            taskService.update(task, new QueryWrapper<QualityTask>() {{
+                eq("quality_task_id", param.getQualityTaskId());
+            }});
+
+            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
+            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
+        }
+
         //判断是否全拒绝
         List<QualityTaskDetailResult> results = taskDetailService.getTaskDetailResults(param.getQualityTaskId());
         boolean a = true;
