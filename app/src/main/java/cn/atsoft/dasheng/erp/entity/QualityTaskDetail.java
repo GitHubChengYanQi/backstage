@@ -54,6 +54,20 @@ public class QualityTaskDetail implements Serializable {
     private Long qualityPlanId;
 
     /**
+     * pid
+     */
+    @TableField("parent_id")
+    private Long parentId;
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    /**
      * 物料id
      */
     @TableField("brand_id")
@@ -79,41 +93,12 @@ public class QualityTaskDetail implements Serializable {
         this.instockNumber = instockNumber;
     }
 
-    /**
-     * 负责人s
-     */
-    @TableField("userIds")
-    private String userIds;
-
-    /**
-     * 时间
-     */
-    @TableField("time")
-    private Date time;
-
-    /**
-     * 地点
-     */
-    @TableField("address")
-    private String address;
-
-    /**
-     * 联系电话
-     */
-    @TableField("phone")
-    private String phone;
 
     /**
      * 备注
      */
     @TableField("note")
     private String note;
-
-    /**
-     * 对接人
-     */
-    @TableField("person")
-    private String person;
 
     @TableField("remaining")
     private Integer remaining;
@@ -129,13 +114,6 @@ public class QualityTaskDetail implements Serializable {
     @TableField("batch")
     private Integer batch;
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public String getNote() {
         return note;
@@ -153,37 +131,7 @@ public class QualityTaskDetail implements Serializable {
         this.number = number;
     }
 
-    public String getUserIds() {
-        return userIds;
-    }
 
-    public void setUserIds(String userIds) {
-        this.userIds = userIds;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPerson() {
-        return person;
-    }
-
-    public void setPerson(String person) {
-        this.person = person;
-    }
 
     public String getInkindId() {
         return inkindId;
