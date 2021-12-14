@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.QualityTaskDetailMapper;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.TaskDetail;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.entity.FormData;
@@ -81,7 +82,9 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Autowired
     private UserService userService;
     @Autowired
-    private ActivitiProcessTaskSend activitiTaskSend;
+    private QualityTaskService taskService;
+    @Autowired
+    private QualityTaskRefuseService refuseService;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -190,6 +193,78 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             }
         }
         return number;
+    }
+
+    @Override
+    //TODO 详情
+    public TaskDetail getDetailResults(Long id) {
+        TaskDetail taskDetail = new TaskDetail();
+
+        List<QualityTaskDetail> taskDetails = this.query().eq("parent_id", id).list();
+        List<QualityTaskDetailResult> detailResults = new ArrayList<>();
+
+        List<Long> taskIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
+
+        //查看拒绝
+        List<QualityTaskRefuseResult> refuseResults = refuseService.getRefuseByDetailId(id);
+        for (QualityTaskRefuseResult refuseResult : refuseResults) {
+            userIds.add(refuseResult.getCreateUser().toString());
+        }
+//查看子任务详情
+
+        for (QualityTaskDetail detail : taskDetails) {
+            QualityTaskDetailResult detailResult = new QualityTaskDetailResult();
+            ToolUtil.copyProperties(detail, detailResult);
+            taskIds.add(detail.getQualityTaskId());
+            detailResults.add(detailResult);
+        }
+
+        List<QualityTask> tasks = taskService.listByIds(taskIds);
+
+        List<QualityTaskResult> taskResults = new ArrayList<>();
+        for (QualityTask task : tasks) {
+            userIds.add(task.getCreateUser().toString());
+            String[] split = task.getUserIds().split(",");
+            userIds.addAll(Arrays.asList(split));
+            QualityTaskResult taskResult = new QualityTaskResult();
+            ToolUtil.copyProperties(task, taskResult);
+            taskResults.add(taskResult);
+        }
+
+        List<User> users = userService.listByIds(userIds);
+
+        for (QualityTaskResult taskResult : taskResults) {
+            List<User> getusers = taskService.getusers(users, taskResult.getUserIds().split(","));
+            taskResult.setUsers(getusers);
+            for (User user : users) {
+                if (user.getUserId().equals(taskResult.getCreateUser())) {
+                    taskResult.setUser(user);
+                }
+            }
+        }
+
+        for (QualityTaskDetailResult detailResult : detailResults) {
+            for (QualityTaskResult taskResult : taskResults) {
+                if (detailResult.getQualityTaskId().equals(taskResult.getQualityTaskId())) {
+                    detailResult.setQualityTaskResult(taskResult);
+                    break;
+                }
+            }
+        }
+
+        for (QualityTaskRefuseResult refuseResult : refuseResults) {
+            for (User user : users) {
+                if (user.getUserId().equals(refuseResult.getCreateUser())) {
+                    refuseResult.setUser(user);
+                    break;
+                }
+            }
+        }
+
+        taskDetail.setDetailResults(detailResults);
+        taskDetail.setRefuseResults(refuseResults);
+        return taskDetail;
     }
 
 

@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.form.model.result.FormDataResult;
 
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.orCode.BindParam;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -163,7 +164,15 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     List<QualityTaskResult> getChilds(Long fatherTaskId);
 
+    /**
+     * 返回多个负责人
+     *
+     * @param users
+     * @param userIds
+     * @return
+     */
+    List<User> getusers(List<User> users, String[] userIds);
 
-
+    void childRefuse (Long childTaskId);
 
 }

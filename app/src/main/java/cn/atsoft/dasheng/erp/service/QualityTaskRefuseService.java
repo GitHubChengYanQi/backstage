@@ -68,8 +68,11 @@ public interface QualityTaskRefuseService extends IService<QualityTaskRefuse> {
 
     /**
      * 主任务拒检
+     *
      * @param param
      */
     void refuse(QualityTaskRefuseParam param);
+
+    List<QualityTaskRefuseResult> getRefuseByDetailId(Long detailId);
 
 }

@@ -138,7 +138,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             if (ToolUtil.isEmpty(task)) {
                 throw new ServiceException(500, "任务不存在");
             }
-
             //主任务应分配的数量
             Long detailNumber = detailService.getDetails(param.getParentId());
             if (detailNumber == 0) {
@@ -1027,7 +1026,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
      * @param userIds
      * @return
      */
-    private List<User> getusers(List<User> users, String[] userIds) {
+    @Override
+    public List<User> getusers(List<User> users, String[] userIds) {
         List<User> userList = new ArrayList<>();
         for (User user : users) {
             for (String userId : userIds) {
@@ -1039,6 +1039,35 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
         return userList;
+    }
+
+    /**
+     * 子任务拒绝
+     *
+     * @param childTaskId
+     */
+    @Override
+    public void childRefuse(Long childTaskId) {
+        QualityTask task = this.getById(childTaskId);
+        if (task.getState() == -1) {
+            throw new ServiceException(500, "不可重复拒绝");
+        }
+        task.setState(-1);
+        this.updateById(task);
+        List<QualityTaskDetailResult> results = detailService.getTaskDetailResults(childTaskId);
+        List<Long> parentId = new ArrayList<>();
+        Map<Long, Integer> map = new HashMap<>();
+
+        for (QualityTaskDetailResult result : results) {
+            parentId.add(result.getParentId());
+            map.put(result.getParentId(), result.getNumber());
+        }
+        List<QualityTaskDetail> details = detailService.listByIds(parentId);
+        for (QualityTaskDetail detail : details) {
+            Integer number = map.get(detail.getQualityTaskDetailId());
+            detail.setRemaining(detail.getRemaining() + number);
+        }
+        detailService.updateBatchById(details);
     }
 
 

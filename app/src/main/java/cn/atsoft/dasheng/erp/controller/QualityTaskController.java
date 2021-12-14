@@ -111,6 +111,20 @@ public class QualityTaskController extends BaseController {
 
 
     /**
+     * 子任务拒绝
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/childRefuse", method = RequestMethod.GET)
+    @ApiOperation("子任务拒绝")
+    public ResponseData childRefuse(@Param("id") Long id) {
+        this.qualityTaskService.childRefuse(id);
+        return ResponseData.success();
+    }
+
+
+    /**
      * 入库显示
      *
      * @author

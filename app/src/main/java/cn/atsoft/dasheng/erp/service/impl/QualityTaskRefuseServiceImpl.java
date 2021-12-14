@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.entity.QualityTaskRefuse;
@@ -13,9 +14,7 @@ import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskRefuseResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskRefuseService;
-import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
-import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -98,6 +97,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
             refuse.setQualityTaskId(param.getQualityTaskId());
             refuse.setBrandId(detailParam.getBrandId());
             refuse.setSkuId(detailParam.getSkuId());
+            refuse.setNote(param.getNote());
             refuse.setQualityTaskDetailId(detailParam.getQualityTaskDetailId());
             refuse.setNumber(Long.valueOf(detailParam.getNewNumber()));
             detailParam.setRemaining(detailParam.getRemaining() - detailParam.getNewNumber());
@@ -127,8 +127,23 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                     eq("quality_task_id", param.getQualityTaskId());
                 }});
                 //TODO  全部拒绝推送
+
             }
         }
+    }
+
+    @Override
+    public List<QualityTaskRefuseResult> getRefuseByDetailId(Long detailId) {
+        List<QualityTaskRefuseResult> refuseResults = new ArrayList<>();
+
+        List<QualityTaskRefuse> taskRefuses = this.query().eq("quality_task_detail_id", detailId).list();
+
+        for (QualityTaskRefuse taskRefus : taskRefuses) {
+            QualityTaskRefuseResult taskRefuseResult = new QualityTaskRefuseResult();
+            ToolUtil.copyProperties(taskRefus, taskRefuseResult);
+            refuseResults.add(taskRefuseResult);
+        }
+        return refuseResults;
     }
 
     private Serializable getKey(QualityTaskRefuseParam param) {

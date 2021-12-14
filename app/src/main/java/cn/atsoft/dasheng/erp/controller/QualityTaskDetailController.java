@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskDetailResult;
+import cn.atsoft.dasheng.erp.pojo.TaskDetail;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -45,6 +46,9 @@ public class QualityTaskDetailController extends BaseController {
         this.qualityTaskDetailService.add(qualityTaskDetailParam);
         return ResponseData.success();
     }
+
+
+
 
     /**
      * 编辑接口
@@ -118,6 +122,20 @@ public class QualityTaskDetailController extends BaseController {
     public ResponseData addDetails(@RequestBody QualityTaskDetailParam qualityTaskDetailParam) {
         this.qualityTaskDetailService.addDetails(qualityTaskDetailParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 查看当前详情所有任务
+     *
+     * @author
+     * @Date 2021-11-16
+     */
+    @RequestMapping(value = "/getDetailResults", method = RequestMethod.GET)
+    @ApiOperation("分派任务")
+    public ResponseData getDetailResults(@Param("id") Long id) {
+        TaskDetail detailResults = this.qualityTaskDetailService.getDetailResults(id);
+        return ResponseData.success(detailResults);
     }
 
     /**
