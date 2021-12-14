@@ -308,7 +308,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 ActivitiProcessLog log = getLog(processLogs, activitiSteps);
                 switch (step.getType()) {
                     case AUDIT:
-                        break;
                     case SEND:
                         if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
