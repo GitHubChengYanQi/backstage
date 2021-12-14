@@ -97,37 +97,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     @Override
     public void addDetails(QualityTaskDetailParam param) {
 
-        List<QualityTaskDetail> taskDetails = this.list(new QueryWrapper<QualityTaskDetail>() {{
-            in("quality_task_detail_id", param.getDetailsIds());
-        }});
-
-        for (QualityTaskDetail taskDetail : taskDetails) {
-            taskDetail.setUserIds(param.getUserIds());
-            taskDetail.setAddress(param.getAddress());
-            taskDetail.setPerson(param.getPerson());
-            taskDetail.setTime(param.getTime());
-            taskDetail.setPhone(param.getPhone());
-            taskDetail.setNote(param.getNote());
-        }
-
-        this.updateBatchById(taskDetails);
-
-
-        List<Long> users = Arrays.asList(param.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-
-        AuditRule auditRule = new AuditRule();
-        List<AuditRule.Rule> roleList = new ArrayList<>();
-        AuditRule.Rule role = new AuditRule.Rule();
-        List<AppointUser> appointUsers = new ArrayList<>();
-        for (Long user : users) {
-            AppointUser appointUser = new AppointUser();
-            appointUser.setKey(user.toString());
-            appointUsers.add(appointUser);
-            role.setAppointUsers(appointUsers);
-            roleList.add(role);
-        }
-        auditRule.setRules(roleList);
-        activitiTaskSend.send(quality_perform, auditRule, param.getQualityTaskId(), 1);
 
     }
 
@@ -222,7 +191,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         }
         return number;
     }
-
 
 
     @Override

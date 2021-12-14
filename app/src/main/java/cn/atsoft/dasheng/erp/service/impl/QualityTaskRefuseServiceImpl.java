@@ -95,8 +95,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
         for (QualityTaskDetailParam detailParam : param.getDetailParams()) {
             QualityTaskRefuse refuse = new QualityTaskRefuse();
             QualityTaskDetail taskDetail = new QualityTaskDetail();
-            refuse.setQualityTaskId(detailParam.getQualityTaskId());
-            refuse.setQualityTaskId(detailParam.getQualityTaskId());
+            refuse.setQualityTaskId(param.getQualityTaskId());
             refuse.setBrandId(detailParam.getBrandId());
             refuse.setSkuId(detailParam.getSkuId());
             refuse.setQualityTaskDetailId(detailParam.getQualityTaskDetailId());

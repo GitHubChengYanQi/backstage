@@ -32,6 +32,8 @@ public class QualityTaskRefuseParam implements Serializable, BaseValidatingParam
     @ApiModelProperty("")
     private Long refuseId;
 
+    private String note;
+
     /**
      * 质检任务id
      */

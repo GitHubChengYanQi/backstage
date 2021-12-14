@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -21,7 +24,7 @@ public class QualityTaskRefuse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "refuse_id", type = IdType.ID_WORKER)
+    @TableId(value = "refuse_id", type = IdType.ID_WORKER)
     private Long refuseId;
 
     /**
@@ -29,6 +32,11 @@ public class QualityTaskRefuse implements Serializable {
      */
     @TableField("quality_task_id")
     private Long qualityTaskId;
+    /**
+     * 备注
+     */
+    @TableField("note")
+    private String note;
 
     /**
      * 质检任务详情id
@@ -57,25 +65,25 @@ public class QualityTaskRefuse implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -173,20 +181,28 @@ public class QualityTaskRefuse implements Serializable {
         this.display = display;
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     @Override
     public String toString() {
         return "QualityTaskRefuse{" +
-        "refuseId=" + refuseId +
-        ", qualityTaskId=" + qualityTaskId +
-        ", qualityTaskDetailId=" + qualityTaskDetailId +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", number=" + number +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        "}";
+                "refuseId=" + refuseId +
+                ", qualityTaskId=" + qualityTaskId +
+                ", qualityTaskDetailId=" + qualityTaskDetailId +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", number=" + number +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                "}";
     }
 }

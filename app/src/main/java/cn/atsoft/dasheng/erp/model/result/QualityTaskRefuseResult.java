@@ -24,6 +24,9 @@ public class QualityTaskRefuseResult implements Serializable {
     @ApiModelProperty("")
     private Long refuseId;
 
+
+    private String note;
+
     /**
      * 质检任务id
      */

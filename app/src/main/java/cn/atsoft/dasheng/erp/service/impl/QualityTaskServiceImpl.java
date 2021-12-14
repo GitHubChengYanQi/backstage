@@ -226,6 +226,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     childDetail.setBatch(detail.getBatch());
                     childDetail.setQualityPlanId(detail.getQualityPlanId());
                     childDetail.setNumber(detail.getNewNumber());
+                    childDetail.setParentId(detail.getQualityTaskDetailId());
                     childDetail.setPercentum(detail.getPercentum());
                     ChildDetails.add(childDetail);
                 }
@@ -956,7 +957,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             taskResults.add(taskResult);
         }
         List<QualityTaskDetail> taskDetails = detailIds.size() == 0 ? new ArrayList<>() : detailService.query().in("quality_task_id", detailIds).list();
-
 
 
         List<String> userIds = new ArrayList<>();
