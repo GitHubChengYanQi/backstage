@@ -116,10 +116,10 @@ public class QualityTaskController extends BaseController {
      * @author
      * @Date 2021-11-16
      */
-    @RequestMapping(value = "/childRefuse", method = RequestMethod.GET)
+    @RequestMapping(value = "/childRefuse", method = RequestMethod.POST)
     @ApiOperation("子任务拒绝")
-    public ResponseData childRefuse(@Param("id") Long id) {
-        this.qualityTaskService.childRefuse(id);
+    public ResponseData childRefuse(@RequestBody QualityTaskParam qualityTaskParam) {
+        this.qualityTaskService.childRefuse(qualityTaskParam);
         return ResponseData.success();
     }
 
@@ -195,20 +195,6 @@ public class QualityTaskController extends BaseController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
 
     @ApiOperation("删除")
-    public ResponseData refuseQuality(@RequestBody QualityTaskParam qualityTaskParam) {
-        this.qualityTaskService.refuseQuality(qualityTaskParam.getQualityTaskId());
-        return ResponseData.success();
-    }
-
-    /**
-     * 拒绝质检
-     *
-     * @author
-     * @Date 2021-11-16
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-
-    @ApiOperation("拒绝质检")
     public ResponseData delete(@RequestBody QualityTaskParam qualityTaskParam) {
         this.qualityTaskService.delete(qualityTaskParam);
         return ResponseData.success();

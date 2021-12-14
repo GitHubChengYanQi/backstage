@@ -55,8 +55,6 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     void detailFormat(QualityTaskResult result);
 
-    void refuseQuality(Long qualityTaskId);
-
     /**
      * 删除
      *
@@ -175,6 +173,6 @@ public interface QualityTaskService extends IService<QualityTask> {
      */
     List<User> getusers(List<User> users, String[] userIds);
 
-    void childRefuse (Long childTaskId);
+    void childRefuse(QualityTaskParam qualityTaskParam);
 
 }
