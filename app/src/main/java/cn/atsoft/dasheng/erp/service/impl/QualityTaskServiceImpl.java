@@ -103,13 +103,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
-    private MobileService mobileService;
-    @Autowired
     private QualityPlanService planService;
     @Autowired
     private QualityCheckService checkService;
     @Autowired
     private ActivitiProcessTaskService processTaskService;
+
+    @Autowired
+    private QualityMessageSend qualityMessageSend;
 
 
     @Override
@@ -251,25 +252,18 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getParentId());
                     activitiProcessLogService.autoAudit(processTask.getProcessTaskId());
                 }
-                if (ToolUtil.isEmpty(param.getParentId())) {
-                    WxCpTemplate wxCpTemplate = new WxCpTemplate();
-                    String userIds = param.getUserIds();
-                    List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-                    wxCpTemplate.setUserIds(users);
-                    String url = mobileService.getMobileConfig().getUrl();
-                    url = url + "/#/Work/Quality?id=" + entity.getQualityTaskId();
-                    wxCpTemplate.setUrl(url);
-                    wxCpTemplate.setDescription("点击查看新质检任务");
-                    wxCpTemplate.setTitle("您被分派新的任务");
-                    wxCpTemplate.setType(1);
-                    wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-                    wxCpSendTemplate.sendTemplate();
+
+                if (param.getState().equals(-1)) {
+
+                } else {
+                    qualityMessageSend.dispatchSend(entity.getQualityTaskId(), param);
                 }
 
             }
         }
 
     }
+
 
     private void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
