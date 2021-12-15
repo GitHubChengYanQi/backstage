@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.mapper.PurchaseAskMapper;
@@ -24,7 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,6 +49,11 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void add(PurchaseAskParam param){
         PurchaseAsk entity = getEntity(param);
         this.save(entity);
+        List<Long> longs = param.getPurchaseListingParams().stream().map(PurchaseListingParam::getSkuId).distinct().collect(Collectors.toList());
+        if (longs.size() != param.getPurchaseListingParams().size()) {
+            throw new ServiceException(500,"单据中出现重复物料");
+        }
+
         List<PurchaseListing> purchaseListings = new ArrayList<>();
         for (PurchaseListingParam purchaseListingParam : param.getPurchaseListingParams()) {
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
