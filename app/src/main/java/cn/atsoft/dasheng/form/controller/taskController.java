@@ -118,6 +118,10 @@ public class taskController extends BaseController {
         }
 
         taskResult.setStepsResult(stepLog);
+        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())){
+            User user = userService.getById(taskResult.getCreateUser());
+            taskResult.setCreateName(user.getName());
+        }
         return ResponseData.success(taskResult);
 
     }
