@@ -77,55 +77,5 @@ public class taskController extends BaseController {
         taskResult.setStepsResult(stepLog);
         return ResponseData.success(taskResult);
 
-//        //质检任务
-//        QualityTask qualityTask = this.qualityTaskService.getById(taskResult.getFormId());
-//        if (ToolUtil.isEmpty(qualityTask) || ToolUtil.isEmpty(processTask)){
-//            return null;
-//        }
-//        QualityTaskResult qualityTaskResult = new QualityTaskResult();
-//        ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-//        User user = userService.getOne(new QueryWrapper<User>() {{
-//            eq("user_id", qualityTaskResult.getCreateUser());
-//        }});
-//        qualityTaskResult.setCreateName(user.getName());
-//        qualityTaskResult.setActivitiProcessTaskResult(taskResult);
-//
-//
-//        ActivitiProcess process = processService.getOne(new QueryWrapper<ActivitiProcess>() {{
-//            eq("process_id", processTask.getProcessId());
-//        }});
-//        qualityTaskResult.setProcess(process);
-//
-//        List<ActivitiProcessLog> processLogList = logService.list(new QueryWrapper<ActivitiProcessLog>() {{
-//            eq("task_id", taskId);
-//        }});
-//
-//
-//        List<Long> stepIds = new ArrayList<>();
-//        for (ActivitiProcessLog activitiProcessLog : processLogList) {
-//            stepIds.add(activitiProcessLog.getSetpsId());
-//        }
-//
-//        List<ActivitiStepsResult> resultList = stepsService.backSteps(stepIds);
-//
-//        List<ActivitiProcessLogResult> processLogResults = new ArrayList<>();
-//
-//        for (ActivitiProcessLog activitiProcessLog : processLogList) {
-//
-//            for (ActivitiStepsResult activitiStepsResult : resultList) {
-//
-//                if (activitiProcessLog.getSetpsId().equals(activitiStepsResult.getSetpsId())) {
-//
-//                    ActivitiProcessLogResult activitiProcessLogResult = new ActivitiProcessLogResult();
-//                    ToolUtil.copyProperties(activitiProcessLog, activitiProcessLogResult);
-//                    activitiProcessLogResult.setStepsResult(activitiStepsResult);
-//                    processLogResults.add(activitiProcessLogResult);
-//                }
-//            }
-//
-//        }
-//        qualityTaskResult.setLogResults(processLogResults);
-//
-//        return ResponseData.success(qualityTaskResult);
     }
 }

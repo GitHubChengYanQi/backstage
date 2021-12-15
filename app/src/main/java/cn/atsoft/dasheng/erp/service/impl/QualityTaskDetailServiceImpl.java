@@ -197,7 +197,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     }
 
     @Override
-    //TODO 详情
+
     public TaskDetail getDetailResults(Long id) {
         TaskDetail taskDetail = new TaskDetail();
 
