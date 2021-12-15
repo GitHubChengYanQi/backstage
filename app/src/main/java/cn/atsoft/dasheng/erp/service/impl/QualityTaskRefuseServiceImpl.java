@@ -208,7 +208,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
 
         }
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userIds.size() > 0 ? userService.listByIds(userIds) : new ArrayList<>();
 
 
         for (QualityTaskRefuseResult refuseResult : refuseResults) {
