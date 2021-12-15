@@ -7,24 +7,25 @@ public class ComparativeCalculation {
         Boolean flag = true;
         switch (operator){
             case "==":
-                flag = key==value;
-                break;
+                return key==value;
+
             case ">=":
-                flag = key>=value;
-                break;
+                return key>=value;
+
             case "<=":
-                flag=key<=value;
-                break;
+                return key<=value;
+
             case ">":
-                flag = key>value;
-                break;
+                return key>value;
+
             case "<":
-                flag=key<value;
-                break;
+                return key<value;
+
             case "!=":
-                flag=key!=value;
-                break;
+                return key!=value;
+
+            default:
+                return false;
         }
-        return flag;
     }
 }

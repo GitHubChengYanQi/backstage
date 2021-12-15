@@ -72,15 +72,21 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         if (longs.size() != param.getPurchaseListingParams().size()) {
             throw new ServiceException(500,"单据中出现重复物料");
         }
+        int totalCount = 0;
+        int totalType = param.getPurchaseListingParams().size();
 
         List<PurchaseListing> purchaseListings = new ArrayList<>();
         for (PurchaseListingParam purchaseListingParam : param.getPurchaseListingParams()) {
+            totalCount+=purchaseListingParam.getApplyNumber();
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
             PurchaseListing purchaseListing = new PurchaseListing();
             ToolUtil.copyProperties(purchaseListingParam, purchaseListing);
             purchaseListings.add(purchaseListing);
         }
         purchaseListingService.saveBatch(purchaseListings);
+        entity.setTypeNumber((long) totalType);
+        entity.setNumber((long) totalCount);
+        this.updateById(entity);
 
         //发起审批流程
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchaseAsk").one();
