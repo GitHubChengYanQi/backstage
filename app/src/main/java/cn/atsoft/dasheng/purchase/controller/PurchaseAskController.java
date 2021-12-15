@@ -59,18 +59,18 @@ public class PurchaseAskController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-12-15
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PurchaseAskParam purchaseAskParam)  {
-        this.purchaseAskService.delete(purchaseAskParam);
-        return ResponseData.success();
-    }
+//    /**
+//     * 删除接口
+//     *
+//     * @author song
+//     * @Date 2021-12-15
+//     */
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody PurchaseAskParam purchaseAskParam)  {
+//        this.purchaseAskService.delete(purchaseAskParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口
@@ -81,12 +81,8 @@ public class PurchaseAskController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<PurchaseAskResult> detail(@RequestBody PurchaseAskParam purchaseAskParam) {
-        PurchaseAsk detail = this.purchaseAskService.getById(purchaseAskParam.getPurchaseAskId());
-        PurchaseAskResult result = new PurchaseAskResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        PurchaseAskResult detail = this.purchaseAskService.detail(purchaseAskParam);
+        return ResponseData.success(detail);
     }
 
     /**

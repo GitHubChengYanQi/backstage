@@ -66,4 +66,5 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
      */
      PageInfo<PurchaseListingResult> findPageBySpec(PurchaseListingParam param);
 
+    List<PurchaseListingResult> getByAskId(Long askId);
 }

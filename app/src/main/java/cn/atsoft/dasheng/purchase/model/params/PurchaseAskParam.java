@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.params;
 
+import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -24,7 +25,7 @@ public class PurchaseAskParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-
+    List<PurchaseListingParam> purchaseListingParams;
     /**
      * 采购申请id
      */
