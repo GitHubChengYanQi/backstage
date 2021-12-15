@@ -42,7 +42,7 @@ public class taskController extends BaseController {
     private ActivitiStepsService stepsService;
 
     @Autowired
-    private ActivitiProcessService processService;
+    private ActivitiAuditService auditService;
 
     @Autowired
     private QualityTaskService qualityTaskService;
@@ -60,6 +60,15 @@ public class taskController extends BaseController {
         return ResponseData.success();
     }
 
+    private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
+        for (ActivitiAudit activitiAudit : activitiAudits) {
+            if (activitiAudit.getSetpsId().equals(stepId)) {
+                return activitiAudit;
+            }
+        }
+        return null;
+    }
+
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
     public ResponseData<ActivitiProcessTaskResult> detail(@Param("taskId") Long taskId) {
@@ -73,6 +82,39 @@ public class taskController extends BaseController {
         List<ActivitiProcessLogResult> process = logService.getLogByTaskProcess(processTask.getProcessId(), taskId);
         //比对log
         ActivitiStepsResult stepLog = stepsService.getStepLog(stepResult, process);
+
+        //取出所有未审核节点
+        List<ActivitiProcessLog> audit = activitiProcessLogService.getAudit(taskId);
+
+        /**
+         * 流程中审核节点
+         */
+        List<Long> stepsIds = new ArrayList<>();
+        for (ActivitiProcessLogResult processLog : process) {
+            stepsIds.add(processLog.getSetpsId());
+        }
+        /**
+         * 取出所有步骤配置
+         */
+        List<ActivitiAudit> activitiAudits = auditService.list(new QueryWrapper<ActivitiAudit>() {{
+            in("setps_id", stepsIds);
+        }});
+
+        taskResult.setPermissions(false);
+        for (ActivitiProcessLog activitiProcessLog : audit) {
+            if (activitiProcessLog.getStatus() == -1){
+                /**
+                 * 取节点规则
+                 */
+                ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
+
+                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiProcessLogService.checkUser(activitiAudit.getRule())){
+                    taskResult.setPermissions(true);
+                    break;
+                }
+            }
+
+        }
 
         taskResult.setStepsResult(stepLog);
         return ResponseData.success(taskResult);

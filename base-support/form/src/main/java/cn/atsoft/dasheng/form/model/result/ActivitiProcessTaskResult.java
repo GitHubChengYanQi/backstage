@@ -35,6 +35,8 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private String taskName;
 
+    private Boolean permissions;
+
     private String deptIds;
 
     private String userIds;
