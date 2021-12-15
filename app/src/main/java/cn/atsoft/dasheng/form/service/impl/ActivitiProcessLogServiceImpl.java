@@ -776,26 +776,28 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setStatus(-1);
         if (activitiStepsResult.getType().toString().equals("branch")) {
             AuditRule auditRule = activitiStepsResult.getAuditRule();
+            boolean b = true;
             for (AuditRule.Rule rule : auditRule.getRules()) {
                 AuditRule.PurchaseAsk ask = rule.getPurchaseAsk();
-                boolean b = true;
+
                 switch (rule.getType()) {
                     case type_number:
-                        b = typeNumber(ask, purchaseAsk);
+                        b = judeg(ask, purchaseAsk.getTypeNumber());
                         if (!b) {
                             return;
                         }
                     case money:
-                        b = money(ask, purchaseAsk);
+                        b = judeg(ask, Long.valueOf(purchaseAsk.getMoney()));
                         if (!b) {
                             return;
                         }
                     case number:
-                        b = number(ask, purchaseAsk);
+                        b = judeg(ask, purchaseAsk.getNumber());
                         if (!b) {
                             return;
                         }
                 }
+
                 if (b) {
                     processLog.setStatus(2);
                 }
@@ -815,31 +817,43 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     }
 
-    private Boolean typeNumber(AuditRule.PurchaseAsk ask, PurchaseAsk purchaseAsk) {
+    /**
+     * 比对
+     *
+     * @param ask
+     * @param number
+     * @return
+     */
+    private Boolean judeg(AuditRule.PurchaseAsk ask, Long number) {
         boolean b;
         switch (ask.getOperator()) {
             case ">":
-                b = ask.getValue() > purchaseAsk.getTypeNumber();
+                b = ask.getValue() > number;
                 if (!b) {
                     return false;
                 }
             case ">=":
-                b = ask.getValue() >= purchaseAsk.getTypeNumber();
+                b = ask.getValue() >= number;
                 if (!b) {
                     return false;
                 }
             case "===":
-                b = ask.getValue().toString().equals(purchaseAsk.getTypeNumber().toString());
+                b = ask.getValue().toString().equals(number.toString());
                 if (!b) {
                     return false;
                 }
             case "<":
-                b = ask.getValue() < purchaseAsk.getTypeNumber();
+                b = ask.getValue() < number;
                 if (!b) {
                     return false;
                 }
             case "<=":
-                b = ask.getValue() <= purchaseAsk.getTypeNumber();
+                b = ask.getValue() <= number;
+                if (!b) {
+                    return false;
+                }
+            case "!=":
+                b = !ask.getValue().toString().equals(number.toString());
                 if (!b) {
                     return false;
                 }
@@ -848,69 +862,5 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
-    private Boolean number(AuditRule.PurchaseAsk ask, PurchaseAsk purchaseAsk) {
-        boolean b;
-        switch (ask.getOperator()) {
-            case ">":
-                b = ask.getValue() > purchaseAsk.getNumber();
-                if (!b) {
-                    return false;
-                }
-            case ">=":
-                b = ask.getValue() >= purchaseAsk.getNumber();
-                if (!b) {
-                    return false;
-                }
-            case "===":
-                b = ask.getValue().toString().equals(purchaseAsk.getNumber().toString());
-                if (!b) {
-                    return false;
-                }
-            case "<":
-                b = ask.getValue() < purchaseAsk.getNumber();
-                if (!b) {
-                    return false;
-                }
-            case "<=":
-                b = ask.getValue() <= purchaseAsk.getNumber();
-                if (!b) {
-                    return false;
-                }
 
-        }
-        return false;
-    }
-
-    private Boolean money(AuditRule.PurchaseAsk ask, PurchaseAsk purchaseAsk) {
-        boolean b;
-        switch (ask.getOperator()) {
-            case ">":
-                b = ask.getValue() > purchaseAsk.getMoney();
-                if (!b) {
-                    return false;
-                }
-            case ">=":
-                b = ask.getValue() >= purchaseAsk.getMoney();
-                if (!b) {
-                    return false;
-                }
-            case "===":
-                b = ask.getValue().toString().equals(purchaseAsk.getMoney().toString());
-                if (!b) {
-                    return false;
-                }
-            case "<":
-                b = ask.getValue() < purchaseAsk.getMoney();
-                if (!b) {
-                    return false;
-                }
-            case "<=":
-                b = ask.getValue() <= purchaseAsk.getMoney();
-                if (!b) {
-                    return false;
-                }
-
-        }
-        return false;
-    }
 }
