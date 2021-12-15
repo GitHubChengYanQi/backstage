@@ -61,6 +61,9 @@ public class ActivitiAuditServiceImpl extends ServiceImpl<ActivitiAuditMapper, A
 
     @Override
     public List<ActivitiAudit> getListByStepsId(List<Long> stepsIds) {
+        if (ToolUtil.isEmpty(stepsIds)) {
+            return  new ArrayList<>();
+        }
         return this.list(new QueryWrapper<ActivitiAudit>(){{
             in("setps_id",stepsIds);
         }});

@@ -309,7 +309,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 switch (step.getType()) {
                     case AUDIT:
                     case SEND:
-                        if (log.getStatus().equals(1)) {
+                        if (!log.getStatus().equals(-1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
                                 if (processLog.getSetpsId().equals(log.getSetpsId())) {
                                     processLog.setStatus(1);
