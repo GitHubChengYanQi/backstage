@@ -91,4 +91,6 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
     List<ActivitiProcessLogResult> getLogByTaskProcess(Long processId, Long taskId);
 
+    void addLogJudgeBranch(Long processId, Long taskId, Long sourId);
+
 }

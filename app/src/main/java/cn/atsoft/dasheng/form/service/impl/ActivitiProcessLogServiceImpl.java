@@ -6,33 +6,25 @@ import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.QualityTask;
-import cn.atsoft.dasheng.erp.entity.Tool;
-import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.CheckQualityTask;
 import cn.atsoft.dasheng.erp.service.impl.ProcessTaskEndSend;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
-
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
-import cn.atsoft.dasheng.form.pojo.QualityRules;
 import cn.atsoft.dasheng.form.pojo.RuleType;
-import cn.atsoft.dasheng.form.pojo.StepsType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
-import cn.atsoft.dasheng.sys.modular.system.entity.User;
-import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.poi.ss.formula.functions.T;
+import com.google.gson.internal.bind.DateTypeAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cn.atsoft.dasheng.form.pojo.StepsType.*;
 
 /**
  * <p>
@@ -70,6 +61,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private ProcessTaskEndSend endSend;
+
+    @Autowired
+    private PurchaseAskService askService;
 
 
     private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -741,6 +735,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return logResults;
     }
 
+
     private Boolean judegSupper(Long setpsId, List<ActivitiSteps> stepsResults, List<ActivitiProcessLog> processLogs) {
         for (ActivitiSteps stepsResult : stepsResults) {
             if (setpsId.equals(stepsResult.getSetpsId())) {
@@ -757,5 +752,115 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         }
         return false;
     }
+
+    @Override
+    public void addLogJudgeBranch(Long processId, Long taskId, Long sourId) {
+        //TODO 分支添加log
+        ActivitiStepsResult stepResult = stepsService.getStepResult(processId);
+        PurchaseAsk purchaseAsk = askService.getById(sourId);
+
+        loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
+    }
+
+    private void loopAddJudgeBranch(ActivitiStepsResult activitiStepsResult, Long taskId, PurchaseAsk purchaseAsk) {
+
+        Long processId = activitiStepsResult.getProcessId();
+
+        /**
+         * insert
+         */
+        ActivitiProcessLog processLog = new ActivitiProcessLog();
+        processLog.setPeocessId(processId);
+        processLog.setTaskId(taskId);
+        processLog.setSetpsId(activitiStepsResult.getSetpsId());
+        processLog.setStatus(-1);
+        if (activitiStepsResult.getType().toString().equals("branch")) {
+            AuditRule auditRule = activitiStepsResult.getAuditRule();
+            boolean b = true;
+            for (AuditRule.Rule rule : auditRule.getRules()) {
+                AuditRule.PurchaseAsk ask = rule.getPurchaseAsk();
+
+                switch (rule.getType()) {
+                    case type_number:
+                        b = judeg(ask, purchaseAsk.getTypeNumber());
+                        if (!b) {
+                            return;
+                        }
+                    case money:
+                        b = judeg(ask, Long.valueOf(purchaseAsk.getMoney()));
+                        if (!b) {
+                            return;
+                        }
+                    case number:
+                        b = judeg(ask, purchaseAsk.getNumber());
+                        if (!b) {
+                            return;
+                        }
+                }
+
+                if (b) {
+                    processLog.setStatus(2);
+                }
+            }
+        }
+        this.save(processLog);
+
+
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
+            for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
+                loopAdd(stepsResult, taskId);
+            }
+        }
+        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+            loopAdd(activitiStepsResult.getChildNode(), taskId);
+        }
+
+    }
+
+    /**
+     * 比对
+     *
+     * @param ask
+     * @param number
+     * @return
+     */
+    private Boolean judeg(AuditRule.PurchaseAsk ask, Long number) {
+        boolean b;
+        switch (ask.getOperator()) {
+            case ">":
+                b = ask.getValue() > number;
+                if (!b) {
+                    return false;
+                }
+            case ">=":
+                b = ask.getValue() >= number;
+                if (!b) {
+                    return false;
+                }
+            case "===":
+                b = ask.getValue().toString().equals(number.toString());
+                if (!b) {
+                    return false;
+                }
+            case "<":
+                b = ask.getValue() < number;
+                if (!b) {
+                    return false;
+                }
+            case "<=":
+                b = ask.getValue() <= number;
+                if (!b) {
+                    return false;
+                }
+            case "!=":
+                b = !ask.getValue().toString().equals(number.toString());
+                if (!b) {
+                    return false;
+                }
+
+        }
+        return false;
+    }
+
 
 }

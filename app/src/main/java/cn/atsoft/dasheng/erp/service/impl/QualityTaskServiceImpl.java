@@ -665,7 +665,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             throw new ServiceException(500, "当前质检已完成，不可以修改");
         }
 
-        //TODO 修改datavalue
+
         FormDataValue dataValue = new FormDataValue();
         dataValue.setValue(JSONUtil.toJsonStr(formValues.getDataValues()));
         formDataValueService.update(dataValue, new QueryWrapper<FormDataValue>() {{
