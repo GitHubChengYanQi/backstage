@@ -51,6 +51,8 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private String url;
 
+    private String createName;
+
     private Integer status;
 
     /**
