@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -102,13 +103,13 @@ public class taskController extends BaseController {
 
         taskResult.setPermissions(false);
         for (ActivitiProcessLog activitiProcessLog : audit) {
-            if (activitiProcessLog.getStatus() == -1){
+            if (activitiProcessLog.getStatus() == -1) {
                 /**
                  * 取节点规则
                  */
                 ActivitiAudit activitiAudit = getRule(activitiAudits, activitiProcessLog.getSetpsId());
 
-                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiProcessLogService.checkUser(activitiAudit.getRule())){
+                if (ToolUtil.isNotEmpty(activitiAudit) && ToolUtil.isNotEmpty(activitiAudit.getRule()) && activitiAudit.getRule().getType() == RuleType.audit && activitiProcessLogService.checkUser(activitiAudit.getRule())) {
                     taskResult.setPermissions(true);
                     break;
                 }
