@@ -107,7 +107,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
      */
     @Override
     public void refuse(QualityTaskRefuseParam param) {
-        //TODO 拒绝检查
+
         List<QualityTaskRefuse> refuses = new ArrayList<>();
         List<QualityTaskDetail> details = new ArrayList<>();
         for (QualityTaskDetailParam detailParam : param.getDetailParams()) {
@@ -160,7 +160,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
             }
         }
         if (a) {
-            //判断有没有子任务
+            //全部拒绝没有子任务
             List<QualityTask> tasks = taskService.query().eq("parent_id", param.getQualityTaskId()).list();
             if (ToolUtil.isEmpty(tasks)) {
                 QualityTask qualityTask = new QualityTask();
@@ -168,7 +168,6 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                 taskService.update(qualityTask, new QueryWrapper<QualityTask>() {{
                     eq("quality_task_id", param.getQualityTaskId());
                 }});
-                //TODO  全部拒绝推送
                 ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
                 activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 0);
             }
@@ -208,7 +207,7 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
 
         }
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
 
         for (QualityTaskRefuseResult refuseResult : refuseResults) {
