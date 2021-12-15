@@ -32,7 +32,7 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
 //    void audit(Long taskId, Integer status, String type, Integer auto);
 
-    void autoAudit(Long taskId,Integer status);
+    void autoAudit(Long taskId, Integer status);
 
 
     Boolean checkUser(AuditRule starUser);
@@ -87,5 +87,8 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      * @return
      */
     Boolean judgeStatus(ActivitiProcessTask task, RuleType ruleType);
+
+
+    List<ActivitiProcessLogResult> getLogByTaskProcess(Long processId, Long taskId);
 
 }

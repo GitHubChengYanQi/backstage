@@ -7,10 +7,12 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.mapper.ActivitiStepsMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiStepsParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.*;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
@@ -502,7 +504,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         //TODO  查询步骤
         List<ActivitiStepsResult> steps = getStepsByProcessId(processId);
         if (ToolUtil.isEmpty(steps)) {
-            return  null;
+            return null;
         }
         List<Long> stepIds = new ArrayList<>();
         ActivitiStepsResult top = new ActivitiStepsResult();
@@ -641,4 +643,75 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
         return stepsResults;
     }
 
+    /**
+     * 比对log
+     *
+     * @param stepResult
+     * @param logs
+     * @return
+     */
+    @Override
+    public ActivitiStepsResult getStepLog(ActivitiStepsResult stepResult, List<ActivitiProcessLogResult> logs) {
+        for (ActivitiProcessLogResult logResult : logs) {
+            if (logResult.getSetpsId().equals(stepResult.getSetpsId())) {
+                stepResult.setLogResult(logResult);
+            }
+        }
+        ActivitiStepsResult stepLog = getChildStepLog(stepResult.getChildNode(), logs);
+        stepResult.setChildNode(stepLog);
+        return stepResult;
+    }
+
+    /**
+     * 子节点比对log
+     *
+     * @param stepsResult
+     * @param logs
+     * @return
+     */
+    private ActivitiStepsResult getChildStepLog(ActivitiStepsResult stepsResult, List<ActivitiProcessLogResult> logs) {
+
+        for (ActivitiProcessLogResult logResult : logs) {
+            if (stepsResult.getSetpsId().equals(logResult.getSetpsId())) {
+                stepsResult.setLogResult(logResult);
+
+                if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
+                    ActivitiStepsResult childStepLog = getChildStepLog(stepsResult.getChildNode(), logs);
+                    stepsResult.setChildNode(childStepLog);
+                }
+
+                if (ToolUtil.isNotEmpty(stepsResult.getConditionNodeList())) {
+                    List<ActivitiStepsResult> branchLog = getBranchLog(stepsResult.getConditionNodeList(), logs);
+                    stepsResult.setConditionNodeList(branchLog);
+                }
+            }
+        }
+
+        return stepsResult;
+    }
+
+    /**
+     * 分支比对log
+     *
+     * @param stepsResults
+     * @param logs
+     * @return
+     */
+    List<ActivitiStepsResult> getBranchLog(List<ActivitiStepsResult> stepsResults, List<ActivitiProcessLogResult> logs) {
+
+        for (ActivitiStepsResult stepsResult : stepsResults) {
+            for (ActivitiProcessLogResult logResult : logs) {
+
+                if (stepsResult.getSetpsId().equals(logResult.getSetpsId())) {
+                    stepsResult.setLogResult(logResult);
+
+                    if (ToolUtil.isNotEmpty(stepsResult.getChildNode())) {
+                        ActivitiStepsResult childStepLog = getChildStepLog(stepsResult.getChildNode(), logs);
+                        stepsResult.setChildNode(childStepLog);
+                    }
+                }
+            }
+        }
+        return stepsResults;
+    }
 }

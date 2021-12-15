@@ -69,13 +69,18 @@
         <include refid="Base_Column_List"/>
         from goods_sku where 1 = 1 and display =1
         <if test="paramCondition.skuId != null">
+
             and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
         </if>
         <if test="paramCondition.coding != null">
             and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') )
+            UNION
+            select
+            <include refid="Base_Column_List"/>
+            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
         </if>
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}
@@ -86,6 +91,7 @@
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
+
         <if test="spuIds != null  and spuIds.size > 0 ">
             and spu_id in
             <foreach collection="spuIds" index="index" item="state" separator="," close=")" open="(">

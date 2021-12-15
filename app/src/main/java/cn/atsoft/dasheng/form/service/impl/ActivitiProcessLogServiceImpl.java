@@ -724,6 +724,23 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
+    @Override
+    public List<ActivitiProcessLogResult> getLogByTaskProcess(Long processId, Long taskId) {
+        List<ActivitiProcessLogResult> logResults = new ArrayList<>();
+
+        List<ActivitiProcessLog> processLogs = this.list(new QueryWrapper<ActivitiProcessLog>() {{
+            eq("peocess_id", processId);
+            eq("task_id", taskId);
+        }});
+        for (ActivitiProcessLog processLog : processLogs) {
+            ActivitiProcessLogResult logResult = new ActivitiProcessLogResult();
+            ToolUtil.copyProperties(processLog, logResult);
+            logResults.add(logResult);
+        }
+
+        return logResults;
+    }
+
     private Boolean judegSupper(Long setpsId, List<ActivitiSteps> stepsResults, List<ActivitiProcessLog> processLogs) {
         for (ActivitiSteps stepsResult : stepsResults) {
             if (setpsId.equals(stepsResult.getSetpsId())) {
