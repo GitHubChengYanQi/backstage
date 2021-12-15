@@ -104,7 +104,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             //添加log
 //            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId,entity.getPurchaseAskId());
-            activitiProcessLogService.autoAudit(taskId, 1);
+//            activitiProcessLogService.autoAudit(taskId, 1);
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }

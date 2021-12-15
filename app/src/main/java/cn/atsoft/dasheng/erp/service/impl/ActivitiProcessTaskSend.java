@@ -207,12 +207,12 @@ public class ActivitiProcessTaskSend {
      */
     private Map<String, String> getAboutSend(Long taskId, RuleType type) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        User byId = userService.getById(qualityTask.getCreateUser());
+//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+        User byId = userService.getById(task.getCreateUser());
         Map<String, String> map = new HashMap<>();
         map.put("taskId", taskId.toString());
-        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
-        map.put("coding", qualityTask.getCoding());
+//        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
+//        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
         String url = this.changeUrl(type, map);//组装url
         map.put("url", url);
