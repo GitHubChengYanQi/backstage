@@ -774,33 +774,33 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(-1);
-        if (activitiStepsResult.getType().toString().equals("branch")) {
+
+        if (activitiStepsResult.getType().toString().equals("3")) {
             AuditRule auditRule = activitiStepsResult.getAuditRule();
             boolean b = true;
             for (AuditRule.Rule rule : auditRule.getRules()) {
                 AuditRule.PurchaseAsk ask = rule.getPurchaseAsk();
-
                 switch (rule.getType()) {
                     case type_number:
-                        b = judeg(ask, purchaseAsk.getTypeNumber());
-                        if (!b) {
-                            return;
+                        if (!judeg(ask, purchaseAsk.getTypeNumber())) {
+                            b = false;
                         }
-                    case money:
-                        b = judeg(ask, Long.valueOf(purchaseAsk.getMoney()));
-                        if (!b) {
-                            return;
-                        }
+                        break;
+//                    case money:
+//                        b = judeg(ask, Long.valueOf(purchaseAsk.getMoney()));
+//                        if (!b) {
+//                            return;
+//                        }
                     case number:
-                        b = judeg(ask, purchaseAsk.getNumber());
-                        if (!b) {
-                            return;
+                        if (!judeg(ask, purchaseAsk.getNumber())) {
+                            b = false;
                         }
+                        break;
                 }
 
-                if (b) {
-                    processLog.setStatus(2);
-                }
+            }
+            if (!b) {
+                processLog.setStatus(2);
             }
         }
         this.save(processLog);
@@ -808,11 +808,11 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
         if (ToolUtil.isNotEmpty(activitiStepsResult.getConditionNodeList()) && activitiStepsResult.getConditionNodeList().size() > 0) {
             for (ActivitiStepsResult stepsResult : activitiStepsResult.getConditionNodeList()) {
-                loopAdd(stepsResult, taskId);
+                loopAddJudgeBranch(stepsResult, taskId, purchaseAsk);
             }
         }
         if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-            loopAdd(activitiStepsResult.getChildNode(), taskId);
+            loopAddJudgeBranch(activitiStepsResult.getChildNode(), taskId, purchaseAsk);
         }
 
     }
@@ -825,41 +825,39 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
      * @return
      */
     private Boolean judeg(AuditRule.PurchaseAsk ask, Long number) {
-        boolean b;
         switch (ask.getOperator()) {
             case ">":
-                b = ask.getValue() > number;
-                if (!b) {
+                if (!(number > ask.getValue())) {
                     return false;
                 }
+                break;
             case ">=":
-                b = ask.getValue() >= number;
-                if (!b) {
+                if (!(number >= ask.getValue())) {
                     return false;
                 }
+                break;
             case "===":
-                b = ask.getValue().toString().equals(number.toString());
-                if (!b) {
+                if (!(ask.getValue().toString().equals(number.toString()))) {
                     return false;
                 }
+                break;
             case "<":
-                b = ask.getValue() < number;
-                if (!b) {
+                if (!(number < ask.getValue())) {
                     return false;
                 }
+                break;
             case "<=":
-                b = ask.getValue() <= number;
-                if (!b) {
+                if (!(number <= ask.getValue())) {
                     return false;
                 }
+                break;
             case "!=":
-                b = !ask.getValue().toString().equals(number.toString());
-                if (!b) {
+                if (!number.toString().equals(ask.getValue().toString())) {
                     return false;
                 }
-
+                break;
         }
-        return false;
+        return true;
     }
 
 
