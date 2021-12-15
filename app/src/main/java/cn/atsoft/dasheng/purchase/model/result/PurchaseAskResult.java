@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,8 @@ import java.util.List;
 public class PurchaseAskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private String CreateUserName;
+    List<PurchaseListingResult> purchaseListingResults;
 
     /**
      * 采购申请id

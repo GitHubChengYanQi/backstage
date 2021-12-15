@@ -25,14 +25,14 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
      * @Date 2021-12-15
      */
     void add(PurchaseAskParam param);
-
-    /**
-     * 删除
-     *
-     * @author song
-     * @Date 2021-12-15
-     */
-    void delete(PurchaseAskParam param);
+//
+//    /**
+//     * 删除
+//     *
+//     * @author song
+//     * @Date 2021-12-15
+//     */
+//    void delete(PurchaseAskParam param);
 
     /**
      * 更新
@@ -66,4 +66,5 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
      */
      PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param);
 
+    PurchaseAskResult detail(PurchaseAskParam param);
 }
