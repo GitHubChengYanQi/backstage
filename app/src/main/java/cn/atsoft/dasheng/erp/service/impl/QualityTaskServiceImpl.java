@@ -164,7 +164,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             } else if (param.getType().equals("入厂")) {
                 type2Activiti = "inQuality";
             }
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "quality").eq("status", 99).eq("module", type2Activiti).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
                 this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();

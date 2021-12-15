@@ -21,9 +21,16 @@ public class AuditRule {
 
         private List<DeptPosition> deptPositions;  //部门+职位
 
+        private PurchaseAsk purchaseAsk;
 
     }
 
+    @Data
+    public static class PurchaseAsk {
+        private String operator;
+
+        private Integer value;
+    }
 
 
 }

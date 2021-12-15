@@ -226,6 +226,7 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
             case start:
             case process:
             case send:
+            case branch:
                 if (ToolUtil.isEmpty(auditRule)) {
                     throw new ServiceException(500, "配置数据错误");
                 }
@@ -233,7 +234,6 @@ public class ActivitiStepsServiceImpl extends ServiceImpl<ActivitiStepsMapper, A
                 break;
 
             case route:
-            case branch:
                 break;
         }
         activitiAudit.setType(String.valueOf(auditType));
