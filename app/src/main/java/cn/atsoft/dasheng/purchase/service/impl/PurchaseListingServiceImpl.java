@@ -109,7 +109,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         for (PurchaseListingResult result : param) {
             skuIds.add(result.getSkuId());
         }
-        List<Sku> skuList = skuService.listByIds(skuIds);
+        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();

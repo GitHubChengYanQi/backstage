@@ -108,7 +108,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         int flag = 0;
         if (LoginContextHolder.getContext().isAdmin()) {
             flag = 1;
-        } else if (flag1 == false || flag2 == false) {
+        } else if (!flag1 || !flag2) {
             flag = 0;
         } else {
             flag = 1;

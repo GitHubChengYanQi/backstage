@@ -160,6 +160,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param) {
         Page<PurchaseAskResult> pageContext = getPageContext();
         IPage<PurchaseAskResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords()
+        );
         return PageFactory.createPageInfo(page);
     }
 
