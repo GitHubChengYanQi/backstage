@@ -27,6 +27,8 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private ActivitiStepsResult stepsResult;
 
+    private Object object;
+
     @ApiModelProperty("")
     private Long processTaskId;
 

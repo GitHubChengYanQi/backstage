@@ -64,7 +64,12 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
      * @author song
      * @Date 2021-12-15
      */
-     PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param);
+    PageInfo<PurchaseAskResult> findPageBySpec(PurchaseAskParam param);
 
     PurchaseAskResult detail(PurchaseAskParam param);
+
+    /**
+     * @param taskId
+     */
+    void updateStatus(Long taskId, Integer status);
 }

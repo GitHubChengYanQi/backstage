@@ -5,8 +5,12 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.CodingRules;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
@@ -21,6 +25,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -60,24 +65,37 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     @Autowired
     private ActivitiStepsService stepsService;
     @Autowired
-    ActivitiAuditService auditService;
-
+    private ActivitiAuditService auditService;
+    @Autowired
+    private ActivitiProcessTaskService taskService;
+    @Autowired
+    private ActivitiProcessLogService logService;
+    @Autowired
+    private CodingRulesService rulesService;
 
     @Override
     @Transactional
     public void add(PurchaseAskParam param) {
+        //创建编码规则
+        CodingRules rules = rulesService.query().eq("coding_rules_id", param.getCoding()).one();
+        if (ToolUtil.isNotEmpty(rules)) {
+            String backCoding = rulesService.backCoding(Long.valueOf(param.getCoding()));
+            param.setCoding(backCoding);
+        }
         PurchaseAsk entity = getEntity(param);
         this.save(entity);
+        //防止重复添加sku
         List<Long> longs = param.getPurchaseListingParams().stream().map(PurchaseListingParam::getSkuId).distinct().collect(Collectors.toList());
         if (longs.size() != param.getPurchaseListingParams().size()) {
-            throw new ServiceException(500,"单据中出现重复物料");
+            throw new ServiceException(500, "单据中出现重复物料");
         }
+
         int totalCount = 0;
         int totalType = param.getPurchaseListingParams().size();
-
         List<PurchaseListing> purchaseListings = new ArrayList<>();
+        //添加采购清单
         for (PurchaseListingParam purchaseListingParam : param.getPurchaseListingParams()) {
-            totalCount+=purchaseListingParam.getApplyNumber();
+            totalCount += purchaseListingParam.getApplyNumber();
             purchaseListingParam.setPurchaseAskId(entity.getPurchaseAskId());
             PurchaseListing purchaseListing = new PurchaseListing();
             ToolUtil.copyProperties(purchaseListingParam, purchaseListing);
@@ -94,7 +112,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             this.power(activitiProcess);//检查创建权限
             LoginUser user = LoginContextHolder.getContext().getUser();
             ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-            activitiProcessTaskParam.setTaskName(user.getName() + "发起的质检任务 (" + param.getCoding() + ")");
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的采购申请 (" + param.getCoding() + ")");
             activitiProcessTaskParam.setQTaskId(entity.getPurchaseAskId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getPurchaseAskId());
@@ -102,9 +120,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
-//            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId,entity.getPurchaseAskId());
-//            activitiProcessLogService.autoAudit(taskId, 1);
+            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
+            activitiProcessLogService.autoAudit(taskId, 1);
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -172,6 +189,42 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         result.setPurchaseListingResults(purchaseListing);
 
         return result;
+    }
+
+    /**
+     * 修改采购申请状态
+     *
+     * @param taskId
+     * @param status
+     */
+    @Override
+    public void updateStatus(Long taskId, Integer status) {
+        ActivitiProcessTask task = taskService.getById(taskId);
+        if (task.getType().equals("purchase")) {
+            if (status == 0) {
+                logService.autoAudit(taskId, 0);
+                PurchaseAsk purchaseAsk = new PurchaseAsk();
+                purchaseAsk.setStatus(1);
+                this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
+                    eq("purchase_ask_id", task.getFormId());
+                }});
+            } else if (status == 1) {
+                //判断完成状态
+                List<ActivitiProcessLogResult> logAudit = logService.getLogAudit(taskId);
+                for (ActivitiProcessLogResult logResult : logAudit) {
+                    AuditRule rule = logResult.getActivitiAudit().getRule();
+                    if (ToolUtil.isNotEmpty(rule) && rule.getType().toString().equals("purchase_complete")) {
+                        if (logResult.getStatus() == 1) {
+                            PurchaseAsk purchaseAsk = new PurchaseAsk();
+                            purchaseAsk.setStatus(2);
+                            this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
+                                eq("purchase_ask_id", task.getFormId());
+                            }});
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private Serializable getKey(PurchaseAskParam param) {

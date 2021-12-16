@@ -80,7 +80,7 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 try {
                     messageProducer.sendMessage(messageEntity);
-                    logger.info("发起推送"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
+//                    logger.info("发起推送"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

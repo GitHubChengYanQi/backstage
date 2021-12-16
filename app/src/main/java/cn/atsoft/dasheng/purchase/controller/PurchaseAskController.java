@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +56,7 @@ public class PurchaseAskController extends BaseController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
     public ResponseData update(@RequestBody PurchaseAskParam purchaseAskParam) {
-
-        this.purchaseAskService.update(purchaseAskParam);
-        return ResponseData.success();
+        throw new ServiceException(500, "不可以修改");
     }
 
 //    /**
@@ -94,13 +94,11 @@ public class PurchaseAskController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PurchaseAskResult> list(@RequestBody(required = false) PurchaseAskParam purchaseAskParam) {
-        if(ToolUtil.isEmpty(purchaseAskParam)){
+        if (ToolUtil.isEmpty(purchaseAskParam)) {
             purchaseAskParam = new PurchaseAskParam();
         }
         return this.purchaseAskService.findPageBySpec(purchaseAskParam);
     }
-
-
 
 
 }

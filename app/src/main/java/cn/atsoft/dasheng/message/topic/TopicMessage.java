@@ -40,7 +40,7 @@ public class TopicMessage {
             case CP:
                 try {
                     wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
-                    logger.info("接收"+ JSONUtil.toJsonStr(JSON.toJSONString(messageEntity.getCpData().getDescription())));
+                    logger.info("接收"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 } catch (WxErrorException e) {
                     e.printStackTrace();
                 }

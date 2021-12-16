@@ -20,11 +20,11 @@ import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
+import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,13 +60,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private CheckQualityTask checkQualityTask;
 
     @Autowired
+    private CheckPurchaseAsk checkPurchaseAsk;
+
+    @Autowired
     private ProcessTaskEndSend endSend;
 
     @Autowired
     private PurchaseAskService askService;
 
+    @Autowired
+    private RemarksService remarksService;
 
-    private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
+    @Override
+    public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
             if (activitiAudit.getSetpsId().equals(stepId)) {
                 return activitiAudit;
@@ -75,7 +81,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return null;
     }
 
-    private List<ActivitiProcessLog> listByTaskId(Long taskId) {
+    @Override
+    public List<ActivitiProcessLog> listByTaskId(Long taskId) {
         return this.list(new QueryWrapper<ActivitiProcessLog>() {{
             eq("task_id", taskId);
         }});
@@ -111,6 +118,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
+
+        //判断采购申请状态
+        askService.updateStatus(taskId, status);
 
 //        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
@@ -182,7 +192,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
-                        case "aaa"://举例 为以后生产 工艺 做例备忘
+                        case "purchase":
+                            if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
+                                updateStatus(activitiProcessLog.getLogId(), status);
+                                //添加备注
+                                remarksService.add(activitiProcessLog.getLogId(), "ccc");
+                                setStatus(logs, activitiProcessLog.getLogId());
+                                if (status.equals(0)) {
+                                    taskSend.refuseTask(taskId);
+                                    auditCheck = false;
+                                }
+                            } else {
+                                auditCheck = false;
+                            }
                             break;
                         default:
 
@@ -236,9 +258,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         /**
          * 推送下一级所有节点
          */
-        if (auditCheck) {
-            this.sendNextStepsByTask(task, audit);
-        }
+//        if (auditCheck) {
+//            this.sendNextStepsByTask(task, audit);
+//        }
 
     }
 
@@ -303,7 +325,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 switch (step.getType()) {
                     case AUDIT:
                     case SEND:
-                        if (!log.getStatus().equals(-1)) {
+                        if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
                                 if (processLog.getSetpsId().equals(log.getSetpsId())) {
                                     processLog.setStatus(1);
@@ -337,7 +359,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                         for (String branchSteps : split) {
                             for (ActivitiProcessLog activitiProcessLog : processLogs) {
-                                if (activitiProcessLog.getSetpsId().toString().equals(branchSteps) && activitiProcessLog.getStatus() != 1) {
+                                if (activitiProcessLog.getSetpsId().toString().equals(branchSteps) && activitiProcessLog.getStatus() == -1) {
                                     state = false;
                                     break;
                                 }
@@ -554,9 +576,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 }
                 break;
             case BRANCH:
-                activitiStepsResultList.add(log);
-                if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
-                    activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
+                if (ToolUtil.isNotEmpty(log)) {
+                    if (!log.getStatus().equals(2)) {
+                        activitiStepsResultList.add(log);
+                        if (ToolUtil.isNotEmpty(activitiStepsResult.getChildNode())) {
+                            activitiStepsResultList.addAll(loopAudit(activitiStepsResult.getChildNode(), activityProcessLog));
+                        }
+                    }
                 }
                 break;
             case ROUTE:
@@ -754,12 +780,42 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     }
 
     @Override
-    public void addLogJudgeBranch(Long processId, Long taskId, Long sourId) {
+    public void addLogJudgeBranch(Long processId, Long taskId, Long sourId, String type) {
         //TODO 分支添加log
         ActivitiStepsResult stepResult = stepsService.getStepResult(processId);
-        PurchaseAsk purchaseAsk = askService.getById(sourId);
+        switch (type) {
+            case "purchaseAsk":
+                PurchaseAsk purchaseAsk = askService.getById(sourId);
+                loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
+                break;
+        }
 
-        loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
+    }
+
+    @Override
+    public List<ActivitiProcessLogResult> getLogAudit(Long taskId) {
+        List<ActivitiProcessLog> processLogs = this.query().eq("task_id", taskId).list();
+
+        List<Long> stepIds = new ArrayList<>();
+        List<ActivitiProcessLogResult> logResults = new ArrayList<>();
+
+        for (ActivitiProcessLog processLog : processLogs) {
+            stepIds.add(processLog.getSetpsId());
+            ActivitiProcessLogResult logResult = new ActivitiProcessLogResult();
+            ToolUtil.copyProperties(processLog, logResult);
+            logResults.add(logResult);
+        }
+        List<ActivitiAudit> audits = auditService.query().in("setps_id", stepIds).list();
+
+        for (ActivitiProcessLogResult logResult : logResults) {
+            for (ActivitiAudit audit : audits) {
+                if (logResult.getSetpsId().equals(audit.getSetpsId())) {
+                    logResult.setActivitiAudit(audit);
+                    break;
+                }
+            }
+        }
+        return logResults;
     }
 
     private void loopAddJudgeBranch(ActivitiStepsResult activitiStepsResult, Long taskId, PurchaseAsk purchaseAsk) {
@@ -774,31 +830,31 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         processLog.setTaskId(taskId);
         processLog.setSetpsId(activitiStepsResult.getSetpsId());
         processLog.setStatus(-1);
-
+        //判断分支条件
         if (activitiStepsResult.getType().toString().equals("3")) {
             AuditRule auditRule = activitiStepsResult.getAuditRule();
             boolean b = true;
             for (AuditRule.Rule rule : auditRule.getRules()) {
                 AuditRule.PurchaseAsk ask = rule.getPurchaseAsk();
                 switch (rule.getType()) {
-                    case type_number:
+                    case type_number: //类型数量
                         if (!judeg(ask, purchaseAsk.getTypeNumber())) {
                             b = false;
                         }
                         break;
-//                    case money:
-//                        b = judeg(ask, Long.valueOf(purchaseAsk.getMoney()));
-//                        if (!b) {
-//                            return;
-//                        }
-                    case number:
+                    case number: //总共数量
                         if (!judeg(ask, purchaseAsk.getNumber())) {
                             b = false;
                         }
                         break;
+                    case money:  //总金额
+                        if (!judeg(ask, Long.valueOf(purchaseAsk.getMoney()))) {
+                            b = false;
+                        }
+                        break;
                 }
-
             }
+
             if (!b) {
                 processLog.setStatus(2);
             }
@@ -827,37 +883,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private Boolean judeg(AuditRule.PurchaseAsk ask, Long number) {
         switch (ask.getOperator()) {
             case ">":
-                if (!(number > ask.getValue())) {
-                    return false;
-                }
-                break;
+                return number > ask.getValue();
             case ">=":
-                if (!(number >= ask.getValue())) {
-                    return false;
-                }
-                break;
+                return number >= ask.getValue();
             case "===":
-                if (!(ask.getValue().toString().equals(number.toString()))) {
-                    return false;
-                }
-                break;
+                return number.toString().equals(ask.getValue().toString());
             case "<":
-                if (!(number < ask.getValue())) {
-                    return false;
-                }
-                break;
+                return number < ask.getValue();
             case "<=":
-                if (!(number <= ask.getValue())) {
-                    return false;
-                }
-                break;
+                return number <= ask.getValue();
             case "!=":
-                if (!number.toString().equals(ask.getValue().toString())) {
-                    return false;
-                }
-                break;
+                return !number.toString().equals(ask.getValue().toString());
         }
-        return true;
+        return false;
     }
 
 

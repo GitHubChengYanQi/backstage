@@ -1,60 +1,40 @@
 package cn.atsoft.dasheng.form.model.result;
 
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import lombok.Data;
-
 import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
-
 /**
  * <p>
- * 流程日志表
+ * log备注
  * </p>
  *
- * @author Sing
- * @since 2021-11-10
+ * @author song
+ * @since 2021-12-16
  */
 @Data
 @ApiModel
-public class ActivitiProcessLogResult implements Serializable {
+public class RemarksResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private ActivitiStepsResult stepsResult;
-
-    private ActivitiAudit activitiAudit;
 
     /**
-     * 主键
+     * 备注id
      */
-    @ApiModelProperty("主键")
+    @ApiModelProperty("备注id")
+    private Long remarksId;
+
+    @ApiModelProperty("")
     private Long logId;
 
-
-    private Long taskId;
-
     /**
-     * 流程Id
+     * 内容
      */
-    @ApiModelProperty("流程Id")
-    private Long peocessId;
-
-    /**
-     * 步骤Id
-     */
-    @ApiModelProperty("步骤Id")
-    private Long setpsId;
-
-    /**
-     * 0（拒绝），1（通过）
-     */
-    @ApiModelProperty("0（拒绝），1（通过）")
-    private Integer status;
+    @ApiModelProperty("内容")
+    private String content;
 
     /**
      * 删除状态

@@ -182,14 +182,14 @@ public class ActivitiProcessTaskSend {
         //创建消息推送 推送给发起人
 
         //找到发起质检任务的人
-        User createUser = userService.getById(qualityTask.getCreateUser());
+        User createUser = userService.getById(processTask.getCreateUser());
         //获取推送人
         List<Long> users = new ArrayList<>();
         users.add(createUser.getUserId());
 
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setTitle("审批被否决");
-        wxCpTemplate.setDescription(createUser.getName() + "创建的任务" + qualityTask.getCoding());
+        wxCpTemplate.setDescription(processTask.getTaskName());
         wxCpTemplate.setUserIds(users);
         //获取url
         Map<String, String> aboutSend = this.getAboutSend(taskId, send);

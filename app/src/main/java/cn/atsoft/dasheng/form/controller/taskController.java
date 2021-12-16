@@ -11,9 +11,13 @@ import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,6 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,20 +59,20 @@ public class taskController extends BaseController {
     @Autowired
     private ActivitiProcessLogService logService;
 
-    @RequestMapping(value = "/post", method = RequestMethod.GET)
-    @ApiOperation("新增")
-    public ResponseData audit(@Param("taskId") Long taskId, @Param("status") Integer status) {
-        this.activitiProcessLogService.audit(taskId, status);
-        return ResponseData.success();
-    }
+    @Autowired
+    private PurchaseAskService askService;
 
-    private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
-        for (ActivitiAudit activitiAudit : activitiAudits) {
-            if (activitiAudit.getSetpsId().equals(stepId)) {
-                return activitiAudit;
-            }
-        }
-        return null;
+    @Autowired
+    private RemarksService remarksService;
+
+    @RequestMapping(value = "/post", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData audit(@RequestBody AuditParam auditParam) {
+        //添加备注
+        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote());
+
+        this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
+        return ResponseData.success();
     }
 
 
@@ -77,6 +82,18 @@ public class taskController extends BaseController {
         ActivitiProcessTask processTask = taskService.getById(taskId);
         ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(processTask, taskResult);
+        switch (taskResult.getType()) {
+            case "quality_task":
+                QualityTaskResult task = qualityTaskService.getTask(taskResult.getFormId());
+                taskResult.setObject(task);
+                break;
+            case "purchase":
+                PurchaseAskParam param = new PurchaseAskParam();
+                param.setPurchaseAskId(taskResult.getFormId());
+                PurchaseAskResult askResult = askService.detail(param);
+                taskResult.setObject(askResult);
+                break;
+        }
         //树形结构
         ActivitiStepsResult stepResult = stepsService.getStepResult(taskResult.getProcessId());
         //获取当前processTask 下的所有log
@@ -114,15 +131,23 @@ public class taskController extends BaseController {
                     break;
                 }
             }
-
         }
 
         taskResult.setStepsResult(stepLog);
-        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())){
+        if (ToolUtil.isNotEmpty(taskResult.getCreateUser())) {
             User user = userService.getById(taskResult.getCreateUser());
             taskResult.setCreateName(user.getName());
         }
         return ResponseData.success(taskResult);
 
+    }
+
+    private ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
+        for (ActivitiAudit activitiAudit : activitiAudits) {
+            if (activitiAudit.getSetpsId().equals(stepId)) {
+                return activitiAudit;
+            }
+        }
+        return null;
     }
 }

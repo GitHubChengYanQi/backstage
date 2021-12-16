@@ -29,11 +29,13 @@ public class MessageProducer {
     public void sendMessage(MessageEntity messageEntity){
         messageEntity.setTimes(1+ messageEntity.getTimes());
         if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
-            rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
-            DateUtil.now().toString();
-            messageEntity.setKey(DateUtil.now());
-            //TODO 测试加入唯一key
+
+            String randomString = ToolUtil.getRandomString(7);
+
+            messageEntity.getCpData().setDescription(messageEntity.getCpData().getDescription()+randomString);
+                    //TODO 测试加入唯一key
             logger.info("sendMessage"+JSONUtil.toJsonStr(messageEntity.getCpData().getDescription()));
+            rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
 
         }
     }
