@@ -65,8 +65,8 @@ public class taskController extends BaseController {
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData audit(@RequestBody AuditParam auditParam) {
-        //添加评论
-        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds());
+        //添加备注
+        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds(), auditParam.getPhotoId());
 
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
         //判断采购申请状态

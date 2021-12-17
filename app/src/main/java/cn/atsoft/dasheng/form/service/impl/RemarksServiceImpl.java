@@ -111,7 +111,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public void addNote(Long taskId, String note, String userIds) {
+    public void addNote(Long taskId, String note, String userIds, String photoId) {
 
         List<ActivitiProcessLog> logs = logService.listByTaskId(taskId);
 
@@ -134,6 +134,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
                     remarks.setUserIds(userIds);
                     remarks.setTaskId(taskId);
                     remarks.setType("备注");
+                    remarks.setPhotoId(photoId);
                     remarks.setLogId(activitiProcessLog.getLogId());
                     this.save(remarks);
                 }
@@ -180,13 +181,17 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             }
         }
         for (RemarksResult remarksResult : remarksResults) {
-            StringBuffer stringBuffer = new StringBuffer();
-            List<String> photoUrl = ToolUtil.isEmpty(remarksResult.getPhotoId()) ? new ArrayList<>() : Arrays.asList( remarksResult.getPhotoId().split(","));
-            for (String url : photoUrl) {
-                stringBuffer.append(url+",");
+            if (ToolUtil.isNotEmpty(remarksResult.getPhotoId())) {
+                StringBuffer stringBuffer = new StringBuffer();
+                List<String> photoUrl = ToolUtil.isEmpty(remarksResult.getPhotoId()) ? new ArrayList<>() : Arrays.asList(remarksResult.getPhotoId().split(","));
+                for (String id : photoUrl) {
+                    String url = mediaService.getMediaUrl(Long.valueOf(id), 1L);
+                    stringBuffer.append(url + ",");
+                }
+                String substring = stringBuffer.toString().substring(0, stringBuffer.length() - 1);
+                remarksResult.setPhotoId(substring);
             }
-            String substring = stringBuffer.toString().substring(0, stringBuffer.length() - 1);
-            remarksResult.setPhotoId(substring);
+
         }
 
         return remarksResults;

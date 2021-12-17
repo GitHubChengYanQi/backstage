@@ -68,7 +68,7 @@ public interface RemarksService extends IService<Remarks> {
     PageInfo<RemarksResult> findPageBySpec(RemarksParam param);
 
 
-    void addNote(Long taskId, String note, String userIds);
+    void addNote(Long taskId, String note, String userIds,String photoId);
 
     /**
      * 添加评论
