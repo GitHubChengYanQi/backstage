@@ -154,7 +154,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     @Override
     public List<RemarksResult> getComments(Long taskId) {
 
-        List<Remarks> remarks = this.query().eq("task_id", taskId).eq("type", "评论").orderByAsc("create_time").list();
+        List<Remarks> remarks = this.query().eq("task_id", taskId).eq("type", "评论").orderByDesc("create_time").list();
 
         List<RemarksResult> remarksResults = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
