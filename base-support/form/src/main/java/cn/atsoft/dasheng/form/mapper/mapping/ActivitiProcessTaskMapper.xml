@@ -4,9 +4,9 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.form.entity.ActivitiProcessTask">
-        <id column="process_task_id" property="processTaskId" />
-        <result column="process_id" property="processId" />
-        <result column="display" property="display" />
+        <id column="process_task_id" property="processTaskId"/>
+        <result column="process_id" property="processId"/>
+        <result column="display" property="display"/>
         <result column="task_name" property="taskName"/>
         <result column="deptIds" property="deptIds"/>
         <result column="user_ids" property="userIds"/>
@@ -15,46 +15,53 @@
         <result column="remark" property="remark"/>
         <result column="cause" property="cause"/>
         <result column="status" property="status"/>
-        <result column="create_user" property="createUser" />
-        <result column="update_user" property="updateUser" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        process_task_id AS "processTaskId",form_id AS "formId",type AS "type",remark AS "remark",cause AS "cause",user_ids AS "userIds",status AS "status",deptIds AS "deptIds",task_name AS "taskName", process_id AS "processId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        process_task_id
+        AS "processTaskId",form_id AS "formId",type AS "type",remark AS "remark",cause AS "cause",user_ids AS "userIds",status AS "status",deptIds AS "deptIds",task_name AS "taskName", process_id AS "processId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_task where 1 = 1 and display = 1
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_task where 1 = 1 and display = 1
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_task where 1 = 1 and display = 1
-
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
         <choose>
             <when test="paramCondition.deptId != null  and paramCondition.deptId != 0">
                 and deptIds like CONCAT('%',#{paramCondition.deptId},'%')
             </when>
-            <otherwise >
+            <otherwise>
                 or user_Ids like CONCAT('%',#{paramCondition.userId},'%')
             </otherwise>
         </choose>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam">
         select
         <include refid="Base_Column_List"/>
         from activiti_process_task where 1 = 1 and display = 1

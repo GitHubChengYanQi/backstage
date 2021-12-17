@@ -50,6 +50,11 @@ public class Remarks implements Serializable {
      */
     @TableField("content")
     private String content;
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 删除状态
@@ -164,6 +169,14 @@ public class Remarks implements Serializable {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

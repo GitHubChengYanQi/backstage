@@ -118,9 +118,9 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public void addNote(Long taskId, String note, String userIds, String photoId) {
+    public void addNote(AuditParam auditParam) {
 
-        List<ActivitiProcessLog> logs = logService.listByTaskId(taskId);
+        List<ActivitiProcessLog> logs = logService.listByTaskId(auditParam.getTaskId());
 
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiProcessLog activitiProcessLog : logs) {
@@ -129,7 +129,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
             in("setps_id", stepIds);
         }});
-        List<ActivitiProcessLog> audit = logService.getAudit(taskId);
+        List<ActivitiProcessLog> audit = logService.getAudit(auditParam.getTaskId());
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
             AuditRule rule = activitiAudit.getRule();
@@ -137,11 +137,12 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
 
                 if (logService.checkUser(activitiAudit.getRule())) {
                     Remarks remarks = new Remarks();
-                    remarks.setContent(note);
-                    remarks.setUserIds(userIds);
-                    remarks.setTaskId(taskId);
+                    remarks.setContent(auditParam.getNote());
+                    remarks.setUserIds(auditParam.getUserIds());
+                    remarks.setTaskId(auditParam.getTaskId());
                     remarks.setType("备注");
-                    remarks.setPhotoId(photoId);
+                    remarks.setStatus(auditParam.getStatus());
+                    remarks.setPhotoId(auditParam.getPhotoId());
                     remarks.setLogId(activitiProcessLog.getLogId());
                     this.save(remarks);
                 }

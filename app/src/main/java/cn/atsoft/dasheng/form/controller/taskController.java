@@ -66,7 +66,7 @@ public class taskController extends BaseController {
     @ApiOperation("新增")
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
-        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds(), auditParam.getPhotoId());
+        remarksService.addNote(auditParam);
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();

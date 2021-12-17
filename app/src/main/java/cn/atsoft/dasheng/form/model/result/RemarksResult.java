@@ -39,6 +39,9 @@ public class RemarksResult implements Serializable {
 
     private String photoId;
 
+    private Integer status;
+
+
     private String userIds;
     private Long taskId;
     private String type;

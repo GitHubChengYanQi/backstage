@@ -42,6 +42,9 @@ public class RemarksParam implements Serializable, BaseValidatingParam {
     private String type;
 
     private String userIds;
+
+    private Integer status;
+
     /**
      * 内容
      */

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -27,6 +28,7 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private ActivitiStepsResult stepsResult;
 
+    private User user;
 
     private List<Object> remarks;
 

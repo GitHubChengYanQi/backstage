@@ -61,6 +61,7 @@ public class ActivitiProcessTaskController extends BaseController {
     private ActivitiProcessTaskSend taskSend;
     @Autowired
     private ActivitiAuditService activitiAuditService;
+
     /**
      * 新增接口
      *
@@ -73,6 +74,7 @@ public class ActivitiProcessTaskController extends BaseController {
         this.activitiProcessTaskService.add(activitiProcessTaskParam);
         return ResponseData.success();
     }
+
     @RequestMapping(value = "/getUsers", method = RequestMethod.POST)
     @ApiOperation("")
     public ResponseData getUsers(@RequestBody ActivitiAuditParam activitiAuditParam) {
@@ -120,8 +122,6 @@ public class ActivitiProcessTaskController extends BaseController {
         ActivitiProcessTask detail = this.activitiProcessTaskService.getById(activitiProcessTaskParam.getProcessTaskId());
         ActivitiProcessTaskResult result = new ActivitiProcessTaskResult();
         ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -150,76 +150,60 @@ public class ActivitiProcessTaskController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/auditDetail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<SetpsDetailResult> auditDetail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
-        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-        Long taskId = activitiProcessTaskParam.getProcessTaskId();
-
-        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.getById(taskId);
-
-
-//        ActivitiAudit audit = auditService.query().eq("setps_id", activitiProcessTaskParam.getSetpsId()).one();
-
-//        Boolean userFlag = true;
-//        Boolean deptFlag = true;
-//        if (!userFlag && !deptFlag) {
-//            if (!detail.getUserId().equals(loginUser.getId())) {
-//                throw new ServiceException(500, "抱歉该审批任务与您无关，您无权限查看");
-//            }
+//    @RequestMapping(value = "/auditDetail", method = RequestMethod.POST)
+//    @ApiOperation("详情")
+//    public ResponseData<SetpsDetailResult> auditDetail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
+//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
+//        Long taskId = activitiProcessTaskParam.getProcessTaskId();
+//
+//        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.getById(taskId);
+//
+//        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
+//
+//        setpsDetailResult.setTaskId(activitiProcessTask.getProcessTaskId());
+//        setpsDetailResult.setTaskName(activitiProcessTask.getTaskName());
+//        QualityTaskResult result = new QualityTaskResult();
+//
+//        QualityTask detail = this.qualityTaskService.getById(activitiProcessTask.getFormId());
+//
+//        ToolUtil.copyProperties(detail, result);
+//        qualityTaskService.detailFormat(result);
+//
+//        if (ToolUtil.isNotEmpty(result.getCreateUser())) {
+//            User user = userService.getById(result.getCreateUser());
+//            result.setCreateName(user.getName());
 //        }
-        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
-
-        setpsDetailResult.setTaskId(activitiProcessTask.getProcessTaskId());
-        setpsDetailResult.setTaskName(activitiProcessTask.getTaskName());
-        QualityTaskResult result = new QualityTaskResult();
-
-        QualityTask detail = this.qualityTaskService.getById(activitiProcessTask.getFormId());
-
-        ToolUtil.copyProperties(detail, result);
-        qualityTaskService.detailFormat(result);
-        ActivitiAuditResult activitiAuditResult = new ActivitiAuditResult();
-
-//        ToolUtil.copyProperties(audit, activitiAuditResult);
-//        setpsDetailResult.setAuditResult(activitiAuditResult);
-
-        if (ToolUtil.isNotEmpty(result.getCreateUser())) {
-            User user = userService.getById(result.getCreateUser());
-            result.setCreateName(user.getName());
-        }
-
-        setpsDetailResult.setQualityTaskResult(result);
-
-//        ActivitiSteps setpsId = activitiStepsService.query().eq("setps_id", audit.getSetpsId()).one();
-
-        List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, activitiProcessTask.getProcessId()).list();
-        List<Long> activitiStepsIds = new ArrayList<>();
-        for (ActivitiSteps activitiStep : activitiSteps) {
-            activitiStepsIds.add(activitiStep.getSetpsId());
-        }
-        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTask.getFormId()).one();
-        List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
-        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcess.getProcessTaskId())).list();
-        List<ActivitiAuditResult> logResult = new ArrayList<>();
-        for (ActivitiAudit activitiAudit : activitiAudits) {
-            ActivitiAuditResult auditResult = new ActivitiAuditResult();
-            ToolUtil.copyProperties(activitiAudit, auditResult);
-            for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
-                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId())) {
-                    auditResult.setStatus(activitiProcessLog.getStatus());
-                }
-            }
-            logResult.add(auditResult);
-        }
-        setpsDetailResult.setAuditResults(logResult);
-
-        if (ToolUtil.isNotEmpty(activitiProcessTask.getProcessId())) {
-            ActivitiProcess process = activitiProcessService.getById(activitiProcessTask.getProcessId());
-            setpsDetailResult.setActivitiProcess(process);
-        }
-
-        return ResponseData.success(setpsDetailResult);
-    }
+//
+//        setpsDetailResult.setQualityTaskResult(result);
+//
+//        List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, activitiProcessTask.getProcessId()).list();
+//        List<Long> activitiStepsIds = new ArrayList<>();
+//        for (ActivitiSteps activitiStep : activitiSteps) {
+//            activitiStepsIds.add(activitiStep.getSetpsId());
+//        }
+//        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTask.getFormId()).one();
+//        List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
+//        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcess.getProcessTaskId())).list();
+//        List<ActivitiAuditResult> logResult = new ArrayList<>();
+//        for (ActivitiAudit activitiAudit : activitiAudits) {
+//            ActivitiAuditResult auditResult = new ActivitiAuditResult();
+//            ToolUtil.copyProperties(activitiAudit, auditResult);
+//            for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
+//                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId())) {
+//                    auditResult.setStatus(activitiProcessLog.getStatus());
+//                }
+//            }
+//            logResult.add(auditResult);
+//        }
+//        setpsDetailResult.setAuditResults(logResult);
+//
+//        if (ToolUtil.isNotEmpty(activitiProcessTask.getProcessId())) {
+//            ActivitiProcess process = activitiProcessService.getById(activitiProcessTask.getProcessId());
+//            setpsDetailResult.setActivitiProcess(process);
+//        }
+//
+//        return ResponseData.success(setpsDetailResult);
+//    }
 
 }
 
