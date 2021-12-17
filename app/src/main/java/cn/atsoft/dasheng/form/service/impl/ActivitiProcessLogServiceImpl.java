@@ -270,7 +270,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     private void refuseTask(Long taskId){
         ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
         activitiProcessTask.setProcessTaskId(taskId);
-        activitiProcessTask.setStatus(1);
+        activitiProcessTask.setStatus(0);
         activitiProcessTaskService.updateById(activitiProcessTask);
         taskSend.refuseTask(taskId);
     }
