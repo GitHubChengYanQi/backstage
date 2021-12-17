@@ -27,6 +27,9 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private ActivitiStepsResult stepsResult;
 
+
+    private List<Object> remarks;
+
     private Object object;
 
     @ApiModelProperty("")

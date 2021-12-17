@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
+import cn.atsoft.dasheng.form.pojo.AuditParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -68,4 +69,21 @@ public interface RemarksService extends IService<Remarks> {
 
 
     void addNote(Long taskId, String note, String userIds);
+
+    /**
+     * 添加评论
+     *
+     * @param auditParam
+     */
+    void addComments(AuditParam auditParam);
+
+    /**
+     * 查询评论
+     *
+     * @param taskId
+     * @return
+     */
+    List<RemarksResult> getComments(Long taskId);
+
+
 }

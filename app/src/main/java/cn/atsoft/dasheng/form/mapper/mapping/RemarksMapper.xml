@@ -14,11 +14,13 @@
         <result column="update_time" property="updateTime"/>
         <result column="user_id" property="userIds"/>
         <result column="task_id" property="taskId"/>
+        <result column="type" property="type"/>
+        <result column="photo_id" property="photoId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">user_id
-    AS "userIds",task_id AS "taskId",
+    AS "userIds",task_id AS "taskId",type AS "type",photo_id AS "photoId"
         remarks_id
         AS "remarksId", log_id AS "logId", content AS "content", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>

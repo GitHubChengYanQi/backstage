@@ -32,10 +32,15 @@ public class RemarksParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("备注id")
     private Long remarksId;
 
+    private String photoId;
+
     @ApiModelProperty("")
     private Long logId;
 
     private Long taskId;
+
+    private String type;
+
     private String userIds;
     /**
      * 内容

@@ -30,6 +30,12 @@ public class Remarks implements Serializable {
     @TableId(value = "remarks_id", type = IdType.ID_WORKER)
     private Long remarksId;
 
+    @TableField("photo_id")
+    private String photoId;
+
+    @TableField("type")
+    private String type;
+
     @TableField("log_id")
     private Long logId;
 
@@ -142,6 +148,22 @@ public class Remarks implements Serializable {
 
     public void setTaskId(Long taskId) {
         this.taskId = taskId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getPhotoId() {
+        return photoId;
+    }
+
+    public void setPhotoId(String photoId) {
+        this.photoId = photoId;
     }
 
     @Override

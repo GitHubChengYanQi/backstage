@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.form.pojo;
 import lombok.Data;
 
 
-
 @Data
 public class AuditParam {
     private Long taskId;
@@ -13,4 +12,6 @@ public class AuditParam {
     private String note;
 
     private String userIds;
+
+    private String photoId;
 }

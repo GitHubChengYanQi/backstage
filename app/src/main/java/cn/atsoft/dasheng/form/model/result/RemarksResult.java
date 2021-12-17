@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * log备注
@@ -30,8 +35,13 @@ public class RemarksResult implements Serializable {
     @ApiModelProperty("")
     private Long logId;
 
+    private User user;
+
+    private String photoId;
+
     private String userIds;
     private Long taskId;
+    private String type;
     /**
      * 内容
      */
