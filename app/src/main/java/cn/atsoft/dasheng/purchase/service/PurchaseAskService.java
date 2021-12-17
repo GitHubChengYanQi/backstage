@@ -72,4 +72,6 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
      * @param taskId
      */
     void updateStatus(Long taskId, Integer status);
+
+    void complateAsk(Long processTaskId);
 }

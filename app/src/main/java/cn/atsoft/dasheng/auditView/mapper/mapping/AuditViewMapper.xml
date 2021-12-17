@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.auditView.mapper.AuditViewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.auditView.entity.AuditView">
+        <id column="audit_view_id" property="auditViewId" />
+        <result column="user_id" property="userId" />
+        <result column="task_type" property="taskType" />
+        <result column="process_id" property="processId" />
+        <result column="audit_log_id" property="auditLogId" />
+        <result column="display" property="display" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        audit_view_id AS "auditViewId", user_id AS "userId", task_type AS "taskType", process_id AS "processId", audit_log_id AS "auditLogId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.auditView.model.result.AuditViewResult" parameterType="cn.atsoft.dasheng.auditView.model.params.AuditViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_audit_view where 1 = 1
+            <if test="paramCondition.userId != null">
+                and user_id like CONCAT('%',#{paramCondition.userId},'%')
+            </if>
+            <if test="paramCondition.taskType != null and paramCondition.taskType != ''">
+                and task_type like CONCAT('%',#{paramCondition.taskType},'%')
+            </if>
+            <if test="paramCondition.processId != null">
+                and process_id like CONCAT('%',#{paramCondition.processId},'%')
+            </if>
+            <if test="paramCondition.auditLogId != null">
+                and audit_log_id like CONCAT('%',#{paramCondition.auditLogId},'%')
+            </if>
+    </select>
+
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.auditView.model.params.AuditViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_audit_view where 1 = 1
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.taskType != null and paramCondition.taskType != ''">
+                        and task_type like CONCAT('%',#{paramCondition.taskType},'%')
+                </if>
+                <if test="paramCondition.processId != null">
+                        and process_id like CONCAT('%',#{paramCondition.processId},'%')
+                </if>
+                <if test="paramCondition.auditLogId != null">
+                        and audit_log_id like CONCAT('%',#{paramCondition.auditLogId},'%')
+                </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.auditView.model.result.AuditViewResult" parameterType="cn.atsoft.dasheng.auditView.model.params.AuditViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_audit_view where 1 = 1
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.taskType != null and paramCondition.taskType != ''">
+                        and task_type like CONCAT('%',#{paramCondition.taskType},'%')
+                </if>
+                <if test="paramCondition.processId != null">
+                        and process_id like CONCAT('%',#{paramCondition.processId},'%')
+                </if>
+                <if test="paramCondition.auditLogId != null">
+                        and audit_log_id like CONCAT('%',#{paramCondition.auditLogId},'%')
+                </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.auditView.model.params.AuditViewParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_audit_view where 1 = 1
+                <if test="paramCondition.userId != null">
+                        and user_id like CONCAT('%',#{paramCondition.userId},'%')
+                </if>
+                <if test="paramCondition.taskType != null and paramCondition.taskType != ''">
+                        and task_type like CONCAT('%',#{paramCondition.taskType},'%')
+                </if>
+                <if test="paramCondition.processId != null">
+                        and process_id like CONCAT('%',#{paramCondition.processId},'%')
+                </if>
+                <if test="paramCondition.auditLogId != null">
+                        and audit_log_id like CONCAT('%',#{paramCondition.auditLogId},'%')
+                </if>
+    </select>
+
+</mapper>

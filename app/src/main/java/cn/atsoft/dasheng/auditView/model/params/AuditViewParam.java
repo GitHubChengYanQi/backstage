@@ -1,14 +1,18 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.auditView.model.params;
 
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
- * log备注
+ * 所有审核
  * </p>
  *
  * @author song
@@ -16,27 +20,37 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RemarksResult implements Serializable {
+public class AuditViewParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 备注id
+     * 审核id
      */
-    @ApiModelProperty("备注id")
-    private Long remarksId;
+    @ApiModelProperty("审核id")
+    private Long auditViewId;
 
     @ApiModelProperty("")
-    private Long logId;
+    private Long userId;
 
-    private String userIds;
-    private Long taskId;
     /**
-     * 内容
+     * 任务类型
      */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("任务类型")
+    private String taskType;
+
+    /**
+     * 流程id
+     */
+    @ApiModelProperty("流程id")
+    private Long processId;
+
+    /**
+     * 审核logid
+     */
+    @ApiModelProperty("审核logid")
+    private Long auditLogId;
 
     /**
      * 删除状态
@@ -55,6 +69,13 @@ public class RemarksResult implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

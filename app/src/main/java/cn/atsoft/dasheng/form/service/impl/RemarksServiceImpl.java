@@ -10,6 +10,7 @@ import cn.atsoft.dasheng.form.mapper.RemarksMapper;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.RemarksService;
@@ -99,7 +100,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public void addNote(Long taskId, String note) {
+    public void addNote(Long taskId, String note, String userIds) {
 
         List<ActivitiProcessLog> logs = logService.listByTaskId(taskId);
 
@@ -113,17 +114,18 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         List<ActivitiProcessLog> audit = logService.getAudit(taskId);
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
+            AuditRule rule = activitiAudit.getRule();
+            if (activitiAudit.getType().equals("process") && rule.getType().toString().equals("audit")) {
 
-            if (activitiAudit.getType().equals("process")) {
-                Remarks one = this.query().eq("log_id", activitiProcessLog.getLogId()).one();
-
-                if (ToolUtil.isNotEmpty(one)) {
-                    throw new ServiceException(500, "请勿重复添加备注");
+                if (logService.checkUser(activitiAudit.getRule())) {
+                    Remarks remarks = new Remarks();
+                    remarks.setContent(note);
+                    remarks.setUserIds(userIds);
+                    remarks.setTaskId(taskId);
+                    remarks.setLogId(activitiProcessLog.getLogId());
+                    this.save(remarks);
                 }
-                Remarks remarks = new Remarks();
-                remarks.setLogId(activitiProcessLog.getLogId());
-                remarks.setContent(note);
-                this.save(remarks);
+
             }
         }
     }

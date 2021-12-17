@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -34,6 +35,8 @@ public class RemarksParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("")
     private Long logId;
 
+    private Long taskId;
+    private String userIds;
     /**
      * 内容
      */

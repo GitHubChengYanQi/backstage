@@ -1,22 +1,22 @@
-package cn.atsoft.dasheng.form.service;
+package cn.atsoft.dasheng.auditView.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.Remarks;
-import cn.atsoft.dasheng.form.model.params.RemarksParam;
-import cn.atsoft.dasheng.form.model.result.RemarksResult;
+import cn.atsoft.dasheng.auditView.entity.AuditView;
+import cn.atsoft.dasheng.auditView.model.params.AuditViewParam;
+import cn.atsoft.dasheng.auditView.model.result.AuditViewResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * <p>
- * log备注 服务类
+ * 所有审核 服务类
  * </p>
  *
  * @author song
  * @since 2021-12-16
  */
-public interface RemarksService extends IService<Remarks> {
+public interface AuditViewService extends IService<AuditView> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    void add(Long logId, String note);
+    void add(AuditViewParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    void delete(RemarksParam param);
+    void delete(AuditViewParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    void update(RemarksParam param);
+    void update(AuditViewParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    RemarksResult findBySpec(RemarksParam param);
+    AuditViewResult findBySpec(AuditViewParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    List<RemarksResult> findListBySpec(RemarksParam param);
+    List<AuditViewResult> findListBySpec(AuditViewParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,8 +64,8 @@ public interface RemarksService extends IService<Remarks> {
      * @author song
      * @Date 2021-12-16
      */
-    PageInfo<RemarksResult> findPageBySpec(RemarksParam param);
+     PageInfo<AuditViewResult> findPageBySpec(AuditViewParam param);
 
 
-    void addNote(Long taskId, String note, String userIds);
+    void addView(Long taskId);
 }

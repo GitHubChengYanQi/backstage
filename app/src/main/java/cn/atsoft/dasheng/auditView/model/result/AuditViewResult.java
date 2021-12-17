@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.form.model.result;
+package cn.atsoft.dasheng.auditView.model.result;
 
 import lombok.Data;
 import java.util.Date;
@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * log备注
+ * 所有审核
  * </p>
  *
  * @author song
@@ -16,27 +16,37 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RemarksResult implements Serializable {
+public class AuditViewResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 备注id
+     * 审核id
      */
-    @ApiModelProperty("备注id")
-    private Long remarksId;
+    @ApiModelProperty("审核id")
+    private Long auditViewId;
 
     @ApiModelProperty("")
-    private Long logId;
+    private Long userId;
 
-    private String userIds;
-    private Long taskId;
     /**
-     * 内容
+     * 任务类型
      */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("任务类型")
+    private String taskType;
+
+    /**
+     * 流程id
+     */
+    @ApiModelProperty("流程id")
+    private Long processId;
+
+    /**
+     * 审核logid
+     */
+    @ApiModelProperty("审核logid")
+    private Long auditLogId;
 
     /**
      * 删除状态
