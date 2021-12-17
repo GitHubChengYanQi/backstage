@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,6 +50,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private ActivitiAuditService auditService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MediaService mediaService;
 
 
     @Override
@@ -174,6 +178,15 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
                     remarksResult.setUser(user);
                 }
             }
+        }
+        for (RemarksResult remarksResult : remarksResults) {
+            StringBuffer stringBuffer = new StringBuffer();
+            List<String> photoUrl = ToolUtil.isEmpty(remarksResult.getPhotoId()) ? new ArrayList<>() : Arrays.asList( remarksResult.getPhotoId().split(","));
+            for (String url : photoUrl) {
+                stringBuffer.append(url+",");
+            }
+            String substring = stringBuffer.toString().substring(0, stringBuffer.length() - 1);
+            remarksResult.setPhotoId(substring);
         }
 
         return remarksResults;
