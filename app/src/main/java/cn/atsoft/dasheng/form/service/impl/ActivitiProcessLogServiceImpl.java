@@ -95,6 +95,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public void audit(Long taskId, Integer status) {
+        //判断采购申请状态
+        askService.updateStatus(taskId, status);
         this.auditPerson(taskId, status);
     }
 
@@ -123,14 +125,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         if (ToolUtil.isEmpty(task)) {
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
-
-        if (task.getType().equals("purchase")) {
-            PurchaseAsk purchaseAsk = askService.getById(task.getFormId());
-            if (purchaseAsk.getStatus().equals(2)) {
-                throw new ServiceException(500, "当前采购申请已驳回");
-            }
-        }
-
 
 //       QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         List<ActivitiProcessLog> logs = listByTaskId(taskId);

@@ -203,15 +203,14 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     public void updateStatus(Long taskId, Integer status) {
         ActivitiProcessTask task = taskService.getById(taskId);
         if (task.getType().equals("purchase")) {
-            if (status == 0) {
-                logService.autoAudit(taskId, 0);
+            PurchaseAsk ask = this.getById(task.getFormId());
+            if (ask.getStatus()!=1&& status == 0) {
                 PurchaseAsk purchaseAsk = new PurchaseAsk();
                 purchaseAsk.setStatus(1);
                 this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
                     eq("purchase_ask_id", task.getFormId());
                 }});
             }
-
         }
     }
 

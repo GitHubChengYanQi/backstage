@@ -69,8 +69,7 @@ public class taskController extends BaseController {
         remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds(), auditParam.getPhotoId());
 
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
-        //判断采购申请状态
-        askService.updateStatus(auditParam.getTaskId(), auditParam.getStatus());
+
         return ResponseData.success();
     }
 
