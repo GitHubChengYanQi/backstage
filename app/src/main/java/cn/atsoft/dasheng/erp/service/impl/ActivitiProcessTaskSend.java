@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -68,6 +69,9 @@ public class ActivitiProcessTaskSend {
     private QualityMessageSend qualityMessageSend;
     @Autowired
     private AuditMessageSendImpl auditMessageSend;
+
+    @Autowired
+    private PurchaseAskService purchaseAskService;
 
     private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
@@ -147,6 +151,10 @@ public class ActivitiProcessTaskSend {
             case quality_perform:
             case quality_dispatch:
                 qualityMessageSend.send(taskId, type, users, url, createName);
+                break;
+            case purchase_complete:
+                purchaseAskService.complateAsk(taskId);
+                this.completeSend(type,aboutSend);
                 break;
         }
 

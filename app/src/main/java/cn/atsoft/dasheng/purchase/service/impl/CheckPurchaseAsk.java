@@ -15,11 +15,11 @@ public class CheckPurchaseAsk {
         switch (ruleType) {
 
             case purchase_complete:
-//                if (purchaseAsk.getStatus().equals(-1)) {
-//                    return true;
-//                } else {
-//                    return false;
-//                }
+                if (purchaseAsk.getStatus().equals(2)) {
+                    return true;
+                } else {
+                    return false;
+                }
 
             default:
                 return false;

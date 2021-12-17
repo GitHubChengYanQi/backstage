@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.form.model.params;
+package cn.atsoft.dasheng.auditView.model.params;
 
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * log备注
+ * 所有审核
  * </p>
  *
  * @author song
@@ -21,32 +20,37 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class RemarksParam implements Serializable, BaseValidatingParam {
+public class AuditViewParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 备注id
+     * 审核id
      */
-    @ApiModelProperty("备注id")
-    private Long remarksId;
-
-    private String photoId;
+    @ApiModelProperty("审核id")
+    private Long auditViewId;
 
     @ApiModelProperty("")
-    private Long logId;
+    private Long userId;
 
-    private Long taskId;
-
-    private String type;
-
-    private String userIds;
     /**
-     * 内容
+     * 任务类型
      */
-    @ApiModelProperty("内容")
-    private String content;
+    @ApiModelProperty("任务类型")
+    private String taskType;
+
+    /**
+     * 流程id
+     */
+    @ApiModelProperty("流程id")
+    private Long processId;
+
+    /**
+     * 审核logid
+     */
+    @ApiModelProperty("审核logid")
+    private Long auditLogId;
 
     /**
      * 删除状态

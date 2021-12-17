@@ -210,22 +210,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
                 this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
                     eq("purchase_ask_id", task.getFormId());
                 }});
-            } else if (status == 1) {
-                //判断完成状态
-                List<ActivitiProcessLogResult> logAudit = logService.getLogAudit(taskId);
-                for (ActivitiProcessLogResult logResult : logAudit) {
-                    AuditRule rule = logResult.getActivitiAudit().getRule();
-                    if (ToolUtil.isNotEmpty(rule) && rule.getType().toString().equals("purchase_complete")) {
-                        if (logResult.getStatus() == 1) {
-                            PurchaseAsk purchaseAsk = new PurchaseAsk();
-                            purchaseAsk.setStatus(2);
-                            this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
-                                eq("purchase_ask_id", task.getFormId());
-                            }});
-                        }
-                    }
-                }
             }
+
         }
     }
 
@@ -247,4 +233,12 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         return entity;
     }
 
+    @Override
+    public void complateAsk(Long processTaskId) {
+        ActivitiProcessTask processTask = activitiProcessTaskService.getById(processTaskId);
+        PurchaseAsk purchaseAsk = this.getById(processTask.getFormId());
+        purchaseAsk.setStatus(2);
+        this.updateById(purchaseAsk);
+        activitiProcessLogService.autoAudit(processTaskId, 1);
+    }
 }

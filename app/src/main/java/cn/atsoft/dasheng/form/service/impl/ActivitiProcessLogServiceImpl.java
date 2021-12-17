@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.auditView.entity.AuditView;
+import cn.atsoft.dasheng.auditView.service.AuditViewService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -71,6 +73,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private RemarksService remarksService;
 
+    @Autowired
+    private AuditViewService viewService;
+
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
@@ -119,10 +124,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
 
-        //判断采购申请状态
-        askService.updateStatus(taskId, status);
 
-//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
+
+//       QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
         /**
@@ -195,8 +199,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                         case "purchase":
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
-                                //添加备注
-                                remarksService.add(activitiProcessLog.getLogId(), "ccc");
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 if (status.equals(0)) {
                                     taskSend.refuseTask(taskId);
@@ -214,6 +216,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     setStatus(logs, activitiProcessLog.getLogId());
                 }
             } else {
+                //判断权限  筛选对应log
                 if (this.checkUser(activitiAudit.getRule())) {
                     updateStatus(activitiProcessLog.getLogId(), status);
                     setStatus(logs, activitiProcessLog.getLogId());
@@ -325,6 +328,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 switch (step.getType()) {
                     case AUDIT:
                     case SEND:
+                        //TODO 原判断 if (log.getStatus().equals(1))
                         if (log.getStatus().equals(1)) {
                             for (ActivitiProcessLog processLog : processLogs) {
                                 if (processLog.getSetpsId().equals(log.getSetpsId())) {
@@ -615,6 +619,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     public ActivitiStepsResult addLog(Long processId, Long taskId) {
         ActivitiStepsResult activitiStepsResult = stepsService.backStepsResult(processId);
         loopAdd(activitiStepsResult, taskId);
+        viewService.addView(taskId);
         return activitiStepsResult;
     }
 
@@ -787,6 +792,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "purchaseAsk":
                 PurchaseAsk purchaseAsk = askService.getById(sourId);
                 loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
+                viewService.addView(taskId);
                 break;
         }
 

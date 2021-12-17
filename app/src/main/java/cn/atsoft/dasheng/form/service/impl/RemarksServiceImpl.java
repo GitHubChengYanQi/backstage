@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.form.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.service.MediaService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
@@ -10,11 +13,15 @@ import cn.atsoft.dasheng.form.mapper.RemarksMapper;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
+import cn.atsoft.dasheng.form.pojo.AuditParam;
+import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,6 +48,10 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private ActivitiProcessLogService logService;
     @Autowired
     private ActivitiAuditService auditService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private MediaService mediaService;
 
 
     @Override
@@ -99,7 +111,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     }
 
     @Override
-    public void addNote(Long taskId, String note) {
+    public void addNote(Long taskId, String note, String userIds, String photoId) {
 
         List<ActivitiProcessLog> logs = logService.listByTaskId(taskId);
 
@@ -113,18 +125,75 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         List<ActivitiProcessLog> audit = logService.getAudit(taskId);
         for (ActivitiProcessLog activitiProcessLog : audit) {
             ActivitiAudit activitiAudit = logService.getRule(activitiAudits, activitiProcessLog.getSetpsId());
+            AuditRule rule = activitiAudit.getRule();
+            if (activitiAudit.getType().equals("process") && rule.getType().toString().equals("audit")) {
 
-            if (activitiAudit.getType().equals("process")) {
-                Remarks one = this.query().eq("log_id", activitiProcessLog.getLogId()).one();
-
-                if (ToolUtil.isNotEmpty(one)) {
-                    throw new ServiceException(500, "请勿重复添加备注");
+                if (logService.checkUser(activitiAudit.getRule())) {
+                    Remarks remarks = new Remarks();
+                    remarks.setContent(note);
+                    remarks.setUserIds(userIds);
+                    remarks.setTaskId(taskId);
+                    remarks.setType("备注");
+                    remarks.setPhotoId(photoId);
+                    remarks.setLogId(activitiProcessLog.getLogId());
+                    this.save(remarks);
                 }
-                Remarks remarks = new Remarks();
-                remarks.setLogId(activitiProcessLog.getLogId());
-                remarks.setContent(note);
-                this.save(remarks);
+
             }
         }
+    }
+
+    @Override
+    public void addComments(AuditParam auditParam) {
+        LoginUser user = LoginContextHolder.getContext().getUser();
+
+        Remarks remarks = new Remarks();
+        remarks.setTaskId(auditParam.getTaskId());
+        remarks.setContent(auditParam.getNote());
+        remarks.setType("评论");
+        remarks.setPhotoId(auditParam.getPhotoId());
+        remarks.setUserIds(user.getId().toString());
+        this.save(remarks);
+    }
+
+    @Override
+    public List<RemarksResult> getComments(Long taskId) {
+
+        List<Remarks> remarks = this.query().eq("task_id", taskId).eq("type", "评论").orderByDesc("create_time").list();
+
+        List<RemarksResult> remarksResults = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+
+        for (Remarks remark : remarks) {
+            RemarksResult result = new RemarksResult();
+            ToolUtil.copyProperties(remark, result);
+            remarksResults.add(result);
+            userIds.add(Long.valueOf(remark.getUserIds()));
+        }
+        List<User> userList = userService.listByIds(userIds);
+
+
+        for (RemarksResult remarksResult : remarksResults) {
+            for (User user : userList) {
+                if (remarksResult.getUserIds().equals(user.getUserId().toString())) {
+                    remarksResult.setUser(user);
+                }
+            }
+        }
+        for (RemarksResult remarksResult : remarksResults) {
+            if (ToolUtil.isNotEmpty(remarksResult.getPhotoId())) {
+                StringBuffer stringBuffer = new StringBuffer();
+                List<String> photoUrl = ToolUtil.isEmpty(remarksResult.getPhotoId()) ? new ArrayList<>() : Arrays.asList(remarksResult.getPhotoId().split(","));
+                for (String id : photoUrl) {
+                    String url = mediaService.getMediaUrl(Long.valueOf(id), 1L);
+                    stringBuffer.append(url + ",");
+                }
+                String substring = stringBuffer.toString().substring(0, stringBuffer.length() - 1);
+                remarksResult.setPhotoId(substring);
+            }
+
+        }
+
+        return remarksResults;
     }
 }

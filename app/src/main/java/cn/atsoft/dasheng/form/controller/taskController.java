@@ -7,10 +7,7 @@ import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.form.entity.*;
-import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
-import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
+import cn.atsoft.dasheng.form.model.result.*;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
@@ -69,9 +66,18 @@ public class taskController extends BaseController {
     @ApiOperation("新增")
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
-        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote());
+        remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds(), auditParam.getPhotoId());
 
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
+        //判断采购申请状态
+        askService.updateStatus(auditParam.getTaskId(), auditParam.getStatus());
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/comments", method = RequestMethod.POST)
+    @ApiOperation("新建评论")
+    public ResponseData addComments(@RequestBody AuditParam auditParam) {
+        remarksService.addComments(auditParam);
         return ResponseData.success();
     }
 
@@ -138,6 +144,10 @@ public class taskController extends BaseController {
             User user = userService.getById(taskResult.getCreateUser());
             taskResult.setCreateName(user.getName());
         }
+
+
+        List comments = remarksService.getComments(taskId);
+        taskResult.setRemarks(comments);
         return ResponseData.success(taskResult);
 
     }
