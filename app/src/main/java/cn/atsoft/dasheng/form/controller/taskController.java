@@ -67,7 +67,6 @@ public class taskController extends BaseController {
     public ResponseData audit(@RequestBody AuditParam auditParam) {
         //添加备注
         remarksService.addNote(auditParam.getTaskId(), auditParam.getNote(), auditParam.getUserIds(), auditParam.getPhotoId());
-
         this.activitiProcessLogService.audit(auditParam.getTaskId(), auditParam.getStatus());
 
         return ResponseData.success();

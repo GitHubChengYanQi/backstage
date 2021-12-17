@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.Remarks;
@@ -20,6 +21,8 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -52,6 +55,10 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private UserService userService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
 
     @Override
@@ -154,6 +161,21 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         remarks.setPhotoId(auditParam.getPhotoId());
         remarks.setUserIds(user.getId().toString());
         this.save(remarks);
+
+        if (ToolUtil.isNotEmpty(auditParam.getUserIds())) {
+            String[] split = auditParam.getUserIds().split(",");
+            List<Long> userIds = new ArrayList<>();
+            for (String s : split) {
+                userIds.add(Long.valueOf(s));
+            }
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            wxCpTemplate.setDescription("你有一条被@的消息");
+            wxCpTemplate.setTitle("新消息");
+            wxCpTemplate.setUserIds(userIds);
+            wxCpTemplate.setUrl(mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + auditParam.getTaskId());
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
+        }
     }
 
     @Override
