@@ -124,6 +124,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
 
+        if (task.getType().equals("purchase")) {
+            PurchaseAsk purchaseAsk = askService.getById(task.getFormId());
+            if (purchaseAsk.getStatus().equals(2)) {
+                throw new ServiceException(500, "当前采购申请已驳回");
+            }
+        }
 
 
 //       QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
