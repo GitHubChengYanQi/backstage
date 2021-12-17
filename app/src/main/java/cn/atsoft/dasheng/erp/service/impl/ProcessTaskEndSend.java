@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class ProcessTaskEndSend {
     @Autowired
@@ -24,7 +25,7 @@ public class ProcessTaskEndSend {
     private WxCpSendTemplate wxCpSendTemplate;
 
 
-    public void endSend(Long taskId){
+    public void endSend(Long taskId) {
         List<Long> users = new ArrayList<>();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
         users.add(processTask.getCreateUser());
@@ -32,7 +33,7 @@ public class ProcessTaskEndSend {
         wxCpTemplate.setTitle("流程已结束");
         wxCpTemplate.setDescription(processTask.getTaskName());
         wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl()+"/cp/#/Work/Workflow?id="+ processTask.getProcessId();
+        String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + processTask.getProcessTaskId();
         wxCpTemplate.setUrl(url);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
