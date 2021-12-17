@@ -50,6 +50,9 @@
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.status != null and paramCondition.status != ''">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
         <choose>
             <when test="paramCondition.deptId != null  and paramCondition.deptId != 0">
                 and deptIds like CONCAT('%',#{paramCondition.deptId},'%')

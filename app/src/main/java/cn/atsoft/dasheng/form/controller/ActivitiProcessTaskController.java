@@ -46,18 +46,6 @@ public class ActivitiProcessTaskController extends BaseController {
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
     @Autowired
-    private ActivitiStepsService activitiStepsService;
-    @Autowired
-    private QualityTaskService qualityTaskService;
-    @Autowired
-    private ActivitiAuditService auditService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
-    @Autowired
-    private ActivitiProcessService activitiProcessService;
-    @Autowired
     private ActivitiProcessTaskSend taskSend;
     @Autowired
     private ActivitiAuditService activitiAuditService;
