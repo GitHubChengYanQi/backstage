@@ -170,7 +170,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
             remarksResults.add(result);
             userIds.add(Long.valueOf(remark.getUserIds()));
         }
-        List<User> userList = userService.listByIds(userIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
 
         for (RemarksResult remarksResult : remarksResults) {
