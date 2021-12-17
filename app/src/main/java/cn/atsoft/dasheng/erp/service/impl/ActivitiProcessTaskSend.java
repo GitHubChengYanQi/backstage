@@ -183,11 +183,7 @@ public class ActivitiProcessTaskSend {
      */
     public void refuseTask(Long taskId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
         //否决更新质检任务状态
-//        qualityTask.setState();
-//        qualityTaskService.updateById(qualityTask);
-        //创建消息推送 推送给发起人
 
         //找到发起质检任务的人
         User createUser = userService.getById(processTask.getCreateUser());

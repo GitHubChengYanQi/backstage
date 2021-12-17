@@ -189,7 +189,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 if (status.equals(0)) {
-                                    taskSend.refuseTask(taskId);
+                                    this.refuseTask(taskId);
                                     auditCheck = false;
                                 }
                             } else {
@@ -201,7 +201,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 if (status.equals(0)) {
-                                    taskSend.refuseTask(taskId);
+                                    this.refuseTask(taskId);
                                     auditCheck = false;
                                 }
                             } else {
@@ -222,7 +222,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                     if (status.equals(0)) {
-                        taskSend.refuseTask(taskId);
+                        this.refuseTask(taskId);
                         auditCheck = false;
                     }
                 }
@@ -267,6 +267,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     }
 
+    private void refuseTask(Long taskId){
+        ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
+        activitiProcessTask.setProcessTaskId(taskId);
+        activitiProcessTask.setStatus(1);
+        activitiProcessTaskService.updateById(activitiProcessTask);
+        taskSend.refuseTask(taskId);
+    }
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck) {
 
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessTaskId());
