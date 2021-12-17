@@ -363,7 +363,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                         for (String branchSteps : split) {
                             for (ActivitiProcessLog activitiProcessLog : processLogs) {
-                                if (activitiProcessLog.getSetpsId().toString().equals(branchSteps) && activitiProcessLog.getStatus() == -1) {
+                                if (activitiProcessLog.getSetpsId().toString().equals(branchSteps) && activitiProcessLog.getStatus() != 1) {
                                     state = false;
                                     break;
                                 }
