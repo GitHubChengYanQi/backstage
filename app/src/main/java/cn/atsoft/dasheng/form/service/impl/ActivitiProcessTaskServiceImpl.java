@@ -154,23 +154,23 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
 
     void format(List<ActivitiProcessTaskResult> data) {
 
-        List<Long> qualityIds = new ArrayList<>();
-        List<Long> purchaseIds = new ArrayList<>();
+//        List<Long> qualityIds = new ArrayList<>();
+//        List<Long> purchaseIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         for (ActivitiProcessTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
-            switch (datum.getType()) {
-                case "quality_task":
-                    qualityIds.add(datum.getFormId());
-                    break;
-                case "purchase":
-                    purchaseIds.add(datum.getFormId());
-                    break;
-            }
+//            switch (datum.getType()) {
+//                case "quality_task":
+//                    qualityIds.add(datum.getFormId());
+//                    break;
+//                case "purchase":
+//                    purchaseIds.add(datum.getFormId());
+//                    break;
+//            }
         }
-        List<QualityTask> qualityTasks = qualityIds.size() == 0 ? new ArrayList<>() : qualityTaskService.listByIds(qualityIds);
-
-        List<PurchaseAsk> purchaseAsks = purchaseIds.size() == 0 ? new ArrayList<>() : askService.listByIds(purchaseIds);
+//        List<QualityTask> qualityTasks = qualityIds.size() == 0 ? new ArrayList<>() : qualityTaskService.listByIds(qualityIds);
+//
+//        List<PurchaseAsk> purchaseAsks = purchaseIds.size() == 0 ? new ArrayList<>() : askService.listByIds(purchaseIds);
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
@@ -183,24 +183,24 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
                 }
             }
 
-
-            for (QualityTask qualityTask : qualityTasks) {
-                if (datum.getFormId().equals(qualityTask.getQualityTaskId())) {
-                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
-                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-                    datum.setObject(qualityTaskResult);
-                    break;
-                }
-            }
-
-            for (PurchaseAsk purchaseAsk : purchaseAsks) {
-                if (purchaseAsk.getPurchaseAskId().equals(datum.getFormId())) {
-                    PurchaseAskResult askResult = new PurchaseAskResult();
-                    ToolUtil.copyProperties(purchaseAsk, askResult);
-                    datum.setObject(askResult);
-                    break;
-                }
-            }
+//
+//            for (QualityTask qualityTask : qualityTasks) {
+//                if (datum.getFormId().equals(qualityTask.getQualityTaskId())) {
+//                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+//                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+//                    datum.setObject(qualityTaskResult);
+//                    break;
+//                }
+//            }
+//
+//            for (PurchaseAsk purchaseAsk : purchaseAsks) {
+//                if (purchaseAsk.getPurchaseAskId().equals(datum.getFormId())) {
+//                    PurchaseAskResult askResult = new PurchaseAskResult();
+//                    ToolUtil.copyProperties(purchaseAsk, askResult);
+//                    datum.setObject(askResult);
+//                    break;
+//                }
+//            }
 
         }
 

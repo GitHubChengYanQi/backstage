@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.form.entity.*;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessLogMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
@@ -267,13 +268,14 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     }
 
-    private void refuseTask(Long taskId){
+    private void refuseTask(Long taskId) {
         ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
         activitiProcessTask.setProcessTaskId(taskId);
         activitiProcessTask.setStatus(0);
         activitiProcessTaskService.updateById(activitiProcessTask);
         taskSend.refuseTask(taskId);
     }
+
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck) {
 
         List<ActivitiProcessLog> audit = this.getAudit(task.getProcessTaskId());
@@ -913,5 +915,43 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
         return false;
     }
 
+    @Override
+    public List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param) {
+        List<ActivitiAudit> audits = auditService.list();
+        List<Long> stepIds = new ArrayList<>();
+        for (ActivitiAudit audit : audits) {
+            AuditRule rule = audit.getRule();
+            if (ToolUtil.isNotEmpty(rule)) {
+                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals("audit")) {
+                    stepIds.add(audit.getSetpsId());
+                }
+            }
+        }
+        List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
+        format(logResults);
+        return logResults;
+    }
+
+    void format(List<ActivitiProcessLogResult> data) {
+        List<Long> taskIds = new ArrayList<>();
+        for (ActivitiProcessLogResult datum : data) {
+            taskIds.add(datum.getTaskId());
+        }
+        List<ActivitiProcessTask> tasks = activitiProcessTaskService.listByIds(taskIds);
+
+        for (ActivitiProcessLogResult datum : data) {
+
+            for (ActivitiProcessTask task : tasks) {
+
+                if (datum.getTaskId().equals(task.getProcessTaskId())) {
+
+                    ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
+                    ToolUtil.copyProperties(task, taskResult);
+                    datum.setTaskResult(taskResult);
+                    break;
+                }
+            }
+        }
+    }
 
 }

@@ -21,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">user_id
-    AS "userIds",task_id AS "taskId",type AS "type",photo_id AS "photoId" status AS "status",
+    AS "userIds",task_id AS "taskId",type AS "type",photo_id AS "photoId" ,status AS "status",
         remarks_id
         AS "remarksId", log_id AS "logId", content AS "content", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
@@ -71,6 +71,24 @@
         </if>
         <if test="paramCondition.content != null and paramCondition.content != ''">
             and content like CONCAT('%',#{paramCondition.content},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.status != null ">
+            and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source == '质检'">
+            and task_id in (select process_task_id from activiti_process_task where type = 'quality_task')
+        </if>
+        <if test="paramCondition.source != null and paramCondition.source == '采购'">
+            and task_id in (select process_task_id from activiti_process_task where type = 'purchase')
         </if>
     </select>
 

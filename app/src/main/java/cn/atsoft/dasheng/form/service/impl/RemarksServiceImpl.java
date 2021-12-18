@@ -9,15 +9,18 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.entity.Remarks;
 import cn.atsoft.dasheng.form.mapper.RemarksMapper;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiAuditResult;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessTaskResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
 import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -59,7 +62,8 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     private MobileService mobileService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
-
+    @Autowired
+    private ActivitiProcessTaskService taskService;
 
     @Override
     public void add(Long logId, String note) {
@@ -96,6 +100,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
     public PageInfo<RemarksResult> findPageBySpec(RemarksParam param) {
         Page<RemarksResult> pageContext = getPageContext();
         IPage<RemarksResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -116,6 +121,27 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
+
+    void format(List<RemarksResult> data) {
+        List<Long> taskIds = new ArrayList<>();
+        for (RemarksResult datum : data) {
+            taskIds.add(datum.getTaskId());
+        }
+        List<ActivitiProcessTask> tasks = taskIds.size() == 0 ? new ArrayList<>() : taskService.listByIds(taskIds);
+
+        for (RemarksResult datum : data) {
+            for (ActivitiProcessTask task : tasks) {
+                if (ToolUtil.isNotEmpty(datum.getTaskId()) && datum.getTaskId().equals(task.getProcessTaskId())) {
+                    ActivitiProcessTaskResult taskResult = new ActivitiProcessTaskResult();
+                    ToolUtil.copyProperties(task, taskResult);
+                    datum.setTaskResult(taskResult);
+                    break;
+                }
+            }
+        }
+    }
+
 
     @Override
     public void addNote(AuditParam auditParam) {

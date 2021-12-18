@@ -4,15 +4,17 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
-import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class ActivitiProcessLogController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiProcessLogParam activitiProcessLogParam)  {
+    public ResponseData delete(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
         this.activitiProcessLogService.delete(activitiProcessLogParam);
         return ResponseData.success();
     }
@@ -98,11 +100,12 @@ public class ActivitiProcessLogController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiProcessLogResult> list(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
-        if(ToolUtil.isEmpty(activitiProcessLogParam)){
+        if (ToolUtil.isEmpty(activitiProcessLogParam)) {
             activitiProcessLogParam = new ActivitiProcessLogParam();
         }
         return this.activitiProcessLogService.findPageBySpec(activitiProcessLogParam);
     }
+
 
 
 

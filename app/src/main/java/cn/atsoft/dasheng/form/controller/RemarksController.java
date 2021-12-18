@@ -2,8 +2,11 @@ package cn.atsoft.dasheng.form.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.Remarks;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessLogParam;
 import cn.atsoft.dasheng.form.model.params.RemarksParam;
+import cn.atsoft.dasheng.form.model.result.ActivitiProcessLogResult;
 import cn.atsoft.dasheng.form.model.result.RemarksResult;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.RemarksService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,9 @@ public class RemarksController extends BaseController {
 
     @Autowired
     private RemarksService remarksService;
+
+    @Autowired
+    private ActivitiProcessLogService logService;
 
 
     /**
@@ -58,14 +65,26 @@ public class RemarksController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<RemarksResult> list(@RequestBody(required = false) RemarksParam remarksParam) {
-        if(ToolUtil.isEmpty(remarksParam)){
+        if (ToolUtil.isEmpty(remarksParam)) {
             remarksParam = new RemarksParam();
         }
         return this.remarksService.findPageBySpec(remarksParam);
     }
 
 
+    /**
+     * 查询未审核
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    @RequestMapping(value = "/auditList", method = RequestMethod.POST)
+    @ApiOperation("删除")
+    public ResponseData auditList(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
 
+        List<ActivitiProcessLogResult> logResults = logService.auditList(activitiProcessLogParam);
+        return ResponseData.success(logResults);
+    }
 
 }
 

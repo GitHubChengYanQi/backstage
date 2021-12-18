@@ -24,6 +24,7 @@ public class ActivitiProcessLogParam implements Serializable, BaseValidatingPara
 
     private static final long serialVersionUID = 1L;
 
+    private String source;
 
     /**
      * 主键

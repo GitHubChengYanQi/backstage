@@ -106,4 +106,12 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
 
      ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId);
 
+    /**
+     * 查询未审核
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param);
+
 }

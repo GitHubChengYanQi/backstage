@@ -50,8 +50,14 @@
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
         </if>
+        <if test="paramCondition.createUser != null and paramCondition.createUser != ''">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
         <if test="paramCondition.status != null and paramCondition.status != ''">
             and status like CONCAT('%',#{paramCondition.status},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type = #{paramCondition.type}
         </if>
         <choose>
             <when test="paramCondition.deptId != null  and paramCondition.deptId != 0">
@@ -59,6 +65,7 @@
             </when>
             <otherwise>
                 or user_Ids like CONCAT('%',#{paramCondition.userId},'%')
+                and type = '备注'
             </otherwise>
         </choose>
     </select>

@@ -29,6 +29,8 @@ public class ActivitiProcessLogResult implements Serializable {
 
     private ActivitiAudit activitiAudit;
 
+    private ActivitiProcessTaskResult taskResult;
+
     /**
      * 主键
      */
