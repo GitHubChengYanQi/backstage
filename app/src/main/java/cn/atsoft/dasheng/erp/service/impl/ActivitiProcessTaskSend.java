@@ -211,19 +211,18 @@ public class ActivitiProcessTaskSend {
      */
     private Map<String, String> getAboutSend(Long taskId, RuleType type) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-//        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         User byId = userService.getById(task.getCreateUser());
         Map<String, String> map = new HashMap<>();
         map.put("taskId", taskId.toString());
 //        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
 //        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
-        String url = this.changeUrl(type, map);//组装url
+        String url = this.changeUrl(type, map,task);//组装url
         map.put("url", url);
         return map;
     }
 
-    private String changeUrl(RuleType type, Map<String, String> map) {
+    private String changeUrl(RuleType type, Map<String, String> map, ActivitiProcessTask processTask) {
         String url = mobileService.getMobileConfig().getUrl();
         switch (type) {
             case audit:
@@ -236,7 +235,8 @@ public class ActivitiProcessTaskSend {
 
 //            case quality_complete:
             case quality_dispatch:
-                url = url + "/cp/#/Work/Quality?id=" + map.get("qualityTaskId");
+                QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
+                url = url + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
                 break;
 
         }
