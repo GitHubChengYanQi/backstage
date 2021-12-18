@@ -174,7 +174,7 @@ public class ActivitiProcessTaskSend {
                     if (ToolUtil.isNotEmpty(qualityTask.getUserIds())&& !qualityTask.getState().equals(-1)){
                         users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                     }
-                    url = url + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
+                    url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
                     qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
                 }
 

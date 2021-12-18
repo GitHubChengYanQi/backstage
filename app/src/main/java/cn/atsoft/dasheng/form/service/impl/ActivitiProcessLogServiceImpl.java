@@ -344,7 +344,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                     processLog.setStatus(1);
                                 }
                             }
-                            logs.add(log);
+                            if (log.getStatus().equals(-1)){
+                                logs.add(log);
+                            }
+//                            logs.add(log);
                             List<ActivitiProcessLog> newLogs = updateSupper(steps, processLogs, getSteps(steps, step.getSupper()));
                             logs.addAll(newLogs);
                         }
