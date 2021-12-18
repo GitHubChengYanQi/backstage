@@ -69,7 +69,7 @@ public class ActivitiProcessTaskSend {
     private QualityMessageSend qualityMessageSend;
     @Autowired
     private AuditMessageSendImpl auditMessageSend;
-
+    @Autowired PurchaseMessageSend purchaseMessageSend;
     @Autowired
     private PurchaseAskService purchaseAskService;
 
@@ -162,19 +162,33 @@ public class ActivitiProcessTaskSend {
 
     private void completeSend(RuleType type,Map<String, String> aboutSend) {
         List<Long> users = new ArrayList<>();
+        String url = mobileService.getMobileConfig().getUrl();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(Long.valueOf(aboutSend.get("taskId")));
-        List<QualityTask> list = qualityTaskService.list(new QueryWrapper<QualityTask>() {{
-            eq("parent_id", processTask.getFormId());
-            ge("state", 1);
-        }});
-        for (QualityTask qualityTask : list) {
-            if (ToolUtil.isNotEmpty(qualityTask.getUserIds())){
-                users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            }
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
-            qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
+        switch (type){
+            case quality_complete:
+                List<QualityTask> list = qualityTaskService.list(new QueryWrapper<QualityTask>() {{
+                    eq("parent_id", processTask.getFormId());
+                    ge("state", 1);
+                }});
+                for (QualityTask qualityTask : list) {
+                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds())){
+                        users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                    }
+                    url = url + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
+                    qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
+                }
+
+                url =url + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
+            break;
+            case purchase_complete:
+                users.add(processTask.getCreateUser());
+                url =url + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
+                break;
         }
     }
+
 
     /**
      * 审批拒绝更新

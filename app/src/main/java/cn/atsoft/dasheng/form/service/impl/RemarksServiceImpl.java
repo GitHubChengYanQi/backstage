@@ -152,7 +152,7 @@ public class RemarksServiceImpl extends ServiceImpl<RemarksMapper, Remarks> impl
         for (ActivitiProcessLog activitiProcessLog : logs) {
             stepIds.add(activitiProcessLog.getSetpsId());
         }
-        List<ActivitiAudit> activitiAudits = this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
+        List<ActivitiAudit> activitiAudits = stepIds.size() == 0 ? new ArrayList<>() : this.auditService.list(new QueryWrapper<ActivitiAudit>() {{
             in("setps_id", stepIds);
         }});
         List<ActivitiProcessLog> audit = logService.getAudit(auditParam.getTaskId());
