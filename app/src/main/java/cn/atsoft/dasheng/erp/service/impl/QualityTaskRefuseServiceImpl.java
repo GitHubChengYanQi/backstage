@@ -138,19 +138,6 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                 break;
             }
         }
-        //  更新主任务状态
-        if (fatherDetail) {
-
-            QualityTask task = new QualityTask();
-            task.setState(1);
-            taskService.update(task, new QueryWrapper<QualityTask>() {{
-                eq("quality_task_id", param.getQualityTaskId());
-            }});
-
-            ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
-            activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
-        }
-
         //判断是否全拒绝
         List<QualityTaskDetailResult> results = taskDetailService.getTaskDetailResults(param.getQualityTaskId());
         boolean a = true;
@@ -171,7 +158,21 @@ public class QualityTaskRefuseServiceImpl extends ServiceImpl<QualityTaskRefuseM
                 ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
                 activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 0);
             }
-        }
+        } else
+            //  更新主任务状态
+            if (fatherDetail) {
+
+                QualityTask task = new QualityTask();
+                task.setState(1);
+                taskService.update(task, new QueryWrapper<QualityTask>() {{
+                    eq("quality_task_id", param.getQualityTaskId());
+                }});
+
+                ActivitiProcessTask processTask = activitiProcessTaskService.getByFormId(param.getQualityTaskId());
+                activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
+            }
+
+
     }
 
     @Override

@@ -171,14 +171,14 @@ public class ActivitiProcessTaskSend {
                     ge("state", 1);
                 }});
                 for (QualityTask qualityTask : list) {
-                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds())){
+                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds())&& !qualityTask.getState().equals(-1)){
                         users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                     }
                     url = url + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
                     qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
                 }
 
-                url =url + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                 url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
                 qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
             break;
             case purchase_complete:
