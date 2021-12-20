@@ -139,6 +139,17 @@ public class Customer implements Serializable {
     private Date createTime;
 
     /**
+     * 默认联系人
+     */
+    @TableField("default_contacts")
+    private Long defaultContacts;
+    /**
+     * 默认地址
+     */
+    @TableField("default_address")
+    private Long defaultAddress;
+
+    /**
      * 修改时间
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
@@ -199,6 +210,21 @@ public class Customer implements Serializable {
     @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
+    public Long getDefaultContacts() {
+        return defaultContacts;
+    }
+
+    public void setDefaultContacts(Long defaultContacts) {
+        this.defaultContacts = defaultContacts;
+    }
+
+    public Long getDefaultAddress() {
+        return defaultAddress;
+    }
+
+    public void setDefaultAddress(Long defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
 
     /**
      * 成立时间

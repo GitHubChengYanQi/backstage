@@ -51,6 +51,10 @@ public class CustomerResult implements Serializable {
     private Integer dynamicCount;
     private Integer contactsCount;
 
+
+    private Long defaultContacts;
+    private Long defaultAddress;
+
     private Integer supply;
     /**
      * 客户id

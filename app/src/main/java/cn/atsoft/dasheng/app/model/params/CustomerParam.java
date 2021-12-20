@@ -52,6 +52,9 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private Integer supply;
     private String userName;
 
+    private Long defaultContacts;
+    private Long defaultAddress;
+
     /**
      * 客户id
      */
