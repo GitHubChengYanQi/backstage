@@ -30,7 +30,7 @@
         <include refid="Base_Column_List"/>
         from qr_code where 1 = 1
         <if test="paramCondition.orCodeId != null">
-            and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
+            and qr_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
@@ -63,7 +63,7 @@
         <include refid="Base_Column_List"/>
         from qr_code where 1 = 1
         <if test="paramCondition.orCodeId != null">
-            and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
+            and qr_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
@@ -135,7 +135,7 @@
         <include refid="Base_Column_List"/>
         from qr_code where 1 = 1
         <if test="paramCondition.orCodeId != null">
-            and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
+            and qr_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
         </if>
         <if test="paramCondition.type != null and paramCondition.type != ''">
             and type like CONCAT('%',#{paramCondition.type},'%')
@@ -163,4 +163,10 @@
         </if>
     </select>
 
+
+    <select id="qrCodeList" resultType="Long" parameterType="String">
+        select qr_code_id
+        from qr_code
+        where qr_code_id like CONCAT('%', #{qrcodeId}, '')
+    </select>
 </mapper>

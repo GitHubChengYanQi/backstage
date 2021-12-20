@@ -160,4 +160,12 @@ public interface OrCodeService extends IService<OrCode> {
      * 自动生成二维码绑定
      */
     Long automaticBinding(BackCodeRequest codeRequest);
+
+    /**
+     * 查询二维码
+     *
+     * @param codeId
+     * @return
+     */
+    List<Long> codeIdList(String codeId);
 }

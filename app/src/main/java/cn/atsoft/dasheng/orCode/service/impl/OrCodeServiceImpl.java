@@ -363,6 +363,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
+                inkindParam.setSourceId(codeRequest.getTaskDetailId());
                 inkindParam.setSource(codeRequest.getInkindType());
                 Long aLong = inkindService.add(inkindParam);
                 OrCodeBindParam bindParam = new OrCodeBindParam();
@@ -790,6 +791,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         bindParam.setSource(codeRequest.getSource());
         orCodeBindService.add(bindParam);
         return orCode.getOrCodeId();
+    }
+
+    @Override
+    public List<Long> codeIdList(String codeId) {
+        List<Long> qrCodeList = this.baseMapper.qrCodeList(codeId);
+        return qrCodeList;
     }
 }
 

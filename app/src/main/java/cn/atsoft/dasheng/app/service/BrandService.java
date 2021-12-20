@@ -75,4 +75,6 @@ public interface BrandService extends IService<Brand> {
      */
     List<BrandResult> getBrandResults(List<Long> brandIds);
 
+
+    BrandResult getBrandResult (Long id );
 }
