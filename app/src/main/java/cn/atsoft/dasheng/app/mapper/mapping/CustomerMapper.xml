@@ -17,6 +17,8 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="default_contacts" property="defaultContacts"/>
+        <result column="default_address" property="defaultAddress"/>
         <result column="customer_level_id" property="customerLevelId"/>
         <result column="status" property="status"/>
         <result column="display" property="display"/>
@@ -42,7 +44,7 @@
         industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id
-        AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "customerId", customer_name AS "customerName",default_contacts AS "defaultContacts",default_address AS "defaultAddress", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
