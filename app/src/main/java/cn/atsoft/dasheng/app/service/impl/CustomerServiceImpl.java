@@ -443,13 +443,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer customer = this.getById(id);
         CustomerResult customerResult = new CustomerResult();
         ToolUtil.copyProperties(customer, customerResult);
-
-      
-
         List<CustomerResult> results = new ArrayList<CustomerResult>() {{
             add(customerResult);
         }};
         this.format(results);
+
+        Contacts contacts = contactsService.getById(customer.getDefaultContacts());
+
+        Adress adress = adressService.getById(customer.getDefaultAddress());
+
+        customerResult.setDefaultAddress(adress);
+        customerResult.setDefaultContacts(contacts);
         return results.get(0);
     }
 
