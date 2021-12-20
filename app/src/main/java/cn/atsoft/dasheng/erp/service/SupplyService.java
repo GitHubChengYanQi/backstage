@@ -69,4 +69,6 @@ public interface SupplyService extends IService<Supply> {
 
     void addList(List<SupplyParam> supplyParams, Long customerId);
 
+    List<SupplyResult> detail(Long customerId);
+
 }

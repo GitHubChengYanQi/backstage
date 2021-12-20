@@ -18,6 +18,7 @@ import cn.atsoft.dasheng.crm.region.GetRegionService;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
+import cn.atsoft.dasheng.erp.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -68,6 +69,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private ContractService contractService;
     @Autowired
     private TrackMessageService trackMessageService;
+    @Autowired
+    private SupplyService supplyService;
+
 
     @Override
     @FreedLog
@@ -86,7 +90,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.save(entity);
 
         //添加联系人
-        if(ToolUtil.isNotEmpty(param.getContactsParams())){
+        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
             for (ContactsParam contactsParam : param.getContactsParams()) {
                 if (ToolUtil.isNotEmpty(contactsParam.getContactsName()) && !contactsParam.getContactsName().equals("")) {
                     Contacts contacts = contactsService.add(contactsParam);
@@ -101,18 +105,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
-        if (ToolUtil.isNotEmpty(param.getAdressParams())){
+        if (ToolUtil.isNotEmpty(param.getAdressParams())) {
             for (AdressParam adressParam : param.getAdressParams()) {
-                if ( ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
+                if (ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
                     adressParam.setCustomerId(entity.getCustomerId());
                     adressService.add(adressParam);
                 }
             }
         }
         //添加地址
-
-
-
+        if (param.getSupply() == 1) {
+//            supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
+        }
         return entity;
 
     }
@@ -439,6 +443,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer customer = this.getById(id);
         CustomerResult customerResult = new CustomerResult();
         ToolUtil.copyProperties(customer, customerResult);
+
+      
+
         List<CustomerResult> results = new ArrayList<CustomerResult>() {{
             add(customerResult);
         }};

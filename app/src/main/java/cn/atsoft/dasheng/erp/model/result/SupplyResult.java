@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 供应商供应物料
@@ -21,6 +25,7 @@ public class SupplyResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private SkuResult skuResult;
     @ApiModelProperty("")
     private Long supplyId;
 
