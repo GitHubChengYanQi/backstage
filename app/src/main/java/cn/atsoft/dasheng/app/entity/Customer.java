@@ -32,6 +32,12 @@ public class Customer implements Serializable {
     @TableField("agent")
     private Integer agent;
 
+    /**
+     * 供应商
+     */
+    @TableField("supply")
+    private Integer supply;
+
 
     @TableField("classification")
     private Integer classification;
@@ -190,7 +196,7 @@ public class Customer implements Serializable {
     /**
      * 部门编号
      */
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
 
@@ -419,5 +425,13 @@ public class Customer implements Serializable {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public Integer getSupply() {
+        return supply;
+    }
+
+    public void setSupply(Integer supply) {
+        this.supply = supply;
     }
 }

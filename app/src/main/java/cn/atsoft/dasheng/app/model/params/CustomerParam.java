@@ -49,7 +49,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private String levelName;
     private Long industryId;
     private String industryName;
-
+    private Integer supply;
     private String userName;
 
     /**

@@ -32,12 +32,13 @@
         <result column="region" property="region"/>
         <result column="classification" property="classification"/>
         <result column="industry_id" property="industryId"/>
+        <result column="supply" property="supply"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">region
-    AS "region",
+    AS "region",supply AS "supply",
         industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id

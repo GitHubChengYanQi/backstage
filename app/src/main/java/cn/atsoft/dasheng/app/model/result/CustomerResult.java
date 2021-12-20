@@ -51,7 +51,7 @@ public class CustomerResult implements Serializable {
     private Integer dynamicCount;
     private Integer contactsCount;
 
-
+    private Integer supply;
     /**
      * 客户id
      */
