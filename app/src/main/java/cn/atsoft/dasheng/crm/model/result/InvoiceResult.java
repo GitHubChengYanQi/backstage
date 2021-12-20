@@ -1,69 +1,67 @@
-package cn.atsoft.dasheng.erp.model.params;
+package cn.atsoft.dasheng.crm.model.result;
 
-import cn.atsoft.dasheng.base.dict.AbstractDictMap;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 实物表
+ * 供应商开票
  * </p>
  *
  * @author song
- * @since 2021-11-01
+ * @since 2021-12-20
  */
 @Data
 @ApiModel
-public class   InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class InvoiceResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long number;
-    private Long spuId;
-    private String source;
-    private Long sourceId;
 
     /**
-     * 品牌
+     * 开票
      */
-    private Long brandId;
-
-
-    /**
-     * 成本价格
-     */
-    private Integer costPrice;
-    /**
-     * 出售价格
-     */
-    private Integer sellingPrice;
+    @ApiModelProperty("开票")
+    private Long invoiceId;
 
     /**
-     * 实物id
+     * 客户id
      */
-    @ApiModelProperty("实物id")
-    private Long inkindId;
+    @ApiModelProperty("客户id")
+    private Long customerId;
 
     /**
-     * 类型
+     * 开户行名称
      */
-    @ApiModelProperty("类型")
-    private String type;
+    @ApiModelProperty("开户行名称")
+    private String bank;
 
     /**
-     * skuId
+     * 开户行账号
      */
-    @ApiModelProperty("skuId")
-    private Long skuId;
+    @ApiModelProperty("开户行账号")
+    private Long bankAccount;
+
+    /**
+     * 统一社会信用代码
+     */
+    @ApiModelProperty("统一社会信用代码")
+    private String creditCode;
+
+    /**
+     * 邮箱
+     */
+    @ApiModelProperty("邮箱")
+    private String email;
+
+    /**
+     * 是否默认
+     */
+    @ApiModelProperty("是否默认")
+    private Integer isDefault;
 
     /**
      * 创建者
@@ -100,22 +98,6 @@ public class   InkindParam extends AbstractDictMap implements Serializable, Base
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    protected void initBeWrapped() {
-
-    }
 }

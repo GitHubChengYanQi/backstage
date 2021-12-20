@@ -202,7 +202,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         //通过实物id查询sku和brand  创建入库清单
         List<InstockList> instockLists = new ArrayList<>();
         for (Inkind inkind : inkinds) {
-            inkind.setInstockOrderId(instockOrder.getInstockOrderId());
             inkind.setSource("质检");
             inkind.setType("0");
             //创建入库清单

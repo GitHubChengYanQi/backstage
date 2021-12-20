@@ -1,13 +1,14 @@
-package cn.atsoft.dasheng.erp.model.result;
+package cn.atsoft.dasheng.crm.model.params;
 
 import lombok.Data;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
-import java.util.Date;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,12 +21,12 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class SupplyResult implements Serializable {
+public class SupplyParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
+    private List<SupplyParam> supplyParams;
 
-    private SkuResult skuResult;
     @ApiModelProperty("")
     private Long supplyId;
 
@@ -58,6 +59,13 @@ public class SupplyResult implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Date updateTime;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

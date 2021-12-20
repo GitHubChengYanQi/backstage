@@ -1,9 +1,9 @@
-package cn.atsoft.dasheng.erp.service;
+package cn.atsoft.dasheng.crm.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Supply;
-import cn.atsoft.dasheng.erp.model.params.SupplyParam;
-import cn.atsoft.dasheng.erp.model.result.SupplyResult;
+import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

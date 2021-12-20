@@ -1,21 +1,24 @@
-package cn.atsoft.dasheng.erp.controller;
+package cn.atsoft.dasheng.crm.controller;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Supply;
-import cn.atsoft.dasheng.erp.model.params.SupplyParam;
-import cn.atsoft.dasheng.erp.model.result.SupplyResult;
-import cn.atsoft.dasheng.erp.service.SupplyService;
+import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.wrapper.SupplySelectWrapper;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -116,6 +119,21 @@ public class SupplyController extends BaseController {
             supplyParam = new SupplyParam();
         }
         return this.supplyService.findPageBySpec(supplyParam);
+    }
+
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("Select数据接口")
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SupplyParam supplyParam) {
+        QueryWrapper<Supply> supplyQueryWrapper = new QueryWrapper<>();
+        supplyQueryWrapper.in("display", 1);
+        if (ToolUtil.isNotEmpty(supplyParam.getCustomerId())) {
+            supplyQueryWrapper.eq("customer_id", supplyParam.getCustomerId());
+        }
+        List<Map<String, Object>> list = this.supplyService.listMaps(supplyQueryWrapper);
+        SupplySelectWrapper supplySelectWrapper = new SupplySelectWrapper(list);
+        List<Map<String, Object>> result = supplySelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 

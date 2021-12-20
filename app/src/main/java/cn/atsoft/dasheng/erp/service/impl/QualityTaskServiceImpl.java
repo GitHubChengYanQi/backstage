@@ -388,6 +388,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         }
         formDataService.save(data);
 
+        //绑定关系
+        QualityTask task = new QualityTask();
+        task.setDataId(data.getDataId());
+        this.update(task, new QueryWrapper<QualityTask>() {{
+            eq("quality_task_id",formDataPojo.getQualityTaskId());
+        }});
+
         //通过质检项详情添加dataValue
         List<QualityPlanDetail> details = qualityPlanDetailService.query().eq("plan_id", formDataPojo.getPlanId()).list();
         if (ToolUtil.isNotEmpty(details)) {

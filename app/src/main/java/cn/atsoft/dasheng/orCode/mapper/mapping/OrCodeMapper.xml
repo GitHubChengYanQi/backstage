@@ -97,7 +97,7 @@
         <include refid="Base_Column_List"/>
         from qr_code where 1 = 1
         <if test="paramCondition.orCodeId != null">
-            and or_code_id like CONCAT('%',#{paramCondition.orCodeId},'%')
+            and qr_code_id like CONCAT('%',#{paramCondition.orCodeId},'')
         </if>
 
         <if test="paramCondition.type != null and paramCondition.type != ''">

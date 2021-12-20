@@ -397,18 +397,13 @@ public class OrCodeController extends BaseController {
 
                     qualityTaskService.detailFormat(qualityTaskResult);
 
-                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())) {
                         User user1 = userService.getById(qualityTaskResult.getUserId());
                         qualityTaskResult.setUserName(user1.getName());
                     }
 
-
-
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
-
-//                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
-//                    qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
                     return ResponseData.success(qualityRequest);
 
@@ -470,6 +465,19 @@ public class OrCodeController extends BaseController {
     public ResponseData outStockByCode(@RequestBody InKindRequest inKindRequest) {
         Long aLong = orCodeService.outStockByCode(inKindRequest);
         return ResponseData.success(aLong);
+    }
+
+    /**
+     * 自动生成并绑定
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/automaticBinding", method = RequestMethod.POST)
+    @Transactional
+    public ResponseData automaticBinding(@RequestBody BackCodeRequest codeRequest) {
+        Long orcodeId = orCodeService.automaticBinding(codeRequest);
+        return ResponseData.success(orcodeId);
     }
 }
 

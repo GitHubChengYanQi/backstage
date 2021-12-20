@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.erp.wrapper;
+package cn.atsoft.dasheng.crm.wrapper;
 
 import cn.atsoft.dasheng.core.base.warpper.BaseControllerWrapper;
 import cn.hutool.core.convert.Convert;
@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SupplySelectWrapper extends BaseControllerWrapper {
+public class InvoiceSelectWrapper extends BaseControllerWrapper {
 
-    public SupplySelectWrapper(List<Map<String, Object>> multi) {
+    public InvoiceSelectWrapper(List<Map<String, Object>> multi) {
         super(multi);
     }
 

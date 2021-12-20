@@ -1,4 +1,4 @@
-package cn.atsoft.dasheng.erp.entity;
+package cn.atsoft.dasheng.crm.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;

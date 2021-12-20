@@ -1,8 +1,6 @@
 package cn.atsoft.dasheng.app.model.params;
 
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.erp.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 

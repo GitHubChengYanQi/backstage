@@ -27,11 +27,8 @@ public class Inkind implements Serializable {
     @TableField("source")
     private String source;
 
-    /**
-     * 出库单
-     */
-    @TableField("outstock_order_id")
-    private Long outstockOrderId;
+    @TableField("source_id")
+    private Long sourceId;
 
     @TableField("number")
     private Long number;
@@ -43,16 +40,7 @@ public class Inkind implements Serializable {
      */
     @TableField("brand_id")
     private Long brandId;
-    /**
-     * 库位
-     */
-    @TableField("storehouse_positions_id")
-    private Long storehousePositionsId;
-    /**
-     * 入库单
-     */
-    @TableField("instock_order_id")
-    private Long instockOrderId;
+
     /**
      * 成本价格
      */
@@ -207,14 +195,6 @@ public class Inkind implements Serializable {
     }
 
 
-    public Long getInstockOrderId() {
-        return instockOrderId;
-    }
-
-    public void setInstockOrderId(Long instockOrderId) {
-        this.instockOrderId = instockOrderId;
-    }
-
     public Integer getCostPrice() {
         return costPrice;
     }
@@ -239,20 +219,12 @@ public class Inkind implements Serializable {
         this.brandId = brandId;
     }
 
-    public Long getStorehousePositionsId() {
-        return storehousePositionsId;
+    public Long getSourceId() {
+        return sourceId;
     }
 
-    public void setStorehousePositionsId(Long storehousePositionsId) {
-        this.storehousePositionsId = storehousePositionsId;
-    }
-
-    public Long getOutstockOrderId() {
-        return outstockOrderId;
-    }
-
-    public void setOutstockOrderId(Long outstockOrderId) {
-        this.outstockOrderId = outstockOrderId;
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getSource() {

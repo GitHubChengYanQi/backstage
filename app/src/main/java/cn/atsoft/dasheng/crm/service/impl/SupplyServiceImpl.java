@@ -1,17 +1,17 @@
-package cn.atsoft.dasheng.erp.service.impl;
+package cn.atsoft.dasheng.crm.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.Supply;
-import cn.atsoft.dasheng.erp.mapper.SupplyMapper;
-import cn.atsoft.dasheng.erp.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
+import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.model.result.SupplyResult;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.SupplyService;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -72,6 +72,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     public PageInfo<SupplyResult> findPageBySpec(SupplyParam param) {
         Page<SupplyResult> pageContext = getPageContext();
         IPage<SupplyResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 

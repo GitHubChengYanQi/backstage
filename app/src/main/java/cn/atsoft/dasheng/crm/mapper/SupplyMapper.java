@@ -1,10 +1,9 @@
-package cn.atsoft.dasheng.erp.mapper;
+package cn.atsoft.dasheng.crm.mapper;
 
-import cn.atsoft.dasheng.erp.entity.Supply;
-import cn.atsoft.dasheng.erp.model.params.SupplyParam;
-import cn.atsoft.dasheng.erp.model.result.SupplyResult;
+import cn.atsoft.dasheng.crm.entity.Supply;
+import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 

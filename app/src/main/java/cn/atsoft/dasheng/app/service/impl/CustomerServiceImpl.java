@@ -14,11 +14,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
-import cn.atsoft.dasheng.crm.region.GetRegionService;
-import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
-import cn.atsoft.dasheng.erp.service.SupplyService;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -452,8 +450,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         Adress adress = adressService.getById(customer.getDefaultAddress());
 
-        customerResult.setDefaultAddress(adress);
-        customerResult.setDefaultContacts(contacts);
+        customerResult.setAddress(adress);
+        customerResult.setContact(contacts);
         return results.get(0);
     }
 

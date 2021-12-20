@@ -54,14 +54,16 @@ public class CustomerResult implements Serializable {
     private Integer contactsCount;
 
 
-    private Contacts defaultContacts;
-    private Adress defaultAddress;
+    private Contacts contact;
+    private Adress address;
 
     private Integer supply;
     /**
      * 客户id
      */
+    private Long defaultContacts;
 
+    private Long defaultAddress;
 
     @ApiModelProperty("客户id")
     private Long customerId;

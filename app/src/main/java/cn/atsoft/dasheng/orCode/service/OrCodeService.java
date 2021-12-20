@@ -150,7 +150,14 @@ public interface OrCodeService extends IService<OrCode> {
 
     /**
      * 扫码出库
+     *
      * @return
      */
     Long outStockByCode(InKindRequest inKindRequest);
+
+
+    /**
+     * 自动生成二维码绑定
+     */
+    Long automaticBinding(BackCodeRequest codeRequest);
 }
