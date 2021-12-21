@@ -34,7 +34,7 @@ public class ProcurementPlanDetal implements Serializable {
      * 数量
      */
     @TableField("total")
-    private Integer total;
+    private Long total;
 
     /**
      * 删除状态
@@ -79,11 +79,11 @@ public class ProcurementPlanDetal implements Serializable {
         this.skuId = skuId;
     }
 
-    public Integer getTotal() {
+    public Long getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(Long total) {
         this.total = total;
     }
 

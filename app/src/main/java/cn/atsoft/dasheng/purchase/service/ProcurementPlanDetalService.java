@@ -26,6 +26,8 @@ public interface ProcurementPlanDetalService extends IService<ProcurementPlanDet
      */
     void add(ProcurementPlanDetalParam param);
 
+    void batchAdd(ProcurementPlanDetalParam param);
+
     /**
      * 删除
      *

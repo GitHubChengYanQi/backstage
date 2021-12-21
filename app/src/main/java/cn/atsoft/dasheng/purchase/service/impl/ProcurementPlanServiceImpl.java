@@ -48,8 +48,10 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     }
 
     @Override
-    public void delete(ProcurementPlanParam param) {
-        this.removeById(getKey(param));
+    public void delete(ProcurementPlanParam param){
+        param.setDisplay(0);
+        ProcurementPlan newEntity = getEntity(param);
+        this.updateById(newEntity);
     }
 
     @Override
@@ -57,7 +59,9 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ProcurementPlan oldEntity = getOldEntity(param);
         ProcurementPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        if (oldEntity.getDisplay().equals(newEntity.getDisplay())){
+            this.updateById(newEntity);
+        }
     }
 
     @Override

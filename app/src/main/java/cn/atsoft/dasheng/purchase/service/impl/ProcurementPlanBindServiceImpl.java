@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.purchase.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanBindMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanBindResult;
@@ -36,7 +37,9 @@ public class ProcurementPlanBindServiceImpl extends ServiceImpl<ProcurementPlanB
 
     @Override
     public void delete(ProcurementPlanBindParam param){
-        this.removeById(getKey(param));
+        param.setDisplay(0);
+        ProcurementPlanBind newEntity = getEntity(param);
+        this.updateById(newEntity);
     }
 
     @Override
@@ -44,7 +47,9 @@ public class ProcurementPlanBindServiceImpl extends ServiceImpl<ProcurementPlanB
         ProcurementPlanBind oldEntity = getOldEntity(param);
         ProcurementPlanBind newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        if (oldEntity.getDisplay().equals(newEntity.getDisplay())){
+            this.updateById(newEntity);
+        }
     }
 
     @Override
