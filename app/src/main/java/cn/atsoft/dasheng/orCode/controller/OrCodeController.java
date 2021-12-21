@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import cn.hutool.core.date.DateTime;
@@ -99,6 +100,10 @@ public class OrCodeController extends BaseController {
     private OutstockService outstockService;
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private QualityTaskDetailService detailService;
 
 
     /**
@@ -125,6 +130,20 @@ public class OrCodeController extends BaseController {
     public ResponseData batchAdd(@RequestBody OrCodeParam orCodeParam) {
         this.orCodeService.batchAdd(orCodeParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 模糊查询二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/codeIdList", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData codeIdList(@Param("codeId") String codeId) {
+        List<Long> longList = this.orCodeService.codeIdList(codeId);
+        return ResponseData.success(longList);
     }
 
 
@@ -386,15 +405,12 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
                 case "quality":
-
                     QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
                     if (ToolUtil.isEmpty(qualityTask)) {
                         throw new ServiceException(500, "当前数据不存在");
                     }
-
                     QualityTaskResult qualityTaskResult = new QualityTaskResult();
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-
                     qualityTaskService.detailFormat(qualityTaskResult);
 
                     if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())) {
@@ -406,8 +422,18 @@ public class OrCodeController extends BaseController {
                     qualityRequest.setType("quality");
                     qualityRequest.setResult(qualityTaskResult);
                     return ResponseData.success(qualityRequest);
+                case "item":
+                    InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
+                    InkindBack inkindBack = new InkindBack();
 
+                    if (inkindResult.getSource().equals("质检")&&ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
+                        QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                        inkindResult.setTaskDetail(detail);
+                    }
 
+                    inkindBack.setInkindResult(inkindResult);
+                    inkindBack.setType("item");
+                    return ResponseData.success(inkindBack);
             }
         }
         return ResponseData.success();

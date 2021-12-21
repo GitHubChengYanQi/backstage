@@ -41,7 +41,7 @@ public class OrCodeParam implements Serializable, BaseValidatingParam {
      * 码id
      */
     @ApiModelProperty("码id")
-    private Long orCodeId;
+    private String orCodeId;
 
     /**
      * 类型

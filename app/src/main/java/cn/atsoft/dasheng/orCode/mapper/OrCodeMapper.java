@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.ObjLongConsumer;
 
 /**
  * <p>
@@ -52,5 +53,8 @@ public interface OrCodeMapper extends BaseMapper<OrCode> {
      * @Date 2021-10-29
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OrCodeParam paramCondition);
+
+
+    List<Long> qrCodeList(@Param("qrcodeId") String qrcodeId);
 
 }

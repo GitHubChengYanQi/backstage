@@ -32,6 +32,17 @@ public class Customer implements Serializable {
     @TableField("agent")
     private Integer agent;
 
+    @TableField("blacklist")
+    private Integer blacklist;
+
+    public Integer getBlacklist() {
+        return blacklist;
+    }
+
+    public void setBlacklist(Integer blacklist) {
+        this.blacklist = blacklist;
+    }
+
     /**
      * 供应商
      */
