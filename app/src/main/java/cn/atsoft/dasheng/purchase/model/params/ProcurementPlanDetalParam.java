@@ -21,7 +21,7 @@ import java.util.List;
 @Data
 @ApiModel
 public class ProcurementPlanDetalParam implements Serializable, BaseValidatingParam {
-    List<ProcurementPlanBindParam> planBindParams;
+    List<Long> planBindParams;
 
     private static final long serialVersionUID = 1L;
 

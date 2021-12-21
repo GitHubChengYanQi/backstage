@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.purchase.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
+import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -26,7 +27,7 @@ public interface ProcurementPlanDetalService extends IService<ProcurementPlanDet
      */
     void add(ProcurementPlanDetalParam param);
 
-    void batchAdd(ProcurementPlanDetalParam param);
+    void batchAdd(ProcurementPlanParam param);
 
     /**
      * 删除

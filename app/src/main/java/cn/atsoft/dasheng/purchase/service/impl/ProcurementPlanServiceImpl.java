@@ -8,9 +8,11 @@ import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
+import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
@@ -36,19 +38,25 @@ import java.util.List;
  */
 @Service
 public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMapper, ProcurementPlan> implements ProcurementPlanService {
+
+    @Autowired
+    private ProcurementPlanDetalService procurementPlanDetalService;
+
     @Autowired
     private ProcurementPlanBindService bindService;
-    @Autowired
-    private PurchaseListingService listingService;
 
     @Override
     public void add(ProcurementPlanParam param) {
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
+
+        param.setProcurementPlanId(entity.getProcurementPlanId());
+        procurementPlanDetalService.batchAdd(param);
+        bindService.batchAdd(param);
     }
 
     @Override
-    public void delete(ProcurementPlanParam param){
+    public void delete(ProcurementPlanParam param) {
         param.setDisplay(0);
         ProcurementPlan newEntity = getEntity(param);
         this.updateById(newEntity);
@@ -59,7 +67,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ProcurementPlan oldEntity = getOldEntity(param);
         ProcurementPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
-        if (oldEntity.getDisplay().equals(newEntity.getDisplay())){
+        if (oldEntity.getDisplay().equals(newEntity.getDisplay())) {
             this.updateById(newEntity);
         }
     }

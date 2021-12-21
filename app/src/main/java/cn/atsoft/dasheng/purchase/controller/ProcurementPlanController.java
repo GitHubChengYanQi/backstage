@@ -51,13 +51,13 @@ public class ProcurementPlanController extends BaseController {
      * @author song
      * @Date 2021-12-21
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody ProcurementPlanParam procurementPlanParam) {
-
-        this.procurementPlanService.update(procurementPlanParam);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+//    @ApiOperation("编辑")
+//    public ResponseData update(@RequestBody ProcurementPlanParam procurementPlanParam) {
+//
+//        this.procurementPlanService.update(procurementPlanParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 删除接口
@@ -65,12 +65,12 @@ public class ProcurementPlanController extends BaseController {
      * @author song
      * @Date 2021-12-21
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProcurementPlanParam procurementPlanParam)  {
-        this.procurementPlanService.delete(procurementPlanParam);
-        return ResponseData.success();
-    }
+//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+//    @ApiOperation("删除")
+//    public ResponseData delete(@RequestBody ProcurementPlanParam procurementPlanParam)  {
+//        this.procurementPlanService.delete(procurementPlanParam);
+//        return ResponseData.success();
+//    }
 
     /**
      * 查看详情接口

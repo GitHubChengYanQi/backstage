@@ -5,12 +5,14 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanDetalMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
+import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import  cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
@@ -51,12 +53,12 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
 
     }
     @Override
-    public void batchAdd(ProcurementPlanDetalParam param){
-        List<Long> askDetailIds = new ArrayList<>();
-        for (ProcurementPlanBindParam planBindParam : param.getPlanBindParams()) {
-            askDetailIds.add(planBindParam.getAskDetailId());
+    public void batchAdd(ProcurementPlanParam param){
+
+        List<PurchaseListing> purchaseListingList = purchaseListingService.listByIds(param.getListingIds());
+        if (purchaseListingList.size()!=param.getListingIds().size()){
+            throw new ServiceException(500,"申请单详情不合法");
         }
-        List<PurchaseListing> purchaseListingList = purchaseListingService.listByIds(askDetailIds);
         List<ProcurementDetailSkuTotal> pdstList = new ArrayList<>();
         for (PurchaseListing purchaseListing : purchaseListingList) {
             ProcurementDetailSkuTotal pdst = new ProcurementDetailSkuTotal();
@@ -65,7 +67,7 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
             pdstList.add(pdst);
         }
         List<ProcurementDetailSkuTotal> totalList = new ArrayList<>();
-        pdstList.parallelStream().collect(Collectors.groupingBy(o -> (o.getSkuId()),Collectors.toList())).forEach(
+        pdstList.parallelStream().collect(Collectors.groupingBy(ProcurementDetailSkuTotal::getSkuId,Collectors.toList())).forEach(
                 (id,transfer) ->{
                     transfer.stream().reduce((a,b) -> new ProcurementDetailSkuTotal(a.getSkuId(),a.getTotal()+b.getTotal())).ifPresent(totalList::add);
                 }
@@ -73,7 +75,7 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
         List<ProcurementPlanDetal> entityList = new ArrayList<>();
         for (ProcurementDetailSkuTotal procurementDetailSkuTotal : totalList) {
             ProcurementPlanDetal entity = new ProcurementPlanDetal();
-            entity.setPlanId(param.getPlanId());
+            entity.setPlanId(param.getProcurementPlanId());
             entity.setSkuId(procurementDetailSkuTotal.getSkuId());
             entity.setTotal(procurementDetailSkuTotal.getTotal());
             entityList.add(entity);
