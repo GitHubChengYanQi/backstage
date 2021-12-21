@@ -344,7 +344,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                     processLog.setStatus(1);
                                 }
                             }
-                            if (log.getStatus().equals(-1)){
+                            if (log.getStatus().equals(-1)) {
                                 logs.add(log);
                             }
 //                            logs.add(log);
@@ -920,20 +920,40 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param) {
+        List<Long> stepIds = getStepIdsByType("audit");
+        List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
+        format(logResults);
+        return logResults;
+    }
+
+    @Override
+    public List<ActivitiProcessLogResult> sendList(ActivitiProcessLogParam param) {
+        List<Long> ids = getStepIdsByType("send");
+        List<ActivitiProcessLogResult> logResults = this.baseMapper.sendList(ids, param);
+        format(logResults);
+        return logResults;
+    }
+
+    /**
+     * 查出当前跪下的所有步骤
+     *
+     * @param type
+     * @return
+     */
+    List<Long> getStepIdsByType(String type) {
         List<ActivitiAudit> audits = auditService.list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
             if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals("audit")) {
+                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals(type)) {
                     stepIds.add(audit.getSetpsId());
                 }
             }
         }
-        List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
-        format(logResults);
-        return logResults;
+        return stepIds;
     }
+
 
     void format(List<ActivitiProcessLogResult> data) {
         List<Long> taskIds = new ArrayList<>();

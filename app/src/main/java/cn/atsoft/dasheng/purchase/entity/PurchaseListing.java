@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,9 +27,14 @@ public class PurchaseListing implements Serializable {
     /**
      * 采购清单id
      */
-      @TableId(value = "purchase_listing_id", type = IdType.ID_WORKER)
+    @TableId(value = "purchase_listing_id", type = IdType.ID_WORKER)
     private Long purchaseListingId;
 
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
     /**
      * 采购申请id
      */
@@ -63,25 +71,25 @@ public class PurchaseListing implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建用户
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改用户
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -96,6 +104,13 @@ public class PurchaseListing implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getPurchaseListingId() {
         return purchaseListingId;
@@ -204,19 +219,19 @@ public class PurchaseListing implements Serializable {
     @Override
     public String toString() {
         return "PurchaseListing{" +
-        "purchaseListingId=" + purchaseListingId +
-        ", purchaseAskId=" + purchaseAskId +
-        ", skuId=" + skuId +
-        ", applyNumber=" + applyNumber +
-        ", availableNumber=" + availableNumber +
-        ", deliveryDate=" + deliveryDate +
-        ", note=" + note +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "purchaseListingId=" + purchaseListingId +
+                ", purchaseAskId=" + purchaseAskId +
+                ", skuId=" + skuId +
+                ", applyNumber=" + applyNumber +
+                ", availableNumber=" + availableNumber +
+                ", deliveryDate=" + deliveryDate +
+                ", note=" + note +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

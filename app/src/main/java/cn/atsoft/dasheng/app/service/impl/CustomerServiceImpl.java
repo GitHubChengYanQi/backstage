@@ -280,7 +280,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
-
         for (CustomerResult record : data) {
 
             for (Long id : customerIds) {
@@ -309,7 +308,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
 
-
             if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
                 record.setClassificationName("终端用户");
             } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
@@ -317,7 +315,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
 
             for (Invoice invoice : invoices) {      //对比开票
-                if (ToolUtil.isNotEmpty(record.getIndustryId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
+                if (ToolUtil.isNotEmpty(record.getInvoiceId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
                     InvoiceResult invoiceResult = new InvoiceResult();
                     ToolUtil.copyProperties(invoice, invoiceResult);
                     record.setInvoiceResult(invoiceResult);

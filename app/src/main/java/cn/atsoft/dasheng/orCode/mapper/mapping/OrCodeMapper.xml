@@ -164,9 +164,9 @@
     </select>
 
 
-    <select id="qrCodeList" resultType="Long" parameterType="String">
+    <select id="qrCodeList" resultType="java.lang.Long" parameterType="java.lang.String">
         select qr_code_id
         from qr_code
-        where qr_code_id like CONCAT('%', #{qrcodeId}, '')
+        where qr_code_id like CONCAT('%', #{codeId}, '')
     </select>
 </mapper>

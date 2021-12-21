@@ -73,19 +73,31 @@ public class RemarksController extends BaseController {
 
 
     /**
-     * 查询未审核
+     * 查询审核
      *
-     * @author Sing
+     * @author
      * @Date 2021-11-10
      */
     @RequestMapping(value = "/auditList", method = RequestMethod.POST)
-    @ApiOperation("删除")
+    @ApiOperation("我所有未审核的")
     public ResponseData auditList(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
 
         List<ActivitiProcessLogResult> logResults = logService.auditList(activitiProcessLogParam);
         return ResponseData.success(logResults);
     }
 
+    /**
+     * 查询推送
+     *
+     * @author
+     * @Date 2021-11-10
+     */
+    @RequestMapping(value = "/sendList", method = RequestMethod.POST)
+    @ApiOperation("我所有推送的")
+    public ResponseData sendList(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
+        List<ActivitiProcessLogResult> logResults = logService.sendList(activitiProcessLogParam);
+        return ResponseData.success(logResults);
+    }
 }
 
 

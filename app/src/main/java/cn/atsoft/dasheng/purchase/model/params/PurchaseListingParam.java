@@ -31,6 +31,7 @@ public class PurchaseListingParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("采购清单id")
     private Long purchaseListingId;
 
+    private Integer status;
     /**
      * 采购申请id
      */

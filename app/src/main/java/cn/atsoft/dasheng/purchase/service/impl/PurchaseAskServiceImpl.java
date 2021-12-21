@@ -170,7 +170,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         for (PurchaseAskResult purchaseAskResult : param) {
             userIds.add(purchaseAskResult.getCreateUser());
         }
-        List<User> userList = userService.listByIds(userIds);
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         for (PurchaseAskResult purchaseAskResult : param) {
             for (User user : userList) {
                 if (purchaseAskResult.getCreateUser().equals(user.getUserId())) {
@@ -204,7 +204,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         ActivitiProcessTask task = taskService.getById(taskId);
         if (task.getType().equals("purchase")) {
             PurchaseAsk ask = this.getById(task.getFormId());
-            if (ask.getStatus()!=1&& status == 0) {
+            if (ask.getStatus() != 1 && status == 0) {
                 PurchaseAsk purchaseAsk = new PurchaseAsk();
                 purchaseAsk.setStatus(1);
                 this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
