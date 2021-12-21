@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.supplier.mapper.SupplierBlacklistMapper">
+<mapper namespace="cn.atsoft.dasheng.purchase.mapper.PurchaseConfigMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.supplier.entity.SupplierBlacklist">
-        <id column="black_list_id" property="blackListId" />
-        <result column="supplier_id" property="supplierId" />
-        <result column="remark" property="remark" />
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.purchase.entity.PurchaseConfig">
+        <id column="purchase_config_id" property="purchaseConfigId" />
+        <result column="type" property="type" />
+        <result column="value" property="value" />
         <result column="display" property="display" />
         <result column="create_user" property="createUser" />
         <result column="update_user" property="updateUser" />
@@ -16,25 +16,22 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        black_list_id AS "blackListId", supplier_id AS "supplierId", remark AS "remark", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
+        purchase_config_id AS "purchaseConfigId", type AS "type", value AS "value", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.supplier.model.result.SupplierBlacklistResult" parameterType="cn.atsoft.dasheng.supplier.model.params.SupplierBlacklistParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseConfigResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_supplier_blacklist where 1 = 1 and display = 1
-            <if test="paramCondition.blackListId != null">
-                and black_list_id like CONCAT('%',#{paramCondition.blackListId},'%')
+        from purchase_config where 1 = 1
+            <if test="paramCondition.purchaseConfigId != null">
+                and purchase_config_id like CONCAT('%',#{paramCondition.purchaseConfigId},'%')
             </if>
-            <if test="paramCondition.supplierId != null">
-                and supplier_id like CONCAT('%',#{paramCondition.supplierId},'%')
+            <if test="paramCondition.type != null and paramCondition.type != ''">
+                and type like CONCAT('%',#{paramCondition.type},'%')
             </if>
-            <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                and remark like CONCAT('%',#{paramCondition.remark},'%')
-            </if>
-            <if test="paramCondition.display != null">
-                and display like CONCAT('%',#{paramCondition.display},'%')
+            <if test="paramCondition.value != null and paramCondition.value != ''">
+                and value like CONCAT('%',#{paramCondition.value},'%')
             </if>
             <if test="paramCondition.createUser != null">
                 and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -50,21 +47,18 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.supplier.model.params.SupplierBlacklistParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_supplier_blacklist where 1 = 1 and display = 1
-                <if test="paramCondition.blackListId != null">
-                        and black_list_id like CONCAT('%',#{paramCondition.blackListId},'%')
+        from purchase_config where 1 = 1
+                <if test="paramCondition.purchaseConfigId != null">
+                        and purchase_config_id like CONCAT('%',#{paramCondition.purchaseConfigId},'%')
                 </if>
-                <if test="paramCondition.supplierId != null">
-                        and supplier_id like CONCAT('%',#{paramCondition.supplierId},'%')
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                <if test="paramCondition.value != null and paramCondition.value != ''">
+                        and value like CONCAT('%',#{paramCondition.value},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -80,21 +74,18 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.supplier.model.result.SupplierBlacklistResult" parameterType="cn.atsoft.dasheng.supplier.model.params.SupplierBlacklistParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.purchase.model.result.PurchaseConfigResult" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_supplier_blacklist where 1 = 1 and display = 1
-                <if test="paramCondition.blackListId != null">
-                        and black_list_id like CONCAT('%',#{paramCondition.blackListId},'%')
+        from purchase_config where 1 = 1
+                <if test="paramCondition.purchaseConfigId != null">
+                        and purchase_config_id like CONCAT('%',#{paramCondition.purchaseConfigId},'%')
                 </if>
-                <if test="paramCondition.supplierId != null">
-                        and supplier_id like CONCAT('%',#{paramCondition.supplierId},'%')
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                <if test="paramCondition.value != null and paramCondition.value != ''">
+                        and value like CONCAT('%',#{paramCondition.value},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')
@@ -110,21 +101,18 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.supplier.model.params.SupplierBlacklistParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.PurchaseConfigParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_supplier_blacklist where 1 = 1 and display = 1
-                <if test="paramCondition.blackListId != null">
-                        and black_list_id like CONCAT('%',#{paramCondition.blackListId},'%')
+        from purchase_config where 1 = 1
+                <if test="paramCondition.purchaseConfigId != null">
+                        and purchase_config_id like CONCAT('%',#{paramCondition.purchaseConfigId},'%')
                 </if>
-                <if test="paramCondition.supplierId != null">
-                        and supplier_id like CONCAT('%',#{paramCondition.supplierId},'%')
+                <if test="paramCondition.type != null and paramCondition.type != ''">
+                        and type like CONCAT('%',#{paramCondition.type},'%')
                 </if>
-                <if test="paramCondition.remark != null and paramCondition.remark != ''">
-                        and remark like CONCAT('%',#{paramCondition.remark},'%')
-                </if>
-                <if test="paramCondition.display != null">
-                        and display like CONCAT('%',#{paramCondition.display},'%')
+                <if test="paramCondition.value != null and paramCondition.value != ''">
+                        and value like CONCAT('%',#{paramCondition.value},'%')
                 </if>
                 <if test="paramCondition.createUser != null">
                         and create_user like CONCAT('%',#{paramCondition.createUser},'%')

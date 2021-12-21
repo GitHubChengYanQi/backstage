@@ -26,6 +26,7 @@
         <result column="origin_id" property="orginId"/>
         <result column="note" property="note"/>
         <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
         <result column="emall" property="emall"/>
         <result column="agent" property="agent"/>
         <result column="url" property="url"/>

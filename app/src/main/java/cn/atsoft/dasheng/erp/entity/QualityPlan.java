@@ -45,8 +45,6 @@ public class QualityPlan implements Serializable {
     @TableField("plan_coding")
     private String planCoding;
 
-
-
     /**
      * 状态
      */

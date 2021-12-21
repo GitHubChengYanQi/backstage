@@ -1,7 +1,5 @@
-package cn.atsoft.dasheng.supplier.model.result;
+package cn.atsoft.dasheng.purchase.model.result;
 
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
-import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -10,39 +8,33 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 供应商黑名单
+ * 采购配置表
  * </p>
  *
- * @author Captian_Jazz
- * @since 2021-12-20
+ * @author song
+ * @since 2021-12-21
  */
 @Data
 @ApiModel
-public class SupplierBlacklistResult implements Serializable {
+public class PurchaseConfigResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private CustomerResult customerResult;
 
-    private String createUserName;
-
-    /**
-     * 黑名单id
-     */
-    @ApiModelProperty("黑名单id")
-    private Long blackListId;
+    @ApiModelProperty("")
+    private Long purchaseConfigId;
 
     /**
-     * 供应商id
+     * 类型（最低级别：level，是否是供应商：supply）
      */
-    @ApiModelProperty("供应商id")
-    private Long supplierId;
+    @ApiModelProperty("类型（最低级别：level，是否是供应商：supply）")
+    private String type;
 
     /**
-     * 备注（原因）
+     * 值
      */
-    @ApiModelProperty("备注（原因）")
-    private String remark;
+    @ApiModelProperty("值")
+    private String value;
 
     /**
      * 删除状态
