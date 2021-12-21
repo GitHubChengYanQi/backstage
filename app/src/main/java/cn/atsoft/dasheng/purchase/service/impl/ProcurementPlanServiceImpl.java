@@ -4,10 +4,12 @@ package cn.atsoft.dasheng.purchase.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
+import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
-import  cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,18 +31,26 @@ import java.util.List;
 public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMapper, ProcurementPlan> implements ProcurementPlanService {
 
     @Override
-    public void add(ProcurementPlanParam param){
+    public void add(ProcurementPlanParam param) {
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
+        List<ProcurementPlanBindParam> bindParams = param.getBindParams();
+
+
+        for (ProcurementPlanBindParam bindParam : bindParams) {
+            ProcurementPlanBind planBind = new ProcurementPlanBind();
+            ToolUtil.copyProperties(bindParam, planBind);
+            planBind.setProcurementPlanId(entity.getProcurementPlanId());
+        }
     }
 
     @Override
-    public void delete(ProcurementPlanParam param){
+    public void delete(ProcurementPlanParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(ProcurementPlanParam param){
+    public void update(ProcurementPlanParam param) {
         ProcurementPlan oldEntity = getOldEntity(param);
         ProcurementPlan newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +58,23 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     }
 
     @Override
-    public ProcurementPlanResult findBySpec(ProcurementPlanParam param){
+    public ProcurementPlanResult findBySpec(ProcurementPlanParam param) {
         return null;
     }
 
     @Override
-    public List<ProcurementPlanResult> findListBySpec(ProcurementPlanParam param){
+    public List<ProcurementPlanResult> findListBySpec(ProcurementPlanParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ProcurementPlanResult> findPageBySpec(ProcurementPlanParam param){
+    public PageInfo<ProcurementPlanResult> findPageBySpec(ProcurementPlanParam param) {
         Page<ProcurementPlanResult> pageContext = getPageContext();
         IPage<ProcurementPlanResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ProcurementPlanParam param){
+    private Serializable getKey(ProcurementPlanParam param) {
         return param.getProcurementPlanId();
     }
 

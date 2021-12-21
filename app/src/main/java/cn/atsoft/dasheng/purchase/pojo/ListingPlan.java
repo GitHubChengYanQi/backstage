@@ -11,5 +11,5 @@ public class ListingPlan {
     private Long skuId;
     private Long number;
     private SkuResult skuResult;
-    private List<PurchaseListingResult> listingResults;
+    private List<PurchaseListingResult> children;
 }

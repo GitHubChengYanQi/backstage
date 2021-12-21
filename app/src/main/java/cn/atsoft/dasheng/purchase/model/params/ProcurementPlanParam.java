@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.purchase.model.params;
 
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,6 +27,7 @@ public class ProcurementPlanParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private List<ProcurementPlanBindParam> bindParams;
     /**
      * 采购计划id
      */

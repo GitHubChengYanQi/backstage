@@ -140,13 +140,13 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                     newListing.add(result);
                 }
             }
-            plan.setListingResults(newListing);
+            plan.setChildren(newListing);
             plans.add(plan);
         }
         //计算总数
         for (ListingPlan plan : plans) {
             Long number = 0L;
-            for (PurchaseListingResult listingResult : plan.getListingResults()) {
+            for (PurchaseListingResult listingResult : plan.getChildren()) {
                 number = number + listingResult.getApplyNumber();
             }
             plan.setNumber(number);
@@ -183,7 +183,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         for (ListingPlan datum : data) {
             SkuResult sku = skuService.getSku(datum.getSkuId());
             datum.setSkuResult(sku);
-            format(datum.getListingResults());
+            format(datum.getChildren());
         }
     }
 
