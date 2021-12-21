@@ -5,18 +5,25 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
+import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -29,19 +36,15 @@ import java.util.List;
  */
 @Service
 public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMapper, ProcurementPlan> implements ProcurementPlanService {
+    @Autowired
+    private ProcurementPlanBindService bindService;
+    @Autowired
+    private PurchaseListingService listingService;
 
     @Override
     public void add(ProcurementPlanParam param) {
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
-        List<ProcurementPlanBindParam> bindParams = param.getBindParams();
-
-
-        for (ProcurementPlanBindParam bindParam : bindParams) {
-            ProcurementPlanBind planBind = new ProcurementPlanBind();
-            ToolUtil.copyProperties(bindParam, planBind);
-            planBind.setProcurementPlanId(entity.getProcurementPlanId());
-        }
     }
 
     @Override

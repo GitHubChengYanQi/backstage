@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,6 +25,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -40,7 +43,8 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     private SkuService skuService;
     @Autowired
     private PurchaseAskService askService;
-
+    @Autowired
+    private UserService userService;
 
     @Override
     public void add(PurchaseListingParam param) {
@@ -149,7 +153,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             for (PurchaseListingResult listingResult : plan.getChildren()) {
                 number = number + listingResult.getApplyNumber();
             }
-            plan.setNumber(number);
+            plan.setApplyNumber(number);
         }
 
         planFormat(plans);
@@ -158,10 +162,14 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
 
     public void format(List<PurchaseListingResult> param) {
         List<Long> skuIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
         for (PurchaseListingResult result : param) {
             skuIds.add(result.getSkuId());
+            userIds.add(result.getCreateUser());
         }
         List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
+
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();
@@ -173,6 +181,13 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             for (SkuResult skuResult : skuResults) {
                 if (result.getSkuId().equals(skuResult.getSkuId())) {
                     result.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (User user : userList) {
+                if (user.getUserId().equals(result.getCreateUser())) {
+                    result.setUser(user);
+                    break;
                 }
             }
         }

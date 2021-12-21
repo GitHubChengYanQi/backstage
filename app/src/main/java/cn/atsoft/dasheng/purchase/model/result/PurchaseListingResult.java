@@ -1,12 +1,17 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 采购清单
@@ -22,6 +27,8 @@ public class PurchaseListingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuResult skuResult;
 
+
+    private User user;
     /**
      * 采购清单id
      */

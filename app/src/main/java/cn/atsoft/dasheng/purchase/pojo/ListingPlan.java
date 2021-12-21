@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ListingPlan {
     private Long skuId;
-    private Long number;
+    private Long applyNumber;
     private SkuResult skuResult;
     private List<PurchaseListingResult> children;
 }

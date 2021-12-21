@@ -27,7 +27,7 @@ public class ProcurementPlanParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
-    private List<ProcurementPlanBindParam> bindParams;
+    private List<Long> listingIds;
     /**
      * 采购计划id
      */
