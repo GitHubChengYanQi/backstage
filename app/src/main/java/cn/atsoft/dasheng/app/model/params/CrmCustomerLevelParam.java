@@ -64,6 +64,8 @@ public class CrmCustomerLevelParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
+    private Integer status;
+
     /**
      * 状态
      */

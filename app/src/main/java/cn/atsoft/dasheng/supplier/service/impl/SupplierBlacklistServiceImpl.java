@@ -96,8 +96,8 @@ public class SupplierBlacklistServiceImpl extends ServiceImpl<SupplierBlacklistM
             userIds.add(supplierBlacklistResult.getCreateUser());
             customerIds.add(supplierBlacklistResult.getSupplierId());
         }
-        List<User> userList = userService.listByIds(userIds);
-        List<Customer> customerList = customerService.listByIds(customerIds);
+        List<User> userList = userIds.size() > 0 ? userService.listByIds(userIds) : new ArrayList<>();
+        List<Customer> customerList = customerIds.size() > 0 ? customerService.listByIds(customerIds) : new ArrayList<>();
 
         for (SupplierBlacklistResult supplierBlacklistResult : param) {
             for (Customer customer : customerList) {

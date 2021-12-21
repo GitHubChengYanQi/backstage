@@ -40,6 +40,12 @@ public class CrmCustomerLevel implements Serializable {
     private String level;
 
     /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+
+    /**
      * 创建者
      */
       @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -141,6 +147,14 @@ public class CrmCustomerLevel implements Serializable {
 
     public void setDisplay(Integer display) {
         this.display = display;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override
