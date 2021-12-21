@@ -53,7 +53,7 @@ public class SupplierBlacklistServiceImpl extends ServiceImpl<SupplierBlacklistM
 
     @Override
     public void delete(SupplierBlacklistParam param){
-        param.setDisplay(1);
+        param.setDisplay(0);
         SupplierBlacklist entity = getEntity(param);
         this.updateById(entity);
 
