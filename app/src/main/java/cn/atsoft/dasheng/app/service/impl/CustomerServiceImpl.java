@@ -241,6 +241,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsIds.add(contactsBind.getContactsId());
         }
 
+        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
         /**
          * 获取联系人
          */
@@ -278,7 +279,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             adressList = adressService.lambdaQuery().eq(Adress::getCustomerId, customerId).list();
         }
 
-        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
+
 
         for (CustomerResult record : data) {
 
@@ -307,6 +308,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
 
+
+
+            if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
+                record.setClassificationName("终端用户");
+            } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
+                record.setClassificationName("代理商");
+            }
+
             for (Invoice invoice : invoices) {      //对比开票
                 if (ToolUtil.isNotEmpty(record.getIndustryId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
                     InvoiceResult invoiceResult = new InvoiceResult();
@@ -316,11 +325,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
 
-            if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
-                record.setClassificationName("终端用户");
-            } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
-                record.setClassificationName("代理商");
-            }
             for (Origin origin : originList) {
                 if (origin.getOriginId().equals(record.getOriginId())) {
                     OriginResult originResult = new OriginResult();
