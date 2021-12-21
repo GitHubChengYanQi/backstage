@@ -426,8 +426,11 @@ public class OrCodeController extends BaseController {
                     InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
                     InkindBack inkindBack = new InkindBack();
 
-                    QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
-                    inkindResult.setPlanId(detail.getQualityPlanId());
+                    if (inkindResult.getSource().equals("质检")&&ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
+                        QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                        inkindResult.setTaskDetail(detail);
+                    }
+
                     inkindBack.setInkindResult(inkindResult);
                     inkindBack.setType("item");
                     return ResponseData.success(inkindBack);

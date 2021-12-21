@@ -93,6 +93,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private StockDetailsService stockDetailsService;
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private QualityTaskDetailService detailService;
 
 
     @Override
@@ -768,11 +770,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     public Long automaticBinding(BackCodeRequest codeRequest) {
         OrCode orCode = new OrCode();
+        orCode.setType(codeRequest.getSource());
         orCode.setState(1);
         this.save(orCode);
         Long formId = 0L;
         switch (codeRequest.getSource()) {
             case "item":
+                QualityTaskDetail detail = detailService.getById(codeRequest.getTaskDetailId());
+                String[] split = detail.getInkindId().split(",");
+                if (split.length > detail.getNumber()) {
+                    throw new ServiceException(500, "绑定次数不对");
+                }
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
                 inkindParam.setType("0");

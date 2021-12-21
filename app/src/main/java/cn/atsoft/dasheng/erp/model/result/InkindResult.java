@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ public class InkindResult implements Serializable {
     private BrandResult brandResult;
     private Long sourceId;
     private Long outstockOrderId;
-    private Long planId;
+    private QualityTaskDetail taskDetail;
     private List<BackSku> backSku;
     private SkuResult skuResult;
     private Long number;
