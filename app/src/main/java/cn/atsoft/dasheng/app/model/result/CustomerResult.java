@@ -81,6 +81,7 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
     private Integer status;
+    private Integer blacklist;
     private Integer classification;
 
     private Long sort;

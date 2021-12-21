@@ -59,6 +59,9 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("客户id")
     private Long customerId;
 
+    @ApiModelProperty("黑名单")
+    private Integer blacklist;
+
     /**
      * 客户名称
      */
