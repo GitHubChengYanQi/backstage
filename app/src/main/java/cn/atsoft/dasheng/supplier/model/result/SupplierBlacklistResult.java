@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.supplier.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +22,9 @@ public class SupplierBlacklistResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private CustomerResult customerResult;
+
+    private String createUserName;
 
     /**
      * 黑名单id
