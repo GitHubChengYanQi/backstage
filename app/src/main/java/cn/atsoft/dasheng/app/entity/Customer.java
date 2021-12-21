@@ -48,6 +48,11 @@ public class Customer implements Serializable {
      */
     @TableField("supply")
     private Integer supply;
+    /**
+     * 开票id
+     */
+    @TableField("invoice_id")
+    private Long invoiceId;
 
 
     @TableField("classification")
@@ -470,5 +475,13 @@ public class Customer implements Serializable {
 
     public void setSupply(Integer supply) {
         this.supply = supply;
+    }
+
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
 }

@@ -12,9 +12,12 @@ import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
+import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
+import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -69,7 +72,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private TrackMessageService trackMessageService;
     @Autowired
     private SupplyService supplyService;
-
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Override
     @FreedLog
@@ -111,10 +115,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
-        //添加地址
-        if (param.getSupply() == 1) {
-//            supplyService.addList(param.getSupplyParams(), entity.getCustomerId());
-        }
+
         return entity;
 
     }
@@ -215,6 +216,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> industryIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
+        List<Long> invoiceIds = new ArrayList<>();
         Long customerId = null;
 
 
@@ -226,7 +228,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
-
+            invoiceIds.add(record.getInvoiceId());
         }
 
 
@@ -276,6 +278,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             adressList = adressService.lambdaQuery().eq(Adress::getCustomerId, customerId).list();
         }
 
+        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
 
         for (CustomerResult record : data) {
 
@@ -304,6 +307,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
 
+            for (Invoice invoice : invoices) {      //对比开票
+                if (ToolUtil.isNotEmpty(record.getIndustryId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
+                    InvoiceResult invoiceResult = new InvoiceResult();
+                    ToolUtil.copyProperties(invoice, invoiceResult);
+                    record.setInvoiceResult(invoiceResult);
+                    break;
+                }
+            }
 
             if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 1) {
                 record.setClassificationName("终端用户");

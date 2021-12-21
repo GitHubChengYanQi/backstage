@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -47,12 +48,12 @@ public class CustomerResult implements Serializable {
     private Integer agent;
     private String region;
     private RegionResult regionResult;
-
+    private InvoiceResult invoiceResult;
     private Integer businessCount;
     private Integer contracrCount;
     private Integer dynamicCount;
     private Integer contactsCount;
-
+    private Long invoiceId;
 
     private Contacts contact;
     private Adress address;
