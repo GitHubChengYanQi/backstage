@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
+import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +42,8 @@ public class PurchaseQuotationController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
-        this.purchaseQuotationService.add(purchaseQuotationParam);
+    public ResponseData addItem(@RequestBody QuotationParam param) {
+        this.purchaseQuotationService.addList(param);
         return ResponseData.success();
     }
 
@@ -67,7 +69,7 @@ public class PurchaseQuotationController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PurchaseQuotationParam purchaseQuotationParam)  {
+    public ResponseData delete(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
         this.purchaseQuotationService.delete(purchaseQuotationParam);
         return ResponseData.success();
     }
@@ -97,13 +99,11 @@ public class PurchaseQuotationController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PurchaseQuotationResult> list(@RequestBody(required = false) PurchaseQuotationParam purchaseQuotationParam) {
-        if(ToolUtil.isEmpty(purchaseQuotationParam)){
+        if (ToolUtil.isEmpty(purchaseQuotationParam)) {
             purchaseQuotationParam = new PurchaseQuotationParam();
         }
         return this.purchaseQuotationService.findPageBySpec(purchaseQuotationParam);
     }
-
-
 
 
 }

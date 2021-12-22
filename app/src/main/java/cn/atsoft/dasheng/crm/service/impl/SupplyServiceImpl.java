@@ -39,8 +39,10 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Autowired
     private SkuService skuService;
 
+
     @Override
     public void add(SupplyParam param) {
+
         Supply entity = getEntity(param);
         this.save(entity);
     }

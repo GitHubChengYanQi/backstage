@@ -114,10 +114,8 @@ public class PurchaseQuotation implements Serializable {
     /**
      * 票据类型
      */
-    @TableField("
-Invoice_type")
-    private String 
-InvoiceType;
+    @TableField("Invoice_type")
+    private String InvoiceType;
 
     /**
      * 创建时间

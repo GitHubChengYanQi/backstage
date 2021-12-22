@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
+import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,6 +65,9 @@ public interface PurchaseQuotationService extends IService<PurchaseQuotation> {
      * @author Captain_Jazz
      * @Date 2021-12-22
      */
-     PageInfo<PurchaseQuotationResult> findPageBySpec(PurchaseQuotationParam param);
+    PageInfo<PurchaseQuotationResult> findPageBySpec(PurchaseQuotationParam param);
+
+
+    void addList(QuotationParam param);
 
 }
