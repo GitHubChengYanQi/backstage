@@ -19,9 +19,7 @@
         <result column="source_id" property="sourceId" />
         <result column="forn_id" property="fornId" />
         <result column="delivery_date" property="deliveryDate" />
-        <result column="
-Invoice_type" property="
-InvoiceType" />
+        <result column="Invoice_type" property="InvoiceType" />
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="create_user" property="createUser" />
@@ -32,9 +30,7 @@ InvoiceType" />
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        purchase_quotation_id AS "purchaseQuotationId", sku_id AS "skuId", price AS "price", customer_id AS "customerId", period_of_validity AS "periodOfValidity", total AS "total", is_tax AS "isTax", pre_tax AS "preTax", freight AS "freight", after_tax AS "afterTax", is_freight AS "isFreight", source AS "source", source_id AS "sourceId", forn_id AS "fornId", delivery_date AS "deliveryDate", 
-Invoice_type AS "
-InvoiceType", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        purchase_quotation_id AS "purchaseQuotationId", sku_id AS "skuId", price AS "price", customer_id AS "customerId", period_of_validity AS "periodOfValidity", total AS "total", is_tax AS "isTax", pre_tax AS "preTax", freight AS "freight", after_tax AS "afterTax", is_freight AS "isFreight", source AS "source", source_id AS "sourceId", forn_id AS "fornId", delivery_date AS "deliveryDate", Invoice_type AS "InvoiceType", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 

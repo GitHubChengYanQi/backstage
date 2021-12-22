@@ -70,4 +70,20 @@ public interface PurchaseQuotationService extends IService<PurchaseQuotation> {
 
     void addList(QuotationParam param);
 
+    /**
+     * 取交集
+     *
+     * @param customerId
+     * @return
+     */
+    List<PurchaseQuotationResult> getList(Long customerId);
+
+    /**
+     * 供应商查看
+     *
+     * @param customerId
+     * @return
+     */
+    List<PurchaseQuotationResult> getListBySupply(Long customerId);
+
 }

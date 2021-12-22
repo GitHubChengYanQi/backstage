@@ -119,6 +119,23 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return supplyResults;
     }
 
+    @Override
+    public List<SupplyResult> getListByCustomerId(Long customerId) {
+        List<SupplyResult> supplyResults = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(customerId)) {
+            return supplyResults;
+        }
+        List<Supply> supplies = this.query().eq("customer_id", customerId).list();
+
+
+        for (Supply supply : supplies) {
+            SupplyResult supplyResult = new SupplyResult();
+            ToolUtil.copyProperties(supply, supplyResult);
+            supplyResults.add(supplyResult);
+        }
+        return supplyResults;
+    }
+
     private Serializable getKey(SupplyParam param) {
         return param.getSupplyId();
     }
