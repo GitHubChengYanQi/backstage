@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class PurchaseQuotation implements Serializable {
     /**
      * 采购报价id
      */
-      @TableId(value = "purchase_quotation_id", type = IdType.ID_WORKER)
+    @TableId(value = "purchase_quotation_id", type = IdType.ID_WORKER)
     private Long purchaseQuotationId;
 
     /**
@@ -114,33 +117,31 @@ public class PurchaseQuotation implements Serializable {
     /**
      * 票据类型
      */
-    @TableField("
-Invoice_type")
-    private String 
-InvoiceType;
+    @TableField("Invoice_type")
+    private String InvoiceType;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建用户
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改用户
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -276,18 +277,12 @@ InvoiceType;
         this.deliveryDate = deliveryDate;
     }
 
-    public String get
-InvoiceType() {
-        return 
-InvoiceType;
+    public String getInvoiceType() {
+        return InvoiceType;
     }
 
-    public void set
-InvoiceType(String 
-InvoiceType) {
-        this.
-InvoiceType = 
-InvoiceType;
+    public void setInvoiceType(String InvoiceType) {
+        this.InvoiceType = InvoiceType;
     }
 
     public Date getCreateTime() {
@@ -341,30 +336,28 @@ InvoiceType;
     @Override
     public String toString() {
         return "PurchaseQuotation{" +
-        "purchaseQuotationId=" + purchaseQuotationId +
-        ", skuId=" + skuId +
-        ", price=" + price +
-        ", customerId=" + customerId +
-        ", periodOfValidity=" + periodOfValidity +
-        ", total=" + total +
-        ", isTax=" + isTax +
-        ", preTax=" + preTax +
-        ", freight=" + freight +
-        ", afterTax=" + afterTax +
-        ", isFreight=" + isFreight +
-        ", source=" + source +
-        ", sourceId=" + sourceId +
-        ", fornId=" + fornId +
-        ", deliveryDate=" + deliveryDate +
-        ", 
-InvoiceType=" + 
-InvoiceType +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "purchaseQuotationId=" + purchaseQuotationId +
+                ", skuId=" + skuId +
+                ", price=" + price +
+                ", customerId=" + customerId +
+                ", periodOfValidity=" + periodOfValidity +
+                ", total=" + total +
+                ", isTax=" + isTax +
+                ", preTax=" + preTax +
+                ", freight=" + freight +
+                ", afterTax=" + afterTax +
+                ", isFreight=" + isFreight +
+                ", source=" + source +
+                ", sourceId=" + sourceId +
+                ", fornId=" + fornId +
+                ", deliveryDate=" + deliveryDate +
+                ", InvoiceType = " + InvoiceType +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }
