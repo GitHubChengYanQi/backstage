@@ -67,6 +67,7 @@ public interface ProcurementPlanDetalService extends IService<ProcurementPlanDet
      * @author song
      * @Date 2021-12-21
      */
-     PageInfo<ProcurementPlanDetalResult> findPageBySpec(ProcurementPlanDetalParam param);
+    PageInfo<ProcurementPlanDetalResult> findPageBySpec(ProcurementPlanDetalParam param);
 
+    List<ProcurementPlanDetalResult> getDetailByPlanId(List<Long> ids);
 }

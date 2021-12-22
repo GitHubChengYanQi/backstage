@@ -49,6 +49,11 @@ public class ProcurementPlanBindServiceImpl extends ServiceImpl<ProcurementPlanB
         if (purchaseListings.size() != param.getListingIds().size()) {
             throw new ServiceException(500, "申请单详情不合法");
         }
+        for (PurchaseListing purchaseListing : purchaseListings) {
+            purchaseListing.setStatus(98);
+        }
+        purchaseListingService.updateBatchById(purchaseListings);
+
         List<ProcurementPlanBind> entityList = new ArrayList<>();
         for (PurchaseListing purchaseListing : purchaseListings) {
             ProcurementPlanBind entity = new ProcurementPlanBind();

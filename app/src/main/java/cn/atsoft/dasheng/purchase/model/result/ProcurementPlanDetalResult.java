@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class ProcurementPlanDetalResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuResult skuResult;
 
     @ApiModelProperty("")
     private Long detailId;

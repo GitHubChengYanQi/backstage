@@ -10,12 +10,15 @@ import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
+import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,6 +47,10 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
 
     @Autowired
     private ProcurementPlanBindService bindService;
+
+    @Autowired
+    private UserService userService;
+
 
     @Override
     public void add(ProcurementPlanParam param) {
@@ -86,6 +93,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     public PageInfo<ProcurementPlanResult> findPageBySpec(ProcurementPlanParam param) {
         Page<ProcurementPlanResult> pageContext = getPageContext();
         IPage<ProcurementPlanResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -107,4 +115,24 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         return entity;
     }
 
+    private void format(List<ProcurementPlanResult> data) {
+        List<Long> planIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (ProcurementPlanResult datum : data) {
+            planIds.add(datum.getProcurementPlanId());
+            userIds.add(datum.getCreateUser());
+        }
+
+        List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+        for (ProcurementPlanResult datum : data) {
+
+            for (User user : userList) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+        }
+    }
 }
