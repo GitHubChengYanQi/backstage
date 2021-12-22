@@ -112,7 +112,6 @@ public class TaxRateController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    @Permission
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<TaxRate> taxRateQueryWrapper = new QueryWrapper<>();
         taxRateQueryWrapper.in("display", 1);

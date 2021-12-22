@@ -115,8 +115,7 @@ public class PurchaseQuotationResult implements Serializable {
      * 票据类型
      */
     @ApiModelProperty("票据类型")
-    private String 
-InvoiceType;
+    private String InvoiceType;
 
     /**
      * 创建时间
