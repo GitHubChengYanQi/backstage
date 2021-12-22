@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -19,6 +20,7 @@ import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +30,7 @@ import oshi.jna.platform.mac.SystemB;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -80,29 +83,46 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     public PageInfo<PurchaseQuotationResult> findPageBySpec(PurchaseQuotationParam param) {
         Page<PurchaseQuotationResult> pageContext = getPageContext();
         IPage<PurchaseQuotationResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
     @Override
     public void addList(QuotationParam param) {
+        Customer customer = customerService.getById(param.getCustomerId());
+        if (ToolUtil.isEmpty(customer)) {
+            throw new ServiceException(500, "请选择供应商");
+        }
+        if (customer.getSupply() != 1) {
+            throw new ServiceException(500, "请选择正确的供应商");
+        }
+
         List<PurchaseQuotation> quotations = new ArrayList<>();
-        List<Long> skuIs = new ArrayList<>();
 
-        for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
-            skuIs.add(quotationParam.getSkuId());
+        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
+        HashSet<Long> skuSst = new HashSet<>();
+        for (Supply supply : supplies) {
+            skuSst.add(supply.getSkuId());
         }
-
-        long count = skuIs.stream().distinct().count();
-
-        if (param.getQuotationParams().size() != count) {
-            throw new ServiceException(500, "请不要重复添加相同物料");
-        }
-
         for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
             PurchaseQuotation quotation = new PurchaseQuotation();
             ToolUtil.copyProperties(quotationParam, quotation);
             quotations.add(quotation);
+            quotation.setCustomerId(customer.getCustomerId());
+            skuSst.add(quotationParam.getSkuId());
         }
+        supplyService.remove(new QueryWrapper<Supply>() {{
+            eq("customer_id", customer.getCustomerId());
+        }});
+
+        List<Supply> supplyList = new ArrayList<>();
+        for (Long aLong : skuSst) {
+            Supply supply = new Supply();
+            supply.setSkuId(aLong);
+            supply.setCustomerId(customer.getCustomerId());
+            supplyList.add(supply);
+        }
+        supplyService.saveBatch(supplyList);
         this.saveBatch(quotations);
     }
 
@@ -208,6 +228,34 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         return quotationResults;
     }
 
+    @Override
+    public List<PurchaseQuotationResult> getListBySku(Long skuId) {
+        List<PurchaseQuotation> purchaseQuotations = this.query().eq("sku_id", skuId).list();
+        List<Long> customerId = new ArrayList<>();
+        List<PurchaseQuotationResult> purchaseQuotationResults = new ArrayList<>();
+
+        for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
+            customerId.add(purchaseQuotation.getCustomerId());
+            PurchaseQuotationResult purchaseQuotationResult = new PurchaseQuotationResult();
+            ToolUtil.copyProperties(purchaseQuotation, purchaseQuotationResult);
+            purchaseQuotationResults.add(purchaseQuotationResult);
+        }
+        List<Customer> customers = customerId.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerId);
+
+        for (PurchaseQuotationResult purchaseQuotationResult : purchaseQuotationResults) {
+            for (Customer customer : customers) {
+                if (ToolUtil.isNotEmpty(purchaseQuotationResult.getCustomerId()) && purchaseQuotationResult.getCustomerId().equals(customer.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    purchaseQuotationResult.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+        }
+
+        return purchaseQuotationResults;
+    }
+
     private Serializable getKey(PurchaseQuotationParam param) {
         return param.getPurchaseQuotationId();
     }
@@ -226,4 +274,27 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         return entity;
     }
 
+    private void format(List<PurchaseQuotationResult> data) {
+        List<Long> skuIds = new ArrayList<>();
+        for (PurchaseQuotationResult datum : data) {
+            skuIds.add(datum.getSkuId());
+        }
+        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
+
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            skuResults.add(skuResult);
+        }
+        skuService.format(skuResults);
+        for (PurchaseQuotationResult datum : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(datum.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+    }
 }

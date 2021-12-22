@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.crm.controller;
 
 import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -14,6 +15,7 @@ import cn.atsoft.dasheng.crm.wrapper.SupplySelectWrapper;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -136,6 +138,18 @@ public class SupplyController extends BaseController {
         return ResponseData.success(result);
     }
 
+    /**
+     * 查询供应商的物料
+     *
+     * @author song
+     * @Date 2021-12-20
+     */
+    @RequestMapping(value = "/getSupplyByLevel", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData getSupplyByLevel(@Param("levelId") Long levelId) {
+        List<CustomerResult> level = this.supplyService.getSupplyByLevel(levelId);
+        return ResponseData.success(level);
+    }
 
 }
 

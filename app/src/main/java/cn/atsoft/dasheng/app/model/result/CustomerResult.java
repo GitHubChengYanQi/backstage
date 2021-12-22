@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.region.RegionResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
@@ -33,7 +34,7 @@ public class CustomerResult implements Serializable {
     private OriginResult originResult;
     private UserResult userResult;
     private CrmIndustryResult crmIndustryResult;
-    //    private  ContactsResult contactsResult;
+    private List<SupplyResult> supplyResults;
     private List<ContactsResult> contactsParams;
     private List<AdressResult> adressParams;
     private String classificationName;

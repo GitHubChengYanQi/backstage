@@ -24,7 +24,8 @@ public class PurchaseQuotationParam implements Serializable, BaseValidatingParam
 
     private static final long serialVersionUID = 1L;
 
-
+    private String paymentMethod;
+    private Long taxPrice;
     /**
      * 采购报价id
      */
@@ -107,7 +108,7 @@ public class PurchaseQuotationParam implements Serializable, BaseValidatingParam
      * 关联表id
      */
     @ApiModelProperty("关联表id")
-    private Long fornId;
+    private Long formId;
 
     /**
      * 交付日期

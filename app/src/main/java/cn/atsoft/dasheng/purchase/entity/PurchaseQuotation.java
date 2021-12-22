@@ -25,6 +25,16 @@ public class PurchaseQuotation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 付款方式
+     */
+    @TableField("payment_method")
+    private String paymentMethod;
+    /**
+     * 税额
+     */
+    @TableField("tax_price")
+    private Long taxPrice;
+    /**
      * 采购报价id
      */
     @TableId(value = "purchase_quotation_id", type = IdType.ID_WORKER)
@@ -59,12 +69,6 @@ public class PurchaseQuotation implements Serializable {
      */
     @TableField("total")
     private Integer total;
-
-    /**
-     * 是否含税
-     */
-    @TableField("is_tax")
-    private Integer isTax;
 
     /**
      * 税前单价
@@ -105,8 +109,8 @@ public class PurchaseQuotation implements Serializable {
     /**
      * 关联表id
      */
-    @TableField("forn_id")
-    private Long fornId;
+    @TableField("form_id")
+    private Long formId;
 
     /**
      * 交付日期
@@ -205,14 +209,6 @@ public class PurchaseQuotation implements Serializable {
         this.total = total;
     }
 
-    public Integer getIsTax() {
-        return isTax;
-    }
-
-    public void setIsTax(Integer isTax) {
-        this.isTax = isTax;
-    }
-
     public Long getPreTax() {
         return preTax;
     }
@@ -261,12 +257,12 @@ public class PurchaseQuotation implements Serializable {
         this.sourceId = sourceId;
     }
 
-    public Long getFornId() {
-        return fornId;
+    public Long getFormId() {
+        return formId;
     }
 
-    public void setFornId(Long fornId) {
-        this.fornId = fornId;
+    public void setFormId(Long fornId) {
+        this.formId = fornId;
     }
 
     public Date getDeliveryDate() {
@@ -333,6 +329,22 @@ public class PurchaseQuotation implements Serializable {
         this.deptId = deptId;
     }
 
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Long getTaxPrice() {
+        return taxPrice;
+    }
+
+    public void setTaxPrice(Long taxPrice) {
+        this.taxPrice = taxPrice;
+    }
+
     @Override
     public String toString() {
         return "PurchaseQuotation{" +
@@ -342,14 +354,13 @@ public class PurchaseQuotation implements Serializable {
                 ", customerId=" + customerId +
                 ", periodOfValidity=" + periodOfValidity +
                 ", total=" + total +
-                ", isTax=" + isTax +
                 ", preTax=" + preTax +
                 ", freight=" + freight +
                 ", afterTax=" + afterTax +
                 ", isFreight=" + isFreight +
                 ", source=" + source +
                 ", sourceId=" + sourceId +
-                ", fornId=" + fornId +
+                ", formId=" + formId +
                 ", deliveryDate=" + deliveryDate +
                 ", InvoiceType = " + InvoiceType +
                 ", createTime=" + createTime +

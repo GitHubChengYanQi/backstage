@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -26,6 +27,9 @@ public class PurchaseQuotationResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private SkuResult skuResult;
+    private String paymentMethod;
+    private Long taxPrice;
+    private CustomerResult customerResult;
 
     /**
      * 采购报价id
@@ -109,7 +113,7 @@ public class PurchaseQuotationResult implements Serializable {
      * 关联表id
      */
     @ApiModelProperty("关联表id")
-    private Long fornId;
+    private Long formId;
 
     /**
      * 交付日期

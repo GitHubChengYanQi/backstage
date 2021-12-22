@@ -1,10 +1,12 @@
 package cn.atsoft.dasheng.crm.service;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 
@@ -73,6 +75,6 @@ public interface SupplyService extends IService<Supply> {
 
     List<SupplyResult> getListByCustomerId(Long customerId);
 
-
+    List<CustomerResult> getSupplyByLevel(Long levelId);
 
 }

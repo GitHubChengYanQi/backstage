@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
@@ -10,6 +11,7 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -43,6 +45,9 @@ public class PurchaseQuotationController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody QuotationParam param) {
+        if (ToolUtil.isEmpty(param.getCustomerId())) {
+            throw new ServiceException(500, "供应商参数错误");
+        }
         this.purchaseQuotationService.addList(param);
         return ResponseData.success();
     }
@@ -105,6 +110,18 @@ public class PurchaseQuotationController extends BaseController {
         return this.purchaseQuotationService.findPageBySpec(purchaseQuotationParam);
     }
 
+    /**
+     * 通过sku查询
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-22
+     */
+    @RequestMapping(value = "/getListBySku", method = RequestMethod.POST)
+    @ApiOperation("通过sku查询")
+    public ResponseData getListBySku(@Param("skuId") Long skuId) {
+        List<PurchaseQuotationResult> list = this.purchaseQuotationService.getListBySku(skuId);
+        return ResponseData.success(list);
+    }
 
 }
 

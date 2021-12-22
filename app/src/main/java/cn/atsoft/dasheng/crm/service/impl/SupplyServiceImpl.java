@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -38,6 +41,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private CustomerService customerService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private CrmCustomerLevelService levelService;
 
 
     @Override
@@ -134,6 +139,50 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             supplyResults.add(supplyResult);
         }
         return supplyResults;
+    }
+
+    @Override
+    public List<CustomerResult> getSupplyByLevel(Long levelId) {
+        List<CrmCustomerLevel> levels = levelService.list();
+        CrmCustomerLevel level = levelService.getById(levelId);
+        //比较等级
+        List<Long> levelIds = new ArrayList<>();
+        for (CrmCustomerLevel crmCustomerLevel : levels) {
+            if (ToolUtil.isNotEmpty(level)) {
+                if (level.getRank() <= crmCustomerLevel.getRank()) {
+                    levelIds.add(crmCustomerLevel.getCustomerLevelId());
+                }
+            } else {
+                levelIds.add(crmCustomerLevel.getCustomerLevelId());
+            }
+
+        }
+        //达到级别的供应商
+        List<Customer> customers = customerService.query().eq("supply", 1).in("customer_level_id", levelIds).list();
+        List<Long> customerIds = new ArrayList<>();
+        List<CustomerResult> customerResults = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            customerIds.add(customer.getCustomerId());
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            customerResults.add(customerResult);
+        }
+        List<Supply> supplies = customerIds.size() == 0 ? new ArrayList<>() : this.query().in("customer_id", customerIds).list();
+
+        //组合数据
+        for (CustomerResult customerResult : customerResults) {
+            List<SupplyResult> supplyResults = new ArrayList<>();
+            for (Supply supply : supplies) {
+                if (supply.getCustomerId().equals(customerResult.getCustomerId())) {
+                    SupplyResult supplyResult = new SupplyResult();
+                    ToolUtil.copyProperties(supply, supplyResult);
+                    supplyResults.add(supplyResult);
+                }
+            }
+            customerResult.setSupplyResults(supplyResults);
+        }
+        return customerResults;
     }
 
     private Serializable getKey(SupplyParam param) {

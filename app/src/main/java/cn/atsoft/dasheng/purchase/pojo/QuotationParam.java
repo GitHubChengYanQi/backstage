@@ -8,4 +8,5 @@ import java.util.List;
 @Data
 public class QuotationParam {
     private List<PurchaseQuotationParam> quotationParams;
+    private Long CustomerId;
 }
