@@ -1,14 +1,18 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -19,7 +23,7 @@ import java.util.List;
 public class ProcurementPlanBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<PurchaseAskResult> askResults;
 
     @ApiModelProperty("")
     private Long detailId;

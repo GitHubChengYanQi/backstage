@@ -11,8 +11,10 @@ import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanBindMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanBindResult;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,6 +38,8 @@ import java.util.List;
 public class ProcurementPlanBindServiceImpl extends ServiceImpl<ProcurementPlanBindMapper, ProcurementPlanBind> implements ProcurementPlanBindService {
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private PurchaseAskService askService;
 
     @Override
     public void add(ProcurementPlanBindParam param) {
@@ -97,6 +101,37 @@ public class ProcurementPlanBindServiceImpl extends ServiceImpl<ProcurementPlanB
         Page<ProcurementPlanBindResult> pageContext = getPageContext();
         IPage<ProcurementPlanBindResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    public List<ProcurementPlanBindResult> getDetail(List<Long> planIds) {
+        if (ToolUtil.isEmpty(planIds)) {
+            return  new ArrayList<>();
+        }
+
+        List<ProcurementPlanBind> planBinds = this.query().in("procurement_plan_id", planIds).list();
+        List<ProcurementPlanBindResult> bindResults = new ArrayList<>();
+        List<Long> askIds = new ArrayList<>();
+
+        for (ProcurementPlanBind planBind : planBinds) {
+            askIds.add(planBind.getAskId());
+            ProcurementPlanBindResult bindResult = new ProcurementPlanBindResult();
+            ToolUtil.copyProperties(planBind, bindResult);
+            bindResults.add(bindResult);
+        }
+        List<PurchaseAskResult> results = askService.getResults(askIds);
+
+        for (ProcurementPlanBindResult bindResult : bindResults) {
+            List<PurchaseAskResult> newAsks = new ArrayList<>();
+            for (PurchaseAskResult result : results) {
+
+                if (result.getPurchaseAskId().equals(bindResult.getAskId())) {
+                    newAsks.add(result);
+                }
+            }
+            bindResult.setAskResults(newAsks);
+        }
+        return bindResults;
     }
 
     private Serializable getKey(ProcurementPlanBindParam param) {

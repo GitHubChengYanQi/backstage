@@ -15,9 +15,12 @@ import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.request.ProcurementDetailSkuTotal;
+import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanBindResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -46,6 +49,10 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
     private PurchaseListingService purchaseListingService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private ProcurementPlanService planService;
+    @Autowired
+    private ProcurementPlanBindService bindService;
 
     @Override
     public void add(ProcurementPlanDetalParam param) {
@@ -157,6 +164,12 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
         return detalResults;
     }
 
+    @Override
+    public List<ProcurementPlanDetalResult> details(Long planId) {
+        List<ProcurementPlanDetal> planDetals = this.query().eq("plan_id", planId).list();
+        return null;
+    }
+
     private Serializable getKey(ProcurementPlanDetalParam param) {
         return param.getDetailId();
     }
@@ -177,10 +190,14 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
 
     private void format(List<ProcurementPlanDetalResult> data) {
         List<Long> skuIds = new ArrayList<>();
+        List<Long> planIds = new ArrayList<>();
         for (ProcurementPlanDetalResult datum : data) {
             skuIds.add(datum.getSkuId());
+            planIds.add(datum.getPlanId());
         }
+//        List<ProcurementPlanBindResult> bindResultList = bindService.getDetail(planIds);
         List<Sku> skus = skuService.listByIds(skuIds);
+
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
@@ -193,9 +210,15 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
                     break;
-
                 }
             }
+
+//            for (ProcurementPlanBindResult bindResult : bindResultList) {
+//                if (bindResult.getProcurementPlanId().equals(datum.getPlanId())) {
+//                    datum.setPlanBindResult(bindResult);
+//                    break;
+//                }
+//            }
         }
     }
 }

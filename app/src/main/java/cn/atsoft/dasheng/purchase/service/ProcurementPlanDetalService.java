@@ -27,6 +27,7 @@ public interface ProcurementPlanDetalService extends IService<ProcurementPlanDet
      */
     void add(ProcurementPlanDetalParam param);
 
+
     void batchAdd(ProcurementPlanParam param);
 
     /**
@@ -69,5 +70,9 @@ public interface ProcurementPlanDetalService extends IService<ProcurementPlanDet
      */
     PageInfo<ProcurementPlanDetalResult> findPageBySpec(ProcurementPlanDetalParam param);
 
+
     List<ProcurementPlanDetalResult> getDetailByPlanId(List<Long> ids);
+
+
+    List<ProcurementPlanDetalResult> details(Long planId);
 }

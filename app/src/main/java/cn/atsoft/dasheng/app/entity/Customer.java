@@ -1,15 +1,9 @@
 package cn.atsoft.dasheng.app.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -27,8 +21,9 @@ public class Customer implements Serializable {
     /**
      * 客户id
      */
-    @TableId(value = "customer_id", type = IdType.AUTO)
+    @TableId(value = "customer_id", type = IdType.ID_WORKER)
     private Long customerId;
+
     @TableField("agent")
     private Integer agent;
 

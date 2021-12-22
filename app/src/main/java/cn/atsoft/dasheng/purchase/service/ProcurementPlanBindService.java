@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author song
@@ -67,6 +67,13 @@ public interface ProcurementPlanBindService extends IService<ProcurementPlanBind
      * @author song
      * @Date 2021-12-21
      */
-     PageInfo<ProcurementPlanBindResult> findPageBySpec(ProcurementPlanBindParam param);
+    PageInfo<ProcurementPlanBindResult> findPageBySpec(ProcurementPlanBindParam param);
+
+    /**
+     *
+      * @param planIds
+     * @return
+     */
+    List<ProcurementPlanBindResult> getDetail(List<Long> planIds);
 
 }

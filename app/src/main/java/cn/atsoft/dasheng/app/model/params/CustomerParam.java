@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.model.params;
 
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -29,6 +30,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private List<ContactsParam> contactsParams;
     private List<AdressParam> adressParams;
     private List<SupplyParam> supplyParams;
+    private List<PurchaseQuotationParam> quotationParams;
     private Long customerLevelId;
     private Integer status;
     private Long originId;
@@ -53,6 +55,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private Long defaultContacts;
     private Long defaultAddress;
     private Long invoiceId;
+
 
     /**
      * 客户id

@@ -1,12 +1,17 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 采购申请
@@ -23,6 +28,8 @@ public class PurchaseAskResult implements Serializable {
     private String CreateUserName;
     List<PurchaseListingResult> purchaseListingResults;
 
+
+    private User user;
     /**
      * 采购申请id
      */

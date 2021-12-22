@@ -2,11 +2,15 @@ package cn.atsoft.dasheng.purchase.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 采购计划单子表  整合数据后的 子表
@@ -22,6 +26,8 @@ public class ProcurementPlanDetalResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private SkuResult skuResult;
+
+    private ProcurementPlanBindResult planBindResult;
 
     @ApiModelProperty("")
     private Long detailId;

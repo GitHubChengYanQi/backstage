@@ -240,4 +240,34 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         this.updateById(purchaseAsk);
         activitiProcessLogService.autoAudit(processTaskId, 1);
     }
+
+    @Override
+    public List<PurchaseAskResult> getResults(List<Long> askIds) {
+        List<PurchaseAskResult> askResults = new ArrayList<>();
+
+        if (ToolUtil.isEmpty(askIds)) {
+            return askResults;
+        }
+
+        List<PurchaseAsk> purchaseAsks = this.listByIds(askIds);
+
+        List<Long> userIds = new ArrayList<>();
+        for (PurchaseAsk purchaseAsk : purchaseAsks) {
+            PurchaseAskResult askResult = new PurchaseAskResult();
+            ToolUtil.copyProperties(purchaseAsk, askResult);
+            askResults.add(askResult);
+            userIds.add(purchaseAsk.getCreateUser());
+        }
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+        for (PurchaseAskResult askResult : askResults) {
+            for (User user : users) {
+                if (user.getUserId().equals(askResult.getCreateUser())) {
+                    askResult.setUser(user);
+                    break;
+                }
+            }
+        }
+        return askResults;
+    }
 }

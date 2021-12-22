@@ -88,6 +88,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (!ToolUtil.isEmpty(list)) {
             throw new ServiceException(500, "已有当前客户");
         }
+        param.setCustomerId(null);
         Customer entity = getEntity(param);
         this.save(entity);
 
@@ -115,6 +116,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
         }
+
 
         return entity;
 
