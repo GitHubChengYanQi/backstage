@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -76,6 +77,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private AuditViewService viewService;
+
+    @Autowired
+    private ProcurementPlanService procurementPlanService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -257,15 +261,22 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             endProcessTask.setProcessTaskId(taskId);
             endProcessTask.setStatus(1);
             activitiProcessTaskService.updateById(endProcessTask);
+            this.updateStatus(endProcessTask);
             endSend.endSend(task.getProcessTaskId());
         }
-        /**
-         * 推送下一级所有节点
-         */
-//        if (auditCheck) {
-//            this.sendNextStepsByTask(task, audit);
-//        }
-
+    }
+    private void updateStatus(ActivitiProcessTask processTask){
+        switch (processTask.getType()){
+            case "purchasePlan":
+                procurementPlanService.updateState(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+//                purchaseAskService.updateStatus(processTask);
+                break;
+        }
     }
 
     private void refuseTask(Long taskId) {

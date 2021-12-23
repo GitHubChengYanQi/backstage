@@ -49,12 +49,6 @@ import java.util.List;
 public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessTaskMapper, ActivitiProcessTask> implements ActivitiProcessTaskService {
 
     @Autowired
-    private QualityTaskServiceImpl qualityTaskService;
-
-    @Autowired
-    private PurchaseAskService askService;
-
-    @Autowired
     private UserService userService;
 
     @Override
