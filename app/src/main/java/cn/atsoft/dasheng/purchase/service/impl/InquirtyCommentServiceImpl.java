@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.appBase.entity.Media;
+import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.InquirtyComment;
@@ -34,6 +36,8 @@ public class InquirtyCommentServiceImpl extends ServiceImpl<InquirtyCommentMappe
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MediaService mediaService;
 
     @Override
     public void add(InquirtyCommentParam param) {
@@ -101,6 +105,8 @@ public class InquirtyCommentServiceImpl extends ServiceImpl<InquirtyCommentMappe
             InquirtyCommentResult commentResult = new InquirtyCommentResult();
             ToolUtil.copyProperties(comment, commentResult);
             commentResults.add(commentResult);
+            String url = this.formatImgUrl(comment.getImageIds());
+            comment.setImageIds(url);
         }
 
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
@@ -115,6 +121,20 @@ public class InquirtyCommentServiceImpl extends ServiceImpl<InquirtyCommentMappe
         }
 
         return commentResults;
+    }
+    private String formatImgUrl(String url){
+       if (ToolUtil.isNotEmpty(url)){
+           String[] split = url.split(",");
+           StringBuffer stringBuffer = new StringBuffer();
+           for (String s : split) {
+               if (!s.contains("http")) {
+                   String mediaUrl = mediaService.getMediaUrl(Long.valueOf(s), 1L);
+                   stringBuffer.append(mediaUrl).append(",");
+               }
+           }
+           return stringBuffer.substring(0, stringBuffer.length() - 1);
+       }
+       return url;
     }
 
 }

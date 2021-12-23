@@ -40,6 +40,12 @@ public class InquiryTaskParam implements Serializable, BaseValidatingParam {
     private String inquiryTaskName;
 
     /**
+     * 询价任务名称
+     */
+    @ApiModelProperty("询价任务名称")
+    private String inquiryTaskCode;
+
+    /**
      * 负责人id
      */
     @ApiModelProperty("负责人id")
