@@ -1,22 +1,22 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.purchase.entity.InquiryTask;
-import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
-import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
+import cn.atsoft.dasheng.purchase.entity.InquirtyComment;
+import cn.atsoft.dasheng.purchase.model.params.InquirtyCommentParam;
+import cn.atsoft.dasheng.purchase.model.result.InquirtyCommentResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
 
 /**
  * <p>
- * 询价任务 服务类
+ *  服务类
  * </p>
  *
  * @author Captain_Jazz
  * @since 2021-12-23
  */
-public interface InquiryTaskService extends IService<InquiryTask> {
+public interface InquirtyCommentService extends IService<InquirtyComment> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-    void add(InquiryTaskParam param);
+    void add(InquirtyCommentParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-    void delete(InquiryTaskParam param);
+    void delete(InquirtyCommentParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-    void update(InquiryTaskParam param);
+    void update(InquirtyCommentParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-    InquiryTaskResult findBySpec(InquiryTaskParam param);
+    InquirtyCommentResult findBySpec(InquirtyCommentParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-    List<InquiryTaskResult> findListBySpec(InquiryTaskParam param);
+    List<InquirtyCommentResult> findListBySpec(InquirtyCommentParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,7 +64,6 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      * @author Captain_Jazz
      * @Date 2021-12-23
      */
-     PageInfo<InquiryTaskResult> findPageBySpec(InquiryTaskParam param);
+     PageInfo<InquirtyCommentResult> findPageBySpec(InquirtyCommentParam param);
 
-    InquiryTaskResult detail(Long taskId);
 }

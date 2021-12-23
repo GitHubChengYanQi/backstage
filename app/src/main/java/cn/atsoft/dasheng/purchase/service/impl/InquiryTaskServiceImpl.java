@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
@@ -9,9 +11,11 @@ import cn.atsoft.dasheng.purchase.mapper.InquiryTaskMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -38,6 +42,10 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private InquiryTaskDetailService detailService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PurchaseQuotationService quotationService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     public void add(InquiryTaskParam param) {
@@ -120,5 +128,24 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             }
         }
 
+    }
+
+    @Override
+    public InquiryTaskResult detail(Long taskId) {
+
+        InquiryTask inquiryTask = this.getById(taskId);
+        InquiryTaskResult taskResult = new InquiryTaskResult();
+        ToolUtil.copyProperties(inquiryTask, taskResult);
+
+        List<PurchaseQuotationResult> bySource = quotationService.getListBySource(taskResult.getInquiryTaskId());
+        taskResult.setQuotationResults(bySource);
+
+        List<CustomerResult> suppliers = customerService.getSuppliers(inquiryTask.getSupplierLevel());
+
+        taskResult.setCustomerResults(suppliers);
+
+
+
+        return taskResult;
     }
 }

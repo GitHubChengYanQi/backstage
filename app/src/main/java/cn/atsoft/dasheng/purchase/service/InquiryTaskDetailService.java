@@ -66,4 +66,6 @@ public interface InquiryTaskDetailService extends IService<InquiryTaskDetail> {
      */
      PageInfo<InquiryTaskDetailResult> findPageBySpec(InquiryTaskDetailParam param);
 
+     List<InquiryTaskDetailResult> getDetails (Long taskId);
+
 }

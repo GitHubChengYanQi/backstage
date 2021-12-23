@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,7 +27,7 @@ public class InquiryTask implements Serializable {
     /**
      * 询价任务id
      */
-      @TableId(value = "inquiry_task_id", type = IdType.ID_WORKER)
+    @TableId(value = "inquiry_task_id", type = IdType.ID_WORKER)
     private Long inquiryTaskId;
 
     /**
@@ -49,7 +52,7 @@ public class InquiryTask implements Serializable {
      * 供应商等级
      */
     @TableField("supplier_level")
-    private String supplierLevel;
+    private Long supplierLevel;
 
     /**
      * 是否供应商物料
@@ -60,25 +63,25 @@ public class InquiryTask implements Serializable {
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
      * 创建用户
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改用户
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -126,11 +129,11 @@ public class InquiryTask implements Serializable {
         this.deadline = deadline;
     }
 
-    public String getSupplierLevel() {
+    public Long getSupplierLevel() {
         return supplierLevel;
     }
 
-    public void setSupplierLevel(String supplierLevel) {
+    public void setSupplierLevel(Long supplierLevel) {
         this.supplierLevel = supplierLevel;
     }
 
@@ -193,18 +196,18 @@ public class InquiryTask implements Serializable {
     @Override
     public String toString() {
         return "InquiryTask{" +
-        "inquiryTaskId=" + inquiryTaskId +
-        ", inquiryTaskName=" + inquiryTaskName +
-        ", userId=" + userId +
-        ", deadline=" + deadline +
-        ", supplierLevel=" + supplierLevel +
-        ", isSupplier=" + isSupplier +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "inquiryTaskId=" + inquiryTaskId +
+                ", inquiryTaskName=" + inquiryTaskName +
+                ", userId=" + userId +
+                ", deadline=" + deadline +
+                ", supplierLevel=" + supplierLevel +
+                ", isSupplier=" + isSupplier +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

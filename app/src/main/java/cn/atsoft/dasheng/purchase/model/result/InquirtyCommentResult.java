@@ -1,8 +1,7 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- * 询价任务
+ *
  * </p>
  *
  * @author Captain_Jazz
@@ -23,50 +22,40 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InquiryTaskResult implements Serializable {
+public class InquirtyCommentResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private User user;
-
-    private List<PurchaseQuotationResult> quotationResults;
-
-    private List<CustomerResult> customerResults;
+    /**
+     * 主键
+     */
+    @ApiModelProperty("主键")
+    private Long commentId;
 
     /**
-     * 询价任务id
+     * 来源id
      */
-    @ApiModelProperty("询价任务id")
-    private Long inquiryTaskId;
+    @ApiModelProperty("来源id")
+    private Long formId;
 
     /**
-     * 询价任务名称
+     * 来源类型
      */
-    @ApiModelProperty("询价任务名称")
-    private String inquiryTaskName;
+    @ApiModelProperty("来源类型")
+    private String formType;
 
     /**
-     * 负责人id
+     * 图片id逗号分隔
      */
-    @ApiModelProperty("负责人id")
-    private Long userId;
+    @ApiModelProperty("图片id逗号分隔")
+    private String imageIds;
 
     /**
-     * 截至日期
+     * 对话详情
      */
-    @ApiModelProperty("截至日期")
-    private Date deadline;
-
-    /**
-     * 供应商等级
-     */
-    @ApiModelProperty("供应商等级")
-    private Long supplierLevel;
-
-    /**
-     * 是否供应商物料
-     */
-    @ApiModelProperty("是否供应商物料")
-    private Integer isSupplier;
+    @ApiModelProperty("对话详情")
+    private String details;
 
     /**
      * 创建时间
@@ -81,13 +70,13 @@ public class InquiryTaskResult implements Serializable {
     private Date updateTime;
 
     /**
-     * 创建用户
+     * 创建者
      */
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
-     * 修改用户
+     * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
@@ -96,12 +85,12 @@ public class InquiryTaskResult implements Serializable {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Long display;
+    private Integer display;
 
     /**
-     * 部门id
+     * 部门编号
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("部门编号")
     private Long deptId;
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

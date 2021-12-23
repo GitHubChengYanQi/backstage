@@ -4,7 +4,6 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * 询价任务
+ * 
  * </p>
  *
  * @author Captain_Jazz
@@ -21,47 +20,40 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InquiryTaskParam implements Serializable, BaseValidatingParam {
+public class InquirtyCommentParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<InquiryTaskDetailParam> detailParams;
 
     /**
-     * 询价任务id
+     * 主键
      */
-    @ApiModelProperty("询价任务id")
-    private Long inquiryTaskId;
+    @ApiModelProperty("主键")
+    private Long commentId;
 
     /**
-     * 询价任务名称
+     * 来源id
      */
-    @ApiModelProperty("询价任务名称")
-    private String inquiryTaskName;
+    @ApiModelProperty("来源id")
+    private Long formId;
 
     /**
-     * 负责人id
+     * 来源类型
      */
-    @ApiModelProperty("负责人id")
-    private Long userId;
+    @ApiModelProperty("来源类型")
+    private String formType;
 
     /**
-     * 截至日期
+     * 图片id逗号分隔
      */
-    @ApiModelProperty("截至日期")
-    private Date deadline;
+    @ApiModelProperty("图片id逗号分隔")
+    private String imageIds;
 
     /**
-     * 供应商等级
+     * 对话详情
      */
-    @ApiModelProperty("供应商等级")
-    private Long supplierLevel;
-
-    /**
-     * 是否供应商物料
-     */
-    @ApiModelProperty("是否供应商物料")
-    private Integer isSupplier;
+    @ApiModelProperty("对话详情")
+    private String details;
 
     /**
      * 创建时间
@@ -76,13 +68,13 @@ public class InquiryTaskParam implements Serializable, BaseValidatingParam {
     private Date updateTime;
 
     /**
-     * 创建用户
+     * 创建者
      */
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
-     * 修改用户
+     * 修改者
      */
     @ApiModelProperty(hidden = true)
     private Long updateUser;
@@ -91,12 +83,12 @@ public class InquiryTaskParam implements Serializable, BaseValidatingParam {
      * 状态
      */
     @ApiModelProperty("状态")
-    private Long display;
+    private Integer display;
 
     /**
-     * 部门id
+     * 部门编号
      */
-    @ApiModelProperty("部门id")
+    @ApiModelProperty("部门编号")
     private Long deptId;
 
     @ApiModelProperty("父ID顺序数组")

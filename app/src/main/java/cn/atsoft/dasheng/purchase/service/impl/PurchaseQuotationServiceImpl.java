@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.mapper.PurchaseQuotationMapper;
@@ -59,6 +60,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private UserService userService;
     @Autowired
     private ProcurementPlanService planService;
+    @Autowired
+    private InquiryTaskServiceImpl taskService;
 
     @Override
     public void add(PurchaseQuotationParam param) {
@@ -106,6 +109,12 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                 ProcurementPlan plan = planService.getById(param.getSourceId());
                 if (ToolUtil.isEmpty(plan)) {
                     throw new ServiceException(500, "采购计划不存在");
+                }
+                break;
+            case "inquiryTask":
+                InquiryTask inquiryTask = taskService.getById(param.getSourceId());
+                if (ToolUtil.isEmpty(inquiryTask)) {
+                    throw new ServiceException(500, "当前询价任务不存在");
                 }
                 break;
             default:
@@ -200,7 +209,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     @Override
     public List<PurchaseQuotationResult> getListBySupply(Long customerId) {
         Customer customer = customerService.getById(customerId);
-        if (ToolUtil.isEmpty(customer)&&customer.getSupply()!=1) {
+        if (ToolUtil.isEmpty(customer) && customer.getSupply() != 1) {
             throw new ServiceException(500, "当前供应商不存在");
         }
 
@@ -266,6 +275,53 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         return purchaseQuotationResults;
     }
 
+    @Override
+    public List<PurchaseQuotationResult> getListBySource(Long sourceId) {
+        List<PurchaseQuotation> quotations = this.query().eq("source_id", sourceId).list();
+
+        List<PurchaseQuotationResult> quotationResults = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+
+        for (PurchaseQuotation quotation : quotations) {
+            PurchaseQuotationResult quotationResult = new PurchaseQuotationResult();
+            ToolUtil.copyProperties(quotation, quotationResult);
+            quotationResults.add(quotationResult);
+            customerIds.add(quotation.getCustomerId());
+            skuIds.add(quotation.getSkuId());
+        }
+
+        List<Customer> customerList = customerService.listByIds(customerIds);
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<CustomerResult> customerResults = new ArrayList<>();
+
+        for (Customer customer : customerList) {
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            customerResults.add(customerResult);
+        }
+
+        for (PurchaseQuotationResult quotationResult : quotationResults) {
+            for (Customer customer : customerList) {
+                if (customer.getCustomerId().equals(quotationResult.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    quotationResult.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(quotationResult.getSkuId())) {
+                    quotationResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+
+
+        return quotationResults;
+    }
+
     private Serializable getKey(PurchaseQuotationParam param) {
         return param.getPurchaseQuotationId();
     }
@@ -288,7 +344,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
-        
+
         for (PurchaseQuotationResult datum : data) {
             skuIds.add(datum.getSkuId());
             userIds.add(datum.getCreateUser());

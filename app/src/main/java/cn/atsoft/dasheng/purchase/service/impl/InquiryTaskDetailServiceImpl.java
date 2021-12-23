@@ -7,7 +7,7 @@ import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
 import cn.atsoft.dasheng.purchase.mapper.InquiryTaskDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskDetailResult;
-import  cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
+import cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,18 +30,18 @@ import java.util.List;
 public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailMapper, InquiryTaskDetail> implements InquiryTaskDetailService {
 
     @Override
-    public void add(InquiryTaskDetailParam param){
+    public void add(InquiryTaskDetailParam param) {
         InquiryTaskDetail entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(InquiryTaskDetailParam param){
+    public void delete(InquiryTaskDetailParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(InquiryTaskDetailParam param){
+    public void update(InquiryTaskDetailParam param) {
         InquiryTaskDetail oldEntity = getOldEntity(param);
         InquiryTaskDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +49,39 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
     }
 
     @Override
-    public InquiryTaskDetailResult findBySpec(InquiryTaskDetailParam param){
+    public InquiryTaskDetailResult findBySpec(InquiryTaskDetailParam param) {
         return null;
     }
 
     @Override
-    public List<InquiryTaskDetailResult> findListBySpec(InquiryTaskDetailParam param){
+    public List<InquiryTaskDetailResult> findListBySpec(InquiryTaskDetailParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<InquiryTaskDetailResult> findPageBySpec(InquiryTaskDetailParam param){
+    public PageInfo<InquiryTaskDetailResult> findPageBySpec(InquiryTaskDetailParam param) {
         Page<InquiryTaskDetailResult> pageContext = getPageContext();
         IPage<InquiryTaskDetailResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(InquiryTaskDetailParam param){
+    @Override
+    public List<InquiryTaskDetailResult> getDetails(Long taskId) {
+
+        List<InquiryTaskDetail> taskDetails = this.query().eq("inquiry_task_id", taskId).list();
+        List<InquiryTaskDetailResult> detailResults = new ArrayList<>();
+
+        for (InquiryTaskDetail taskDetail : taskDetails) {
+            InquiryTaskDetailResult detailResult = new InquiryTaskDetailResult();
+            ToolUtil.copyProperties(taskDetail, detailResult);
+            detailResults.add(detailResult);
+        }
+
+
+        return detailResults;
+    }
+
+    private Serializable getKey(InquiryTaskDetailParam param) {
         return param.getInquiryDetailId();
     }
 
@@ -82,4 +99,7 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
         return entity;
     }
 
+    private void format(List<InquiryTaskDetailResult> data) {
+
+    }
 }
