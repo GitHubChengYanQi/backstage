@@ -116,7 +116,7 @@ public class PurchaseQuotationController extends BaseController {
      * @author Captain_Jazz
      * @Date 2021-12-22
      */
-    @RequestMapping(value = "/getListBySku", method = RequestMethod.POST)
+    @RequestMapping(value = "/getListBySku", method = RequestMethod.GET)
     @ApiOperation("通过sku查询")
     public ResponseData getListBySku(@Param("skuId") Long skuId) {
         List<PurchaseQuotationResult> list = this.purchaseQuotationService.getListBySku(skuId);
