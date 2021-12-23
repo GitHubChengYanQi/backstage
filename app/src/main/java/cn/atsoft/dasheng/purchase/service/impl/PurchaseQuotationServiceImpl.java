@@ -116,13 +116,12 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         if (ToolUtil.isEmpty(customer) && customer.getSupply() != 1) {
             throw new ServiceException(500, "请选择供应商");
         }
-        //过滤相同sku
+
         List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
+        //过滤相同sku
         HashSet<Long> skuSst = new HashSet<>();
-        List<Long> skuIds = new ArrayList<>();
         for (Supply supply : supplies) {
             skuSst.add(supply.getSkuId());
-
         }
 
         List<PurchaseQuotation> quotations = new ArrayList<>();
@@ -131,16 +130,16 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             PurchaseQuotation quotation = new PurchaseQuotation();
             ToolUtil.copyProperties(quotationParam, quotation);
             quotation.setSource(param.getSource());
+            quotation.setSourceId(param.getSourceId());
             quotations.add(quotation);
             quotation.setCustomerId(customer.getCustomerId());
             skuSst.add(quotationParam.getSkuId());
-            skuIds.add(quotationParam.getSkuId());
         }
 
         supplyService.remove(new QueryWrapper<Supply>() {{
             eq("customer_id", customer.getCustomerId());
         }});
-
+        //添加供应商绑定物料
         List<Supply> supplyList = new ArrayList<>();
         for (Long aLong : skuSst) {
             Supply supply = new Supply();
@@ -168,6 +167,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                 }
             }
         }
+        //
         List<PurchaseQuotation> quotationList = this.listByIds(ids);
         List<PurchaseQuotationResult> results = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
@@ -200,11 +200,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     @Override
     public List<PurchaseQuotationResult> getListBySupply(Long customerId) {
         Customer customer = customerService.getById(customerId);
-        if (ToolUtil.isEmpty(customer)) {
+        if (ToolUtil.isEmpty(customer)&&customer.getSupply()!=1) {
             throw new ServiceException(500, "当前供应商不存在");
-        }
-        if (customer.getSupply() != 1) {
-            throw new ServiceException(500, "当前不是供应商");
         }
 
         List<SupplyResult> supplyResults = supplyService.getListByCustomerId(customer.getCustomerId());
@@ -291,6 +288,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
+        
         for (PurchaseQuotationResult datum : data) {
             skuIds.add(datum.getSkuId());
             userIds.add(datum.getCreateUser());
@@ -299,7 +297,6 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
-
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
         for (PurchaseQuotationResult datum : data) {

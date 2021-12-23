@@ -134,8 +134,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             skuSet.add(listingResult.getSkuId());
             results.add(listingResult);
         }
-
-        planFormat(results);
+        format(results);
 
         //过滤相同sku 重新组合
         for (Long aLong : skuSet) {
@@ -159,8 +158,6 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             }
             plan.setApplyNumber(number);
         }
-
-
         return plans;
     }
 
@@ -171,16 +168,9 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             skuIds.add(result.getSkuId());
             userIds.add(result.getCreateUser());
         }
-        List<Sku> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
-
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skuList) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
-        skuService.format(skuResults);
+
         for (PurchaseListingResult result : param) {
             for (SkuResult skuResult : skuResults) {
                 if (result.getSkuId().equals(skuResult.getSkuId())) {
@@ -188,6 +178,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                     break;
                 }
             }
+
             for (User user : userList) {
                 if (user.getUserId().equals(result.getCreateUser())) {
                     result.setUser(user);
@@ -195,43 +186,5 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
                 }
             }
         }
-
     }
-
-    private void planFormat(List<PurchaseListingResult> data) {
-        List<Long> skuIds = new ArrayList<>();
-        List<Long> userIds = new ArrayList<>();
-        for (PurchaseListingResult datum : data) {
-            skuIds.add(datum.getSkuId());
-            userIds.add(datum.getCreateUser());
-        }
-
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
-        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skus) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
-        skuService.format(skuResults);
-        for (PurchaseListingResult datum : data) {
-            for (SkuResult skuResult : skuResults) {
-                if (datum.getSkuId().equals(skuResult.getSkuId())) {
-                    datum.setSkuResult(skuResult);
-                    break;
-                }
-            }
-            for (User user : users) {
-                if (user.getUserId().equals(datum.getCreateUser())) {
-                    datum.setUser(user);
-                    break;
-                }
-
-            }
-        }
-    }
-
-
 }
