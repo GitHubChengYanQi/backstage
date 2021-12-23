@@ -4,8 +4,10 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ import java.util.List;
  * 工序表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-10-29
  */
 @Data
@@ -27,8 +29,7 @@ public class WorkingProcedureParam implements Serializable, BaseValidatingParam 
      * 工序
      */
     @ApiModelProperty("工序")
-    private Long 
-workingProcedureId;
+    private Long workingProcedureId;
 
     /**
      * 人员id
@@ -55,7 +56,7 @@ workingProcedureId;
     private String remark;
 
     /**
-     * 工序名称	
+     * 工序名称
      */
     @ApiModelProperty("工序名称	")
     private String workingProcedureName;

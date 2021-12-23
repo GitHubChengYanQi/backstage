@@ -13,13 +13,17 @@ import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.mapper.PurchaseQuotationMapper;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,7 +35,9 @@ import oshi.jna.platform.mac.SystemB;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,6 +55,10 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private SupplyService supplyService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ProcurementPlanService planService;
 
     @Override
     public void add(PurchaseQuotationParam param) {
@@ -89,28 +99,44 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
     @Override
     public void addList(QuotationParam param) {
+        switch (param.getSource()) {
+            case "toBuyPlan":
+                break;
+            case "purchasePlan":
+                ProcurementPlan plan = planService.getById(param.getSourceId());
+                if (ToolUtil.isEmpty(plan)) {
+                    throw new ServiceException(500, "采购计划不存在");
+                }
+                break;
+            default:
+                throw new ServiceException(500, "请确定方式");
+        }
+
         Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer)) {
+        if (ToolUtil.isEmpty(customer) && customer.getSupply() != 1) {
             throw new ServiceException(500, "请选择供应商");
         }
-        if (customer.getSupply() != 1) {
-            throw new ServiceException(500, "请选择正确的供应商");
+        //过滤相同sku
+        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
+        HashSet<Long> skuSst = new HashSet<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (Supply supply : supplies) {
+            skuSst.add(supply.getSkuId());
+
         }
 
         List<PurchaseQuotation> quotations = new ArrayList<>();
 
-        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
-        HashSet<Long> skuSst = new HashSet<>();
-        for (Supply supply : supplies) {
-            skuSst.add(supply.getSkuId());
-        }
         for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
             PurchaseQuotation quotation = new PurchaseQuotation();
             ToolUtil.copyProperties(quotationParam, quotation);
+            quotation.setSource(param.getSource());
             quotations.add(quotation);
             quotation.setCustomerId(customer.getCustomerId());
             skuSst.add(quotationParam.getSkuId());
+            skuIds.add(quotationParam.getSkuId());
         }
+
         supplyService.remove(new QueryWrapper<Supply>() {{
             eq("customer_id", customer.getCustomerId());
         }});
@@ -151,16 +177,9 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             results.add(quotationResult);
             skuIds.add(quotation.getSkuId());
         }
-        List<Sku> skus = skuService.listByIds(skuIds);
 
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skus) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
-        skuService.format(skuResults);
 
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         for (PurchaseQuotationResult result : results) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(result.getSkuId())) {
@@ -196,9 +215,12 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         }
         List<PurchaseQuotation> quotations = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();
 
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         List<PurchaseQuotationResult> quotationResults = new ArrayList<>();
 
         skuIds.clear();
+
         for (PurchaseQuotation quotation : quotations) {
             PurchaseQuotationResult quotationResult = new PurchaseQuotationResult();
             ToolUtil.copyProperties(quotation, quotationResult);
@@ -206,15 +228,6 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             skuIds.add(quotation.getSkuId());
         }
 
-        List<Sku> skus = skuIds.size() == 01 ? new ArrayList<>() : skuService.listByIds(skuIds);
-
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skus) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
-        skuService.format(skuResults);
 
         for (PurchaseQuotationResult quotationResult : quotationResults) {
             for (SkuResult skuResult : skuResults) {
@@ -276,22 +289,37 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
     private void format(List<PurchaseQuotationResult> data) {
         List<Long> skuIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (PurchaseQuotationResult datum : data) {
             skuIds.add(datum.getSkuId());
+            userIds.add(datum.getCreateUser());
+            customerIds.add(datum.getCustomerId());
         }
-        List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.listByIds(skuIds);
 
-        List<SkuResult> skuResults = new ArrayList<>();
-        for (Sku sku : skus) {
-            SkuResult skuResult = new SkuResult();
-            ToolUtil.copyProperties(sku, skuResult);
-            skuResults.add(skuResult);
-        }
-        skuService.format(skuResults);
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         for (PurchaseQuotationResult datum : data) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(datum.getSkuId())) {
                     datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+            for (Customer customer : customers) {
+                if (ToolUtil.isNotEmpty(datum.getCustomerId()) && customer.getCustomerId().equals(datum.getCustomerId())) {
+                    CustomerResult customerResult = new CustomerResult();
+                    ToolUtil.copyProperties(customer, customerResult);
+                    datum.setCustomerResult(customerResult);
                     break;
                 }
             }

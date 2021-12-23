@@ -9,4 +9,6 @@ import java.util.List;
 public class QuotationParam {
     private List<PurchaseQuotationParam> quotationParams;
     private Long CustomerId;
+    private String source;
+    private Long sourceId;
 }
