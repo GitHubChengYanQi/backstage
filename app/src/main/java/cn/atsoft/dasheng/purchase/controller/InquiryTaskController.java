@@ -85,7 +85,7 @@ public class InquiryTaskController extends BaseController {
         InquiryTaskResult result = new InquiryTaskResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+
         return ResponseData.success(result);
     }
 
