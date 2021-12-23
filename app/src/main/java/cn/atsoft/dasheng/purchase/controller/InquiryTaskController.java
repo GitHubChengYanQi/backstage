@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class InquiryTaskController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InquiryTaskParam inquiryTaskParam)  {
+    public ResponseData delete(@RequestBody InquiryTaskParam inquiryTaskParam) {
         this.inquiryTaskService.delete(inquiryTaskParam);
         return ResponseData.success();
     }
@@ -81,12 +82,8 @@ public class InquiryTaskController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<InquiryTaskResult> detail(@RequestBody InquiryTaskParam inquiryTaskParam) {
-        InquiryTask detail = this.inquiryTaskService.getById(inquiryTaskParam.getInquiryTaskId());
-        InquiryTaskResult result = new InquiryTaskResult();
-        ToolUtil.copyProperties(detail, result);
-
-
-        return ResponseData.success(result);
+        InquiryTaskResult detail = this.inquiryTaskService.detail(inquiryTaskParam.getInquiryTaskId());
+        return ResponseData.success(detail);
     }
 
     /**
@@ -98,13 +95,11 @@ public class InquiryTaskController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InquiryTaskResult> list(@RequestBody(required = false) InquiryTaskParam inquiryTaskParam) {
-        if(ToolUtil.isEmpty(inquiryTaskParam)){
+        if (ToolUtil.isEmpty(inquiryTaskParam)) {
             inquiryTaskParam = new InquiryTaskParam();
         }
         return this.inquiryTaskService.findPageBySpec(inquiryTaskParam);
     }
-
-
 
 
 }

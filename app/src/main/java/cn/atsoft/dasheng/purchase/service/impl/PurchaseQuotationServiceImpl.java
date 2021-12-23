@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -62,6 +64,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private ProcurementPlanService planService;
     @Autowired
     private InquiryTaskServiceImpl taskService;
+    @Autowired
+    private CrmCustomerLevelService levelService;
 
     @Override
     public void add(PurchaseQuotationParam param) {
@@ -115,6 +119,11 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                 InquiryTask inquiryTask = taskService.getById(param.getSourceId());
                 if (ToolUtil.isEmpty(inquiryTask)) {
                     throw new ServiceException(500, "当前询价任务不存在");
+                }
+                Customer customer = customerService.getById(param.getCustomerId());
+                Boolean level = judgeLevel(inquiryTask.getSupplierLevel(), customer);
+                if (!level) {
+                    throw new ServiceException(500, "当前供应商等级不够");
                 }
                 break;
             default:
@@ -291,7 +300,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             skuIds.add(quotation.getSkuId());
         }
 
-        List<Customer> customerList = customerService.listByIds(customerIds);
+        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<CustomerResult> customerResults = new ArrayList<>();
 
@@ -377,5 +386,26 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                 }
             }
         }
+    }
+
+    private Boolean judgeLevel(Long levelId, Customer customer) {
+
+
+        CrmCustomerLevel level = levelService.getById(levelId);
+        List<CrmCustomerLevel> customerLevels = levelService.list();
+
+        List<Long> levelIds = new ArrayList<>();
+
+        for (CrmCustomerLevel customerLevel : customerLevels) {
+            if (level.getRank() <= customerLevel.getRank()) {
+                levelIds.add(customerLevel.getCustomerLevelId());
+            }
+        }
+        for (Long id : levelIds) {
+            if (customer.getCustomerLevelId().equals(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -17,6 +17,8 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
+import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -43,6 +47,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private SkuService skuService;
     @Autowired
     private CrmCustomerLevelService levelService;
+    @Autowired
+    private PurchaseQuotationService quotationService;
 
 
     @Override
@@ -181,6 +187,51 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 }
             }
             customerResult.setSupplyResults(supplyResults);
+        }
+        return customerResults;
+    }
+
+    @Override
+    public List<CustomerResult> getSupplyBySku(List<Long> skuIds) {
+        List<Supply> supplies = this.query().in("sku_id", skuIds).list();
+        List<Long> customerIds = new ArrayList<>();
+
+        for (Supply supply : supplies) {
+            customerIds.add(supply.getCustomerId());
+        }
+        List<Customer> customers = customerService.listByIds(customerIds);
+
+        List<CustomerResult> customerResults = new ArrayList<>();
+
+
+        for (Customer customer : customers) {
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            customerResults.add(customerResult);
+
+        }
+        skuIds.clear();
+        List<Supply> supplyList = this.query().in("customer_id", customerIds).list();
+        for (Supply supply : supplyList) {
+            skuIds.add(supply.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        //取供应商的供应的物料
+        Map<Long, List<SkuResult>> map = new HashMap<>();
+        for (Supply supply : supplyList) {
+            List<SkuResult> skuResultList = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(supply.getCustomerId())) {
+                for (SkuResult skuResult : skuResults) {
+                    if (skuResult.getSkuId().equals(supply.getSkuId())) {
+                        skuResultList.add(skuResult);
+                    }
+                }
+                map.put(supply.getCustomerId(), skuResultList);
+            }
+        }
+        for (CustomerResult customerResult : customerResults) {
+            List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
+            customerResult.setSkuResultList(skuResultList);
         }
         return customerResults;
     }

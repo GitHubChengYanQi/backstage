@@ -66,4 +66,5 @@ public interface InquirtyCommentService extends IService<InquirtyComment> {
      */
      PageInfo<InquirtyCommentResult> findPageBySpec(InquirtyCommentParam param);
 
+    List<InquirtyCommentResult> getComment(Long id);
 }

@@ -5,13 +5,17 @@ import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
 import cn.atsoft.dasheng.purchase.mapper.InquiryTaskMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
+import cn.atsoft.dasheng.purchase.model.result.InquirtyCommentResult;
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
+import cn.atsoft.dasheng.purchase.service.InquirtyCommentService;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -46,11 +50,24 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private PurchaseQuotationService quotationService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private InquirtyCommentService commentService;
+    @Autowired
+    private SupplyService supplyService;
 
     @Override
     public void add(InquiryTaskParam param) {
         InquiryTask entity = getEntity(param);
         this.save(entity);
+
+        List<Long> skuIds = new ArrayList<>();
+        for (InquiryTaskDetailParam detailParam : param.getDetailParams()) {
+            skuIds.add(detailParam.getSkuId());
+        }
+        long count = skuIds.stream().distinct().count();
+        if (param.getDetailParams().size() != count) {
+            throw new ServiceException(500, "请不要添加重复物料");
+        }
 
         List<InquiryTaskDetail> details = new ArrayList<>();
         for (InquiryTaskDetailParam detailParam : param.getDetailParams()) {
@@ -140,11 +157,15 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         List<PurchaseQuotationResult> bySource = quotationService.getListBySource(taskResult.getInquiryTaskId());
         taskResult.setQuotationResults(bySource);
 
-        List<CustomerResult> suppliers = customerService.getSuppliers(inquiryTask.getSupplierLevel());
+        List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
 
+        //返回供应商
+        List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku);
         taskResult.setCustomerResults(suppliers);
 
-
+        //返回评论
+        List<InquirtyCommentResult> comment = commentService.getComment(taskResult.getInquiryTaskId());
+        taskResult.setComment(comment);
 
         return taskResult;
     }

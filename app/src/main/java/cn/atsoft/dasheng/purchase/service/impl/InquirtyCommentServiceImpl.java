@@ -89,7 +89,7 @@ public class InquirtyCommentServiceImpl extends ServiceImpl<InquirtyCommentMappe
         return entity;
     }
 
-
+    @Override
     public List<InquirtyCommentResult> getComment(Long id) {
         List<InquirtyComment> comments = this.query().eq("form_id", id).list();
         List<Long> userIds = new ArrayList<>();
