@@ -81,8 +81,8 @@
         <if test="paramCondition.sourceId != null">
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
         </if>
-        <if test="paramCondition.fornId != null">
-            and forn_id like CONCAT('%',#{paramCondition.fornId},'%')
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -148,8 +148,8 @@
         <if test="paramCondition.sourceId != null">
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
         </if>
-        <if test="paramCondition.fornId != null">
-            and forn_id like CONCAT('%',#{paramCondition.fornId},'%')
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -215,8 +215,8 @@
         <if test="paramCondition.sourceId != null">
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
         </if>
-        <if test="paramCondition.fornId != null">
-            and forn_id like CONCAT('%',#{paramCondition.fornId},'%')
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
@@ -282,8 +282,8 @@
         <if test="paramCondition.sourceId != null">
             and source_id like CONCAT('%',#{paramCondition.sourceId},'%')
         </if>
-        <if test="paramCondition.fornId != null">
-            and forn_id like CONCAT('%',#{paramCondition.fornId},'%')
+        <if test="paramCondition.formId != null">
+            and form_id like CONCAT('%',#{paramCondition.formId},'%')
         </if>
         <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
             and create_time like CONCAT('%',#{paramCondition.createTime},'%')
