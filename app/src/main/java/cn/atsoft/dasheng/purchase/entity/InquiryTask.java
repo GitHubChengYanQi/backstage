@@ -8,6 +8,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -35,6 +36,12 @@ public class InquiryTask implements Serializable {
      */
     @TableField("inquiry_task_name")
     private String inquiryTaskName;
+
+    /**
+     * 询价任务名称
+     */
+    @TableField("inquiry_task_code")
+    private String inquiryTaskCode;
 
     /**
      * 负责人id
@@ -127,6 +134,13 @@ public class InquiryTask implements Serializable {
 
     public void setDeadline(Date deadline) {
         this.deadline = deadline;
+    }
+    public String getInquiryTaskCode() {
+        return inquiryTaskCode;
+    }
+
+    public void setInquiryTaskCode(String inquiryTaskCode) {
+        this.inquiryTaskCode = inquiryTaskCode;
     }
 
     public Long getSupplierLevel() {

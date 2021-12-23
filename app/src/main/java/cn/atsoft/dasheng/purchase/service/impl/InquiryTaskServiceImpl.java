@@ -12,10 +12,10 @@ import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
 import cn.atsoft.dasheng.purchase.mapper.InquiryTaskMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
-import cn.atsoft.dasheng.purchase.model.result.InquirtyCommentResult;
+
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
-import cn.atsoft.dasheng.purchase.service.InquirtyCommentService;
+
 import cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -50,8 +50,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private PurchaseQuotationService quotationService;
     @Autowired
     private CustomerService customerService;
-    @Autowired
-    private InquirtyCommentService commentService;
+
     @Autowired
     private SupplyService supplyService;
 
@@ -163,9 +162,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku);
         taskResult.setCustomerResults(suppliers);
 
-        //返回评论
-        List<InquirtyCommentResult> comment = commentService.getComment(taskResult.getInquiryTaskId());
-        taskResult.setComment(comment);
+
 
         return taskResult;
     }
