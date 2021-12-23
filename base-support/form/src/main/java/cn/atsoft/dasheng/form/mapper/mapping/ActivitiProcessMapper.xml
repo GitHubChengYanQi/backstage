@@ -46,6 +46,7 @@
         select
         <include refid="Base_Column_List"/>
         from activiti_process where display = 1
+        and type = #{paramCondition.type}
     </select>
 
     <select id="customPageMapList" resultType="map"

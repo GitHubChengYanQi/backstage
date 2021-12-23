@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +70,7 @@ public class ActivitiProcessController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ActivitiProcessParam activitiProcessParam)  {
+    public ResponseData delete(@RequestBody ActivitiProcessParam activitiProcessParam) {
         this.activitiProcessService.delete(activitiProcessParam);
         return ResponseData.success();
     }
@@ -98,15 +101,25 @@ public class ActivitiProcessController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ActivitiProcessResult> list(@RequestBody(required = false) ActivitiProcessParam activitiProcessParam) {
-        if(ToolUtil.isEmpty(activitiProcessParam)){
+        if (ToolUtil.isEmpty(activitiProcessParam)) {
             activitiProcessParam = new ActivitiProcessParam();
         }
         return this.activitiProcessService.findPageBySpec(activitiProcessParam);
     }
 
 
+    @RequestMapping(value = "/getType", method = RequestMethod.GET)
+    public ResponseData getType() {
+        List<String> type = this.activitiProcessService.getType();
+        return ResponseData.success(type);
+    }
 
 
+    @RequestMapping(value = "/getModule", method = RequestMethod.POST)
+    public ResponseData getModule(@RequestBody ProcessParam param) {
+        List<String> module = this.activitiProcessService.getModule(param.getProcessEnum());
+        return ResponseData.success(module);
+    }
 }
 
 

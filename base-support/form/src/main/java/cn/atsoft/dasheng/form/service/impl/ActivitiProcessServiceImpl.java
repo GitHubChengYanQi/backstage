@@ -8,6 +8,8 @@ import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -18,10 +20,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,8 +47,39 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         if (ToolUtil.isNotEmpty(process)) {
             throw new ServiceException(500, "名字以重复");
         }
+        if (ToolUtil.isEmpty(param.getType())) {
+            throw new ServiceException(500, "类型错误");
+        }
+        if (ToolUtil.isEmpty(param.getModule())) {
+            throw new ServiceException(500, "功能错误");
+        }
+        switch (param.getType()) {
+            case 采购:
+                if (!param.getModule().getValue().equals("采购申请") && !param.getModule().getValue().equals("采购计划")) {
+                    throw new ServiceException(500, "功能选择错误");
+                }
+                break;
+            case 质检:
+                if (!param.getModule().getValue().equals("入厂检")) {
+                    throw new ServiceException(500, "功能选择错误");
+                }
+                break;
+            case 询价:
+        }
         ActivitiProcess entity = getEntity(param);
+
         this.save(entity);
+    }
+
+    @Override
+    public List<String> getType() {
+        List<String> type = new ArrayList<>();
+        ProcessEnum[] values = ProcessEnum.values();
+
+        for (ProcessEnum value : values) {
+            type.add(value.getValue());
+        }
+        return type;
     }
 
     @Override
@@ -130,6 +165,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
 
     @Override
     public PageInfo<ActivitiProcessResult> findPageBySpec(ActivitiProcessParam param) {
+
         Page<ActivitiProcessResult> pageContext = getPageContext();
         IPage<ActivitiProcessResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
@@ -153,4 +189,23 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         return entity;
     }
 
+    @Override
+    public List<String> getModule(ProcessEnum processEnum) {
+        if (ToolUtil.isEmpty(processEnum)) {
+            throw new ServiceException(500, "请选择类型");
+        }
+        List<String> module = new ArrayList<>();
+        switch (processEnum) {
+            case 询价:
+
+            case 质检:
+                module.add(ProcessModuleEnum.入厂检.getValue());
+                break;
+            case 采购:
+                module.add(ProcessModuleEnum.采购申请.getValue());
+                module.add(ProcessModuleEnum.采购计划.getValue());
+                break;
+        }
+        return module;
+    }
 }
