@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
@@ -41,6 +42,8 @@ public interface ProcurementPlanService extends IService<ProcurementPlan> {
      * @Date 2021-12-21
      */
     void update(ProcurementPlanParam param);
+
+    void updateState(ActivitiProcessTask processTask);
 
     /**
      * 查询单条数据，Specification模式
