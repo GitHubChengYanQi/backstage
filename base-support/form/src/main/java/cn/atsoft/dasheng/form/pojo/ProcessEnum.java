@@ -3,10 +3,10 @@ package cn.atsoft.dasheng.form.pojo;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
 public enum ProcessEnum {
-    purchasePlan("purchasePlan","采购计划"),
-    purchaseAsk("purchaseAsk","采购申请单"),
-    inQuality("inQuality","入场检"),
-    outQuality("outQuality","出场检");
+    quality("quality", "质检"),
+    enquiry("enquiry", "询价"),
+    purchase("purchase", "采购");
+
 
     @EnumValue
     private final String type;
@@ -30,7 +30,7 @@ public enum ProcessEnum {
     public String toString() {
         return "ProcessEnum{" +
                 "type='" + type + '\'' +
-                ", value='" + name + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
