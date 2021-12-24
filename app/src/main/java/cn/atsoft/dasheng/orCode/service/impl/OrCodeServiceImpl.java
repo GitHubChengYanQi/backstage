@@ -95,6 +95,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private QualityTaskService qualityTaskService;
     @Autowired
     private QualityTaskDetailService detailService;
+    @Autowired
+    private InstockListService listService;
 
 
     @Override
@@ -367,7 +369,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
-                inkindParam.setSourceId(codeRequest.getTaskDetailId());
+                inkindParam.setSourceId(codeRequest.getSourceId());
                 inkindParam.setSource(codeRequest.getInkindType());
                 Long aLong = inkindService.add(inkindParam);
                 OrCodeBindParam bindParam = new OrCodeBindParam();
@@ -774,10 +776,21 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         Long formId = 0L;
         switch (codeRequest.getSource()) {
             case "item":
-                QualityTaskDetail detail = detailService.getById(codeRequest.getTaskDetailId());
-                String[] split = detail.getInkindId().split(",");
-                if (split.length > detail.getNumber()) {
-                    throw new ServiceException(500, "绑定次数不对");
+                if (codeRequest.getInkindType().equals("质检")) {
+                    QualityTaskDetail detail = detailService.getById(codeRequest.getSourceId());
+                    String[] split = detail.getInkindId().split(",");
+                    if (split.length > detail.getNumber()) {
+                        throw new ServiceException(500, "绑定次数不对");
+                    }
+                }
+                if (codeRequest.getInkindType().equals("入库")) {
+                    InstockList instockList = listService.getById(codeRequest.getSourceId());
+                    if (ToolUtil.isEmpty(instockList)) {
+                        throw new ServiceException(500, "Identify the source ID ");
+                    }
+                    if (instockList.getNumber() < codeRequest.getNumber()) {
+                        throw new ServiceException(500, "数量不符");
+                    }
                 }
                 InkindParam inkindParam = new InkindParam();
                 inkindParam.setSkuId(codeRequest.getId());
@@ -787,7 +800,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
                 inkindParam.setSource(codeRequest.getInkindType());
-                inkindParam.setSourceId(codeRequest.getTaskDetailId());
+                inkindParam.setSourceId(codeRequest.getSourceId());
                 formId = inkindService.add(inkindParam);
                 break;
         }
