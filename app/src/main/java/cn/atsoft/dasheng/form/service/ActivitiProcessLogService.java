@@ -114,4 +114,5 @@ public interface ActivitiProcessLogService extends IService<ActivitiProcessLog> 
      */
     List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param);
 
+    List<ActivitiProcessLogResult> sendList(ActivitiProcessLogParam param);
 }

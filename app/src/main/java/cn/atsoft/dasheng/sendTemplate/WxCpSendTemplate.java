@@ -60,7 +60,6 @@ public class WxCpSendTemplate {
 
         return uuIds;
     }
-    private Logger logger = LoggerFactory.getLogger(MessageEntity.class);
     //发送模板消息
     public void sendTemplate() {
 
@@ -80,7 +79,6 @@ public class WxCpSendTemplate {
                 messageEntity.setMaxTimes(2);
                 try {
                     messageProducer.sendMessage(messageEntity);
-//                    logger.info("发起推送"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -92,9 +90,8 @@ public class WxCpSendTemplate {
             message.setContent(wxCpTemplate.getDescription());
             message.setType(wxCpTemplate.getType());
             message.setSort(0L);
-//            message.setUrl("url");
             messageEntity.setMessage(message);
-            messageProducer.sendMessage(messageEntity, 1000);
+            messageProducer.sendMessage(messageEntity, 10);
         }
 
     }

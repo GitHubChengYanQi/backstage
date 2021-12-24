@@ -16,4 +16,5 @@ public class BackCodeRequest {
     private Long storehousePositionsId;
     private Long number;
     private String inkindType;
+    private Long taskDetailId;
 }

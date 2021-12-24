@@ -23,26 +23,21 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
+public class   InkindParam extends AbstractDictMap implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private Long outstockOrderId;
+
     private Long number;
     private Long spuId;
     private String source;
+    private Long sourceId;
 
     /**
      * 品牌
      */
     private Long brandId;
-    /**
-     * 库位
-     */
-    private Long storehousePositionsId;
-    /**
-     * 入库单
-     */
-    private Long instockOrderId;
+
+
     /**
      * 成本价格
      */

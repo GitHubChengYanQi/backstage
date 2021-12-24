@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      * @Date 2021-11-10
      */
     void add(ActivitiProcessParam param);
+
+    List<String> getType();
 
     /**
      * 删除
@@ -68,4 +71,5 @@ public interface ActivitiProcessService extends IService<ActivitiProcess> {
      */
      PageInfo<ActivitiProcessResult> findPageBySpec(ActivitiProcessParam param);
 
+    List<String> getModule(ProcessEnum processEnum);
 }

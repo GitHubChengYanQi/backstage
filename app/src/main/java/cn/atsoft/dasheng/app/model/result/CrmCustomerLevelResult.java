@@ -37,6 +37,8 @@ public class CrmCustomerLevelResult implements Serializable {
     @ApiModelProperty("级别")
     private String level;
 
+    private Integer status;
+
 
     /**
      * 修改者

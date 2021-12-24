@@ -4,24 +4,20 @@ import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.erp.entity.AttributeValues;
-import cn.atsoft.dasheng.erp.entity.ItemAttribute;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
-import cn.atsoft.dasheng.erp.service.AttributeValuesService;
-import cn.atsoft.dasheng.erp.service.ItemAttributeService;
-import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.service.SpuService;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -56,6 +52,12 @@ public class SkuController extends BaseController {
     private SpuService spuService;
     @Autowired
     private UnitService unitService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private QualityPlanService qualityPlanService;
+    @Autowired
+    private SpuClassificationService spuClassificationService;
 
     /**
      * 新增接口
@@ -119,48 +121,27 @@ public class SkuController extends BaseController {
         Sku detail = this.skuService.getById(skuParam.getSkuId());
         SkuResult result = new SkuResult();
         ToolUtil.copyProperties(detail, result);
-        List<Long> attributeIds = new ArrayList<>();
-        List<Long> valuesIds = new ArrayList<>();
-        JSONArray jsonArray = JSONUtil.parseArray(result.getSkuValue());
+        SkuResult sku = skuService.getSku(detail.getSkuId());
         if (ToolUtil.isNotEmpty(detail.getSpuId())) {
             Spu spu = spuService.getById(detail.getSpuId());
             if (ToolUtil.isNotEmpty(spu.getUnitId())){
                 Unit unit = unitService.getById(spu.getUnitId());
-                result.setUnit(unit);
+                sku.setUnit(unit);
             }
-            result.setSpu(spu);
+            if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
+                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
+                sku.setSpuClassification(spuClassification);
+            }
+        }
+        if (ToolUtil.isNotEmpty(detail.getQualityPlanId())) {
+            QualityPlan plan = qualityPlanService.getById(detail.getQualityPlanId());
+            sku.setQualityPlan(plan);
         }
 
+        User user = userService.getById(detail.getCreateUser());
+        sku.setCreateUserName(user.getName());
 
-        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-
-        for (AttributeValues valuesRequest : valuesRequests) {
-               attributeIds.add(valuesRequest.getAttributeId());
-              valuesIds.add( valuesRequest.getAttributeValuesId());
-        }
-        List<AttributeValuesResult> results = new ArrayList<>();
-        List<ItemAttribute> attributeList = attributeIds.size()==0?new ArrayList<>(): itemAttributeService.lambdaQuery().in(ItemAttribute::getAttributeId, attributeIds).list();
-        List<AttributeValues> valuesList = valuesIds.size() == 0 ? new ArrayList<>(): attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValuesId, valuesIds).list();
-
-        for (AttributeValues valuesRequest : valuesRequests) {
-            AttributeValuesResult valuesResult = new AttributeValuesResult();
-            valuesResult.setAttributeValuesId(valuesRequest.getAttributeValuesId());
-            valuesResult.setAttributeId(valuesRequest.getAttributeId());
-            for (ItemAttribute itemAttribute : attributeList) {
-                if (valuesRequest.getAttributeId().equals(itemAttribute.getAttributeId())) {
-                    valuesResult.setAttributeName(itemAttribute.getAttribute());
-                }
-            }
-            for (AttributeValues values : valuesList) {
-                if (valuesRequest.getAttributeValuesId().equals(values.getAttributeValuesId())) {
-                    valuesResult.setAttributeValues(values.getAttributeValues());
-                }
-            }
-            results.add(valuesResult);
-        }
-        result.setList(results);
-
-        return ResponseData.success(result);
+        return ResponseData.success(sku);
     }
 
     /**

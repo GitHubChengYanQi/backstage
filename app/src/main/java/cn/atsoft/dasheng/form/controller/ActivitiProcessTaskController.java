@@ -138,61 +138,6 @@ public class ActivitiProcessTaskController extends BaseController {
         }
     }
 
-//    @RequestMapping(value = "/auditDetail", method = RequestMethod.POST)
-//    @ApiOperation("详情")
-//    public ResponseData<SetpsDetailResult> auditDetail(@RequestBody ActivitiProcessTaskParam activitiProcessTaskParam) {
-//        LoginUser loginUser = LoginContextHolder.getContext().getUser();
-//        Long taskId = activitiProcessTaskParam.getProcessTaskId();
-//
-//        ActivitiProcessTask activitiProcessTask = activitiProcessTaskService.getById(taskId);
-//
-//        SetpsDetailResult setpsDetailResult = new SetpsDetailResult();
-//
-//        setpsDetailResult.setTaskId(activitiProcessTask.getProcessTaskId());
-//        setpsDetailResult.setTaskName(activitiProcessTask.getTaskName());
-//        QualityTaskResult result = new QualityTaskResult();
-//
-//        QualityTask detail = this.qualityTaskService.getById(activitiProcessTask.getFormId());
-//
-//        ToolUtil.copyProperties(detail, result);
-//        qualityTaskService.detailFormat(result);
-//
-//        if (ToolUtil.isNotEmpty(result.getCreateUser())) {
-//            User user = userService.getById(result.getCreateUser());
-//            result.setCreateName(user.getName());
-//        }
-//
-//        setpsDetailResult.setQualityTaskResult(result);
-//
-//        List<ActivitiSteps> activitiSteps = activitiStepsService.lambdaQuery().in(ActivitiSteps::getProcessId, activitiProcessTask.getProcessId()).list();
-//        List<Long> activitiStepsIds = new ArrayList<>();
-//        for (ActivitiSteps activitiStep : activitiSteps) {
-//            activitiStepsIds.add(activitiStep.getSetpsId());
-//        }
-//        ActivitiProcessTask activitiProcess = activitiProcessTaskService.query().eq("form_id", activitiProcessTask.getFormId()).one();
-//        List<ActivitiAudit> activitiAudits = auditService.lambdaQuery().in(ActivitiAudit::getSetpsId, activitiStepsIds).list();
-//        List<ActivitiProcessLog> activitiProcessLogs = activitiProcessLogService.lambdaQuery().in(ActivitiProcessLog::getSetpsId, activitiStepsIds).and(i -> i.eq(ActivitiProcessLog::getTaskId, activitiProcess.getProcessTaskId())).list();
-//        List<ActivitiAuditResult> logResult = new ArrayList<>();
-//        for (ActivitiAudit activitiAudit : activitiAudits) {
-//            ActivitiAuditResult auditResult = new ActivitiAuditResult();
-//            ToolUtil.copyProperties(activitiAudit, auditResult);
-//            for (ActivitiProcessLog activitiProcessLog : activitiProcessLogs) {
-//                if (activitiAudit.getSetpsId().equals(activitiProcessLog.getSetpsId())) {
-//                    auditResult.setStatus(activitiProcessLog.getStatus());
-//                }
-//            }
-//            logResult.add(auditResult);
-//        }
-//        setpsDetailResult.setAuditResults(logResult);
-//
-//        if (ToolUtil.isNotEmpty(activitiProcessTask.getProcessId())) {
-//            ActivitiProcess process = activitiProcessService.getById(activitiProcessTask.getProcessId());
-//            setpsDetailResult.setActivitiProcess(process);
-//        }
-//
-//        return ResponseData.success(setpsDetailResult);
-//    }
-
 }
 
 

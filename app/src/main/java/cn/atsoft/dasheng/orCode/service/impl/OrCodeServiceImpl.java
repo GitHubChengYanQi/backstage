@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongFunction;
 
 /**
  * <p>
@@ -93,6 +94,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private StockDetailsService stockDetailsService;
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private QualityTaskDetailService detailService;
 
 
     @Override
@@ -347,7 +350,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 //判断相同物料绑定
                 Integer count = inkindService.query()
                         .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())
-                        .eq("type", 0).eq("source","入库").count();
+                        .eq("type", 0).eq("source", "入库").count();
                 if (count > 0) {
                     throw new ServiceException(500, "物料已经绑定");
                 }
@@ -361,11 +364,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setType("0");
                 inkindParam.setNumber(codeRequest.getNumber());
                 inkindParam.setCostPrice(codeRequest.getCostPrice());
-                inkindParam.setInstockOrderId(codeRequest.getInstockOrderId());
                 inkindParam.setSellingPrice(codeRequest.getSellingPrice());
                 inkindParam.setBrandId(codeRequest.getBrandId());
+                inkindParam.setSourceId(codeRequest.getTaskDetailId());
                 inkindParam.setSource(codeRequest.getInkindType());
-                inkindParam.setStorehousePositionsId(codeRequest.getStorehousePositionsId());
                 Long aLong = inkindService.add(inkindParam);
                 OrCodeBindParam bindParam = new OrCodeBindParam();
                 bindParam.setOrCodeId(codeRequest.getCodeId());
@@ -455,10 +457,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             one.setType("1");
             Inkind inkind = new Inkind();
             inkind.setType("1");
-            inkind.setStorehousePositionsId(inKindRequest.getSorehousePositionsId());
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
+            //入库
             inKindRequest.getInstockListParam().setNum(one.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
@@ -485,6 +487,64 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             return instockList.getNumber() - number;
         }
     }
+
+    /**
+     * 批量扫码入库
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @Override
+    @Transactional
+    public Long batchInstockByCode(InKindRequest inKindRequest) {
+        List<OrCodeBind> list = orCodeBindService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
+        if (inKindRequest.getCodeIds().size() != list.size()) {
+            throw new ServiceException(500, "有错误二维码");
+        }
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind bind : list) {
+            inkindIds.add(bind.getFormId());
+        }
+        List<Inkind> inkinds = inkindService.listByIds(inkindIds);
+        //判断实物是否已有入库
+        Long inkindNumber = 0L;
+        for (Inkind inkind : inkinds) {
+            if (inkind.getType().equals("1")) {
+                throw new ServiceException(500, "已有入库，请确定二维码");
+            }
+            inkind.setType("1");
+            inkindNumber = inkindNumber + inkind.getNumber();
+        }
+        inkindService.updateBatchById(inkinds);
+        //入库
+        InstockList instockList = null;
+        inKindRequest.getInstockListParam().setNum(inkindNumber);
+        if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
+            instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
+            if (ToolUtil.isNotEmpty(instockList)) {
+                if ((instockList.getNumber() - inkindNumber) == 0) {
+                    try {
+                        instockListService.update(inKindRequest.getInstockListParam());
+                    } catch (Exception e) {
+                        return 0L;
+                    }
+                    return 0L;
+                }
+            }
+            try {
+                instockListService.update(inKindRequest.getInstockListParam());
+            } catch (Exception e) {
+                return 0L;
+            }
+        }
+        if (ToolUtil.isEmpty(instockList)) {
+            return 0L;
+        } else {
+            return instockList.getNumber() - inkindNumber;
+        }
+
+    }
+
 
     @Override
     public void batchAdd(OrCodeParam param) {
@@ -749,7 +809,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             newinKind.setNumber(inKindRequest.getNumber());
             newinKind.setSkuId(inkind.getSkuId());
             newinKind.setSource("出库");
-            newinKind.setOutstockOrderId(inKindRequest.getOutstockOrderId());
             newinKind.setBrandId(inkind.getBrandId());
             inkindService.save(newinKind);
         }
@@ -766,6 +825,46 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
 
         return listNumber;
+    }
+
+    @Override
+    public Long automaticBinding(BackCodeRequest codeRequest) {
+        OrCode orCode = new OrCode();
+        orCode.setType(codeRequest.getSource());
+        orCode.setState(1);
+        this.save(orCode);
+        Long formId = 0L;
+        switch (codeRequest.getSource()) {
+            case "item":
+                QualityTaskDetail detail = detailService.getById(codeRequest.getTaskDetailId());
+                String[] split = detail.getInkindId().split(",");
+                if (split.length > detail.getNumber()) {
+                    throw new ServiceException(500, "绑定次数不对");
+                }
+                InkindParam inkindParam = new InkindParam();
+                inkindParam.setSkuId(codeRequest.getId());
+                inkindParam.setType("0");
+                inkindParam.setNumber(codeRequest.getNumber());
+                inkindParam.setCostPrice(codeRequest.getCostPrice());
+                inkindParam.setSellingPrice(codeRequest.getSellingPrice());
+                inkindParam.setBrandId(codeRequest.getBrandId());
+                inkindParam.setSource(codeRequest.getInkindType());
+                inkindParam.setSourceId(codeRequest.getTaskDetailId());
+                formId = inkindService.add(inkindParam);
+                break;
+        }
+        OrCodeBindParam bindParam = new OrCodeBindParam();
+        bindParam.setOrCodeId(orCode.getOrCodeId());
+        bindParam.setFormId(formId);
+        bindParam.setSource(codeRequest.getSource());
+        orCodeBindService.add(bindParam);
+        return orCode.getOrCodeId();
+    }
+
+    @Override
+    public List<Long> codeIdList(String codeId) {
+        List<Long> qrCodeList = this.baseMapper.qrCodeList(codeId);
+        return qrCodeList;
     }
 }
 

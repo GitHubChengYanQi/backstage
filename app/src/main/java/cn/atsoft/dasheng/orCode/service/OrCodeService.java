@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -135,6 +136,9 @@ public interface OrCodeService extends IService<OrCode> {
      */
     Long instockByCode(InKindRequest inKindRequest);
 
+
+    Long batchInstockByCode(InKindRequest inKindRequest);
+
     /**
      * 批量增加二维码
      *
@@ -150,7 +154,22 @@ public interface OrCodeService extends IService<OrCode> {
 
     /**
      * 扫码出库
+     *
      * @return
      */
     Long outStockByCode(InKindRequest inKindRequest);
+
+
+    /**
+     * 自动生成二维码绑定
+     */
+    Long automaticBinding(BackCodeRequest codeRequest);
+
+    /**
+     * 查询二维码
+     *
+     * @param codeId
+     * @return
+     */
+    List<Long> codeIdList(String codeId);
 }

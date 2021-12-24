@@ -17,6 +17,8 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="default_contacts" property="defaultContacts"/>
+        <result column="default_address" property="defaultAddress"/>
         <result column="customer_level_id" property="customerLevelId"/>
         <result column="status" property="status"/>
         <result column="display" property="display"/>
@@ -24,24 +26,28 @@
         <result column="origin_id" property="orginId"/>
         <result column="note" property="note"/>
         <result column="user_id" property="userId"/>
+        <result column="status" property="status"/>
         <result column="emall" property="emall"/>
         <result column="agent" property="agent"/>
         <result column="url" property="url"/>
         <result column="sort" property="sort"/>
         <result column="avatar" property="avatar"/>
         <result column="region" property="region"/>
+        <result column="blacklist" property="blacklist"/>
         <result column="classification" property="classification"/>
         <result column="industry_id" property="industryId"/>
+        <result column="supply" property="supply"/>
+        <result column="invoice_id" property="invoiceId"/>
 
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">region
-    AS "region",
+    AS "region",supply AS "supply",blacklist AS "blacklist",invoice_id AS "invoiceId",
         industry_id AS "industryId" ,agent AS "agent",avatar AS "avatar",sort AS "sort" , classification AS "classification",
         customer_level_id AS "customerLevelId" ,status AS "status", origin_id AS "originId" , note AS "note" , user_id AS "userId" , emall AS "emall" ,url AS "url" ,
         customer_id
-        AS "customerId", customer_name AS "customerName", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        AS "customerId", customer_name AS "customerName",default_contacts AS "defaultContacts",default_address AS "defaultAddress", setup AS "setup", legal AS "legal", utscc AS "utscc", company_type AS "companyType", business_term AS "businessTerm", sign_in AS "signIn", introduction AS "introduction", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -49,7 +55,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 1
+        from daoxin_crm_customer where display = 1 and blacklist = 0
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -68,7 +74,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 1
+        from daoxin_crm_customer where display = 1 and blacklist = 0
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -92,7 +98,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 1
+        from daoxin_crm_customer where display = 1 and blacklist = 0
         <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
@@ -123,6 +129,9 @@
         <if test="paramCondition.userId !=null  and paramCondition.userId != '' ">
             and user_id = #{paramCondition.userId}
         </if>
+        <if test="paramCondition.supply !=null ">
+            and supply = #{paramCondition.supply}
+        </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
@@ -134,7 +143,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 1
+        from daoxin_crm_customer where display = 1 and blacklist = 0
         <if test="paramCondition.customerName != null and paramCondition.customerName != ''">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>

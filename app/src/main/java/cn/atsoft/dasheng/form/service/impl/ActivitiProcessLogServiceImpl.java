@@ -22,6 +22,7 @@ import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -76,6 +77,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Autowired
     private AuditViewService viewService;
+
+    @Autowired
+    private ProcurementPlanService procurementPlanService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -257,15 +261,22 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             endProcessTask.setProcessTaskId(taskId);
             endProcessTask.setStatus(1);
             activitiProcessTaskService.updateById(endProcessTask);
+            this.updateStatus(endProcessTask);
             endSend.endSend(task.getProcessTaskId());
         }
-        /**
-         * 推送下一级所有节点
-         */
-//        if (auditCheck) {
-//            this.sendNextStepsByTask(task, audit);
-//        }
-
+    }
+    private void updateStatus(ActivitiProcessTask processTask){
+        switch (processTask.getType()){
+            case "purchasePlan":
+                procurementPlanService.updateState(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+//                purchaseAskService.updateStatus(processTask);
+                break;
+        }
     }
 
     private void refuseTask(Long taskId) {
@@ -344,7 +355,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                     processLog.setStatus(1);
                                 }
                             }
-                            if (log.getStatus().equals(-1)){
+                            if (log.getStatus().equals(-1)) {
                                 logs.add(log);
                             }
 //                            logs.add(log);
@@ -920,20 +931,40 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public List<ActivitiProcessLogResult> auditList(ActivitiProcessLogParam param) {
+        List<Long> stepIds = getStepIdsByType("audit");
+        List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
+        format(logResults);
+        return logResults;
+    }
+
+    @Override
+    public List<ActivitiProcessLogResult> sendList(ActivitiProcessLogParam param) {
+        List<Long> ids = getStepIdsByType("send");
+        List<ActivitiProcessLogResult> logResults = this.baseMapper.sendList(ids, param);
+        format(logResults);
+        return logResults;
+    }
+
+    /**
+     * 查出当前跪下的所有步骤
+     *
+     * @param type
+     * @return
+     */
+    List<Long> getStepIdsByType(String type) {
         List<ActivitiAudit> audits = auditService.list();
         List<Long> stepIds = new ArrayList<>();
         for (ActivitiAudit audit : audits) {
             AuditRule rule = audit.getRule();
             if (ToolUtil.isNotEmpty(rule)) {
-                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals("audit")) {
+                if (ToolUtil.isNotEmpty(rule.getType()) && rule.getType().toString().equals(type)) {
                     stepIds.add(audit.getSetpsId());
                 }
             }
         }
-        List<ActivitiProcessLogResult> logResults = this.baseMapper.auditList(stepIds, param);
-        format(logResults);
-        return logResults;
+        return stepIds;
     }
+
 
     void format(List<ActivitiProcessLogResult> data) {
         List<Long> taskIds = new ArrayList<>();

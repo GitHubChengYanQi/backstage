@@ -1,13 +1,8 @@
 package cn.atsoft.dasheng.orCode.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
 
@@ -26,6 +21,7 @@ public class OrCode implements Serializable {
     /**
      * 绑定状态
      */
+
     @TableField("state")
     private Integer state;
     /**

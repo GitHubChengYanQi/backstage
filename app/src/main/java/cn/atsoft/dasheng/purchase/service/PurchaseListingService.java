@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -64,7 +65,15 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
      * @author song
      * @Date 2021-12-15
      */
-     PageInfo<PurchaseListingResult> findPageBySpec(PurchaseListingParam param);
+    PageInfo<PurchaseListingResult> findPageBySpec(PurchaseListingParam param);
 
     List<PurchaseListingResult> getByAskId(Long askId);
+
+    /**
+     * 待买
+     *
+     * @return
+     */
+    List<ListingPlan> plans();
+
 }

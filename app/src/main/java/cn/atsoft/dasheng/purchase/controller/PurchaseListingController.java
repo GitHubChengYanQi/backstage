@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseListingParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
+import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class PurchaseListingController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PurchaseListingParam purchaseListingParam)  {
+    public ResponseData delete(@RequestBody PurchaseListingParam purchaseListingParam) {
         this.purchaseListingService.delete(purchaseListingParam);
         return ResponseData.success();
     }
@@ -97,13 +99,24 @@ public class PurchaseListingController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<PurchaseListingResult> list(@RequestBody(required = false) PurchaseListingParam purchaseListingParam) {
-        if(ToolUtil.isEmpty(purchaseListingParam)){
+        if (ToolUtil.isEmpty(purchaseListingParam)) {
             purchaseListingParam = new PurchaseListingParam();
         }
         return this.purchaseListingService.findPageBySpec(purchaseListingParam);
     }
 
-
+    /**
+     * 待买
+     *
+     * @author song
+     * @Date 2021-12-15
+     */
+    @RequestMapping(value = "/planList", method = RequestMethod.POST)
+    @ApiOperation("待买")
+    public ResponseData planList() {
+        List<ListingPlan> plans = this.purchaseListingService.plans();
+        return ResponseData.success(plans);
+    }
 
 
 }
