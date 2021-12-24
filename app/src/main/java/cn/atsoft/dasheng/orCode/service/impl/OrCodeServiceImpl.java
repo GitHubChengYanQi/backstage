@@ -346,13 +346,15 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 if (ToolUtil.isEmpty(orCode)) {
                     throw new ServiceException(500, "二维码不合法");
                 }
-                //判断相同物料绑定
-                Integer count = inkindService.query()
-                        .eq("sku_id", codeRequest.getId()).eq("brand_id", codeRequest.getBrandId()).eq("instock_order_id", codeRequest.getInstockOrderId())
-                        .eq("type", 0).eq("source", "入库").count();
-                if (count > 0) {
-                    throw new ServiceException(500, "物料已经绑定");
-                }
+//                //判断相同物料绑定
+//                Integer count = inkindService.query()
+//                        .eq("sku_id", codeRequest.getId())
+//                        .eq("brand_id", codeRequest.getBrandId())
+//                        .eq("type", 0)
+//                        .eq("source", "入库").count();
+//                if (count > 0) {
+//                    throw new ServiceException(500, "物料已经绑定");
+//                }
                 //判断相同二维码绑定
                 OrCodeBind orCodeBind = orCodeBindService.query().in("qr_code_id", codeRequest.getCodeId()).one();
                 if (ToolUtil.isNotEmpty(orCodeBind)) {
@@ -425,11 +427,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             if (ToolUtil.isEmpty(one)) {
                 return false;
             }
-            if (one.getType().equals("0")) {
-                return true;
-            } else {
-                return false;
-            }
+            return one.getType().equals("0");
         }
 
         return false;
