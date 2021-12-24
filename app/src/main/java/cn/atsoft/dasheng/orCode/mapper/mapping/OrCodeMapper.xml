@@ -127,6 +127,7 @@
         <if test="paramCondition.state != null">
             and state =#{paramCondition.state}
         </if>
+        order by update_time desc
 
     </select>
 
