@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.purchase.model.result;
 
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -30,6 +31,7 @@ public class PurchaseQuotationResult implements Serializable {
     private String paymentMethod;
     private Long taxPrice;
     private CustomerResult customerResult;
+    private User user;
 
     /**
      * 采购报价id

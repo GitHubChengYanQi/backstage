@@ -489,6 +489,22 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         return skuResult;
     }
 
+    @Override
+    public List<SkuResult> formatSkuResult(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds)) {
+            return new ArrayList<>();
+        }
+        List<Sku> skus = this.listByIds(skuIds);
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            skuResults.add(skuResult);
+        }
+        this.format(skuResults);
+        return skuResults;
+    }
+
     private Serializable getKey(SkuParam param) {
         return param.getSkuId();
     }

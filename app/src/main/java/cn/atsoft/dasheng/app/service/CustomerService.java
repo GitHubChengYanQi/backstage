@@ -17,14 +17,14 @@ import java.util.List;
  * @author
  * @since 2021-07-23
  */
-public interface CustomerService extends IService<Customer>{
+public interface CustomerService extends IService<Customer> {
 
     /**
      * 新增
      *
+     * @return
      * @author
      * @Date 2021-07-23
-     * @return
      */
     Customer add(CustomerParam param);
 
@@ -33,23 +33,24 @@ public interface CustomerService extends IService<Customer>{
     /**
      * 删除
      *
+     * @return
      * @author
      * @Date 2021-07-23
-     * @return
      */
     Customer delete(CustomerParam param);
 
     /**
      * 更新
      *
+     * @return
      * @author
      * @Date 2021-07-23
-     * @return
      */
     Customer update(CustomerParam param);
 
     /**
      * 更新负责人
+     *
      * @param param
      * @return
      */
@@ -78,17 +79,20 @@ public interface CustomerService extends IService<Customer>{
      * @author
      * @Date 2021-07-23
      */
-    PageInfo<CustomerResult> findPageBySpec(DataScope dataScope,CustomerParam param);
+    PageInfo<CustomerResult> findPageBySpec(DataScope dataScope, CustomerParam param);
 
     /**
      * 批量删除
+     *
      * @param
      */
-    void batchDelete( List<Long> customerId);
+    void batchDelete(List<Long> customerId);
 
-    void updateStatus (CustomerParam customerParam);
+    void updateStatus(CustomerParam customerParam);
 
 
-    CustomerResult  detail (Long id);
+    CustomerResult detail(Long id);
+
+    List<CustomerResult> getSuppliers(Long levelId);
 
 }

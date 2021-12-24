@@ -470,6 +470,36 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return results.get(0);
     }
 
+    /**
+     * 按级别获取供应商
+     *
+     * @param levelId
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getSuppliers(Long levelId) {
+        CrmCustomerLevel level = crmCustomerLevelService.getById(levelId);
+        Long rank = level.getRank();
+        List<CrmCustomerLevel> levels = crmCustomerLevelService.list();
+
+        List<Long> levelIds = new ArrayList<>();
+        for (CrmCustomerLevel crmCustomerLevel : levels) {
+            if (crmCustomerLevel.getRank() >= rank) {
+                levelIds.add(crmCustomerLevel.getCustomerLevelId());
+            }
+        }
+
+        List<Customer> customers = this.query().eq("supply", 1).in("customer_level_id", levelIds).list();
+
+        List<CustomerResult> customerResults = new ArrayList<>();
+        for (Customer customer : customers) {
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            customerResults.add(customerResult);
+        }
+        return customerResults;
+    }
+
     public void addContacts(Long customerId, List<ContactsParam> contactsParams) {
         List<ContactsBind> contactsBinds = new ArrayList<>();
         for (ContactsParam contactsParam : contactsParams) {
