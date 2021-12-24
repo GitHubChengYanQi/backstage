@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -115,7 +116,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Override
     public InkindResult getInkindResult(Long id) {
         Inkind inkind = this.getById(id);
-
+        if (ToolUtil.isEmpty(inkind)) {
+            throw  new ServiceException(500,"当前数据不存在");
+        }
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);
 

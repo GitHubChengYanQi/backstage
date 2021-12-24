@@ -102,4 +102,20 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
     private void format(List<InquiryTaskDetailResult> data) {
 
     }
+
+    /**
+     * 获取询价任务的sku
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public List<Long> getSku(Long taskId) {
+        List<Long> skuIds = new ArrayList<>();
+        List<InquiryTaskDetail> taskDetails = this.query().eq("inquiry_task_id", taskId).list();
+        for (InquiryTaskDetail taskDetail : taskDetails) {
+            skuIds.add(taskDetail.getSkuId());
+        }
+        return skuIds;
+    }
 }

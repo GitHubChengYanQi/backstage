@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.region.RegionResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -29,7 +30,7 @@ import java.util.List;
 public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<SkuResult> skuResultList; //供应物料
     private CrmCustomerLevelResult crmCustomerLevelResult;
     private OriginResult originResult;
     private UserResult userResult;
@@ -55,10 +56,8 @@ public class CustomerResult implements Serializable {
     private Integer dynamicCount;
     private Integer contactsCount;
     private Long invoiceId;
-
     private Contacts contact;
     private Adress address;
-
     private Integer supply;
     /**
      * 客户id

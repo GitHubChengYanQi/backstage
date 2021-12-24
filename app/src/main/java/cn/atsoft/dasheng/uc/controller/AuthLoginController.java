@@ -265,7 +265,6 @@ public class AuthLoginController extends BaseController {
         return ResponseData.success(token);
     }
 
-
     /**
      * 点击登录执行的动作
      */

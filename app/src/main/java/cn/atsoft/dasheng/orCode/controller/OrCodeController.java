@@ -176,16 +176,29 @@ public class OrCodeController extends BaseController {
 
 
     /**
-     * 返回二维码
+     * 扫码入库
      *
      * @author song
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
-    @ApiOperation("二维码")
-    @Transactional
+    @ApiOperation("扫码入库")
     public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
         Long number = orCodeService.instockByCode(inKindRequest);
+        return ResponseData.success(number);
+
+    }
+
+    /**
+     * 批量扫码入库
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/batchInstockByCode", method = RequestMethod.POST)
+    @ApiOperation("批量扫码入库")
+    public ResponseData batchInstockByCode(@RequestBody InKindRequest inKindRequest) {
+        Long number = orCodeService.batchInstockByCode(inKindRequest);
         return ResponseData.success(number);
 
     }

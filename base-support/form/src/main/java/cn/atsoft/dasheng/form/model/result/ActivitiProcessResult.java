@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
@@ -28,7 +30,7 @@ public class ActivitiProcessResult implements Serializable {
     /**
      * 模块
      */
-    private String module;
+    private ProcessModuleEnum module;
     /**
      * 启用状态
      */
@@ -56,7 +58,7 @@ public class ActivitiProcessResult implements Serializable {
      * 类型：ship（工艺），audit（审核）
      */
     @ApiModelProperty("类型：ship（工艺），audit（审核）")
-    private String type;
+    private ProcessEnum type;
 
     private String url;
 

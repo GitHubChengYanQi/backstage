@@ -32,6 +32,9 @@ public class InquiryTaskResult implements Serializable {
 
     private List<CustomerResult> customerResults;
 
+
+
+
     /**
      * 询价任务id
      */

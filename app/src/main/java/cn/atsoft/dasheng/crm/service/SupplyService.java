@@ -77,4 +77,12 @@ public interface SupplyService extends IService<Supply> {
 
     List<CustomerResult> getSupplyByLevel(Long levelId);
 
+    /**
+     * 通过物料查询供应商
+     *
+     * @param skuIds
+     * @return
+     */
+    List<CustomerResult> getSupplyBySku(List<Long> skuIds);
+
 }
