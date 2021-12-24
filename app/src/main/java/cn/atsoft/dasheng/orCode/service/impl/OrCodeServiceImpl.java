@@ -463,6 +463,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
+
+                    if (instockList.getNumber() - one.getNumber() < 0) {  //判断出库数量是否超过清单数量
+                        throw new ServiceException(500, "超出单据数量");
+                    }
+
                     if ((instockList.getNumber() - one.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
@@ -520,6 +525,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
             instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
             if (ToolUtil.isNotEmpty(instockList)) {
+
+                if (instockList.getNumber() - inkindNumber < 0) {  //判断出库数量是否超过清单数量
+                    throw new ServiceException(500, "超出单据数量");
+                }
+
                 if ((instockList.getNumber() - inkindNumber) == 0) {
                     try {
                         instockListService.update(inKindRequest.getInstockListParam());
