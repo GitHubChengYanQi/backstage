@@ -4,21 +4,17 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
-import cn.atsoft.dasheng.form.pojo.ProcessEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 
 /**
@@ -120,6 +116,8 @@ public class ActivitiProcessController extends BaseController {
         List<String> module = this.activitiProcessService.getModule(param.getProcessEnum());
         return ResponseData.success(module);
     }
+
+
 }
 
 

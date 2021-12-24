@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongFunction;
 
 /**
  * <p>
@@ -459,6 +460,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             QueryWrapper<Inkind> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
+            //入库
             inKindRequest.getInstockListParam().setNum(one.getNumber());
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
@@ -485,6 +487,64 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             return instockList.getNumber() - number;
         }
     }
+
+    /**
+     * 批量扫码入库
+     *
+     * @param inKindRequest
+     * @return
+     */
+    @Override
+    @Transactional
+    public Long batchInstockByCode(InKindRequest inKindRequest) {
+        List<OrCodeBind> list = orCodeBindService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
+        if (inKindRequest.getCodeIds().size() != list.size()) {
+            throw new ServiceException(500, "有错误二维码");
+        }
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind bind : list) {
+            inkindIds.add(bind.getFormId());
+        }
+        List<Inkind> inkinds = inkindService.listByIds(inkindIds);
+        //判断实物是否已有入库
+        Long inkindNumber = 0L;
+        for (Inkind inkind : inkinds) {
+            if (inkind.getType().equals("1")) {
+                throw new ServiceException(500, "已有入库，请确定二维码");
+            }
+            inkind.setType("1");
+            inkindNumber = inkindNumber + inkind.getNumber();
+        }
+        inkindService.updateBatchById(inkinds);
+        //入库
+        InstockList instockList = null;
+        inKindRequest.getInstockListParam().setNum(inkindNumber);
+        if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
+            instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
+            if (ToolUtil.isNotEmpty(instockList)) {
+                if ((instockList.getNumber() - inkindNumber) == 0) {
+                    try {
+                        instockListService.update(inKindRequest.getInstockListParam());
+                    } catch (Exception e) {
+                        return 0L;
+                    }
+                    return 0L;
+                }
+            }
+            try {
+                instockListService.update(inKindRequest.getInstockListParam());
+            } catch (Exception e) {
+                return 0L;
+            }
+        }
+        if (ToolUtil.isEmpty(instockList)) {
+            return 0L;
+        } else {
+            return instockList.getNumber() - inkindNumber;
+        }
+
+    }
+
 
     @Override
     public void batchAdd(OrCodeParam param) {

@@ -3,14 +3,13 @@ package cn.atsoft.dasheng.form.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.form.entity.ActivitiAudit;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.mapper.ActivitiProcessMapper;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessParam;
 import cn.atsoft.dasheng.form.model.result.ActivitiProcessResult;
+
 import cn.atsoft.dasheng.form.pojo.ProcessEnum;
 import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
-import cn.atsoft.dasheng.form.service.ActivitiAuditService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
@@ -20,7 +19,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -66,6 +64,7 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
                 break;
             case 询价:
         }
+
         ActivitiProcess entity = getEntity(param);
 
         this.save(entity);
