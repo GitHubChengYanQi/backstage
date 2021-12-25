@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeBindResult;
 import com.baomidou.mybatisplus.extension.service.IService;
+import sun.util.resources.cldr.mg.LocaleNames_mg;
 
 import java.util.List;
 
@@ -89,5 +90,13 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      * @return
      */
     Long getFormId(Long qrcodeId);
+
+    /**
+     * 通过多个二维码获取 formId
+     *
+     * @param qrcodeIds
+     * @return
+     */
+    List<Long> getFormIds(List<Long> qrcodeIds);
 
 }
