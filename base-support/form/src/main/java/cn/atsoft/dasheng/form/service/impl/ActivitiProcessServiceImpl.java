@@ -45,26 +45,6 @@ public class ActivitiProcessServiceImpl extends ServiceImpl<ActivitiProcessMappe
         if (ToolUtil.isNotEmpty(process)) {
             throw new ServiceException(500, "名字以重复");
         }
-        if (ToolUtil.isEmpty(param.getType())) {
-            throw new ServiceException(500, "类型错误");
-        }
-        if (ToolUtil.isEmpty(param.getModule())) {
-            throw new ServiceException(500, "功能错误");
-        }
-        switch (param.getType()) {
-            case 采购:
-                if (!param.getModule().getValue().equals("采购申请") && !param.getModule().getValue().equals("采购计划")) {
-                    throw new ServiceException(500, "功能选择错误");
-                }
-                break;
-            case 质检:
-                if (!param.getModule().getValue().equals("入厂检")) {
-                    throw new ServiceException(500, "功能选择错误");
-                }
-                break;
-            case 询价:
-        }
-
         ActivitiProcess entity = getEntity(param);
 
         this.save(entity);

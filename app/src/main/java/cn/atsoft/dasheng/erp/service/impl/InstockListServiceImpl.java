@@ -105,12 +105,12 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
             StockParam stockParam = new StockParam();
             Long stockId = null;
-            if (ToolUtil.isNotEmpty(stock)) {
+            if (ToolUtil.isNotEmpty(stock)) {    //库存有此物 合并库存数量
                 long number = stock.getInventory() + param.getNum();
                 stock.setInventory(number);
                 ToolUtil.copyProperties(stock, stockParam);
                 stockId = stockService.update(stockParam);
-            } else {
+            } else {   //库存没有此物 新增此物
                 stockParam.setInventory(param.getNum());
                 stockParam.setBrandId(newEntity.getBrandId());
                 stockParam.setSkuId(newEntity.getSkuId());
@@ -129,12 +129,11 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setSkuId(newEntity.getSkuId());
             stockDetailsParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             stockDetailsService.add(stockDetailsParam);
-
         } else {
             throw new ServiceException(500, "已经入库成功");
         }
 
-    }
+   }
 
     @Override
     public InstockListResult findBySpec(InstockListParam param) {
@@ -173,6 +172,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     }
 
     private void format(List<InstockListResult> data) {
+        
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();

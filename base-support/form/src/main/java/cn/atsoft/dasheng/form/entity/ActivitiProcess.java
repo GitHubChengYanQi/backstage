@@ -33,8 +33,8 @@ public class ActivitiProcess implements Serializable {
      * 模块
      */
     @TableField("module")
-    @JSONField(serialzeFeatures = SerializerFeature.WriteEnumUsingToString)
-    private ProcessModuleEnum module;
+
+    private String module;
     /**
      * 启用状态
      */
@@ -58,8 +58,8 @@ public class ActivitiProcess implements Serializable {
      * 类型：ship（工艺），audit（审核）
      */
     @TableField("type")
-    @JSONField(serialzeFeatures = SerializerFeature.WriteEnumUsingToString)
-    private ProcessEnum type;
+
+    private String type;
 
     /**
      * 工艺表Id或表单Id
@@ -122,14 +122,6 @@ public class ActivitiProcess implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public ProcessEnum getType() {
-        return type;
-    }
-
-    public void setType(ProcessEnum type) {
-        this.type = type;
-    }
-
     public Long getFormId() {
         return formId;
     }
@@ -186,12 +178,20 @@ public class ActivitiProcess implements Serializable {
         this.status = status;
     }
 
-    public ProcessModuleEnum getModule() {
+    public String getModule() {
         return module;
     }
 
-    public void setModule(ProcessModuleEnum module) {
+    public void setModule(String module) {
         this.module = module;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

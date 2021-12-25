@@ -49,8 +49,6 @@ public class InstockServiceImpl extends ServiceImpl<InstockMapper, Instock> impl
     @Autowired
     private BrandService brandService;
     @Autowired
-    private ItemsService itemsService;
-    @Autowired
     private StorehouseService storehouseService;
     @Autowired
     private StorehousePositionsService storehousePositionsService;

@@ -30,7 +30,7 @@ public class ActivitiProcessResult implements Serializable {
     /**
      * 模块
      */
-    private ProcessModuleEnum module;
+    private String module;
     /**
      * 启用状态
      */
@@ -58,7 +58,7 @@ public class ActivitiProcessResult implements Serializable {
      * 类型：ship（工艺），audit（审核）
      */
     @ApiModelProperty("类型：ship（工艺），audit（审核）")
-    private ProcessEnum type;
+    private String type;
 
     private String url;
 

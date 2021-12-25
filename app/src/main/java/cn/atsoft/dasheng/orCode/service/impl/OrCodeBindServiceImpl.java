@@ -40,16 +40,12 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
 
     @Override
     public void delete(OrCodeBindParam param) {
-//        this.removeById(getKey(param));
         throw new ServiceException(500, "不可以删除");
     }
 
     @Override
     public void update(OrCodeBindParam param) {
-//        OrCodeBind oldEntity = getOldEntity(param);
-//        OrCodeBind newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
+
         throw new ServiceException(500, "不可以修改");
     }
 
@@ -96,7 +92,7 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
         }
         OrCodeBind bind = this.query().eq("form_id", formId).one();
         if (ToolUtil.isEmpty(bind)) {
-            return null;
+            throw new ServiceException(500, "此物未绑定二维码");
         }
         return bind.getOrCodeId();
 
@@ -110,9 +106,22 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
         }
         OrCodeBind codeBind = this.query().eq("qr_code_id", qrcodeId).one();
         if (ToolUtil.isEmpty(codeBind)) {
-            return l;
+            throw new ServiceException(500, "此码未绑定");
         }
         return codeBind.getFormId();
+    }
+
+    @Override
+    public List<Long> getFormIds(List<Long> qrcodeIds) {
+        if (ToolUtil.isEmpty(qrcodeIds)) {
+            return new ArrayList<>();
+        }
+        List<OrCodeBind> codeBinds = this.query().in("qr_code_id", qrcodeIds).list();
+        List<Long> formIds = new ArrayList<>();
+        for (OrCodeBind codeBind : codeBinds) {
+            formIds.add(codeBind.getFormId());
+        }
+        return formIds;
     }
 
     private Serializable getKey(OrCodeBindParam param) {
