@@ -24,11 +24,12 @@
         <result column="storehouse_positions_id" property="storehousePositionsId"/>
         <result column="number" property="number"/>
         <result column="qr_code_id" property="qrCodeId"/>
+        <result column="inkind_id" property="inkindId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">outstock_order_id
-    AS "outStockOrderId",deptId AS "deptId",number AS "number",qr_code_id AS "qrCodeId",
+    AS "outStockOrderId",deptId AS "deptId",number AS "number",qr_code_id AS "qrCodeId",inkind_id AS "inkindId",
 stage
     AS "stage",sku_id AS "skuId",storehouse_positions_id AS "storehousePositionsId",
         barcode AS "barcode", brand_id AS "brandId", item_id AS "itemId", storehouse_id AS "storehouseId",  stock_item_id AS "stockItemId", stock_id AS "stockId", price AS "price", storage_time AS "storageTime", create_user AS "createUser", create_time AS "createTime", update_user AS "updateUser", update_time AS "updateTime", display AS "display"

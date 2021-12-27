@@ -389,9 +389,13 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     }
 
     private Boolean judgeLevel(Long levelId, Customer customer) {
-
-
+        if (ToolUtil.isEmpty(customer.getCustomerLevelId())) {
+            throw new ServiceException(500, "请先设置供应商等级");
+        }
         CrmCustomerLevel level = levelService.getById(levelId);
+        if (ToolUtil.isEmpty(level)) {
+            throw new ServiceException(500, "当前供应商等级不合法");
+        }
         List<CrmCustomerLevel> customerLevels = levelService.list();
 
         List<Long> levelIds = new ArrayList<>();

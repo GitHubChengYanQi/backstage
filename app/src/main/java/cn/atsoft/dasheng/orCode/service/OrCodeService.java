@@ -136,6 +136,12 @@ public interface OrCodeService extends IService<OrCode> {
      */
     Long instockByCode(InKindRequest inKindRequest);
 
+    /**
+     * 批量扫码入库
+     *
+     * @param inKindRequest
+     * @return
+     */
 
     Long batchInstockByCode(InKindRequest inKindRequest);
 

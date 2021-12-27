@@ -32,6 +32,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -144,7 +145,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             instockSendTemplate.setBusinessTrack(businessTrack);
             instockSendTemplate.setUrl(url);
             instockSendTemplate.sendTemplate();
-
         }
     }
 
@@ -154,13 +154,44 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         this.removeById(getKey(param));
     }
 
+    /**
+     * 自由入库
+     *
+     * @param param
+     */
     @Override
-
+    @Transactional
     public void update(InstockOrderParam param) {
-        InstockOrder oldEntity = getOldEntity(param);
-        InstockOrder newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+        InstockOrder instockOrder = this.getById(param.getInstockOrderId());
+        if (ToolUtil.isEmpty(instockOrder)) {
+            throw new ServiceException(500, "入库单不存在");
+        } else if (instockOrder.getState() == 2) {
+            throw new ServiceException(500, "当前入库单已完成,不可再添加新的物料");
+        }
+
+
+        List<InstockRequest> instockRequest = param.getInstockRequest();
+        if (ToolUtil.isEmpty(instockRequest)) {
+            throw new ServiceException(500, "请填写要入库的物料");
+        }
+        List<InstockList> instockLists = new ArrayList<>();
+        for (InstockRequest request : instockRequest) {
+            InstockList instockList = new InstockList();
+            instockList.setSkuId(request.getSkuId());
+            instockList.setNumber(request.getNumber());
+            instockList.setInstockOrderId(param.getInstockOrderId());
+            instockList.setInstockNumber(request.getNumber());
+            instockList.setBrandId(request.getBrandId());
+            instockList.setStoreHouseId(param.getStoreHouseId());
+            if (ToolUtil.isNotEmpty(request.getCostprice())) {
+                instockList.setCostPrice(request.getCostprice());
+            }
+            if (ToolUtil.isNotEmpty(request.getSellingPrice())) {
+                instockList.setSellingPrice(request.getSellingPrice());
+            }
+            instockLists.add(instockList);
+        }
+        instockListService.saveBatch(instockLists);
     }
 
     @Override
@@ -287,41 +318,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
-        List<Long> InstockListIds = new ArrayList<>();
+
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
             storeIds.add(datum.getStoreHouseId());
-            InstockListIds.add(datum.getInstockOrderId());
+
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
-        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", InstockListIds).list();
 
-        Integer state = null;
         for (InstockOrderResult datum : data) {
-            Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
-            if (instock > 0) {
-                if (ToolUtil.isNotEmpty(instockLists)) {
-                    for (InstockList instockList : instockLists) {
-                        if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
-                            if (instockList.getNumber() == 0) {
-                                state = 2;
-                            } else {
-                                state = 1;
-                                break;
-                            }
-                        }
-                    }
-
-                }
-
-            } else {
-                state = 0;
-            }
-            datum.setState(state);
-
-
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {
                     if (datum.getUserId().equals(user.getUserId())) {

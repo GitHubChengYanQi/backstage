@@ -447,7 +447,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             queryWrapper.eq("inkind_id", one.getInkindId());
             inkindService.update(inkind, queryWrapper);
             //入库
-            inKindRequest.getInstockListParam().setNum(one.getNumber());
+            inKindRequest.getInstockListParam().setNum(one.getNumber());   //传入出库数量
+            inKindRequest.getInstockListParam().setCodeId(formId);         //传入二维码
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {

@@ -47,7 +47,7 @@ public class SkuResult implements Serializable {
     private QualityPlan qualityPlan;
     private Unit unit;
     private SpuClassification spuClassification;
-
+    private Long fileId;
     private Integer batch;
 
 

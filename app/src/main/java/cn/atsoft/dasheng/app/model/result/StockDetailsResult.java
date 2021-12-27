@@ -44,7 +44,7 @@ public class StockDetailsResult implements Serializable {
     private Long number;
     private Long qrCodeId;
     private List<StockDetailRequest> stockDetailRequests;
-
+    private Long inkindId;
 
     /**
      * 库位id

@@ -13,17 +13,21 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockList;
+import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -57,7 +61,10 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private StorehouseService storehouseService;
     @Autowired
     private SkuService skuService;
-
+    @Autowired
+    private InstockOrderService orderService;
+    @Autowired
+    private OrCodeBindService codeBindService;
 
     @Override
     public void add(InstockListParam param) {
@@ -122,6 +129,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setNumber(param.getNum());
             if (ToolUtil.isNotEmpty(param.getCodeId())) {
                 stockDetailsParam.setQrCodeid(param.getCodeId());
+                Long inkindId = getInkindId(param.getCodeId());
+                stockDetailsParam.setInkindId(inkindId);
             }
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
             stockDetailsParam.setPrice(newEntity.getCostPrice());
@@ -129,11 +138,45 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setSkuId(newEntity.getSkuId());
             stockDetailsParam.setStorehousePositionsId(newEntity.getStorehousePositionsId());
             stockDetailsService.add(stockDetailsParam);
+
+            //修改入库单状态
+            updateOrderState(param.getInstockOrderId());
+
         } else {
             throw new ServiceException(500, "已经入库成功");
         }
 
-   }
+    }
+
+    private Long getInkindId(Long qrcodeId) {
+        Long formId = 0L;
+        formId = codeBindService.getFormId(qrcodeId);
+        return formId;
+    }
+
+    /**
+     * 修改入库单状态
+     *
+     * @param instockOrderId
+     */
+    private void updateOrderState(Long instockOrderId) {
+        InstockOrder instockOrder = new InstockOrder();
+        instockOrder.setInstockOrderId(instockOrderId);
+        instockOrder.setState(1);
+        boolean t = true;
+        List<InstockList> instockLists = this.query().eq("instock_order_id", instockOrderId).list();
+        for (InstockList instockList : instockLists) {
+            if (instockList.getNumber() != 0) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            instockOrder.setState(2);
+        }
+        orderService.updateById(instockOrder);
+    }
+
 
     @Override
     public InstockListResult findBySpec(InstockListParam param) {
@@ -172,7 +215,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     }
 
     private void format(List<InstockListResult> data) {
-        
+
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();

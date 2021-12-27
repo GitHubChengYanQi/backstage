@@ -76,6 +76,11 @@ public interface StockDetailsService extends IService<StockDetails> {
      */
     List<Long> backSkuByStoreHouse(Long id);
 
-
-
+    /**
+     * 返回当前仓库下所有数据
+     *
+     * @param stockId
+     * @return
+     */
+    List<StockDetailsResult> getStockDetails(Long stockId);
 }
