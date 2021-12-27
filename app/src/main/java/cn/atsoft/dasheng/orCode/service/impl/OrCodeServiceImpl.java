@@ -404,19 +404,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
     //判断是否入库
     @Override
-    public Boolean judgeBind(InKindRequest inKindRequest) {
+    public Inkind judgeBind(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
                     .one();
-            if (ToolUtil.isEmpty(one)) {
-                return false;
-            }
-            return one.getType().equals("0");
+            if (ToolUtil.isEmpty(one) || !(one.getType().equals("0")))
+                return null;
+            return one;
         }
-
-        return false;
+        return null;
     }
 
     /**

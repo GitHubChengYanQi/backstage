@@ -475,8 +475,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/judgeBind", method = RequestMethod.POST)
     @ApiOperation("判断是否绑定")
     public ResponseData judgeBind(@RequestBody InKindRequest inKindRequest) {
-        Boolean t = orCodeService.judgeBind(inKindRequest);
-        return ResponseData.success(t);
+        Inkind inkind = orCodeService.judgeBind(inKindRequest);
+        return ResponseData.success(inkind);
     }
 
 
