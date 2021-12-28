@@ -22,7 +22,7 @@ public class DirectQueueConfig {
 
     public final static String MESSAGE_REAL_EXCHANGE = mqPrefix+".message.real.topicExchange";
     public final static String MESSAGE_REAL_ROUTE = mqPrefix+".message.real.route";
-    public final static String MESSAGE_REAL_QUEUE = mqPrefix+".message.real.topicExchange";
+    public final static String MESSAGE_REAL_QUEUE = "message.real.topicExchange";
 
     public final static String MESSAGE_DELAY_EXCHANGE = mqPrefix+".message.delay.topicExchange";
     public final static String MESSAGE_DELAY_ROUTE = mqPrefix+".message.delay.route";
