@@ -231,6 +231,19 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
         stockDetails.setNumber(newNumber);
         stockDetailsService.updateById(stockDetails);
+        //修改仓库数量
+        Stock stock = stockService.query().eq("stock_id", stockDetails.getStockId()).one();
+        stock.setInventory(stock.getInventory() - freeOutStockParam.getNumber());
+        stockService.updateById(stock);
+
+        Outstock outstock = new Outstock();
+        outstock.setStorehouseId(stock.getStorehouseId());
+        outstock.setBrandId(stock.getBrandId());
+        outstock.setStockId(stockDetails.getStockId());
+        outstock.setStockItemId(stockDetails.getStockItemId());
+        outstock.setSkuId(stockDetails.getSkuId());
+        outstock.setNumber(freeOutStockParam.getNumber());
+        outstockService.save(outstock);
 
     }
 
