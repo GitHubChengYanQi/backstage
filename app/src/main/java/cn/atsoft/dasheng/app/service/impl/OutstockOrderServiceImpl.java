@@ -222,7 +222,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
      * @param freeOutStockParam
      */
     @Override
-    public void freeOutsotck(FreeOutStockParam freeOutStockParam) {
+    public void freeOutStock(FreeOutStockParam freeOutStockParam) {
         StockDetails stockDetails = stockDetailsService.query().eq("qr_code_id", freeOutStockParam.getCodeId()).one();
 
         if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
