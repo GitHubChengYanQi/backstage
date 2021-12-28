@@ -106,18 +106,7 @@ public class OrCodeController extends BaseController {
     private QualityTaskDetailService detailService;
 
 
-    /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody OrCodeParam orCodeParam) {
-        this.orCodeService.add(orCodeParam);
-        return ResponseData.success();
-    }
+
 
     /**
      * 批量增加二维码
@@ -144,34 +133,6 @@ public class OrCodeController extends BaseController {
     public ResponseData codeIdList(@Param("codeId") String codeId) {
         List<Long> longList = this.orCodeService.codeIdList(codeId);
         return ResponseData.success(longList);
-    }
-
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody OrCodeParam orCodeParam) {
-
-        this.orCodeService.update(orCodeParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrCodeParam orCodeParam) {
-        this.orCodeService.delete(orCodeParam);
-        return ResponseData.success();
     }
 
 
@@ -203,20 +164,6 @@ public class OrCodeController extends BaseController {
 
     }
 
-    /**
-     * 查看详情接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<OrCodeResult> detail(@RequestBody OrCodeParam orCodeParam) {
-        OrCode detail = this.orCodeService.getById(orCodeParam.getOrCodeId());
-        OrCodeResult result = new OrCodeResult();
-        ToolUtil.copyProperties(detail, result);
-        return ResponseData.success(result);
-    }
 
     /**
      * 查询列表
@@ -487,7 +434,6 @@ public class OrCodeController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/backInkindByCode", method = RequestMethod.POST)
-    @ApiOperation("判断是否绑定")
     public ResponseData backInkindByCode(@RequestBody InKindRequest inKindRequest) {
         Object o = orCodeService.backInkindByCode(inKindRequest);
         return ResponseData.success(o);
