@@ -4,7 +4,6 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -17,18 +16,22 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
+import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
-import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
+
 
 /**
  * <p>
@@ -152,10 +155,33 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind,inkindResult);
         inkindResult.setSkuResult(skuResult);
+        inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
+        this.returnPrintTemplate(inkindResult);
+        inkindResult.setSkuResult(null);
+        inkindResult.setBrandResult(null);
         return inkindResult;
     }
     public void returnPrintTemplate(InkindResult param){
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", PHYSICALDETAIL);
+        }});
+        System.out.println(  PHYSICALDETAIL);
+        String templete = printTemplate.getTemplete();
+        if (templete.contains("${name}")){
+            templete =  templete.replace("${name}",param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
+        }
+        if (templete.contains("${number}")){
+            templete =  templete.replace("${number}",param.getNumber().toString());
+        }
+        if (templete.contains("${brand}")){
+            templete =  templete.replace("${brand}",param.getBrandResult().getBrandName());
+        }
+        PrintTemplateResult printTemplateResult = new PrintTemplateResult();
+        ToolUtil.copyProperties(printTemplate,printTemplateResult);
+        printTemplateResult.setTemplete(templete);
+        param.setPrintTemplateResult(printTemplateResult);
     }
+
 
     @Override
     public InkindResult getInkindResult(Long id) {

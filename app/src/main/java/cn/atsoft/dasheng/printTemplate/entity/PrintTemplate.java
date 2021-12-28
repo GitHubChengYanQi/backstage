@@ -1,5 +1,8 @@
 package cn.atsoft.dasheng.printTemplate.entity;
 
+import cn.atsoft.dasheng.form.pojo.PrintTemplateEnum;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -31,7 +34,8 @@ public class PrintTemplate implements Serializable {
      * 类型
      */
     @TableField("type")
-    private String type;
+    @JSONField(serialzeFeatures= SerializerFeature.WriteEnumUsingToString)
+    private PrintTemplateEnum type;
 
     /**
      * 名称
@@ -90,11 +94,11 @@ public class PrintTemplate implements Serializable {
         this.printTemplateId = printTemplateId;
     }
 
-    public String getType() {
+    public PrintTemplateEnum getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PrintTemplateEnum type) {
         this.type = type;
     }
 

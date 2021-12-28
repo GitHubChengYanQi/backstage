@@ -1,6 +1,6 @@
 package cn.atsoft.dasheng.printTemplate.model.params;
 
-import cn.atsoft.dasheng.form.pojo.printTemplateEnum;
+import cn.atsoft.dasheng.form.pojo.PrintTemplateEnum;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -36,7 +36,7 @@ public class PrintTemplateParam implements Serializable, BaseValidatingParam {
      * 类型
      */
     @ApiModelProperty("类型")
-    private printTemplateEnum type;
+    private PrintTemplateEnum type;
 
     /**
      * 名称
