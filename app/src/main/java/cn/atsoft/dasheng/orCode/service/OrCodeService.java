@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.orCode.service;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -126,7 +127,7 @@ public interface OrCodeService extends IService<OrCode> {
      * @param inKindRequest
      * @return
      */
-    Boolean judgeBind(InKindRequest inKindRequest);
+    Inkind judgeBind(InKindRequest inKindRequest);
 
     /**
      * 扫码入库
