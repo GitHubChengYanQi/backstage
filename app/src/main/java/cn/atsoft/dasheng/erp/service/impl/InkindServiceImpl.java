@@ -17,6 +17,7 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +44,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private PrintTemplateService printTemplateService;
 
 
     @Override
@@ -138,6 +141,20 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         }
 
         return inKindResults;
+    }
+    @Override
+    public InkindResult inkindDetail(InkindParam param){
+        Inkind inkind = this.getById(param.getInkindId());
+        List<Long> skuIds = new ArrayList<>();
+        skuIds.add(inkind.getSkuId());
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        SkuResult skuResult = skuResults.get(0);
+        InkindResult inkindResult = new InkindResult();
+        ToolUtil.copyProperties(inkind,inkindResult);
+        inkindResult.setSkuResult(skuResult);
+        return inkindResult;
+    }
+    public void returnPrintTemplate(InkindResult param){
     }
 
     @Override

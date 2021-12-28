@@ -3,7 +3,9 @@ package cn.atsoft.dasheng.form.pojo;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
 public enum printTemplateEnum {
-    test("测试");
+    test("测试"),
+
+    PHYSICALDETAIL("实物详情");
 
 
 

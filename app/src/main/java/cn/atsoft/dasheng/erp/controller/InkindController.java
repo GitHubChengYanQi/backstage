@@ -86,9 +86,7 @@ public class InkindController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<InkindResult> detail(@RequestBody InkindParam inkindParam) {
-        Inkind detail = this.inkindService.getById(inkindParam.getInkindId());
-        InkindResult result = new InkindResult();
-        ToolUtil.copyProperties(detail, result);
+        InkindResult result = this.inkindService.inkindDetail(inkindParam);
         return ResponseData.success(result);
     }
 

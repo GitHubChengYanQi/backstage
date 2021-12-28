@@ -85,7 +85,7 @@ public class PrintTemplateController extends BaseController {
         PrintTemplateResult result = new PrintTemplateResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
