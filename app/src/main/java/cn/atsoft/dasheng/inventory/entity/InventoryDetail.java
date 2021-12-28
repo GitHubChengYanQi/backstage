@@ -35,6 +35,13 @@ public class InventoryDetail implements Serializable {
      */
     @TableField("status")
     private Integer status;
+
+
+    /**
+     * 对应实物id
+     */
+    @TableField("inventory_id")
+    private Long inventoryId;
     /**
      * 对应实物id
      */
@@ -59,6 +66,15 @@ public class InventoryDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+
+
+    public Long getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(Long inventoryId) {
+        this.inventoryId = inventoryId;
+    }
 
     public Long getDetailId() {
         return detailId;

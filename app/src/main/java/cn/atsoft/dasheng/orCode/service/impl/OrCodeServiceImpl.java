@@ -405,19 +405,17 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
     //判断是否入库
     @Override
-    public Boolean judgeBind(InKindRequest inKindRequest) {
+    public Inkind judgeBind(InKindRequest inKindRequest) {
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(orCodeBind) && orCodeBind.getSource().equals("item")) {
             Inkind one = inkindService.query().eq("inkind_id", orCodeBind.getFormId()).eq("sku_id", inKindRequest.getId())
                     .eq("brand_id", inKindRequest.getBrandId())
                     .one();
-            if (ToolUtil.isEmpty(one)) {
-                return false;
-            }
-            return one.getType().equals("0");
+            if (ToolUtil.isEmpty(one) || !(one.getType().equals("0")))
+                return null;
+            return one;
         }
-
-        return false;
+        return null;
     }
 
     /**
@@ -706,24 +704,32 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         BackObject object = new BackObject();
         switch (codeBind.getSource()) {
             case "item":
-                InkindResult inkindResult = inkindService.backInKindgetById(codeBind.getFormId());
-                if (inkindResult.getNumber() == 0) {
-                    throw new ServiceException(500, "已出库，请勿重复扫描");
-                }
-                if (ToolUtil.isEmpty(inkindResult)) {
+                StockDetails stockDetail = stockDetailsService.query().in("qr_code_id", codeId).one();
+                if (ToolUtil.isEmpty(stockDetail)) {
                     throw new ServiceException(500, "没有此物料");
                 }
-
-
-                if (inkindResult.getSkuId().equals(inKindRequest.getId()) && inkindResult.getBrandId().equals(inKindRequest.getBrandId())) {
-                    if (ToolUtil.isNotEmpty(inkindResult.getStorehousePositionsId())) {
+                if (stockDetail.getNumber() == 0) {
+                    throw new ServiceException(500, "已出库，请勿重复扫描");
+                }
+                if (
+                        stockDetail.getSkuId().equals(inKindRequest.getId())
+                        &&
+                        stockDetail.getBrandId().equals(inKindRequest.getBrandId())
+                        &&
+                        stockDetail.getStorehouseId().equals(inKindRequest.getStorehouse())
+                ) {
+                    if (ToolUtil.isNotEmpty(stockDetail.getStorehousePositionsId())) {
                         StorehousePositions storehousePositions = storehousePositionsService.query()
-                                .eq("storehouse_positions_id", inkindResult.getStorehousePositionsId()).one();
+                                .eq("storehouse_positions_id", stockDetail.getStorehousePositionsId()).one();
                         object.setPositions(storehousePositions);
                     }
-                    object.setInkind(inkindResult);
+                    object.setStockDetails(stockDetail);
                     return object;
+                }else {
+                    throw new ServiceException(500, "没有此物料");
                 }
+            default:
+                break;
 
         }
         throw new ServiceException(500, "请扫正确物料二维码");

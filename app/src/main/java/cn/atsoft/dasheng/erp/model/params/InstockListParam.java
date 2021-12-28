@@ -53,7 +53,6 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
 
     private Integer costPrice;
 
-
     private Integer sellingPrice;
 
     private Long storeHouseId;
