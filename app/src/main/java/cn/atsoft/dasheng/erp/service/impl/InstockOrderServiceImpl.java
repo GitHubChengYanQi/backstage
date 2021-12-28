@@ -271,6 +271,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         StockDetailsParam stockDetailsParam = new StockDetailsParam();
         stockDetailsParam.setStockId(stockId);
         stockDetailsParam.setNumber(inkind.getNumber());
+        stockDetailsParam.setStorehousePositionsId(freeInStockParam.getPositionsId());
 
         stockDetailsParam.setQrCodeid(freeInStockParam.getCodeId());
         stockDetailsParam.setInkindId(inkind.getInkindId());
