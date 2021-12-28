@@ -8,4 +8,5 @@ public class FreeInStockParam {
     private Long brandId;
     private Long number;
     private Long storeHouseId;
+    private Long codeId;
 }

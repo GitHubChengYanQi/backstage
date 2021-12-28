@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -76,7 +77,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
-
+    @Autowired
+    private OrCodeBindService bindService;
 
     @Override
     @Transactional
@@ -241,24 +243,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
     @Override
     public void freeInstock(FreeInStockParam freeInStockParam) {
-        Inkind inkind = new Inkind();
-        inkind.setBrandId(freeInStockParam.getBrandId());
-        inkind.setSkuId(freeInStockParam.getSkuId());
-        inkind.setNumber(freeInStockParam.getNumber());
-        inkind.setType("1");
-        inkind.setSource("自由入库");
-        inkindService.save(inkind);
 
-        OrCode orCode = new OrCode();
-        orCode.setType("item");
-        orCode.setState(1);
-        orCodeService.save(orCode);
-
-        OrCodeBind codeBind = new OrCodeBind();
-        codeBind.setOrCodeId(orCode.getOrCodeId());
-        codeBind.setSource("item");
-        codeBind.setFormId(inkind.getInkindId());
-
+        Long formId = bindService.getFormId(freeInStockParam.getCodeId());
+        Inkind inkind = inkindService.getById(formId);
+        if (ToolUtil.isEmpty(inkind)) {
+            throw new ServiceException(500, "请扫描正确的二维码");
+        }
         Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())
                 .and(i -> i.eq(Stock::getSkuId, inkind.getSkuId()))
                 .eq(Stock::getBrandId, inkind.getBrandId())
@@ -282,7 +272,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         stockDetailsParam.setStockId(stockId);
         stockDetailsParam.setNumber(inkind.getNumber());
 
-        stockDetailsParam.setQrCodeid(orCode.getOrCodeId());
+        stockDetailsParam.setQrCodeid(freeInStockParam.getCodeId());
         stockDetailsParam.setInkindId(inkind.getInkindId());
         stockDetailsParam.setStorehouseId(freeInStockParam.getStoreHouseId());
 
@@ -296,7 +286,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         return param.getInstockOrderId();
     }
 
-    private Page<InstockOrderResult> getPageContext(){
+    private Page<InstockOrderResult> getPageContext() {
         List<String> fields = new ArrayList<>();
         fields.add("storeHouseId");
         fields.add("createTime");
