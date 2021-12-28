@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.inventory.entity.InventoryDetail">
         <id column="detail_id" property="detailId"/>
         <result column="inkind_id" property="inkindId"/>
+        <result column="inventory_id" property="inventoryId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -18,7 +19,7 @@
     <sql id="Base_Column_List"> status
     AS "status",
         detail_id
-        AS "detailId", inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "detailId",inventory_id AS "inventoryId" ,inkind_id AS "inkindId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>
 
 

@@ -87,6 +87,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Override
     public InkindResult backInKindgetById(Long id) {
         Inkind inkind = this.getById(id);
+        if (ToolUtil.isEmpty(inkind)){
+            return null;
+        }
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);
         List<BackSku> backSku = skuService.backSku(inkindResult.getSkuId());

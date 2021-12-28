@@ -32,6 +32,12 @@ public class InventoryDetailResult implements Serializable {
     @ApiModelProperty("盘点任务详情id")
     private Long detailId;
 
+    /**
+     * 主表 Id
+     */
+    @ApiModelProperty("主表盘点任务id")
+    private Long inventoryId;
+
 
     private Integer status;
     /**

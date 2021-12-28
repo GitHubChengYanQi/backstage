@@ -38,6 +38,12 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("对应实物id")
     private Long inkindId;
+    /**
+     * 主表 Id
+     */
+    @ApiModelProperty("主表盘点任务id")
+    private Long inventoryId;
+
 
     @ApiModelProperty(hidden = true)
     private Long createUser;
