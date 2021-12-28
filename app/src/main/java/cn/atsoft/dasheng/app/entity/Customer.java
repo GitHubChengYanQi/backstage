@@ -1,15 +1,9 @@
 package cn.atsoft.dasheng.app.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -27,10 +21,33 @@ public class Customer implements Serializable {
     /**
      * 客户id
      */
-    @TableId(value = "customer_id", type = IdType.AUTO)
+    @TableId(value = "customer_id", type = IdType.ID_WORKER)
     private Long customerId;
+
     @TableField("agent")
     private Integer agent;
+
+    @TableField("blacklist")
+    private Integer blacklist;
+
+    public Integer getBlacklist() {
+        return blacklist;
+    }
+
+    public void setBlacklist(Integer blacklist) {
+        this.blacklist = blacklist;
+    }
+
+    /**
+     * 供应商
+     */
+    @TableField("supply")
+    private Integer supply;
+    /**
+     * 开票id
+     */
+    @TableField("invoice_id")
+    private Long invoiceId;
 
 
     @TableField("classification")
@@ -133,6 +150,17 @@ public class Customer implements Serializable {
     private Date createTime;
 
     /**
+     * 默认联系人
+     */
+    @TableField("default_contacts")
+    private Long defaultContacts;
+    /**
+     * 默认地址
+     */
+    @TableField("default_address")
+    private Long defaultAddress;
+
+    /**
      * 修改时间
      */
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
@@ -190,9 +218,24 @@ public class Customer implements Serializable {
     /**
      * 部门编号
      */
-     @TableField(value = "deptId",fill =FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
+    public Long getDefaultContacts() {
+        return defaultContacts;
+    }
+
+    public void setDefaultContacts(Long defaultContacts) {
+        this.defaultContacts = defaultContacts;
+    }
+
+    public Long getDefaultAddress() {
+        return defaultAddress;
+    }
+
+    public void setDefaultAddress(Long defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
 
     /**
      * 成立时间
@@ -419,5 +462,21 @@ public class Customer implements Serializable {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public Integer getSupply() {
+        return supply;
+    }
+
+    public void setSupply(Integer supply) {
+        this.supply = supply;
+    }
+
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
 }

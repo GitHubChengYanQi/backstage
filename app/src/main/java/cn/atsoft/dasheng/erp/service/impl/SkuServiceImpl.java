@@ -26,6 +26,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.jsonwebtoken.lang.Strings;
@@ -348,6 +349,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             spuIds = new ArrayList<>();
         }
 
+
         IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
@@ -458,47 +460,49 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Spu spu = spuService.getById(skuResult.getSpuId());
         SpuResult spuResult = new SpuResult();
         ToolUtil.copyProperties(spu, spuResult);
-
         skuResult.setSpuResult(spuResult);
-
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
-
-
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
-
         List<Long> attIds = new ArrayList<>();
         List<Long> valueIds = new ArrayList<>();
         for (AttributeValues valuesRequest : valuesRequests) {
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-
         List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).list();
-
         List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
-
 
         for (AttributeValues valuesRequest : valuesList) {
             for (ItemAttribute itemAttribute : itemAttributes) {
                 if (valuesRequest.getAttributeId().equals(itemAttribute.getAttributeId())) {
-
                     AttributeValuesResult valuesResult = new AttributeValuesResult();
                     ToolUtil.copyProperties(valuesRequest, valuesResult);
-
                     ItemAttributeResult itemAttributeResult = new ItemAttributeResult();
                     ToolUtil.copyProperties(itemAttribute, itemAttributeResult);
-
                     valuesResult.setItemAttributeResult(itemAttributeResult);
-
                     valuesResults.add(valuesResult);
                 }
             }
         }
-
         skuResult.setList(valuesResults);
-
         return skuResult;
+    }
+
+    @Override
+    public List<SkuResult> formatSkuResult(List<Long> skuIds) {
+        if (ToolUtil.isEmpty(skuIds)) {
+            return new ArrayList<>();
+        }
+        List<Sku> skus = this.listByIds(skuIds);
+        List<SkuResult> skuResults = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuResult skuResult = new SkuResult();
+            ToolUtil.copyProperties(sku, skuResult);
+            skuResults.add(skuResult);
+        }
+        this.format(skuResults);
+        return skuResults;
     }
 
     private Serializable getKey(SkuParam param) {
@@ -571,7 +575,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 attIds.add(valuesRequest.getAttributeId());
             }
         }
-
         List<AttributeValues> attValuesList = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attIds).list();
         for (Sku sku : skuList) {
             SkuResult skuResult = new SkuResult();
@@ -591,8 +594,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuResult.setSkuTextValue(sb.toString());
             results.add(skuResult);
         }
-
-
         return results;
     }
 
@@ -609,18 +610,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             return spuResult;
         }
         return null;
-
     }
 
     @Override
-    public Map<Long, List<BackSku>> sendSku(List<Long> skuiIds) {
-        if (skuiIds.size() == 0) {
+    public Map<Long, List<BackSku>> sendSku(List<Long> skuIds) {
+        if (skuIds.size() == 0) {
             return null;
         }
         Map<Long, List<BackSku>> skuMap = new HashMap<>();
         List<Long> values = new ArrayList<>();
         List<Long> attIds = new ArrayList<>();
-        List<Sku> skus = this.query().in("sku_id", skuiIds).list();
+        List<Sku> skus = this.query().in("sku_id", skuIds).list();
         Map<Long, List<AttributeValues>> map = new HashMap<>();
         if (ToolUtil.isNotEmpty(skus)) {
             for (Sku sku : skus) {
@@ -628,7 +628,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
                 map.put(sku.getSkuId(), valuesRequests);
             }
-            for (Long skuiId : skuiIds) {
+            for (Long skuiId : skuIds) {
                 List<AttributeValues> attributeValues = map.get(skuiId);
                 if (ToolUtil.isNotEmpty(attributeValues)) {
                     for (AttributeValues attributeValue : attributeValues) {
@@ -642,7 +642,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 itemAttributeService.query().in("attribute_id", attIds).list();
         List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() :
                 attributeValuesService.query().in("attribute_values_id", values).list();
-        for (Long skuiId : skuiIds) {
+        for (Long skuiId : skuIds) {
             List<BackSku> backSkus = new ArrayList<>();
             List<AttributeValues> list = map.get(skuiId);
             if (ToolUtil.isNotEmpty(list)) {

@@ -63,7 +63,7 @@ public class QualityMessageSend implements AuditMessageSend {
         List<Long> users = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         wxCpTemplate.setUserIds(users);
         String url = mobileService.getMobileConfig().getUrl();
-        url = url + "/#/Work/Quality?id=" + parentId;
+        url = url + "/cp/#/Work/Quality?id=" + parentId;
         wxCpTemplate.setUrl(url);
         wxCpTemplate.setDescription("点击查看新质检任务");
         wxCpTemplate.setTitle("您被分派新的任务");
@@ -71,18 +71,6 @@ public class QualityMessageSend implements AuditMessageSend {
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
     }
-    public void refuseQuality(){
-        WxCpTemplate wxCpTemplate = new WxCpTemplate();
-        List<Long> users = new ArrayList<>();
-        wxCpTemplate.setUserIds(users);
-        String url = mobileService.getMobileConfig().getUrl();
-        url = url + "/#/Work/Quality?id=" + "?";
-        wxCpTemplate.setUrl(url);
-        wxCpTemplate.setDescription("质检任务有物料被拒绝质检");
-        wxCpTemplate.setTitle("质检任务物料被拒绝质检");
-        wxCpTemplate.setType(1);
-        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-        wxCpSendTemplate.sendTemplate();
-    }
+    
 
 }

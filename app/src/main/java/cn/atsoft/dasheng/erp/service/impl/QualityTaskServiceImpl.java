@@ -79,10 +79,6 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private OrCodeBindService bindService;
     @Autowired
-    private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
-    private OrCodeService orCodeService;
-    @Autowired
     private InkindService inkindService;
     @Autowired
     private QualityPlanDetailService qualityPlanDetailService;
@@ -164,7 +160,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             } else if (param.getType().equals("入厂")) {
                 type2Activiti = "inQuality";
             }
-            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "audit").eq("status", 99).eq("module", type2Activiti).one();
+
+            ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "quality").eq("status", 99).eq("module", type2Activiti).one();
             if (ToolUtil.isNotEmpty(activitiProcess)) {
                 this.power(activitiProcess);//检查创建权限
                 LoginUser user = LoginContextHolder.getContext().getUser();
@@ -387,6 +384,13 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             throw new ServiceException(500, "data数据错误");
         }
         formDataService.save(data);
+
+        //绑定关系
+        QualityTask task = new QualityTask();
+        task.setDataId(data.getDataId());
+        this.update(task, new QueryWrapper<QualityTask>() {{
+            eq("quality_task_id",formDataPojo.getQualityTaskId());
+        }});
 
         //通过质检项详情添加dataValue
         List<QualityPlanDetail> details = qualityPlanDetailService.query().eq("plan_id", formDataPojo.getPlanId()).list();
@@ -665,7 +669,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             throw new ServiceException(500, "当前质检已完成，不可以修改");
         }
 
-        //TODO 修改datavalue
+
         FormDataValue dataValue = new FormDataValue();
         dataValue.setValue(JSONUtil.toJsonStr(formValues.getDataValues()));
         formDataValueService.update(dataValue, new QueryWrapper<FormDataValue>() {{

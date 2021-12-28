@@ -1,15 +1,20 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
- * 流程任务表	
+ * 流程任务表
  * </p>
  *
  * @author Jazz
@@ -21,7 +26,13 @@ public class ActivitiProcessTaskResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ActivitiStepsResult stepsResult;
 
+    private User user;
+
+    private List<Object> remarks;
+
+    private Object object;
 
     @ApiModelProperty("")
     private Long processTaskId;
@@ -30,6 +41,8 @@ public class ActivitiProcessTaskResult implements Serializable {
     private Long processId;
 
     private String taskName;
+
+    private Boolean permissions;
 
     private String deptIds;
 
@@ -44,6 +57,8 @@ public class ActivitiProcessTaskResult implements Serializable {
     private Long formId;
 
     private String url;
+
+    private String createName;
 
     private Integer status;
 

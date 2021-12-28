@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import cn.hutool.core.date.DateTime;
@@ -99,6 +100,10 @@ public class OrCodeController extends BaseController {
     private OutstockService outstockService;
     @Autowired
     private QualityTaskService qualityTaskService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private QualityTaskDetailService detailService;
 
 
     /**
@@ -125,6 +130,20 @@ public class OrCodeController extends BaseController {
     public ResponseData batchAdd(@RequestBody OrCodeParam orCodeParam) {
         this.orCodeService.batchAdd(orCodeParam);
         return ResponseData.success();
+    }
+
+
+    /**
+     * 模糊查询二维码
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/codeIdList", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData codeIdList(@Param("codeId") String codeId) {
+        List<Long> longList = this.orCodeService.codeIdList(codeId);
+        return ResponseData.success(longList);
     }
 
 
@@ -157,17 +176,30 @@ public class OrCodeController extends BaseController {
 
 
     /**
-     * 返回二维码
+     * 扫码入库
      *
      * @author song
      * @Date 2021-10-29
      */
     @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
-    @ApiOperation("二维码")
-    @Transactional
+    @ApiOperation("扫码入库")
     public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
         Long number = orCodeService.instockByCode(inKindRequest);
         return ResponseData.success(number);
+
+    }
+
+    /**
+     * 批量扫码入库
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/batchInstockByCode", method = RequestMethod.POST)
+    @ApiOperation("批量扫码入库")
+    public ResponseData batchInstockByCode(@RequestBody InKindRequest inKindRequest) {
+        orCodeService.batchInstockByCode(inKindRequest);
+        return ResponseData.success();
 
     }
 
@@ -244,7 +276,7 @@ public class OrCodeController extends BaseController {
     public ResponseData backObject(@RequestParam Long id) {
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {
-            throw new ServiceException(500, "当前二维码不合法");
+            return null;
         } else {
             String source = codeBind.getSource();
             switch (source) {
@@ -386,33 +418,35 @@ public class OrCodeController extends BaseController {
                     outStockOrderRequest.setResult(outstockResult);
                     return ResponseData.success(outStockOrderRequest);
                 case "quality":
-
                     QualityTask qualityTask = qualityTaskService.query().eq("quality_task_id", codeBind.getFormId()).one();
                     if (ToolUtil.isEmpty(qualityTask)) {
                         throw new ServiceException(500, "当前数据不存在");
                     }
-
                     QualityTaskResult qualityTaskResult = new QualityTaskResult();
                     ToolUtil.copyProperties(qualityTask, qualityTaskResult);
-
                     qualityTaskService.detailFormat(qualityTaskResult);
 
-                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())){
+                    if (ToolUtil.isNotEmpty(qualityTaskResult.getUserId())) {
                         User user1 = userService.getById(qualityTaskResult.getUserId());
                         qualityTaskResult.setUserName(user1.getName());
                     }
 
-
-
                     QualityRequest qualityRequest = new QualityRequest();
                     qualityRequest.setType("quality");
-
-//                    List<TaskCount> taskCounts = qualityTaskService.backIkind(codeBind.getFormId());
-//                    qualityTaskResult.setTaskCounts(taskCounts);
                     qualityRequest.setResult(qualityTaskResult);
                     return ResponseData.success(qualityRequest);
+                case "item":
+                    InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
+                    InkindBack inkindBack = new InkindBack();
 
+                    if (inkindResult.getSource().equals("质检") && ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
+                        QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                        inkindResult.setTaskDetail(detail);
+                    }
 
+                    inkindBack.setInkindResult(inkindResult);
+                    inkindBack.setType("item");
+                    return ResponseData.success(inkindBack);
             }
         }
         return ResponseData.success();
@@ -470,6 +504,19 @@ public class OrCodeController extends BaseController {
     public ResponseData outStockByCode(@RequestBody InKindRequest inKindRequest) {
         Long aLong = orCodeService.outStockByCode(inKindRequest);
         return ResponseData.success(aLong);
+    }
+
+    /**
+     * 自动生成并绑定
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/automaticBinding", method = RequestMethod.POST)
+    @Transactional
+    public ResponseData automaticBinding(@RequestBody BackCodeRequest codeRequest) {
+        Long orcodeId = orCodeService.automaticBinding(codeRequest);
+        return ResponseData.success(orcodeId);
     }
 }
 

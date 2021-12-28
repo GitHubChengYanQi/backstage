@@ -4,6 +4,8 @@ import cn.atsoft.dasheng.app.model.params.InstockParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class InKindRequest {
     private Long codeId;
@@ -21,4 +23,5 @@ public class InKindRequest {
     private Long outstockOrderId;
     private Long outstockListingId;
 
+    private List<Long> codeIds;  //批量二维码
 }

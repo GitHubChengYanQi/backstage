@@ -27,7 +27,6 @@ public class AuditMessageSendImpl implements AuditMessageSend {
     public void send(Long taskId, RuleType type, List<Long> users, String url, String createName) {
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
         switch (type) {
             case audit:
                 wxCpTemplate.setTitle("待审批");
@@ -37,7 +36,7 @@ public class AuditMessageSendImpl implements AuditMessageSend {
                 break;
 
         }
-        wxCpTemplate.setDescription(createName + "创建的任务" + qualityTask.getCoding());
+        wxCpTemplate.setDescription(processTask.getTaskName());
         wxCpTemplate.setUserIds(users);
         wxCpTemplate.setUrl(url);
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);

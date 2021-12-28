@@ -1,6 +1,11 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.app.entity.Adress;
+import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.region.RegionResult;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import lombok.Data;
 
@@ -25,12 +30,12 @@ import java.util.List;
 public class CustomerResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private List<SkuResult> skuResultList; //供应物料
     private CrmCustomerLevelResult crmCustomerLevelResult;
     private OriginResult originResult;
     private UserResult userResult;
     private CrmIndustryResult crmIndustryResult;
-    //    private  ContactsResult contactsResult;
+    private List<SupplyResult> supplyResults;
     private List<ContactsResult> contactsParams;
     private List<AdressResult> adressParams;
     private String classificationName;
@@ -45,17 +50,21 @@ public class CustomerResult implements Serializable {
     private Integer agent;
     private String region;
     private RegionResult regionResult;
-
+    private InvoiceResult invoiceResult;
     private Integer businessCount;
     private Integer contracrCount;
     private Integer dynamicCount;
     private Integer contactsCount;
-
-
+    private Long invoiceId;
+    private Contacts contact;
+    private Adress address;
+    private Integer supply;
     /**
      * 客户id
      */
+    private Long defaultContacts;
 
+    private Long defaultAddress;
 
     @ApiModelProperty("客户id")
     private Long customerId;
@@ -73,6 +82,7 @@ public class CustomerResult implements Serializable {
     private Long customerLevelId;
 
     private Integer status;
+    private Integer blacklist;
     private Integer classification;
 
     private Long sort;

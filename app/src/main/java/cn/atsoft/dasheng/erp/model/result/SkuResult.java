@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
+import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -36,13 +38,16 @@ public class SkuResult implements Serializable {
     private String categoryName;
     private SpuResult spuResult;
     private String spuName;
+    private String createUserName;
     private String skuTextValue;
     private Long spuClass;
     @ApiModelProperty("")
     private Long skuId;
     private Spu spu;
+    private QualityPlan qualityPlan;
     private Unit unit;
-
+    private SpuClassification spuClassification;
+    private Long fileId;
     private Integer batch;
 
 
@@ -114,6 +119,7 @@ public class SkuResult implements Serializable {
      */
     @ApiModelProperty("状态")
     private Integer display;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

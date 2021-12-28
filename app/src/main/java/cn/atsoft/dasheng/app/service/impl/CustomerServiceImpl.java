@@ -12,12 +12,14 @@ import cn.atsoft.dasheng.app.mapper.CustomerMapper;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.ContactsBind;
+import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
-import cn.atsoft.dasheng.crm.region.GetRegionService;
-import cn.atsoft.dasheng.crm.region.RegionResult;
+import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
+import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
@@ -68,6 +70,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private ContractService contractService;
     @Autowired
     private TrackMessageService trackMessageService;
+    @Autowired
+    private SupplyService supplyService;
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Override
     @FreedLog
@@ -82,11 +88,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (!ToolUtil.isEmpty(list)) {
             throw new ServiceException(500, "已有当前客户");
         }
+        param.setCustomerId(null);
         Customer entity = getEntity(param);
         this.save(entity);
 
         //添加联系人
-        if(ToolUtil.isNotEmpty(param.getContactsParams())){
+        if (ToolUtil.isNotEmpty(param.getContactsParams())) {
             for (ContactsParam contactsParam : param.getContactsParams()) {
                 if (ToolUtil.isNotEmpty(contactsParam.getContactsName()) && !contactsParam.getContactsName().equals("")) {
                     Contacts contacts = contactsService.add(contactsParam);
@@ -101,16 +108,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
 
 
-        if (ToolUtil.isNotEmpty(param.getAdressParams())){
+        if (ToolUtil.isNotEmpty(param.getAdressParams())) {
             for (AdressParam adressParam : param.getAdressParams()) {
-                if ( ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
+                if (ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
                     adressParam.setCustomerId(entity.getCustomerId());
                     adressService.add(adressParam);
                 }
             }
         }
-        //添加地址
-
 
 
         return entity;
@@ -213,6 +218,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> industryIds = new ArrayList<>();
         List<Long> contactsIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
+        List<Long> invoiceIds = new ArrayList<>();
         Long customerId = null;
 
 
@@ -224,7 +230,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             dycustomerIds.add(record.getCustomerId());
             customerIds.add(record.getCustomerId());
             customerId = record.getCustomerId();
-
+            invoiceIds.add(record.getInvoiceId());
         }
 
 
@@ -237,6 +243,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             contactsIds.add(contactsBind.getContactsId());
         }
 
+        List<Invoice> invoices = invoiceIds.size() == 0 ? new ArrayList<>() : invoiceService.listByIds(invoiceIds);
         /**
          * 获取联系人
          */
@@ -308,6 +315,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             } else if (ToolUtil.isNotEmpty(record.getClassification()) && record.getClassification() == 0) {
                 record.setClassificationName("代理商");
             }
+
+            for (Invoice invoice : invoices) {      //对比开票
+                if (ToolUtil.isNotEmpty(record.getInvoiceId()) && invoice.getInvoiceId().equals(record.getInvoiceId())) {
+                    InvoiceResult invoiceResult = new InvoiceResult();
+                    ToolUtil.copyProperties(invoice, invoiceResult);
+                    record.setInvoiceResult(invoiceResult);
+                    break;
+                }
+            }
+
             for (Origin origin : originList) {
                 if (origin.getOriginId().equals(record.getOriginId())) {
                     OriginResult originResult = new OriginResult();
@@ -443,7 +460,44 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             add(customerResult);
         }};
         this.format(results);
+
+        Contacts contacts = contactsService.getById(customer.getDefaultContacts());
+
+        Adress adress = adressService.getById(customer.getDefaultAddress());
+
+        customerResult.setAddress(adress);
+        customerResult.setContact(contacts);
         return results.get(0);
+    }
+
+    /**
+     * 按级别获取供应商
+     *
+     * @param levelId
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getSuppliers(Long levelId) {
+        CrmCustomerLevel level = crmCustomerLevelService.getById(levelId);
+        Long rank = level.getRank();
+        List<CrmCustomerLevel> levels = crmCustomerLevelService.list();
+
+        List<Long> levelIds = new ArrayList<>();
+        for (CrmCustomerLevel crmCustomerLevel : levels) {
+            if (crmCustomerLevel.getRank() >= rank) {
+                levelIds.add(crmCustomerLevel.getCustomerLevelId());
+            }
+        }
+
+        List<Customer> customers = this.query().eq("supply", 1).in("customer_level_id", levelIds).list();
+
+        List<CustomerResult> customerResults = new ArrayList<>();
+        for (Customer customer : customers) {
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            customerResults.add(customerResult);
+        }
+        return customerResults;
     }
 
     public void addContacts(Long customerId, List<ContactsParam> contactsParams) {

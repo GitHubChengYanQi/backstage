@@ -63,6 +63,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         }
         this.updateById(newEntity);
     }
+
     @Override
     public int isAdmin(Long taskId) {
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
@@ -99,7 +100,6 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
-
 
 
     private Serializable getKey(ActivitiProcessTaskParam param) {

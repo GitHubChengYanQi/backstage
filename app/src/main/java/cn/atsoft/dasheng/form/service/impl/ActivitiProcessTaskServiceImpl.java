@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.model.result.QualityTaskResult;
 import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.erp.service.impl.QualityTaskServiceImpl;
 import cn.atsoft.dasheng.form.entity.*;
@@ -16,7 +18,12 @@ import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,22 +47,9 @@ import java.util.List;
  */
 @Service
 public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessTaskMapper, ActivitiProcessTask> implements ActivitiProcessTaskService {
+
     @Autowired
-    private ActivitiProcessService processService;
-    @Autowired
-    private ActivitiStepsService stepsService;
-    @Autowired
-    private WxCpSendTemplate wxCpSendTemplate;
-    @Autowired
-    private ActivitiAuditService auditService;
-    @Autowired
-    private QualityTaskServiceImpl qualityTaskService;
-    @Autowired
-    private ActivitiProcessTaskSend taskSend;
-    @Autowired
-    private ActivitiProcessLogService activitiProcessLogService;
-    @Autowired
-    private ActivitiProcessLogService logService;
+    private UserService userService;
 
     @Override
     public Long add(ActivitiProcessTaskParam param) {
@@ -108,7 +102,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         int flag = 0;
         if (LoginContextHolder.getContext().isAdmin()) {
             flag = 1;
-        } else if (flag1 == false || flag2 == false) {
+        } else if (!flag1 || !flag2) {
             flag = 0;
         } else {
             flag = 1;
@@ -130,6 +124,7 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
     public PageInfo<ActivitiProcessTaskResult> findPageBySpec(ActivitiProcessTaskParam param) {
         Page<ActivitiProcessTaskResult> pageContext = getPageContext();
         IPage<ActivitiProcessTaskResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -151,7 +146,59 @@ public class ActivitiProcessTaskServiceImpl extends ServiceImpl<ActivitiProcessT
         return entity;
     }
 
+    void format(List<ActivitiProcessTaskResult> data) {
 
+//        List<Long> qualityIds = new ArrayList<>();
+//        List<Long> purchaseIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
+        for (ActivitiProcessTaskResult datum : data) {
+            userIds.add(datum.getCreateUser());
+//            switch (datum.getType()) {
+//                case "quality_task":
+//                    qualityIds.add(datum.getFormId());
+//                    break;
+//                case "purchase":
+//                    purchaseIds.add(datum.getFormId());
+//                    break;
+//            }
+        }
+//        List<QualityTask> qualityTasks = qualityIds.size() == 0 ? new ArrayList<>() : qualityTaskService.listByIds(qualityIds);
+//
+//        List<PurchaseAsk> purchaseAsks = purchaseIds.size() == 0 ? new ArrayList<>() : askService.listByIds(purchaseIds);
+
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+
+        for (ActivitiProcessTaskResult datum : data) {
+
+            for (User user : users) {
+                if (user.getUserId().equals(datum.getCreateUser())) {
+                    datum.setUser(user);
+                    break;
+                }
+            }
+
+//
+//            for (QualityTask qualityTask : qualityTasks) {
+//                if (datum.getFormId().equals(qualityTask.getQualityTaskId())) {
+//                    QualityTaskResult qualityTaskResult = new QualityTaskResult();
+//                    ToolUtil.copyProperties(qualityTask, qualityTaskResult);
+//                    datum.setObject(qualityTaskResult);
+//                    break;
+//                }
+//            }
+//
+//            for (PurchaseAsk purchaseAsk : purchaseAsks) {
+//                if (purchaseAsk.getPurchaseAskId().equals(datum.getFormId())) {
+//                    PurchaseAskResult askResult = new PurchaseAskResult();
+//                    ToolUtil.copyProperties(purchaseAsk, askResult);
+//                    datum.setObject(askResult);
+//                    break;
+//                }
+//            }
+
+        }
+
+    }
 }
 
 

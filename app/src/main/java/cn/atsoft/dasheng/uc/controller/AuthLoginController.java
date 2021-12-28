@@ -265,32 +265,34 @@ public class AuthLoginController extends BaseController {
         return ResponseData.success(token);
     }
 
-
     /**
      * 点击登录执行的动作
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/wxCp", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation("登录接口")
     public ResponseData restLogin(@RequestBody @Valid LoginParam loginParam) {
-
         String username = loginParam.getUserName();
         String password = loginParam.getPassword();
 
-        Long memberId = UserUtils.getUserId();//memberId
         //登录并创建token
         String token = authService.login(username, password);
         JwtPayLoad jwtPayLoad = JwtTokenUtil.getJwtPayLoad(token);
         Long userId = jwtPayLoad.getUserId();//userId
-        WxuserInfo wxuserInfo = new WxuserInfo();
-        wxuserInfo.setMemberId(memberId);
-        wxuserInfo.setUserId(userId);
-        wxuserInfo.setSource("wxCp");
-        QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
-        wxuserInfoQueryWrapper.eq("user_id", userId);
-        wxuserInfoQueryWrapper.eq("source", "wxCp");
-        wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
+        try{
+            Long memberId = UserUtils.getUserId();//memberId
+            WxuserInfo wxuserInfo = new WxuserInfo();
+            wxuserInfo.setMemberId(memberId);
+            wxuserInfo.setUserId(userId);
+            wxuserInfo.setSource("wxCp");
+            QueryWrapper<WxuserInfo> wxuserInfoQueryWrapper = new QueryWrapper<>();
+            wxuserInfoQueryWrapper.eq("user_id", userId);
+            wxuserInfoQueryWrapper.eq("source", "wxCp");
+            wxuserInfoService.saveOrUpdate(wxuserInfo, wxuserInfoQueryWrapper);
 
+        }catch (Exception e){
+
+        }
         return ResponseData.success(token);
     }
 

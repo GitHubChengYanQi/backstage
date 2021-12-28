@@ -137,11 +137,7 @@ public class FreedAop {
             Contacts contactsparam = (Contacts) result;
             QueryWrapper<Contacts> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("contacts_id", contactsparam.getContactsId());
-            List<Contacts> contactsList = contactsService.list(queryWrapper);
-//            for (Contacts contacts1 : contactsList) {
-//                contacts1.getCustomerId();
-//                customerDynamicParam.setCustomerId(contacts1.getCustomerId());
-//            }
+
 
             switch (methodName) {
                 case "add":
@@ -252,9 +248,7 @@ public class FreedAop {
             try {
                 FreedTemplateProperties.TrackMessage trackMessage = freedTemplateService.getConfig().getTrackMessage();
                 TrackMessage trackMessageResult = (TrackMessage) result;
-//            if (ToolUtil.isEmpty(trackMessageResult.getBusinessId())) {
-//                throw new ServiceException(500, "请确认当前项目");
-//            }
+
                 businessDynamicParam.setBusinessId(trackMessageResult.getBusinessId());
                 String content = "";
                 switch (methodName) {
@@ -265,9 +259,7 @@ public class FreedAop {
                 }
                 businessDynamicService.add(businessDynamicParam);
             }catch (Exception e){
-
             }
-
         }
 
 

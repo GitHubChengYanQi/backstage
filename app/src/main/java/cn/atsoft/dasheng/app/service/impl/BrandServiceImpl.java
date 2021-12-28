@@ -100,6 +100,14 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         return brandResults;
     }
 
+    @Override
+    public BrandResult getBrandResult(Long id) {
+        Brand brand = this.getById(id);
+        BrandResult brandResult = new BrandResult();
+        ToolUtil.copyProperties(brand, brandResult);
+        return brandResult;
+    }
+
     private Serializable getKey(BrandParam param) {
         return param.getBrandId();
     }

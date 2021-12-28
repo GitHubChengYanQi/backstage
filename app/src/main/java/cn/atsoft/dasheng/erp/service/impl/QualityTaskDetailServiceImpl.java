@@ -197,7 +197,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     }
 
     @Override
-    //TODO 详情
+
     public TaskDetail getDetailResults(Long id) {
         TaskDetail taskDetail = new TaskDetail();
 
@@ -209,7 +209,6 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
 
         //查看拒绝
         List<QualityTaskRefuseResult> refuseResults = refuseService.getRefuseByDetailId(id);
-
 
 
 //查看子任务详情
@@ -233,7 +232,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             taskResults.add(taskResult);
         }
 
-        List<User> users = userService.listByIds(userIds);
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (QualityTaskResult taskResult : taskResults) {
             List<User> getusers = taskService.getusers(users, taskResult.getUserIds().split(","));

@@ -53,4 +53,20 @@ public interface ActivitiProcessLogMapper extends BaseMapper<ActivitiProcessLog>
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ActivitiProcessLogParam paramCondition);
 
+    /**
+     * 查询所有审核的
+     *
+     * @author Sing
+     * @Date 2021-11-10
+     */
+    List<ActivitiProcessLogResult> auditList(@Param("stepIds") List<Long> stepIds, @Param("paramCondition") ActivitiProcessLogParam paramCondition);
+
+    /**
+     * 查出所有推送的
+     *
+     * @param stepIds
+     * @param paramCondition
+     * @return
+     */
+    List<ActivitiProcessLogResult> sendList(@Param("stepIds") List<Long> stepIds, @Param("paramCondition") ActivitiProcessLogParam paramCondition);
 }

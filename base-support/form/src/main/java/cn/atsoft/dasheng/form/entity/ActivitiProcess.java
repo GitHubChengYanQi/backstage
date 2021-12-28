@@ -1,5 +1,9 @@
 package cn.atsoft.dasheng.form.entity;
 
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.util.Date;
@@ -29,6 +33,7 @@ public class ActivitiProcess implements Serializable {
      * 模块
      */
     @TableField("module")
+
     private String module;
     /**
      * 启用状态
@@ -53,6 +58,7 @@ public class ActivitiProcess implements Serializable {
      * 类型：ship（工艺），audit（审核）
      */
     @TableField("type")
+
     private String type;
 
     /**
@@ -114,14 +120,6 @@ public class ActivitiProcess implements Serializable {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public Long getFormId() {
@@ -186,6 +184,14 @@ public class ActivitiProcess implements Serializable {
 
     public void setModule(String module) {
         this.module = module;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

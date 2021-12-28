@@ -37,6 +37,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
      */
     List<Map<String, Object>> customMapList(@Param("paramCondition") SkuParam paramCondition);
 
+
     /**
      * 获取分页实体列表
      *

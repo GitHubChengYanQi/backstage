@@ -14,21 +14,19 @@
         <result column="display" property="display"/>
         <result column="spu_id" property="spuId"/>
         <result column="deptId" property="deptId"/>
-        <result column="instock_order_id" property="instockOrderId"/>
         <result column="cost_price" property="costPrice"/>
         <result column="selling_price" property="sellingPrice"/>
-        <result column="storehouse_positions_id" property="storehousePositionsId"/>
         <result column="brand_id" property="brandId"/>
         <result column="number" property="number"/>
-        <result column="outstock_order_id" property="outstockOrderId"/>
+        <result column="source_id" property="sourceId"/>
         <result column="source" property="source"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
-    AS "number",outstock_order_id AS "outstockOrderId",source AS "source",
+    AS "number",source AS "source", source_id AS "sourceId",
 spu_id
-    AS "spuId",instock_order_id AS "instockOrderId", cost_price AS "costPrice" , selling_price AS "sellingPrice",storehouse_positions_id AS "storehousePositionsId" ,brand_id AS "brandId",
+    AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",
         inkind_id
         AS "inkindId", type AS "type", sku_id AS "skuId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>

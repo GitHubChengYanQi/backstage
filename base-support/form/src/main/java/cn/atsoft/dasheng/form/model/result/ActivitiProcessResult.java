@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
+import cn.atsoft.dasheng.form.pojo.ProcessEnum;
+import cn.atsoft.dasheng.form.pojo.ProcessModuleEnum;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 

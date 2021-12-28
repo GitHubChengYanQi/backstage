@@ -30,6 +30,8 @@ public class Sku implements Serializable {
     @TableField("quality_plan_id")
     private Long qualityPlanId;
 
+    @TableField("file_id")
+    private Long fileId;
     /**
      * 批量
      */
@@ -253,6 +255,14 @@ public class Sku implements Serializable {
 
     public void setCoding(String coding) {
         this.coding = coding;
+    }
+
+    public Long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
     }
 
     @Override

@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.form.service.ActivitiStepsService;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -68,6 +69,9 @@ public class ActivitiProcessTaskSend {
     private QualityMessageSend qualityMessageSend;
     @Autowired
     private AuditMessageSendImpl auditMessageSend;
+    @Autowired PurchaseMessageSend purchaseMessageSend;
+    @Autowired
+    private PurchaseAskService purchaseAskService;
 
     private Logger logger = LoggerFactory.getLogger(ActivitiProcessTaskSend.class);
 
@@ -148,25 +152,43 @@ public class ActivitiProcessTaskSend {
             case quality_dispatch:
                 qualityMessageSend.send(taskId, type, users, url, createName);
                 break;
+            case purchase_complete:
+                purchaseAskService.complateAsk(taskId);
+                this.completeSend(type,aboutSend);
+                break;
         }
 
     }
 
     private void completeSend(RuleType type,Map<String, String> aboutSend) {
         List<Long> users = new ArrayList<>();
+        String url = mobileService.getMobileConfig().getUrl();
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(Long.valueOf(aboutSend.get("taskId")));
-        List<QualityTask> list = qualityTaskService.list(new QueryWrapper<QualityTask>() {{
-            eq("parent_id", processTask.getFormId());
-            ge("state", 1);
-        }});
-        for (QualityTask qualityTask : list) {
-            if (ToolUtil.isNotEmpty(qualityTask.getUserIds())){
-                users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            }
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
-            qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
+        switch (type){
+            case quality_complete:
+                List<QualityTask> list = qualityTaskService.list(new QueryWrapper<QualityTask>() {{
+                    eq("parent_id", processTask.getFormId());
+                    ge("state", 1);
+                }});
+                for (QualityTask qualityTask : list) {
+                    if (ToolUtil.isNotEmpty(qualityTask.getUserIds())&& !qualityTask.getState().equals(-1)){
+                        users = Arrays.asList(qualityTask.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                    }
+                    url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
+                    qualityMessageSend.send(Long.valueOf(aboutSend.get("taskId")), type, users, url,aboutSend.get("byIdName"));
+                }
+
+                 url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                qualityMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
+            break;
+            case purchase_complete:
+                users.add(processTask.getCreateUser());
+                url =url + "/cp/#/Work/Workflow?" + "id=" + processTask.getProcessTaskId();
+                purchaseMessageSend.send(processTask.getProcessTaskId(), type, users, url,aboutSend.get("byIdName"));
+                break;
         }
     }
+
 
     /**
      * 审批拒绝更新
@@ -175,21 +197,17 @@ public class ActivitiProcessTaskSend {
      */
     public void refuseTask(Long taskId) {
         ActivitiProcessTask processTask = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
         //否决更新质检任务状态
-//        qualityTask.setState();
-//        qualityTaskService.updateById(qualityTask);
-        //创建消息推送 推送给发起人
 
         //找到发起质检任务的人
-        User createUser = userService.getById(qualityTask.getCreateUser());
+        User createUser = userService.getById(processTask.getCreateUser());
         //获取推送人
         List<Long> users = new ArrayList<>();
         users.add(createUser.getUserId());
 
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
         wxCpTemplate.setTitle("审批被否决");
-        wxCpTemplate.setDescription(createUser.getName() + "创建的任务" + qualityTask.getCoding());
+        wxCpTemplate.setDescription(processTask.getTaskName());
         wxCpTemplate.setUserIds(users);
         //获取url
         Map<String, String> aboutSend = this.getAboutSend(taskId, send);
@@ -207,19 +225,18 @@ public class ActivitiProcessTaskSend {
      */
     private Map<String, String> getAboutSend(Long taskId, RuleType type) {
         ActivitiProcessTask task = activitiProcessTaskService.getById(taskId);
-        QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
-        User byId = userService.getById(qualityTask.getCreateUser());
+        User byId = userService.getById(task.getCreateUser());
         Map<String, String> map = new HashMap<>();
         map.put("taskId", taskId.toString());
-        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
-        map.put("coding", qualityTask.getCoding());
+//        map.put("qualityTaskId", qualityTask.getQualityTaskId().toString());
+//        map.put("coding", qualityTask.getCoding());
         map.put("byIdName", byId.getName());
-        String url = this.changeUrl(type, map);//组装url
+        String url = this.changeUrl(type, map,task);//组装url
         map.put("url", url);
         return map;
     }
 
-    private String changeUrl(RuleType type, Map<String, String> map) {
+    private String changeUrl(RuleType type, Map<String, String> map, ActivitiProcessTask processTask) {
         String url = mobileService.getMobileConfig().getUrl();
         switch (type) {
             case audit:
@@ -229,10 +246,11 @@ public class ActivitiProcessTaskSend {
 //                case quality_perform:
 //                url = url + "/cp/#/OrCode?id=" + map.get("orcodeId");
 //                break;
-            //TODO complete节点推送子任务  
+
 //            case quality_complete:
             case quality_dispatch:
-                url = url + "/cp/#/Work/Quality?id=" + map.get("qualityTaskId");
+                QualityTask qualityTask = qualityTaskService.getById(processTask.getFormId());
+                url = url + "/cp/#/Work/Quality?id=" + qualityTask.getQualityTaskId();
                 break;
 
         }

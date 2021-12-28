@@ -31,6 +31,11 @@ public class QualityTask implements Serializable {
      */
     @TableField("userIds")
     private String userIds;
+    /**
+     * 表单id
+     */
+    @TableField("data_id")
+    private Long dataId;
 
     /**
      * 主任务分派状态
@@ -306,6 +311,14 @@ public class QualityTask implements Serializable {
 
     public void setUserIds(String userIds) {
         this.userIds = userIds;
+    }
+
+    public Long getDataId() {
+        return dataId;
+    }
+
+    public void setDataId(Long dataId) {
+        this.dataId = dataId;
     }
 
     @Override

@@ -91,4 +91,6 @@ public interface SkuService extends IService<Sku> {
 
 
     SkuResult getSku(Long id);
+
+    List<SkuResult> formatSkuResult (List<Long> skuIds);
 }
