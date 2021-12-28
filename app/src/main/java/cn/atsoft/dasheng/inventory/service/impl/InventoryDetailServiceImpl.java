@@ -3,18 +3,22 @@ package cn.atsoft.dasheng.inventory.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
 import cn.atsoft.dasheng.inventory.mapper.InventoryDetailMapper;
 import cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
-import  cn.atsoft.dasheng.inventory.service.InventoryDetailService;
+import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,19 +32,22 @@ import java.util.List;
 @Service
 public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMapper, InventoryDetail> implements InventoryDetailService {
 
+    @Autowired
+    private InkindService inkindService;
+
     @Override
-    public void add(InventoryDetailParam param){
+    public void add(InventoryDetailParam param) {
         InventoryDetail entity = getEntity(param);
         this.save(entity);
     }
 
     @Override
-    public void delete(InventoryDetailParam param){
+    public void delete(InventoryDetailParam param) {
         this.removeById(getKey(param));
     }
 
     @Override
-    public void update(InventoryDetailParam param){
+    public void update(InventoryDetailParam param) {
         InventoryDetail oldEntity = getOldEntity(param);
         InventoryDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -48,23 +55,24 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     }
 
     @Override
-    public InventoryDetailResult findBySpec(InventoryDetailParam param){
+    public InventoryDetailResult findBySpec(InventoryDetailParam param) {
         return null;
     }
 
     @Override
-    public List<InventoryDetailResult> findListBySpec(InventoryDetailParam param){
+    public List<InventoryDetailResult> findListBySpec(InventoryDetailParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param){
+    public PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param) {
         Page<InventoryDetailResult> pageContext = getPageContext();
         IPage<InventoryDetailResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(InventoryDetailParam param){
+    private Serializable getKey(InventoryDetailParam param) {
         return param.getDetailId();
     }
 
@@ -82,4 +90,20 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return entity;
     }
 
+    private void format(List<InventoryDetailResult> data) {
+        List<Long> inkindIds = new ArrayList<>();
+        for (InventoryDetailResult datum : data) {
+            inkindIds.add(datum.getInkindId());
+        }
+        List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
+
+        for (InventoryDetailResult datum : data) {
+            for (InkindResult inKind : inKinds) {
+                if (datum.getInkindId().equals(inKind.getInkindId())) {
+                    datum.setInkindResult(inKind);
+                    break;
+                }
+            }
+        }
+    }
 }

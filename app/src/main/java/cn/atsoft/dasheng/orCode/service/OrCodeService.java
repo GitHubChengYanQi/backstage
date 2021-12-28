@@ -143,7 +143,7 @@ public interface OrCodeService extends IService<OrCode> {
      * @return
      */
 
-    Long batchInstockByCode(InKindRequest inKindRequest);
+    void batchInstockByCode(InKindRequest inKindRequest);
 
     /**
      * 批量增加二维码
