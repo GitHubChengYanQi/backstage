@@ -753,7 +753,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long outStockByCode(InKindRequest inKindRequest) {
         //修改库存详情
         StockDetails stockDetails = stockDetailsService.query().eq("storehouse_id", inKindRequest.getStorehouse()).eq("qr_code_id", inKindRequest.getCodeId()).one();
-        if (stockDetails.getNumber() == 0) {
+        if (ToolUtil.isNotEmpty(stockDetails) && stockDetails.getNumber() == 0) {
             throw new ServiceException(500, "数量不足");
         }
         long l = stockDetails.getNumber() - inKindRequest.getNumber();
