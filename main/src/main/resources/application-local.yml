@@ -63,7 +63,10 @@ spring:
     username: guest
     password: guest
     port: 5672
-
+    listener:
+      simple:
+        acknowledge-mode: manual
+    prefix: hhgy
 # 邮件发送（改为自己的账号）
 mail:
   from: sn93@qq.com
