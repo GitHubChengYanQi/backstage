@@ -1,15 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.BusinessTrack;
-import cn.atsoft.dasheng.app.entity.Instock;
-import cn.atsoft.dasheng.app.entity.Message;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.BusinessTrackService;
-import cn.atsoft.dasheng.app.service.InstockService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -22,9 +18,13 @@ import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
@@ -72,6 +72,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private CodingRulesService codingRulesService;
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
 
     @Override
@@ -162,36 +166,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     @Override
     @Transactional
     public void update(InstockOrderParam param) {
-        InstockOrder instockOrder = this.getById(param.getInstockOrderId());
-        if (ToolUtil.isEmpty(instockOrder)) {
-            throw new ServiceException(500, "入库单不存在");
-        } else if (instockOrder.getState() == 2) {
-            throw new ServiceException(500, "当前入库单已完成,不可再添加新的物料");
-        }
-
-
-        List<InstockRequest> instockRequest = param.getInstockRequest();
-        if (ToolUtil.isEmpty(instockRequest)) {
-            throw new ServiceException(500, "请填写要入库的物料");
-        }
-        List<InstockList> instockLists = new ArrayList<>();
-        for (InstockRequest request : instockRequest) {
-            InstockList instockList = new InstockList();
-            instockList.setSkuId(request.getSkuId());
-            instockList.setNumber(request.getNumber());
-            instockList.setInstockOrderId(param.getInstockOrderId());
-            instockList.setInstockNumber(request.getNumber());
-            instockList.setBrandId(request.getBrandId());
-            instockList.setStoreHouseId(param.getStoreHouseId());
-            if (ToolUtil.isNotEmpty(request.getCostprice())) {
-                instockList.setCostPrice(request.getCostprice());
-            }
-            if (ToolUtil.isNotEmpty(request.getSellingPrice())) {
-                instockList.setSellingPrice(request.getSellingPrice());
-            }
-            instockLists.add(instockList);
-        }
-        instockListService.saveBatch(instockLists);
     }
 
     @Override
@@ -265,18 +239,69 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockSendTemplate.sendTemplate();
     }
 
+    @Override
+    public void freeInstock(FreeInStockParam freeInStockParam) {
+        Inkind inkind = new Inkind();
+        inkind.setBrandId(freeInStockParam.getBrandId());
+        inkind.setSkuId(freeInStockParam.getSkuId());
+        inkind.setNumber(freeInStockParam.getNumber());
+        inkind.setType("1");
+        inkind.setSource("自由入库");
+        inkindService.save(inkind);
+
+        OrCode orCode = new OrCode();
+        orCode.setType("item");
+        orCode.setState(1);
+        orCodeService.save(orCode);
+
+        OrCodeBind codeBind = new OrCodeBind();
+        codeBind.setOrCodeId(orCode.getOrCodeId());
+        codeBind.setSource("item");
+        codeBind.setFormId(inkind.getInkindId());
+
+        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())
+                .and(i -> i.eq(Stock::getSkuId, inkind.getSkuId()))
+                .eq(Stock::getBrandId, inkind.getBrandId())
+                .one();
+        Long stockId = null;
+        if (ToolUtil.isNotEmpty(stock)) {
+            long addNumber = stock.getInventory() + inkind.getNumber();
+            stock.setInventory(addNumber);
+            stockService.updateById(stock);
+            stockId = stock.getStockId();
+        } else {
+            Stock newStock = new Stock();
+            newStock.setInventory(inkind.getNumber());
+            newStock.setBrandId(inkind.getBrandId());
+            newStock.setSkuId(inkind.getSkuId());
+            newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+            stockService.save(newStock);
+            stockId = newStock.getStockId();
+        }
+        StockDetailsParam stockDetailsParam = new StockDetailsParam();
+        stockDetailsParam.setStockId(stockId);
+        stockDetailsParam.setNumber(inkind.getNumber());
+
+        stockDetailsParam.setQrCodeid(orCode.getOrCodeId());
+        stockDetailsParam.setInkindId(inkind.getInkindId());
+        stockDetailsParam.setStorehouseId(freeInStockParam.getStoreHouseId());
+
+        stockDetailsParam.setBrandId(inkind.getBrandId());
+        stockDetailsParam.setSkuId(inkind.getSkuId());
+        stockDetailsService.add(stockDetailsParam);
+    }
+
 
     private Serializable getKey(InstockOrderParam param) {
         return param.getInstockOrderId();
     }
 
-    private Page<InstockOrderResult> getPageContext() {
+    private Page<InstockOrderResult> getPageContext(){
         List<String> fields = new ArrayList<>();
         fields.add("storeHouseId");
         fields.add("createTime");
         fields.add("userId");
         return PageFactory.defaultPage(fields);
-
     }
 
     /**

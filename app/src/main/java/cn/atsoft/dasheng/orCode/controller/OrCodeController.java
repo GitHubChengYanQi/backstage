@@ -198,8 +198,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/batchInstockByCode", method = RequestMethod.POST)
     @ApiOperation("批量扫码入库")
     public ResponseData batchInstockByCode(@RequestBody InKindRequest inKindRequest) {
-        Long number = orCodeService.batchInstockByCode(inKindRequest);
-        return ResponseData.success(number);
+        orCodeService.batchInstockByCode(inKindRequest);
+        return ResponseData.success();
 
     }
 
@@ -439,7 +439,7 @@ public class OrCodeController extends BaseController {
                     InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
                     InkindBack inkindBack = new InkindBack();
 
-                    if (inkindResult.getSource().equals("质检")&&ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
+                    if (inkindResult.getSource().equals("质检") && ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
                         QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
                         inkindResult.setTaskDetail(detail);
                     }

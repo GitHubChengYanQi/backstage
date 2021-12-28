@@ -12,12 +12,14 @@ import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockList;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
@@ -34,6 +36,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,11 +95,9 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(newEntity);
 
-
             InstockParam instockParam = new InstockParam();
             instockParam.setState(1);
             instockParam.setBrandId(newEntity.getBrandId());
-
             instockParam.setSkuId(newEntity.getSkuId());
             instockParam.setStoreHouseId(newEntity.getStoreHouseId());
             instockParam.setCostPrice(newEntity.getCostPrice());
@@ -108,6 +109,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
 
             Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, newEntity.getStoreHouseId())
                     .and(i -> i.eq(Stock::getSkuId, newEntity.getSkuId()))
+                    .eq(Stock::getBrandId, newEntity.getBrandId())
                     .one();
 
             StockParam stockParam = new StockParam();
@@ -194,6 +196,80 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
         IPage<InstockListResult> page = this.baseMapper.customPageList(pageContext, param);
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    @Override
+    @Transactional
+    public void batchInstock(InstockListParam param) {
+        InstockList instockList = this.getById(param.getInstockListId());
+        Long number = 0L;
+        if (instockList.getNumber() == 0) {
+            throw new ServiceException(500, "已经全部入库");
+        }
+        for (InstockListRequest request : param.getRequests()) {  //获取入库的总数量
+            number = number + request.getInkind().getNumber();
+        }
+        //判断清单数量
+        if (instockList.getNumber() < number) {   //判断清单数量
+            throw new ServiceException(500, "数量不符");
+        }
+        //修改清单数量
+        instockList.setNumber(instockList.getNumber() - number);
+        this.updateById(instockList);
+
+        Stock stock = stockService.query().eq("brand_id", instockList.getBrandId())   //判断库存
+                .eq("sku_id", instockList.getSkuId())
+                .eq("storehouse_id", instockList.getStoreHouseId())
+                .one();
+        Long stockId = null;
+        if (ToolUtil.isNotEmpty(stock)) {
+            long addNumber = stock.getInventory() + number;
+            stock.setInventory(addNumber);
+            stockService.updateById(stock);
+            stockId = stock.getStockId();
+        } else {
+            Stock newStock = new Stock();
+            newStock.setInventory(number);
+            newStock.setBrandId(instockList.getBrandId());
+            newStock.setSkuId(instockList.getSkuId());
+            newStock.setStorehouseId(instockList.getStoreHouseId());
+            stockService.save(newStock);
+            stockId = newStock.getStockId();
+        }
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        List<Instock> instocks = new ArrayList<>();
+        for (InstockListRequest request : param.getRequests()) {
+
+            Inkind inkind = request.getInkind();
+            if (!instockList.getSkuId().equals(inkind.getInkindId()) && !instockList.getBrandId().equals(inkind.getBrandId())) {
+                throw new ServiceException(500, "物料与入库单不符");
+            }
+
+            StockDetails stockDetail = new StockDetails();
+            stockDetail.setNumber(request.getInkind().getNumber());
+            stockDetail.setSkuId(request.getInkind().getSkuId());
+            stockDetail.setBrandId(request.getInkind().getBrandId());
+            stockDetail.setStockId(stockId);
+            stockDetail.setQrCodeid(request.getCodeId());
+            stockDetail.setStorehouseId(instockList.getStoreHouseId());
+            Long inkindId = getInkindId(request.getCodeId());
+            stockDetail.setInkindId(inkindId);
+            stockDetailsList.add(stockDetail);
+            //入库明细
+            Instock instock = new Instock();
+            instock.setState(1);
+            instock.setBrandId(request.getInkind().getBrandId());
+            instock.setSkuId(request.getInkind().getSkuId());
+            instock.setStoreHouseId(instockList.getStoreHouseId());
+            instock.setNumber(request.getInkind().getNumber());
+            instock.setInstockOrderId(instockList.getInstockOrderId());
+            instock.setStorehousePositionsId(instockList.getStorehousePositionsId());
+            instocks.add(instock);
+        }
+        stockDetailsService.saveBatch(stockDetailsList);
+        instockService.saveBatch(instocks);
+        //修改入库单状态
+        updateOrderState(param.getInstockOrderId());
     }
 
     private Serializable getKey(InstockListParam param) {

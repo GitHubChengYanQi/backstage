@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.model.result.CategoryResult;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.form.entity.FormDataValue;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -485,8 +486,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      * @return
      */
     @Override
-    @Transactional
-    public Long batchInstockByCode(InKindRequest inKindRequest) {
+
+    public void batchInstockByCode(InKindRequest inKindRequest) {
 
         List<Long> formIds = orCodeBindService.getFormIds(inKindRequest.getCodeIds());
         if (inKindRequest.getCodeIds().size() != formIds.size()) {
@@ -497,48 +498,35 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             throw new ServiceException(500, "你的二维码信息不符");
         }
         //判断实物是否已有入库
-        Long inkindNumber = 0L;
+
         for (Inkind inkind : inkinds) {
             if (inkind.getType().equals("1")) {
                 throw new ServiceException(500, "已有入库，请确定二维码");
             }
             inkind.setType("1");
-            inkindNumber = inkindNumber + inkind.getNumber();
         }
         inkindService.updateBatchById(inkinds);
         //入库
-        InstockList instockList = null;
-        inKindRequest.getInstockListParam().setNum(inkindNumber);
-        if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
-            instockList = instockListService.getById(inKindRequest.getInstockListParam().getInstockListId());
-            if (ToolUtil.isNotEmpty(instockList)) {
+        List<InstockListRequest> instockListRequests = new ArrayList<>();
 
-                if (instockList.getNumber() - inkindNumber < 0) {  //判断出库数量是否超过清单数量
-                    throw new ServiceException(500, "超出单据数量");
-                }
 
-                if ((instockList.getNumber() - inkindNumber) == 0) {
-                    try {
-                        instockListService.update(inKindRequest.getInstockListParam());
-                    } catch (Exception e) {
-                        return 0L;
-                    }
-                    return 0L;
+        //获取实物对应的二维码
+        List<OrCodeBind> codeBinds = orCodeBindService.query().in("form_id", formIds).list();
+        for (OrCodeBind codeBind : codeBinds) {
+            for (Inkind inkind : inkinds) {
+                if (inkind.getInkindId().equals(codeBind.getFormId())) {
+                    InstockListRequest listRequest = new InstockListRequest();
+                    listRequest.setCodeId(codeBind.getOrCodeId());
+                    listRequest.setInkind(inkind);
+                    instockListRequests.add(listRequest);
                 }
             }
-
-            try {
-                instockListService.update(inKindRequest.getInstockListParam());
-            } catch (Exception e) {
-                return 0L;
-            }
-        }
-        if (ToolUtil.isEmpty(instockList)) {
-            return 0L;
-        } else {
-            return instockList.getNumber() - inkindNumber;
         }
 
+        InstockListParam instockListParam = inKindRequest.getInstockListParam();
+        instockListParam.setRequests(instockListRequests);
+
+        instockListService.batchInstock(instockListParam);
     }
 
 

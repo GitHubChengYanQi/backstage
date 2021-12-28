@@ -64,6 +64,13 @@ public interface InstockListService extends IService<InstockList> {
      * @author song
      * @Date 2021-10-06
      */
-     PageInfo<InstockListResult> findPageBySpec(InstockListParam param);
+    PageInfo<InstockListResult> findPageBySpec(InstockListParam param);
+
+    /**
+     * 批量扫码入库
+     *
+     * @param param
+     */
+    void batchInstock(InstockListParam param);
 
 }
