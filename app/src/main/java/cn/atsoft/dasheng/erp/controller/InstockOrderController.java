@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -72,7 +73,8 @@ public class InstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/freeInstock", method = RequestMethod.POST)
     @ApiOperation("自有入库")
-    public ResponseData freeInstock(@RequestBody FreeInStockParam freeInStockParam ) {
+    @Permission
+    public ResponseData freeInstock(@RequestBody FreeInStockParam freeInStockParam) {
         this.instockOrderService.freeInstock(freeInStockParam);
         return ResponseData.success();
     }

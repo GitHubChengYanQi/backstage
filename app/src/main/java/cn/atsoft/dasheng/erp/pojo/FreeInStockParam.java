@@ -2,10 +2,11 @@ package cn.atsoft.dasheng.erp.pojo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class FreeInStockParam {
-    private Long number;
     private Long storeHouseId;
-    private Long codeId;
+    private List<Long> codeIds;
     private Long positionsId;
 }
