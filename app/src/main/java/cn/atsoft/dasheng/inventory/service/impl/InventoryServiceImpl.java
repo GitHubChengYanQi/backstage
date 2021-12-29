@@ -103,7 +103,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         //获取实物
         Inkind inkind = inkindService.getById(codeBind.getFormId());
         //查询仓库
-        Stock stock = stockService.query().eq("storehouse_id", inventoryRequest.getStoreHouseId())
+        Stock stock = ToolUtil.isEmpty(inkind) ? new Stock() : stockService.query().eq("storehouse_id", inventoryRequest.getStoreHouseId())
                 .eq("brand_id", inkind.getBrandId())
                 .eq("sku_id", inkind.getSkuId()).one();
         //查看仓库是否有次实物

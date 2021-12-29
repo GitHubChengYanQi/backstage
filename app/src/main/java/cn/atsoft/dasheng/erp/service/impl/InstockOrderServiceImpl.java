@@ -26,6 +26,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -41,10 +42,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -76,7 +74,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private StockService stockService;
     @Autowired
     private StockDetailsService stockDetailsService;
-
+    @Autowired
+    private OrCodeBindService bindService;
 
     @Override
     @Transactional
@@ -239,56 +238,98 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockSendTemplate.sendTemplate();
     }
 
+    /**
+     * 自由入库
+     *
+     * @param freeInStockParam
+     */
     @Override
     public void freeInstock(FreeInStockParam freeInStockParam) {
-        Inkind inkind = new Inkind();
-        inkind.setBrandId(freeInStockParam.getBrandId());
-        inkind.setSkuId(freeInStockParam.getSkuId());
-        inkind.setNumber(freeInStockParam.getNumber());
-        inkind.setType("1");
-        inkind.setSource("自由入库");
-        inkindService.save(inkind);
+        if (ToolUtil.isEmpty(freeInStockParam.getPositionsId())) {
+            throw new ServiceException(500, "请选择库位");
+        }
+        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
+        if (ToolUtil.isNotEmpty(detailsList)) {
+            throw new ServiceException(500, "已入库");
+        }
 
-        OrCode orCode = new OrCode();
-        orCode.setType("item");
-        orCode.setState(1);
-        orCodeService.save(orCode);
+        if (ToolUtil.isEmpty(freeInStockParam.getCodeIds())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
+        List<OrCodeBind> codeBinds = bindService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
+        if (ToolUtil.isEmpty(codeBinds)) {
+            throw new ServiceException(500, "二维码不正确");
+        }
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind codeBind : codeBinds) {
+            inkindIds.add(codeBind.getFormId());
+        }
+        List<Inkind> inkinds = inkindService.query().in("inkind_id", inkindIds).eq("type", 0).list();
 
-        OrCodeBind codeBind = new OrCodeBind();
-        codeBind.setOrCodeId(orCode.getOrCodeId());
-        codeBind.setSource("item");
-        codeBind.setFormId(inkind.getInkindId());
+        if (ToolUtil.isEmpty(inkinds) && inkinds.size() != freeInStockParam.getCodeIds().size()) {   //判断实物
+            throw new ServiceException(500, "有错误二维码");
+        }
+        List<Long> distinct = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            distinct.add(inkind.getSkuId() + inkind.getBrandId());
+        }
+        long count = distinct.stream().distinct().count();
+        if (count != 1) {
+            throw new ServiceException(500, "批次物料有不相同");
+        }
 
-        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())
-                .and(i -> i.eq(Stock::getSkuId, inkind.getSkuId()))
-                .eq(Stock::getBrandId, inkind.getBrandId())
+        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询仓库
+                .eq(Stock::getSkuId, inkinds.get(0).getSkuId())
+                .eq(Stock::getBrandId, inkinds.get(0).getBrandId())
                 .one();
+
+        Long inkindNumber = 0L;   //入库的数量
+        for (Inkind inkind : inkinds) {
+            inkindNumber = inkindNumber + inkind.getNumber();
+        }
         Long stockId = null;
-        if (ToolUtil.isNotEmpty(stock)) {
-            long addNumber = stock.getInventory() + inkind.getNumber();
-            stock.setInventory(addNumber);
+        if (ToolUtil.isNotEmpty(stock)) {  //有相同物料 叠加数量
+            stock.setInventory(stock.getInventory() + inkindNumber);
             stockService.updateById(stock);
             stockId = stock.getStockId();
-        } else {
+        } else {                          //没有相同物料 创建新物料
             Stock newStock = new Stock();
-            newStock.setInventory(inkind.getNumber());
-            newStock.setBrandId(inkind.getBrandId());
-            newStock.setSkuId(inkind.getSkuId());
+            newStock.setInventory(inkindNumber);
+            newStock.setBrandId(inkinds.get(0).getBrandId());
+            newStock.setSkuId(inkinds.get(0).getSkuId());
             newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
             stockService.save(newStock);
             stockId = newStock.getStockId();
         }
-        StockDetailsParam stockDetailsParam = new StockDetailsParam();
-        stockDetailsParam.setStockId(stockId);
-        stockDetailsParam.setNumber(inkind.getNumber());
+        Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
+        for (OrCodeBind codeBind : codeBinds) {
+            for (Long codeId : freeInStockParam.getCodeIds()) {
+                if (codeBind.getOrCodeId().equals(codeId)) {
+                    map.put(codeBind.getFormId(), codeId);
+                    break;
+                }
+            }
+        }
 
-        stockDetailsParam.setQrCodeid(orCode.getOrCodeId());
-        stockDetailsParam.setInkindId(inkind.getInkindId());
-        stockDetailsParam.setStorehouseId(freeInStockParam.getStoreHouseId());
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        for (Inkind inkind : inkinds) {    //添加库存详情
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setStockId(stockId);
+            stockDetails.setNumber(inkind.getNumber());
+            stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
+            Long codeId = map.get(inkind.getInkindId());
+            stockDetails.setQrCodeid(codeId);
+            stockDetails.setInkindId(inkind.getInkindId());
+            stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
 
-        stockDetailsParam.setBrandId(inkind.getBrandId());
-        stockDetailsParam.setSkuId(inkind.getSkuId());
-        stockDetailsService.add(stockDetailsParam);
+            stockDetails.setBrandId(inkind.getBrandId());
+            stockDetails.setSkuId(inkind.getSkuId());
+            stockDetailsList.add(stockDetails);
+
+            inkind.setType("1");
+        }
+        stockDetailsService.saveBatch(stockDetailsList);
+        inkindService.updateBatchById(inkinds);
     }
 
 
@@ -296,7 +337,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         return param.getInstockOrderId();
     }
 
-    private Page<InstockOrderResult> getPageContext(){
+    private Page<InstockOrderResult> getPageContext() {
         List<String> fields = new ArrayList<>();
         fields.add("storeHouseId");
         fields.add("createTime");

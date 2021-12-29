@@ -11,10 +11,10 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -154,6 +154,8 @@ public interface OrCodeService extends IService<OrCode> {
     void batchAdd(OrCodeParam param);
 
 
+    Map<String,Object> inkindDetail(Long qrcodeId);
+
     /**
      * @return
      */
@@ -170,7 +172,7 @@ public interface OrCodeService extends IService<OrCode> {
     /**
      * 自动生成二维码绑定
      */
-    Long automaticBinding(BackCodeRequest codeRequest);
+    AutomaticBindResult automaticBinding(BackCodeRequest codeRequest);
 
     /**
      * 查询二维码

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,6 +37,7 @@ public class InkindResult implements Serializable {
     private List<BackSku> backSku;
     private SkuResult skuResult;
     private Long number;
+    private Map<String,Object> inkindDetail;
 
     private PrintTemplateResult printTemplateResult;
     /**
