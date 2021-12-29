@@ -607,6 +607,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Map<String,Object> result = new HashMap<>();
             result.put("stock",stockResult);
             result.put("storehouse",storehouseResult);
+            result.put("stockDetails",stockDetails);
             result.put("storehousePositions",storehousePositionsResult);
             result.put("inkindResult",inkindResult);
             return result;
