@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -153,6 +154,8 @@ public interface OrCodeService extends IService<OrCode> {
      */
     void batchAdd(OrCodeParam param);
 
+
+    Map<String,Object> inkindDetail(Long qrcodeId);
 
     /**
      * @return

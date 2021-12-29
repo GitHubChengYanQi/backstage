@@ -422,8 +422,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             List<SkuJson> list = new ArrayList<>();
             for (AttributeValues valuesRequest : valuesRequests) {
-                valuesRequest.getAttributeValuesId();
-                valuesRequest.getAttributeId();
                 SkuJson skuJson = new SkuJson();
                 for (ItemAttribute itemAttribute : itemAttributes) {
                     if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
@@ -435,7 +433,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
                 for (AttributeValues attributeValue : attributeValues) {
                     if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
-                        AttributeValuesParam attributeValuesParam = new AttributeValuesParam();
                         Values values = new Values();
                         values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
                         values.setAttributeValues(attributeValue.getAttributeValues());
@@ -449,6 +446,53 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
     }
+//    public void formatSku(SkuResult skuResult){
+//        List<Long> valuesIds = new ArrayList<>();
+//        List<Long> attributeIds = new ArrayList<>();
+//        JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
+//        List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
+//        for (AttributeValues valuesRequest : valuesRequests) {
+//            valuesIds.add(valuesRequest.getAttributeValuesId());
+//            attributeIds.add(valuesRequest.getAttributeId());
+//        }
+//        List<ItemAttribute> itemAttributes = itemAttributeService.lambdaQuery().list();
+//
+//        List<AttributeValues> attributeValues = attributeIds.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery()
+//                .in(AttributeValues::getAttributeId, attributeIds)
+//                .list();
+//        Spu spu = ToolUtil.isEmpty(skuResult.getSpu())? new Spu() : spuService.query().eq("spu_id", skuResult.getSpu()).one();
+//        SpuResult spuResult = new SpuResult();
+//        ToolUtil.copyProperties(spu,spuResult);
+//        Unit unit = unitService.getById(spu.getUnitId());
+//        UnitResult unitResult = new UnitResult();
+//        ToolUtil.copyProperties(unit,unitResult);
+//
+//        spuResult.setUnitResult(unitResult);
+//        skuResult.setSpuResult(spuResult);
+//        List<SkuJson> list = new ArrayList<>();
+//        for (AttributeValues valuesRequest : valuesRequests) {
+//            SkuJson skuJson = new SkuJson();
+//            for (ItemAttribute itemAttribute : itemAttributes) {
+//                if (itemAttribute.getAttributeId().equals(valuesRequest.getAttributeId())) {
+//                    Attribute attribute = new Attribute();
+//                    attribute.setAttributeId(itemAttribute.getAttributeId().toString());
+//                    attribute.setAttribute(itemAttribute.getAttribute());
+//                    skuJson.setAttribute(attribute);
+//                }
+//            }
+//            for (AttributeValues attributeValue : attributeValues) {
+//                if (valuesRequest.getAttributeValuesId().equals(attributeValue.getAttributeValuesId())) {
+//                    Values values = new Values();
+//                    values.setAttributeValuesId(valuesRequest.getAttributeValuesId().toString());
+//                    values.setAttributeValues(attributeValue.getAttributeValues());
+//                    skuJson.setValues(values);
+//                }
+//            }
+//            list.add(skuJson);
+//        }
+//        skuResult.setSkuJsons(list);
+//
+//    }
 
     @Override
     public SkuResult getSku(Long id) {
