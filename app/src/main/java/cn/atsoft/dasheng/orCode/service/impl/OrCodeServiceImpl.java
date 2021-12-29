@@ -101,6 +101,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private InstockListService listService;
 
 
+
     @Override
     @Transactional
     public Long add(OrCodeParam param) {
@@ -427,6 +428,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     @Transactional
     public Long instockByCode(InKindRequest inKindRequest) {
+        StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
+        if (ToolUtil.isNotEmpty(details)) {
+            throw  new ServiceException(500,"已入库，请勿再次入库相同");
+        }
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
         Long number = 0L;
@@ -488,6 +493,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
 
     public void batchInstockByCode(InKindRequest inKindRequest) {
+
+        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
+        if (ToolUtil.isNotEmpty(detailsList)) {
+            throw  new ServiceException(500,"已入库，请勿再次入库相同");
+        }
 
         List<Long> formIds = orCodeBindService.getFormIds(inKindRequest.getCodeIds());
         if (inKindRequest.getCodeIds().size() != formIds.size()) {
@@ -741,7 +751,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long outStockByCode(InKindRequest inKindRequest) {
         //修改库存详情
         StockDetails stockDetails = stockDetailsService.query().eq("storehouse_id", inKindRequest.getStorehouse()).eq("qr_code_id", inKindRequest.getCodeId()).one();
-        if (stockDetails.getNumber() == 0 || stockDetails.getNumber()<inKindRequest.getNumber()) {
+        if (stockDetails.getNumber() == 0 || stockDetails.getNumber() < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不足");
         }
         //修改出库清单

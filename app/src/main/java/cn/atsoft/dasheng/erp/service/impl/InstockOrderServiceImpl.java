@@ -248,6 +248,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (ToolUtil.isEmpty(freeInStockParam.getPositionsId())) {
             throw new ServiceException(500, "请选择库位");
         }
+        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
+        if (ToolUtil.isNotEmpty(detailsList)) {
+            throw new ServiceException(500, "已入库");
+        }
 
         if (ToolUtil.isEmpty(freeInStockParam.getCodeIds())) {
             throw new ServiceException(500, "请扫描二维码");

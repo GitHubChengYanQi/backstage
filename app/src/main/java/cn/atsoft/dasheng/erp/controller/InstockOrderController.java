@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class InstockOrderController extends BaseController {
     @RequestMapping(value = "/freeInstock", method = RequestMethod.POST)
     @ApiOperation("自有入库")
     @Permission
-    public ResponseData freeInstock(@RequestBody FreeInStockParam freeInStockParam) {
+    public ResponseData freeInstock(@Valid @RequestBody FreeInStockParam freeInStockParam) {
         this.instockOrderService.freeInstock(freeInStockParam);
         return ResponseData.success();
     }

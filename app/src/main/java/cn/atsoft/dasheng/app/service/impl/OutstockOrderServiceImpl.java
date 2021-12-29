@@ -224,6 +224,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     @Override
     public void freeOutStock(FreeOutStockParam freeOutStockParam) {
         StockDetails stockDetails = stockDetailsService.query().eq("qr_code_id", freeOutStockParam.getCodeId()).one();
+        if (ToolUtil.isEmpty(stockDetails)) {
+            throw new ServiceException(500, "库存没有此物料");
+        }
 
         if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
             throw new ServiceException(500, "数量不足");

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/freeOutStock", method = RequestMethod.POST)
     @ApiOperation("自由出库")
     @Permission
-    public ResponseData freeOutStock(@RequestBody FreeOutStockParam freeOutStockParam) {
+    public ResponseData freeOutStock(@Valid @RequestBody FreeOutStockParam freeOutStockParam) {
         this.outstockOrderService.freeOutStock(freeOutStockParam);
         return ResponseData.success();
     }
@@ -87,7 +88,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OutstockOrderParam outstockOrderParam)  {
+    public ResponseData delete(@RequestBody OutstockOrderParam outstockOrderParam) {
         this.outstockOrderService.delete(outstockOrderParam);
         return ResponseData.success();
     }
@@ -118,10 +119,9 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OutstockOrderResult> list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
-        if(ToolUtil.isEmpty(outstockOrderParam)){
+        if (ToolUtil.isEmpty(outstockOrderParam)) {
             outstockOrderParam = new OutstockOrderParam();
         }
-//        return this.outstockOrderService.findPageBySpec(outstockOrderParam);
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.outstockOrderService.findPageBySpec(outstockOrderParam, null);
         } else {
@@ -147,7 +147,7 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<OutstockOrder> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("display", 1).in("state",1);
+        itemsQueryWrapper.in("display", 1).in("state", 1);
         List<Map<String, Object>> list = this.outstockOrderService.listMaps(itemsQueryWrapper);
         OutstockOrderSelectWrapper itemsSelectWrapper = new OutstockOrderSelectWrapper(list);
         List<Map<String, Object>> result = itemsSelectWrapper.wrap();

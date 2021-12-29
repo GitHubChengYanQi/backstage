@@ -106,8 +106,6 @@ public class OrCodeController extends BaseController {
     private QualityTaskDetailService detailService;
 
 
-
-
     /**
      * 批量增加二维码
      *
@@ -145,6 +143,9 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
     @ApiOperation("扫码入库")
     public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
+        if (ToolUtil.isEmpty(inKindRequest.getCodeId())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
         Long number = orCodeService.instockByCode(inKindRequest);
         return ResponseData.success(number);
 
@@ -159,6 +160,9 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/batchInstockByCode", method = RequestMethod.POST)
     @ApiOperation("批量扫码入库")
     public ResponseData batchInstockByCode(@RequestBody InKindRequest inKindRequest) {
+        if (ToolUtil.isEmpty(inKindRequest.getCodeIds())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
         orCodeService.batchInstockByCode(inKindRequest);
         return ResponseData.success();
 
