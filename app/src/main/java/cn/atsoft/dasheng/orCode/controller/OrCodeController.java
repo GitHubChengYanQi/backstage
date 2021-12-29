@@ -389,13 +389,17 @@ public class OrCodeController extends BaseController {
                 case "item":
                     InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
                     InkindBack inkindBack = new InkindBack();
-
-                    if (inkindResult.getSource().equals("质检") && ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
-                        QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
-                        inkindResult.setTaskDetail(detail);
+                    switch (inkindResult.getSource()) {
+                        case "质检":
+                            QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                            inkindResult.setTaskDetail(detail);
+                            break;
+                        case "入库":
+                        case "自由入库":
+                            Map<String, Object> inkindDetail = orCodeService.inkindDetail(codeBind.getOrCodeId());
+                            inkindResult.setInkindDetail(inkindDetail);
+                            break;
                     }
-                    Map<String, Object> inkindDetail = orCodeService.inkindDetail(codeBind.getOrCodeId());
-                    inkindResult.setInkindDetail(inkindDetail);
                     inkindBack.setInkindResult(inkindResult);
                     inkindBack.setType("item");
                     return ResponseData.success(inkindBack);
@@ -416,6 +420,7 @@ public class OrCodeController extends BaseController {
     public ResponseData inkindDetail(@RequestParam Long id) {
         return ResponseData.success(orCodeService.inkindDetail(id));
     }
+
     /**
      * 判断是否绑定
      *
