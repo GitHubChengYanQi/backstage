@@ -26,11 +26,13 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.service.impl.OrCodeServiceImpl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -483,8 +485,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/automaticBinding", method = RequestMethod.POST)
     @Transactional
     public ResponseData automaticBinding(@RequestBody BackCodeRequest codeRequest) {
-        Long orcodeId = orCodeService.automaticBinding(codeRequest);
-        return ResponseData.success(orcodeId);
+        AutomaticBindResult automaticBindResult = orCodeService.automaticBinding(codeRequest);
+        return ResponseData.success(automaticBindResult);
     }
 }
 

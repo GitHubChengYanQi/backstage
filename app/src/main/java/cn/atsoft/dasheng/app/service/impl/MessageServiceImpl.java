@@ -62,8 +62,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     @Override
     public PageInfo<MessageResult> findPageBySpec(MessageParam param, DataScope dataScope) {
-        DateTime date = DateUtil.date(param.getCreateTime());
-        param.setCreateTime(date);
+        if (ToolUtil.isNotEmpty(param.getCreateTime())) {
+            DateTime date = DateUtil.date(param.getCreateTime());
+            param.setCreateTime(date);
+        }
         Page<MessageResult> pageContext = getPageContext();
         IPage<MessageResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);

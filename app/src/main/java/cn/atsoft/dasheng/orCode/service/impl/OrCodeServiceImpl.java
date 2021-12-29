@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -99,7 +100,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private QualityTaskDetailService detailService;
     @Autowired
     private InstockListService listService;
-
 
 
     @Override
@@ -430,7 +430,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long instockByCode(InKindRequest inKindRequest) {
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(details)) {
-            throw  new ServiceException(500,"已入库，请勿再次入库相同");
+            throw new ServiceException(500, "已入库，请勿再次入库相同");
         }
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
@@ -496,7 +496,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
         if (ToolUtil.isNotEmpty(detailsList)) {
-            throw  new ServiceException(500,"已入库，请勿再次入库相同");
+            throw new ServiceException(500, "已入库，请勿再次入库相同");
         }
 
         List<Long> formIds = orCodeBindService.getFormIds(inKindRequest.getCodeIds());
@@ -572,8 +572,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
-    public Map<String,Object> inkindDetail(Long qrcodeId){
+    public Map<String, Object> inkindDetail(Long qrcodeId) {
         StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
             eq("qr_code_id", qrcodeId);
         }});
@@ -581,38 +582,37 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         /**
          * 格式化sku 返回数据
          */
-        if (ToolUtil.isNotEmpty(stockDetails)){
+        if (ToolUtil.isNotEmpty(stockDetails)) {
 
 
             Inkind inkind = inkindService.getById(stockDetails.getInkindId());
             InkindResult inkindResult = new InkindResult();
-            ToolUtil.copyProperties(inkind,inkindResult);
-
+            ToolUtil.copyProperties(inkind, inkindResult);
 
 
             Stock stock = stockService.getById(stockDetails.getStockId());
             StockResult stockResult = new StockResult();
-            ToolUtil.copyProperties(stock,stockResult);
-
+            ToolUtil.copyProperties(stock, stockResult);
 
 
             Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
             StorehouseResult storehouseResult = new StorehouseResult();
-            ToolUtil.copyProperties(storehouse,storehouseResult);
+            ToolUtil.copyProperties(storehouse, storehouseResult);
 
             StorehousePositions storehousePositions = storehousePositionsService.getById(stockDetails.getStorehousePositionsId());
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePositions,storehousePositionsResult);
+            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
 
-            Map<String,Object> result = new HashMap<>();
-            result.put("stock",stockResult);
-            result.put("storehouse",storehouseResult);
-            result.put("storehousePositions",storehousePositionsResult);
-            result.put("inkindResult",inkindResult);
+            Map<String, Object> result = new HashMap<>();
+            result.put("stock", stockResult);
+            result.put("storehouse", storehouseResult);
+            result.put("storehousePositions", storehousePositionsResult);
+            result.put("inkindResult", inkindResult);
             return result;
         }
-        return null ;
+        return null;
     }
+
     public Object orcodeBackObj(Long id) {
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {
@@ -863,7 +863,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      * @return
      */
     @Override
-    public Long automaticBinding(BackCodeRequest codeRequest) {
+    public AutomaticBindResult automaticBinding(BackCodeRequest codeRequest) {
         OrCode orCode = new OrCode();
         orCode.setType(codeRequest.getSource());
         orCode.setState(1);
@@ -904,7 +904,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         bindParam.setFormId(formId);
         bindParam.setSource(codeRequest.getSource());
         orCodeBindService.add(bindParam);
-        return orCode.getOrCodeId();
+        AutomaticBindResult automaticBindResult = new AutomaticBindResult();
+        automaticBindResult.setCodeId(orCode.getOrCodeId());
+        automaticBindResult.setInkindId(formId);
+        return automaticBindResult;
     }
 
     @Override
