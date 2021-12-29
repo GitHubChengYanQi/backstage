@@ -227,29 +227,28 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         if (ToolUtil.isEmpty(stockDetails)) {
             throw new ServiceException(500, "库存没有此物料");
         }
-
         if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
             throw new ServiceException(500, "数量不足");
         }
         long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
         stockDetails.setNumber(newNumber);
         stockDetailsService.updateById(stockDetails);
-        //修改仓库数量
-        Stock stock = stockService.query().eq("stock_id", stockDetails.getStockId()).one();
-        stock.setInventory(stock.getInventory() - freeOutStockParam.getNumber());
-        stockService.updateById(stock);
-
-//        Outstock outstock = new Outstock();
-//        outstock.setStorehouseId(stock.getStorehouseId());
-//        outstock.setBrandId(stock.getBrandId());
-//        outstock.setStockId(stockDetails.getStockId());
-//        outstock.setStockItemId(stockDetails.getStockItemId());
-//        outstock.setSkuId(stockDetails.getSkuId());
-//        outstock.setNumber(freeOutStockParam.getNumber());
-//        outstockService.save(outstock);
-
+        //更新仓库数量
+        updateStock(stockDetails.getStockId());
     }
 
+    private void updateStock(Long stockId) {
+        List<StockDetails> details = stockDetailsService.query().eq("stock_id", stockId).list();
+        Long number = 0L;
+        for (StockDetails detail : details) {
+            number = number + detail.getNumber();
+        }
+        Stock stock = new Stock();
+        stock.setInventory(number);
+        stockService.update(stock, new QueryWrapper<Stock>() {{
+            eq("stock_id", stockId);
+        }});
+    }
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {
