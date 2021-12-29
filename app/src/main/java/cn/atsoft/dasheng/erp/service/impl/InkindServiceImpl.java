@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.mapper.InkindMapper;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
@@ -16,6 +17,9 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
@@ -26,6 +30,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +54,12 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     private BrandService brandService;
     @Autowired
     private PrintTemplateService printTemplateService;
+    @Autowired
+    private QrCodeCreateService qrCodeCreateService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
 
     @Override
@@ -157,14 +168,16 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setSkuResult(skuResult);
         inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
         this.returnPrintTemplate(inkindResult);
-        inkindResult.setSkuResult(null);
-        inkindResult.setBrandResult(null);
+//        inkindResult.setSkuResult(null);
+//        inkindResult.setBrandResult(null);
         return inkindResult;
     }
     public void returnPrintTemplate(InkindResult param){
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
         }});
+        param.getInkindId();
+
         System.out.println(  PHYSICALDETAIL);
         String templete = printTemplate.getTemplete();
         if (templete.contains("${name}")){
@@ -175,6 +188,16 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         }
         if (templete.contains("${brand}")){
             templete =  templete.replace("${brand}",param.getBrandResult().getBrandName());
+        }
+        if (templete.contains("${brand}")){
+            OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
+                eq("form_id", param.getInkindId());
+                eq("source", "item");
+            }});
+            String url = mobileService.getMobileConfig().getUrl()+"/cp/#/OrCode?id="+orCodeBind.getOrCodeId();
+            String qrCode = qrCodeCreateService.createQrCode(url);
+
+            templete =  templete.replace("${qrCode}",qrCode);
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate,printTemplateResult);
