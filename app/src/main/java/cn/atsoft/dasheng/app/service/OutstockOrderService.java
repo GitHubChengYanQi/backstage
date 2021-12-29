@@ -82,6 +82,6 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      *
      * @param freeOutStockParam
      */
-    void freeOutsotck(FreeOutStockParam freeOutStockParam);
+    void freeOutStock(FreeOutStockParam freeOutStockParam);
 
 }

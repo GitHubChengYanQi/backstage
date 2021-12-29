@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.OutstockOrderSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
@@ -48,6 +50,20 @@ public class OutstockOrderController extends BaseController {
     public ResponseData addItem(@RequestBody OutstockOrderParam outstockOrderParam) {
         OutstockOrder add = this.outstockOrderService.add(outstockOrderParam);
         return ResponseData.success(add);
+    }
+
+    /**
+     * 新增接口
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    @RequestMapping(value = "/freeOutStock", method = RequestMethod.POST)
+    @ApiOperation("自由出库")
+    @Permission
+    public ResponseData freeOutStock(@RequestBody FreeOutStockParam freeOutStockParam) {
+        this.outstockOrderService.freeOutStock(freeOutStockParam);
+        return ResponseData.success();
     }
 
     /**
