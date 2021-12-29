@@ -100,6 +100,15 @@ stage
         <if test="paramCondition.stage != null">
             and stage = #{paramCondition.stage}
         </if>
+        <if test="paramCondition.skuName != null ">
+            and sku_id in (SELECT sku_id from goods_sku where spu_id in (select spu_id from goods_spu where name like
+            #{paramCondition.skuName}) )
+            UNION
+            SELECT
+            <include refid="Base_Column_List"/>
+            FROM daoxin_erp_stock_details where sku_id in (SELECT sku_id from goods_sku where sku_name like CONCAT
+            ('%',#{paramCondition.skuName},'%') )
+        </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
