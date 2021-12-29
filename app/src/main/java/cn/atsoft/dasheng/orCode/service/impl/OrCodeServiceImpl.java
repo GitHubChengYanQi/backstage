@@ -572,7 +572,47 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+    @Override
+    public Map<String,Object> inkindDetail(Long qrcodeId){
+        StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
+            eq("qr_code_id", qrcodeId);
+        }});
 
+        /**
+         * 格式化sku 返回数据
+         */
+        if (ToolUtil.isNotEmpty(stockDetails)){
+
+
+            Inkind inkind = inkindService.getById(stockDetails.getInkindId());
+            InkindResult inkindResult = new InkindResult();
+            ToolUtil.copyProperties(inkind,inkindResult);
+
+
+
+            Stock stock = stockService.getById(stockDetails.getStockId());
+            StockResult stockResult = new StockResult();
+            ToolUtil.copyProperties(stock,stockResult);
+
+
+
+            Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
+            StorehouseResult storehouseResult = new StorehouseResult();
+            ToolUtil.copyProperties(storehouse,storehouseResult);
+
+            StorehousePositions storehousePositions = storehousePositionsService.getById(stockDetails.getStorehousePositionsId());
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePositions,storehousePositionsResult);
+
+            Map<String,Object> result = new HashMap<>();
+            result.put("stock",stockResult);
+            result.put("storehouse",storehouseResult);
+            result.put("storehousePositions",storehousePositionsResult);
+            result.put("inkindResult",inkindResult);
+            return result;
+        }
+        return null ;
+    }
     public Object orcodeBackObj(Long id) {
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {

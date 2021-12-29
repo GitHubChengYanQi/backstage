@@ -394,7 +394,8 @@ public class OrCodeController extends BaseController {
                         QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
                         inkindResult.setTaskDetail(detail);
                     }
-
+                    Map<String, Object> inkindDetail = orCodeService.inkindDetail(codeBind.getOrCodeId());
+                    inkindResult.setInkindDetail(inkindDetail);
                     inkindBack.setInkindResult(inkindResult);
                     inkindBack.setType("item");
                     return ResponseData.success(inkindBack);
@@ -403,6 +404,18 @@ public class OrCodeController extends BaseController {
         return ResponseData.success();
     }
 
+
+    /**
+     * 判断是否绑定
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/inkindDetail", method = RequestMethod.GET)
+    @ApiOperation("判断是否绑定")
+    public ResponseData inkindDetail(@RequestParam Long id) {
+        return ResponseData.success(orCodeService.inkindDetail(id));
+    }
     /**
      * 判断是否绑定
      *
