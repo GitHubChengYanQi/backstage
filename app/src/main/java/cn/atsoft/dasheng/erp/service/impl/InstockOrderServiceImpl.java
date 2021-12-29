@@ -245,6 +245,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      */
     @Override
     public void freeInstock(FreeInStockParam freeInStockParam) {
+        if (ToolUtil.isEmpty(freeInStockParam.getPositionsId())) {
+            throw new ServiceException(500, "请选择库位");
+        }
+
         if (ToolUtil.isEmpty(freeInStockParam.getCodeIds())) {
             throw new ServiceException(500, "请扫描二维码");
         }
@@ -261,6 +265,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         if (ToolUtil.isEmpty(inkinds) && inkinds.size() != freeInStockParam.getCodeIds().size()) {   //判断实物
             throw new ServiceException(500, "有错误二维码");
         }
+        List<Long> distinct = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            distinct.add(inkind.getSkuId() + inkind.getBrandId());
+        }
+        long count = distinct.stream().distinct().count();
+        if (count != 1) {
+            throw new ServiceException(500, "批次物料有不相同");
+        }
+
         Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询仓库
                 .eq(Stock::getSkuId, inkinds.get(0).getSkuId())
                 .eq(Stock::getBrandId, inkinds.get(0).getBrandId())
@@ -308,9 +321,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);
+
+            inkind.setType("1");
         }
         stockDetailsService.saveBatch(stockDetailsList);
-
+        inkindService.updateBatchById(inkinds);
     }
 
 
