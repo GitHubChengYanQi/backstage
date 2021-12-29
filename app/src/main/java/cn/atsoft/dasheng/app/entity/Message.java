@@ -66,6 +66,12 @@ public class Message implements Serializable {
     private Integer type;
 
     /**
+     * 关联人id
+     */
+    @TableField("user_id")
+    private Long userId;
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -126,6 +132,14 @@ public class Message implements Serializable {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Integer getState() {

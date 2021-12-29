@@ -36,6 +36,12 @@ public class MessageResult implements Serializable {
     private Long messageId;
 
     /**
+     * 人员id
+     */
+    @ApiModelProperty("关联人id")
+    private Long userId;
+
+    /**
      * 提醒时间
      */
     @ApiModelProperty("提醒时间")

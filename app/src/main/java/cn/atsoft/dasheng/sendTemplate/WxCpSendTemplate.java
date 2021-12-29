@@ -70,7 +70,7 @@ public class WxCpSendTemplate {
         wxCpMessage.setTitle(wxCpTemplate.getTitle());
         wxCpMessage.setDescription(wxCpTemplate.getDescription());
         wxCpMessage.setMsgType("textcard");
-        List<String> userIds = userIds();
+            List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
@@ -83,15 +83,19 @@ public class WxCpSendTemplate {
                     e.printStackTrace();
                 }
             }
-            messageEntity.setType(MessageType.MESSAGE);
-            Message message = new Message();
-            message.setTime(new DateTime());
-            message.setTitle(wxCpTemplate.getTitle());
-            message.setContent(wxCpTemplate.getDescription());
-            message.setType(wxCpTemplate.getType());
-            message.setSort(0L);
-            messageEntity.setMessage(message);
-            messageProducer.sendMessage(messageEntity, 10);
+            for (Long userId : wxCpTemplate.getUserIds()) {
+                messageEntity.setType(MessageType.MESSAGE);
+                Message message = new Message();
+                message.setTime(new DateTime());
+                message.setTitle(wxCpTemplate.getTitle());
+                message.setContent(wxCpTemplate.getDescription());
+                message.setType(wxCpTemplate.getType());
+                message.setUserId(userId);
+                message.setSort(0L);
+                message.setUrl(wxCpTemplate.getUrl());
+                messageEntity.setMessage(message);
+                messageProducer.sendMessage(messageEntity, 100);
+            }
         }
 
     }
