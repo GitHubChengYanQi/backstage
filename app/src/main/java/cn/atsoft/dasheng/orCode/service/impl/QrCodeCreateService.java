@@ -38,7 +38,7 @@ public class QrCodeCreateService {
                 BitMatrix bitMatrix = writer.encode(String.valueOf(content), BarcodeFormat.QR_CODE, 200, 200, hints);
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ImageIO.write(bufferedImage, "png", os);
-                return new String("data:image/png;base64" + Base64.encode(os.toByteArray()));
+                return new String("<img src='data:image/png;base64" + Base64.encode(os.toByteArray())+"' />");
             } catch (WriterException | IOException e) {
                 e.printStackTrace();
             }
