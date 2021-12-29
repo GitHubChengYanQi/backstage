@@ -104,7 +104,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Override
     public InkindResult backInKindgetById(Long id) {
         Inkind inkind = this.getById(id);
-        if (ToolUtil.isEmpty(inkind)){
+        if (ToolUtil.isEmpty(inkind)) {
             return null;
         }
         InkindResult inkindResult = new InkindResult();
@@ -156,15 +156,16 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
 
         return inKindResults;
     }
+
     @Override
-    public InkindResult inkindDetail(InkindParam param){
+    public InkindResult inkindDetail(InkindParam param) {
         Inkind inkind = this.getById(param.getInkindId());
         List<Long> skuIds = new ArrayList<>();
         skuIds.add(inkind.getSkuId());
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         SkuResult skuResult = skuResults.get(0);
         InkindResult inkindResult = new InkindResult();
-        ToolUtil.copyProperties(inkind,inkindResult);
+        ToolUtil.copyProperties(inkind, inkindResult);
         inkindResult.setSkuResult(skuResult);
         inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
         this.returnPrintTemplate(inkindResult);
@@ -172,34 +173,43 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrandResult(null);
         return inkindResult;
     }
-    public void returnPrintTemplate(InkindResult param){
+
+    public void returnPrintTemplate(InkindResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
         }});
         param.getInkindId();
-
-        System.out.println(  PHYSICALDETAIL);
+        if (ToolUtil.isEmpty(printTemplate)) {
+            throw new ServiceException(500, "请先定义二维码模板");
+        }
+        System.out.println(PHYSICALDETAIL);
         String templete = printTemplate.getTemplete();
-        if (templete.contains("${name}")){
-            templete =  templete.replace("${name}",param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
+
+        if (templete.contains("${coding}")) {
+            String inkindId = param.getInkindId().toString();
+            String substring = inkindId.substring(inkindId.length() - 6);
+            templete = templete.replace("${coding}", substring);
         }
-        if (templete.contains("${number}")){
-            templete =  templete.replace("${number}",param.getNumber().toString());
+        if (templete.contains("${name}")) {
+            templete = templete.replace("${name}", param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
         }
-        if (templete.contains("${brand}")){
-            templete =  templete.replace("${brand}",param.getBrandResult().getBrandName());
+        if (templete.contains("${number}")) {
+            templete = templete.replace("${number}", param.getNumber().toString());
         }
-        if (templete.contains("${qrCode}")){
+        if (templete.contains("${brand}")) {
+            templete = templete.replace("${brand}", param.getBrandResult().getBrandName());
+        }
+        if (templete.contains("${qrCode}")) {
             OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
                 eq("form_id", param.getInkindId());
                 eq("source", "item");
             }});
-            String url = mobileService.getMobileConfig().getUrl()+"/cp/#/OrCode?id="+orCodeBind.getOrCodeId();
+            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + orCodeBind.getOrCodeId();
             String qrCode = qrCodeCreateService.createQrCode(url);
-            templete =  templete.replace("${qrCode}",qrCode);
+            templete = templete.replace("${qrCode}", qrCode);
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
-        ToolUtil.copyProperties(printTemplate,printTemplateResult);
+        ToolUtil.copyProperties(printTemplate, printTemplateResult);
         printTemplateResult.setTemplete(templete);
         param.setPrintTemplateResult(printTemplateResult);
     }
