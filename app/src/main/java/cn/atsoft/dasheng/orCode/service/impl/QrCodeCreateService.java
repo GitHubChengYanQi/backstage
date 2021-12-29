@@ -2,12 +2,15 @@ package cn.atsoft.dasheng.orCode.service.impl;
 
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.hutool.core.codec.Base64;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.tomcat.util.net.openssl.ciphers.EncryptionLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,18 +33,19 @@ public class QrCodeCreateService {
             @SuppressWarnings("rawtypes")
             HashMap<EncodeHintType, Comparable> hints = new HashMap<>();
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-            hints.put(EncodeHintType.ERROR_CORRECTION, EncryptionLevel.MEDIUM);
+            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
             hints.put(EncodeHintType.MARGIN, 2);
 
             try {
                 QRCodeWriter writer = new QRCodeWriter();
-                BitMatrix bitMatrix = writer.encode(String.valueOf(content), BarcodeFormat.QR_CODE, 200, 200, hints);
+                BitMatrix bitMatrix = writer.encode(String.valueOf(content), BarcodeFormat.QR_CODE, 100, 100, hints);
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ImageIO.write(bufferedImage, "png", os);
-                return new String("<img src='data:image/png;base64" + Base64.encode(os.toByteArray())+"' />");
+                return new String("<img width='100' height='100' src='data:image/png;base64," + Base64.encode(os.toByteArray())+"' />");
             } catch (WriterException | IOException e) {
                 e.printStackTrace();
             }
+
 //
 //            finally {
 //                if (stream != null) {

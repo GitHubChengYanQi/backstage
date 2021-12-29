@@ -168,8 +168,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setSkuResult(skuResult);
         inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
         this.returnPrintTemplate(inkindResult);
-//        inkindResult.setSkuResult(null);
-//        inkindResult.setBrandResult(null);
+        inkindResult.setSkuResult(null);
+        inkindResult.setBrandResult(null);
         return inkindResult;
     }
     public void returnPrintTemplate(InkindResult param){
@@ -189,14 +189,13 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         if (templete.contains("${brand}")){
             templete =  templete.replace("${brand}",param.getBrandResult().getBrandName());
         }
-        if (templete.contains("${brand}")){
+        if (templete.contains("${qrCode}")){
             OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
                 eq("form_id", param.getInkindId());
                 eq("source", "item");
             }});
             String url = mobileService.getMobileConfig().getUrl()+"/cp/#/OrCode?id="+orCodeBind.getOrCodeId();
             String qrCode = qrCodeCreateService.createQrCode(url);
-
             templete =  templete.replace("${qrCode}",qrCode);
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();

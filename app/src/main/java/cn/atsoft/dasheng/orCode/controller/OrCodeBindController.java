@@ -9,10 +9,13 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.extra.qrcode.QrCodeUtil;
+import cn.hutool.extra.qrcode.QrConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +56,7 @@ public class OrCodeBindController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody OrCodeBindParam orCodeBindParam) {
-
-        this.orCodeBindService.update(orCodeBindParam);
+    public ResponseData update() {
         return ResponseData.success();
     }
 
@@ -67,7 +68,7 @@ public class OrCodeBindController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrCodeBindParam orCodeBindParam)  {
+    public ResponseData delete(@RequestBody OrCodeBindParam orCodeBindParam) {
         this.orCodeBindService.delete(orCodeBindParam);
         return ResponseData.success();
     }
@@ -96,13 +97,11 @@ public class OrCodeBindController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OrCodeBindResult> list(@RequestBody(required = false) OrCodeBindParam orCodeBindParam) {
-        if(ToolUtil.isEmpty(orCodeBindParam)){
+        if (ToolUtil.isEmpty(orCodeBindParam)) {
             orCodeBindParam = new OrCodeBindParam();
         }
         return this.orCodeBindService.findPageBySpec(orCodeBindParam);
     }
-
-
 
 
 }
