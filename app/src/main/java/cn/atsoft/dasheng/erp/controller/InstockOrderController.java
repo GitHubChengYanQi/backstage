@@ -34,9 +34,9 @@ import java.util.Map;
 @RequestMapping("/instockOrder")
 @Api(tags = "入库单")
 public class InstockOrderController extends BaseController {
-
     @Autowired
     private InstockOrderService instockOrderService;
+
 
     /**
      * 新增接口

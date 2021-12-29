@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -215,15 +216,41 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
 
     }
 
+    /**
+     * 自由出库
+     *
+     * @param freeOutStockParam
+     */
+    @Override
+    public void freeOutsotck(FreeOutStockParam freeOutStockParam) {
+        StockDetails stockDetails = stockDetailsService.query().eq("qr_code_id", freeOutStockParam.getCodeId()).one();
+
+        if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
+            throw new ServiceException(500, "数量不足");
+        }
+        long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
+        stockDetails.setNumber(newNumber);
+        stockDetailsService.updateById(stockDetails);
+        //修改仓库数量
+        Stock stock = stockService.query().eq("stock_id", stockDetails.getStockId()).one();
+        stock.setInventory(stock.getInventory() - freeOutStockParam.getNumber());
+        stockService.updateById(stock);
+
+//        Outstock outstock = new Outstock();
+//        outstock.setStorehouseId(stock.getStorehouseId());
+//        outstock.setBrandId(stock.getBrandId());
+//        outstock.setStockId(stockDetails.getStockId());
+//        outstock.setStockItemId(stockDetails.getStockItemId());
+//        outstock.setSkuId(stockDetails.getSkuId());
+//        outstock.setNumber(freeOutStockParam.getNumber());
+//        outstockService.save(outstock);
+
+    }
+
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {
         throw new ServiceException(500, "不可以修改");
-//        OutstockOrder oldEntity = getOldEntity(param);
-//        OutstockOrder newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
-//        return newEntity;
     }
 
     @Override
