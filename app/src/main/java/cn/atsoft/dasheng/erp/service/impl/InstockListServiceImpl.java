@@ -251,7 +251,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetail.setBrandId(request.getInkind().getBrandId());
             stockDetail.setStockId(stockId);
             stockDetail.setQrCodeid(request.getCodeId());
-            stockDetail.setStorehouseId(instockList.getStoreHouseId());
+            stockDetail.setStorehouseId(param.getStoreHouseId());
+            stockDetail.setStorehousePositionsId(param.getStorehousePositionsId());
             Long inkindId = getInkindId(request.getCodeId());
             stockDetail.setInkindId(inkindId);
             stockDetailsList.add(stockDetail);
@@ -263,7 +264,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instock.setStoreHouseId(instockList.getStoreHouseId());
             instock.setNumber(request.getInkind().getNumber());
             instock.setInstockOrderId(instockList.getInstockOrderId());
-            instock.setStorehousePositionsId(instockList.getStorehousePositionsId());
+            instock.setStorehousePositionsId(param.getStorehousePositionsId());
             instocks.add(instock);
         }
         stockDetailsService.saveBatch(stockDetailsList);
