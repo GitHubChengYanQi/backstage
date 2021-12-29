@@ -86,6 +86,17 @@
             <artifactId>weixin-java-cp</artifactId>
             <version>4.1.7.B</version>
         </dependency>
+        <!--生成二维码 的  依赖包        -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.2.1</version>
+        </dependency>
 
 
         <dependency>

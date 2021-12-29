@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
@@ -7,6 +8,7 @@ import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
+import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +35,9 @@ import java.util.Map;
 @RequestMapping("/instockOrder")
 @Api(tags = "入库单")
 public class InstockOrderController extends BaseController {
-
     @Autowired
     private InstockOrderService instockOrderService;
+
 
     /**
      * 新增接口
@@ -64,33 +67,19 @@ public class InstockOrderController extends BaseController {
 
 
     /**
-     * 编辑接口
+     * 自由入库
      *
      * @author song
      * @Date 2021-10-06
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @BussinessLog(value = "修改入库单", key = "name", dict = InstockOrderParam.class)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody InstockOrderParam instockOrderParam) {
-
-        this.instockOrderService.update(instockOrderParam);
+    @RequestMapping(value = "/freeInstock", method = RequestMethod.POST)
+    @ApiOperation("自有入库")
+    @Permission
+    public ResponseData freeInstock(@Valid @RequestBody FreeInStockParam freeInStockParam) {
+        this.instockOrderService.freeInstock(freeInStockParam);
         return ResponseData.success();
     }
 
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-10-06
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @BussinessLog(value = "删除入库单", key = "name", dict = InstockOrderParam.class)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InstockOrderParam instockOrderParam) {
-        this.instockOrderService.delete(instockOrderParam);
-        return ResponseData.success();
-    }
 
     /**
      * 查看详情接口

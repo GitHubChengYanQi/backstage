@@ -201,7 +201,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     @Override
     @Transactional
     public void batchInstock(InstockListParam param) {
-        InstockList instockList = this.getById(param.getInstockListId());
+        InstockList instockList = this.getById(param.getInstockListId()); //判断清单
         Long number = 0L;
         if (instockList.getNumber() == 0) {
             throw new ServiceException(500, "已经全部入库");
@@ -222,12 +222,12 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
                 .eq("storehouse_id", instockList.getStoreHouseId())
                 .one();
         Long stockId = null;
-        if (ToolUtil.isNotEmpty(stock)) {
+        if (ToolUtil.isNotEmpty(stock)) {   //相同合并数量
             long addNumber = stock.getInventory() + number;
             stock.setInventory(addNumber);
             stockService.updateById(stock);
             stockId = stock.getStockId();
-        } else {
+        } else {   //不相同 新建
             Stock newStock = new Stock();
             newStock.setInventory(number);
             newStock.setBrandId(instockList.getBrandId());

@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -427,6 +428,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     @Transactional
     public Long instockByCode(InKindRequest inKindRequest) {
+        StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
+        if (ToolUtil.isNotEmpty(details)) {
+            throw new ServiceException(500, "已入库，请勿再次入库相同");
+        }
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
         Long number = 0L;
@@ -488,6 +493,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
 
     public void batchInstockByCode(InKindRequest inKindRequest) {
+
+        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
+        if (ToolUtil.isNotEmpty(detailsList)) {
+            throw new ServiceException(500, "已入库，请勿再次入库相同");
+        }
 
         List<Long> formIds = orCodeBindService.getFormIds(inKindRequest.getCodeIds());
         if (inKindRequest.getCodeIds().size() != formIds.size()) {
@@ -561,6 +571,47 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         OrCode entity = new OrCode();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public Map<String, Object> inkindDetail(Long qrcodeId) {
+        StockDetails stockDetails = stockDetailsService.getOne(new QueryWrapper<StockDetails>() {{
+            eq("qr_code_id", qrcodeId);
+        }});
+
+        /**
+         * 格式化sku 返回数据
+         */
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+
+
+            Inkind inkind = inkindService.getById(stockDetails.getInkindId());
+            InkindResult inkindResult = new InkindResult();
+            ToolUtil.copyProperties(inkind, inkindResult);
+
+
+            Stock stock = stockService.getById(stockDetails.getStockId());
+            StockResult stockResult = new StockResult();
+            ToolUtil.copyProperties(stock, stockResult);
+
+
+            Storehouse storehouse = storehouseService.getById(stockDetails.getStorehouseId());
+            StorehouseResult storehouseResult = new StorehouseResult();
+            ToolUtil.copyProperties(storehouse, storehouseResult);
+
+            StorehousePositions storehousePositions = storehousePositionsService.getById(stockDetails.getStorehousePositionsId());
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
+
+            Map<String,Object> result = new HashMap<>();
+            result.put("stock",stockResult);
+            result.put("storehouse",storehouseResult);
+            result.put("stockDetails",stockDetails);
+            result.put("storehousePositions",storehousePositionsResult);
+            result.put("inkindResult",inkindResult);
+            return result;
+        }
+        return null;
     }
 
     public Object orcodeBackObj(Long id) {
@@ -713,10 +764,10 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 }
                 if (
                         stockDetail.getSkuId().equals(inKindRequest.getId())
-                        &&
-                        stockDetail.getBrandId().equals(inKindRequest.getBrandId())
-                        &&
-                        stockDetail.getStorehouseId().equals(inKindRequest.getStorehouse())
+                                &&
+                                stockDetail.getBrandId().equals(inKindRequest.getBrandId())
+                                &&
+                                stockDetail.getStorehouseId().equals(inKindRequest.getStorehouse())
                 ) {
                     if (ToolUtil.isNotEmpty(stockDetail.getStorehousePositionsId())) {
                         StorehousePositions storehousePositions = storehousePositionsService.query()
@@ -725,7 +776,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     }
                     object.setStockDetails(stockDetail);
                     return object;
-                }else {
+                } else {
                     throw new ServiceException(500, "没有此物料");
                 }
             default:
@@ -741,44 +792,30 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     public Long outStockByCode(InKindRequest inKindRequest) {
         //修改库存详情
         StockDetails stockDetails = stockDetailsService.query().eq("storehouse_id", inKindRequest.getStorehouse()).eq("qr_code_id", inKindRequest.getCodeId()).one();
-        if (ToolUtil.isNotEmpty(stockDetails) && stockDetails.getNumber() == 0) {
+        if (stockDetails.getNumber() == 0 || stockDetails.getNumber() < inKindRequest.getNumber()) {
             throw new ServiceException(500, "数量不足");
         }
+        //修改出库清单
+        OutstockListing outstockListing = outstockListingService.getById(inKindRequest.getOutstockListingId());
+        Long ListingNumber = outstockListing.getNumber();
+        if (ListingNumber == 0 || ListingNumber < inKindRequest.getNumber()) {
+            throw new ServiceException(500, "请确定单据数量");
+        }
+        //修改库存数量
         long l = stockDetails.getNumber() - inKindRequest.getNumber();
         stockDetails.setNumber(l);
         QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("stock_item_id", stockDetails.getStockItemId());
         stockDetailsService.update(stockDetails, queryWrapper);
+        updateStock(stockDetails.getStockId());
 
         //修改出库清单
-        OutstockListing outstockListing = outstockListingService.query().eq("outstock_listing_id", inKindRequest.getOutstockListingId()).one();
-        Long ListingNumber = outstockListing.getNumber();
-        if (ListingNumber == 0) {
-            throw new ServiceException(500, "数量不足");
-        }
-        if (ListingNumber < inKindRequest.getNumber()) {
-            throw new ServiceException(500, "数量不符");
-        }
-
         long listNumber = outstockListing.getNumber() - inKindRequest.getNumber();
         outstockListing.setNumber(listNumber);
         QueryWrapper<OutstockListing> listingQueryWrapper = new QueryWrapper<>();
         listingQueryWrapper.eq("outstock_listing_id", inKindRequest.getOutstockListingId());
         outstockListingService.update(outstockListing, listingQueryWrapper);
 
-        //修改库存
-        Stock stock = stockService.query().eq("stock_id", stockDetails.getStockId()).one();
-        if (stock.getInventory() == 0) {
-            throw new ServiceException(500, "数量不足");
-        }
-        if (stock.getInventory() < inKindRequest.getNumber()) {
-            throw new ServiceException(500, "数量不符");
-        }
-        long newNumber = stock.getInventory() - inKindRequest.getNumber();
-        stock.setInventory(newNumber);
-        QueryWrapper<Stock> stockQueryWrapper = new QueryWrapper<>();
-        stockQueryWrapper.eq("stock_id", stock.getStockId());
-        stockService.update(stock, stockQueryWrapper);
 
         //修改实物
         OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
@@ -800,21 +837,22 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             Inkind newinKind = new Inkind();
             newinKind.setNumber(inKindRequest.getNumber());
             newinKind.setSkuId(inkind.getSkuId());
+            newinKind.setSourceId(inKindRequest.getOutstockListingId());
             newinKind.setSource("出库");
             newinKind.setBrandId(inkind.getBrandId());
             inkindService.save(newinKind);
         }
+
         //增加出库详情
         Outstock outstock = new Outstock();
         outstock.setStorehouseId(inKindRequest.getStorehouse());
         outstock.setBrandId(outstockListing.getBrandId());
         outstock.setOutstockOrderId(inKindRequest.getOutstockOrderId());
-        outstock.setStockId(stock.getStockId());
+        outstock.setStockId(stockDetails.getStockId());
         outstock.setStockItemId(stockDetails.getStockItemId());
         outstock.setSkuId(stockDetails.getSkuId());
         outstock.setNumber(inKindRequest.getNumber());
         outstockService.save(outstock);
-
 
         return listNumber;
     }
@@ -826,7 +864,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
      * @return
      */
     @Override
-    public Long automaticBinding(BackCodeRequest codeRequest) {
+    public AutomaticBindResult automaticBinding(BackCodeRequest codeRequest) {
         OrCode orCode = new OrCode();
         orCode.setType(codeRequest.getSource());
         orCode.setState(1);
@@ -867,13 +905,34 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         bindParam.setFormId(formId);
         bindParam.setSource(codeRequest.getSource());
         orCodeBindService.add(bindParam);
-        return orCode.getOrCodeId();
+        AutomaticBindResult automaticBindResult = new AutomaticBindResult();
+        automaticBindResult.setCodeId(orCode.getOrCodeId());
+        automaticBindResult.setInkindId(formId);
+        return automaticBindResult;
     }
 
     @Override
     public List<Long> codeIdList(String codeId) {
         List<Long> qrCodeList = this.baseMapper.qrCodeList(codeId);
         return qrCodeList;
+    }
+
+    /**
+     * 更新仓库数量
+     *
+     * @param stockId
+     */
+    private void updateStock(Long stockId) {
+        List<StockDetails> stockDetails = stockDetailsService.query().eq("stock_id", stockId).list();
+        Long count = 0L;
+        for (StockDetails stockDetail : stockDetails) {
+            count = count + stockDetail.getNumber();
+        }
+        Stock stock = new Stock();
+        stock.setInventory(count);
+        stockService.update(stock, new QueryWrapper<Stock>() {{
+            eq("stock_id", stockId);
+        }});
     }
 }
 
