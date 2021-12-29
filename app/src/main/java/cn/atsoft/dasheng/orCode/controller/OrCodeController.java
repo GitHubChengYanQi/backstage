@@ -229,7 +229,11 @@ public class OrCodeController extends BaseController {
     public ResponseData backObject(@RequestParam Long id) {
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {
-            return null;
+            OrCode orCode = orCodeService.getById(id);
+            if (ToolUtil.isNotEmpty(orCode))
+                return null;
+            else
+                throw new ServiceException(500, "当前二维码不合法");
         } else {
             String source = codeBind.getSource();
             switch (source) {
