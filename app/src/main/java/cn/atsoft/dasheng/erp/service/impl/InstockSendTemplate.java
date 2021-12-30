@@ -96,7 +96,7 @@ public class InstockSendTemplate {
 
                     //添加代办信息
                     messageEntity.setType(MessageType.CP);
-                    messageProducer.sendMessage(messageEntity, 500);
+                    messageProducer.sendMessage(messageEntity, 100);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -108,9 +108,13 @@ public class InstockSendTemplate {
                message.setContent("您有新的入库单需要操作");
                message.setType(3);
                message.setSort(0L);
+               message.setUrl(getUrl());
+               message.setUserId(businessTrack.getUserId());
                messageEntity.setType(MessageType.MESSAGE);
                messageEntity.setMessage(message);
-               messageProducer.sendMessage(messageEntity, 1000);
+               messageProducer.sendMessage(messageEntity, 100);
+
+
 
 
         }

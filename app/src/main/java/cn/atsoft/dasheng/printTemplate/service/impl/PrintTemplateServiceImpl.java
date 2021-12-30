@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.printTemplate.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.mapper.PrintTemplateMapper;
@@ -44,7 +45,9 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
 
     @Override
     public void delete(PrintTemplateParam param) {
-        this.removeById(getKey(param));
+        PrintTemplate printTemplate =  this.getEntity(param);
+        printTemplate.setDisplay(1);
+        this.updateById(printTemplate);
     }
 
     @Override
@@ -70,9 +73,9 @@ public class PrintTemplateServiceImpl extends ServiceImpl<PrintTemplateMapper, P
     }
 
     @Override
-    public PageInfo<PrintTemplateResult> findPageBySpec(PrintTemplateParam param) {
+    public PageInfo<PrintTemplateResult> findPageBySpec(DataScope dataScope, PrintTemplateParam param) {
         Page<PrintTemplateResult> pageContext = getPageContext();
-        IPage<PrintTemplateResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<PrintTemplateResult> page = this.baseMapper.customPageList(dataScope,pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
