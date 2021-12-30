@@ -82,8 +82,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getCodingClass()) && classification.getDisplay() != 0) {
                 String replace = backCoding.replace("${skuClass}", classification.getCodingClass());
                 param.setStandard(replace);
-            }else {
-                throw new ServiceException(500,"请选择分类！");
+            } else {
+                throw new ServiceException(500, "请选择分类！");
             }
         }
 
@@ -91,8 +91,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
          * type=1 是整机添加
          */
         if (param.getType() == 0) {
-
-
+            /**
+             * 查询分类  添加分类
+             */
             Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
             Long categoryId = null;
             if (ToolUtil.isNotEmpty(one1)) {
@@ -104,6 +105,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 categoryId = category.getCategoryId();
             }
 
+            /**
+             * 查询产品，添加产品
+             */
             Long spuId = param.getSpu().getSpuId();
             Spu spuEntity = new Spu();
             spuEntity.setName(param.getSpu().getName());
@@ -126,7 +130,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Spu byId = spuService.lambdaQuery().eq(Spu::getSpuId, spuId).and(i -> i.eq(Spu::getDisplay, 1)).one();
             //判断是否有已存在的分类
 
-
+            /**
+             * 查询属性，添加属性
+             */
             Long itemAttributeId = null;
             if (ToolUtil.isNotEmpty(categoryId)) {
                 //查询出属性id
@@ -148,6 +154,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
             Long attributeValuesId = null;
             //根据分类查询出属性新建属性值
+            /**
+             * 查询属性值  添加属性值
+             */
             AttributeValues one = attributeValuesService.lambdaQuery().eq(AttributeValues::getAttributeId, itemAttributeId).eq(AttributeValues::getAttributeValues, param.getSpecifications()).eq(AttributeValues::getDisplay, 1).one();
             if (ToolUtil.isNotEmpty(one)) {
                 attributeValuesId = one.getAttributeValuesId();
@@ -176,12 +185,25 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
             entity.setSkuValueMd5(md5);
 
-            List<Sku> sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).list();
-            List<Sku> oldsku1 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd51).and(i -> i.eq(Sku::getDisplay, 1)).list();
-            List<Sku> oldsku2 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd52).and(i -> i.eq(Sku::getDisplay, 1)).list();
-
-
-            if ((ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(oldsku1) || ToolUtil.isNotEmpty(oldsku2))) {
+//
+            /**
+             * //TODO 原 SKU防重复判断
+             *
+             * List<Sku> sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).list();
+             * List<Sku> oldsku1 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd51).and(i -> i.eq(Sku::getDisplay, 1)).list();
+             * List<Sku> oldsku2 = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, oldMd52).and(i -> i.eq(Sku::getDisplay, 1)).list();
+             * Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
+             *  if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(oldsku1) || ToolUtil.isNotEmpty(oldsku2)) {
+             *    throw new ServiceException(500, "此物料在产品中已存在");
+             *} else {
+             *    this.save(entity);
+             *}
+             *
+             *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
+             */
+            List<Spu> spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
+            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
                 throw new ServiceException(500, "此物料在产品中已存在");
             } else {
                 this.save(entity);
@@ -217,14 +239,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //                entity.setSkuValue(spuId + "," + json);
                 String md5 = SecureUtil.md5(entity.getSpuId() + entity.getSkuValue());
                 entity.setSkuValueMd5(md5);
-                Spu spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).one();
-                Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
-//                Sku SkuStander
-                if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
+                /**
+                 * //TODO 原 SKU防重复判断
+                 *
+                 * Sku sku = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).one();
+                 *  if (ToolUtil.isNotEmpty(sku) || ToolUtil.isNotEmpty(spu)) {
+                 *    throw new ServiceException(500, "此物料在产品中已存在");
+                 *} else {
+                 *    this.save(entity);
+                 *}
+                 *
+                 *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
+                 */
+                List<Spu> spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
+                List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+                if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
                     throw new ServiceException(500, "此物料在产品中已存在");
                 } else {
                     this.save(entity);
                 }
+
             }
 
         }
