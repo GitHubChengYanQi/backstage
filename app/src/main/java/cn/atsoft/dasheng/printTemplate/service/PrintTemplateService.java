@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.printTemplate.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
@@ -64,6 +65,6 @@ public interface PrintTemplateService extends IService<PrintTemplate> {
      * @author Captain_Jazz
      * @Date 2021-12-28
      */
-     PageInfo<PrintTemplateResult> findPageBySpec(PrintTemplateParam param);
+     PageInfo<PrintTemplateResult> findPageBySpec(DataScope dataScope , PrintTemplateParam param);
 
 }

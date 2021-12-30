@@ -1,6 +1,10 @@
 package cn.atsoft.dasheng.printTemplate.controller;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
@@ -40,6 +44,7 @@ public class PrintTemplateController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody PrintTemplateParam printTemplateParam) {
         this.printTemplateService.add(printTemplateParam);
         return ResponseData.success();
@@ -53,6 +58,7 @@ public class PrintTemplateController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
+    @Permission
     public ResponseData update(@RequestBody PrintTemplateParam printTemplateParam) {
 
         this.printTemplateService.update(printTemplateParam);
@@ -67,6 +73,7 @@ public class PrintTemplateController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
+    @Permission
     public ResponseData delete(@RequestBody PrintTemplateParam printTemplateParam)  {
         this.printTemplateService.delete(printTemplateParam);
         return ResponseData.success();
@@ -80,6 +87,7 @@ public class PrintTemplateController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<PrintTemplateResult> detail(@RequestBody PrintTemplateParam printTemplateParam) {
         PrintTemplate detail = this.printTemplateService.getById(printTemplateParam.getPrintTemplateId());
         PrintTemplateResult result = new PrintTemplateResult();
@@ -97,11 +105,20 @@ public class PrintTemplateController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+//    @Permission
     public PageInfo<PrintTemplateResult> list(@RequestBody(required = false) PrintTemplateParam printTemplateParam) {
         if(ToolUtil.isEmpty(printTemplateParam)){
             printTemplateParam = new PrintTemplateParam();
         }
-        return this.printTemplateService.findPageBySpec(printTemplateParam);
+
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.printTemplateService.findPageBySpec(null,printTemplateParam);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            PageInfo<PrintTemplateResult> pageBySpec = printTemplateService.findPageBySpec(dataScope, printTemplateParam);
+            return pageBySpec;
+        }
+
     }
 
 

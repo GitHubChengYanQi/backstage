@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.printTemplate.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.params.PrintTemplateParam;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
@@ -43,7 +44,7 @@ public interface PrintTemplateMapper extends BaseMapper<PrintTemplate> {
      * @author Captain_Jazz
      * @Date 2021-12-28
      */
-    Page<PrintTemplateResult> customPageList(@Param("page") Page page, @Param("paramCondition") PrintTemplateParam paramCondition);
+    Page<PrintTemplateResult> customPageList(@Param("DateScope") DataScope dataScope, @Param("page") Page page, @Param("paramCondition") PrintTemplateParam paramCondition);
 
     /**
      * 获取分页map列表
