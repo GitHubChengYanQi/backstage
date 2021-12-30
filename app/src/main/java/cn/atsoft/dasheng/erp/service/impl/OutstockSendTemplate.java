@@ -98,6 +98,7 @@ public class OutstockSendTemplate {
                 Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle("出库提醒");
+                message.setUrl(getUrl());
                 message.setContent("您有新的出库单需要操作");
                 message.setType(3);
                 message.setSort(0L);
