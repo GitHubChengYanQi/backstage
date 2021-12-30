@@ -452,7 +452,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             inkindService.update(inkind, queryWrapper);
             //入库
             inKindRequest.getInstockListParam().setNum(one.getNumber());   //传入出库数量
-            inKindRequest.getInstockListParam().setCodeId(formId);         //传入二维码
+            inKindRequest.getInstockListParam().setCodeId(inKindRequest.getCodeId());         //传入二维码
+            inKindRequest.getInstockListParam().setInkindId(formId);
             if (ToolUtil.isNotEmpty(inKindRequest.getInstockListParam())) {
                 instockList = instockListService.query().eq("instock_list_id", inKindRequest.getInstockListParam().getInstockListId()).one();
                 if (ToolUtil.isNotEmpty(instockList)) {
@@ -460,7 +461,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     if (instockList.getNumber() - one.getNumber() < 0) {  //判断出库数量是否超过清单数量
                         throw new ServiceException(500, "超出单据数量");
                     }
-
                     if ((instockList.getNumber() - one.getNumber()) == 0) {
                         try {
                             instockListService.update(inKindRequest.getInstockListParam());
@@ -603,13 +603,13 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
             ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
 
-            Map<String,Object> result = new HashMap<>();
-            result.put("stock",stockResult);
-            result.put("stockDetails",stockDetails);
-            result.put("storehouse",storehouseResult);
-            result.put("stockDetails",stockDetails);
-            result.put("storehousePositions",storehousePositionsResult);
-            result.put("inKindResult",inkindResult);
+            Map<String, Object> result = new HashMap<>();
+            result.put("stock", stockResult);
+            result.put("stockDetails", stockDetails);
+            result.put("storehouse", storehouseResult);
+            result.put("stockDetails", stockDetails);
+            result.put("storehousePositions", storehousePositionsResult);
+            result.put("inKindResult", inkindResult);
             return result;
         }
         return null;

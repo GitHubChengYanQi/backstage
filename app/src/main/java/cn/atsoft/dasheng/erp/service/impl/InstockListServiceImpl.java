@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.erp.mapper.InstockListMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockListParam;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.InstockListService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.InstockOrderService;
@@ -68,6 +69,8 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     private InstockOrderService orderService;
     @Autowired
     private OrCodeBindService codeBindService;
+    @Autowired
+    private InkindService inkindService;
 
     @Override
     public void add(InstockListParam param) {
@@ -131,8 +134,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetailsParam.setNumber(param.getNum());
             if (ToolUtil.isNotEmpty(param.getCodeId())) {
                 stockDetailsParam.setQrCodeid(param.getCodeId());
-                Long inkindId = getInkindId(param.getCodeId());
-                stockDetailsParam.setInkindId(inkindId);
+                stockDetailsParam.setInkindId(param.getInkindId());
             }
             stockDetailsParam.setStorehouseId(newEntity.getStoreHouseId());
             stockDetailsParam.setPrice(newEntity.getCostPrice());
@@ -151,9 +153,15 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
     }
 
     private Long getInkindId(Long qrcodeId) {
-        Long formId = 0L;
-        formId = codeBindService.getFormId(qrcodeId);
-        return formId;
+
+        Long formId = codeBindService.getFormId(qrcodeId);
+
+        Inkind inkind = inkindService.getById(formId);
+        if (ToolUtil.isEmpty(inkind)) {
+            throw new ServiceException(500, "二维码不正确");
+        }
+        Long inkindId = inkind.getInkindId();
+        return inkindId;
     }
 
     /**
@@ -261,7 +269,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             instock.setState(1);
             instock.setBrandId(request.getInkind().getBrandId());
             instock.setSkuId(request.getInkind().getSkuId());
-            instock.setStoreHouseId(instockList.getStoreHouseId());
+            instock.setStoreHouseId(param.getStoreHouseId());
             instock.setNumber(request.getInkind().getNumber());
             instock.setInstockOrderId(instockList.getInstockOrderId());
             instock.setStorehousePositionsId(param.getStorehousePositionsId());

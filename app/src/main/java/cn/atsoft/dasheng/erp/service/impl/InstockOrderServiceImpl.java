@@ -29,6 +29,8 @@ import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -76,6 +78,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private StockDetailsService stockDetailsService;
     @Autowired
     private OrCodeBindService bindService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     @Transactional
