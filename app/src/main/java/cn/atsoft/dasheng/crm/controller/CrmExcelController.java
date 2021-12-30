@@ -292,20 +292,6 @@ public class CrmExcelController {
 
         }
 
-
-//        int i =1;
-//        for (Long orCode : codeIds) {
-//            if (ToolUtil.isEmpty(orCode)) {
-//                HSSFRow row1 = sheet.createRow(i);
-//                HSSFCell id = row1.createCell(1);
-//                HSSFCell url = row1.createCell(2);
-//                HSSFRichTextString text = new HSSFRichTextString(orCode.getOrCodeId().toString());
-//                id.setCellValue(text);
-//                url.setCellValue("www.baidu.com");
-//                i++;
-//            }
-//        }
-
         //准备将Excel的输出流通过response输出到页面下载
         //八进制输出流
         response.setContentType("application/octet-stream");
