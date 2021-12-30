@@ -12,6 +12,8 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.atsoft.dasheng.userInfo.service.UserInfoService;
@@ -24,6 +26,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static cn.atsoft.dasheng.form.pojo.RuleType.send;
 
 @Service
 @Data
@@ -39,6 +44,10 @@ public class InstockSendTemplate {
 
     @Autowired
     MessageProducer messageProducer;
+
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+
 
     private String url;
 
@@ -62,6 +71,21 @@ public class InstockSendTemplate {
         return uuIds;
     }
 
+    public void send(String url){
+        List<Long> users = new ArrayList();
+        users.add(businessTrack.getUserId());
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setTitle("入库提醒");
+        wxCpTemplate.setDescription("有新的物料需要入库");
+        wxCpTemplate.setUserIds(users);
+
+        wxCpTemplate.setUrl(url);
+        //获取url
+
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+
+    }
     public String getTitle() {
         return "入库提醒";
     }
@@ -78,8 +102,6 @@ public class InstockSendTemplate {
     public void sendTemplate() {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
-
-
         List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             WxCpMessage wxCpMessage = new WxCpMessage();

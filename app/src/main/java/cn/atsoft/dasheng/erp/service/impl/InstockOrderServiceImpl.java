@@ -143,11 +143,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             BackCodeRequest backCodeRequest = new BackCodeRequest();
             backCodeRequest.setId(entity.getInstockOrderId());
             backCodeRequest.setSource("instock");
+
+
             Long aLong = orCodeService.backCode(backCodeRequest);
             String url = param.getUrl().replace("codeId", aLong.toString());
             instockSendTemplate.setBusinessTrack(businessTrack);
-            instockSendTemplate.setUrl(url);
-            instockSendTemplate.sendTemplate();
+            instockSendTemplate.send(url);
         }
     }
 
