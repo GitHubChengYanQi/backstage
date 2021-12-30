@@ -105,20 +105,23 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
             Long spuId = param.getSpu().getSpuId();
+            Spu spuEntity = new Spu();
+            spuEntity.setName(param.getSpu().getName());
+            spuEntity.setSpuClassificationId(param.getSpuClassificationId());
+            spuEntity.setCategoryId(categoryId);
+            spuEntity.setType(0);
+            spuEntity.setUnitId(param.getUnitId());
             if (ToolUtil.isEmpty(spuId)) {
                 Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
                 if (ToolUtil.isNotEmpty(spu)) {
                     spuId = spu.getSpuId();
                 } else {
-                    Spu spuEntity = new Spu();
-                    spuEntity.setName(param.getSpu().getName());
-                    spuEntity.setSpuClassificationId(param.getSpuClassificationId());
-                    spuEntity.setCategoryId(categoryId);
-                    spuEntity.setType(0);
-                    spuEntity.setUnitId(param.getUnitId());
                     spuService.save(spuEntity);
                     spuId = spuEntity.getSpuId();
                 }
+            }else {
+                spuEntity.setSpuId(spuId);
+                spuService.updateById(spuEntity);
             }
             Spu byId = spuService.lambdaQuery().eq(Spu::getSpuId, spuId).and(i -> i.eq(Spu::getDisplay, 1)).one();
             //判断是否有已存在的分类
@@ -316,6 +319,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        Spu spuEntity = new Spu();
+        spuEntity.setSpuClassificationId(param.getSpuClassificationId());
+        spuEntity.setUnitId(param.getUnitId());
+        spuEntity.setSpuId(param.getSpuId());
+        spuService.updateById(spuEntity);
         this.updateById(newEntity);
     }
 
