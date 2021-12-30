@@ -12,11 +12,9 @@ import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.ApplyDetails;
-import cn.atsoft.dasheng.erp.entity.CodingRules;
-import cn.atsoft.dasheng.erp.entity.InstockList;
-import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -65,6 +63,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OutstockSendTemplate outstockSendTemplate;
     @Autowired
     private OrCodeService orCodeService;
+    @Autowired
+    private InkindService inkindService;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -131,91 +131,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         throw new ServiceException(500, "不可以删除");
     }
 
-
-    @Override
-    public void outStock(OutstockOrderParam param) {
-
-        OutstockOrder entity = getEntity(param);
-        Long outStockOrderId = entity.getOutstockOrderId();
-        // 判断出库单对应出库明细数据有无
-        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(outStockOrderId)) {
-            outstockQueryWrapper.in("outstock_order_id", outStockOrderId).in("display", 1);
-        }
-        List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
-
-        if (ToolUtil.isNotEmpty(outstockList)) {
-            List<Stock> Stock = this.stockService.list();
-
-
-            // 出库明细里进行出库
-            for (int i = 0; i < outstockList.size(); i++) {
-                Outstock outstock = outstockList.get(i);
-                // 判断库存里数据是否存在
-                if (ToolUtil.isEmpty(Stock)) {
-                    throw new ServiceException(500, "仓库没有此产品或仓库库存不足！");
-                } else {
-                    for (int k = 0; k < Stock.size(); k++) {
-                        Stock StockList = Stock.get(k);
-                        // 匹配库存里对应的数据
-                        if (StockList.getItemId().equals(outstock.getItemId())
-                                && StockList.getBrandId().equals(outstock.getBrandId())
-                                && StockList.getStorehouseId().equals(entity.getStorehouseId())
-                        ) {
-                            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-                            queryWrapper.in("stock_id", StockList.getStockId()).in("stage", 1);
-                            List<StockDetails> stockDetail = stockDetailsService.list(queryWrapper);
-                            // 库存数据数量的判断
-                            if (StockList.getInventory() == 0) {
-                                throw new ServiceException(500, "此产品仓库库存不足！");
-                            } else if (outstock.getNumber() > StockList.getInventory()) {
-                                throw new ServiceException(500, "此产品仓库库存不足,请重新输入数量，最大数量为：" + StockList.getInventory());
-                            } else {
-                                StockParam stockParam = new StockParam();
-                                stockParam.setStockId(StockList.getStockId());
-                                stockParam.setItemId(StockList.getItemId());
-                                stockParam.setBrandId(StockList.getBrandId());
-                                stockParam.setStorehouseId(StockList.getStorehouseId());
-                                stockParam.setInventory(StockList.getInventory() - outstock.getNumber());
-                                // 减去出库数量
-                                this.stockService.update(stockParam);
-
-
-                                if (ToolUtil.isEmpty(stockDetail)) {
-                                    throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
-                                } else {
-                                    List stockItemIds = new ArrayList<>();
-                                    QueryWrapper<StockDetails> queryWrapper1 = new QueryWrapper<>();
-                                    for (int j = 0; j < outstock.getNumber(); j++) {
-                                        StockDetails stockDetailList = stockDetail.get(j);
-                                        // 匹配库存明细里对应的数据
-                                        if (stockDetailList.getStockId().equals(StockList.getStockId())) {
-                                            // 减去出库明细产品
-                                            StockDetails StockDetailsList = stockDetail.get(j);
-                                            stockItemIds.add(StockDetailsList.getStockItemId());
-                                        }
-                                    }
-                                    queryWrapper1.in("stock_item_id", stockItemIds);
-                                    StockDetails stockDetails = new StockDetails();
-                                    stockDetails.setStage(2);
-                                    stockDetails.setOutStockOrderId(outStockOrderId);
-                                    this.stockDetailsService.update(stockDetails, queryWrapper1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            OutstockOrder oldEntity = getOldEntity(param);
-            OutstockOrder newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(newEntity);
-        } else {
-            throw new ServiceException(500, "仓库没有此产品！");
-        }
-
-    }
-
     /**
      * 自由出库
      *
@@ -235,6 +150,14 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         stockDetailsService.updateById(stockDetails);
         //更新仓库数量
         updateStock(stockDetails.getStockId());
+
+        //创建实物
+        Inkind inkind = new Inkind();
+        inkind.setSource("自由出库");
+        inkind.setSkuId(stockDetails.getSkuId());
+        inkind.setBrandId(stockDetails.getBrandId());
+        inkind.setType("2");
+        inkindService.save(inkind);
     }
 
     private void updateStock(Long stockId) {

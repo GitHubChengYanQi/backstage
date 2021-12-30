@@ -537,7 +537,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         InstockListParam instockListParam = inKindRequest.getInstockListParam();
         instockListParam.setRequests(instockListRequests);
-
         instockListService.batchInstock(instockListParam);
     }
 
@@ -842,6 +841,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             newinKind.setSkuId(inkind.getSkuId());
             newinKind.setSourceId(inKindRequest.getOutstockListingId());
             newinKind.setSource("出库");
+            newinKind.setType("2");
             newinKind.setBrandId(inkind.getBrandId());
             inkindService.save(newinKind);
         }
