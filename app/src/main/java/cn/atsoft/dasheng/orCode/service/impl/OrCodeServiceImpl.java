@@ -100,6 +100,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private QualityTaskDetailService detailService;
     @Autowired
     private InstockListService listService;
+    @Autowired
+    private OutstockOrderService outstockOrderService;
 
 
     @Override
@@ -854,9 +856,30 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         outstock.setSkuId(stockDetails.getSkuId());
         outstock.setNumber(inKindRequest.getNumber());
         outstockService.save(outstock);
-
+        updateOutStockState(inKindRequest.getOutstockOrderId());
         return listNumber;
     }
+
+    /**
+     * 修改出库单状态；
+     */
+    private void updateOutStockState(Long outStockOrderId) {
+        OutstockOrder outstockOrder = outstockOrderService.getById(outStockOrderId);
+        if (ToolUtil.isEmpty(outstockOrder)) {
+            throw new ServiceException(500, "入库单不正确");
+        }
+        outstockOrder.setState(1);
+        List<OutstockListing> outstockListings = outstockListingService.query().eq("outstock_order_id", outStockOrderId).list();
+        Long number = 0L;
+        for (OutstockListing outstockListing : outstockListings) {
+            number = number + outstockListing.getNumber();
+        }
+        if (number == 0) {
+            outstockOrder.setState(2);
+        }
+        outstockOrderService.updateById(outstockOrder);
+    }
+
 
     /**
      * 自动绑定
