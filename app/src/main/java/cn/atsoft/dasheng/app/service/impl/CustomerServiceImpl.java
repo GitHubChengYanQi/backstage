@@ -119,7 +119,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
         }
 
-        if (param.getSupply() == 2) {   //创建品牌
+        if (param.getSupply() == 1) {   //创建品牌
             Brand brand = new Brand();
             brand.setBrandName(param.getCustomerName());
             brandService.save(brand);
