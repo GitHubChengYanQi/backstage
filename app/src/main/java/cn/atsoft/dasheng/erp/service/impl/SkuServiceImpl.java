@@ -115,8 +115,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             spuEntity.setCategoryId(categoryId);
             spuEntity.setType(0);
             spuEntity.setUnitId(param.getUnitId());
+            
+            /**
+             * sku名称（skuName）加型号(spuName)判断防止重复
+             */
+            Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+                throw new ServiceException(500, "此物料在产品中已存在");
+            }
+
+
+
             if (ToolUtil.isEmpty(spuId)) {
-                Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
                 if (ToolUtil.isNotEmpty(spu)) {
                     spuId = spu.getSpuId();
                 } else {
@@ -127,8 +138,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 spuEntity.setSpuId(spuId);
                 spuService.updateById(spuEntity);
             }
-            Spu byId = spuService.lambdaQuery().eq(Spu::getSpuId, spuId).and(i -> i.eq(Spu::getDisplay, 1)).one();
-            //判断是否有已存在的分类
 
             /**
              * 查询属性，添加属性
@@ -201,13 +210,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              *
              *  ↓为新sku防止重复判断  以名称加型号 做数据库比对判断
              */
-            List<Spu> spu = spuService.query().eq("name", param.getSpu().getName()).and(i -> i.eq("display", 1)).list();
-            List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
-            if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
-                throw new ServiceException(500, "此物料在产品中已存在");
-            } else {
-                this.save(entity);
-            }
+
+            this.save(entity);
         } else if (param.getType() == 1) {
             Long spuId = param.getSpu().getSpuId();
             if (ToolUtil.isEmpty(spuId)) {
