@@ -88,7 +88,7 @@ public class OutstockSendTemplate {
         //获取url
         wxCpSendTemplate.setMessage(new Message(){{
             setSource("outStockOrder");
-            setSourceId(this.getSourceId());
+            setSourceId(sourceId);
         }});
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
