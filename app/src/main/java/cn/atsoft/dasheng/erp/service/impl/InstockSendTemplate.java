@@ -53,6 +53,8 @@ public class InstockSendTemplate {
 
     private BusinessTrack businessTrack;
 
+    private Long sourceId;
+
 
     //企业微信推送
     public List<String> userIds() {
@@ -81,7 +83,10 @@ public class InstockSendTemplate {
 
         wxCpTemplate.setUrl(url);
         //获取url
-
+        wxCpSendTemplate.setMessage(new Message(){{
+            setSource("outStockOrder");
+            setSourceId(sourceId);
+        }});
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
 

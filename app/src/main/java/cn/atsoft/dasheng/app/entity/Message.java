@@ -72,6 +72,18 @@ public class Message implements Serializable {
     private Long userId;
 
     /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -124,6 +136,22 @@ public class Message implements Serializable {
 
     public void setMessageId(Long messageId) {
         this.messageId = messageId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Date getTime() {

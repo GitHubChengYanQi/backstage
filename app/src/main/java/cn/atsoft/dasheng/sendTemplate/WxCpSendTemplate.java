@@ -35,6 +35,8 @@ public class WxCpSendTemplate {
     @Autowired
     MessageProducer messageProducer;
 
+    //添加系统小铃铛信息
+    private Message message;
 
     private WxCpTemplate wxCpTemplate;
 
@@ -85,7 +87,7 @@ public class WxCpSendTemplate {
             }
             for (Long userId : wxCpTemplate.getUserIds()) {
                 messageEntity.setType(MessageType.MESSAGE);
-                Message message = new Message();
+//                Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle(wxCpTemplate.getTitle());
                 message.setContent(wxCpTemplate.getDescription());
