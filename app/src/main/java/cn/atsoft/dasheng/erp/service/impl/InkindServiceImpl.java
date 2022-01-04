@@ -174,7 +174,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return inkindResult;
     }
 
-    public void returnPrintTemplate(InkindResult param) {
+    private void returnPrintTemplate(InkindResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
         }});

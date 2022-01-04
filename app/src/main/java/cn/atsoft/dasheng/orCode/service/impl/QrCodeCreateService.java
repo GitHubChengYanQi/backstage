@@ -28,7 +28,7 @@ public class QrCodeCreateService {
 
     public String createQrCode(String content){
         if (ToolUtil.isNotEmpty(content)) {
-//            ServletOutputStream stream = null;
+
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             @SuppressWarnings("rawtypes")
             HashMap<EncodeHintType, Comparable> hints = new HashMap<>();
@@ -46,13 +46,7 @@ public class QrCodeCreateService {
                 e.printStackTrace();
             }
 
-//
-//            finally {
-//                if (stream != null) {
-//                    stream.flush();
-//                    stream.close();
-//                }
-//            }
+
         }
         return null ;
     }

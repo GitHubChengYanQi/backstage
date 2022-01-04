@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
@@ -19,6 +20,10 @@ import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -55,8 +60,74 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void add(StorehousePositionsParam param) {
+        if (ToolUtil.isNotEmpty(param.getPid())) {
+            StockDetails stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).one();
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
+            }
+        }
+
         StorehousePositions entity = getEntity(param);
         this.save(entity);
+
+        StorehousePositions positions = new StorehousePositions();
+        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+        positions.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+        positions.setChildren(JSON.toJSONString(childrenMap.get("children")));
+        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("storehouse_positions_id", entity.getPid());
+        this.update(positions, QueryWrapper);
+
+        updateChildren(entity.getPid());
+    }
+
+    /**
+     * 递归
+     */
+    public Map<String, List<Long>> getChildrens(Long id) {
+
+        List<Long> childrensSkuIds = new ArrayList<>();
+        Map<String, List<Long>> result = new HashMap<String, List<Long>>() {
+            {
+                put("children", new ArrayList<>());
+                put("childrens", new ArrayList<>());
+            }
+        };
+
+        List<Long> skuIds = new ArrayList<>();
+        StorehousePositions positions = this.query().eq("storehouse_positions_id", id).eq("display", 1).one();
+        if (ToolUtil.isNotEmpty(positions)) {
+            List<StorehousePositions> details = this.query().eq("pid", positions.getStorehousePositionsId()).eq("display", 1).list();
+            for (StorehousePositions detail : details) {
+                skuIds.add(detail.getStorehousePositionsId());
+                childrensSkuIds.add(detail.getStorehousePositionsId());
+                Map<String, List<Long>> childrenMap = this.getChildrens(detail.getStorehousePositionsId());
+                childrensSkuIds.addAll(childrenMap.get("childrens"));
+            }
+            result.put("children", skuIds);
+            result.put("childrens", childrensSkuIds);
+        }
+        return result;
+    }
+
+    /**
+     * 更新包含它的
+     */
+    public void updateChildren(Long id) {
+        List<StorehousePositions> positions = this.query().like("children", id).eq("display", 1).list();
+        for (StorehousePositions storehousePositions : positions) {
+            Map<String, List<Long>> childrenMap = getChildrens(id);
+            JSONArray childrensjsonArray = JSONUtil.parseArray(storehousePositions.getChildrens());
+            List<Long> longs = JSONUtil.toList(childrensjsonArray, Long.class);
+            List<Long> list = childrenMap.get("childrens");
+            longs.addAll(list);
+            storehousePositions.setChildrens(JSON.toJSONString(longs));
+            // update
+            QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("storehouse_positions_id", storehousePositions.getStorehousePositionsId());
+            this.update(storehousePositions, queryWrapper);
+            updateChildren(storehousePositions.getStorehousePositionsId());
+        }
     }
 
     @Override
@@ -72,6 +143,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
     }
+
+    public StorehousePositionsResult positionsResult(Long id) {
+
+        StorehousePositions storehousePositions = this.getById(id);
+        StorehousePositionsResult positionsResult = new StorehousePositionsResult();
+        ToolUtil.copyProperties(storehousePositions, positionsResult);
+        return positionsResult;
+    }
+
 
     @Override
     public StorehousePositionsResult findBySpec(StorehousePositionsParam param) {
@@ -91,29 +171,29 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public Map<String,Map<String,Object>> takeStock(StorehousePositionsParam param) {
+    public Map<String, Map<String, Object>> takeStock(StorehousePositionsParam param) {
         param.getStorehousePositionsId();
         List<Long> skuIds = new ArrayList<>();
         List<StockDetails> stockDetailsList = stockDetailsService.lambdaQuery().in(StockDetails::getStorehousePositionsId, param.getStorehousePositionsId()).list();
         for (StockDetails stockDetails : stockDetailsList) {
-                skuIds.add(stockDetails.getSkuId());
+            skuIds.add(stockDetails.getSkuId());
 
         }
 
         List<Long> collect = skuIds.stream().distinct().collect(Collectors.toList());
         List<Sku> skuList = skuService.lambdaQuery().in(Sku::getSkuId, collect).list();
 
-        Map<String,Map<String,Object>> resultMap = new HashMap<>();
+        Map<String, Map<String, Object>> resultMap = new HashMap<>();
         List<List<StockDetails>> listArrayList = new ArrayList<>();
         for (Long skuId : collect) {
             List<StockDetails> stockDetails = new ArrayList<>();
             List<BackSku> backSkus = skuService.backSku(skuId);
             for (StockDetails stockDetail : stockDetailsList) {
                 if (skuId.equals(stockDetail.getSkuId())) {
-                    Map<String,Object> map = new HashMap<>();
-                    ToolUtil.copyProperties(stockDetail,map);
-                    map.put("skuValue",backSkus);
-                    resultMap.put(stockDetail.getStockItemId().toString(),map);
+                    Map<String, Object> map = new HashMap<>();
+                    ToolUtil.copyProperties(stockDetail, map);
+                    map.put("skuValue", backSkus);
+                    resultMap.put(stockDetail.getStockItemId().toString(), map);
                 }
             }
             listArrayList.add(stockDetails);
