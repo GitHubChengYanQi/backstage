@@ -106,7 +106,7 @@ public class SkuExcelController {
                     //防止添加已有数据-------------------------------------------------------------------------------------
                     Sku sku1 = skuService.query().eq("sku_name", skuExcelItem.get型号()).inSql("spu_id", "select spu_id from goods_spu where name ='" + skuExcelItem.get物料名称() + "'").one();
                     if (ToolUtil.isNotEmpty(sku1)) {
-                        throw new ServiceException(500, "物料名称：" + skuExcelItem.get物料名称() + ",型号" + skuExcelItem.get型号() + ".已经存在");
+                        break;
                     }
                     //型号
                     Sku sku = new Sku();
