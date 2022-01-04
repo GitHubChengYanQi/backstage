@@ -81,11 +81,11 @@
             UNION
             SELECT
             <include refid="Base_Column_List"/>
-            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%') and display =1
             UNION
             select
             <include refid="Base_Column_List"/>
-            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%') and display = 1
         </if>
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}
