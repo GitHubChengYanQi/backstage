@@ -89,7 +89,8 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
-        if (param.getPid() == 0) {
+        SpuClassification classification = this.getById(param.getSpuClassificationId());
+        if (classification.getPid() == 0) {
             List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
             for (SpuClassification spuClassification : spuClassifications) {
                 JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
