@@ -632,10 +632,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         skuResult.setList(valuesResults);
         List<AttributeInSpu> tree = new ArrayList<>();
-        AttributeInSpu attribute = new AttributeInSpu();
-        List<AttributeValueInSpu> values = new ArrayList<>();
-        for (AttributeValues attributeValues : valuesList) {
-            for (ItemAttribute itemAttribute : itemAttributes) {
+        for (ItemAttribute itemAttribute : itemAttributes) {
+            AttributeInSpu attribute = new AttributeInSpu();
+            List<AttributeValueInSpu> values = new ArrayList<>();
+            for (AttributeValues attributeValues : valuesList) {
                 if (attributeValues.getAttributeId().equals(itemAttribute.getAttributeId())) {
                     AttributeValueInSpu value = new AttributeValueInSpu();
                     attribute.setK(itemAttribute.getAttribute());
@@ -647,8 +647,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     attribute.setV(values);
                 }
             }
+            tree.add(attribute);
         }
-        tree.add(attribute);
+
         SkuRequest skuRequest = new SkuRequest();
         skuRequest.setTree(tree);
         skuResult.setSpuClassification(skuRequest);
