@@ -124,7 +124,7 @@ public class SkuController extends BaseController {
         SkuResult sku = skuService.getSku(detail.getSkuId());
         if (ToolUtil.isNotEmpty(detail.getSpuId())) {
             Spu spu = spuService.getById(detail.getSpuId());
-            if (ToolUtil.isNotEmpty(spu.getUnitId())){
+            if (ToolUtil.isNotEmpty(spu)&&ToolUtil.isNotEmpty(spu.getUnitId())){
                 Unit unit = unitService.getById(spu.getUnitId());
                 sku.setUnit(unit);
             }
@@ -140,7 +140,6 @@ public class SkuController extends BaseController {
 
         User user = userService.getById(detail.getCreateUser());
         sku.setCreateUserName(user.getName());
-
         return ResponseData.success(sku);
     }
 
