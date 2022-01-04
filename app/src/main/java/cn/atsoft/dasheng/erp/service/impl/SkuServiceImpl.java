@@ -287,7 +287,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attributeName.add(skuAttributeAndValue.getLabel());
             attributeValueName.add(skuAttributeAndValue.getValue());
         }
-        List<ItemAttribute> attributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
+        List<ItemAttribute> attributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i->i.eq(ItemAttribute::getCategoryId,categoryId)).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
         for (ItemAttribute attribute : attributes) {
             attributeId.add(attribute.getAttributeId());
         }
@@ -445,6 +445,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (ToolUtil.isNotEmpty(sku)){
             throw new ServiceException(500,"已存在相同属性相同名称物料,不能重复添加");
         }
+
         this.updateById(newEntity);
 
 
@@ -647,7 +648,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).eq("display",1).list();
+        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).eq("display",1).eq("category_id",spu.getCategoryId()).list();
         List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).eq("display",1).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
 
