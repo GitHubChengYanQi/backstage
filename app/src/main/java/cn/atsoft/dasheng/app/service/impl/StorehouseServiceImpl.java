@@ -76,6 +76,19 @@ public class StorehouseServiceImpl extends ServiceImpl<StorehouseMapper, Storeho
         return PageFactory.createPageInfo(page);
     }
 
+    @Override
+    public StorehouseResult getDetail(Long Id) {
+        Storehouse storehouse = this.getById(Id);
+        if (ToolUtil.isEmpty(storehouse)) {
+            return null;
+        }
+        StorehouseResult storehouseResult = new StorehouseResult();
+
+        ToolUtil.copyProperties(storehouse, storehouseResult);
+
+        return storehouseResult;
+    }
+
     private Serializable getKey(StorehouseParam param) {
         return param.getStorehouseId();
     }

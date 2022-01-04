@@ -9,18 +9,26 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
+import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
+import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
+import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
@@ -41,6 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
+import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.POSITIONS;
+
 /**
  * <p>
  * 仓库库位表 服务实现类
@@ -57,6 +68,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     private StockDetailsService stockDetailsService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
+    @Autowired
+    private QrCodeCreateService qrCodeCreateService;
+
+    @Autowired
+    private PrintTemplateService printTemplateService;
 
     @Override
     public void add(StorehousePositionsParam param) {
@@ -138,18 +158,53 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void update(StorehousePositionsParam param) {
-        StorehousePositions oldEntity = getOldEntity(param);
-        StorehousePositions newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
+//        StorehousePositions oldEntity = getOldEntity(param);
+//        StorehousePositions newEntity = getEntity(param);
+//        ToolUtil.copyProperties(newEntity, oldEntity);
+//        this.updateById(newEntity);
     }
 
-    public StorehousePositionsResult positionsResult(Long id) {
+    public StorehousePositionsResult positionsResultByCodeId(Long codeId) {
 
-        StorehousePositions storehousePositions = this.getById(id);
-        StorehousePositionsResult positionsResult = new StorehousePositionsResult();
-        ToolUtil.copyProperties(storehousePositions, positionsResult);
-        return positionsResult;
+        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", codeId).one();
+
+        StorehousePositions storehousePositions = this.getById(orCodeBind.getFormId());
+
+        if (ToolUtil.isEmpty(storehousePositions.getChildren())) {
+
+            StorehousePositionsResult positionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePositions, positionsResult);
+            StorehouseResult serviceDetail = storehouseService.getDetail(positionsResult.getStorehouseId());
+            positionsResult.setStorehouseResult(serviceDetail);
+            returnPrintTemplate(positionsResult);
+            return positionsResult;
+        }
+
+        return null;
+    }
+
+    private void returnPrintTemplate(StorehousePositionsResult param) {
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", POSITIONS);
+        }});
+
+        if (ToolUtil.isEmpty(printTemplate)) {
+            throw new ServiceException(500, "请先定义二维码模板");
+        }
+
+        String templete = printTemplate.getTemplete();
+        if (templete.contains("${qrCode}")) {
+            OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
+                eq("form_id", param.getStorehousePositionsId());
+            }});
+            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + orCodeBind.getOrCodeId();
+            String qrCode = qrCodeCreateService.createQrCode(url);
+            templete = templete.replace("${qrCode}", qrCode);
+        }
+        PrintTemplateResult printTemplateResult = new PrintTemplateResult();
+        ToolUtil.copyProperties(printTemplate, printTemplateResult);
+        printTemplateResult.setTemplete(templete);
+        param.setPrintTemplateResult(printTemplateResult);
     }
 
 
