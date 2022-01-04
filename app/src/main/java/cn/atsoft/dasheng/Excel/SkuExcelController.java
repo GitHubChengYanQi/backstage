@@ -103,6 +103,10 @@ public class SkuExcelController {
                 List<Sku> skus = new ArrayList<>();
                 Long spuId = null;
                 for (SkuExcelItem skuExcelItem : skuExcelItems) {
+                    Sku sku1 = skuService.query().eq("sku_name", skuExcelItem.get型号()).inSql("spu_id", "select spu_id from goods_spu where name ='" + skuExcelItem.get物料名称() + "'").one();
+                    if (ToolUtil.isNotEmpty(sku1)) {
+                        throw new ServiceException(500, "物料名称：" + skuExcelItem.get物料名称() + ",型号" + skuExcelItem.get型号() + ".已经存在");
+                    }
                     //型号
                     Sku sku = new Sku();
                     sku.setSkuName(skuExcelItem.get型号());
