@@ -91,6 +91,9 @@ stage
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
+        <if test="paramCondition.storehouseId != null">
+            and storehouse_positions_id = #{paramCondition.storehouseId}
+        </if>
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
