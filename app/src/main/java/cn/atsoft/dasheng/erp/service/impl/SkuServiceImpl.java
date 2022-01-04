@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.SkuMapper;
 import cn.atsoft.dasheng.erp.model.params.*;
+import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -105,16 +106,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 categoryId = category.getCategoryId();
             }
 
-            /**
-             * 查询产品，添加产品
-             */
-            Long spuId = param.getSpu().getSpuId();
-            Spu spuEntity = new Spu();
-            spuEntity.setName(param.getSpu().getName());
-            spuEntity.setSpuClassificationId(param.getSpuClassificationId());
-            spuEntity.setCategoryId(categoryId);
-            spuEntity.setType(0);
-            spuEntity.setUnitId(param.getUnitId());
 
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
@@ -126,6 +117,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
+            /**
+             * 查询产品，添加产品
+             */
+            Long spuId = param.getSpu().getSpuId();
+            Spu spuEntity = new Spu();
+            spuEntity.setName(param.getSpu().getName());
+            spuEntity.setSpuClassificationId(param.getSpuClassificationId());
+            spuEntity.setCategoryId(categoryId);
+            spuEntity.setType(0);
+            spuEntity.setUnitId(param.getUnitId());
 
             if (ToolUtil.isEmpty(spuId)) {
                 if (ToolUtil.isNotEmpty(spu)) {
@@ -134,7 +135,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     spuService.save(spuEntity);
                     spuId = spuEntity.getSpuId();
                 }
-            }else {
+            } else {
+                /**
+                 * TODO 疑问  为什么要 更新
+                 */
                 spuEntity.setSpuId(spuId);
                 spuService.updateById(spuEntity);
             }
@@ -142,46 +146,53 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * 查询属性，添加属性
              */
-            Long itemAttributeId = null;
-            if (ToolUtil.isNotEmpty(categoryId)) {
-                //查询出属性id
-                ItemAttribute one = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
-                /**
-                 * 如果已经创建过产品  但是 没有物料属性  创建物料属性后  创建属性值  最后绑定创建物料
-                 */
+//            Long itemAttributeId = null;
+//            if (ToolUtil.isNotEmpty(categoryId)) {
+//                //查询出属性id
+//                ItemAttribute InBaseAttribute = itemAttributeService.lambdaQuery().eq(ItemAttribute::getCategoryId, categoryId).and(i -> i.eq(ItemAttribute::getDisplay, 1)).one();
+//                /**
+//                 * 如果已经创建过产品  但是 没有物料属性  创建物料属性后  创建属性值  最后绑定创建物料
+//                 */
+//
+//                if (ToolUtil.isNotEmpty(InBaseAttribute)) {
+//                    itemAttributeId = InBaseAttribute.getAttributeId();
+//                } else {
+//                    ItemAttribute attribute = new ItemAttribute();
+//                    attribute.setCategoryId(categoryId);
+//                    attribute.setAttribute("规格");
+//                    attribute.setStandard(param.getSpuStandard());
+//                    itemAttributeService.save(attribute);
+//                    itemAttributeId = attribute.getAttributeId();
+//                }
+//            }
+//            Long attributeValuesId = null;
+//            //根据分类查询出属性新建属性值
+//            /**
+//             * 查询属性值  添加属性值
+//             */
+//            AttributeValues InBaseAttributeValue = attributeValuesService.lambdaQuery().eq(AttributeValues::getAttributeId, itemAttributeId).eq(AttributeValues::getAttributeValues, param.getSpecifications()).eq(AttributeValues::getDisplay, 1).one();
+//            if (ToolUtil.isNotEmpty(InBaseAttributeValue)) {
+//                attributeValuesId = InBaseAttributeValue.getAttributeValuesId();
+//            } else {
+//                AttributeValues attributeValues = new AttributeValues();
+//                attributeValues.setAttributeValues(param.getSpecifications());
+//                attributeValues.setAttributeId(itemAttributeId);
+//                attributeValuesService.save(attributeValues);
+//                attributeValuesId = attributeValues.getAttributeValuesId();
+//            }
 
-                if (ToolUtil.isNotEmpty(one)) {
-                    itemAttributeId = one.getAttributeId();
-                } else {
-                    ItemAttribute attribute = new ItemAttribute();
-                    attribute.setCategoryId(categoryId);
-                    attribute.setAttribute("规格");
-                    attribute.setStandard(param.getSpuStandard());
-                    itemAttributeService.save(attribute);
-                    itemAttributeId = attribute.getAttributeId();
-                }
-            }
-            Long attributeValuesId = null;
-            //根据分类查询出属性新建属性值
             /**
-             * 查询属性值  添加属性值
+             * 做匹配保存 属性属性值方法
+             *
              */
-            AttributeValues one = attributeValuesService.lambdaQuery().eq(AttributeValues::getAttributeId, itemAttributeId).eq(AttributeValues::getAttributeValues, param.getSpecifications()).eq(AttributeValues::getDisplay, 1).one();
-            if (ToolUtil.isNotEmpty(one)) {
-                attributeValuesId = one.getAttributeValuesId();
-            } else {
-                AttributeValues attributeValues = new AttributeValues();
-                attributeValues.setAttributeValues(param.getSpecifications());
-                attributeValues.setAttributeId(itemAttributeId);
-                attributeValuesService.save(attributeValues);
-                attributeValuesId = attributeValues.getAttributeValuesId();
-            }
+            List<AttributeValues> list = this.addAttributeAndValue(param.getSpecifications(), categoryId);
+
             Sku entity = getEntity(param);
-            List<AttributeValues> list = new ArrayList<>();
-            AttributeValues attributeValue = new AttributeValues();
-            attributeValue.setAttributeId(itemAttributeId);
-            attributeValue.setAttributeValuesId(attributeValuesId);
-            list.add(attributeValue);
+//            List<AttributeValues> list = new ArrayList<>();
+//            AttributeValues attributeValue = new AttributeValues();
+//            attributeValue.setAttributeId(itemAttributeId);
+//            attributeValue.setAttributeValuesId(attributeValuesId);
+//            list.add(attributeValue);
             list.sort(Comparator.comparing(AttributeValues::getAttributeId));
             String json = JSON.toJSONString(list);
 
@@ -268,8 +279,49 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
     }
 
-    @Override
+    private List<AttributeValues>  addAttributeAndValue(List<SkuAttributeAndValue> param,Long categoryId) {
+        List<String> attributeName = new ArrayList<>();
+        List<String> attributeValueName = new ArrayList<>();
+        for (SkuAttributeAndValue skuAttributeAndValue : param) {
+            attributeName.add(skuAttributeAndValue.getLabel());
+            attributeValueName.add(skuAttributeAndValue.getValue());
+        }
+        List<ItemAttribute> attributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
+        List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValues, attributeValueName).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        List<AttributeValues> list = new ArrayList<>();
+        for (SkuAttributeAndValue skuAttributeAndValue : param) {
+            AttributeValues value = new AttributeValues();
+            for (ItemAttribute itemAttribute : attributes) {
+                if (skuAttributeAndValue.getLabel().equals(itemAttribute.getAttribute())) {
+                    value.setAttributeId(itemAttribute.getAttributeId());
+                }
+            }
+            if (attributes.stream().noneMatch(attribute -> attribute.getAttribute().equals(skuAttributeAndValue.getLabel()))) {
+                ItemAttribute itemAttributeEntity = new ItemAttribute();
+                itemAttributeEntity.setAttribute(skuAttributeAndValue.getLabel());
+                itemAttributeEntity.setCategoryId(categoryId);
+                itemAttributeService.save(itemAttributeEntity);
+                value.setAttributeId(itemAttributeEntity.getAttributeId());
+            }
+            for (AttributeValues attributeValue : attributeValues) {
+                if (skuAttributeAndValue.getValue().equals(attributeValue.getAttributeValues())) {
+                    value.setAttributeValuesId(attributeValue.getAttributeValuesId());
+                }
+            }
+            if (attributeValues.stream().noneMatch(attributeValue -> attributeValue.getAttributeValues().equals(skuAttributeAndValue.getLabel()))) {
+                AttributeValues attributeValuesEntity = new AttributeValues();
+                attributeValuesEntity.setAttributeId(value.getAttributeId());
+                attributeValuesEntity.setAttributeValues(skuAttributeAndValue.getValue());
+                attributeValuesService.save(attributeValuesEntity);
+                value.setAttributeValuesId(attributeValuesEntity.getAttributeValuesId());
+            }
+            list.add(value);
+        }
+        return list;
+    }
 
+
+    @Override
     public void delete(SkuParam param) {
         List<Long> id = new ArrayList<>();
         id.add(param.getSkuId());
@@ -553,6 +605,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SpuResult spuResult = new SpuResult();
         ToolUtil.copyProperties(spu, spuResult);
         skuResult.setSpuResult(spuResult);
+
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
         List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
         List<Long> attIds = new ArrayList<>();
@@ -578,8 +631,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
         }
         skuResult.setList(valuesResults);
+        List<AttributeInSpu> tree = new ArrayList<>();
+        AttributeInSpu attribute = new AttributeInSpu();
+        List<AttributeValueInSpu> values = new ArrayList<>();
+        for (AttributeValues attributeValues : valuesList) {
+            for (ItemAttribute itemAttribute : itemAttributes) {
+                if (attributeValues.getAttributeId().equals(itemAttribute.getAttributeId())) {
+                    AttributeValueInSpu value = new AttributeValueInSpu();
+                    attribute.setK(itemAttribute.getAttribute());
+                    attribute.setK_s(itemAttribute.getAttributeId());
+                    value.setAttributeId(itemAttribute.getAttributeId());
+                    value.setId(attributeValues.getAttributeValuesId());
+                    value.setName(attributeValues.getAttributeValues());
+                    values.add(value);
+                    attribute.setV(values);
+                }
+            }
+        }
+        tree.add(attribute);
+        SkuRequest skuRequest = new SkuRequest();
+        skuRequest.setTree(tree);
+        skuResult.setSpuClassification(skuRequest);
         return skuResult;
     }
+
 
     @Override
     public List<SkuResult> formatSkuResult(List<Long> skuIds) {

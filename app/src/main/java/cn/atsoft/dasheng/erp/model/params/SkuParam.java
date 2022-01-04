@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.app.model.params.Attribute;
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
 import cn.atsoft.dasheng.erp.entity.AttributeValues;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
+import cn.atsoft.dasheng.erp.model.request.SkuAttributeAndValue;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -30,7 +31,6 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
 
     private static final long serialVersionUID = 1L;
     private List<AttributeValuesParam> attributeValues;
-    @ApiModelProperty("")
     private Long skuId;
     private List<Long> skuIds;
     private SpuParam spu;
@@ -42,6 +42,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private Integer batch;
     private String spuName;
     private Long fileId;
+
+    private List<SkuAttributeAndValue> specifications;
 
     /**
      * 编码
@@ -66,8 +68,8 @@ public class SkuParam extends AbstractDictMap implements Serializable, BaseValid
     private String skuValueMd5;
     @ApiModelProperty("是否禁用")
     private Integer isBan;
-    @ApiModelProperty("规格")
-    public String specifications;
+//    @ApiModelProperty("规格")
+//    public String specifications;
     @ApiModelProperty("执行标准")
     private String standard;
 
