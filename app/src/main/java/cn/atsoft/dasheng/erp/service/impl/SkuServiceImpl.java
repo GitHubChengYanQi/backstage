@@ -282,12 +282,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private List<AttributeValues>  addAttributeAndValue(List<SkuAttributeAndValue> param,Long categoryId) {
         List<String> attributeName = new ArrayList<>();
         List<String> attributeValueName = new ArrayList<>();
+        List<Long> attributeId = new ArrayList<>();
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             attributeName.add(skuAttributeAndValue.getLabel());
             attributeValueName.add(skuAttributeAndValue.getValue());
         }
         List<ItemAttribute> attributes = itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
-        List<AttributeValues> attributeValues = attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeValues, attributeValueName).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        for (ItemAttribute attribute : attributes) {
+            attributeId.add(attribute.getAttributeId());
+        }
+        List<AttributeValues> attributeValues = attributeId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId,attributeId).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
         List<AttributeValues> list = new ArrayList<>();
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             AttributeValues value = new AttributeValues();
@@ -308,7 +312,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     value.setAttributeValuesId(attributeValue.getAttributeValuesId());
                 }
             }
-            if (attributeValues.stream().noneMatch(attributeValue -> attributeValue.getAttributeValues().equals(skuAttributeAndValue.getLabel()))) {
+            if (attributeValues.stream().noneMatch(attributeValue -> attributeValue.getAttributeValues().equals(skuAttributeAndValue.getValue()))) {
                 AttributeValues attributeValuesEntity = new AttributeValues();
                 attributeValuesEntity.setAttributeId(value.getAttributeId());
                 attributeValuesEntity.setAttributeValues(skuAttributeAndValue.getValue());
@@ -430,13 +434,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
         String json = JSON.toJSONString(list);
 
-
         Spu spuEntity = new Spu();
         spuEntity.setSpuClassificationId(param.getSpuClassificationId());
         spuEntity.setUnitId(param.getUnitId());
         spuEntity.setSpuId(param.getSpuId());
         spuService.updateById(spuEntity);
         newEntity.setSkuValue(json);
+        newEntity.setSkuValueMd5( SecureUtil.md5(categoryId + param.getSpuId() + newEntity.getSkuValue()));
+        Sku sku = this.lambdaQuery().eq(Sku::getSkuValue, json).and(i -> i.eq(Sku::getDisplay, 1)).and(i -> i.eq(Sku::getSkuName, newEntity.getSkuName())).one();
+        if (ToolUtil.isNotEmpty(sku)){
+            throw new ServiceException(500,"已存在相同属性相同名称物料,不能重复添加");
+        }
         this.updateById(newEntity);
 
 
@@ -639,8 +647,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).list();
-        List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).list();
+        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).eq("display",1).list();
+        List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).eq("display",1).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
 
         for (AttributeValues valuesRequest : valuesList) {
@@ -655,12 +663,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
             }
         }
+        List<AttributeValues> valuesAllList = attributeValuesService.query().in("attribute_id", attIds).eq("display",1).list();
+
         skuResult.setList(valuesResults);
         List<AttributeInSpu> tree = new ArrayList<>();
         for (ItemAttribute itemAttribute : itemAttributes) {
             AttributeInSpu attribute = new AttributeInSpu();
             List<AttributeValueInSpu> values = new ArrayList<>();
-            for (AttributeValues attributeValues : valuesList) {
+            for (AttributeValues attributeValues : valuesAllList) {
                 if (attributeValues.getAttributeId().equals(itemAttribute.getAttributeId())) {
                     AttributeValueInSpu value = new AttributeValueInSpu();
                     attribute.setK(itemAttribute.getAttribute());
