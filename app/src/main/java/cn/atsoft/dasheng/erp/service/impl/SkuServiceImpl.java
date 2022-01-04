@@ -406,10 +406,18 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     @BussinessLog
     public void update(SkuParam param) {
+
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
 
+
+        Spu spu = spuService.lambdaQuery().eq(Spu::getName, param.getSpu().getName()).and(i -> i.eq(Spu::getDisplay, 1)).one();
+        List<Sku> skuName = skuService.query().eq("sku_name", param.getSkuName()).and(i -> i.eq("display", 1)).list();
+        if (ToolUtil.isNotEmpty(spu) && ToolUtil.isNotEmpty(skuName)) {
+            throw new ServiceException(500, "此物料在产品中已存在");
+        }
+        
         Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
         Long categoryId = null;
         if (ToolUtil.isNotEmpty(one1)) {
@@ -420,6 +428,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             categoryService.save(category);
             categoryId = category.getCategoryId();
         }
+
+        /**
+         * sku名称（skuName）加型号(spuName)判断防止重复
+         */
+
+
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
         String json = JSON.toJSONString(list);
 
