@@ -540,6 +540,40 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         instockListService.batchInstock(instockListParam);
     }
 
+    /**
+     * 批量扫码出库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    @Transactional
+    public void batchOutStockByCode(InKindRequest inKindRequest) {
+        List<Long> codeIds = new ArrayList<>();
+
+        for (InKindRequest.BatchOutStockParam batchOutStockParam : inKindRequest.getBatchOutStockParams()) {
+            codeIds.add(batchOutStockParam.getCodeId());
+        }
+        List<StockDetails> details = stockDetailsService.query().in("qr_code_id", codeIds).list();
+
+        List<InKindRequest.BatchOutStockParam> batchOutStockParams = inKindRequest.getBatchOutStockParams();
+        //判断二维码合法性
+        if (details.size() != batchOutStockParams.size()) {
+            throw new ServiceException(500, "请保证所有二维码正确");
+        }
+        for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
+            for (StockDetails detail : details) {
+                if (detail.getQrCodeid().equals(batchOutStockParam.getCodeId())) {
+                    if (detail.getNumber() < batchOutStockParam.getNumber()) {
+                        throw new ServiceException(500, "库存数量不足");
+                    }
+                    detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
+                }
+            }
+
+        }
+        stockDetailsService.updateBatchById(details);
+    }
+
 
     @Override
     public void batchAdd(OrCodeParam param) {
