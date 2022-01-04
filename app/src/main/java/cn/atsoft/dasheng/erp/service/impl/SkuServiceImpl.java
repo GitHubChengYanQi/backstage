@@ -185,7 +185,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * 做匹配保存 属性属性值方法
              *
              */
-            List<AttributeValues> list = this.addAttributeAndValue(param.getSpecifications(), categoryId);
+            List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
 
             Sku entity = getEntity(param);
 //            List<AttributeValues> list = new ArrayList<>();
@@ -409,12 +409,30 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+
+        Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
+        Long categoryId = null;
+        if (ToolUtil.isNotEmpty(one1)) {
+            categoryId = one1.getCategoryId();
+        } else {
+            Category category = new Category();
+            category.setCategoryName(param.getSpu().getName().replace(" ", ""));
+            categoryService.save(category);
+            categoryId = category.getCategoryId();
+        }
+        List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
+        String json = JSON.toJSONString(list);
+
+
         Spu spuEntity = new Spu();
         spuEntity.setSpuClassificationId(param.getSpuClassificationId());
         spuEntity.setUnitId(param.getUnitId());
         spuEntity.setSpuId(param.getSpuId());
         spuService.updateById(spuEntity);
+        newEntity.setSkuValue(json);
         this.updateById(newEntity);
+
+
     }
 
     @Override
@@ -652,7 +670,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         SkuRequest skuRequest = new SkuRequest();
         skuRequest.setTree(tree);
-        skuResult.setSpuClassification(skuRequest);
+        skuResult.setSku(skuRequest);
         return skuResult;
     }
 
