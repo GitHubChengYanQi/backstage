@@ -554,6 +554,70 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         instockListService.batchInstock(instockListParam);
     }
 
+    /**
+     * 批量扫码出库
+     *
+     * @param inKindRequest
+     */
+    @Override
+    @Transactional
+    public void batchOutStockByCode(InKindRequest inKindRequest) {
+        List<Long> codeIds = new ArrayList<>();
+
+        for (InKindRequest.BatchOutStockParam batchOutStockParam : inKindRequest.getBatchOutStockParams()) {
+            codeIds.add(batchOutStockParam.getCodeId());
+        }
+        List<StockDetails> details = stockDetailsService.query().in("qr_code_id", codeIds).list();
+
+        List<InKindRequest.BatchOutStockParam> batchOutStockParams = inKindRequest.getBatchOutStockParams();
+        //判断二维码合法性
+        if (details.size() != batchOutStockParams.size()) {
+            throw new ServiceException(500, "请保证所有二维码正确");
+        }
+
+        for (StockDetails detail : details) {
+            for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
+                if (detail.getQrCodeid().equals(batchOutStockParam.getCodeId())) {
+                    if (detail.getNumber() < batchOutStockParam.getNumber()) {
+                        throw new ServiceException(500, "库存数量不足");
+                    }
+                    detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
+                }
+            }
+
+        }
+        stockDetailsService.updateBatchById(details);
+        //map 比对
+        Map<Long, List<StockDetails>> maps = new HashMap<>();
+        List<Long> stockIds = new ArrayList<>();
+        List<StockDetails> detailsList = new ArrayList<>();
+        for (StockDetails detail : details) {
+            stockIds.add(detail.getStockId());
+
+            List<StockDetails> stockDetails = maps.get(detail.getStockId());
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                stockDetails.add(detail);
+                maps.put(detail.getStockId(), stockDetails);
+            }
+
+            detailsList.add(detail);
+            maps.put(detail.getStockId(), detailsList);
+        }
+
+        //更新库存数量
+        List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
+
+        for (Stock stock : stocks) {
+            List<StockDetails> stockDetailsList = maps.get(stock);
+            Long newNumber = 0L;
+            for (StockDetails stockDetails : stockDetailsList) {
+                newNumber = newNumber + stockDetails.getNumber();
+            }
+            stock.setInventory(newNumber);
+        }
+        stockService.updateBatchById(stocks);
+    }
+
 
     @Override
     public void batchAdd(OrCodeParam param) {
