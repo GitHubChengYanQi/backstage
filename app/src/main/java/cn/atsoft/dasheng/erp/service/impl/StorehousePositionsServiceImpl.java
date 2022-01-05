@@ -86,7 +86,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
             }
         }
-        Integer count = this.query().eq("name", param.getName()).eq("display",1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -170,7 +170,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void update(StorehousePositionsParam param) {
-        Integer count = this.query().eq("name", param.getName()).eq("display",1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -181,14 +181,13 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }});
     }
 
-    public StorehousePositionsResult positionsResultByCodeId(Long codeId) {
+    @Override
+    public StorehousePositionsResult positionsResultById(Long Id) {
 
-        OrCodeBind orCodeBind = orCodeBindService.query().eq("qr_code_id", codeId).one();
 
-        StorehousePositions storehousePositions = this.getById(orCodeBind.getFormId());
+        StorehousePositions storehousePositions = this.getById(Id);
 
         if (ToolUtil.isEmpty(storehousePositions.getChildren())) {
-
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
             ToolUtil.copyProperties(storehousePositions, positionsResult);
             StorehouseResult serviceDetail = storehouseService.getDetail(positionsResult.getStorehouseId());
@@ -247,7 +246,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public Map<String, Map<String, Object>> takeStock(StorehousePositionsParam param) {
-        param.getStorehousePositionsId();
         List<Long> skuIds = new ArrayList<>();
         List<StockDetails> stockDetailsList = stockDetailsService.lambdaQuery().in(StockDetails::getStorehousePositionsId, param.getStorehousePositionsId()).list();
         for (StockDetails stockDetails : stockDetailsList) {

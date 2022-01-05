@@ -43,6 +43,8 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     void update(StorehousePositionsParam param);
 
+    StorehousePositionsResult positionsResultById(Long codeId);
+
     /**
      * 查询单条数据，Specification模式
      *
