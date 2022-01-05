@@ -17,7 +17,9 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +61,22 @@ public class StorehousePositionsController extends BaseController {
         this.storehousePositionsService.add(storehousePositionsParam);
         return ResponseData.success();
     }
+
+
+    /**
+     * 库位二维码打印
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/positionsResultById", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public ResponseData positionsResultById(@Param("id")Long id) {
+        StorehousePositionsResult positionsResult = this.storehousePositionsService.positionsResultById(id);
+        return ResponseData.success(positionsResult);
+    }
+
+
 
     /**
      * 编辑接口

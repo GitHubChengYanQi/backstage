@@ -67,4 +67,6 @@ public interface PrintTemplateService extends IService<PrintTemplate> {
      */
      PageInfo<PrintTemplateResult> findPageBySpec(DataScope dataScope , PrintTemplateParam param);
 
+
+
 }

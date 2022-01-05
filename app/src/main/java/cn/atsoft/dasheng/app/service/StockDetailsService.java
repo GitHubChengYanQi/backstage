@@ -83,4 +83,6 @@ public interface StockDetailsService extends IService<StockDetails> {
      * @return
      */
     List<StockDetailsResult> getStockDetails(Long stockId);
+
+
 }
