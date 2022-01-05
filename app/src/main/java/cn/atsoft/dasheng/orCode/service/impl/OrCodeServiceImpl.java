@@ -560,8 +560,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (details.size() != batchOutStockParams.size()) {
             throw new ServiceException(500, "请保证所有二维码正确");
         }
-        for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
-            for (StockDetails detail : details) {
+
+        for (StockDetails detail : details) {
+            for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
                 if (detail.getQrCodeid().equals(batchOutStockParam.getCodeId())) {
                     if (detail.getNumber() < batchOutStockParam.getNumber()) {
                         throw new ServiceException(500, "库存数量不足");
@@ -572,6 +573,35 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         }
         stockDetailsService.updateBatchById(details);
+        //map 比对
+        Map<Long, List<StockDetails>> maps = new HashMap<>();
+        List<Long> stockIds = new ArrayList<>();
+        List<StockDetails> detailsList = new ArrayList<>();
+        for (StockDetails detail : details) {
+            stockIds.add(detail.getStockId());
+
+            List<StockDetails> stockDetails = maps.get(detail.getStockId());
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                stockDetails.add(detail);
+                maps.put(detail.getStockId(), stockDetails);
+            }
+
+            detailsList.add(detail);
+            maps.put(detail.getStockId(), detailsList);
+        }
+
+        //更新库存数量
+        List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
+
+        for (Stock stock : stocks) {
+            List<StockDetails> stockDetailsList = maps.get(stock);
+            Long newNumber = 0L;
+            for (StockDetails stockDetails : stockDetailsList) {
+                newNumber = newNumber + stockDetails.getNumber();
+            }
+            stock.setInventory(newNumber);
+        }
+        stockService.updateBatchById(stocks);
     }
 
 
