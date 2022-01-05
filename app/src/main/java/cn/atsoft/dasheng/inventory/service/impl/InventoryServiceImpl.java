@@ -2,13 +2,18 @@ package cn.atsoft.dasheng.inventory.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Stock;
+import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.inventory.entity.Inventory;
 import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
 import cn.atsoft.dasheng.inventory.mapper.InventoryMapper;
@@ -29,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +57,9 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private StockDetailsService detailsService;
     @Autowired
     private InventoryDetailService inventoryDetailService;
+    @Autowired
+    private StorehousePositionsService positionsService;
+
 
     @Override
     public void add(InventoryParam param) {
@@ -123,6 +132,33 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             inventoryDetail.setStatus(2);
         }
         inventoryDetailService.save(inventoryDetail);
+    }
+
+    @Override
+    public InkindResult inkindInventory(Long id) {
+        InkindResult inkindResult = inkindService.getInkindResult(id);
+        StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).one();
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
+            inkindResult.setPositionsResult(positionsResult);
+        }
+        return inkindResult;
+    }
+
+    @Override
+    public StorehousePositionsResult positionInventory(Long id) {
+        StorehousePositionsResult positionsResult = positionsService.positionsResultById(id);
+
+        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            List<Long> inkindIds = new ArrayList<>();
+            for (StockDetails stockDetail : stockDetails) {
+                inkindIds.add(stockDetail.getInkindId());
+            }
+            List<InkindResult> kinds = inkindService.getInKinds(inkindIds);
+            positionsResult.setInkindResults(kinds);
+        }
+        return positionsResult;
     }
 
     private Serializable getKey(InventoryParam param) {

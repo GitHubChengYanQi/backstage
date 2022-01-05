@@ -435,7 +435,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //判断库位
         List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(pid)) {
-            throw new ServiceException(500,"请选择最下级库位");
+            throw new ServiceException(500, "请选择最下级库位");
         }
 
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
@@ -507,7 +507,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //判断库位
         List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(pid)) {
-            throw new ServiceException(500,"请选择最下级库位");
+            throw new ServiceException(500, "请选择最下级库位");
         }
 
         List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
@@ -574,8 +574,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         if (details.size() != batchOutStockParams.size()) {
             throw new ServiceException(500, "请保证所有二维码正确");
         }
-        for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
-            for (StockDetails detail : details) {
+
+        for (StockDetails detail : details) {
+            for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
                 if (detail.getQrCodeid().equals(batchOutStockParam.getCodeId())) {
                     if (detail.getNumber() < batchOutStockParam.getNumber()) {
                         throw new ServiceException(500, "库存数量不足");
@@ -583,9 +584,59 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
                 }
             }
-
         }
         stockDetailsService.updateBatchById(details);
+        //修改实物数量
+        List<OrCodeBind> binds = orCodeBindService.query().in("qr_code_id", codeIds).list();
+        Map<Long, Long> updateInkind = new HashMap<>();
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind bind : binds) {
+            inkindIds.add(bind.getFormId());
+
+            for (InKindRequest.BatchOutStockParam batchOutStockParam : inKindRequest.getBatchOutStockParams()) {
+                if (bind.getOrCodeId().equals(batchOutStockParam.getCodeId())) {
+                    updateInkind.put(bind.getFormId(), batchOutStockParam.getNumber());
+                    break;
+                }
+            }
+        }
+        List<Inkind> inkindList = inkindService.listByIds(inkindIds);
+
+        for (Inkind inkind : inkindList) {
+            Long number = updateInkind.get(inkind.getInkindId());
+            inkind.setNumber(inkind.getNumber() - number);
+        }
+        inkindService.updateBatchById(inkindList);
+
+        //更新库存数量
+        List<Long> stockIds = new ArrayList<>();
+        for (StockDetails detail : details) {
+            stockIds.add(detail.getStockId());
+        }
+        List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
+        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockIds).list();
+
+        Map<Long, Long> map = new HashMap<>();
+        for (Stock stock : stocks) {
+            for (StockDetails stockDetail : stockDetails) {
+                if (stock.getStockId().equals(stockDetail.getStockId())) {
+                    Long number = map.get(stock.getStockId());
+                    if (ToolUtil.isNotEmpty(number)) {
+                        long newNumber = number + stockDetail.getNumber();
+                        map.put(stock.getStockId(), newNumber);
+                    } else {
+                        map.put(stock.getStockId(), stockDetail.getNumber());
+                    }
+                }
+            }
+        }
+
+        for (Stock stock : stocks) {
+            Long number = map.get(stock.getStockId());
+            stock.setInventory(number);
+        }
+
+        stockService.updateBatchById(stocks);
     }
 
 

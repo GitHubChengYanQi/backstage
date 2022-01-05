@@ -37,8 +37,8 @@ public class InkindResult implements Serializable {
     private List<BackSku> backSku;
     private SkuResult skuResult;
     private Long number;
-    private Map<String,Object> inkindDetail;
-
+    private Map<String, Object> inkindDetail;
+    private StorehousePositionsResult positionsResult;
     private PrintTemplateResult printTemplateResult;
     /**
      * 品牌

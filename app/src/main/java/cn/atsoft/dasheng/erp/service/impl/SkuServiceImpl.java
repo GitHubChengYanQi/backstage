@@ -115,7 +115,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             spuEntity.setCategoryId(categoryId);
             spuEntity.setType(0);
             spuEntity.setUnitId(param.getUnitId());
-            
+
             /**
              * sku名称（skuName）加型号(spuName)判断防止重复
              */
@@ -126,7 +126,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             }
 
 
-
             if (ToolUtil.isEmpty(spuId)) {
                 if (ToolUtil.isNotEmpty(spu)) {
                     spuId = spu.getSpuId();
@@ -134,7 +133,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     spuService.save(spuEntity);
                     spuId = spuEntity.getSpuId();
                 }
-            }else {
+            } else {
                 spuEntity.setSpuId(spuId);
                 spuService.updateById(spuEntity);
             }
@@ -362,6 +361,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         spuEntity.setUnitId(param.getUnitId());
         spuEntity.setSpuId(param.getSpuId());
         spuService.updateById(spuEntity);
+
         this.updateById(newEntity);
     }
 

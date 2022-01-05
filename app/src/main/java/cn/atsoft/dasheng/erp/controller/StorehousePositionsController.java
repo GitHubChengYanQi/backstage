@@ -71,11 +71,10 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/positionsResultById", method = RequestMethod.GET)
     @ApiOperation("新增")
-    public ResponseData positionsResultById(@Param("id")Long id) {
+    public ResponseData positionsResultById(@Param("id") Long id) {
         StorehousePositionsResult positionsResult = this.storehousePositionsService.positionsResultById(id);
         return ResponseData.success(positionsResult);
     }
-
 
 
     /**
@@ -166,10 +165,9 @@ public class StorehousePositionsController extends BaseController {
     @ApiOperation("Tree数据接口")
     public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids) {
 
-        Storehouse storehouse = storehouseService.query().eq("storehouse_id", ids).one();
-
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
         if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
 
