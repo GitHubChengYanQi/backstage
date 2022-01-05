@@ -117,6 +117,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
 
+
+
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();
     }

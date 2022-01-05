@@ -14,7 +14,7 @@ import java.util.List;
  * 地点表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 public interface StorehouseService extends IService<Storehouse> {
@@ -22,7 +22,7 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     Long add(StorehouseParam param);
@@ -30,7 +30,7 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     void delete(StorehouseParam param);
@@ -38,7 +38,7 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 更新
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     void update(StorehouseParam param);
@@ -46,7 +46,7 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     StorehouseResult findBySpec(StorehouseParam param);
@@ -54,7 +54,7 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     List<StorehouseResult> findListBySpec(StorehouseParam param);
@@ -62,9 +62,12 @@ public interface StorehouseService extends IService<Storehouse> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
-     PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope );
+    PageInfo<StorehouseResult> findPageBySpec(StorehouseParam param, DataScope dataScope);
+
+
+    StorehouseResult getDetail(Long Id);
 
 }
