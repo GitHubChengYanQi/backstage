@@ -440,7 +440,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(details)) {
-            throw new ServiceException(500, "已入库，请勿再次入库相同");
+            throw new ServiceException(500, "已入库，请勿再次入库");
         }
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
