@@ -416,6 +416,7 @@ public class OrCodeController extends BaseController {
                             break;
                         case "入库":
                         case "自由入库":
+                        case "盘点入库":
                             Map<String, Object> inkindDetail = orCodeService.inkindDetail(codeBind.getOrCodeId());
                             inkindResult.setInkindDetail(inkindDetail);
                             break;

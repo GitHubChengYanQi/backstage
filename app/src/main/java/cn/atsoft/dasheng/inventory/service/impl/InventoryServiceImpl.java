@@ -139,7 +139,6 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         InkindResult inkindResult = inkindService.getInkindResult(id);
         StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).one();
         if (ToolUtil.isNotEmpty(stockDetails)) {
-            inkindResult.setNumber(stockDetails.getNumber());
             StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
             inkindResult.setPositionsResult(positionsResult);
         }

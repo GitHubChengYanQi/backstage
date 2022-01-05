@@ -584,9 +584,30 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
                 }
             }
-
         }
         stockDetailsService.updateBatchById(details);
+        //修改实物数量
+        List<OrCodeBind> binds = orCodeBindService.query().in("qr_code_id", codeIds).list();
+        Map<Long, Long> updateInkind = new HashMap<>();
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind bind : binds) {
+            inkindIds.add(bind.getFormId());
+
+            for (InKindRequest.BatchOutStockParam batchOutStockParam : inKindRequest.getBatchOutStockParams()) {
+                if (bind.getOrCodeId().equals(batchOutStockParam.getCodeId())) {
+                    updateInkind.put(bind.getFormId(), batchOutStockParam.getNumber());
+                    break;
+                }
+            }
+        }
+        List<Inkind> inkindList = inkindService.listByIds(inkindIds);
+
+        for (Inkind inkind : inkindList) {
+            Long number = updateInkind.get(inkind.getInkindId());
+            inkind.setNumber(inkind.getNumber() - number);
+        }
+        inkindService.updateBatchById(inkindList);
+
         //更新库存数量
         List<Long> stockIds = new ArrayList<>();
         for (StockDetails detail : details) {
