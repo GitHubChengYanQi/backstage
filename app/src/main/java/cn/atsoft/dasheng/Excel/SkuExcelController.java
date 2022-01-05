@@ -78,7 +78,7 @@ public class SkuExcelController {
                     List<Object> objects = read.get(i);
                     SkuExcelItem skuExcelItem = skuExcelItems.get(i);
                     List<String> attributes = new ArrayList<>();
-                    for (int j = 6; j < objects.size() - 1; j++) {
+                    for (int j = 6; j < objects.size(); j++) {
                         Object o = objects.get(j);
                         if (ToolUtil.isNotEmpty(o)) {
                             attributes.add(o.toString());
@@ -161,7 +161,7 @@ public class SkuExcelController {
                     } else {
                         Unit newUnit = new Unit();
                         newUnit.setUnitName(skuExcelItem.get单位());
-                        unitService.save(unit);
+                        unitService.save(newUnit);
                         spuById.setUnitId(newUnit.getUnitId());
                     }
                     spuService.updateById(spuById);

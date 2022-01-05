@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.inventory.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
@@ -11,6 +13,7 @@ import cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,11 +37,23 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Autowired
     private InkindService inkindService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
 
     @Override
     public void add(InventoryDetailParam param) {
-        InventoryDetail entity = getEntity(param);
-        this.save(entity);
+        if (param.getStatus() == 0) {  //正常
+            StockDetails inkindId = stockDetailsService.query().eq("inkind_id", param.getInkindId()).one();
+            if (ToolUtil.isEmpty(inkindId)) {
+                throw new ServiceException(500, "当前物料在库存中不存在");
+            }
+            if (inkindId.getNumber() < 0) {
+                throw new ServiceException(500, "当前物流已经出库,此物料异常");
+            }
+            InventoryDetail entity = getEntity(param);
+            this.save(entity);
+        }
+
     }
 
     @Override

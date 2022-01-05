@@ -655,8 +655,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-        List<ItemAttribute> itemAttributes = itemAttributeService.query().in("attribute_id", attIds).eq("display",1).eq("category_id",spu.getCategoryId()).list();
-        List<AttributeValues> valuesList = attributeValuesService.query().in("attribute_values_id", valueIds).eq("display",1).list();
+        List<ItemAttribute> itemAttributes =  attIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attIds).eq("display",1).eq("category_id",spu.getCategoryId()).list();
+        List<AttributeValues> valuesList = valueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", valueIds).eq("display",1).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
 
         for (AttributeValues valuesRequest : valuesList) {
@@ -671,7 +671,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 }
             }
         }
-        List<AttributeValues> valuesAllList = attributeValuesService.query().in("attribute_id", attIds).eq("display",1).list();
+        List<AttributeValues> valuesAllList = attIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_id", attIds).eq("display",1).list();
 
         skuResult.setList(valuesResults);
         List<AttributeInSpu> tree = new ArrayList<>();
