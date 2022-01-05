@@ -152,16 +152,25 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void delete(StorehousePositionsParam param) {
+        StorehousePositions positions = this.getById(param.getStorehousePositionsId());
+        if (ToolUtil.isNotEmpty(positions.getChildren())) {
+            throw new ServiceException(500, "当前仓位不能删除");
+        }
+        List<StockDetails> details = stockDetailsService.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).list();
+        if (ToolUtil.isNotEmpty(details)) {
+            throw new ServiceException(500, "库位已被使用，不可以删除");
+        }
         param.setDisplay(0);
         this.update(param);
     }
 
     @Override
     public void update(StorehousePositionsParam param) {
-//        StorehousePositions oldEntity = getOldEntity(param);
-//        StorehousePositions newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
+        StorehousePositions positions = new StorehousePositions();
+        positions.setName(param.getName());
+        this.update(positions, new QueryWrapper<StorehousePositions>() {{
+            eq("storehouse_positions_id", param.getStorehousePositionsId());
+        }});
     }
 
     public StorehousePositionsResult positionsResultByCodeId(Long codeId) {
@@ -200,6 +209,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + orCodeBind.getOrCodeId();
             String qrCode = qrCodeCreateService.createQrCode(url);
             templete = templete.replace("${qrCode}", qrCode);
+        }
+        if (templete.contains("${name}")) {
+            templete = templete.replace("${name}", param.getName());
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
         ToolUtil.copyProperties(printTemplate, printTemplateResult);
