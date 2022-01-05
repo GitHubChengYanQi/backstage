@@ -86,6 +86,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
             }
         }
+        Integer count = this.query().eq("name", param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名字以重复");
+        }
 
         StorehousePositions entity = getEntity(param);
         this.save(entity);
@@ -166,6 +170,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void update(StorehousePositionsParam param) {
+        Integer count = this.query().eq("name", param.getName()).count();
+        if (count > 0) {
+            throw new ServiceException(500, "名字以重复");
+        }
         StorehousePositions positions = new StorehousePositions();
         positions.setName(param.getName());
         this.update(positions, new QueryWrapper<StorehousePositions>() {{

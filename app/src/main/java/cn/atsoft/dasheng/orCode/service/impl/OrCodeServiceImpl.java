@@ -102,6 +102,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private InstockListService listService;
     @Autowired
     private OutstockOrderService outstockOrderService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
 
     @Override
@@ -430,6 +432,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
     @Transactional
     public Long instockByCode(InKindRequest inKindRequest) {
+        //判断库位
+        List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
+        if (ToolUtil.isNotEmpty(pid)) {
+            throw new ServiceException(500,"请选择最下级库位");
+        }
+
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(details)) {
             throw new ServiceException(500, "已入库，请勿再次入库相同");
@@ -495,6 +503,12 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Override
 
     public void batchInstockByCode(InKindRequest inKindRequest) {
+
+        //判断库位
+        List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
+        if (ToolUtil.isNotEmpty(pid)) {
+            throw new ServiceException(500,"请选择最下级库位");
+        }
 
         List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
         if (ToolUtil.isNotEmpty(detailsList)) {
