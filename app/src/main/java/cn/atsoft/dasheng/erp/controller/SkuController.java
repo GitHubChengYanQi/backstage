@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
+import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
@@ -118,12 +119,10 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<SkuResult> detail(@RequestBody SkuParam skuParam) {
-        Sku detail = this.skuService.getById(skuParam.getSkuId());
-        SkuResult result = new SkuResult();
-        ToolUtil.copyProperties(detail, result);
-        SkuResult sku = skuService.getSku(detail.getSkuId());
-        if (ToolUtil.isNotEmpty(detail.getSpuId())) {
-            Spu spu = spuService.getById(detail.getSpuId());
+
+        SkuResult sku = skuService.getSku(skuParam.getSkuId());
+        if (ToolUtil.isNotEmpty(sku.getSpuId())) {
+            Spu spu = spuService.getById(sku.getSpuId());
             if (ToolUtil.isNotEmpty(spu.getUnitId())){
                 Unit unit = unitService.getById(spu.getUnitId());
                 sku.setUnit(unit);
@@ -133,15 +132,25 @@ public class SkuController extends BaseController {
                 sku.setSpuClassification(spuClassification);
             }
         }
-        if (ToolUtil.isNotEmpty(detail.getQualityPlanId())) {
-            QualityPlan plan = qualityPlanService.getById(detail.getQualityPlanId());
+        if (ToolUtil.isNotEmpty(sku.getQualityPlanId())) {
+            QualityPlan plan = qualityPlanService.getById(sku.getQualityPlanId());
             sku.setQualityPlan(plan);
         }
-
-        User user = userService.getById(detail.getCreateUser());
+//        for (SkuJson skuJson : sku.getSkuJsons()) {
+//            skuJson.getAttribute();
+//        }
+        User user = userService.getById(sku.getCreateUser());
         sku.setCreateUserName(user.getName());
 
         return ResponseData.success(sku);
+    }
+
+    @RequestMapping(value = "/detail1", method = RequestMethod.POST)
+    @ApiOperation("详情1")
+    public ResponseData<SkuResult> detail1(@RequestBody SkuParam skuParam) {
+
+
+        return ResponseData.success();
     }
 
     /**
