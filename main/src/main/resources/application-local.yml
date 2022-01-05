@@ -66,6 +66,7 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual
+    prefix: hhgy
 
 # 邮件发送（改为自己的账号）
 mail:
