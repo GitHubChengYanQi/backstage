@@ -137,23 +137,29 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
 
-            BusinessTrack businessTrack = new BusinessTrack();
-            businessTrack.setType("代办");
-            businessTrack.setMessage("入库");
-            businessTrack.setUserId(param.getUserId());
-            businessTrack.setNote("有物料需要入库");
-            DateTime data = new DateTime();
-            businessTrack.setTime(data);
             BackCodeRequest backCodeRequest = new BackCodeRequest();
             backCodeRequest.setId(entity.getInstockOrderId());
             backCodeRequest.setSource("instock");
-
-
             Long aLong = orCodeService.backCode(backCodeRequest);
-            String url = param.getUrl().replace("codeId", aLong.toString());
-            instockSendTemplate.setSourceId(entity.getInstockOrderId());
-            instockSendTemplate.setBusinessTrack(businessTrack);
-            instockSendTemplate.send(url);
+
+
+//            String url = param.getUrl().replace("codeId", aLong.toString());
+
+
+            User createUser = userService.getById(entity.getCreateUser());
+            //新微信推送
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setTitle("新的入库提醒");
+            wxCpTemplate.setDescription(createUser.getName()+"您有新的入库任务"+entity.getCoding());
+            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+                add(entity.getUserId());
+            }});
+            wxCpSendTemplate.setSource("入库");
+            wxCpSendTemplate.setSourceId(aLong);
+            wxCpTemplate.setType(0);
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
         }
     }
 

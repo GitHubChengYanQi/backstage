@@ -83,10 +83,10 @@ public class InstockSendTemplate {
 
         wxCpTemplate.setUrl(url);
         //获取url
-        wxCpSendTemplate.setMessage(new Message(){{
-            setSource("outStockOrder");
-            setSourceId(sourceId);
-        }});
+//        wxCpSendTemplate.setMessage(new Message(){{
+//            setSource("outStockOrder");
+//            setSourceId(sourceId);
+//        }});
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
 

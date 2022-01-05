@@ -19,13 +19,13 @@ public class DirectQueueConfig {
     private static String prefix;
     protected static final Logger logger = LoggerFactory.getLogger(DirectQueueConfig.class);
 
-    public final static String MESSAGE_REAL_EXCHANGE =prefix+ ".message.real.topicExchange";
-    public final static String MESSAGE_REAL_ROUTE = prefix+".message.real.route";
-    public final static String MESSAGE_REAL_QUEUE = "jazz.message.real.topicExchange";
+    public final static String MESSAGE_REAL_EXCHANGE ="message.real.topicExchange";
+    public final static String MESSAGE_REAL_ROUTE = "message.real.route";
+    public final static String MESSAGE_REAL_QUEUE = "message.real.topicExchange";
 
-    public final static String MESSAGE_DELAY_EXCHANGE = prefix+".message.delay.topicExchange";
-    public final static String MESSAGE_DELAY_ROUTE = prefix+".message.delay.route";
-    public final static String MESSAGE_DELAY_QUEUE = "jazz.message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_EXCHANGE = "message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_ROUTE = "message.delay.route";
+    public final static String MESSAGE_DELAY_QUEUE = "message.delay.topicExchange";
 
     /**
      * 声明队列

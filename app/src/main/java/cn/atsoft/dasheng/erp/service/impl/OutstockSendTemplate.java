@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,10 +87,10 @@ public class OutstockSendTemplate {
 
         wxCpTemplate.setUrl(url);
         //获取url
-        wxCpSendTemplate.setMessage(new Message(){{
-            setSource("outStockOrder");
-            setSourceId(sourceId);
-        }});
+//        wxCpSendTemplate.setMessage(new Message(){{
+//            setSource("outStockOrder");
+//            setSourceId(sourceId);
+//        }});
         wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
         wxCpSendTemplate.sendTemplate();
 
@@ -118,6 +119,7 @@ public class OutstockSendTemplate {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                messageEntity.setType(MessageType.MESSAGE);
                 Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle("出库提醒");
@@ -125,7 +127,6 @@ public class OutstockSendTemplate {
                 message.setContent("您有新的出库单需要操作");
                 message.setType(3);
                 message.setSort(0L);
-                messageEntity.setType(MessageType.MESSAGE);
                 messageEntity.setMessage(message);
                 messageProducer.sendMessage(messageEntity);
             }

@@ -31,7 +31,7 @@ public class MessageProducer {
         if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
             messageEntity.getCpData().setDescription(messageEntity.getCpData().getDescription());
                     //TODO 测试加入唯一key
-            logger.info("sendMessage"+JSONUtil.toJsonStr(messageEntity.getCpData().getDescription()));
+
             rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
 
         }

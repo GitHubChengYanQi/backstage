@@ -20,6 +20,8 @@ import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -65,6 +67,9 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OrCodeService orCodeService;
     @Autowired
     private InkindService inkindService;
+
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -117,11 +122,26 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setId(entity.getOutstockOrderId());
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
-        String url = param.getUrl().replace("codeId", aLong.toString());
-        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
-        outstockSendTemplate.setUserId(param.getUserId());
-        outstockSendTemplate.setUrl(url);
-        outstockSendTemplate.sendTemplate();
+
+//        String url = param.getUrl().replace("codeId", aLong.toString());
+//        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
+//        outstockSendTemplate.setUserId(param.getUserId());
+//        outstockSendTemplate.setUrl(url);
+
+        User createUser = userService.getById(entity.getCreateUser());
+        //新微信推送
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("新的出库提醒");
+        wxCpTemplate.setDescription(createUser.getName()+"创建了新的入库任务"+entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+            add(entity.getUserId());
+        }});
+        wxCpSendTemplate.setSource("出库");
+        wxCpSendTemplate.setSourceId(entity.getOutstockOrderId());
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
         return entity;
     }
 

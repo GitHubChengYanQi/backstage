@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.erp.service.impl.ActivitiProcessTaskSend;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
@@ -35,8 +36,12 @@ public class WxCpSendTemplate {
     @Autowired
     MessageProducer messageProducer;
 
-    //添加系统小铃铛信息
-    private Message message;
+//    //添加系统小铃铛信息
+//    private Message message;
+
+    private Long sourceId;
+
+    private String source;
 
     private WxCpTemplate wxCpTemplate;
 
@@ -62,6 +67,8 @@ public class WxCpSendTemplate {
 
         return uuIds;
     }
+    protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
+
     //发送模板消息
     public void sendTemplate() {
 
@@ -72,7 +79,7 @@ public class WxCpSendTemplate {
         wxCpMessage.setTitle(wxCpTemplate.getTitle());
         wxCpMessage.setDescription(wxCpTemplate.getDescription());
         wxCpMessage.setMsgType("textcard");
-            List<String> userIds = userIds();
+        List<String> userIds = userIds();
         if (ToolUtil.isNotEmpty(userIds)) {
             for (String userId : userIds) {
                 wxCpMessage.setToUser(userId);
@@ -80,6 +87,10 @@ public class WxCpSendTemplate {
                 messageEntity.setTimes(0);
                 messageEntity.setMaxTimes(2);
                 try {
+                    String randomString = ToolUtil.getRandomString(5);
+                    String s = messageEntity.getCpData().getDescription() + randomString;
+                    messageEntity.getCpData().setDescription(s);
+                    logger.info("微信消息"+messageEntity.getCpData().getDescription());
                     messageProducer.sendMessage(messageEntity);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -87,15 +98,18 @@ public class WxCpSendTemplate {
             }
             for (Long userId : wxCpTemplate.getUserIds()) {
                 messageEntity.setType(MessageType.MESSAGE);
-//                Message message = new Message();
+                Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle(wxCpTemplate.getTitle());
                 message.setContent(wxCpTemplate.getDescription());
                 message.setType(wxCpTemplate.getType());
                 message.setUserId(userId);
                 message.setSort(0L);
+                message.setSourceId(getSourceId());
+                message.setSource(getSource());
                 message.setUrl(wxCpTemplate.getUrl());
                 messageEntity.setMessage(message);
+                logger.info("铃铛发送"+messageEntity.getCpData().getDescription());
                 messageProducer.sendMessage(messageEntity);
             }
         }
