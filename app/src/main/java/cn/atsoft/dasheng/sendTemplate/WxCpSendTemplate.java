@@ -96,7 +96,7 @@ public class WxCpSendTemplate {
                 message.setSort(0L);
                 message.setUrl(wxCpTemplate.getUrl());
                 messageEntity.setMessage(message);
-                messageProducer.sendMessage(messageEntity, 100);
+                messageProducer.sendMessage(messageEntity);
             }
         }
 

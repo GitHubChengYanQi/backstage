@@ -7,6 +7,7 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,16 +15,17 @@ import java.util.Map;
 
 @Configuration
 public class DirectQueueConfig {
-
+    @Value("rabbitmq.prefix")
+    private static String prefix;
     protected static final Logger logger = LoggerFactory.getLogger(DirectQueueConfig.class);
 
-    public final static String MESSAGE_REAL_EXCHANGE = "message.real.topicExchange";
-    public final static String MESSAGE_REAL_ROUTE = "message.real.route";
-    public final static String MESSAGE_REAL_QUEUE = "message.real.topicExchange";
+    public final static String MESSAGE_REAL_EXCHANGE =prefix+ ".message.real.topicExchange";
+    public final static String MESSAGE_REAL_ROUTE = prefix+".message.real.route";
+    public final static String MESSAGE_REAL_QUEUE = "jazz.message.real.topicExchange";
 
-    public final static String MESSAGE_DELAY_EXCHANGE = "message.delay.topicExchange";
-    public final static String MESSAGE_DELAY_ROUTE = "message.delay.route";
-    public final static String MESSAGE_DELAY_QUEUE = "message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_EXCHANGE = prefix+".message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_ROUTE = prefix+".message.delay.route";
+    public final static String MESSAGE_DELAY_QUEUE = "jazz.message.delay.topicExchange";
 
     /**
      * 声明队列

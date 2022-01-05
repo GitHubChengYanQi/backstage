@@ -122,14 +122,6 @@ public class Message implements Serializable {
     @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
-
     public Long getMessageId() {
         return messageId;
     }
@@ -138,20 +130,12 @@ public class Message implements Serializable {
         this.messageId = messageId;
     }
 
-    public String getSource() {
-        return source;
+    public String getUrl() {
+        return url;
     }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Date getTime() {
@@ -160,14 +144,6 @@ public class Message implements Serializable {
 
     public void setTime(Date time) {
         this.time = time;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public Integer getState() {
@@ -200,6 +176,30 @@ public class Message implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Long getCreateUser() {
@@ -250,12 +250,12 @@ public class Message implements Serializable {
         this.sort = sort;
     }
 
-    public String getUrl() {
-        return url;
+    public Long getDeptId() {
+        return deptId;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     @Override
