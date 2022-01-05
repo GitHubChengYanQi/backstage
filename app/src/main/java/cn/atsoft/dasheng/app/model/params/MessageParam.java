@@ -72,6 +72,18 @@ public class MessageParam implements Serializable, BaseValidatingParam {
     private Integer type;
 
     /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
+
+    /**
      * 创建者
      */
     @ApiModelProperty(hidden = true)

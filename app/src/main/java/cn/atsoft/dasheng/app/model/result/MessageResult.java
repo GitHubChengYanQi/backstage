@@ -42,6 +42,18 @@ public class MessageResult implements Serializable {
     private Long userId;
 
     /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
+
+    /**
      * 提醒时间
      */
     @ApiModelProperty("提醒时间")

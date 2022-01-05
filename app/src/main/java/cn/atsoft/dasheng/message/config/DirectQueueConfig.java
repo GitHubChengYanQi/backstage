@@ -16,7 +16,8 @@ import java.util.Map;
 
 @Configuration
 public class DirectQueueConfig {
-
+    @Value("rabbitmq.prefix")
+    private static String prefix;
     protected static final Logger logger = LoggerFactory.getLogger(DirectQueueConfig.class);
 
     @Value("{spring.rabbitmq.prefix}")
