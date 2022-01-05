@@ -138,8 +138,11 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public InkindResult inkindInventory(Long id) {
         InkindResult inkindResult = inkindService.getInkindResult(id);
         StockDetails stockDetails = detailsService.query().eq("inkind_id", inkindResult.getInkindId()).one();
-        StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
-        inkindResult.setPositionsResult(positionsResult);
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            inkindResult.setNumber(stockDetails.getNumber());
+            StorehousePositionsResult positionsResult = positionsService.positionsResultById(stockDetails.getStorehousePositionsId());
+            inkindResult.setPositionsResult(positionsResult);
+        }
         return inkindResult;
     }
 
@@ -148,12 +151,14 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         StorehousePositionsResult positionsResult = positionsService.positionsResultById(id);
 
         List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
-        List<Long> inkindIds = new ArrayList<>();
-        for (StockDetails stockDetail : stockDetails) {
-            inkindIds.add(stockDetail.getInkindId());
+        if (ToolUtil.isNotEmpty(stockDetails)) {
+            List<Long> inkindIds = new ArrayList<>();
+            for (StockDetails stockDetail : stockDetails) {
+                inkindIds.add(stockDetail.getInkindId());
+            }
+            List<InkindResult> kinds = inkindService.getInKinds(inkindIds);
+            positionsResult.setInkindResults(kinds);
         }
-        List<InkindResult> kinds = inkindService.getInKinds(inkindIds);
-        positionsResult.setInkindResults(kinds);
         return positionsResult;
     }
 

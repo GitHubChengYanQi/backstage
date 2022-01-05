@@ -435,7 +435,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //判断库位
         List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(pid)) {
-            throw new ServiceException(500,"请选择最下级库位");
+            throw new ServiceException(500, "请选择最下级库位");
         }
 
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
@@ -507,7 +507,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         //判断库位
         List<StorehousePositions> pid = positionsService.query().eq("pid", inKindRequest.getInstockListParam().getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(pid)) {
-            throw new ServiceException(500,"请选择最下级库位");
+            throw new ServiceException(500, "请选择最下级库位");
         }
 
         List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", inKindRequest.getCodeIds()).list();
@@ -587,34 +587,34 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         }
         stockDetailsService.updateBatchById(details);
-        //map 比对
-        Map<Long, List<StockDetails>> maps = new HashMap<>();
+        //更新库存数量
         List<Long> stockIds = new ArrayList<>();
-        List<StockDetails> detailsList = new ArrayList<>();
         for (StockDetails detail : details) {
             stockIds.add(detail.getStockId());
-
-            List<StockDetails> stockDetails = maps.get(detail.getStockId());
-            if (ToolUtil.isNotEmpty(stockDetails)) {
-                stockDetails.add(detail);
-                maps.put(detail.getStockId(), stockDetails);
-            }
-
-            detailsList.add(detail);
-            maps.put(detail.getStockId(), detailsList);
         }
-
-        //更新库存数量
         List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
+        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockIds).list();
+
+        Map<Long, Long> map = new HashMap<>();
+        for (Stock stock : stocks) {
+            for (StockDetails stockDetail : stockDetails) {
+                if (stock.getStockId().equals(stockDetail.getStockId())) {
+                    Long number = map.get(stock.getStockId());
+                    if (ToolUtil.isNotEmpty(number)) {
+                        long newNumber = number + stockDetail.getNumber();
+                        map.put(stock.getStockId(), newNumber);
+                    } else {
+                        map.put(stock.getStockId(), stockDetail.getNumber());
+                    }
+                }
+            }
+        }
 
         for (Stock stock : stocks) {
-            List<StockDetails> stockDetailsList = maps.get(stock);
-            Long newNumber = 0L;
-            for (StockDetails stockDetails : stockDetailsList) {
-                newNumber = newNumber + stockDetails.getNumber();
-            }
-            stock.setInventory(newNumber);
+            Long number = map.get(stock.getStockId());
+            stock.setInventory(number);
         }
+
         stockService.updateBatchById(stocks);
     }
 
