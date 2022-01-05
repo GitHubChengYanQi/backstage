@@ -53,7 +53,7 @@ public class TopicMessage {
                 break;
 
             case MESSAGE:
-                messageService.save(messageEntity.getMessage());
+//                messageService.save(messageEntity.getMessage());
                 break;
             default:
         }

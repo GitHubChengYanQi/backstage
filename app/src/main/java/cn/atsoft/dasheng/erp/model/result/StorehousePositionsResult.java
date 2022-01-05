@@ -35,6 +35,8 @@ public class StorehousePositionsResult implements Serializable {
 
     private PrintTemplateResult printTemplateResult;
 
+    private List<InkindResult> inkindResults;
+
     /**
      * 仓库库位id
      */

@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.inventory.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.inventory.entity.Inventory;
 import cn.atsoft.dasheng.inventory.model.params.InventoryParam;
 import cn.atsoft.dasheng.inventory.model.result.InventoryResult;
@@ -73,4 +76,9 @@ public interface InventoryService extends IService<Inventory> {
      * @param
      */
     void inventory(InventoryRequest inventoryRequest);
+
+
+    InkindResult inkindInventory(Long id);
+
+    StorehousePositionsResult positionInventory(Long id);
 }
