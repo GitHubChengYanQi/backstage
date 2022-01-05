@@ -95,6 +95,12 @@ public class StorehousePositionsParam extends AbstractDictMap implements Seriali
     private Long deptId;
 
     /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Integer sort;
+
+    /**
      * 上级
      */
     @ApiModelProperty("上级")

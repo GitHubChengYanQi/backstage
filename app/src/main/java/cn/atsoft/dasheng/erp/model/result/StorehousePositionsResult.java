@@ -116,6 +116,12 @@ public class StorehousePositionsResult implements Serializable {
     @ApiModelProperty("上级")
     private Long pid;
 
+    /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Integer sort;
+
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

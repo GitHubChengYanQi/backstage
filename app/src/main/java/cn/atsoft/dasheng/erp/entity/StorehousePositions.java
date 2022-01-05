@@ -111,6 +111,19 @@ public class StorehousePositions implements Serializable {
     @TableField("pid")
     private Long pid;
 
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
 
     public Long getStorehousePositionsId() {
         return storehousePositionsId;
