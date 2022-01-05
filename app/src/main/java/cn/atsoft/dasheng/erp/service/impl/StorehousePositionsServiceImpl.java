@@ -176,11 +176,12 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     @Override
     public void update(StorehousePositionsParam param) {
         Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
-        if (count > 0) {
+        if (count > 1) {
             throw new ServiceException(500, "名字以重复");
         }
         StorehousePositions positions = new StorehousePositions();
         positions.setName(param.getName());
+        positions.setSort(param.getSort());
         this.update(positions, new QueryWrapper<StorehousePositions>() {{
             eq("storehouse_positions_id", param.getStorehousePositionsId());
         }});
