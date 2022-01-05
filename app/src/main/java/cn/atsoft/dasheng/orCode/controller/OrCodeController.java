@@ -167,7 +167,23 @@ public class OrCodeController extends BaseController {
         }
         orCodeService.batchInstockByCode(inKindRequest);
         return ResponseData.success();
+    }
 
+
+    /**
+     * 批量扫码出库
+     *
+     * @author song
+     * @Date 2021-10-29
+     */
+    @RequestMapping(value = "/batchOutStockByCode", method = RequestMethod.POST)
+    @ApiOperation("批量扫码入库")
+    public ResponseData batchOutStockByCode(@RequestBody InKindRequest inKindRequest) {
+        if (ToolUtil.isEmpty(inKindRequest.getBatchOutStockParams())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
+        orCodeService.batchOutStockByCode(inKindRequest);
+        return ResponseData.success();
     }
 
 
@@ -199,7 +215,6 @@ public class OrCodeController extends BaseController {
     public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest) {
         Long aLong = orCodeService.backCode(backCodeRequest);
         return ResponseData.success(aLong);
-
     }
 
 
@@ -214,7 +229,6 @@ public class OrCodeController extends BaseController {
     public ResponseData batchBackCode(@RequestBody OrCodeRequest codeRequest) {
         List<Long> longs = orCodeService.backBatchCode(codeRequest.getIds(), codeRequest.getType());
         return ResponseData.success(longs);
-
     }
 
 
