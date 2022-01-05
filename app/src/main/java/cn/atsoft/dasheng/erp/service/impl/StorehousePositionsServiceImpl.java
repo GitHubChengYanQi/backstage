@@ -23,8 +23,10 @@ import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
 import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
@@ -77,6 +79,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Autowired
     private PrintTemplateService printTemplateService;
+
+    @Autowired
+    private OrCodeService codeService;
 
     @Override
     public void add(StorehousePositionsParam param) {
@@ -209,11 +214,27 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
 
         String templete = printTemplate.getTemplete();
+        Long codeId = null;
         if (templete.contains("${qrCode}")) {
             OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
                 eq("form_id", param.getStorehousePositionsId());
             }});
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + orCodeBind.getOrCodeId();
+
+            if (ToolUtil.isEmpty(orCodeBind)) { //绑定
+                OrCode orCode = new OrCode();
+                orCode.setType("storehousePositions");
+                orCode.setState(1);
+                codeService.save(orCode);
+                OrCodeBind codeBind = new OrCodeBind();
+                codeBind.setOrCodeId(orCode.getOrCodeId());
+                codeBind.setFormId(param.getStorehousePositionsId());
+                codeBind.setSource("storehousePositions");
+                orCodeBindService.save(codeBind);
+                codeId = orCode.getOrCodeId();
+            } else {
+                codeId = orCodeBind.getOrCodeId();
+            }
+            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + codeId;
             String qrCode = qrCodeCreateService.createQrCode(url);
             templete = templete.replace("${qrCode}", qrCode);
         }
