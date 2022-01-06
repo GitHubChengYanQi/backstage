@@ -192,8 +192,12 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             templete = templete.replace("${coding}", substring);
         }
         if (templete.contains("${skuCoding}")) {
-            Sku sku = skuService.getById(param.getSkuId());
-            templete = templete.replace("${skuCoding}", sku.getCoding());
+            Sku sku =ToolUtil.isEmpty(param.getSkuId())? new Sku() : skuService.getById(param.getSkuId());
+            if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isNotEmpty(sku.getCoding())){
+                templete = templete.replace("${skuCoding}", sku.getCoding());
+            }else if (ToolUtil.isEmpty(sku)){
+                templete = templete.replace("${skuCoding}", "无");
+            }
         }
         if (templete.contains("${name}")) {
             templete = templete.replace("${name}", param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
