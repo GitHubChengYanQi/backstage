@@ -105,33 +105,8 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      */
     @Override
     public void inventory(InventoryRequest inventoryRequest) {
-        OrCodeBind codeBind = codeBindService.query().eq("qr_code_id", inventoryRequest.getQrcodeId()).one();
-        if (ToolUtil.isEmpty(codeBind) && !codeBind.getSource().equals("item")) {
-            throw new ServiceException(500, "二维码不合法");
-        }
-        //获取实物
-        Inkind inkind = inkindService.getById(codeBind.getFormId());
-        //查询仓库
-        Stock stock = ToolUtil.isEmpty(inkind) ? new Stock() : stockService.query().eq("storehouse_id", inventoryRequest.getStoreHouseId())
-                .eq("brand_id", inkind.getBrandId())
-                .eq("sku_id", inkind.getSkuId()).one();
-        //查看仓库是否有次实物
-        List<StockDetailsResult> stockDetails = detailsService.getStockDetails(stock.getStockId());
-        InventoryDetail inventoryDetail = null;
-        for (StockDetailsResult stockDetail : stockDetails) {
-            if (stockDetail.getInkindId().equals(inkind.getInkindId())) {  //有次无正常记录
-                inventoryDetail = new InventoryDetail();
-                inventoryDetail.setInkindId(inkind.getInkindId());
-                inventoryDetail.setStatus(1);
-                break;
-            }
-        }
-        if (ToolUtil.isEmpty(inventoryDetail)) {  //没有此物 异常处理
-            inventoryDetail = new InventoryDetail();
-            inventoryDetail.setInkindId(inkind.getInkindId());
-            inventoryDetail.setStatus(2);
-        }
-        inventoryDetailService.save(inventoryDetail);
+        List<Object> list = listObjs();
+
     }
 
     @Override

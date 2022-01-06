@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.inventory.model.result;
 
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,44 +26,57 @@ public class InventoryDetailResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private InkindResult inkindResult;
+
+    private String type;
+
+    private Object object;
     /**
      * 盘点任务详情id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("盘点任务详情id")
     private Long detailId;
 
     /**
      * 主表 Id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("主表盘点任务id")
     private Long inventoryId;
 
-
+    @JSONField(serialize = false)
     private Integer status;
     /**
      * 对应实物id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("对应实物id")
     private Long inkindId;
 
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 部门id
      */
+    @JSONField(serialize = false)
     @ApiModelProperty("部门id")
     private Long deptId;
+
+    @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

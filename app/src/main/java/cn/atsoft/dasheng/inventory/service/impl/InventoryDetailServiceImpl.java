@@ -42,18 +42,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     @Override
     public void add(InventoryDetailParam param) {
-        if (param.getStatus() == 0) {  //正常
-            StockDetails inkindId = stockDetailsService.query().eq("inkind_id", param.getInkindId()).one();
-            if (ToolUtil.isEmpty(inkindId)) {
-                throw new ServiceException(500, "当前物料在库存中不存在");
-            }
-            if (inkindId.getNumber() < 0) {
-                throw new ServiceException(500, "当前物流已经出库,此物料异常");
-            }
-            InventoryDetail entity = getEntity(param);
-            this.save(entity);
-        }
 
+        InventoryDetail entity = getEntity(param);
+        this.save(entity);
     }
 
     @Override
@@ -83,7 +74,6 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public PageInfo<InventoryDetailResult> findPageBySpec(InventoryDetailParam param) {
         Page<InventoryDetailResult> pageContext = getPageContext();
         IPage<InventoryDetailResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -105,20 +95,5 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         return entity;
     }
 
-    private void format(List<InventoryDetailResult> data) {
-        List<Long> inkindIds = new ArrayList<>();
-        for (InventoryDetailResult datum : data) {
-            inkindIds.add(datum.getInkindId());
-        }
-        List<InkindResult> inKinds = inkindService.getInKinds(inkindIds);
 
-        for (InventoryDetailResult datum : data) {
-            for (InkindResult inKind : inKinds) {
-                if (datum.getInkindId().equals(inKind.getInkindId())) {
-                    datum.setInkindResult(inKind);
-                    break;
-                }
-            }
-        }
-    }
 }

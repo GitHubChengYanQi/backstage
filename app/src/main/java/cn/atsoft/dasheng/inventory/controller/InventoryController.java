@@ -4,7 +4,9 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.inventory.entity.Inventory;
+import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
 import cn.atsoft.dasheng.inventory.model.params.InventoryParam;
+import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
 import cn.atsoft.dasheng.inventory.model.result.InventoryResult;
 import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
 import cn.atsoft.dasheng.inventory.service.InventoryService;
@@ -96,13 +98,18 @@ public class InventoryController extends BaseController {
         if (ToolUtil.isEmpty(codeBind)) {
             throw new ServiceException(500, "请扫描正确二维码");
         }
+        InventoryDetailResult inventoryDetailResult = new InventoryDetailResult();
         switch (codeBind.getSource()) {
             case "item":
                 InkindResult inkindResult = this.inventoryService.inkindInventory(codeBind.getFormId());
-                return ResponseData.success(inkindResult);
+                inventoryDetailResult.setType("inkind");
+                inventoryDetailResult.setObject(inkindResult);
+                return ResponseData.success(inventoryDetailResult);
             case "storehousePositions":
                 StorehousePositionsResult positionsResult = this.inventoryService.positionInventory(codeBind.getFormId());
-                return ResponseData.success(positionsResult);
+                inventoryDetailResult.setType("positions");
+                inventoryDetailResult.setObject(positionsResult);
+                return ResponseData.success(inventoryDetailResult);
             default:
                 throw new ServiceException(500, "请扫描正确二维码");
         }

@@ -163,14 +163,18 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/treeView", method = RequestMethod.GET)
     @ApiOperation("Tree数据接口")
-    public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids) {
+    public ResponseData<List<TreeNode>> treeView(@RequestParam(required = false) Long ids, String name) {
 
 
         QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
+        queryWrapper.orderByAsc("sort");
         if (ToolUtil.isNotEmpty(ids)) {
             queryWrapper.in("storehouse_id", ids);
 
+        }
+        if (ToolUtil.isNotEmpty(name)) {  //模糊查询
+            queryWrapper.like("name", name);
         }
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps(queryWrapper);
