@@ -113,7 +113,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
         detailsService.updateById(stockDetails);
 
         //修改实物数量
-        Inkind inkind = inkindService.getById(inventoryDetailParam.getInventoryId());
+        Inkind inkind = inkindService.getById(inventoryDetailParam.getInkindId());
         inkind.setNumber(inkind.getNumber() + inventoryDetailParam.getNumber());
         inkindService.updateById(inkind);
 
