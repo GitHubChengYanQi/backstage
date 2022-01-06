@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -89,6 +91,50 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         format(stockResults);
         return stockResults;
     }
+
+    /**
+     * 更新库存
+     *
+     * @param stockId
+     */
+    @Override
+    public void updateNumber(List<Long> stockId) {
+        List<Stock> stockList = this.listByIds(stockId);
+
+        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockId).list();
+
+        Map<Long, List<StockDetails>> map = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+
+            List<StockDetails> detailsList = map.get(stockDetail.getStockId());
+
+            if (ToolUtil.isEmpty(detailsList)) {
+                List<StockDetails> details = new ArrayList<StockDetails>() {{
+                    add(stockDetail);
+                }};
+                map.put(stockDetail.getStockId(), details);
+            } else {
+                detailsList.add(stockDetail);
+                map.put(stockDetail.getStockId(), detailsList);
+            }
+        }
+
+        for (Stock stock : stockList) {
+            List<StockDetails> details = map.get(stock.getStockId());
+
+            if (ToolUtil.isNotEmpty(details)) {
+                Long number = 0L;
+                for (StockDetails detail : details) {
+                    number = number + detail.getNumber();
+                }
+                stock.setInventory(number);
+            }
+
+
+        }
+        this.updateBatchById(stockList);
+    }
+
 
     @Override
     public PageInfo<StockResult> findPageBySpec(StockParam param, DataScope dataScope) {
@@ -179,7 +225,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {
-                    if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && ToolUtil.isNotEmpty(storehouse.getStorehouseId()) &&  datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
+                    if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && ToolUtil.isNotEmpty(storehouse.getStorehouseId()) && datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
                         ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);

@@ -133,8 +133,8 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         WxCpTemplate wxCpTemplate = new WxCpTemplate();
 //        wxCpTemplate.setUrl(url);
         wxCpTemplate.setTitle("新的出库提醒");
-        wxCpTemplate.setDescription(createUser.getName()+"创建了新的入库任务"+entity.getCoding());
-        wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+        wxCpTemplate.setDescription(createUser.getName() + "创建了新的入库任务" + entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
             add(entity.getUserId());
         }});
         wxCpSendTemplate.setSource("出库");
@@ -172,13 +172,24 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         //更新仓库数量
         updateStock(stockDetails.getStockId());
 
+        //修改库存数量
+        Inkind instockInkind = inkindService.getById(stockDetails.getInkindId());
+        instockInkind.setNumber(instockInkind.getNumber() - freeOutStockParam.getNumber());
+        inkindService.updateById(instockInkind);
+
         //创建实物
         Inkind inkind = new Inkind();
-        inkind.setSource("自由出库");
+        inkind.setSource(freeOutStockParam.getType());
         inkind.setSkuId(stockDetails.getSkuId());
         inkind.setBrandId(stockDetails.getBrandId());
         inkind.setType("2");
+        inkind.setNumber(freeOutStockParam.getNumber());
         inkindService.save(inkind);
+
+        //更新库存数量
+        stockService.updateNumber(new ArrayList<Long>() {{
+            add(stockDetails.getStockId());
+        }});
     }
 
     private void updateStock(Long stockId) {

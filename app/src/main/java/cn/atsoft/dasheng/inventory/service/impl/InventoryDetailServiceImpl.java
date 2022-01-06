@@ -7,10 +7,12 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.inventory.entity.InventoryDetail;
 import cn.atsoft.dasheng.inventory.mapper.InventoryDetailMapper;
 import cn.atsoft.dasheng.inventory.model.params.InventoryDetailParam;
 import cn.atsoft.dasheng.inventory.model.result.InventoryDetailResult;
+import cn.atsoft.dasheng.inventory.pojo.InventoryRequest;
 import cn.atsoft.dasheng.inventory.service.InventoryDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -38,7 +40,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     @Autowired
     private InkindService inkindService;
     @Autowired
-    private StockDetailsService stockDetailsService;
+    private StockDetailsService detailsService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -51,6 +55,46 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     public void delete(InventoryDetailParam param) {
         this.removeById(getKey(param));
     }
+
+
+    public void inventory(InventoryRequest inventoryRequest) {
+        List<InventoryRequest.InkindParam> params = inventoryRequest.getInkindParams();
+        List<Long> inkindIds = new ArrayList<>();
+
+        for (InventoryRequest.InkindParam param : params) {
+            inkindIds.add(param.getInkindId());
+        }
+        List<StockDetails> details = detailsService.query().in("inkind_id", inkindIds).list();
+
+        List<InventoryDetail> inventories = new ArrayList<>();
+        List<Long> outInkind = new ArrayList<>();
+        InventoryDetail inventory = null;
+
+        //添加盘点数据----------------------------------------------------------------------------------------------------
+        for (StockDetails detail : details) {
+            for (InventoryRequest.InkindParam param : params) {
+                if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
+
+                    if (detail.getNumber() > param.getNumber()) {  //出库
+                        inventory = new InventoryDetail();
+                        inventory.setInkindId(param.getInkindId());
+                        inventory.setStatus(2);
+                        outInkind.add(param.getInkindId());
+                        inventories.add(inventory);
+                    } else {                                       //入库
+                        inventory = new InventoryDetail();
+                        inventory.setInkindId(param.getInkindId());
+                        inventory.setStatus(1);
+                        inventories.add(inventory);
+                    }
+                    detail.setNumber(param.getNumber());
+                }
+            }
+        }
+        this.saveBatch(inventories);
+
+    }
+
 
     @Override
     public void update(InventoryDetailParam param) {

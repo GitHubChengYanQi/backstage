@@ -47,16 +47,11 @@ import java.util.List;
  */
 @Service
 public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory> implements InventoryService {
-    @Autowired
-    private OrCodeBindService codeBindService;
+
     @Autowired
     private InkindService inkindService;
     @Autowired
-    private StockService stockService;
-    @Autowired
     private StockDetailsService detailsService;
-    @Autowired
-    private InventoryDetailService inventoryDetailService;
     @Autowired
     private StorehousePositionsService positionsService;
 
@@ -105,7 +100,41 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
      */
     @Override
     public void inventory(InventoryRequest inventoryRequest) {
-        List<Object> list = listObjs();
+        List<InventoryRequest.InkindParam> params = inventoryRequest.getInkindParams();
+        List<Long> inkindIds = new ArrayList<>();
+
+        for (InventoryRequest.InkindParam param : params) {
+            inkindIds.add(param.getInkindId());
+        }
+        List<StockDetails> details = detailsService.query().in("inkind_id", inkindIds).list();
+
+        List<InventoryDetail> inventories = new ArrayList<>();
+        List<Long> outInkind = new ArrayList<>();
+        InventoryDetail inventory = null;
+
+        //添加盘点数据----------------------------------------------------------------------------------------------------
+        for (StockDetails detail : details) {
+            for (InventoryRequest.InkindParam param : params) {
+                if (detail.getInkindId().equals(param.getInkindId())) {  //相同实物
+
+                    if (detail.getNumber() > param.getNumber()) {  //出库
+                        inventory = new InventoryDetail();
+                        inventory.setInkindId(param.getInkindId());
+                        inventory.setStatus(2);
+                        outInkind.add(param.getInkindId());
+                        inventories.add(inventory);
+                    } else {                                       //入库
+                        inventory = new InventoryDetail();
+                        inventory.setInkindId(param.getInkindId());
+                        inventory.setStatus(1);
+                        inventories.add(inventory);
+                    }
+                    detail.setNumber(param.getNumber());
+                }
+            }
+        }
+
+
 
     }
 
@@ -127,11 +156,24 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
         List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             List<Long> inkindIds = new ArrayList<>();
+            List<StockDetailsResult> detailsResults = new ArrayList<>();
             for (StockDetails stockDetail : stockDetails) {
                 inkindIds.add(stockDetail.getInkindId());
+                StockDetailsResult detailsResult = new StockDetailsResult();
+                ToolUtil.copyProperties(stockDetail, detailsResult);
+                detailsResults.add(detailsResult);
             }
+
             List<InkindResult> kinds = inkindService.getInKinds(inkindIds);
-            positionsResult.setInkindResults(kinds);
+            for (StockDetailsResult detailsResult : detailsResults) {
+                for (InkindResult kind : kinds) {
+                    if (detailsResult.getInkindId().equals(kind.getInkindId())) {
+                        detailsResult.setInkindResult(kind);
+                        break;
+                    }
+                }
+            }
+            positionsResult.setDetailsResults(detailsResults);
         }
         return positionsResult;
     }

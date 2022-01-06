@@ -601,12 +601,22 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             }
         }
         List<Inkind> inkindList = inkindService.listByIds(inkindIds);
+        List<Inkind> addInkinds = new ArrayList<>();
 
+        //修改入库实物数量
         for (Inkind inkind : inkindList) {
             Long number = updateInkind.get(inkind.getInkindId());
             inkind.setNumber(inkind.getNumber() - number);
+
+            Inkind addInkind = new Inkind();
+            addInkind.setSkuId(inkind.getSkuId());
+            addInkind.setBrandId(inkind.getBrandId());
+            addInkind.setNumber(number);
+            addInkind.setSource(inKindRequest.getType());
+            addInkinds.add(addInkind);
         }
         inkindService.updateBatchById(inkindList);
+        inkindService.saveBatch(addInkinds);
 
         //更新库存数量
         List<Long> stockIds = new ArrayList<>();

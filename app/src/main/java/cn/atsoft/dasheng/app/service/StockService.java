@@ -60,6 +60,8 @@ public interface StockService extends IService<Stock> {
      */
     List<StockResult> findListBySpec(StockParam param);
 
+    void updateNumber(List<Long> stockId);
+
     /**
      * 查询分页数据，Specification模式
      *

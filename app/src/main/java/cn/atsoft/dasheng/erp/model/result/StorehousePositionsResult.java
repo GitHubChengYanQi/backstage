@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -35,8 +37,7 @@ public class StorehousePositionsResult implements Serializable {
 
     private PrintTemplateResult printTemplateResult;
 
-    private List<InkindResult> inkindResults;
-
+    private List<StockDetailsResult> detailsResults;
     /**
      * 仓库库位id
      */

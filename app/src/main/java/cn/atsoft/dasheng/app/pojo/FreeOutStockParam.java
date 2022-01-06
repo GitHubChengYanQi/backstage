@@ -10,4 +10,6 @@ public class FreeOutStockParam {
     private Long codeId;
     @NotNull
     private Long number;
+
+    private String type;
 }
