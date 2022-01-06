@@ -448,8 +448,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         spuService.updateById(spuEntity);
         newEntity.setSkuValue(json);
         newEntity.setSkuValueMd5( SecureUtil.md5(categoryId + param.getSpuId() + newEntity.getSkuValue()));
-        Sku sku = this.lambdaQuery().eq(Sku::getSkuValue, json).and(i -> i.eq(Sku::getDisplay, 1)).and(i -> i.eq(Sku::getSkuName, newEntity.getSkuName())).one();
-        if (ToolUtil.isNotEmpty(sku)){
+        List<Sku> skus = this.lambdaQuery().eq(Sku::getSkuValue, json).and(i -> i.eq(Sku::getDisplay, 1)).and(i -> i.eq(Sku::getSkuName, newEntity.getSkuName())).list();
+        if (skus.size()>1){
             throw new ServiceException(500,"已存在相同属性相同名称物料,不能重复添加");
         }
 
