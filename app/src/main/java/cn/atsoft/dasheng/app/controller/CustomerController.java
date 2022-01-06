@@ -122,13 +122,13 @@ public class CustomerController extends BaseController {
             customerParam = new CustomerParam();
         }
 
-        if (LoginContextHolder.getContext().isAdmin()) {
+//        if (LoginContextHolder.getContext().isAdmin()) {
             return this.customerService.findPageBySpec(null,customerParam);
-        }else{
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            PageInfo<CustomerResult> customer= customerService.findPageBySpec(dataScope,customerParam);
-            return this.customerService.findPageBySpec(dataScope,customerParam);
-        }
+//        }else{
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            PageInfo<CustomerResult> customer= customerService.findPageBySpec(dataScope,customerParam);
+//            return this.customerService.findPageBySpec(dataScope,customerParam);
+//        }
     }
 
 
