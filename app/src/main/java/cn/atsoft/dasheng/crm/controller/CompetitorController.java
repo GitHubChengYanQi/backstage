@@ -121,12 +121,12 @@ public class CompetitorController extends BaseController {
         if (ToolUtil.isEmpty(competitorParam)) {
             competitorParam = new CompetitorParam();
         }
-        if (LoginContextHolder.getContext().isAdmin()) {
+//        if (LoginContextHolder.getContext().isAdmin()) {
             return this.competitorService.findPageBySpec(null, competitorParam);
-        } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.competitorService.findPageBySpec(dataScope, competitorParam);
-        }
+//        } else {
+//            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+//            return this.competitorService.findPageBySpec(dataScope, competitorParam);
+//        }
     }
 
 
