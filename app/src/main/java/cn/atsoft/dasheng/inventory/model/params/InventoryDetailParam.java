@@ -4,6 +4,7 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -25,6 +26,7 @@ public class InventoryDetailParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
 
+    private Long number;
     /**
      * 盘点任务详情id
      */

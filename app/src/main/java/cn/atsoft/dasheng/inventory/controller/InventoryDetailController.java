@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,20 @@ public class InventoryDetailController extends BaseController {
     }
 
     /**
+     * 盘点入库
+     *
+     * @author
+     * @Date 2021-12-27
+     */
+    @RequestMapping(value = "/inventoryInstock", method = RequestMethod.POST)
+    @ApiOperation("盘点入库")
+    public ResponseData inventoryInstock(@RequestBody InventoryDetailParam inventoryDetailParam) {
+        this.inventoryDetailService.inventoryInstock(inventoryDetailParam);
+        return ResponseData.success();
+    }
+
+
+    /**
      * 编辑接口
      *
      * @author Captain_Jazz
@@ -67,7 +82,7 @@ public class InventoryDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody InventoryDetailParam inventoryDetailParam)  {
+    public ResponseData delete(@RequestBody InventoryDetailParam inventoryDetailParam) {
         this.inventoryDetailService.delete(inventoryDetailParam);
         return ResponseData.success();
     }
@@ -98,13 +113,11 @@ public class InventoryDetailController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<InventoryDetailResult> list(@RequestBody(required = false) InventoryDetailParam inventoryDetailParam) {
-        if(ToolUtil.isEmpty(inventoryDetailParam)){
+        if (ToolUtil.isEmpty(inventoryDetailParam)) {
             inventoryDetailParam = new InventoryDetailParam();
         }
         return this.inventoryDetailService.findPageBySpec(inventoryDetailParam);
     }
-
-
 
 
 }

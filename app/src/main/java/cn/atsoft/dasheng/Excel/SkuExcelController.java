@@ -63,7 +63,6 @@ public class SkuExcelController {
      */
     @RequestMapping("/importSku")
     @ResponseBody
-    @Transactional
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();

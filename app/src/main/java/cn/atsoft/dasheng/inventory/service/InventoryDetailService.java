@@ -34,6 +34,8 @@ public interface InventoryDetailService extends IService<InventoryDetail> {
      */
     void delete(InventoryDetailParam param);
 
+    void inventoryInstock(InventoryDetailParam inventoryDetailParam);
+
     /**
      * 更新
      *

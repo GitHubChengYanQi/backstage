@@ -3,8 +3,10 @@ package cn.atsoft.dasheng.inventory.service.impl;
 
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
+import cn.atsoft.dasheng.app.service.StockService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -43,6 +45,9 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
     private StockDetailsService detailsService;
     @Autowired
     private StorehousePositionsService positionsService;
+
+    @Autowired
+    private StockService stockService;
 
     @Override
     public void add(InventoryDetailParam param) {
@@ -95,6 +100,33 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
 
     }
 
+    /**
+     * 盘点入库
+     *
+     * @param
+     */
+    @Override
+    public void inventoryInstock(InventoryDetailParam inventoryDetailParam) {
+        //修改库存库存详情
+        StockDetails stockDetails = detailsService.query().eq("inkind_id", inventoryDetailParam.getInkindId()).one();
+        stockDetails.setNumber(stockDetails.getNumber() + inventoryDetailParam.getNumber());
+        detailsService.updateById(stockDetails);
+
+        //修改实物数量
+        Inkind inkind = inkindService.getById(inventoryDetailParam.getInventoryId());
+        inkind.setNumber(inkind.getNumber() + inventoryDetailParam.getNumber());
+        inkindService.updateById(inkind);
+
+        //跟新库存数量
+        stockService.updateNumber(new ArrayList<Long>() {{
+            add(stockDetails.getStockId());
+        }});
+
+        InventoryDetail inventoryDetail = new InventoryDetail();
+        inventoryDetail.setInkindId(inkind.getInkindId());
+        inventoryDetail.setStatus(1);
+        this.save(inventoryDetail);
+    }
 
     @Override
     public void update(InventoryDetailParam param) {

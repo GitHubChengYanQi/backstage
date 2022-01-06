@@ -129,8 +129,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 }
                 stock.setInventory(number);
             }
-
-
         }
         this.updateBatchById(stockList);
     }
