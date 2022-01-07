@@ -93,8 +93,8 @@ public class SkuExcelController {
         }
 //----------------------------------------------------------------------------------------------------------------------
 
-        if (skuExcelItems.size() > 50) {
-            throw new ServiceException(500, "最多只可导入50个");
+        if (skuExcelItems.size() > 1000) {
+            throw new ServiceException(500, "最多只可导入1000个");
         }
 //判断重复---------------------------------------------------------------------------------------------------------------
         List<String> removal = new ArrayList<>();

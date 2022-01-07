@@ -321,7 +321,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             List<InkindResult> kinds = inkindService.getInKinds(inkindIds);
             for (StockDetailsResult detailsResult : detailsResults) {
                 for (InkindResult kind : kinds) {
-                    if (detailsResult.getInkindId().equals(kind.getInkindId())) {
+                    if (ToolUtil.isNotEmpty(detailsResult.getInkindId()) && detailsResult.getInkindId().equals(kind.getInkindId())) {
                         detailsResult.setInkindResult(kind);
                         break;
                     }
