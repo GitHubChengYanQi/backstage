@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.inventory.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StockService;
@@ -107,17 +108,46 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
      */
     @Override
     public void inventoryInstock(InventoryDetailParam inventoryDetailParam) {
-        //修改库存库存详情
-        StockDetails stockDetails = detailsService.query().eq("inkind_id", inventoryDetailParam.getInkindId()).one();
-        stockDetails.setNumber(stockDetails.getNumber() + inventoryDetailParam.getNumber());
-        detailsService.updateById(stockDetails);
+        Inkind inkind = inkindService.getById(inventoryDetailParam.getInkindId());
+
+        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, inventoryDetailParam.getStoreHouseId())  //查询仓库
+                .eq(Stock::getSkuId, inkind.getSkuId())
+                .eq(Stock::getBrandId, inkind.getBrandId())
+                .one();
+        Long stockId = 0L;
+        if (ToolUtil.isNotEmpty(stock)) {  //有相同物料 叠加数量
+            stockId = stock.getStockId();
+        } else {                          //没有相同物料 创建新物料
+            Stock newStock = new Stock();
+            newStock.setInventory(inventoryDetailParam.getNumber());
+            newStock.setBrandId(inkind.getBrandId());
+            newStock.setSkuId(inkind.getSkuId());
+            newStock.setStorehouseId(inventoryDetailParam.getStoreHouseId());
+            stockService.save(newStock);
+            stockId = newStock.getStockId();
+        }
+
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setStockId(stockId);
+        stockDetails.setNumber(inventoryDetailParam.getNumber());
+        stockDetails.setStorehousePositionsId(inventoryDetailParam.getPositionId());
+        if (ToolUtil.isEmpty(inventoryDetailParam.getPositionId())) {
+            throw new ServiceException(500,"请选择库位");
+        }
+        stockDetails.setQrCodeid(inventoryDetailParam.getQrcodeId());
+        stockDetails.setInkindId(inkind.getInkindId());
+        stockDetails.setBrandId(inkind.getBrandId());
+        stockDetails.setStorehouseId(inventoryDetailParam.getStoreHouseId());
+        stockDetails.setSkuId(inkind.getSkuId());
+        detailsService.save(stockDetails);
 
         //修改实物数量
-        Inkind inkind = inkindService.getById(inventoryDetailParam.getInkindId());
-        inkind.setNumber(inkind.getNumber() + inventoryDetailParam.getNumber());
+
+        inkind.setNumber(inventoryDetailParam.getNumber());
         inkindService.updateById(inkind);
 
         //跟新库存数量
+
         stockService.updateNumber(new ArrayList<Long>() {{
             add(stockDetails.getStockId());
         }});

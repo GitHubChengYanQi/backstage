@@ -121,14 +121,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
         for (Stock stock : stockList) {
             List<StockDetails> details = map.get(stock.getStockId());
-
+            Long number = 0L;
             if (ToolUtil.isNotEmpty(details)) {
-                Long number = 0L;
                 for (StockDetails detail : details) {
                     number = number + detail.getNumber();
                 }
-                stock.setInventory(number);
             }
+            stock.setInventory(number);
         }
         this.updateBatchById(stockList);
     }

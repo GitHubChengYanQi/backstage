@@ -95,7 +95,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_stock where 1 = 1
+        from daoxin_erp_stock where display = 1 and inventory != 0
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
         </if>
@@ -119,7 +119,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_stock where display = 1
+        from daoxin_erp_stock where display = 1 and inventory != 0
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
         </if>

@@ -168,9 +168,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }
         long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
         stockDetails.setNumber(newNumber);
-        stockDetailsService.updateById(stockDetails);
-        //更新仓库数量
-        updateStock(stockDetails.getStockId());
+        if (stockDetails.getNumber() == 0) {
+            stockDetailsService.removeById(stockDetails);
+        } else {
+            stockDetailsService.updateById(stockDetails);
+        }
 
         //修改库存数量
         Inkind instockInkind = inkindService.getById(stockDetails.getInkindId());
@@ -192,18 +194,6 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         }});
     }
 
-    private void updateStock(Long stockId) {
-        List<StockDetails> details = stockDetailsService.query().eq("stock_id", stockId).list();
-        Long number = 0L;
-        for (StockDetails detail : details) {
-            number = number + detail.getNumber();
-        }
-        Stock stock = new Stock();
-        stock.setInventory(number);
-        stockService.update(stock, new QueryWrapper<Stock>() {{
-            eq("stock_id", stockId);
-        }});
-    }
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {

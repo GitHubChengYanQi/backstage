@@ -582,6 +582,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                         throw new ServiceException(500, "库存数量不足");
                     }
                     detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
+                    if (detail.getNumber() == 0) {
+                        stockDetailsService.removeById(detail);
+                    }
                 }
             }
         }
@@ -623,30 +626,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
         for (StockDetails detail : details) {
             stockIds.add(detail.getStockId());
         }
-        List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
-        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockIds).list();
-
-        Map<Long, Long> map = new HashMap<>();
-        for (Stock stock : stocks) {
-            for (StockDetails stockDetail : stockDetails) {
-                if (stock.getStockId().equals(stockDetail.getStockId())) {
-                    Long number = map.get(stock.getStockId());
-                    if (ToolUtil.isNotEmpty(number)) {
-                        long newNumber = number + stockDetail.getNumber();
-                        map.put(stock.getStockId(), newNumber);
-                    } else {
-                        map.put(stock.getStockId(), stockDetail.getNumber());
-                    }
-                }
-            }
-        }
-
-        for (Stock stock : stocks) {
-            Long number = map.get(stock.getStockId());
-            stock.setInventory(number);
-        }
-
-        stockService.updateBatchById(stocks);
+        stockService.updateNumber(stockIds);
     }
 
 

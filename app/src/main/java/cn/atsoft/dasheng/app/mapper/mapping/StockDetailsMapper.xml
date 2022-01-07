@@ -97,6 +97,9 @@ stage
         <if test="paramCondition.outStockOrderId != null">
             and outstock_order_id = #{paramCondition.outStockOrderId}
         </if>
+        <if test="paramCondition.storehousePositionsId != null">
+            and storehouse_positions_id = #{paramCondition.storehousePositionsId}
+        </if>
         <if test="paramCondition.stage != null">
             and stage = #{paramCondition.stage}
         </if>
