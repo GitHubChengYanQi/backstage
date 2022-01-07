@@ -83,6 +83,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getCodingClass()) && classification.getDisplay() != 0) {
                 String replace = backCoding.replace("${skuClass}", classification.getCodingClass());
                 param.setStandard(replace);
+                param.setCoding(replace);
             } else {
                 throw new ServiceException(500, "请选择分类！");
             }
@@ -452,7 +453,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         if (skus.size()>1){
             throw new ServiceException(500,"已存在相同属性相同名称物料,不能重复添加");
         }
-
         this.updateById(newEntity);
 
 
