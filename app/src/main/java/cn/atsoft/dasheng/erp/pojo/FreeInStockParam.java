@@ -13,4 +13,6 @@ public class FreeInStockParam {
     private List<Long> codeIds;
     @NotNull
     private Long positionsId;
+
+    private String type;
 }

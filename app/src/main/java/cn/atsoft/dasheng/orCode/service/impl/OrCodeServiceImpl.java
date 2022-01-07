@@ -440,7 +440,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         StockDetails details = stockDetailsService.query().eq("qr_code_id", inKindRequest.getCodeId()).one();
         if (ToolUtil.isNotEmpty(details)) {
-            throw new ServiceException(500, "已入库，请勿再次入库相同");
+            throw new ServiceException(500, "已入库，请勿再次入库");
         }
         Long formId = orCodeBindService.getFormId(inKindRequest.getCodeId());
         InstockList instockList = null;
@@ -582,6 +582,9 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                         throw new ServiceException(500, "库存数量不足");
                     }
                     detail.setNumber(detail.getNumber() - batchOutStockParam.getNumber());
+                    if (detail.getNumber() == 0) {
+                        stockDetailsService.removeById(detail);
+                    }
                 }
             }
         }
@@ -601,42 +604,29 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             }
         }
         List<Inkind> inkindList = inkindService.listByIds(inkindIds);
+        List<Inkind> addInkinds = new ArrayList<>();
 
+        //修改入库实物数量
         for (Inkind inkind : inkindList) {
             Long number = updateInkind.get(inkind.getInkindId());
             inkind.setNumber(inkind.getNumber() - number);
+
+            Inkind addInkind = new Inkind();
+            addInkind.setSkuId(inkind.getSkuId());
+            addInkind.setBrandId(inkind.getBrandId());
+            addInkind.setNumber(number);
+            addInkind.setSource(inKindRequest.getType());
+            addInkinds.add(addInkind);
         }
         inkindService.updateBatchById(inkindList);
+        inkindService.saveBatch(addInkinds);
 
         //更新库存数量
         List<Long> stockIds = new ArrayList<>();
         for (StockDetails detail : details) {
             stockIds.add(detail.getStockId());
         }
-        List<Stock> stocks = stockService.query().in("stock_id", stockIds).list();
-        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockIds).list();
-
-        Map<Long, Long> map = new HashMap<>();
-        for (Stock stock : stocks) {
-            for (StockDetails stockDetail : stockDetails) {
-                if (stock.getStockId().equals(stockDetail.getStockId())) {
-                    Long number = map.get(stock.getStockId());
-                    if (ToolUtil.isNotEmpty(number)) {
-                        long newNumber = number + stockDetail.getNumber();
-                        map.put(stock.getStockId(), newNumber);
-                    } else {
-                        map.put(stock.getStockId(), stockDetail.getNumber());
-                    }
-                }
-            }
-        }
-
-        for (Stock stock : stocks) {
-            Long number = map.get(stock.getStockId());
-            stock.setInventory(number);
-        }
-
-        stockService.updateBatchById(stocks);
+        stockService.updateNumber(stockIds);
     }
 
 
