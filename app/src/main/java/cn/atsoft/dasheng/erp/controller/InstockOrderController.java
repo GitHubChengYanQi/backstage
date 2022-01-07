@@ -73,7 +73,7 @@ public class InstockOrderController extends BaseController {
      * @Date 2021-10-06
      */
     @RequestMapping(value = "/freeInstock", method = RequestMethod.POST)
-    @ApiOperation("自有入库")
+    @ApiOperation("自由入库")
     @Permission
     public ResponseData freeInstock(@Valid @RequestBody FreeInStockParam freeInStockParam) {
         this.instockOrderService.freeInstock(freeInStockParam);

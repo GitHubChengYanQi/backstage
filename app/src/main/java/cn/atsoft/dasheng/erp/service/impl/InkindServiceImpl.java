@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InkindMapper;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -189,6 +190,16 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             String inkindId = param.getInkindId().toString();
             String substring = inkindId.substring(inkindId.length() - 6);
             templete = templete.replace("${coding}", substring);
+        }
+        if (templete.contains("${skuCoding}")) {
+            Sku sku =ToolUtil.isEmpty(param.getSkuId())? new Sku() : skuService.getById(param.getSkuId());
+            if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isNotEmpty(sku.getCoding())){
+                templete = templete.replace("${skuCoding}", sku.getCoding());
+            }else if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isEmpty(sku.getCoding())&&ToolUtil.isEmpty(sku.getStandard())){
+                templete = templete.replace("${skuCoding}", "无");
+            }else if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isNotEmpty(sku.getStandard())){
+                templete = templete.replace("${skuCoding}", sku.getStandard());
+            }
         }
         if (templete.contains("${name}")) {
             templete = templete.replace("${name}", param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
