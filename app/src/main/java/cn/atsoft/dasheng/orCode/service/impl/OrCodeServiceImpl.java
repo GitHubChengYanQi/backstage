@@ -336,6 +336,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 if (ToolUtil.isEmpty(codeRequest.getCodeId())) {
                     OrCodeParam orCodeParam = new OrCodeParam();
                     orCodeParam.setType(codeRequest.getSource());
+                    orCodeParam.setState(1);
                     Long aLong = this.add(orCodeParam);
                     orCodeBindParam.setOrCodeId(aLong);
                     orCodeBindService.add(orCodeBindParam);

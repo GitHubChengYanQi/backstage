@@ -40,6 +40,7 @@ public class InkindResult implements Serializable {
     private Map<String, Object> inkindDetail;
     private StorehousePositionsResult positionsResult;
     private PrintTemplateResult printTemplateResult;
+    private Boolean inNotStock;
     /**
      * 品牌
      */
