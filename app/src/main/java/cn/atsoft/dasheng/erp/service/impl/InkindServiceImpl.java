@@ -215,8 +215,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
                 eq("form_id", param.getInkindId());
                 eq("source", "item");
             }});
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + orCodeBind.getOrCodeId();
-            String qrCode = qrCodeCreateService.createQrCode(url);
+            Long url = orCodeBind.getOrCodeId();
+            String qrCode = qrCodeCreateService.createQrCode(url.toString());
             templete = templete.replace("${qrCode}", qrCode);
         }
         PrintTemplateResult printTemplateResult = new PrintTemplateResult();
