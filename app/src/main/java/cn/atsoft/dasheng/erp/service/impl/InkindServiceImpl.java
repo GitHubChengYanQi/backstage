@@ -161,6 +161,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Override
     public InkindResult inkindDetail(InkindParam param) {
         Inkind inkind = this.getById(param.getInkindId());
+        if (ToolUtil.isEmpty(inkind)) {
+            throw new ServiceException(500, "没有此物");
+        }
         List<Long> skuIds = new ArrayList<>();
         skuIds.add(inkind.getSkuId());
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
@@ -192,12 +195,12 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             templete = templete.replace("${coding}", substring);
         }
         if (templete.contains("${skuCoding}")) {
-            Sku sku =ToolUtil.isEmpty(param.getSkuId())? new Sku() : skuService.getById(param.getSkuId());
-            if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isNotEmpty(sku.getCoding())){
+            Sku sku = ToolUtil.isEmpty(param.getSkuId()) ? new Sku() : skuService.getById(param.getSkuId());
+            if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getCoding())) {
                 templete = templete.replace("${skuCoding}", sku.getCoding());
-            }else if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isEmpty(sku.getCoding())&&ToolUtil.isEmpty(sku.getStandard())){
+            } else if (ToolUtil.isNotEmpty(sku) && ToolUtil.isEmpty(sku.getCoding()) && ToolUtil.isEmpty(sku.getStandard())) {
                 templete = templete.replace("${skuCoding}", "无");
-            }else if (ToolUtil.isNotEmpty(sku)&& ToolUtil.isNotEmpty(sku.getStandard())){
+            } else if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getStandard())) {
                 templete = templete.replace("${skuCoding}", sku.getStandard());
             }
         }
