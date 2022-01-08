@@ -176,7 +176,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void update(StorehousePositionsParam param) {
-        Integer count = this.query().eq("name", param.getName()).eq("pid",param.getPid()).eq("display", 1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 1) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -194,7 +194,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         StorehousePositions storehousePositions = this.getById(Id);
 
-        if (ToolUtil.isEmpty(storehousePositions.getChildren())) {
+
+        if (ToolUtil.isNotEmpty(storehousePositions) && ToolUtil.isEmpty(storehousePositions.getChildren())) {
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
             ToolUtil.copyProperties(storehousePositions, positionsResult);
             StorehouseResult serviceDetail = storehouseService.getDetail(positionsResult.getStorehouseId());
