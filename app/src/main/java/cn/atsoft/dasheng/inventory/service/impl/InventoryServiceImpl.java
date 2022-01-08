@@ -151,13 +151,13 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
                     sotckIds.add(detail.getStockId());
 
-                    if (detail.getNumber() > param.getNumber()) {  //出库
+                    if (detail.getNumber() > param.getNumber()) {  //修正出库
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(2);
                         outInkind.add(param.getInkindId());
                         inventories.add(inventory);
-                    } else if (detail.getNumber() < param.getNumber()) {                                       //入库
+                    } else if (detail.getNumber() < param.getNumber()) { //修正入库
                         inventory = new InventoryDetail();
                         inventory.setInkindId(param.getInkindId());
                         inventory.setStatus(1);
@@ -170,9 +170,12 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
 
         List<Long> collect = inkindIds.stream().filter(item -> !stockInkinds.contains(item)).collect(toList());
-//--------------------------------------------------------------------------------------------------------------------------
-        if (ToolUtil.isNotEmpty(collect)) {    //新入库
-
+//------------------------------------------------------------------------------------------------------------------------新入库
+        if (ToolUtil.isNotEmpty(collect)) {
+            List<StockDetails> stockDetails = detailsService.query().in("inkind_id", collect).list();
+            if (ToolUtil.isNotEmpty(stockDetails)) {
+                throw new ServiceException(500, "新入库的物料 在库存中已存在");
+            }
             List<Inkind> inkindList = collect.size() == 0 ? new ArrayList<>() : inkindService.listByIds(collect);
 
             Map<Long, Long> numberMap = new HashMap<>();
@@ -196,7 +199,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             }
             inkindInstock(inkindList, numberMap, codeMap, inventoryRequest.getStoreHouseId(), inventoryRequest.getPositionId());
         }
-//--------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------新出库
         if (ToolUtil.isNotEmpty(inventoryRequest.getOutStockInkindParams())) {
             List<Long> outStockInkind = new ArrayList<>();
             for (InventoryRequest.outStockInkindParam outStockInkindParam : inventoryRequest.getOutStockInkindParams()) {
