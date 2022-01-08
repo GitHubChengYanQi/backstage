@@ -305,7 +305,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     public StorehousePositionsResult positionInventory(Long id) {
         StorehousePositionsResult positionsResult = positionsService.positionsResultById(id);
 
-        List<StockDetails> stockDetails = detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
+        List<StockDetails> stockDetails =  detailsService.query().eq("storehouse_positions_id", positionsResult.getStorehousePositionsId()).list();
         if (ToolUtil.isNotEmpty(stockDetails)) {
             List<Long> inkindIds = new ArrayList<>();
             List<StockDetailsResult> detailsResults = new ArrayList<>();
