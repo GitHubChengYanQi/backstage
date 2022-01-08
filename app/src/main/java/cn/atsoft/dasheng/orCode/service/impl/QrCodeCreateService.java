@@ -26,7 +26,7 @@ import java.util.HashMap;
 @Service
 public class QrCodeCreateService {
 
-    public String createQrCode(String content){
+    public String createQrCode(String content) {
         if (ToolUtil.isNotEmpty(content)) {
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -41,13 +41,13 @@ public class QrCodeCreateService {
                 BitMatrix bitMatrix = writer.encode(String.valueOf(content), BarcodeFormat.QR_CODE, 100, 100, hints);
                 BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
                 ImageIO.write(bufferedImage, "png", os);
-                return new String("<img width='100' height='100' src='data:image/png;base64," + Base64.encode(os.toByteArray())+"' />");
+                return new String("<img width='200' height='200' src='data:image/png;base64," + Base64.encode(os.toByteArray()) + "' />");
             } catch (WriterException | IOException e) {
                 e.printStackTrace();
             }
 
 
         }
-        return null ;
+        return null;
     }
 }
