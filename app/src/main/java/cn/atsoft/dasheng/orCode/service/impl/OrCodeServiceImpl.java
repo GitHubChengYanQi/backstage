@@ -836,6 +836,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setType("item");
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
+                    itemRequest.setState(inkind.getType());
                     return itemRequest;
                 case "quality":
                     QualityTask qualityTask = qualityTaskService.getById(codeBind.getFormId());
