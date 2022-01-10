@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     private SpuService spuService;
 
     @Override
+    @Transactional
     public Long add(SpuClassificationParam param) {
         Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).count();
         if (count > 0) {
@@ -64,6 +66,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
         QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("spu_classification_id", entity.getPid());
+        SpuClassification spuClass = this.getById(entity.getPid());
+        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2){
+            throw new ServiceException(500,"产品不可以有下级分类");
+        }
         this.update(spuClassification, QueryWrapper);
 
         updateChildren(entity.getPid());
@@ -86,10 +92,13 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     }
 
     @Override
-
+    @Transactional
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
         SpuClassification classification = this.getById(param.getSpuClassificationId());
+        if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getType()) && classification.getType() == 2){
+            throw new ServiceException(500,"产品不可以有下级分类");
+        }
         if (classification.getPid() == 0) {
             List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
             for (SpuClassification spuClassification : spuClassifications) {

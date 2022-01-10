@@ -44,6 +44,14 @@ public class SpuClassification implements Serializable {
      */
     @TableField("pid")
     private Long pid;
+
+
+    /**
+     * 是否是产品分类
+     */
+    @TableField("type")
+    private Long type;
+
     /**
      * spu分类id
      */
@@ -196,6 +204,16 @@ public class SpuClassification implements Serializable {
     public void setChildrens(String childrens) {
         this.childrens = childrens;
     }
+
+    public Long getType() {
+        return type;
+    }
+
+    public void setType(Long type) {
+        this.type = type;
+    }
+
+
 
     @Override
     public String toString() {

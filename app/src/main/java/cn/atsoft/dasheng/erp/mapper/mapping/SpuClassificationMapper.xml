@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.erp.entity.SpuClassification">
         <id column="spu_classification_id" property="spuClassificationId"/>
         <result column="name" property="name"/>
+        <result column="type" property="type"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="create_user" property="createUser"/>
@@ -23,7 +24,7 @@
     <sql id="Base_Column_List">pid
     AS "pid",sort AS "sort",coding_class AS "codingClass", children AS "children",childrens AS "childrens",
         spu_classification_id
-        AS "spuClassificationId", name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
+        AS "spuClassificationId", type AS "type",name AS "name", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -31,7 +32,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu_class where 1 = 1
+        from goods_spu_class where 1 = 1 and display = 1
         <if test="paramCondition.spuClassificationId != null">
             and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
         </if>
@@ -62,7 +63,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu_class where 1 = 1
+        from goods_spu_class where 1 = 1 and display = 1
         <if test="paramCondition.spuClassificationId != null">
             and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
         </if>
@@ -128,7 +129,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.SpuClassificationParam">
         select
         <include refid="Base_Column_List"/>
-        from goods_spu_class where 1 = 1
+        from goods_spu_class where 1 = 1 and display = 1
         <if test="paramCondition.spuClassificationId != null">
             and spu_classification_id like CONCAT('%',#{paramCondition.spuClassificationId},'%')
         </if>

@@ -135,6 +135,7 @@ public class SpuClassificationController extends BaseController {
             }
         }
         spuClassificationQueryWrapper.eq("display", 1);
+        spuClassificationQueryWrapper.ne("type",2);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {

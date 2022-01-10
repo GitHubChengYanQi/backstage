@@ -57,6 +57,12 @@ public class SpuClassificationParam  extends AbstractDictMap implements Serializ
     private String name;
 
     /**
+     * 是否是产品分类
+     */
+    @ApiModelProperty("是否是产品分类")
+    private Long type;
+
+    /**
      * 创建时间
      */
     @ApiModelProperty(hidden = true)
