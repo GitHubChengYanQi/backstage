@@ -345,7 +345,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);
-
             inkind.setType("1");
         }
         stockDetailsService.saveBatch(stockDetailsList);

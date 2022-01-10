@@ -27,6 +27,9 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      */
     void add(StorehousePositionsParam param);
 
+    //判断当前库位是否为最下级
+    Long judgePosition(Long positionId);
+
     /**
      * 删除
      *
