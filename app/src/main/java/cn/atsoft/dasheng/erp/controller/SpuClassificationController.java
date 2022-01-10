@@ -117,10 +117,14 @@ public class SpuClassificationController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam){
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
+
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
+            queryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
+        }
         queryWrapper.eq("display", 1);
-        queryWrapper.ne("type", 2);
+
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
@@ -135,9 +139,13 @@ public class SpuClassificationController extends BaseController {
                 spuClassificationQueryWrapper.eq("spu_classification_id", spuClassificationParam.getSpuClassificationId());
             }
         }
-        spuClassificationQueryWrapper.ne("type", 2);
+
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
+            spuClassificationQueryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
+        }
+
         spuClassificationQueryWrapper.eq("display", 1);
-        spuClassificationQueryWrapper.ne("type",2);
+
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {
@@ -158,8 +166,8 @@ public class SpuClassificationController extends BaseController {
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
             treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
-            treeNode.setTitle(Convert.toStr(item.get("name")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
+            treeNode.setTitle(Convert.toStr(item.get("name")));
             treeViewNodes.add(treeNode);
         }
         //构建树

@@ -29,6 +29,8 @@ public class SpuClassificationParam  extends AbstractDictMap implements Serializ
     private String children;
 
 
+    private  Integer isNotproduct;
+
     private String childrens;
     /**
      * 编码分类
