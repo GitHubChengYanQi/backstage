@@ -145,6 +145,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             //修改实物数量
 
             inkind.setNumber(inventoryDetailParam.getNumber());
+            inkind.setType("1");
             inkindService.updateById(inkind);
 
             //跟新库存数量
@@ -157,7 +158,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
             inventoryDetail.setInkindId(inkind.getInkindId());
             inventoryDetail.setStatus(1);
             this.save(inventoryDetail);
-        } else {
+        } else {   //已在库存 修改数量
             StockDetails stockDetails = new StockDetails();
             stockDetails.setNumber(inventoryDetailParam.getNumber());
             detailsService.update(stockDetails, new QueryWrapper<StockDetails>() {{
@@ -167,6 +168,7 @@ public class InventoryDetailServiceImpl extends ServiceImpl<InventoryDetailMappe
                 add(details.getStockId());
             }});
             inkind.setNumber(inventoryDetailParam.getNumber());
+            inkind.setType("1");
             inkindService.updateById(inkind);
         }
 
