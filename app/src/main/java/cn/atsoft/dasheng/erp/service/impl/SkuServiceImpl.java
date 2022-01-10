@@ -532,7 +532,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
 
         List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.query().in("unit_id", unitIds).list();
-        List<SpuClassification> spuClassifications = spuClassId.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spuClassificationId", spuClassId).list();
+        List<SpuClassification> spuClassifications = spuClassId.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spu_classification_id", spuClassId).list();
 
         for (Spu spu : spus) {
             if (ToolUtil.isNotEmpty(units)) {
