@@ -50,7 +50,7 @@ public class SkuResult implements Serializable {
     private SpuClassification spuClassification;
     private Long fileId;
     private Integer batch;
-    private SkuRequest sku;
+    private SkuRequest skuTree;
 
 
     /**
