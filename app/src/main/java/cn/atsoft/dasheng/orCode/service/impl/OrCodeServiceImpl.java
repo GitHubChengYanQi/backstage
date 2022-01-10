@@ -35,6 +35,7 @@ import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     @Autowired
     private InkindService inkindService;
     @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
     private InstockListService instockListService;
     @Autowired
     private InstockOrderService instockOrderService;
@@ -92,8 +95,6 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     private OutstockService outstockService;
     @Autowired
     private OutstockListingService outstockListingService;
-    @Autowired
-    private StockDetailsService stockDetailsService;
     @Autowired
     private QualityTaskService qualityTaskService;
     @Autowired
@@ -804,6 +805,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     if (ToolUtil.isEmpty(inkind)) {
                         return null;
                     }
+                    StockDetails details = stockDetailsService.lambdaQuery().eq(StockDetails::getInkindId, inkind.getInkindId()).one();
                     List<BackSku> backSkus = skuService.backSku(inkind.getSkuId());
                     OrcodeBackItem orcodeBackItem = new OrcodeBackItem();
                     Sku sku = skuService.getById(inkind.getSkuId());
@@ -817,7 +819,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                     itemRequest.setType("item");
                     itemRequest.setOrcodeBackItem(orcodeBackItem);
                     itemRequest.setInKindNumber(inkind.getNumber());
-                    itemRequest.setState(inkind.getType());
+                    itemRequest.setState(ToolUtil.isNotEmpty(details));
                     return itemRequest;
                 case "quality":
                     QualityTask qualityTask = qualityTaskService.getById(codeBind.getFormId());
