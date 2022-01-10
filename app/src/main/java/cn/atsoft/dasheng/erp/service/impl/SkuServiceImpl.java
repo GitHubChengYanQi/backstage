@@ -748,8 +748,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 atrValueIds.add(valuesRequest.getAttributeValuesId());
             }
 
-            List<AttributeValues> values = attributeValuesService.query().in("attribute_values_id", atrValueIds).list();
-            List<ItemAttribute> attributes = itemAttributeService.query().in("attribute_id", atrIds).list();
+            List<AttributeValues> values = atrValueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", atrValueIds).list();
+            List<ItemAttribute> attributes = atrIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", atrIds).list();
 
             List<BackSku> backSkus = new ArrayList<>();
             for (AttributeValues valuesRequest : valuesRequests) {
