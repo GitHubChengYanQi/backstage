@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuClassificationSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.Console;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -117,11 +119,14 @@ public class SpuClassificationController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam){
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
 
         if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
             queryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
+        }
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
+            queryWrapper.eq("pid", spuClassificationParam.getSpuClassificationId());
         }
         queryWrapper.eq("display", 1);
 
