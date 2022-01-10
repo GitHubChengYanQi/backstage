@@ -120,6 +120,7 @@ public class SpuClassificationController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("display", 1);
+        queryWrapper.ne("type", 2);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
@@ -134,6 +135,7 @@ public class SpuClassificationController extends BaseController {
                 spuClassificationQueryWrapper.eq("spu_classification_id", spuClassificationParam.getSpuClassificationId());
             }
         }
+        spuClassificationQueryWrapper.ne("type", 2);
         spuClassificationQueryWrapper.eq("display", 1);
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
