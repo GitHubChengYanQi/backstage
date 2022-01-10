@@ -294,10 +294,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             attributeName.add(skuAttributeAndValue.getLabel());
             attributeValueName.add(skuAttributeAndValue.getValue());
-            if (skuAttributeAndValue.getLabel()== null && skuAttributeAndValue.getLabel().replace(" ","").length()==0){
+            if (ToolUtil.isEmpty(skuAttributeAndValue.getLabel()) || skuAttributeAndValue.getLabel().replace(" ","").length()==0){
                 throw new ServiceException(500,"规格名称不可为空或空格");
             }
-            if (skuAttributeAndValue.getValue()== null && skuAttributeAndValue.getValue().replace(" ","").length()==0){
+            if (ToolUtil.isEmpty(skuAttributeAndValue.getValue()) || skuAttributeAndValue.getValue().replace(" ","").length()==0){
                 throw new ServiceException(500,"规格值不可为空或空格");
             }
         }
