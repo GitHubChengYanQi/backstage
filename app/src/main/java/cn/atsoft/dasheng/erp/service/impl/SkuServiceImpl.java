@@ -286,20 +286,26 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-
-    private List<AttributeValues> addAttributeAndValue(List<SkuAttributeAndValue> param, Long categoryId) {
+    @Transactional
+    public List<AttributeValues> addAttributeAndValue(List<SkuAttributeAndValue> param, Long categoryId) {
         List<String> attributeName = new ArrayList<>();
         List<String> attributeValueName = new ArrayList<>();
         List<Long> attributeId = new ArrayList<>();
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             attributeName.add(skuAttributeAndValue.getLabel());
             attributeValueName.add(skuAttributeAndValue.getValue());
+            if (skuAttributeAndValue.getLabel()== null && skuAttributeAndValue.getLabel().replace(" ","").length()==0){
+                throw new ServiceException(500,"规格名称不可为空或空格");
+            }
+            if (skuAttributeAndValue.getValue()== null && skuAttributeAndValue.getValue().replace(" ","").length()==0){
+                throw new ServiceException(500,"规格值不可为空或空格");
+            }
         }
-        List<ItemAttribute> attributes = attributeName.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getCategoryId, categoryId)).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
+        List<ItemAttribute> attributes = attributeName.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getCategoryId, categoryId)).and(i -> i.isNotNull(ItemAttribute::getAttribute)).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
         for (ItemAttribute attribute : attributes) {
             attributeId.add(attribute.getAttributeId());
         }
-        List<AttributeValues> attributeValues = attributeId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attributeId).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
+        List<AttributeValues> attributeValues = attributeId.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, attributeId).and(i -> i.isNotNull(AttributeValues::getAttributeValues)).and(i -> i.eq(AttributeValues::getDisplay, 1)).list();
         List<AttributeValues> list = new ArrayList<>();
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             if (ToolUtil.isNotEmpty(skuAttributeAndValue)) {
