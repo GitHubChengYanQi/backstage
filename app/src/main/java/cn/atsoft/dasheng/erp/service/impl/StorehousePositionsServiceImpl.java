@@ -91,7 +91,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
             }
         }
-        Integer count = this.query().eq("name", param.getName()).eq("display", 1).count();
+
+        Integer count = this.query().eq("name", param.getName()).eq("pid",param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -158,6 +159,20 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             updateChildren(storehousePositions.getStorehousePositionsId());
         }
     }
+
+    //判断当前库位是否为最下级
+    @Override
+    public Long judgePosition(Long positionId) {
+        if (ToolUtil.isEmpty(positionId)) {
+            throw new ServiceException(500, "库位 IS NULL");
+        }
+        StorehousePositions positions = this.query().eq("pid", positionId).one();
+        if (ToolUtil.isNotEmpty(positions)) {
+            throw new ServiceException(500, "当前库位不是最下级");
+        }
+        return positionId;
+    }
+
 
     @Override
     public void delete(StorehousePositionsParam param) {

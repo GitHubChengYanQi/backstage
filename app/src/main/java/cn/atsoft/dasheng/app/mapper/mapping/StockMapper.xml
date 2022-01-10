@@ -95,7 +95,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_stock where display = 1 and inventory != 0
+        from daoxin_erp_stock where display = 1
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
         </if>
@@ -113,13 +113,14 @@
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))
         </if>
 
+
     </select>
 
     <select id="customPageList" resultType="cn.atsoft.dasheng.app.model.result.StockResult"
             parameterType="cn.atsoft.dasheng.app.model.params.StockParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_stock where display = 1 and inventory != 0
+        from daoxin_erp_stock where display = 1
         <if test="paramCondition.itemId != null">
             and item_id = #{paramCondition.itemId}
         </if>
@@ -132,5 +133,13 @@
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
+        <choose>
+            <when test="paramCondition.stockNumber==null">
+                and inventory != 0
+            </when>
+            <otherwise>
+                and inventory &gt;= stockNumber
+            </otherwise>
+        </choose>
     </select>
 </mapper>

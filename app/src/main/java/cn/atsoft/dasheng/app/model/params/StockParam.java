@@ -26,6 +26,7 @@ public class StockParam implements Serializable, BaseValidatingParam {
     private String  iname;
     private  String pname;
     private  String bname;
+    private Long stockNumber;
 
     /**
      * skuId
