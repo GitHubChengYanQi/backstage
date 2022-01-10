@@ -520,15 +520,19 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         List<Spu> spus = spuIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_id", spuIds).list();
         List<Long> unitIds = new ArrayList<>();
+        List<Long> spuClassId = new ArrayList<>();
         Map<Long, UnitResult> unitMaps = new HashMap<>();
+        Map<Long, SpuClassificationResult> spuClassificationMap = new HashMap<>();
 
         for (Spu spu : spus) {
             if (ToolUtil.isNotEmpty(spu.getUnitId())) {
                 unitIds.add(spu.getUnitId());
+                spuClassId.add(spu.getSpuClassificationId());
             }
         }
 
         List<Unit> units = unitIds.size() == 0 ? new ArrayList<>() : unitService.query().in("unit_id", unitIds).list();
+        List<SpuClassification> spuClassifications = spuClassId.size() == 0 ? new ArrayList<>() : spuClassificationService.query().in("spuClassificationId", spuClassId).list();
 
         for (Spu spu : spus) {
             if (ToolUtil.isNotEmpty(units)) {
@@ -537,6 +541,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                         UnitResult unitResult = new UnitResult();
                         ToolUtil.copyProperties(unit, unitResult);
                         unitMaps.put(spu.getSpuId(), unitResult);
+                    }
+                }
+                for (SpuClassification spuClassification : spuClassifications) {
+                    if (spu.getSpuClassificationId() != null && spu.getSpuClassificationId().equals(spuClassification.getSpuClassificationId())) {
+                        SpuClassificationResult classification = new SpuClassificationResult();
+                        ToolUtil.copyProperties(spuClassification, classification);
+                        spuClassificationMap.put(spu.getSpuId(), classification);
                     }
                 }
             }
@@ -550,8 +561,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                         SpuResult spuResult = new SpuResult();
                         ToolUtil.copyProperties(spu, spuResult);
                         UnitResult unitResult = unitMaps.get(spu.getSpuId());
+                        SpuClassificationResult spuClassificationResult = spuClassificationMap.get(spu.getSpuId());
                         if (ToolUtil.isNotEmpty(unitResult)) {
                             spuResult.setUnitResult(unitResult);
+                        }
+                        if (ToolUtil.isNotEmpty(spuClassificationResult)) {
+                            spuResult.setSpuClassificationResult(spuClassificationResult);
                         }
                         skuResult.setSpuResult(spuResult);
                         break;
