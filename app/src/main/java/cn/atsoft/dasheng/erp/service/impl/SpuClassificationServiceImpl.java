@@ -50,7 +50,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @Transactional
     public Long add(SpuClassificationParam param) {
-        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).count();
+        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).and(i->i.eq(SpuClassification::getType,1)).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
