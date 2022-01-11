@@ -133,11 +133,19 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<StorehousePositionsResult> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
+    public  List<StorehousePositions> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
-        return this.storehousePositionsService.findPageBySpec(storehousePositionsParam);
+        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("display", 1);
+        queryWrapper.orderByAsc("sort");
+        if (ToolUtil.isNotEmpty(storehousePositionsParam.getStorehouseId())) {
+            queryWrapper.in("storehouse_id", storehousePositionsParam.getStorehouseId());
+        }
+        List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
+
+        return storehousePositionsList;
     }
 
     /**
