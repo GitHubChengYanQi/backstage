@@ -88,7 +88,15 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 throw new ServiceException(500, "请选择分类！");
             }
         }
-
+        /**
+         * 判断成品码是否重复
+         */
+        int count = skuService.count(new QueryWrapper<Sku>() {{
+            eq("standard", param.getStandard());
+        }});
+        if (count>0){
+            throw  new ServiceException(500,"编码/成品码重复");
+        }
         /**
          * type=1 是整机添加
          */
