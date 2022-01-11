@@ -65,6 +65,7 @@ public class SkuExcelController {
      */
     @RequestMapping("/importSku")
     @ResponseBody
+    @Transactional
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
@@ -164,7 +165,7 @@ public class SkuExcelController {
             Spu spu = spuService.query().eq("name", skuExcelItem.get型号()).one();
             if (ToolUtil.isNotEmpty(spu)) {
                 sku.setSpuId(spu.getSpuId());
-                spu.setSpuClassificationId(classId);
+                spu.setSpuClassificationId(itemId);
                 spuService.updateById(spu);
                 spuId = spu.getSpuId();
             } else {
