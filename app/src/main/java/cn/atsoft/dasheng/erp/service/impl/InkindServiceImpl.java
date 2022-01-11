@@ -177,6 +177,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrandResult(null);
         return inkindResult;
     }
+    public List<InkindResult> inkindDetails(InkindParam param){
+        
+    }
 
     private void returnPrintTemplate(InkindResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
