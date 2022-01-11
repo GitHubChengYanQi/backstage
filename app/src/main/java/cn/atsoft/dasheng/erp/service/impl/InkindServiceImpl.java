@@ -117,6 +117,32 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return inkindResult;
     }
 
+//    @Override
+//    public List<InkindResult> details (InkindParam param){
+//        param.getInkindIds();
+//        param.getSkuIds();
+//        List<Inkind> inkinds = this.lambdaQuery().in(Inkind::getInkindId, param.getInkindIds()).list();
+//        List<Sku> skus = this.skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
+//        List<InkindParam> inkindParams = new ArrayList<>();
+//        for (Inkind inkind : inkinds) {
+//            InkindParam inkindParam = new InkindParam();
+//            for (Sku sku : skus) {
+//                if (inkind.getSkuId().equals(sku.getSkuId())){
+//                    ToolUtil.copyProperties(inkind,inkindParam);
+//                    inkindParams.add(inkindParam);
+//                }
+//            }
+//        }
+//        List<InkindResult> inkindResults = new ArrayList<>();
+//        for (InkindParam inkindParam : inkindParams) {
+//            InkindResult inkindResult = this.inkindDetail(inkindParam);
+//            inkindResults.add(inkindResult);
+//        }
+//
+//        return inkindResults;
+//
+//    }
+
     @Override
     public List<InkindResult> getInKinds(List<Long> inKindIds) {
         if (ToolUtil.isEmpty(inKindIds)) {
@@ -157,31 +183,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
 
         return inKindResults;
     }
-    @Override
-    public List<InkindResult> details (InkindParam param){
-        param.getInkindIds();
-        param.getSkuIds();
-        List<Inkind> inkinds = this.lambdaQuery().in(Inkind::getInkindId, param.getInkindIds()).list();
-        List<Sku> skus = this.skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
-        List<InkindParam> inkindParams = new ArrayList<>();
-        for (Inkind inkind : inkinds) {
-            InkindParam inkindParam = new InkindParam();
-            for (Sku sku : skus) {
-                if (inkind.getSkuId().equals(sku.getSkuId())){
-                    ToolUtil.copyProperties(inkind,inkindParam);
-                    inkindParams.add(inkindParam);
-                }
-            }
-        }
-        List<InkindResult> inkindResults = new ArrayList<>();
-        for (InkindParam inkindParam : inkindParams) {
-            InkindResult inkindResult = this.inkindDetail(inkindParam);
-            inkindResults.add(inkindResult);
-        }
 
-        return inkindResults;
-
-    }
     @Override
     public InkindResult inkindDetail(InkindParam param) {
         Inkind inkind = this.getById(param.getInkindId());
@@ -201,7 +203,50 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         inkindResult.setBrandResult(null);
         return inkindResult;
     }
+    public List<InkindResult> details(InkindParam param){
+        /**
+         * 查询出实物（inkind) 然后查出对应物料（sku）, 品牌
+         */
+        List<InkindResult> inkindResults = new ArrayList<>();
+        List<Inkind> inkinds = this.lambdaQuery().in(Inkind::getInkindId, param.getInkindIds()).list();
 
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (Inkind inKind : inkinds) {
+            skuIds.add(inKind.getSkuId());
+            brandIds.add(inKind.getBrandId());
+        }
+
+        //查询sku
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        //查询品牌
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        //循环匹配sku
+        for (Inkind inkind : inkinds) {
+            InkindResult inkindResult = new InkindResult();
+            ToolUtil.copyProperties(inkind, inkindResult);
+            for (SkuResult skuResult : skuResults) {
+                if (inkindResult.getSkuId().equals(skuResult.getSkuId())) {
+                    inkindResult.setSkuResult(skuResult);
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(inkind.getBrandId())) {
+                    inkindResult.setBrandResult(brandResult);
+                }
+            }
+            inkindResults.add(inkindResult);
+        }
+
+        for (InkindResult inkindResult : inkindResults) {
+            this.returnPrintTemplate(inkindResult);
+        }
+
+
+        return inkindResults;
+    }
     private void returnPrintTemplate(InkindResult param) {
         PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
             eq("type", PHYSICALDETAIL);
@@ -219,13 +264,14 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             templete = templete.replace("${coding}", substring);
         }
         if (templete.contains("${skuCoding}")) {
-            Sku sku = ToolUtil.isEmpty(param.getSkuId()) ? new Sku() : skuService.getById(param.getSkuId());
-            if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getCoding())) {
-                templete = templete.replace("${skuCoding}", sku.getCoding());
-            } else if (ToolUtil.isNotEmpty(sku) && ToolUtil.isEmpty(sku.getCoding()) && ToolUtil.isEmpty(sku.getStandard())) {
+//            Sku sku = ToolUtil.isEmpty(param.getSkuId()) ? new Sku() : skuService.getById(param.getSkuId());
+            SkuResult skuResult = param.getSkuResult();
+            if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getCoding())) {
+                templete = templete.replace("${skuCoding}", skuResult.getCoding());
+            } else if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isEmpty(skuResult.getCoding()) && ToolUtil.isEmpty(skuResult.getStandard())) {
                 templete = templete.replace("${skuCoding}", "无");
-            } else if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getStandard())) {
-                templete = templete.replace("${skuCoding}", sku.getStandard());
+            } else if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getStandard())) {
+                templete = templete.replace("${skuCoding}", skuResult.getStandard());
             }
         }
         if (templete.contains("${name}")) {
