@@ -198,12 +198,22 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         ToolUtil.copyProperties(inkind, inkindResult);
         inkindResult.setSkuResult(skuResult);
         inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
-        this.returnPrintTemplate(inkindResult);
+        //打印查询打印模板
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", PHYSICALDETAIL);
+        }});
+        if (ToolUtil.isNotEmpty(printTemplate)) {
+            this.returnPrintTemplate(inkindResult, printTemplate);
+        }
         inkindResult.setSkuResult(null);
         inkindResult.setBrandResult(null);
         return inkindResult;
     }
     public List<InkindResult> details(InkindParam param){
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", PHYSICALDETAIL);
+        }});
+
         /**
          * 查询出实物（inkind) 然后查出对应物料（sku）, 品牌
          */
@@ -240,18 +250,19 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             inkindResults.add(inkindResult);
         }
 
-        for (InkindResult inkindResult : inkindResults) {
-            this.returnPrintTemplate(inkindResult);
+        //查询不到模板 不执行返回打印模板操作
+        if (ToolUtil.isEmpty(printTemplate)){
+            for (InkindResult inkindResult : inkindResults) {
+                this.returnPrintTemplate(inkindResult,printTemplate);
+                inkindResult.setSkuResult(null);
+                inkindResult.setBrandResult(null);
+            }
         }
-
 
         return inkindResults;
     }
-    private void returnPrintTemplate(InkindResult param) {
-        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
-            eq("type", PHYSICALDETAIL);
-        }});
-        param.getInkindId();
+    private void returnPrintTemplate(InkindResult param,PrintTemplate printTemplate) {
+
         if (ToolUtil.isEmpty(printTemplate)) {
             throw new ServiceException(500, "请先定义二维码模板");
         }

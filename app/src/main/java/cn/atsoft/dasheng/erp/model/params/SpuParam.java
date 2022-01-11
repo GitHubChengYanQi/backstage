@@ -31,6 +31,8 @@ public class SpuParam extends AbstractDictMap implements Serializable, BaseValid
     private static final long serialVersionUID = 1L;
     private SpuRequest spuAttributes;
     private Long spuStandard;
+    private Long spuClass;
+    private SpuClassificationParam spuClassification;
 //    private List<ItemAttributeParam> spuAttributes;
 
     /**

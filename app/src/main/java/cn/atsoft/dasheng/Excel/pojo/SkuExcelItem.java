@@ -10,13 +10,13 @@ import java.util.List;
 public class SkuExcelItem {
 
 
-    private String 编码;
+    private String 成品码;
 
 
     private String 分类;
 
 
-    private String 物料名称;
+    private String 产品;
 
 
     private String 型号;
