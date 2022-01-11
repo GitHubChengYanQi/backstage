@@ -94,8 +94,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         int count = skuService.count(new QueryWrapper<Sku>() {{
             eq("standard", param.getStandard());
         }});
-        if (count>0){
-            throw  new ServiceException(500,"编码/成品码重复");
+        if (count > 0) {
+            throw new ServiceException(500, "编码/成品码重复");
         }
         /**
          * type=1 是整机添加
@@ -294,6 +294,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
+
     @Transactional
     public List<AttributeValues> addAttributeAndValue(List<SkuAttributeAndValue> param, Long categoryId) {
         List<String> attributeName = new ArrayList<>();
@@ -302,11 +303,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         for (SkuAttributeAndValue skuAttributeAndValue : param) {
             attributeName.add(skuAttributeAndValue.getLabel());
             attributeValueName.add(skuAttributeAndValue.getValue());
-            if (ToolUtil.isEmpty(skuAttributeAndValue.getLabel()) || skuAttributeAndValue.getLabel().replace(" ","").length()==0){
-                throw new ServiceException(500,"规格名称不可为空或空格");
+            if (ToolUtil.isEmpty(skuAttributeAndValue.getLabel()) || skuAttributeAndValue.getLabel().replace(" ", "").length() == 0) {
+                throw new ServiceException(500, "规格名称不可为空或空格");
             }
-            if (ToolUtil.isEmpty(skuAttributeAndValue.getValue()) || skuAttributeAndValue.getValue().replace(" ","").length()==0){
-                throw new ServiceException(500,"规格值不可为空或空格");
+            if (ToolUtil.isEmpty(skuAttributeAndValue.getValue()) || skuAttributeAndValue.getValue().replace(" ", "").length() == 0) {
+                throw new ServiceException(500, "规格值不可为空或空格");
             }
         }
         List<ItemAttribute> attributes = attributeName.size() == 0 ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getAttribute, attributeName).and(i -> i.eq(ItemAttribute::getCategoryId, categoryId)).and(i -> i.isNotNull(ItemAttribute::getAttribute)).and(i -> i.eq(ItemAttribute::getDisplay, 1)).list();
@@ -670,10 +671,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         SkuResult skuResult = new SkuResult();
         ToolUtil.copyProperties(sku, skuResult);
 
-
-        Spu spu = spuService.getById(skuResult.getSpuId());
-        SpuResult spuResult = new SpuResult();
-        ToolUtil.copyProperties(spu, spuResult);
+        SpuResult spuResult = this.backSpu(sku.getSkuId());
         skuResult.setSpuResult(spuResult);
 
         JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
@@ -684,7 +682,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             attIds.add(valuesRequest.getAttributeId());
             valueIds.add(valuesRequest.getAttributeValuesId());
         }
-        List<ItemAttribute> itemAttributes = attIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attIds).eq("display", 1).eq("category_id", spu.getCategoryId()).list();
+        List<ItemAttribute> itemAttributes = attIds.size() == 0 ? new ArrayList<>() : itemAttributeService.query().in("attribute_id", attIds).eq("display", 1).eq("category_id", spuResult.getCategoryId()).list();
         List<AttributeValues> valuesList = valueIds.size() == 0 ? new ArrayList<>() : attributeValuesService.query().in("attribute_values_id", valueIds).eq("display", 1).list();
         List<AttributeValuesResult> valuesResults = new ArrayList<>();
 
@@ -845,6 +843,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             Spu spu = spuService.query().eq("spu_id", sku.getSpuId()).one();
             SpuResult spuResult = new SpuResult();
             if (ToolUtil.isNotEmpty(spu)) {
+                SpuClassificationResult spuClassificationResult = new SpuClassificationResult();
+                SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
+                ToolUtil.copyProperties(spuClassification, spuClassificationResult);
+                spuResult.setSpuClassificationResult(spuClassificationResult);
                 ToolUtil.copyProperties(spu, spuResult);
             }
             return spuResult;
