@@ -205,6 +205,7 @@ public class StorehousePositionsController extends BaseController {
             treeNode.setValue(Convert.toStr(item.get("storehouse_positions_id")));
             treeNode.setTitle(Convert.toStr(item.get("name")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
+            treeNode.setSort(Convert.toStr(item.get("sort")));
             treeViewNodes.add(treeNode);
         }
         //构建树

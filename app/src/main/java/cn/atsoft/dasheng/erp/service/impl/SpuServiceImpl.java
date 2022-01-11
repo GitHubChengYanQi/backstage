@@ -88,12 +88,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         if (count > 0) {
             throw new ServiceException(500, "产品名称重复,请更换");
         }
-//        if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-//            String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
-//            entity.setAttribute(toJSONString);
-//        } else {
-//            throw new ServiceException(500, "请配置属性！");
-//        }
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+            String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
+            entity.setAttribute(toJSONString);
+        } else {
+            throw new ServiceException(500, "请配置属性！");
+        }
 
         /**
          * 绑定产品

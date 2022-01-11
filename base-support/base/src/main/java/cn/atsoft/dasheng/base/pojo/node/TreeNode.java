@@ -45,8 +45,8 @@ public class TreeNode implements Tree {
     private String parentId;
 
     /**
-    * 节点名称
-    */
+     * 节点名称
+     */
     @ApiModelProperty("Tree组件名称")
     private String title;
 
@@ -56,6 +56,8 @@ public class TreeNode implements Tree {
     @ApiModelProperty("Tree组件子集")
     private List<TreeNode> children;
 
+    @ApiModelProperty("排序")
+    private String sort;
 
     /**
      * 创建tree的父级节点
@@ -82,7 +84,7 @@ public class TreeNode implements Tree {
     @Override
     public String getNodeParentId() {
 
-        if(null==parentId){
+        if (null == parentId) {
             return "-1";
         }
         return parentId;
