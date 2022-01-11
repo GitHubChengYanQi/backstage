@@ -100,7 +100,7 @@ public class InkindController extends BaseController {
     @RequestMapping(value = "/details", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<List<InkindResult>> details(@RequestBody InkindParam inkindParam) {
-        List<InkindResult> inkindResults = this.inkindService.inkindDetails(inkindParam);
+        List<InkindResult> inkindResults = this.inkindService.details(inkindParam);
         return ResponseData.success(inkindResults);
     }
 
