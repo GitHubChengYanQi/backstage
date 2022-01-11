@@ -5,30 +5,19 @@ import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
-import cn.atsoft.dasheng.erp.model.params.QualityPlanDetailParam;
-import cn.atsoft.dasheng.erp.model.params.SkuJson;
 import cn.atsoft.dasheng.erp.model.params.SkuParam;
-import cn.atsoft.dasheng.erp.model.params.SpuParam;
-import cn.atsoft.dasheng.erp.model.result.AttributeValuesResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SkuSelectWrapper;
-import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,10 +32,7 @@ import java.util.Map;
 @RequestMapping("/sku")
 @Api(tags = "sku表")
 public class SkuController extends BaseController {
-    @Autowired
-    private ItemAttributeService itemAttributeService;
-    @Autowired
-    private AttributeValuesService attributeValuesService;
+
     @Autowired
     private SkuService skuService;
     @Autowired
@@ -136,22 +122,12 @@ public class SkuController extends BaseController {
             QualityPlan plan = qualityPlanService.getById(sku.getQualityPlanId());
             sku.setQualityPlan(plan);
         }
-//        for (SkuJson skuJson : sku.getSkuJsons()) {
-//            skuJson.getAttribute();
-//        }
         User user = userService.getById(sku.getCreateUser());
         sku.setCreateUserName(user.getName());
 
         return ResponseData.success(sku);
     }
 
-    @RequestMapping(value = "/detail1", method = RequestMethod.POST)
-    @ApiOperation("详情1")
-    public ResponseData<SkuResult> detail1(@RequestBody SkuParam skuParam) {
-
-
-        return ResponseData.success();
-    }
 
     /**
      * 查询列表

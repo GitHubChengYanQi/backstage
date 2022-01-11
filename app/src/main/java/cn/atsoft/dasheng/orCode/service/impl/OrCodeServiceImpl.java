@@ -28,6 +28,7 @@ import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
+import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -1029,10 +1030,38 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
     @Override
-    public List<Long> codeIdList(String codeId) {
-        List<Long> qrCodeList = this.baseMapper.qrCodeList(codeId);
-        return qrCodeList;
+    public List<AutomaticBindResult> batchAutomaticBinding(BatchAutomatic batchAutomatic) {
+        List<AutomaticBindResult> bindResults = new ArrayList<>();
+
+        for (BackCodeRequest codeRequest : batchAutomatic.getCodeRequests()) {
+            OrCode orCode = new OrCode();
+            orCode.setType(codeRequest.getSource());
+            orCode.setState(1);
+            this.save(orCode);
+            //新建绑定实物
+            InkindParam inkindParam = new InkindParam();
+            inkindParam.setSkuId(codeRequest.getId());
+            inkindParam.setType("0");
+            inkindParam.setNumber(codeRequest.getNumber());
+            inkindParam.setBrandId(codeRequest.getBrandId());
+            inkindParam.setSource(codeRequest.getInkindType());
+            inkindParam.setSourceId(codeRequest.getSourceId());
+            Long formId = inkindService.add(inkindParam);
+            //二维码绑定关联
+            OrCodeBindParam bindParam = new OrCodeBindParam();
+            bindParam.setOrCodeId(orCode.getOrCodeId());
+            bindParam.setFormId(formId);
+            bindParam.setSource(codeRequest.getSource());
+            orCodeBindService.add(bindParam);
+
+            AutomaticBindResult automaticBindResult = new AutomaticBindResult();
+            automaticBindResult.setCodeId(orCode.getOrCodeId());
+            automaticBindResult.setInkindId(formId);
+            bindResults.add(automaticBindResult);
+        }
+        return bindResults;
     }
+
 
     /**
      * 更新仓库数量

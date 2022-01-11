@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
+import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 import java.util.Map;
@@ -184,12 +185,13 @@ public interface OrCodeService extends IService<OrCode> {
     AutomaticBindResult automaticBinding(BackCodeRequest codeRequest);
 
     /**
-     * 查询二维码
-     *
-     * @param codeId
+     * 批量自动生成二维码绑定
+     * @param batchAutomatic
      * @return
      */
-    List<Long> codeIdList(String codeId);
+    List<AutomaticBindResult> batchAutomaticBinding(BatchAutomatic batchAutomatic);
+
+
 
 
 }

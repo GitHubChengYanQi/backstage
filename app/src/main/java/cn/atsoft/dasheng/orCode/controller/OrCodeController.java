@@ -27,6 +27,7 @@ import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
+import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
@@ -123,18 +124,13 @@ public class OrCodeController extends BaseController {
 
 
     /**
-     * 模糊查询二维码
-     *
-     * @author song
-     * @Date 2021-10-29
+     * 批量自动生成二维码绑定
      */
-    @RequestMapping(value = "/codeIdList", method = RequestMethod.GET)
-    @ApiOperation("新增")
-    public ResponseData codeIdList(@Param("codeId") String codeId) {
-        List<Long> longList = this.orCodeService.codeIdList(codeId);
-        return ResponseData.success(longList);
+    @RequestMapping(value = "/batchAutomaticBinding", method = RequestMethod.POST)
+    public ResponseData batchAutomaticBinding(@RequestBody BatchAutomatic batchAutomatic) {
+        List<AutomaticBindResult> bindResults = this.orCodeService.batchAutomaticBinding(batchAutomatic);
+        return ResponseData.success(bindResults);
     }
-
 
     /**
      * 扫码入库
@@ -240,7 +236,10 @@ public class OrCodeController extends BaseController {
      */
     @RequestMapping(value = "/backObject", method = RequestMethod.GET)
     @Transactional
-    public ResponseData backObject(@RequestParam Long id) {
+    public ResponseData backObject(@Param("id") Long id) {
+        if (ToolUtil.isEmpty(id)) {
+            throw new ServiceException(500, "未提交参数");
+        }
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {
             OrCode orCode = orCodeService.getById(id);
