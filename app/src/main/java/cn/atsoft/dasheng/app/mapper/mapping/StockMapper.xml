@@ -138,7 +138,7 @@
                 and inventory != 0
             </when>
             <otherwise>
-                and inventory &gt;= stockNumber
+                and inventory &gt;= #{paramCondition.stockNumber}
             </otherwise>
         </choose>
     </select>
