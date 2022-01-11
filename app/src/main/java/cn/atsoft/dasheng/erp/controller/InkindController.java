@@ -90,6 +90,20 @@ public class InkindController extends BaseController {
         return ResponseData.success(result);
     }
 
+
+    /**
+     * 查看详情接口
+     *
+     * @author song
+     * @Date 2021-11-01
+     */
+    @RequestMapping(value = "/details", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<List<InkindResult>> details(@RequestBody InkindParam inkindParam) {
+        List<InkindResult> inkindResults = this.inkindService.inkindDetails(inkindParam);
+        return ResponseData.success(inkindResults);
+    }
+
     /**
      * 查询列表
      *

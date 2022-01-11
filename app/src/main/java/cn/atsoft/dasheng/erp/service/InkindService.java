@@ -75,5 +75,7 @@ public interface InkindService extends IService<Inkind> {
 
     InkindResult inkindDetail(InkindParam param);
 
+    List<InkindResult> inkindDetails(InkindParam param);
+
     InkindResult getInkindResult(Long id);
 }
