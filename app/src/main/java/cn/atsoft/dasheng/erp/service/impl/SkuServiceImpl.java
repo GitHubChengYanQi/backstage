@@ -100,7 +100,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             CodingRules codingRules = codingRulesService.query().eq("coding_rules_id", param.getStandard()).one();
             if (ToolUtil.isNotEmpty(codingRules)) {
                 String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
-                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
+//                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
+                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
                 if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getCodingClass()) && classification.getDisplay() != 0) {
                     String replace = backCoding.replace("${skuClass}", classification.getCodingClass());
                     param.setStandard(replace);
@@ -131,29 +132,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * 查询产品，添加产品 在上方spu查询
              */
-            Long spuId = param.getSpu().getSpuId();
-            Spu spuEntity = new Spu();
-            spuEntity.setUnitId(param.getUnitId());
-            if (ToolUtil.isEmpty(spuId)) {
-                if (ToolUtil.isNotEmpty(spu)) {
-                    spuId = spu.getSpuId();
+            Long spuId = this.getOrSaveSpu(param, spu, spuClassificationId, categoryId);
 
-                } else {
-                    spuEntity.setName(param.getSpu().getName());
-                    spuEntity.setSpuClassificationId(spuClassificationId);
-                    spuEntity.setCategoryId(categoryId);
-                    spuEntity.setType(0);
-                    spuService.save(spuEntity);
-                    spuId = spuEntity.getSpuId();
-                }
-            } else {
-                /**
-                 * TODO 疑问  为什么要 更新
-                 * 因为会涉及到spu单位的修改
-                 */
-                spuEntity.setSpuId(spuId);
-                spuService.updateById(spuEntity);
-            }
 
             /**
              * 查询属性，添加属性
@@ -290,7 +270,32 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
+    private Long getOrSaveSpu (SkuParam param,Spu spu,Long spuClassificationId,Long categoryId){
+        Long spuId = param.getSpu().getSpuId();
+        Spu spuEntity = new Spu();
+        spuEntity.setUnitId(param.getUnitId());
+        if (ToolUtil.isEmpty(spuId)) {
+            if (ToolUtil.isNotEmpty(spu)) {
+                spuId = spu.getSpuId();
 
+            } else {
+                spuEntity.setName(param.getSpu().getName());
+                spuEntity.setSpuClassificationId(spuClassificationId);
+                spuEntity.setCategoryId(categoryId);
+                spuEntity.setType(0);
+                spuService.save(spuEntity);
+                spuId = spuEntity.getSpuId();
+            }
+        } else {
+            /**
+             * TODO 疑问  为什么要 更新
+             * 因为会涉及到spu单位的修改
+             */
+            spuEntity.setSpuId(spuId);
+            spuService.updateById(spuEntity);
+        }
+        return spuId;
+    }
     /**
      * 查询产品 新建或返回已有产品id
      *
@@ -473,23 +478,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
-        String json = JSON.toJSONString(list);
-        Long spuClassificationId = 0L;
-        if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())) {
-            spuClassificationId = param.getSpuClassification().getSpuClassificationId();
-        } else if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getName())) {
-            SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
-            if (ToolUtil.isEmpty(spuClassification)) {
-                SpuClassification spuClassificationEntity = new SpuClassification();
-                spuClassificationEntity.setName(param.getSpuClassification().getName());
-                spuClassificationEntity.setType(2L);
-                spuClassificationEntity.setPid(param.getSpuClass());
-                spuClassificationService.save(spuClassificationEntity);
-                spuClassificationId = spuClassificationEntity.getSpuClassificationId();
-            } else {
-                spuClassificationId = spuClassification.getSpuClassificationId();
-            }
-        }
+
+        Long spuClassificationId = this.getOrSaveSpuClass(param);
 
         Spu spuEntity = new Spu();
         spuEntity.setSpuClassificationId(param.getSpuClassificationId());
@@ -497,8 +487,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         spuEntity.setSpuClassificationId(spuClassificationId);
         spuEntity.setSpuId(param.getSpuId());
         spuService.updateById(spuEntity);
-
-
+        String json = JSON.toJSONString(list);
+        newEntity.setSkuValue(json);
+        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
+        newEntity.setSkuValueMd5(md5);
         this.updateById(newEntity);
 
 
