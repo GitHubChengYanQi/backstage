@@ -135,9 +135,12 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     @Permission
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CustomerParam customerParam) {
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
-        queryWrapper.in("display", 1);
+        queryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(customerParam.getSupply())){
+            queryWrapper.eq("supply",customerParam.getSupply());
+        }
         List<Map<String, Object>> list = this.customerService.listMaps(queryWrapper);
         CustomerSelectWrapper customerSelectWrapper = new CustomerSelectWrapper(list);
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
