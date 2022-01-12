@@ -251,7 +251,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         }
 
         //查询不到模板 不执行返回打印模板操作
-        if (ToolUtil.isEmpty(printTemplate)){
+        if (ToolUtil.isNotEmpty(printTemplate)){
             for (InkindResult inkindResult : inkindResults) {
                 this.returnPrintTemplate(inkindResult,printTemplate);
                 inkindResult.setSkuResult(null);
