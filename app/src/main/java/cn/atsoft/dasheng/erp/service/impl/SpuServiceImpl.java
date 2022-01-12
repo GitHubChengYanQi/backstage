@@ -98,18 +98,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         /**
          * 绑定产品
          */
-        Long spuClassificationId = 0L;
-        SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
-        if (ToolUtil.isEmpty(spuClassification)) {
-            SpuClassification spuClassificationEntity = new SpuClassification();
-            spuClassificationEntity.setName(param.getSpuClassification().getName());
-            spuClassificationEntity.setType(2L);
-            spuClassificationEntity.setPid(param.getSpuClass());
-            spuClassificationService.save(spuClassificationEntity);
-            spuClassificationId = spuClassificationEntity.getSpuClassificationId();
-        } else {
-            spuClassificationId = spuClassification.getSpuClassificationId();
-        }
+        Long spuClassificationId = this.getSpuClass(param);
         entity.setSpuClassificationId(spuClassificationId);
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
@@ -327,6 +316,16 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         Spu oldEntity = getOldEntity(param);
         Spu newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        Long spuClassificationId = this.getSpuClass(param);
+        newEntity.setSpuClassificationId(spuClassificationId);
+        this.updateById(newEntity);
+    }
+    /**
+     * 查询产品 新建或返回已有产品id
+     * @param param
+     * @return
+     */
+    private Long getSpuClass(SpuParam param){
         Long spuClassificationId = 0L;
         SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
         if (ToolUtil.isEmpty(spuClassification)) {
@@ -339,10 +338,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         } else {
             spuClassificationId = spuClassification.getSpuClassificationId();
         }
-        newEntity.setSpuClassificationId(spuClassificationId);
-        this.updateById(newEntity);
+        return spuClassificationId;
     }
-
     @Override
     public SpuResult findBySpec(SpuParam param) {
         return null;

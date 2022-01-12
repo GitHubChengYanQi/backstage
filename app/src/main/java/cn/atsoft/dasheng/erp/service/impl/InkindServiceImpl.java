@@ -286,7 +286,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             }
         }
         if (templete.contains("${name}")) {
-            templete = templete.replace("${name}", param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
+            String name = param.getSkuResult().getSpuResult().getSpuClassificationResult().getName();
+            templete = templete.replace("${name}", name + "/" + param.getSkuResult().getSpuResult().getName());
         }
         if (templete.contains("${number}")) {
             templete = templete.replace("${number}", param.getNumber().toString());
