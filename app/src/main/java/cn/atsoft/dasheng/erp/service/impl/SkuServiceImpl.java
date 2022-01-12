@@ -124,20 +124,20 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            spuEntity.setType(0);
 //            spuEntity.setUnitId(param.getUnitId());
 //            spuService.save(spuEntity);
-            Long spuClassificationId  =  0L;
+            Long spuClassificationId = 0L;
 
             if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())) {
                 spuClassificationId = param.getSpuClassification().getSpuClassificationId();
-            }else if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getName())){
+            } else if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getName())) {
                 SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
-                if (ToolUtil.isEmpty(spuClassification)){
+                if (ToolUtil.isEmpty(spuClassification)) {
                     SpuClassification spuClassificationEntity = new SpuClassification();
                     spuClassificationEntity.setName(param.getSpuClassification().getName());
                     spuClassificationEntity.setType(2L);
                     spuClassificationEntity.setPid(param.getSpuClass());
                     spuClassificationService.save(spuClassificationEntity);
-                    spuClassificationId =spuClassificationEntity.getSpuClassificationId();
-                }else {
+                    spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+                } else {
                     spuClassificationId = spuClassification.getSpuClassificationId();
                 }
             }
@@ -478,16 +478,16 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         Long spuClassificationId = 0L;
         if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getSpuClassificationId())) {
             spuClassificationId = param.getSpuClassification().getSpuClassificationId();
-        }else if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getName())){
+        } else if (ToolUtil.isNotEmpty(param.getSpuClassification()) && ToolUtil.isNotEmpty(param.getSpuClassification().getName())) {
             SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
-            if (ToolUtil.isEmpty(spuClassification)){
+            if (ToolUtil.isEmpty(spuClassification)) {
                 SpuClassification spuClassificationEntity = new SpuClassification();
                 spuClassificationEntity.setName(param.getSpuClassification().getName());
                 spuClassificationEntity.setType(2L);
                 spuClassificationEntity.setPid(param.getSpuClass());
                 spuClassificationService.save(spuClassificationEntity);
-                spuClassificationId =spuClassificationEntity.getSpuClassificationId();
-            }else {
+                spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+            } else {
                 spuClassificationId = spuClassification.getSpuClassificationId();
             }
         }
@@ -526,7 +526,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuIds = null;
         if (ToolUtil.isNotEmpty(param.getSpuClass())) {
             spuIds = new ArrayList<>();
-            List<Spu> spuList = spuService.query().eq("spu_classification_id", param.getSpuClass()).list();
+            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).list();
+            List<Long> classIds = new ArrayList<>();
+            for (SpuClassification classification : classifications) {
+                classIds.add(classification.getSpuClassificationId());
+            }
+            classIds.add(param.getSpuClass());
+            List<Spu> spuList = spuService.query().in("spu_classification_id", classIds).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }
