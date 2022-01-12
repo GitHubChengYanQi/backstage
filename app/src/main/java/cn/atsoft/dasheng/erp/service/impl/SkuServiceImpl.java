@@ -523,7 +523,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuIds = null;
         if (ToolUtil.isNotEmpty(param.getSpuClass())) {
             spuIds = new ArrayList<>();
-            List<Spu> spuList = spuService.query().eq("spu_classification_id", param.getSpuClass()).list();
+            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).list();
+            List<Long> classIds = new ArrayList<>();
+            for (SpuClassification classification : classifications) {
+                classIds.add(classification.getSpuClassificationId());
+            }
+            classIds.add(param.getSpuClass());
+            List<Spu> spuList = spuService.query().in("spu_classification_id", classIds).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }
