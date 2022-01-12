@@ -293,10 +293,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
     /**
      * 查询产品 新建或返回已有产品id
+     *
      * @param param
      * @return
      */
-    private Long getOrSaveSpuClass(SkuParam param){
+    private Long getOrSaveSpuClass(SkuParam param) {
         Long spuClassificationId = 0L;
         SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
         if (ToolUtil.isEmpty(spuClassification)) {
@@ -311,6 +312,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         return spuClassificationId;
     }
+
     @Transactional
     public List<AttributeValues> addAttributeAndValue(List<SkuAttributeAndValue> param, Long categoryId) {
         List<String> attributeName = new ArrayList<>();
@@ -528,8 +530,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             for (SpuClassification classification : classifications) {
                 classIds.add(classification.getSpuClassificationId());
             }
-            classIds.add(param.getSpuClass());
-            List<Spu> spuList = spuService.query().in("spu_classification_id", classIds).list();
+            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }
