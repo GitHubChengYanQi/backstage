@@ -132,29 +132,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             /**
              * 查询产品，添加产品 在上方spu查询
              */
-            Long spuId = param.getSpu().getSpuId();
-            Spu spuEntity = new Spu();
-            spuEntity.setUnitId(param.getUnitId());
-            if (ToolUtil.isEmpty(spuId)) {
-                if (ToolUtil.isNotEmpty(spu)) {
-                    spuId = spu.getSpuId();
+            Long spuId = this.getOrSaveSpu(param, spu, spuClassificationId, categoryId);
 
-                } else {
-                    spuEntity.setName(param.getSpu().getName());
-                    spuEntity.setSpuClassificationId(spuClassificationId);
-                    spuEntity.setCategoryId(categoryId);
-                    spuEntity.setType(0);
-                    spuService.save(spuEntity);
-                    spuId = spuEntity.getSpuId();
-                }
-            } else {
-                /**
-                 * TODO 疑问  为什么要 更新
-                 * 因为会涉及到spu单位的修改
-                 */
-                spuEntity.setSpuId(spuId);
-                spuService.updateById(spuEntity);
-            }
 
             /**
              * 查询属性，添加属性
@@ -291,7 +270,32 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
+    private Long getOrSaveSpu (SkuParam param,Spu spu,Long spuClassificationId,Long categoryId){
+        Long spuId = param.getSpu().getSpuId();
+        Spu spuEntity = new Spu();
+        spuEntity.setUnitId(param.getUnitId());
+        if (ToolUtil.isEmpty(spuId)) {
+            if (ToolUtil.isNotEmpty(spu)) {
+                spuId = spu.getSpuId();
 
+            } else {
+                spuEntity.setName(param.getSpu().getName());
+                spuEntity.setSpuClassificationId(spuClassificationId);
+                spuEntity.setCategoryId(categoryId);
+                spuEntity.setType(0);
+                spuService.save(spuEntity);
+                spuId = spuEntity.getSpuId();
+            }
+        } else {
+            /**
+             * TODO 疑问  为什么要 更新
+             * 因为会涉及到spu单位的修改
+             */
+            spuEntity.setSpuId(spuId);
+            spuService.updateById(spuEntity);
+        }
+        return spuId;
+    }
     /**
      * 查询产品 新建或返回已有产品id
      *
