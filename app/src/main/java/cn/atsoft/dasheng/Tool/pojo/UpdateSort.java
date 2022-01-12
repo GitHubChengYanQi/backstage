@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class UpdateSort {
+    @NotNull
     private List<SortParam> sortParams;
     @NotNull
     private String type;
