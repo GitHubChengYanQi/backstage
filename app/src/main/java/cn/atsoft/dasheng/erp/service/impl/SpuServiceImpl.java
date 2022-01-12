@@ -84,7 +84,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
         Spu entity = getEntity(param);
         //查询判断是否有相同名称spu
-        Integer count = this.query().eq("name", param.getName()).count();
+        Integer count = this.query().eq("name", param.getName()).eq("display",1).count();
         if (count > 0) {
             throw new ServiceException(500, "产品名称重复,请更换");
         }
@@ -302,7 +302,8 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     public void delete(SpuParam param) {
         param.setDisplay(0);
-        spuService.update(param);
+        Spu entity = this.getEntity(param);
+        spuService.updateById(entity);
     }
 
     @Override
