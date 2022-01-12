@@ -474,7 +474,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         List<AttributeValues> list = this.addAttributeAndValue(param.getSku(), categoryId);
-        String json = JSON.toJSONString(list);
+
         Long spuClassificationId = this.getOrSaveSpuClass(param);
 
         Spu spuEntity = new Spu();
@@ -483,8 +483,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         spuEntity.setSpuClassificationId(spuClassificationId);
         spuEntity.setSpuId(param.getSpuId());
         spuService.updateById(spuEntity);
-
-
+        String json = JSON.toJSONString(list);
+        newEntity.setSkuValue(json);
+        String md5 = SecureUtil.md5(newEntity.getSpuId() + newEntity.getSkuValue());
+        newEntity.setSkuValueMd5(md5);
         this.updateById(newEntity);
 
 
