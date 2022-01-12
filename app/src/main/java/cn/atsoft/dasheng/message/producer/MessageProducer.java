@@ -31,7 +31,9 @@ public class MessageProducer {
         if(ToolUtil.isNotEmpty(messageEntity.getMaxTimes()) && messageEntity.getTimes()<= messageEntity.getMaxTimes()) {
             messageEntity.getCpData().setDescription(messageEntity.getCpData().getDescription());
                     //TODO 测试加入唯一key
-
+            String randomString = ToolUtil.getRandomString(5);
+            String s = messageEntity.getCpData().getDescription() + randomString;
+            logger.info("发送"+messageEntity.getCpData().getDescription());
             rabbitTemplate.convertAndSend(MESSAGE_REAL_EXCHANGE, MESSAGE_REAL_ROUTE, JSON.toJSONString(messageEntity));
 
         }
