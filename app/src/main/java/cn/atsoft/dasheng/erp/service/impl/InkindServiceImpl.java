@@ -251,7 +251,7 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         }
 
         //查询不到模板 不执行返回打印模板操作
-        if (ToolUtil.isEmpty(printTemplate)){
+        if (ToolUtil.isNotEmpty(printTemplate)){
             for (InkindResult inkindResult : inkindResults) {
                 this.returnPrintTemplate(inkindResult,printTemplate);
                 inkindResult.setSkuResult(null);
@@ -286,7 +286,8 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
             }
         }
         if (templete.contains("${name}")) {
-            templete = templete.replace("${name}", param.getSkuResult().getSkuName() + "/" + param.getSkuResult().getSpuResult().getName());
+            String name = param.getSkuResult().getSpuResult().getSpuClassificationResult().getName();
+            templete = templete.replace("${name}", name + "/" + param.getSkuResult().getSpuResult().getName());
         }
         if (templete.contains("${number}")) {
             templete = templete.replace("${number}", param.getNumber().toString());
