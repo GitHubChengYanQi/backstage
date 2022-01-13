@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static cn.atsoft.dasheng.message.config.DirectQueueConfig.$MESSAGE_REAL_QUEUE;
 import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
 
 @Component
@@ -33,7 +34,7 @@ public class TopicMessage {
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
-    @RabbitListener(queues = MESSAGE_REAL_QUEUE)
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + $MESSAGE_REAL_QUEUE)
     public void readMessage(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 //        logger.info(new String(message.getBody()));
@@ -42,7 +43,7 @@ public class TopicMessage {
             case CP:
                 try {
                     wxCpService.getWxCpClient().getMessageService().send(messageEntity.getCpData());
-                    logger.info("接收"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
+                    logger.info("接收" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 } catch (WxErrorException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +59,7 @@ public class TopicMessage {
                 if (ToolUtil.isNotEmpty(messageEntity.getMessage().getSource()) && ToolUtil.isNotEmpty(messageEntity.getMessage().getSourceId())) {
                     messageService.save(messageEntity.getMessage());
                 }
-                logger.info("小铃铛保存"+ JSON.toJSONString(messageEntity.getCpData().getDescription()));
+                logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 break;
             default:
         }
