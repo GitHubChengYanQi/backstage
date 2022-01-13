@@ -48,7 +48,7 @@ public class DirectQueueConfig {
     @Bean
     public Queue messageQueue() {
         logger.info(mqPrefix);
-        logger.info(getMessageDelayRoute());
+        logger.info(getMessageRealQueue());
         return new Queue(getMessageRealQueue());
     }
 

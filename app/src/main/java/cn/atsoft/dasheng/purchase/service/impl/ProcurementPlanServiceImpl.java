@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -67,6 +68,10 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
 
+    @Autowired
+    private ContractService contractService;
+
+
     @Override
     public void add(ProcurementPlanParam param) {
         ProcurementPlan entity = getEntity(param);
@@ -108,7 +113,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ToolUtil.copyProperties(newEntity, oldEntity);
         if (oldEntity.getDisplay().equals(newEntity.getDisplay())) {
             this.updateById(newEntity);
-            if (newEntity.getStatus()==99) {
+            if (newEntity.getStatus() == 99) {
 
             }
         }
