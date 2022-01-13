@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -76,6 +78,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private InvoiceService invoiceService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private SupplierBrandService supplierBrandService;
 
     @Override
     @FreedLog
@@ -123,6 +127,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Brand brand = new Brand();
             brand.setBrandName(param.getCustomerName());
             brandService.save(brand);
+            SupplierBrand supplierBrand = new SupplierBrand();
+            supplierBrand.setBrandId(brand.getBrandId());
+            supplierBrand.setCustomerId(entity.getCustomerId());
+            supplierBrandService.save(supplierBrand);
         }
 
         return entity;
@@ -476,6 +484,26 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         customerResult.setContact(contacts);
         return results.get(0);
     }
+
+    @Override
+    public List<CustomerResult> getResults(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<Customer> customerList = this.listByIds(ids);
+
+        if (ToolUtil.isEmpty(customerList)) {
+            return new ArrayList<>();
+        }
+        List<CustomerResult> results = new ArrayList<>();
+        for (Customer customer : customerList) {
+            CustomerResult customerResult = new CustomerResult();
+            ToolUtil.copyProperties(customer, customerResult);
+            results.add(customerResult);
+        }
+        return results;
+    }
+
 
     /**
      * 按级别获取供应商
