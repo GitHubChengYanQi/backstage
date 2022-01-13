@@ -53,6 +53,20 @@ public class PurchaseQuotationController extends BaseController {
     }
 
     /**
+     * 批量增加
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-22
+     */
+    @RequestMapping(value = "/addbatch", method = RequestMethod.POST)
+    @ApiOperation("批量增加")
+    public ResponseData addbatch(@RequestBody QuotationParam param) {
+        this.purchaseQuotationService.batchAdd(param);
+        return ResponseData.success();
+    }
+
+
+    /**
      * 编辑接口
      *
      * @author Captain_Jazz

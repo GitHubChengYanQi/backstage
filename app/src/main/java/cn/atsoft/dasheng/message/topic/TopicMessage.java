@@ -21,8 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static cn.atsoft.dasheng.message.config.DirectQueueConfig.$MESSAGE_REAL_QUEUE;
+
 import static cn.atsoft.dasheng.message.config.DirectQueueConfig.MESSAGE_REAL_QUEUE;
+
 
 @Component
 public class TopicMessage {
@@ -34,7 +35,7 @@ public class TopicMessage {
 
     protected static final Logger logger = LoggerFactory.getLogger(TopicMessage.class);
 
-    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + $MESSAGE_REAL_QUEUE)
+    @RabbitListener(queues = "${spring.rabbitmq.prefix}" + MESSAGE_REAL_QUEUE)
     public void readMessage(Message message, Channel channel) throws IOException {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 //        logger.info(new String(message.getBody()));
