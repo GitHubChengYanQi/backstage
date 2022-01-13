@@ -20,27 +20,16 @@ public class DirectQueueConfig {
     private static String prefix;
     protected static final Logger logger = LoggerFactory.getLogger(DirectQueueConfig.class);
 
-    @Value("${spring.rabbitmq.prefix}")
-    private String tmpPrefix;
-
-
+    @Value("{spring.rabbitmq.prefix}")
     private static String mqPrefix;
 
     public final static String MESSAGE_REAL_EXCHANGE = mqPrefix + ".message.real.topicExchange";
     public final static String MESSAGE_REAL_ROUTE = mqPrefix + ".message.real.route";
-
-    public final static String $MESSAGE_REAL_QUEUE = ".message.real.topicExchange";
-    public final static String MESSAGE_REAL_QUEUE = mqPrefix + $MESSAGE_REAL_QUEUE;
-
+    public final static String MESSAGE_REAL_QUEUE =   "message.real.topicExchange";
 
     public final static String MESSAGE_DELAY_EXCHANGE = mqPrefix + ".message.delay.topicExchange";
     public final static String MESSAGE_DELAY_ROUTE = mqPrefix + ".message.delay.route";
-    public final static String MESSAGE_DELAY_QUEUE = mqPrefix + ".message.delay.topicExchange";
-
-    @Bean
-    public void init() {
-        mqPrefix = tmpPrefix;
-    }
+    public final static String MESSAGE_DELAY_QUEUE =  "message.delay.topicExchange";
 
     /**
      * 声明队列
@@ -49,11 +38,8 @@ public class DirectQueueConfig {
      */
     @Bean
     public Queue messageQueue() {
-        logger.info(mqPrefix);
-        logger.info(MESSAGE_REAL_QUEUE);
         return new Queue(MESSAGE_REAL_QUEUE);
     }
-
 
     @Bean
     public Queue messageDelayQueue() {
@@ -61,7 +47,7 @@ public class DirectQueueConfig {
         Map<String, Object> argsMap = Maps.newHashMap();
         argsMap.put("x-dead-letter-exchange", MESSAGE_REAL_EXCHANGE); //真正的交换机
         argsMap.put("x-dead-letter-routing-key", MESSAGE_REAL_ROUTE); //真正的路由键
-        return new Queue(tmpPrefix + MESSAGE_DELAY_QUEUE, true, false, false, argsMap);
+        return new Queue(MESSAGE_DELAY_QUEUE, true, false, false, argsMap);
     }
 
     /**
