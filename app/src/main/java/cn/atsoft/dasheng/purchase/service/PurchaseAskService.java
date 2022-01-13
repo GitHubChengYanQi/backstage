@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.pojo.ProcessParam;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
@@ -71,7 +73,8 @@ public interface PurchaseAskService extends IService<PurchaseAsk> {
     /**
      * @param taskId
      */
-    void updateStatus(Long taskId, Integer status);
+//    void updateStatus(Long taskId, Integer status);
+    void updateStatus(ActivitiProcessTask processTask);
 
     void complateAsk(Long processTaskId);
 

@@ -81,6 +81,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private ProcurementPlanService procurementPlanService;
 
+    @Autowired PurchaseAskService purchaseAskService;
+
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
@@ -100,8 +102,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public void audit(Long taskId, Integer status) {
-        //判断采购申请状态
-        askService.updateStatus(taskId, status);
+//        //判断采购申请状态
+//        askService.updateStatus(taskId, status);
         this.auditPerson(taskId, status);
     }
 
@@ -274,7 +276,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "outQuality":
                 break;
             case "purchaseAsk":
-//                purchaseAskService.updateStatus(processTask);
+                purchaseAskService.updateStatus(processTask);
                 break;
         }
     }

@@ -23,6 +23,7 @@ import cn.atsoft.dasheng.purchase.model.result.PurchaseListingResult;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -72,6 +73,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     private ActivitiProcessLogService logService;
     @Autowired
     private CodingRulesService rulesService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     @Transactional
@@ -196,21 +199,15 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     /**
      * 修改采购申请状态
      *
-     * @param taskId
-     * @param status
+//     * @param taskId
+//     * @param status
      */
     @Override
-    public void updateStatus(Long taskId, Integer status) {
-        ActivitiProcessTask task = taskService.getById(taskId);
-        if (task.getType().equals("purchase")) {
-            PurchaseAsk ask = this.getById(task.getFormId());
-            if (ask.getStatus() != 1 && status == 0) {
-                PurchaseAsk purchaseAsk = new PurchaseAsk();
-                purchaseAsk.setStatus(1);
-                this.update(purchaseAsk, new QueryWrapper<PurchaseAsk>() {{
-                    eq("purchase_ask_id", task.getFormId());
-                }});
-            }
+    public void updateStatus(ActivitiProcessTask param) {
+        if (param.getType().equals("purchase")) {
+            PurchaseAsk ask = this.getById(param.getFormId());
+            ask.setStatus(99);
+            this.updateById(ask);
         }
     }
 
