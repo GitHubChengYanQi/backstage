@@ -98,9 +98,11 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
         SpuClassification classification = this.getById(param.getSpuClassificationId());
-        if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getType()) && classification.getType() == 2){
+        SpuClassification pid = this.getById(classification.getPid());
+        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2){
             throw new ServiceException(500,"产品不可以有下级分类");
         }
+        
         if (classification.getPid() == 0) {
             List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
             for (SpuClassification spuClassification : spuClassifications) {
