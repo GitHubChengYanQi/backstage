@@ -34,7 +34,7 @@ public class DirectQueueConfig {
 
 
     public final static String MESSAGE_DELAY_EXCHANGE = mqPrefix + ".message.delay.topicExchange";
-    public final static String MESSAGE_DELAY_ROUTE = mqPrefix + ".message.delay.route";
+    public final static String MESSAGE_DELAY_ROUTE = ".message.delay.route";
     public final static String MESSAGE_DELAY_QUEUE = mqPrefix + ".message.delay.topicExchange";
 
     @Bean
@@ -50,8 +50,8 @@ public class DirectQueueConfig {
     @Bean
     public Queue messageQueue() {
         logger.info(mqPrefix);
-        logger.info(MESSAGE_REAL_QUEUE);
-        return new Queue(MESSAGE_REAL_QUEUE);
+        logger.info(getMessageDelayRoute());
+        return new Queue(getMessageDelayRoute());
     }
 
 
@@ -92,5 +92,9 @@ public class DirectQueueConfig {
     Binding bindingTopicDelayExchange() {
         logger.info("绑定延迟队列");
         return BindingBuilder.bind(messageDelayQueue()).to(topicDelayExchange()).with(MESSAGE_DELAY_ROUTE);
+    }
+
+    public static String getMessageDelayRoute() {
+        return mqPrefix + MESSAGE_DELAY_ROUTE;
     }
 }
