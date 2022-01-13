@@ -85,8 +85,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "此分类下有物品,无法删除");
         } else {
-            param.setDisplay(0);
-            this.update(param);
+            SpuClassification spuClassification = new SpuClassification();
+            spuClassification.setSpuClassificationId(param.getSpuClassificationId());
+            spuClassification.setDisplay(0);
+            this.updateById(spuClassification);
         }
 //        this.removeById(getKey(param));
     }
