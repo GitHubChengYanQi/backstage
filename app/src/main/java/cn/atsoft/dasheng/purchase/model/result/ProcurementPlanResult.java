@@ -27,6 +27,8 @@ public class ProcurementPlanResult implements Serializable {
 
     private ProcurementPlanDetalResult detalResult;
 
+    private List<ProcurementPlanDetalResult> detalResults;
+
 
     private User user;
     /**

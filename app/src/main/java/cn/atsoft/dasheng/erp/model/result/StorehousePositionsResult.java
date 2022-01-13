@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.erp.model.result;
 
+import cn.atsoft.dasheng.app.entity.StockDetails;
+import cn.atsoft.dasheng.app.model.result.StockDetailsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -32,7 +35,9 @@ public class StorehousePositionsResult implements Serializable {
 
     private SkuResult skuResult;
 
+    private PrintTemplateResult printTemplateResult;
 
+    private List<StockDetailsResult> detailsResults;
     /**
      * 仓库库位id
      */
@@ -113,6 +118,12 @@ public class StorehousePositionsResult implements Serializable {
 
     @ApiModelProperty("上级")
     private Long pid;
+
+    /**
+     * 排序
+     */
+    @ApiModelProperty("排序")
+    private Integer sort;
 
     @JSONField(serialize = false)
     @ApiModelProperty("父ID顺序数组")

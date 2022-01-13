@@ -22,11 +22,12 @@
         <result column="coding" property="coding"/>
         <result column="batch" property="batch"/>
         <result column="quality_plan_id" property="qualityPlanId"/>
+        <result column="file_id" property="fileId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">type
-    AS "type",coding AS "coding",quality_plan_id AS "qualityPlanId",
+    AS "type",coding AS "coding",quality_plan_id AS "qualityPlanId",file_id AS "fileId",
         sku_id
         AS "skuId",batch AS "batch", sku_name AS "skuName",remarks AS "remarks",standard AS standard,specifications AS "specifications",is_ban AS "isBan",sku_value_md5 AS "skuValueMd5", spu_id AS "spuId", sku_value AS "skuValue",create_time AS "createTime", create_user AS "createUser", update_time AS "updateTime", update_user AS "updateUser", display AS "display"
     </sql>
@@ -46,6 +47,7 @@
         <if test="paramCondition.spuId != null">
             and spu_id like CONCAT('%',#{paramCondition.spuId},'%')
         </if>
+
     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.erp.model.params.SkuParam">
@@ -76,15 +78,16 @@
             and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') )
+            and (spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1)
+            OR spu_id IN(SELECT spu_id FROM goods_spu WHERE spu_classification_id IN(SELECT spu_classification_id FROM  goods_spu_class WHERE `name`  like CONCAT ('%',#{paramCondition.skuName},'%') AND display = 1) and display = 1))
             UNION
             SELECT
             <include refid="Base_Column_List"/>
-            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%')
+            FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1
             UNION
             select
             <include refid="Base_Column_List"/>
-            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%')
+            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%') and display = 1
         </if>
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}

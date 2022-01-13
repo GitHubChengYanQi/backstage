@@ -2,8 +2,11 @@ package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
+import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -31,6 +34,9 @@ public class ProcurementPlanController extends BaseController {
 
     @Autowired
     private ProcurementPlanService procurementPlanService;
+
+    @Autowired
+    private ProcurementPlanDetalService procurementPlanDetalService;
 
     /**
      * 新增接口
@@ -82,10 +88,22 @@ public class ProcurementPlanController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<ProcurementPlanResult> detail(@RequestBody ProcurementPlanParam procurementPlanParam) {
         ProcurementPlan detail = this.procurementPlanService.getById(procurementPlanParam.getProcurementPlanId());
+        if (ToolUtil.isEmpty(detail)){
+            return null;
+        }
         ProcurementPlanResult result = new ProcurementPlanResult();
         ToolUtil.copyProperties(detail, result);
 
-;
+        List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, detail.getProcurementPlanId()).list();
+        List<ProcurementPlanDetalResult> detalResultList = new ArrayList<>();
+        for (ProcurementPlanDetal procurementPlanDetal : procurementPlanDetals) {
+            ProcurementPlanDetalResult procurementPlanDetalResult = new ProcurementPlanDetalResult();
+            ToolUtil.copyProperties(procurementPlanDetal,procurementPlanDetalResult);
+            detalResultList.add(procurementPlanDetalResult);
+        }
+
+        result.setDetalResults(detalResultList);
+
         return ResponseData.success(result);
     }
 

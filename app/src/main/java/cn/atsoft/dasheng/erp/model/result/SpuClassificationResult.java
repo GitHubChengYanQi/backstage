@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.erp.entity.Spu;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -51,6 +52,12 @@ public class SpuClassificationResult implements Serializable {
      */
     @ApiModelProperty("spu分类id")
     private Long spuClassificationId;
+
+    /**
+     * 是否是产品分类
+     */
+    @ApiModelProperty("是否是产品分类")
+    private Long type;
 
     /**
      * 名称

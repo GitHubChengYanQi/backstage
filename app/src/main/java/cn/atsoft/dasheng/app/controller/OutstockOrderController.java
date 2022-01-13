@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.app.controller;
 
 import cn.atsoft.dasheng.app.entity.Items;
+import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.wrapper.ItemsSelectWrapper;
 import cn.atsoft.dasheng.app.wrapper.OutstockOrderSelectWrapper;
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +54,20 @@ public class OutstockOrderController extends BaseController {
     }
 
     /**
+     * 新增接口
+     *
+     * @author cheng
+     * @Date 2021-08-16
+     */
+    @RequestMapping(value = "/freeOutStock", method = RequestMethod.POST)
+    @ApiOperation("自由出库")
+    @Permission
+    public ResponseData freeOutStock(@Valid @RequestBody FreeOutStockParam freeOutStockParam) {
+        this.outstockOrderService.freeOutStock(freeOutStockParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 编辑接口
      *
      * @author cheng
@@ -71,7 +88,7 @@ public class OutstockOrderController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OutstockOrderParam outstockOrderParam)  {
+    public ResponseData delete(@RequestBody OutstockOrderParam outstockOrderParam) {
         this.outstockOrderService.delete(outstockOrderParam);
         return ResponseData.success();
     }
@@ -102,10 +119,9 @@ public class OutstockOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<OutstockOrderResult> list(@RequestBody(required = false) OutstockOrderParam outstockOrderParam) {
-        if(ToolUtil.isEmpty(outstockOrderParam)){
+        if (ToolUtil.isEmpty(outstockOrderParam)) {
             outstockOrderParam = new OutstockOrderParam();
         }
-//        return this.outstockOrderService.findPageBySpec(outstockOrderParam);
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.outstockOrderService.findPageBySpec(outstockOrderParam, null);
         } else {
@@ -114,24 +130,12 @@ public class OutstockOrderController extends BaseController {
         }
     }
 
-    /**
-     * 编辑接口
-     *
-     * @author cheng
-     * @Date 2021-08-16
-     */
-    @RequestMapping(value = "/outStock", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData outStock(@RequestBody OutstockOrderParam outstockOrderParam) {
 
-        this.outstockOrderService.outStock(outstockOrderParam);
-        return ResponseData.success();
-    }
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     public ResponseData<List<Map<String, Object>>> listSelect() {
         QueryWrapper<OutstockOrder> itemsQueryWrapper = new QueryWrapper<>();
-        itemsQueryWrapper.in("display", 1).in("state",1);
+        itemsQueryWrapper.in("display", 1).in("state", 1);
         List<Map<String, Object>> list = this.outstockOrderService.listMaps(itemsQueryWrapper);
         OutstockOrderSelectWrapper itemsSelectWrapper = new OutstockOrderSelectWrapper(list);
         List<Map<String, Object>> result = itemsSelectWrapper.wrap();

@@ -10,6 +10,9 @@
         <result column="title" property="title"/>
         <result column="content" property="content"/>
         <result column="type" property="type"/>
+        <result column="user_id" property="userId"/>
+        <result column="source" property="source"/>
+        <result column="source_id" property="sourceId"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -23,7 +26,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">deptId
     AS "deptId",url AS "url",
-        message_id AS "messageId", time AS "time", state AS "state", title AS "title", content AS "content", type AS "type", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
+        message_id AS "messageId", time AS "time",source AS "source",source_id AS "sourceId", state AS "state", user_id AS "userId",title AS "title", content AS "content", type AS "type", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sort AS "sort"
     </sql>
 
 
@@ -45,6 +48,10 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_message where display = 1
+        <if test="paramCondition.createTime">
+            and create_time &lt;= #{paramCondition.createTime}
+        </if>
+
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
             CONCAT('%$[', #{paramCondition.deptId}, '$]%') escape '$' ))

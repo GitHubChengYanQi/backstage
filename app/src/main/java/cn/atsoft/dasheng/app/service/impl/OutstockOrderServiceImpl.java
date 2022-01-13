@@ -4,6 +4,7 @@ package cn.atsoft.dasheng.app.service.impl;
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.*;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -11,16 +12,16 @@ import cn.atsoft.dasheng.app.mapper.OutstockOrderMapper;
 import cn.atsoft.dasheng.app.model.result.OutstockOrderResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.erp.entity.ApplyDetails;
-import cn.atsoft.dasheng.erp.entity.CodingRules;
-import cn.atsoft.dasheng.erp.entity.InstockList;
-import cn.atsoft.dasheng.erp.entity.OutstockListing;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.service.CodingRulesService;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.OutstockListingService;
 import cn.atsoft.dasheng.erp.service.impl.OutstockSendTemplate;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -64,6 +65,11 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     private OutstockSendTemplate outstockSendTemplate;
     @Autowired
     private OrCodeService orCodeService;
+    @Autowired
+    private InkindService inkindService;
+
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     public OutstockOrder add(OutstockOrderParam param) {
@@ -116,10 +122,26 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         backCodeRequest.setId(entity.getOutstockOrderId());
         backCodeRequest.setSource("outstock");
         Long aLong = orCodeService.backCode(backCodeRequest);
-        String url = param.getUrl().replace("codeId", aLong.toString());
-        outstockSendTemplate.setUserId(param.getUserId());
-        outstockSendTemplate.setUrl(url);
-        outstockSendTemplate.sendTemplate();
+
+//        String url = param.getUrl().replace("codeId", aLong.toString());
+//        outstockSendTemplate.setSourceId(entity.getOutstockOrderId());
+//        outstockSendTemplate.setUserId(param.getUserId());
+//        outstockSendTemplate.setUrl(url);
+
+        User createUser = userService.getById(entity.getCreateUser());
+        //新微信推送
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//        wxCpTemplate.setUrl(url);
+        wxCpTemplate.setTitle("新的出库提醒");
+        wxCpTemplate.setDescription(createUser.getName() + "创建了新的入库任务" + entity.getCoding());
+        wxCpTemplate.setUserIds(new ArrayList<Long>() {{
+            add(entity.getUserId());
+        }});
+        wxCpSendTemplate.setSource("出库");
+        wxCpSendTemplate.setSourceId(entity.getOutstockOrderId());
+        wxCpTemplate.setType(0);
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
         return entity;
     }
 
@@ -130,100 +152,52 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         throw new ServiceException(500, "不可以删除");
     }
 
-
+    /**
+     * 自由出库
+     *
+     * @param freeOutStockParam
+     */
     @Override
-    public void outStock(OutstockOrderParam param) {
-
-        OutstockOrder entity = getEntity(param);
-        Long outStockOrderId = entity.getOutstockOrderId();
-        // 判断出库单对应出库明细数据有无
-        QueryWrapper<Outstock> outstockQueryWrapper = new QueryWrapper<>();
-        if (ToolUtil.isNotEmpty(outStockOrderId)) {
-            outstockQueryWrapper.in("outstock_order_id", outStockOrderId).in("display", 1);
+    public void freeOutStock(FreeOutStockParam freeOutStockParam) {
+        StockDetails stockDetails = stockDetailsService.query().eq("qr_code_id", freeOutStockParam.getCodeId()).one();
+        if (ToolUtil.isEmpty(stockDetails)) {
+            throw new ServiceException(500, "库存没有此物料");
         }
-        List<Outstock> outstockList = outstockService.list(outstockQueryWrapper);
-
-        if (ToolUtil.isNotEmpty(outstockList)) {
-            List<Stock> Stock = this.stockService.list();
-
-
-            // 出库明细里进行出库
-            for (int i = 0; i < outstockList.size(); i++) {
-                Outstock outstock = outstockList.get(i);
-                // 判断库存里数据是否存在
-                if (ToolUtil.isEmpty(Stock)) {
-                    throw new ServiceException(500, "仓库没有此产品或仓库库存不足！");
-                } else {
-                    for (int k = 0; k < Stock.size(); k++) {
-                        Stock StockList = Stock.get(k);
-                        // 匹配库存里对应的数据
-                        if (StockList.getItemId().equals(outstock.getItemId())
-                                && StockList.getBrandId().equals(outstock.getBrandId())
-                                && StockList.getStorehouseId().equals(entity.getStorehouseId())
-                        ) {
-                            QueryWrapper<StockDetails> queryWrapper = new QueryWrapper<>();
-                            queryWrapper.in("stock_id", StockList.getStockId()).in("stage", 1);
-                            List<StockDetails> stockDetail = stockDetailsService.list(queryWrapper);
-                            // 库存数据数量的判断
-                            if (StockList.getInventory() == 0) {
-                                throw new ServiceException(500, "此产品仓库库存不足！");
-                            } else if (outstock.getNumber() > StockList.getInventory()) {
-                                throw new ServiceException(500, "此产品仓库库存不足,请重新输入数量，最大数量为：" + StockList.getInventory());
-                            } else {
-                                StockParam stockParam = new StockParam();
-                                stockParam.setStockId(StockList.getStockId());
-                                stockParam.setItemId(StockList.getItemId());
-                                stockParam.setBrandId(StockList.getBrandId());
-                                stockParam.setStorehouseId(StockList.getStorehouseId());
-                                stockParam.setInventory(StockList.getInventory() - outstock.getNumber());
-                                // 减去出库数量
-                                this.stockService.update(stockParam);
-
-
-                                if (ToolUtil.isEmpty(stockDetail)) {
-                                    throw new ServiceException(500, "库存明细里没有此产品或仓库库存不足！");
-                                } else {
-                                    List stockItemIds = new ArrayList<>();
-                                    QueryWrapper<StockDetails> queryWrapper1 = new QueryWrapper<>();
-                                    for (int j = 0; j < outstock.getNumber(); j++) {
-                                        StockDetails stockDetailList = stockDetail.get(j);
-                                        // 匹配库存明细里对应的数据
-                                        if (stockDetailList.getStockId().equals(StockList.getStockId())) {
-                                            // 减去出库明细产品
-                                            StockDetails StockDetailsList = stockDetail.get(j);
-                                            stockItemIds.add(StockDetailsList.getStockItemId());
-                                        }
-                                    }
-                                    queryWrapper1.in("stock_item_id", stockItemIds);
-                                    StockDetails stockDetails = new StockDetails();
-                                    stockDetails.setStage(2);
-                                    stockDetails.setOutStockOrderId(outStockOrderId);
-                                    this.stockDetailsService.update(stockDetails, queryWrapper1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            OutstockOrder oldEntity = getOldEntity(param);
-            OutstockOrder newEntity = getEntity(param);
-            ToolUtil.copyProperties(newEntity, oldEntity);
-            this.updateById(newEntity);
+        if (stockDetails.getNumber() < freeOutStockParam.getNumber()) {
+            throw new ServiceException(500, "数量不足");
+        }
+        long newNumber = stockDetails.getNumber() - freeOutStockParam.getNumber();
+        stockDetails.setNumber(newNumber);
+        if (stockDetails.getNumber() == 0) {
+            stockDetailsService.removeById(stockDetails);
         } else {
-            throw new ServiceException(500, "仓库没有此产品！");
+            stockDetailsService.updateById(stockDetails);
         }
 
+        //修改库存数量
+        Inkind instockInkind = inkindService.getById(stockDetails.getInkindId());
+        instockInkind.setNumber(instockInkind.getNumber() - freeOutStockParam.getNumber());
+        inkindService.updateById(instockInkind);
+
+        //创建实物
+        Inkind inkind = new Inkind();
+        inkind.setSource(freeOutStockParam.getType());
+        inkind.setSkuId(stockDetails.getSkuId());
+        inkind.setBrandId(stockDetails.getBrandId());
+        inkind.setType("2");
+        inkind.setNumber(freeOutStockParam.getNumber());
+        inkindService.save(inkind);
+
+        //更新库存数量
+        stockService.updateNumber(new ArrayList<Long>() {{
+            add(stockDetails.getStockId());
+        }});
     }
 
 
     @Override
     public OutstockOrder update(OutstockOrderParam param) {
         throw new ServiceException(500, "不可以修改");
-//        OutstockOrder oldEntity = getOldEntity(param);
-//        OutstockOrder newEntity = getEntity(param);
-//        ToolUtil.copyProperties(newEntity, oldEntity);
-//        this.updateById(newEntity);
-//        return newEntity;
     }
 
     @Override
@@ -265,41 +239,16 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
     public void format(List<OutstockOrderResult> data) {
         List<Long> ids = new ArrayList<>();
         List<Long> stockHouseIds = new ArrayList<>();
-        List<Long> orderIds = new ArrayList<>();
+
         for (OutstockOrderResult datum : data) {
             ids.add(datum.getUserId());
             stockHouseIds.add(datum.getStorehouseId());
-            orderIds.add(datum.getOutstockOrderId());
         }
         List<User> users = ids.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, ids).list();
-
-        List<OutstockListing> outstockListings = orderIds.size() == 0 ? new ArrayList<>() : outstockListingService.query().in("outstock_order_id", orderIds).list();
 
         List<Storehouse> storehouses = stockHouseIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, stockHouseIds).list();
 
         for (OutstockOrderResult datum : data) {
-            Integer state = null;
-            //判断出库当前状态
-            Integer outstock = outstockService.query().eq("outstock_order_id", datum.getOutstockOrderId()).count();
-            if (outstock > 0) {
-                if (ToolUtil.isNotEmpty(outstockListings)) {
-                    for (OutstockListing outstockListing : outstockListings) {
-                        if (outstockListing.getOutstockOrderId().equals(datum.getOutstockOrderId())) {
-                            if (outstockListing.getNumber() == 0) {
-                                state = 2;
-                            } else {
-                                state = 1;
-                                break;
-                            }
-                        }
-                    }
-
-                }
-
-            } else {
-                state = 0;
-            }
-            datum.setState(state);
 
 
             for (User user : users) {

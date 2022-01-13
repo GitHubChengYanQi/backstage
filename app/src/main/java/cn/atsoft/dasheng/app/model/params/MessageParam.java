@@ -36,6 +36,12 @@ public class MessageParam implements Serializable, BaseValidatingParam {
     private Long messageId;
 
     /**
+     * 人员id
+     */
+    @ApiModelProperty("关联人id")
+    private Long userId;
+
+    /**
      * 提醒时间
      */
     @ApiModelProperty("提醒时间")
@@ -64,6 +70,18 @@ public class MessageParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("提醒类型")
     private Integer type;
+
+    /**
+     * 来源
+     */
+    @ApiModelProperty("来源")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @ApiModelProperty("来源id")
+    private Long sourceId;
 
     /**
      * 创建者

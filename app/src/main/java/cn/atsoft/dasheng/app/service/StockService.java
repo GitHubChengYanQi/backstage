@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.service;
 
+import cn.atsoft.dasheng.app.pojo.AddStockParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.StockParam;
@@ -59,6 +60,11 @@ public interface StockService extends IService<Stock> {
      * @Date 2021-07-15
      */
     List<StockResult> findListBySpec(StockParam param);
+
+    void updateNumber(List<Long> stockId);
+
+    //添加库存
+    void addDetails(AddStockParam stockParam);
 
     /**
      * 查询分页数据，Specification模式

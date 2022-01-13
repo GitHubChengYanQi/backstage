@@ -31,6 +31,8 @@ public class   InkindParam extends AbstractDictMap implements Serializable, Base
     private Long spuId;
     private String source;
     private Long sourceId;
+    private List<Long> inkindIds;
+    private List<Long> skuIds;
 
     /**
      * 品牌

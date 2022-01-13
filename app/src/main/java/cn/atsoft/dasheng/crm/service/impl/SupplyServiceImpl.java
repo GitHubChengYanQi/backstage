@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -255,10 +256,17 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     }
 
     private void format(List<SupplyResult> data) {
-
+        List<Long> skuIds = new ArrayList<>();
         for (SupplyResult datum : data) {
-            SkuResult sku = skuService.getSku(datum.getSkuId());
-            datum.setSkuResult(sku);
+            skuIds.add(datum.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (SupplyResult datum : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())){
+                    datum.setSkuResult(skuResult);
+                }
+            }
         }
 
     }

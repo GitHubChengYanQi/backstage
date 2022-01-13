@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
 import cn.atsoft.dasheng.erp.entity.SpuClassification;
 import cn.atsoft.dasheng.erp.model.params.SkuJson;
+import cn.atsoft.dasheng.erp.model.params.SkuRequest;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -47,8 +48,9 @@ public class SkuResult implements Serializable {
     private QualityPlan qualityPlan;
     private Unit unit;
     private SpuClassification spuClassification;
-
+    private Long fileId;
     private Integer batch;
+    private SkuRequest skuTree;
 
 
     /**

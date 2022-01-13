@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.app.model.result;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
+import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import lombok.Data;
@@ -44,8 +45,8 @@ public class StockDetailsResult implements Serializable {
     private Long number;
     private Long qrCodeId;
     private List<StockDetailRequest> stockDetailRequests;
-
-
+    private Long inkindId;
+    private InkindResult inkindResult;
     /**
      * 库位id
      */

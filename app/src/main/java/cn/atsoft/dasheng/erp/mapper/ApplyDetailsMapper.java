@@ -53,4 +53,5 @@ public interface ApplyDetailsMapper extends BaseMapper<ApplyDetails> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") ApplyDetailsParam paramCondition);
 
+
 }

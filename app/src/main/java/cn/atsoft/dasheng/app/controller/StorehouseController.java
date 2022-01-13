@@ -122,12 +122,10 @@ public class StorehouseController extends BaseController {
             storehouseParam = new StorehouseParam();
         }
 //        return this.storehouseService.findPageBySpec(storehouseParam);
-        if (LoginContextHolder.getContext().isAdmin()) {
+
             return this.storehouseService.findPageBySpec(storehouseParam, null);
-        } else {
-            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
-            return this.storehouseService.findPageBySpec(storehouseParam, dataScope);
-        }
+
+        
     }
 
     /**

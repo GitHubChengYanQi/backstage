@@ -24,6 +24,16 @@ import java.io.Serializable;
 public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
+    private Long deptId;
+
+    /**
+     * 实物id
+     */
+    @TableField("inkind_id")
+    private Long inkindId;
+
     @TableField("number")
     private Long number;
 
@@ -32,6 +42,7 @@ public class StockDetails implements Serializable {
 
     @TableField("outstock_order_id")
     private Long outStockOrderId;
+
     @TableField("stage")
     private Integer stage;
     /**
@@ -43,16 +54,6 @@ public class StockDetails implements Serializable {
     @TableField("storehouse_id")
     private Long storehouseId;
 
-    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
-    private Long deptId;
-
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
 
     /**
      * skuId
@@ -286,6 +287,22 @@ public class StockDetails implements Serializable {
 
     public void setStorehousePositionsId(Long storehousePositionsId) {
         this.storehousePositionsId = storehousePositionsId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    public Long getInkindId() {
+        return inkindId;
+    }
+
+    public void setInkindId(Long inkindId) {
+        this.inkindId = inkindId;
     }
 
     @Override

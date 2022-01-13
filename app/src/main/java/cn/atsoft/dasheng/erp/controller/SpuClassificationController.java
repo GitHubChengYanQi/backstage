@@ -14,7 +14,9 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.wrapper.SpuClassificationSelectWrapper;
 import cn.atsoft.dasheng.erp.wrapper.SpuSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.Console;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -117,9 +119,17 @@ public class SpuClassificationController extends BaseController {
 
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) SpuClassificationParam spuClassificationParam) {
         QueryWrapper<SpuClassification> queryWrapper = new QueryWrapper<>();
+
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
+            queryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
+        }
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getSpuClassificationId())) {
+            queryWrapper.eq("pid", spuClassificationParam.getSpuClassificationId());
+        }
         queryWrapper.eq("display", 1);
+
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(queryWrapper);
         SpuClassificationSelectWrapper spuClassificationSelectWrapper = new SpuClassificationSelectWrapper(list);
         List<Map<String, Object>> result = spuClassificationSelectWrapper.wrap();
@@ -134,7 +144,13 @@ public class SpuClassificationController extends BaseController {
                 spuClassificationQueryWrapper.eq("spu_classification_id", spuClassificationParam.getSpuClassificationId());
             }
         }
+
+        if (ToolUtil.isNotEmpty(spuClassificationParam) && ToolUtil.isNotEmpty(spuClassificationParam.getIsNotproduct())) {
+            spuClassificationQueryWrapper.eq("type", spuClassificationParam.getIsNotproduct());
+        }
+
         spuClassificationQueryWrapper.eq("display", 1);
+
         List<Map<String, Object>> list = this.spuClassificationService.listMaps(spuClassificationQueryWrapper);
 
         if (ToolUtil.isEmpty(list)) {
@@ -155,8 +171,8 @@ public class SpuClassificationController extends BaseController {
             treeNode.setParentId(Convert.toStr(item.get("pid")));
             treeNode.setKey(Convert.toStr(item.get("spu_classification_id")));
             treeNode.setValue(Convert.toStr(item.get("spu_classification_id")));
-            treeNode.setTitle(Convert.toStr(item.get("name")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
+            treeNode.setTitle(Convert.toStr(item.get("name")));
             treeViewNodes.add(treeNode);
         }
         //构建树

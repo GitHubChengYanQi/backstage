@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.app.service;
 
 import cn.atsoft.dasheng.app.model.params.OutstockParam;
+import cn.atsoft.dasheng.app.pojo.FreeOutStockParam;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.OutstockOrder;
 import cn.atsoft.dasheng.app.model.params.OutstockOrderParam;
@@ -66,14 +67,15 @@ public interface OutstockOrderService extends IService<OutstockOrder> {
      * @author cheng
      * @Date 2021-08-16
      */
-    PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope );
+    PageInfo<OutstockOrderResult> findPageBySpec(OutstockOrderParam param, DataScope dataScope);
+
+
 
     /**
-     * 出库
+     * 自由出库
      *
-     * @author cheng
-     * @Date 2021-08-16
+     * @param freeOutStockParam
      */
-    void outStock(OutstockOrderParam param);
+    void freeOutStock(FreeOutStockParam freeOutStockParam);
 
 }

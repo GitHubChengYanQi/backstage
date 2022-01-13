@@ -1,15 +1,11 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.BusinessTrack;
-import cn.atsoft.dasheng.app.entity.Instock;
-import cn.atsoft.dasheng.app.entity.Message;
-import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
+import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
-import cn.atsoft.dasheng.app.service.BusinessTrackService;
-import cn.atsoft.dasheng.app.service.InstockService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -22,16 +18,24 @@ import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.InstockListResult;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
 import cn.atsoft.dasheng.erp.model.result.InstockRequest;
+import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.portal.repair.service.RepairSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,10 +44,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -71,7 +72,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private CodingRulesService codingRulesService;
     @Autowired
     private InkindService inkindService;
-
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+    @Autowired
+    private OrCodeBindService bindService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     @Transactional
@@ -129,22 +139,29 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
 
 
-            BusinessTrack businessTrack = new BusinessTrack();
-            businessTrack.setType("代办");
-            businessTrack.setMessage("入库");
-            businessTrack.setUserId(param.getUserId());
-            businessTrack.setNote("有物料需要入库");
-            DateTime data = new DateTime();
-            businessTrack.setTime(data);
             BackCodeRequest backCodeRequest = new BackCodeRequest();
             backCodeRequest.setId(entity.getInstockOrderId());
             backCodeRequest.setSource("instock");
             Long aLong = orCodeService.backCode(backCodeRequest);
-            String url = param.getUrl().replace("codeId", aLong.toString());
-            instockSendTemplate.setBusinessTrack(businessTrack);
-            instockSendTemplate.setUrl(url);
-            instockSendTemplate.sendTemplate();
 
+
+//            String url = param.getUrl().replace("codeId", aLong.toString());
+
+
+            User createUser = userService.getById(entity.getCreateUser());
+            //新微信推送
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setTitle("新的入库提醒");
+            wxCpTemplate.setDescription(createUser.getName()+"您有新的入库任务"+entity.getCoding());
+            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+                add(entity.getUserId());
+            }});
+            wxCpSendTemplate.setSource("入库");
+            wxCpSendTemplate.setSourceId(aLong);
+            wxCpTemplate.setType(0);
+            wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+            wxCpSendTemplate.sendTemplate();
         }
     }
 
@@ -154,13 +171,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         this.removeById(getKey(param));
     }
 
+    /**
+     * 自由入库
+     *
+     * @param param
+     */
     @Override
-
+    @Transactional
     public void update(InstockOrderParam param) {
-        InstockOrder oldEntity = getOldEntity(param);
-        InstockOrder newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
     }
 
     @Override
@@ -234,6 +252,105 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         instockSendTemplate.sendTemplate();
     }
 
+    /**
+     * 自由入库
+     *
+     * @param freeInStockParam
+     */
+    @Override
+    public void freeInstock(FreeInStockParam freeInStockParam) {
+        if (ToolUtil.isEmpty(freeInStockParam.getPositionsId())) {
+            throw new ServiceException(500, "请选择库位");
+        }
+        //判断库位
+        List<StorehousePositions> pid = positionsService.query().eq("pid", freeInStockParam.getPositionsId()).list();
+        if (ToolUtil.isNotEmpty(pid)) {
+            throw new ServiceException(500, "请选择最下级库位");
+        }
+
+        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
+        if (ToolUtil.isNotEmpty(detailsList)) {
+            throw new ServiceException(500, "已入库");
+        }
+
+        if (ToolUtil.isEmpty(freeInStockParam.getCodeIds())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
+        List<OrCodeBind> codeBinds = bindService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
+        if (ToolUtil.isEmpty(codeBinds)) {
+            throw new ServiceException(500, "二维码不正确");
+        }
+        List<Long> inkindIds = new ArrayList<>();
+        for (OrCodeBind codeBind : codeBinds) {
+            inkindIds.add(codeBind.getFormId());
+        }
+        List<Inkind> inkinds = inkindService.query().in("inkind_id", inkindIds).eq("type", 0).list();
+
+        if (ToolUtil.isEmpty(inkinds) && inkinds.size() != freeInStockParam.getCodeIds().size()) {   //判断实物
+            throw new ServiceException(500, "有错误二维码");
+        }
+        List<Long> distinct = new ArrayList<>();
+        for (Inkind inkind : inkinds) {
+            distinct.add(inkind.getSkuId() + inkind.getBrandId());
+        }
+        long count = distinct.stream().distinct().count();
+        if (count != 1) {
+            throw new ServiceException(500, "批次物料有不相同");
+        }
+
+        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询仓库
+                .eq(Stock::getSkuId, inkinds.get(0).getSkuId())
+                .eq(Stock::getBrandId, inkinds.get(0).getBrandId())
+                .one();
+
+        Long inkindNumber = 0L;   //入库的数量
+        for (Inkind inkind : inkinds) {
+            inkindNumber = inkindNumber + inkind.getNumber();
+        }
+        Long stockId = null;
+        if (ToolUtil.isNotEmpty(stock)) {  //有相同物料 叠加数量
+            stock.setInventory(stock.getInventory() + inkindNumber);
+            stockService.updateById(stock);
+            stockId = stock.getStockId();
+        } else {                          //没有相同物料 创建新物料
+            Stock newStock = new Stock();
+            newStock.setInventory(inkindNumber);
+            newStock.setBrandId(inkinds.get(0).getBrandId());
+            newStock.setSkuId(inkinds.get(0).getSkuId());
+            newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+            stockService.save(newStock);
+            stockId = newStock.getStockId();
+        }
+        Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
+        for (OrCodeBind codeBind : codeBinds) {
+            for (Long codeId : freeInStockParam.getCodeIds()) {
+                if (codeBind.getOrCodeId().equals(codeId)) {
+                    map.put(codeBind.getFormId(), codeId);
+                    break;
+                }
+            }
+        }
+
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        for (Inkind inkind : inkinds) {    //添加库存详情
+            StockDetails stockDetails = new StockDetails();
+            stockDetails.setStockId(stockId);
+            stockDetails.setNumber(inkind.getNumber());
+            stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
+            Long codeId = map.get(inkind.getInkindId());
+            stockDetails.setQrCodeid(codeId);
+            stockDetails.setInkindId(inkind.getInkindId());
+            stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
+
+            stockDetails.setBrandId(inkind.getBrandId());
+            stockDetails.setSkuId(inkind.getSkuId());
+            stockDetailsList.add(stockDetails);
+            inkind.setType("1");
+        }
+        stockDetailsService.saveBatch(stockDetailsList);
+        inkindService.updateBatchById(inkinds);
+    }
+
 
     private Serializable getKey(InstockOrderParam param) {
         return param.getInstockOrderId();
@@ -245,7 +362,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         fields.add("createTime");
         fields.add("userId");
         return PageFactory.defaultPage(fields);
-
     }
 
     /**
@@ -287,41 +403,17 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private void format(List<InstockOrderResult> data) {
         List<Long> userIds = new ArrayList<>();
         List<Long> storeIds = new ArrayList<>();
-        List<Long> InstockListIds = new ArrayList<>();
+
         for (InstockOrderResult datum : data) {
             userIds.add(datum.getUserId());
             storeIds.add(datum.getStoreHouseId());
-            InstockListIds.add(datum.getInstockOrderId());
+
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.lambdaQuery().in(User::getUserId, userIds).list();
         List<Storehouse> storehouses = storeIds.size() == 0 ? new ArrayList<>() : storehouseService.lambdaQuery().in(Storehouse::getStorehouseId, storeIds).list();
 
-        List<InstockList> instockLists = InstockListIds.size() == 0 ? new ArrayList<>() : instockListService.query().in("instock_order_id", InstockListIds).list();
 
-        Integer state = null;
         for (InstockOrderResult datum : data) {
-            Integer instock = instockService.query().eq("instock_order_id", datum.getInstockOrderId()).count();
-            if (instock > 0) {
-                if (ToolUtil.isNotEmpty(instockLists)) {
-                    for (InstockList instockList : instockLists) {
-                        if (instockList.getInstockOrderId().equals(datum.getInstockOrderId())) {
-                            if (instockList.getNumber() == 0) {
-                                state = 2;
-                            } else {
-                                state = 1;
-                                break;
-                            }
-                        }
-                    }
-
-                }
-
-            } else {
-                state = 0;
-            }
-            datum.setState(state);
-
-
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId())) {
                     if (datum.getUserId().equals(user.getUserId())) {

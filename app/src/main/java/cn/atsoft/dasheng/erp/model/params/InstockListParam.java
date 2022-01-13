@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.params;
 
 import cn.atsoft.dasheng.base.dict.AbstractDictMap;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
@@ -30,6 +31,9 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     private Long codeId;
     private Long num;
     private Long instockNumber;
+
+    private List<InstockListRequest> requests;
+
     /**
      * 库位id
      */
@@ -48,7 +52,6 @@ public class InstockListParam extends AbstractDictMap implements Serializable, B
     private Long instockListId;
 
     private Integer costPrice;
-
 
     private Integer sellingPrice;
 

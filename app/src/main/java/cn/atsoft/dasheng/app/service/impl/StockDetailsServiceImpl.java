@@ -49,7 +49,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private SkuService skuService;
 
 
-
     @Override
     public Long add(StockDetailsParam param) {
         StockDetails entity = getEntity(param);
@@ -100,6 +99,23 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
         }
         return skuIds;
     }
+
+    @Override
+    public List<StockDetailsResult> getStockDetails(Long stockId) {
+        List<StockDetailsResult> detailsResults = new ArrayList<>();
+        if (ToolUtil.isEmpty(stockId)) {
+            return detailsResults;
+        }
+        List<StockDetails> details = this.query().eq("stock_id", stockId).eq("display", 1).list();
+
+        for (StockDetails detail : details) {
+            StockDetailsResult stockDetailsResult = new StockDetailsResult();
+            ToolUtil.copyProperties(detail, stockDetailsResult);
+            detailsResults.add(stockDetailsResult);
+        }
+        return detailsResults;
+    }
+
 
 
 

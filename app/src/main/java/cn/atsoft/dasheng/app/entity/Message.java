@@ -66,6 +66,24 @@ public class Message implements Serializable {
     private Integer type;
 
     /**
+     * 关联人id
+     */
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
+
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
+
+    /**
      * 创建者
      */
     @TableField(value = "create_user", fill = FieldFill.INSERT)
@@ -104,20 +122,20 @@ public class Message implements Serializable {
     @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
     private Long deptId;
 
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
-
     public Long getMessageId() {
         return messageId;
     }
 
     public void setMessageId(Long messageId) {
         this.messageId = messageId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Date getTime() {
@@ -158,6 +176,30 @@ public class Message implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Long getCreateUser() {
@@ -208,12 +250,12 @@ public class Message implements Serializable {
         this.sort = sort;
     }
 
-    public String getUrl() {
-        return url;
+    public Long getDeptId() {
+        return deptId;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     @Override

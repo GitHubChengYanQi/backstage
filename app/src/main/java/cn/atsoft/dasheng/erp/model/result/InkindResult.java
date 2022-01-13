@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.model.result;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.entity.QualityTaskDetail;
+import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,6 +37,10 @@ public class InkindResult implements Serializable {
     private List<BackSku> backSku;
     private SkuResult skuResult;
     private Long number;
+    private Map<String, Object> inkindDetail;
+    private StorehousePositionsResult positionsResult;
+    private PrintTemplateResult printTemplateResult;
+    private Boolean inNotStock;
     /**
      * 品牌
      */

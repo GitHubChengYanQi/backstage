@@ -54,11 +54,6 @@ public interface OrCodeMapper extends BaseMapper<OrCode> {
      */
     Page<Map<String, Object>> customPageMapList(@Param("page") Page page, @Param("paramCondition") OrCodeParam paramCondition);
 
-    /**
-     * 模糊查询
-     * @param codeId
-     * @return
-     */
-    List<Long> qrCodeList(@Param("codeId") String codeId);
+
 
 }

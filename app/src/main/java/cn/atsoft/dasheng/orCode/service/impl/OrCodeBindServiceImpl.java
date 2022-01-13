@@ -100,15 +100,16 @@ public class OrCodeBindServiceImpl extends ServiceImpl<OrCodeBindMapper, OrCodeB
 
     @Override
     public Long getFormId(Long qrcodeId) {
-        Long l = 0L;
+
         if (ToolUtil.isEmpty(qrcodeId)) {
-            return l;
+            throw new ServiceException(500, "请传入二维码");
         }
         OrCodeBind codeBind = this.query().eq("qr_code_id", qrcodeId).one();
         if (ToolUtil.isEmpty(codeBind)) {
             throw new ServiceException(500, "此码未绑定");
         }
-        return codeBind.getFormId();
+        Long formId = codeBind.getFormId();
+        return formId;
     }
 
     @Override

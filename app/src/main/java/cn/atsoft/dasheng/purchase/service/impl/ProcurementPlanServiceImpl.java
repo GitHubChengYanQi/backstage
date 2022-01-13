@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
 import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
@@ -80,15 +81,17 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
          */
         LoginUser user = LoginContextHolder.getContext().getUser();
         ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchasePlan").one();
-        ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
-        activitiProcessTaskParam.setTaskName(user.getName() + "发起的采购计划申请 (" + param.getProcurementPlanName() + ")");
-        activitiProcessTaskParam.setFormId(entity.getProcurementPlanId());
-        activitiProcessTaskParam.setType("purchasePlan");
-        activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
-        Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
-        //添加log
-        activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
-        activitiProcessLogService.autoAudit(taskId, 1);
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的采购计划申请 (" + param.getProcurementPlanName() + ")");
+            activitiProcessTaskParam.setFormId(entity.getProcurementPlanId());
+            activitiProcessTaskParam.setType("purchasePlan");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1);
+        }
     }
 
     @Override
@@ -105,15 +108,20 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ToolUtil.copyProperties(newEntity, oldEntity);
         if (oldEntity.getDisplay().equals(newEntity.getDisplay())) {
             this.updateById(newEntity);
+            if (newEntity.getStatus()==99) {
+
+            }
         }
     }
+
     @Override
-    public void updateState(ActivitiProcessTask processTask){
+    public void updateState(ActivitiProcessTask processTask) {
         processTask.getFormId();
         ProcurementPlan procurementPlan = this.getById(processTask.getFormId());
         procurementPlan.setStatus(98);
         this.updateById(procurementPlan);
     }
+
     @Override
     public ProcurementPlanResult findBySpec(ProcurementPlanParam param) {
         return null;

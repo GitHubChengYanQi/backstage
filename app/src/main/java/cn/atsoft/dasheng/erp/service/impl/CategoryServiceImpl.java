@@ -134,31 +134,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         QueryWrapper<Category> categoryQueryWrapper = new QueryWrapper<>();
         categoryQueryWrapper.in("category_id", param.getCategoryId());
         this.update(category, categoryQueryWrapper);
-//        List<ItemAttribute> attributes = param.getCategoryId() == null ? new ArrayList<>() : itemAttributeService.lambdaQuery().in(ItemAttribute::getCategoryId, param.getCategoryId())
-//                .in(ItemAttribute::getDisplay, 1)
-//                .list();
-//        List<Long> values = new ArrayList<>();
-//        List<ItemAttribute> itemAttributes = new ArrayList<>();
-//        if (ToolUtil.isNotEmpty(attributes)) {
-//            for (ItemAttribute attribute : attributes) {
-//                attribute.setDisplay(0);
-//                itemAttributes.add(attribute);
-//                values.add(attribute.getAttributeId());
-//            }
-//        }
-//        itemAttributeService.updateBatchById(itemAttributes);
-//        List<AttributeValues> valuesList = values.size() == 0 ? new ArrayList<>() : attributeValuesService.lambdaQuery().in(AttributeValues::getAttributeId, values)
-//                .in(AttributeValues::getDisplay, 1).list();
-//
-//        if (ToolUtil.isNotEmpty(valuesList)) {
-//            List<AttributeValues> attributeValuesList = new ArrayList<>();
-//            for (AttributeValues attributeValues : valuesList) {
-//                attributeValues.setDisplay(0);
-//                attributeValuesList.add(attributeValues);
-//            }
-//            attributeValuesService.updateBatchById(attributeValuesList);
-//        }
-//        this.removeById(getKey(param));
     }
 
     @Override

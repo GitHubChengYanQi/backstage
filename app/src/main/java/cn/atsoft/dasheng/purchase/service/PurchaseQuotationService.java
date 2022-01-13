@@ -68,6 +68,8 @@ public interface PurchaseQuotationService extends IService<PurchaseQuotation> {
     PageInfo<PurchaseQuotationResult> findPageBySpec(PurchaseQuotationParam param);
 
 
+    void batchAdd(QuotationParam param);
+
     void addList(QuotationParam param);
 
     /**

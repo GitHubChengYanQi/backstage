@@ -4,10 +4,11 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Inkind;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.mapper.InkindMapper;
 import cn.atsoft.dasheng.erp.model.params.InkindParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -17,17 +18,26 @@ import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
+import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
+import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
+import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
-import org.bouncycastle.cms.PasswordRecipientId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
+
 
 /**
  * <p>
@@ -43,6 +53,14 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     private SkuService skuService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private PrintTemplateService printTemplateService;
+    @Autowired
+    private QrCodeCreateService qrCodeCreateService;
+    @Autowired
+    private MobileService mobileService;
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
 
     @Override
@@ -87,6 +105,9 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
     @Override
     public InkindResult backInKindgetById(Long id) {
         Inkind inkind = this.getById(id);
+        if (ToolUtil.isEmpty(inkind)) {
+            return null;
+        }
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);
         List<BackSku> backSku = skuService.backSku(inkindResult.getSkuId());
@@ -96,6 +117,32 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         return inkindResult;
     }
 
+//    @Override
+//    public List<InkindResult> details (InkindParam param){
+//        param.getInkindIds();
+//        param.getSkuIds();
+//        List<Inkind> inkinds = this.lambdaQuery().in(Inkind::getInkindId, param.getInkindIds()).list();
+//        List<Sku> skus = this.skuService.lambdaQuery().in(Sku::getSkuId, param.getSkuIds()).list();
+//        List<InkindParam> inkindParams = new ArrayList<>();
+//        for (Inkind inkind : inkinds) {
+//            InkindParam inkindParam = new InkindParam();
+//            for (Sku sku : skus) {
+//                if (inkind.getSkuId().equals(sku.getSkuId())){
+//                    ToolUtil.copyProperties(inkind,inkindParam);
+//                    inkindParams.add(inkindParam);
+//                }
+//            }
+//        }
+//        List<InkindResult> inkindResults = new ArrayList<>();
+//        for (InkindParam inkindParam : inkindParams) {
+//            InkindResult inkindResult = this.inkindDetail(inkindParam);
+//            inkindResults.add(inkindResult);
+//        }
+//
+//        return inkindResults;
+//
+//    }
+
     @Override
     public List<InkindResult> getInKinds(List<Long> inKindIds) {
         if (ToolUtil.isEmpty(inKindIds)) {
@@ -104,20 +151,171 @@ public class InkindServiceImpl extends ServiceImpl<InkindMapper, Inkind> impleme
         List<Inkind> inKinds = this.listByIds(inKindIds);
 
         List<InkindResult> inKindResults = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (Inkind inKind : inKinds) {
+            skuIds.add(inKind.getSkuId());
+            brandIds.add(inKind.getBrandId());
+
             InkindResult inkindResult = new InkindResult();
             ToolUtil.copyProperties(inKind, inkindResult);
             inKindResults.add(inkindResult);
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        for (InkindResult inKindResult : inKindResults) {
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(inKindResult.getSkuId())) {
+                    inKindResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(inKindResult.getBrandId())) {
+                    inKindResult.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
         }
 
         return inKindResults;
     }
 
     @Override
+    public InkindResult inkindDetail(InkindParam param) {
+        Inkind inkind = this.getById(param.getInkindId());
+        if (ToolUtil.isEmpty(inkind)) {
+            throw new ServiceException(500, "没有此物");
+        }
+        List<Long> skuIds = new ArrayList<>();
+        skuIds.add(inkind.getSkuId());
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        SkuResult skuResult = skuResults.get(0);
+        InkindResult inkindResult = new InkindResult();
+        ToolUtil.copyProperties(inkind, inkindResult);
+        inkindResult.setSkuResult(skuResult);
+        inkindResult.setBrandResult(brandService.getBrandResult(inkind.getBrandId()));
+        //打印查询打印模板
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", PHYSICALDETAIL);
+        }});
+        if (ToolUtil.isNotEmpty(printTemplate)) {
+            this.returnPrintTemplate(inkindResult, printTemplate);
+        }
+        inkindResult.setSkuResult(null);
+        inkindResult.setBrandResult(null);
+        return inkindResult;
+    }
+    public List<InkindResult> details(InkindParam param){
+        PrintTemplate printTemplate = printTemplateService.getOne(new QueryWrapper<PrintTemplate>() {{
+            eq("type", PHYSICALDETAIL);
+        }});
+
+        /**
+         * 查询出实物（inkind) 然后查出对应物料（sku）, 品牌
+         */
+        List<InkindResult> inkindResults = new ArrayList<>();
+        List<Inkind> inkinds = this.lambdaQuery().in(Inkind::getInkindId, param.getInkindIds()).list();
+
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (Inkind inKind : inkinds) {
+            skuIds.add(inKind.getSkuId());
+            brandIds.add(inKind.getBrandId());
+        }
+
+        //查询sku
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        //查询品牌
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        //循环匹配sku
+        for (Inkind inkind : inkinds) {
+            InkindResult inkindResult = new InkindResult();
+            ToolUtil.copyProperties(inkind, inkindResult);
+            for (SkuResult skuResult : skuResults) {
+                if (inkindResult.getSkuId().equals(skuResult.getSkuId())) {
+                    inkindResult.setSkuResult(skuResult);
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(inkind.getBrandId())) {
+                    inkindResult.setBrandResult(brandResult);
+                }
+            }
+            inkindResults.add(inkindResult);
+        }
+
+        //查询不到模板 不执行返回打印模板操作
+        if (ToolUtil.isNotEmpty(printTemplate)){
+            for (InkindResult inkindResult : inkindResults) {
+                this.returnPrintTemplate(inkindResult,printTemplate);
+                inkindResult.setSkuResult(null);
+                inkindResult.setBrandResult(null);
+            }
+        }
+
+        return inkindResults;
+    }
+    private void returnPrintTemplate(InkindResult param,PrintTemplate printTemplate) {
+
+        if (ToolUtil.isEmpty(printTemplate)) {
+            throw new ServiceException(500, "请先定义二维码模板");
+        }
+        System.out.println(PHYSICALDETAIL);
+        String templete = printTemplate.getTemplete();
+
+        if (templete.contains("${coding}")) {
+            String inkindId = param.getInkindId().toString();
+            String substring = inkindId.substring(inkindId.length() - 6);
+            templete = templete.replace("${coding}", substring);
+        }
+        if (templete.contains("${skuCoding}")) {
+//            Sku sku = ToolUtil.isEmpty(param.getSkuId()) ? new Sku() : skuService.getById(param.getSkuId());
+            SkuResult skuResult = param.getSkuResult();
+            if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getCoding())) {
+                templete = templete.replace("${skuCoding}", skuResult.getCoding());
+            } else if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isEmpty(skuResult.getCoding()) && ToolUtil.isEmpty(skuResult.getStandard())) {
+                templete = templete.replace("${skuCoding}", "无");
+            } else if (ToolUtil.isNotEmpty(skuResult) && ToolUtil.isNotEmpty(skuResult.getStandard())) {
+                templete = templete.replace("${skuCoding}", skuResult.getStandard());
+            }
+        }
+        if (templete.contains("${name}")) {
+            String name = param.getSkuResult().getSpuResult().getSpuClassificationResult().getName();
+            templete = templete.replace("${name}", name + "/" + param.getSkuResult().getSpuResult().getName());
+        }
+        if (templete.contains("${number}")) {
+            templete = templete.replace("${number}", param.getNumber().toString());
+        }
+        if (templete.contains("${brand}")) {
+            templete = templete.replace("${brand}", param.getBrandResult().getBrandName());
+        }
+        if (templete.contains("${qrCode}")) {
+            OrCodeBind orCodeBind = orCodeBindService.getOne(new QueryWrapper<OrCodeBind>() {{
+                eq("form_id", param.getInkindId());
+                eq("source", "item");
+            }});
+            Long url = orCodeBind.getOrCodeId();
+            String qrCode = qrCodeCreateService.createQrCode(url.toString());
+            templete = templete.replace("${qrCode}", qrCode);
+        }
+        PrintTemplateResult printTemplateResult = new PrintTemplateResult();
+        ToolUtil.copyProperties(printTemplate, printTemplateResult);
+        printTemplateResult.setTemplete(templete);
+        param.setPrintTemplateResult(printTemplateResult);
+    }
+
+
+    @Override
     public InkindResult getInkindResult(Long id) {
         Inkind inkind = this.getById(id);
         if (ToolUtil.isEmpty(inkind)) {
-            throw  new ServiceException(500,"当前数据不存在");
+            throw new ServiceException(500, "当前数据不存在");
         }
         InkindResult inkindResult = new InkindResult();
         ToolUtil.copyProperties(inkind, inkindResult);

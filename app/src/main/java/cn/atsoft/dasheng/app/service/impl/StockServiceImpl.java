@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.ItemsResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.pojo.AddStockParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,11 +14,15 @@ import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
+import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,9 +30,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -40,8 +48,6 @@ import java.util.List;
 @Service
 public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements StockService {
     @Autowired
-    private ItemsService itemsService;
-    @Autowired
     private StorehouseService storehouseService;
     @Autowired
     private BrandService brandService;
@@ -49,6 +55,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     private StockDetailsService stockDetailsService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private StorehousePositionsService positionsService;
 
     @Override
     public Long add(StockParam param) {
@@ -88,6 +98,89 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         format(stockResults);
         return stockResults;
+    }
+
+    /**
+     * 更新库存
+     *
+     * @param stockId
+     */
+    @Override
+    public void updateNumber(List<Long> stockId) {
+        List<Stock> stockList = this.listByIds(stockId);
+
+        List<StockDetails> stockDetails = stockDetailsService.query().in("stock_id", stockId).list();
+
+        Map<Long, List<StockDetails>> map = new HashMap<>();
+        for (StockDetails stockDetail : stockDetails) {
+
+            List<StockDetails> detailsList = map.get(stockDetail.getStockId());
+
+            if (ToolUtil.isEmpty(detailsList)) {
+                List<StockDetails> details = new ArrayList<StockDetails>() {{
+                    add(stockDetail);
+                }};
+                map.put(stockDetail.getStockId(), details);
+            } else {
+                detailsList.add(stockDetail);
+                map.put(stockDetail.getStockId(), detailsList);
+            }
+        }
+
+        for (Stock stock : stockList) {
+            List<StockDetails> details = map.get(stock.getStockId());
+            Long number = 0L;
+            if (ToolUtil.isNotEmpty(details)) {
+                for (StockDetails detail : details) {
+                    number = number + detail.getNumber();
+                }
+            }
+            stock.setInventory(number);
+        }
+        this.updateBatchById(stockList);
+    }
+
+    //添加库存
+    @Override
+    @Transactional
+    public void addDetails(AddStockParam stockParam) {
+        Stock stock = this.lambdaQuery().eq(Stock::getStorehouseId, stockParam.getStoreHouseId())  //查询仓库
+                .eq(Stock::getSkuId, stockParam.getSkuId())
+                .eq(Stock::getBrandId, stockParam.getBrandId())
+                .one();
+        Long stockId;
+        if (ToolUtil.isNotEmpty(stock)) {
+            stockId = stock.getStockId();
+        } else {   //新建相同物料的库存
+            Stock newStock = new Stock();
+            newStock.setBrandId(stockParam.getBrandId());
+            newStock.setSkuId(stockParam.getSkuId());
+            newStock.setStorehouseId(stockParam.getStoreHouseId());
+            this.save(newStock);
+            stockId = newStock.getStockId();
+        }
+        StockDetails stockDetails = new StockDetails();
+        stockDetails.setStockId(stockId);
+        stockDetails.setNumber(stockParam.getNumber());
+        stockDetails.setStorehousePositionsId(positionsService.judgePosition(stockParam.getPositionsId()));
+        stockDetails.setQrCodeid(stockParam.getCodeId());
+        stockDetails.setInkindId(stockParam.getInkindId());
+        stockDetails.setBrandId(stockParam.getBrandId());
+        stockDetails.setStorehouseId(stockParam.getStoreHouseId());
+        stockDetails.setSkuId(stockParam.getSkuId());
+        stockDetailsService.save(stockDetails);
+
+        //修改实物
+        Inkind inkind = new Inkind();
+        inkind.setNumber(stockParam.getNumber());
+        inkind.setType("1");
+        inkindService.update(inkind, new QueryWrapper<Inkind>() {{
+            eq("inkind_id", stockParam.getInkindId());
+        }});
+
+        this.updateNumber(new ArrayList<Long>() {{  //更改stock数量
+            add(stockId);
+        }});
     }
 
     @Override
@@ -179,7 +272,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
             if (!storeList.isEmpty()) {
                 for (Storehouse storehouse : storeList) {
-                    if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && ToolUtil.isNotEmpty(storehouse.getStorehouseId()) &&  datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
+                    if (ToolUtil.isNotEmpty(datum.getStorehouseId()) && ToolUtil.isNotEmpty(storehouse.getStorehouseId()) && datum.getStorehouseId().equals(storehouse.getStorehouseId())) {
                         StorehouseResult storehouseResult = new StorehouseResult();
                         ToolUtil.copyProperties(storehouse, storehouseResult);
                         datum.setStorehouseResult(storehouseResult);

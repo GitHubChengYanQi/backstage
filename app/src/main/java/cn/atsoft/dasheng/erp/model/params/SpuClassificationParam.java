@@ -29,6 +29,8 @@ public class SpuClassificationParam  extends AbstractDictMap implements Serializ
     private String children;
 
 
+    private  Integer isNotproduct;
+
     private String childrens;
     /**
      * 编码分类
@@ -55,6 +57,12 @@ public class SpuClassificationParam  extends AbstractDictMap implements Serializ
      */
     @ApiModelProperty("名称")
     private String name;
+
+    /**
+     * 是否是产品分类
+     */
+    @ApiModelProperty("是否是产品分类")
+    private Long type;
 
     /**
      * 创建时间

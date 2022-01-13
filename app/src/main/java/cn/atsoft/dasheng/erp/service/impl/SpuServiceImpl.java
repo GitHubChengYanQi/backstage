@@ -81,16 +81,12 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
     @Override
     public Long add(SpuParam param) {
 
+
         Spu entity = getEntity(param);
         //查询判断是否有相同名称spu
-        Integer count = this.query().eq("name", param.getName()).count();
+        Integer count = this.query().eq("name", param.getName()).eq("display",1).count();
         if (count > 0) {
             throw new ServiceException(500, "产品名称重复,请更换");
-        }
-
-        //如果此参数为空
-        if (ToolUtil.isEmpty(param.getIsHidden())) {
-            throw new ServiceException(500, "（测试用）参数有错误无状态判断值");
         }
         if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
@@ -98,12 +94,17 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
         } else {
             throw new ServiceException(500, "请配置属性！");
         }
+
+        /**
+         * 绑定产品
+         */
+        Long spuClassificationId = this.getSpuClass(param);
+        entity.setSpuClassificationId(spuClassificationId);
         this.save(entity);
         List<List<String>> result = new ArrayList<List<String>>();
         param.getSpuAttributes().getSpuRequests().sort(Comparator.comparing(Attribute::getAttributeId));
 
         if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
-
             descartes1(param.getSpuAttributes().getSpuRequests(), result, 0, new ArrayList<String>());
             List<Sku> skuList = new ArrayList<>();
             List<String> toJsonSkuValue = new ArrayList<>();
@@ -301,22 +302,45 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, Spu> implements SpuSe
 
     public void delete(SpuParam param) {
         param.setDisplay(0);
-        spuService.update(param);
+        Spu entity = this.getEntity(param);
+        spuService.updateById(entity);
     }
 
     @Override
 
     public void update(SpuParam param) {
-        if (ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
+        if (ToolUtil.isNotEmpty(param.getSpuAttributes()) && ToolUtil.isNotEmpty(param.getSpuAttributes().getSpuRequests())) {
             String toJSONString = JSON.toJSONString(param.getSpuAttributes().getSpuRequests());
             param.setAttribute(toJSONString);
         }
+
         Spu oldEntity = getOldEntity(param);
         Spu newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        Long spuClassificationId = this.getSpuClass(param);
+        newEntity.setSpuClassificationId(spuClassificationId);
         this.updateById(newEntity);
     }
-
+    /**
+     * 查询产品 新建或返回已有产品id
+     * @param param
+     * @return
+     */
+    private Long getSpuClass(SpuParam param){
+        Long spuClassificationId = 0L;
+        SpuClassification spuClassification = spuClassificationService.lambdaQuery().eq(SpuClassification::getName, param.getSpuClassification().getName()).and(i -> i.eq(SpuClassification::getDisplay, 1)).one();
+        if (ToolUtil.isEmpty(spuClassification)) {
+            SpuClassification spuClassificationEntity = new SpuClassification();
+            spuClassificationEntity.setName(param.getSpuClassification().getName());
+            spuClassificationEntity.setType(2L);
+            spuClassificationEntity.setPid(param.getSpuClass());
+            spuClassificationService.save(spuClassificationEntity);
+            spuClassificationId = spuClassificationEntity.getSpuClassificationId();
+        } else {
+            spuClassificationId = spuClassification.getSpuClassificationId();
+        }
+        return spuClassificationId;
+    }
     @Override
     public SpuResult findBySpec(SpuParam param) {
         return null;

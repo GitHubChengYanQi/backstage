@@ -5,6 +5,8 @@ import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
+import cn.atsoft.dasheng.erp.pojo.FreeInStockParam;
+import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -74,5 +76,11 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @param instockParams
      */
     void addByQuality(InstockParams instockParams);
+
+    /**
+     * 自由入库
+     * @param freeInStockParam
+     */
+    void freeInstock(FreeInStockParam freeInStockParam);
 
 }

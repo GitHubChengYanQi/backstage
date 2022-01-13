@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.orCode.service;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -10,10 +11,11 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.model.result.InKindRequest;
 import cn.atsoft.dasheng.orCode.model.result.OrCodeResult;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
+import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -126,7 +128,7 @@ public interface OrCodeService extends IService<OrCode> {
      * @param inKindRequest
      * @return
      */
-    Boolean judgeBind(InKindRequest inKindRequest);
+    Inkind judgeBind(InKindRequest inKindRequest);
 
     /**
      * 扫码入库
@@ -136,9 +138,24 @@ public interface OrCodeService extends IService<OrCode> {
      */
     Long instockByCode(InKindRequest inKindRequest);
 
+    /**
+     * 批量扫码入库
+     *
+     * @param inKindRequest
+     * @return
+     */
 
-    Long batchInstockByCode(InKindRequest inKindRequest);
+    void batchInstockByCode(InKindRequest inKindRequest);
 
+
+    /**
+     * 批量扫码出库
+     *
+     * @param inKindRequest
+     * @return
+     */
+
+    void batchOutStockByCode(InKindRequest inKindRequest);
     /**
      * 批量增加二维码
      *
@@ -146,6 +163,8 @@ public interface OrCodeService extends IService<OrCode> {
      */
     void batchAdd(OrCodeParam param);
 
+
+    Map<String,Object> inkindDetail(Long qrcodeId);
 
     /**
      * @return
@@ -163,13 +182,16 @@ public interface OrCodeService extends IService<OrCode> {
     /**
      * 自动生成二维码绑定
      */
-    Long automaticBinding(BackCodeRequest codeRequest);
+    AutomaticBindResult automaticBinding(BackCodeRequest codeRequest);
 
     /**
-     * 查询二维码
-     *
-     * @param codeId
+     * 批量自动生成二维码绑定
+     * @param batchAutomatic
      * @return
      */
-    List<Long> codeIdList(String codeId);
+    List<AutomaticBindResult> batchAutomaticBinding(BatchAutomatic batchAutomatic);
+
+
+
+
 }

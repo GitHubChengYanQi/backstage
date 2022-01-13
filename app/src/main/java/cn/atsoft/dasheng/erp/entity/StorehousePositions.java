@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.erp.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,12 +23,15 @@ import java.io.Serializable;
 public class StorehousePositions implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @TableField("children")
+    private String children;
 
-
+    @TableField("childrens")
+    private String childrens;
     /**
      * 仓库库位id
      */
-      @TableId(value = "storehouse_positions_id", type = IdType.ID_WORKER)
+    @TableId(value = "storehouse_positions_id", type = IdType.ID_WORKER)
     private Long storehousePositionsId;
 
     /**
@@ -66,25 +72,25 @@ public class StorehousePositions implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -105,6 +111,19 @@ public class StorehousePositions implements Serializable {
     @TableField("pid")
     private Long pid;
 
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
 
     public Long getStorehousePositionsId() {
         return storehousePositionsId;
@@ -202,21 +221,37 @@ public class StorehousePositions implements Serializable {
         this.pid = pid;
     }
 
+    public String getChildren() {
+        return children;
+    }
+
+    public void setChildren(String children) {
+        this.children = children;
+    }
+
+    public String getChildrens() {
+        return childrens;
+    }
+
+    public void setChildrens(String childrens) {
+        this.childrens = childrens;
+    }
+
     @Override
     public String toString() {
         return "StorehousePositions{" +
-        "storehousePositionsId=" + storehousePositionsId +
-        ", storehouseId=" + storehouseId +
-        ", skuId=" + skuId +
-        ", name=" + name +
-        ", number=" + number +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        ", pid=" + pid +
-        "}";
+                "storehousePositionsId=" + storehousePositionsId +
+                ", storehouseId=" + storehouseId +
+                ", skuId=" + skuId +
+                ", name=" + name +
+                ", number=" + number +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                ", pid=" + pid +
+                "}";
     }
 }

@@ -10,9 +10,12 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.message.enmu.MessageType;
 import cn.atsoft.dasheng.message.entity.MessageEntity;
 import cn.atsoft.dasheng.message.producer.MessageProducer;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.uc.entity.UcOpenUserInfo;
 import cn.atsoft.dasheng.uc.service.UcOpenUserInfoService;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,8 @@ public class OutstockSendTemplate {
     private WxCpService wxCpService;
     @Autowired
     private BusinessTrackService businessTrackService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Autowired
     MessageProducer messageProducer;
@@ -39,6 +44,8 @@ public class OutstockSendTemplate {
     private String url;
 
     private Long userId;
+
+    private Long sourceId;
 
 
     //企业微信推送
@@ -70,7 +77,24 @@ public class OutstockSendTemplate {
     public String getUrl() {
         return url;
     }
+    public void send(String url){
+        List<Long> users = new ArrayList();
+        users.add(getUserId());
+        WxCpTemplate wxCpTemplate = new WxCpTemplate();
+        wxCpTemplate.setTitle("出库有提醒");
+        wxCpTemplate.setDescription("有新的物料需要出库");
+        wxCpTemplate.setUserIds(users);
 
+        wxCpTemplate.setUrl(url);
+        //获取url
+//        wxCpSendTemplate.setMessage(new Message(){{
+//            setSource("outStockOrder");
+//            setSourceId(sourceId);
+//        }});
+        wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+        wxCpSendTemplate.sendTemplate();
+
+    }
     public void sendTemplate() {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setType(MessageType.CP);
@@ -95,13 +119,14 @@ public class OutstockSendTemplate {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                messageEntity.setType(MessageType.MESSAGE);
                 Message message = new Message();
                 message.setTime(new DateTime());
                 message.setTitle("出库提醒");
+                message.setUrl(getUrl());
                 message.setContent("您有新的出库单需要操作");
                 message.setType(3);
                 message.setSort(0L);
-                messageEntity.setType(MessageType.MESSAGE);
                 messageEntity.setMessage(message);
                 messageProducer.sendMessage(messageEntity);
             }

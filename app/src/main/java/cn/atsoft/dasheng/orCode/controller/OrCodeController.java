@@ -26,11 +26,14 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
+import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
+import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.service.impl.OrCodeServiceImpl;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -107,19 +110,6 @@ public class OrCodeController extends BaseController {
 
 
     /**
-     * 新增接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody OrCodeParam orCodeParam) {
-        this.orCodeService.add(orCodeParam);
-        return ResponseData.success();
-    }
-
-    /**
      * 批量增加二维码
      *
      * @author song
@@ -134,46 +124,13 @@ public class OrCodeController extends BaseController {
 
 
     /**
-     * 模糊查询二维码
-     *
-     * @author song
-     * @Date 2021-10-29
+     * 批量自动生成二维码绑定
      */
-    @RequestMapping(value = "/codeIdList", method = RequestMethod.GET)
-    @ApiOperation("新增")
-    public ResponseData codeIdList(@Param("codeId") String codeId) {
-        List<Long> longList = this.orCodeService.codeIdList(codeId);
-        return ResponseData.success(longList);
+    @RequestMapping(value = "/batchAutomaticBinding", method = RequestMethod.POST)
+    public ResponseData batchAutomaticBinding(@RequestBody BatchAutomatic batchAutomatic) {
+        List<AutomaticBindResult> bindResults = this.orCodeService.batchAutomaticBinding(batchAutomatic);
+        return ResponseData.success(bindResults);
     }
-
-
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody OrCodeParam orCodeParam) {
-
-        this.orCodeService.update(orCodeParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-10-29
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody OrCodeParam orCodeParam) {
-        this.orCodeService.delete(orCodeParam);
-        return ResponseData.success();
-    }
-
 
     /**
      * 扫码入库
@@ -184,6 +141,9 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/instockByCode", method = RequestMethod.POST)
     @ApiOperation("扫码入库")
     public ResponseData instockByCode(@RequestBody InKindRequest inKindRequest) {
+        if (ToolUtil.isEmpty(inKindRequest.getCodeId())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
         Long number = orCodeService.instockByCode(inKindRequest);
         return ResponseData.success(number);
 
@@ -198,25 +158,30 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/batchInstockByCode", method = RequestMethod.POST)
     @ApiOperation("批量扫码入库")
     public ResponseData batchInstockByCode(@RequestBody InKindRequest inKindRequest) {
-        Long number = orCodeService.batchInstockByCode(inKindRequest);
-        return ResponseData.success(number);
-
+        if (ToolUtil.isEmpty(inKindRequest.getCodeIds())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
+        orCodeService.batchInstockByCode(inKindRequest);
+        return ResponseData.success();
     }
 
+
     /**
-     * 查看详情接口
+     * 批量扫码出库
      *
      * @author song
      * @Date 2021-10-29
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.POST)
-    @ApiOperation("详情")
-    public ResponseData<OrCodeResult> detail(@RequestBody OrCodeParam orCodeParam) {
-        OrCode detail = this.orCodeService.getById(orCodeParam.getOrCodeId());
-        OrCodeResult result = new OrCodeResult();
-        ToolUtil.copyProperties(detail, result);
-        return ResponseData.success(result);
+    @RequestMapping(value = "/batchOutStockByCode", method = RequestMethod.POST)
+    @ApiOperation("批量扫码入库")
+    public ResponseData batchOutStockByCode(@RequestBody InKindRequest inKindRequest) {
+        if (ToolUtil.isEmpty(inKindRequest.getBatchOutStockParams())) {
+            throw new ServiceException(500, "请扫描二维码");
+        }
+        orCodeService.batchOutStockByCode(inKindRequest);
+        return ResponseData.success();
     }
+
 
     /**
      * 查询列表
@@ -246,7 +211,6 @@ public class OrCodeController extends BaseController {
     public ResponseData backCode(@RequestBody BackCodeRequest backCodeRequest) {
         Long aLong = orCodeService.backCode(backCodeRequest);
         return ResponseData.success(aLong);
-
     }
 
 
@@ -261,7 +225,6 @@ public class OrCodeController extends BaseController {
     public ResponseData batchBackCode(@RequestBody OrCodeRequest codeRequest) {
         List<Long> longs = orCodeService.backBatchCode(codeRequest.getIds(), codeRequest.getType());
         return ResponseData.success(longs);
-
     }
 
 
@@ -273,10 +236,17 @@ public class OrCodeController extends BaseController {
      */
     @RequestMapping(value = "/backObject", method = RequestMethod.GET)
     @Transactional
-    public ResponseData backObject(@RequestParam Long id) {
+    public ResponseData backObject(@Param("id") Long id) {
+        if (ToolUtil.isEmpty(id)) {
+            throw new ServiceException(500, "未提交参数");
+        }
         OrCodeBind codeBind = orCodeBindService.query().in("qr_code_id", id).one();
         if (ToolUtil.isEmpty(codeBind)) {
-            return null;
+            OrCode orCode = orCodeService.getById(id);
+            if (ToolUtil.isNotEmpty(orCode))
+                return null;
+            else
+                throw new ServiceException(500, "当前二维码不合法");
         } else {
             String source = codeBind.getSource();
             switch (source) {
@@ -438,18 +408,37 @@ public class OrCodeController extends BaseController {
                 case "item":
                     InkindResult inkindResult = inkindService.getInkindResult(codeBind.getFormId());
                     InkindBack inkindBack = new InkindBack();
-
-                    if (inkindResult.getSource().equals("质检")&&ToolUtil.isNotEmpty(inkindResult.getSourceId())) {
-                        QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
-                        inkindResult.setTaskDetail(detail);
+                    switch (inkindResult.getSource()) {
+                        case "质检":
+                            QualityTaskDetail detail = detailService.getById(inkindResult.getSourceId());
+                            inkindResult.setTaskDetail(detail);
+                            break;
+                        case "入库":
+                        case "自由入库":
+                        case "盘点入库":
+                            Map<String, Object> inkindDetail = orCodeService.inkindDetail(codeBind.getOrCodeId());
+                            inkindResult.setInkindDetail(inkindDetail);
+                            break;
                     }
-
                     inkindBack.setInkindResult(inkindResult);
                     inkindBack.setType("item");
                     return ResponseData.success(inkindBack);
             }
         }
         return ResponseData.success();
+    }
+
+
+    /**
+     * 判断是否绑定
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/inkindDetail", method = RequestMethod.GET)
+    @ApiOperation("判断是否绑定")
+    public ResponseData inkindDetail(@RequestParam Long id) {
+        return ResponseData.success(orCodeService.inkindDetail(id));
     }
 
     /**
@@ -475,8 +464,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/judgeBind", method = RequestMethod.POST)
     @ApiOperation("判断是否绑定")
     public ResponseData judgeBind(@RequestBody InKindRequest inKindRequest) {
-        Boolean t = orCodeService.judgeBind(inKindRequest);
-        return ResponseData.success(t);
+        Inkind inkind = orCodeService.judgeBind(inKindRequest);
+        return ResponseData.success(inkind);
     }
 
 
@@ -487,7 +476,6 @@ public class OrCodeController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/backInkindByCode", method = RequestMethod.POST)
-    @ApiOperation("判断是否绑定")
     public ResponseData backInkindByCode(@RequestBody InKindRequest inKindRequest) {
         Object o = orCodeService.backInkindByCode(inKindRequest);
         return ResponseData.success(o);
@@ -515,8 +503,8 @@ public class OrCodeController extends BaseController {
     @RequestMapping(value = "/automaticBinding", method = RequestMethod.POST)
     @Transactional
     public ResponseData automaticBinding(@RequestBody BackCodeRequest codeRequest) {
-        Long orcodeId = orCodeService.automaticBinding(codeRequest);
-        return ResponseData.success(orcodeId);
+        AutomaticBindResult automaticBindResult = orCodeService.automaticBinding(codeRequest);
+        return ResponseData.success(automaticBindResult);
     }
 }
 

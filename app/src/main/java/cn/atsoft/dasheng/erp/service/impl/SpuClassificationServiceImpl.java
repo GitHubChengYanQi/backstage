@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,8 +48,9 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     private SpuService spuService;
 
     @Override
+    @Transactional
     public Long add(SpuClassificationParam param) {
-        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).count();
+        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).and(i->i.eq(SpuClassification::getType,1)).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -64,6 +66,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
         QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("spu_classification_id", entity.getPid());
+        SpuClassification spuClass = this.getById(entity.getPid());
+        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2){
+            throw new ServiceException(500,"产品不可以有下级分类");
+        }
         this.update(spuClassification, QueryWrapper);
 
         updateChildren(entity.getPid());
@@ -79,17 +85,25 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         if (count > 0) {
             throw new ServiceException(500, "此分类下有物品,无法删除");
         } else {
-            param.setDisplay(0);
-            this.update(param);
+            SpuClassification spuClassification = new SpuClassification();
+            spuClassification.setSpuClassificationId(param.getSpuClassificationId());
+            spuClassification.setDisplay(0);
+            this.updateById(spuClassification);
         }
 //        this.removeById(getKey(param));
     }
 
     @Override
-
+    @Transactional
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
-        if (param.getPid() == 0) {
+        SpuClassification classification = this.getById(param.getSpuClassificationId());
+        SpuClassification pid = this.getById(classification.getPid());
+        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2){
+            throw new ServiceException(500,"产品不可以有下级分类");
+        }
+        
+        if (classification.getPid() == 0) {
             List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
             for (SpuClassification spuClassification : spuClassifications) {
                 JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
