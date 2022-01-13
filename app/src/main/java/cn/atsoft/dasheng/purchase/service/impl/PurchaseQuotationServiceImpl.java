@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import oshi.jna.platform.mac.SystemB;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -103,6 +104,44 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
+
+    /**
+     * 批量 增加
+     *
+     * @param param
+     */
+    @Override
+    @Transactional
+    public void batchAdd(QuotationParam param) {
+        List<PurchaseQuotationParam> params = param.getQuotationParams();
+
+        List<PurchaseQuotation> purchaseQuotations = new ArrayList<>();
+
+        for (PurchaseQuotationParam purchaseQuotationParam : params) {
+            if (ToolUtil.isEmpty(purchaseQuotationParam.getCustomerId())) {
+                throw new ServiceException(500, "请添加供应商");
+            }
+            judgeSupplier(purchaseQuotationParam.getCustomerId());
+            PurchaseQuotation purchaseQuotation = new PurchaseQuotation();
+            ToolUtil.copyProperties(purchaseQuotationParam, purchaseQuotation);
+            purchaseQuotations.add(purchaseQuotation);
+        }
+        this.saveBatch(purchaseQuotations);
+    }
+
+    /**
+     * 判断是否是供应商
+     */
+    private void judgeSupplier(Long id) {
+        Customer supplier = customerService.getById(id);
+        if (ToolUtil.isEmpty(supplier)) {
+            throw new ServiceException(500, "当前供应商不存在");
+        }
+        if (supplier.getSupply() != 2) {
+            throw new ServiceException(500, "请选择正确供应商");
+        }
+    }
+
 
     @Override
     public void addList(QuotationParam param) {

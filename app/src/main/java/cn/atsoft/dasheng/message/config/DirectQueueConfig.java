@@ -26,16 +26,14 @@ public class DirectQueueConfig {
 
     private static String mqPrefix;
 
-    public final static String MESSAGE_REAL_EXCHANGE = mqPrefix + ".message.real.topicExchange";
-    public final static String MESSAGE_REAL_ROUTE = mqPrefix + ".message.real.route";
-
-    public final static String $MESSAGE_REAL_QUEUE = ".message.real.topicExchange";
-    public final static String MESSAGE_REAL_QUEUE = mqPrefix + $MESSAGE_REAL_QUEUE;
+    public final static String MESSAGE_REAL_EXCHANGE = ".message.real.topicExchange";
+    public final static String MESSAGE_REAL_ROUTE = ".message.real.route";
+    public final static String MESSAGE_REAL_QUEUE = ".message.real.queue";
 
 
-    public final static String MESSAGE_DELAY_EXCHANGE = mqPrefix + ".message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_EXCHANGE = ".message.delay.topicExchange";
     public final static String MESSAGE_DELAY_ROUTE = ".message.delay.route";
-    public final static String MESSAGE_DELAY_QUEUE = mqPrefix + ".message.delay.topicExchange";
+    public final static String MESSAGE_DELAY_QUEUE = ".message.delay.queue";
 
     @Bean
     public void init() {
@@ -51,7 +49,7 @@ public class DirectQueueConfig {
     public Queue messageQueue() {
         logger.info(mqPrefix);
         logger.info(getMessageDelayRoute());
-        return new Queue(getMessageDelayRoute());
+        return new Queue(getMessageRealQueue());
     }
 
 
@@ -59,9 +57,9 @@ public class DirectQueueConfig {
     public Queue messageDelayQueue() {
 
         Map<String, Object> argsMap = Maps.newHashMap();
-        argsMap.put("x-dead-letter-exchange", MESSAGE_REAL_EXCHANGE); //真正的交换机
-        argsMap.put("x-dead-letter-routing-key", MESSAGE_REAL_ROUTE); //真正的路由键
-        return new Queue(tmpPrefix + MESSAGE_DELAY_QUEUE, true, false, false, argsMap);
+        argsMap.put("x-dead-letter-exchange", getMessageRealExchange()); //真正的交换机
+        argsMap.put("x-dead-letter-routing-key", getMessageRealRoute()); //真正的路由键
+        return new Queue(getMessageDelayQueue() , true, false, false, argsMap);
     }
 
     /**
@@ -71,12 +69,12 @@ public class DirectQueueConfig {
      */
     @Bean
     public TopicExchange topicExchange() {
-        return new TopicExchange(MESSAGE_REAL_EXCHANGE);
+        return new TopicExchange(getMessageRealExchange());
     }
 
     @Bean
     public TopicExchange topicDelayExchange() {
-        return new TopicExchange(MESSAGE_DELAY_EXCHANGE);
+        return new TopicExchange(getMessageDelayExchange());
     }
 
     /**
@@ -85,16 +83,36 @@ public class DirectQueueConfig {
     @Bean
     Binding bindingTopicExchange() {
         logger.info("绑定队列");
-        return BindingBuilder.bind(messageQueue()).to(topicExchange()).with(MESSAGE_REAL_ROUTE);
+        return BindingBuilder.bind(messageQueue()).to(topicExchange()).with(getMessageRealRoute());
     }
 
     @Bean
     Binding bindingTopicDelayExchange() {
         logger.info("绑定延迟队列");
-        return BindingBuilder.bind(messageDelayQueue()).to(topicDelayExchange()).with(MESSAGE_DELAY_ROUTE);
+        return BindingBuilder.bind(messageDelayQueue()).to(topicDelayExchange()).with(getMessageRealRoute());
     }
 
     public static String getMessageDelayRoute() {
         return mqPrefix + MESSAGE_DELAY_ROUTE;
+    }
+
+    public static String getMessageRealExchange() {
+        return mqPrefix + MESSAGE_REAL_EXCHANGE;
+    }
+
+    public static String getMessageRealRoute() {
+        return mqPrefix + MESSAGE_REAL_ROUTE;
+    }
+
+    public static String getMessageRealQueue() {
+        return mqPrefix + MESSAGE_REAL_QUEUE;
+    }
+
+    public static String getMessageDelayExchange() {
+        return mqPrefix + MESSAGE_DELAY_EXCHANGE;
+    }
+
+    public static String getMessageDelayQueue() {
+        return mqPrefix + MESSAGE_DELAY_QUEUE;
     }
 }

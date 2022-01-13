@@ -108,6 +108,9 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ToolUtil.copyProperties(newEntity, oldEntity);
         if (oldEntity.getDisplay().equals(newEntity.getDisplay())) {
             this.updateById(newEntity);
+            if (newEntity.getStatus()==99) {
+
+            }
         }
     }
 
