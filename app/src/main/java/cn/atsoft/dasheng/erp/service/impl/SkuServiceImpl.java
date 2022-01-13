@@ -270,7 +270,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         }
     }
-    private Long getOrSaveSpu (SkuParam param,Spu spu,Long spuClassificationId,Long categoryId){
+
+    private Long getOrSaveSpu(SkuParam param, Spu spu, Long spuClassificationId, Long categoryId) {
         Long spuId = param.getSpu().getSpuId();
         Spu spuEntity = new Spu();
         spuEntity.setUnitId(param.getUnitId());
@@ -296,6 +297,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         }
         return spuId;
     }
+
     /**
      * 查询产品 新建或返回已有产品id
      *
@@ -517,12 +519,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuIds = null;
         if (ToolUtil.isNotEmpty(param.getSpuClass())) {
             spuIds = new ArrayList<>();
-            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).list();
+            List<SpuClassification> classifications = spuClassificationService.query().eq("pid", param.getSpuClass()).eq("display", 1).list();
             List<Long> classIds = new ArrayList<>();
             for (SpuClassification classification : classifications) {
                 classIds.add(classification.getSpuClassificationId());
             }
-            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).list();
+            List<Spu> spuList = classIds.size() == 0 ? new ArrayList<>() : spuService.query().in("spu_classification_id", classIds).eq("display", 1).list();
             for (Spu spu : spuList) {
                 spuIds.add(spu.getSpuId());
             }

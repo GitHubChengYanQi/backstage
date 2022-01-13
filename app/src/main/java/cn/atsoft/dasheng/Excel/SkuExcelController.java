@@ -12,6 +12,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.service.*;
+import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
@@ -23,6 +24,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
 
 @Controller
 @RequestMapping("/Excel")
@@ -60,6 +64,8 @@ public class SkuExcelController {
     @Autowired
     private CategoryService categoryService;
 
+    protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
+
     /**
      * 上传excel填报
      */
@@ -67,6 +73,8 @@ public class SkuExcelController {
     @ResponseBody
     @Transactional
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
+
+
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
 
@@ -76,6 +84,11 @@ public class SkuExcelController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        logger.info("文件名称——>" + name);
+        logger.info("文件路径——>" + fileSavePath);
+        logger.info("file 文件——>" + excelFile);
+
 
         ExcelReader reader = ExcelUtil.getReader(excelFile);
         List<SkuExcelItem> skuExcelItems = reader.readAll(SkuExcelItem.class);
