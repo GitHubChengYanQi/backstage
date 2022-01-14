@@ -122,7 +122,25 @@ public class SkuExcelController {
         Integer i = 0;
 
         List<SkuExcelItem> errorList = new ArrayList<>();
+//对比相同数据取重复数据-----------------------------------------------------------------------------------------------------------
+        List<String> repeat = new ArrayList<>();
+        for (SkuExcelItem skuExcelItem : skuExcelItems) {
+            repeat.add(skuExcelItem.get成品码());
+        }
+        for (int j = 0; j < repeat.size(); j++) {
+            for (SkuExcelItem skuExcelItem : skuExcelItems) {
+                if (repeat.get(j).equals(skuExcelItem.get成品码())) {
+                    repeat.remove(j);
+                    skuExcelItems.remove(skuExcelItem);
+                    errorList.add(skuExcelItem);
+                    break;
+                }
+            }
+        }
 
+
+        //-------------------------------------------------------------------------------------------------------------
+        List<Sku> skuList = new ArrayList<>();
         for (SkuExcelItem skuExcelItem : skuExcelItems) {
             i++;
             try {
@@ -240,7 +258,7 @@ public class SkuExcelController {
                     }
                     String md5 = SecureUtil.md5(spuId + sku.getSkuValue());
                     sku.setSkuValueMd5(md5);
-                    skuService.save(sku);
+                    skuList.add(sku);
                 }
 
             } catch (Exception e) {
@@ -248,6 +266,7 @@ public class SkuExcelController {
                 logger.error("第" + i + "行" + skuExcelItem + "错误");
             }
         }
+        skuService.saveBatch(skuList);
         return ResponseData.success(errorList);
     }
 
