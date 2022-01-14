@@ -45,8 +45,8 @@ public class PhoneController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody @Valid  PhoneParam phoneParam) {
-        this.phoneService.add(phoneParam);
-        return ResponseData.success();
+        Phone phone = this.phoneService.add(phoneParam);
+        return ResponseData.success(phone);
     }
 
     /**
