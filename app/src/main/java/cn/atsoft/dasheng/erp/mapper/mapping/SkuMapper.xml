@@ -78,16 +78,17 @@
             and coding like CONCAT('%',#{paramCondition.coding},'%')
         </if>
         <if test="paramCondition.skuName != null and paramCondition.skuName != ''">
-            and (spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1)
-            OR spu_id IN(SELECT spu_id FROM goods_spu WHERE spu_classification_id IN(SELECT spu_classification_id FROM  goods_spu_class WHERE `name`  like CONCAT ('%',#{paramCondition.skuName},'%') AND display = 1) and display = 1))
+            and (spu_id IN(SELECT spu_id from goods_spu where name like CONCAT ('%',#{paramCondition.skuName},'%') and
+            display = 1)
+            OR spu_id IN(SELECT spu_id FROM goods_spu WHERE spu_classification_id IN(SELECT spu_classification_id FROM
+            goods_spu_class WHERE `name` like CONCAT ('%',#{paramCondition.skuName},'%') AND display = 1) and display =
+            1))
+
             UNION
             SELECT
             <include refid="Base_Column_List"/>
             FROM goods_sku where standard like CONCAT ('%',#{paramCondition.skuName},'%') and display = 1
-            UNION
-            select
-            <include refid="Base_Column_List"/>
-            from goods_sku where sku_name like CONCAT('%',#{paramCondition.skuName},'%') and display = 1
+
         </if>
         <if test="paramCondition.type != null">
             and type = #{paramCondition.type}

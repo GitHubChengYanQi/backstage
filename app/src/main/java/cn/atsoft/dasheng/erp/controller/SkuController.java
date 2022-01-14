@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ import java.util.Map;
 /**
  * sku表控制器
  *
- * @author 
+ * @author
  * @Date 2021-10-18 14:14:21
  */
 @RestController
@@ -49,7 +51,7 @@ public class SkuController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -62,7 +64,7 @@ public class SkuController extends BaseController {
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -77,13 +79,13 @@ public class SkuController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @BussinessLog(value = "删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody SkuParam skuParam)  {
+    public ResponseData delete(@RequestBody SkuParam skuParam) {
         this.skuService.delete(skuParam);
         return ResponseData.success();
     }
@@ -91,7 +93,7 @@ public class SkuController extends BaseController {
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.POST)
     @BussinessLog(value = "批量删除sku", key = "name", dict = SkuParam.class)
     @ApiOperation("删除")
-    public ResponseData deleteBatch(@RequestBody SkuParam skuParam)  {
+    public ResponseData deleteBatch(@RequestBody SkuParam skuParam) {
         this.skuService.deleteBatch(skuParam);
         return ResponseData.success();
     }
@@ -99,7 +101,7 @@ public class SkuController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -109,7 +111,7 @@ public class SkuController extends BaseController {
         SkuResult sku = skuService.getSku(skuParam.getSkuId());
         if (ToolUtil.isNotEmpty(sku.getSpuId())) {
             Spu spu = spuService.getById(sku.getSpuId());
-            if (ToolUtil.isNotEmpty(spu.getUnitId())){
+            if (ToolUtil.isNotEmpty(spu.getUnitId())) {
                 Unit unit = unitService.getById(spu.getUnitId());
                 sku.setUnit(unit);
             }
@@ -132,16 +134,32 @@ public class SkuController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2021-10-18
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<SkuResult> list(@RequestBody(required = false) SkuParam skuParam) {
-        if(ToolUtil.isEmpty(skuParam)){
+        if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
-        return this.skuService.findPageBySpec(skuParam);
+        if (ToolUtil.isNotEmpty(skuParam.getSkuIds())) {   //特殊查询 取交集
+            PageInfo<SkuResult> pageBySpec = skuService.findPageBySpec(skuParam);
+            List<SkuResult> skuResults = new ArrayList<>();
+            for (SkuResult datum : pageBySpec.getData()) {
+                for (Long skuId : skuParam.getSkuIds()) {
+                    if (skuId.equals(datum.getSkuId())) {
+                        skuResults.add(datum);
+                        break;
+                    }
+                }
+            }
+            pageBySpec.setData(skuResults);
+            return pageBySpec;
+        } else {
+            return this.skuService.findPageBySpec(skuParam);
+        }
+
     }
 
     /**
@@ -158,8 +176,6 @@ public class SkuController extends BaseController {
         List<Map<String, Object>> result = factory.wrap();
         return ResponseData.success(result);
     }
-
-
 
 
 }
