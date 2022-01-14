@@ -143,23 +143,7 @@ public class SkuController extends BaseController {
         if (ToolUtil.isEmpty(skuParam)) {
             skuParam = new SkuParam();
         }
-        if (ToolUtil.isNotEmpty(skuParam.getSkuIds())) {   //特殊查询 取交集
-            PageInfo<SkuResult> pageBySpec = skuService.findPageBySpec(skuParam);
-            List<SkuResult> skuResults = new ArrayList<>();
-            for (SkuResult datum : pageBySpec.getData()) {
-                for (Long skuId : skuParam.getSkuIds()) {
-                    if (skuId.equals(datum.getSkuId())) {
-                        skuResults.add(datum);
-                        break;
-                    }
-                }
-            }
-            pageBySpec.setData(skuResults);
-            return pageBySpec;
-        } else {
-            return this.skuService.findPageBySpec(skuParam);
-        }
-
+        return this.skuService.findPageBySpec(skuParam);
     }
 
     /**
