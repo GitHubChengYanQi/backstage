@@ -69,11 +69,7 @@ public class ProcurementOrder implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
-    /**
-     * 采购计划 详情
-     */
-    @TableField("detail_id")
-    private Long detailId;
+
 
 
     public Long getProcurementOrderId() {
@@ -156,13 +152,7 @@ public class ProcurementOrder implements Serializable {
         this.deptId = deptId;
     }
 
-    public Long getDetailId() {
-        return detailId;
-    }
 
-    public void setDetailId(Long detailId) {
-        this.detailId = detailId;
-    }
 
     @Override
     public String toString() {
@@ -177,7 +167,6 @@ public class ProcurementOrder implements Serializable {
         ", createTime=" + createTime +
         ", updateTime=" + updateTime +
         ", deptId=" + deptId +
-        ", detailId=" + detailId +
-        "}";
+                "}";
     }
 }

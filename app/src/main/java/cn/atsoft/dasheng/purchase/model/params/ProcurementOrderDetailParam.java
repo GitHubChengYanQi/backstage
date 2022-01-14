@@ -4,15 +4,17 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -24,7 +26,10 @@ public class ProcurementOrderDetailParam implements Serializable, BaseValidating
 
     private static final long serialVersionUID = 1L;
 
+    private Long planDetailId;
 
+
+    private Integer status;
     /**
      * 采购单详情id
      */
@@ -33,6 +38,13 @@ public class ProcurementOrderDetailParam implements Serializable, BaseValidating
 
     @ApiModelProperty("")
     private Long skuId;
+
+    /**
+     * 采购计划 详情
+     */
+    @ApiModelProperty("采购计划 详情")
+    @NotNull
+    private Long detailId;
 
     /**
      * 品牌id

@@ -14,12 +14,12 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="deptId" property="deptId" />
-        <result column="detail_id" property="detailId" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        procurement_order_id AS "procurementOrderId", procurement_plan_id AS "procurementPlanId", status AS "status", note AS "note", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId", detail_id AS "detailId"
+        procurement_order_id AS "procurementOrderId", procurement_plan_id AS "procurementPlanId", status AS "status", note AS "note", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
     </sql>
 
 

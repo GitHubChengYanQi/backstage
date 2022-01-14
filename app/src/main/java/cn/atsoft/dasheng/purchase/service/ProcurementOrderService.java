@@ -24,7 +24,7 @@ public interface ProcurementOrderService extends IService<ProcurementOrder> {
      * @author song
      * @Date 2022-01-13
      */
-    void add(ProcurementOrderParam param);
+    void add(ProcurementOrderParam param) throws Exception;
 
     /**
      * 删除

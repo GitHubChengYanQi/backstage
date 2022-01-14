@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class ProcurementOrderParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    @NotNull
     private List<ProcurementOrderDetailParam> detailParams;
     /**
      * 采购单
@@ -36,6 +37,7 @@ public class ProcurementOrderParam implements Serializable, BaseValidatingParam 
      * 采购计划id
      */
     @ApiModelProperty("采购计划id")
+    @NotNull
     private Long procurementPlanId;
 
     /**
@@ -74,11 +76,6 @@ public class ProcurementOrderParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("部门id")
     private Long deptId;
 
-    /**
-     * 采购计划 详情
-     */
-    @ApiModelProperty("采购计划 详情")
-    private Long detailId;
 
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;

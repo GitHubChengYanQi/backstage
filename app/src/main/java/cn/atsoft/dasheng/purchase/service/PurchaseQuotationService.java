@@ -95,5 +95,4 @@ public interface PurchaseQuotationService extends IService<PurchaseQuotation> {
     List<PurchaseQuotationResult> getListBySource(Long sourceId);
 
 
-    List<CustomerResult> getSupplierBySku(Long skuId);
 }

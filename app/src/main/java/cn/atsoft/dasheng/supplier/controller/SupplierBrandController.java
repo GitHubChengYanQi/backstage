@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.supplier.controller;
 
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.model.params.SupplierBrandParam;
@@ -36,7 +37,7 @@ public class SupplierBrandController extends BaseController {
     @Autowired
     private SupplierBrandService supplierBrandService;
     @Autowired
-    private PurchaseQuotationService quotationService;
+    private SupplyService supplyService;
 
 
     /**
@@ -47,7 +48,7 @@ public class SupplierBrandController extends BaseController {
      */
     @RequestMapping(value = "/getSupplierBySku", method = RequestMethod.GET)
     public ResponseData getSupplierBySku(@Param("skuId") Long skuId) {
-        List<CustomerResult> supplierBySku = this.quotationService.getSupplierBySku(skuId);
+        List<CustomerResult> supplierBySku = this.supplyService.getSupplierBySku(skuId);
         return ResponseData.success(supplierBySku);
     }
 

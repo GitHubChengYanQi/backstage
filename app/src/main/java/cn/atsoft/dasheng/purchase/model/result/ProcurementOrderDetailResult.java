@@ -35,6 +35,12 @@ public class ProcurementOrderDetailResult implements Serializable {
     @ApiModelProperty("采购单详情id")
     private Long orderDetailId;
 
+    /**
+     * 采购计划 详情
+     */
+    @ApiModelProperty("采购计划 详情")
+    private Long detailId;
+
     @ApiModelProperty("")
     private Long skuId;
 

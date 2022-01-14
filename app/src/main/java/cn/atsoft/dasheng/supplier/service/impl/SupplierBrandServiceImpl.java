@@ -75,19 +75,31 @@ public class SupplierBrandServiceImpl extends ServiceImpl<SupplierBrandMapper, S
 
         for (SupplierBrand supplierBrand : supplierBrands) {
             for (CustomerResult customerResult : customerResults) {
-
                 if (supplierBrand.getCustomerId().equals(customerResult.getCustomerId())) {
-                    List<BrandResult> brandResultList = new ArrayList<>();
-                    for (BrandResult brandResult : brandResults) {
-                        if (brandResult.getBrandId().equals(supplierBrand.getBrandId())) {
-                            brandResultList.add(brandResult);
-                        }
-                    }
-                    customerResult.setBrandResults(brandResults);
+                    judge(customerResult, supplierBrand.getBrandId(), brandResults);
                 }
             }
         }
     }
+
+    /**
+     * 供应商  品牌组合
+     *
+     * @param customerResult
+     * @param brandId
+     * @param brandResults
+     */
+    private void judge(CustomerResult customerResult, Long brandId, List<BrandResult> brandResults) {
+        List<BrandResult> brandResultList = new ArrayList<>();
+        for (BrandResult brandResult : brandResults) {
+
+            if (brandId.equals(brandResult.getBrandId())) {
+                brandResultList.add(brandResult);
+            }
+        }
+        customerResult.setBrandResults(brandResultList);
+    }
+
 
     @Override
     public SupplierBrandResult findBySpec(SupplierBrandParam param) {

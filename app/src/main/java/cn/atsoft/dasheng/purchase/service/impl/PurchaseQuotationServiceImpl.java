@@ -379,28 +379,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         return quotationResults;
     }
 
-    /**
-     * 当前物料下所有的供应商
-     *
-     * @param skuId
-     * @return
-     */
-    @Override
-    public List<CustomerResult> getSupplierBySku(Long skuId) {
-        if (ToolUtil.isEmpty(skuId)) {
-            throw new ServiceException(500, "请选择物料");
-        }
-        List<PurchaseQuotation> purchaseQuotations = this.query().eq("sku_id", skuId).list();
 
-        List<Long> custoemrIds = new ArrayList<>();
-
-        for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
-            custoemrIds.add(purchaseQuotation.getCustomerId());
-        }
-        List<CustomerResult> results = customerService.getResults(custoemrIds);
-        supplierBrandService.getBrand(results);
-        return results;
-    }
 
     private Serializable getKey(PurchaseQuotationParam param) {
         return param.getPurchaseQuotationId();

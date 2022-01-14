@@ -13,9 +13,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessService;
 import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
-import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
-import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
+import cn.atsoft.dasheng.purchase.entity.*;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
@@ -60,8 +58,10 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private ActivitiProcessService activitiProcessService;
+
     @Autowired
     private ActivitiProcessTaskService activitiProcessTaskService;
 
@@ -71,6 +71,11 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     @Autowired
     private ContractService contractService;
 
+    @Autowired
+    private ProcurementPlanBindService planBindService;
+
+    @Autowired
+    private PurchaseListingService purchaseListingService;
 
     @Override
     public void add(ProcurementPlanParam param) {
@@ -126,6 +131,52 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         procurementPlan.setStatus(98);
         this.updateById(procurementPlan);
     }
+
+    /**
+     * 更新采购计划状态
+     *
+     * @param planId
+     */
+    @Override
+    public void updateStatus(Long planId) throws Exception {
+        List<ProcurementPlanDetal> detals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, planId).list();
+        if (ToolUtil.isEmpty(detals)) {
+            throw new ServiceException(500, "请确当前数据");
+        }
+        boolean t = true;
+        for (ProcurementPlanDetal detal : detals) {
+            if (detal.getStatus() != 99) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            ProcurementPlan plan = this.getById(planId);
+            plan.setStatus(99);
+            this.updateById(plan);
+            updateAskStatus(plan.getProcurementPlanId());
+        }
+    }
+
+    /**
+     * 更新采购申请清单状态；
+     *
+     * @param planId
+     */
+    private void updateAskStatus(Long planId) {
+        List<ProcurementPlanBind> planBinds = planBindService.query().eq("procurement_plan_id", planId).list();//获取绑定的采购申请
+
+        List<PurchaseListing> purchaseListings = new ArrayList<>();
+        for (ProcurementPlanBind planBind : planBinds) {
+            PurchaseListing purchaseListing = new PurchaseListing();
+            purchaseListing.setStatus(99);
+            purchaseListing.setPurchaseListingId(planBind.getAskDetailId());
+            purchaseListings.add(purchaseListing);
+        }
+
+        purchaseListingService.updateBatchById(purchaseListings);
+    }
+
 
     @Override
     public ProcurementPlanResult findBySpec(ProcurementPlanParam param) {

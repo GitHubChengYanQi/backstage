@@ -69,11 +69,7 @@ public class ProcurementOrderResult implements Serializable {
     @ApiModelProperty("部门id")
     private Long deptId;
 
-    /**
-     * 采购计划 详情
-     */
-    @ApiModelProperty("采购计划 详情")
-    private Long detailId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
 }

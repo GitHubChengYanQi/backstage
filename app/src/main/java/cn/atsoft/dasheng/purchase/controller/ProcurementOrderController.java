@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,7 @@ public class ProcurementOrderController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody ProcurementOrderParam procurementOrderParam) {
+    public ResponseData addItem(@RequestBody @Valid ProcurementOrderParam procurementOrderParam) throws Exception {
         this.procurementOrderService.add(procurementOrderParam);
         return ResponseData.success();
     }
@@ -67,7 +69,7 @@ public class ProcurementOrderController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProcurementOrderParam procurementOrderParam)  {
+    public ResponseData delete(@RequestBody ProcurementOrderParam procurementOrderParam) {
         this.procurementOrderService.delete(procurementOrderParam);
         return ResponseData.success();
     }
@@ -98,13 +100,11 @@ public class ProcurementOrderController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<ProcurementOrderResult> list(@RequestBody(required = false) ProcurementOrderParam procurementOrderParam) {
-        if(ToolUtil.isEmpty(procurementOrderParam)){
+        if (ToolUtil.isEmpty(procurementOrderParam)) {
             procurementOrderParam = new ProcurementOrderParam();
         }
         return this.procurementOrderService.findPageBySpec(procurementOrderParam);
     }
-
-
 
 
 }

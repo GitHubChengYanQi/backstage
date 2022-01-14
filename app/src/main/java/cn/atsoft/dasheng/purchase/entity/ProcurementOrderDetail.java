@@ -31,6 +31,12 @@ public class ProcurementOrderDetail implements Serializable {
     private Long skuId;
 
     /**
+     * 采购计划 详情
+     */
+    @TableField("detail_id")
+    private Long detailId;
+
+    /**
      * 品牌id
      */
     @TableField("brand_id")
@@ -173,6 +179,14 @@ public class ProcurementOrderDetail implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Long getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(Long detailId) {
+        this.detailId = detailId;
     }
 
     @Override

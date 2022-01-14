@@ -28,6 +28,8 @@ public interface SupplyService extends IService<Supply> {
      */
     void add(SupplyParam param);
 
+    List<CustomerResult> getSupplierBySku(Long skuId);
+
     /**
      * 删除
      *
