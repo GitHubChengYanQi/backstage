@@ -32,7 +32,7 @@ import java.util.List;
 public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements PhoneService {
 
     @Override
-    public void add(PhoneParam param) {
+    public Phone add(PhoneParam param) {
         //防止添加重复电话号
         Integer count = this.query().eq("phone_number", param.getPhoneNumber()).and(i->i.eq("display",1)).count();
         if (count > 0) {
@@ -40,7 +40,7 @@ public class PhoneServiceImpl extends ServiceImpl<PhoneMapper, Phone> implements
         }
         Phone entity = getEntity(param);
         this.save(entity);
-
+        return entity;
 
     }
 

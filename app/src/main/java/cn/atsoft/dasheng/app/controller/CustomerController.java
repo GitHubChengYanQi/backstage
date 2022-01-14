@@ -138,9 +138,12 @@ public class CustomerController extends BaseController {
     public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CustomerParam customerParam) {
         QueryWrapper<Customer> queryWrapper = new QueryWrapper();
         queryWrapper.eq("display", 1);
-        if (ToolUtil.isNotEmpty(customerParam.getSupply())){
-            queryWrapper.eq("supply",customerParam.getSupply());
+        if (ToolUtil.isNotEmpty(customerParam)){
+            if (ToolUtil.isNotEmpty(customerParam.getSupply())){
+                queryWrapper.eq("supply",customerParam.getSupply());
+            }
         }
+
         List<Map<String, Object>> list = this.customerService.listMaps(queryWrapper);
         CustomerSelectWrapper customerSelectWrapper = new CustomerSelectWrapper(list);
         List<Map<String, Object>> result = customerSelectWrapper.wrap();
