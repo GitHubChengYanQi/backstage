@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
@@ -24,9 +25,11 @@ import cn.atsoft.dasheng.purchase.mapper.PurchaseQuotationMapper;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
+import cn.atsoft.dasheng.purchase.pojo.SupplierResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -70,6 +73,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private InquiryTaskServiceImpl taskService;
     @Autowired
     private CrmCustomerLevelService levelService;
+    @Autowired
+    private SupplierBrandService supplierBrandService;
 
 
     @Override
@@ -372,6 +377,29 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
 
         return quotationResults;
+    }
+
+    /**
+     * 当前物料下所有的供应商
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getSupplierBySku(Long skuId) {
+        if (ToolUtil.isEmpty(skuId)) {
+            throw new ServiceException(500, "请选择物料");
+        }
+        List<PurchaseQuotation> purchaseQuotations = this.query().eq("sku_id", skuId).list();
+
+        List<Long> custoemrIds = new ArrayList<>();
+
+        for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
+            custoemrIds.add(purchaseQuotation.getCustomerId());
+        }
+        List<CustomerResult> results = customerService.getResults(custoemrIds);
+        supplierBrandService.getBrand(results);
+        return results;
     }
 
     private Serializable getKey(PurchaseQuotationParam param) {

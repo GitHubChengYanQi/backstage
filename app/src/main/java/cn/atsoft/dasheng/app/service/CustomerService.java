@@ -93,6 +93,8 @@ public interface CustomerService extends IService<Customer> {
 
     CustomerResult detail(Long id);
 
+    List<CustomerResult> getResults(List<Long> ids);
+
     List<CustomerResult> getSuppliers(Long levelId);
 
 }

@@ -59,6 +59,7 @@ public class CustomerResult implements Serializable {
     private Contacts contact;
     private Adress address;
     private Integer supply;
+    private List<BrandResult> brandResults;
     /**
      * 客户id
      */

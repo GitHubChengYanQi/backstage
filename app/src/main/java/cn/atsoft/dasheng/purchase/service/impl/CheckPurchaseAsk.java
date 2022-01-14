@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CheckPurchaseAsk {
+
     @Autowired
     private PurchaseAskService purchaseAskService;
     public Boolean checkTask(Long purchaseAskId, RuleType ruleType){

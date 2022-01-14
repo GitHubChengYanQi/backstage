@@ -14,6 +14,8 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,11 +39,15 @@ import java.util.List;
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements BrandService {
     @Autowired
     private PartsService partsService;
+    @Autowired
+    private SupplierBrandService supplierBrandService;
 
     @Override
     public Long add(BrandParam param) {
         Brand entity = getEntity(param);
         this.save(entity);
+
+
         return entity.getBrandId();
     }
 
