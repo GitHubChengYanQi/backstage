@@ -63,6 +63,8 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     private AdressService adressService;
     @Autowired
     private PhoneService phoneService;
+    @Autowired
+    private ContractDetailService contractDetailService;
 
     @Override
     @Transactional
@@ -93,6 +95,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             ToolUtil.copyProperties(procurementOrderDetailParam, procurementOrderDetail);
             details.add(procurementOrderDetail);
 
+
             //过滤供应商
             List<ProcurementOrderDetailParam> detailParams = supplierMap.get(procurementOrderDetail.getCustomerId());
             if (ToolUtil.isEmpty(detailParams)) {
@@ -113,7 +116,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
             customerIds.add(longListEntry.getKey());
         }
-        addContract(customerIds);
+        addContract(customerIds, supplierMap);
         detailService.saveBatch(details);
     }
 
@@ -148,7 +151,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     }
 
 
-    private void addContract(List<Long> customerId) {
+    private void addContract(List<Long> customerId, Map<Long, List<ProcurementOrderDetailParam>> supplierMap) {
         Template template = templateService.query().eq("module", "procurement").one();
         if (ToolUtil.isEmpty(template)) {
             throw new ServiceException(500, "请先设置采购合同模板");
@@ -213,10 +216,23 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             }
             contract.setContent(templateContent);
             contract.setName(customer.getCustomerName() + "的采购合同");
-            contracts.add(contract);
+            contractService.save(contract);
+
+            List<ProcurementOrderDetailParam> detailParamList = supplierMap.get(customer.getCustomerId());
+
+            List<ContractDetail> contractDetails = new ArrayList<>();
+            for (ProcurementOrderDetailParam procurementOrderDetailParam : detailParamList) {
+                ContractDetail contractDetail = new ContractDetail();
+                contractDetail.setCustomerId(procurementOrderDetailParam.getCustomerId());
+                contractDetail.setSkuId(procurementOrderDetailParam.getSkuId());
+                contractDetail.setBrandId(procurementOrderDetailParam.getBrandId());
+                contractDetail.setContractId(contract.getContractId());
+                contractDetails.add(contractDetail);
+            }
+            contractDetailService.saveBatch(contractDetails);
         }
 
-        contractService.saveBatch(contracts);
+
     }
 
 

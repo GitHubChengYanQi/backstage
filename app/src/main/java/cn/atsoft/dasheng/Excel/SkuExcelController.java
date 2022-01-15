@@ -38,10 +38,7 @@ import javax.sound.midi.Soundbank;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
@@ -122,21 +119,6 @@ public class SkuExcelController {
         Integer i = 0;
 
         List<SkuExcelItem> errorList = new ArrayList<>();
-//对比相同数据取重复数据-----------------------------------------------------------------------------------------------------------
-        List<String> repeat = new ArrayList<>();
-        for (SkuExcelItem skuExcelItem : skuExcelItems) {
-            repeat.add(skuExcelItem.get成品码());
-        }
-        for (int j = 0; j < repeat.size(); j++) {
-            for (SkuExcelItem skuExcelItem : skuExcelItems) {
-                if (repeat.get(j).equals(skuExcelItem.get成品码())) {
-                    repeat.remove(j);
-                    skuExcelItems.remove(skuExcelItem);
-                    errorList.add(skuExcelItem);
-                    break;
-                }
-            }
-        }
 
 
         //-------------------------------------------------------------------------------------------------------------
@@ -258,7 +240,12 @@ public class SkuExcelController {
                     }
                     String md5 = SecureUtil.md5(spuId + sku.getSkuValue());
                     sku.setSkuValueMd5(md5);
-                    skuList.add(sku);
+                    if (skuList.stream().anyMatch(item -> item.getStandard().equals(sku.getStandard()))) {
+                        errorList.add(skuExcelItem);
+                    } else {
+                        skuList.add(sku);
+                    }
+
                 }
 
             } catch (Exception e) {

@@ -29,4 +29,6 @@ public class SkuExcelItem {
 
     private List<String> attributes;
 
+    private Integer line;
+
 }
