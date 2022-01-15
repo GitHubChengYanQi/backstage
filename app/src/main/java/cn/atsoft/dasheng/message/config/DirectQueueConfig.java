@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 
 @Configuration
@@ -48,7 +49,7 @@ public class DirectQueueConfig {
     @Bean
     public Queue messageQueue() {
         logger.info(mqPrefix);
-        logger.info(getMessageDelayRoute());
+        logger.info(getMessageRealQueue());
         return new Queue(getMessageRealQueue());
     }
 

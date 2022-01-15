@@ -50,8 +50,8 @@ public class AdressController extends BaseController {
     @ApiOperation("新增")
     @Permission
     public ResponseData addItem(@RequestBody AdressParam adressParam) {
-        this.adressService.add(adressParam);
-        return ResponseData.success();
+        Adress adress = this.adressService.add(adressParam);
+        return ResponseData.success(adress);
     }
 
     /**
@@ -116,10 +116,10 @@ public class AdressController extends BaseController {
     @ApiOperation("列表")
     @Permission
     public PageInfo<AdressResult> list(@RequestBody(required = false) AdressParam adressParam) {
-        clientId = adressParam.getCustomerId();
         if (ToolUtil.isEmpty(adressParam)) {
             adressParam = new AdressParam();
         }
+        clientId = adressParam.getCustomerId();
         if (LoginContextHolder.getContext().isAdmin()) {
             PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, null);
 //            return ResponseData.success(adress.getData().get(0));

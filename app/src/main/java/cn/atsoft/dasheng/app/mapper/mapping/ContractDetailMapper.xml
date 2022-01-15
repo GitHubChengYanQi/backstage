@@ -6,7 +6,8 @@
     <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.app.entity.ContractDetail">
         <id column="id" property="id" />
         <result column="contract_id" property="contractId" />
-        <result column="item_id" property="itemId" />
+        <result column="sku_id" property="skuId" />
+        <result column="customer_id" property="customerId" />
         <result column="quantity" property="quantity" />
         <result column="process_id" property="processId" />
         <result column="create_user" property="createUser" />
@@ -22,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        brand_id AS "brandId" ,id AS "id", contract_id AS "contractId", item_id AS "itemId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice", deptId AS "deptId"
+        brand_id AS "brandId" ,id AS "id", contract_id AS "contractId", sku_id AS "skuId",customer_id AS "customerId", quantity AS "quantity", process_id AS "processId", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", sale_price AS "salePrice", total_price AS "totalPrice", deptId AS "deptId"
     </sql>
 
 

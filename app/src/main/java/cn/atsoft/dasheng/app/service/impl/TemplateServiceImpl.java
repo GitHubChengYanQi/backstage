@@ -10,13 +10,18 @@ import cn.atsoft.dasheng.app.model.result.TemplateResult;
 import cn.atsoft.dasheng.app.service.TemplateService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.ContractClass;
+import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
+import cn.atsoft.dasheng.crm.service.ContractClassService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +35,8 @@ import java.util.List;
 @Service
 public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> implements TemplateService {
 
-
+    @Autowired
+    private ContractClassService contractClassService;
 
 
     @Override
@@ -66,8 +72,28 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     @Override
     public PageInfo<TemplateResult> findPageBySpec(TemplateParam param, DataScope dataScope) {
         Page<TemplateResult> pageContext = getPageContext();
-        IPage<TemplateResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<TemplateResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    private void format(List<TemplateResult> data) {
+        List<Long> classIds = new ArrayList<>();
+        for (TemplateResult datum : data) {
+            classIds.add(datum.getContractClassId());
+        }
+        List<ContractClass> contractClasses = contractClassService.listByIds(classIds);
+
+        for (TemplateResult datum : data) {
+            for (ContractClass contractClass : contractClasses) {
+                if (datum.getContractClassId().equals(contractClass.getContractClassId())) {
+                    ContractClassResult classResult = new ContractClassResult();
+                    ToolUtil.copyProperties(contractClass, classResult);
+                    datum.setClassResult(classResult);
+                    break;
+                }
+            }
+        }
     }
 
     @Override

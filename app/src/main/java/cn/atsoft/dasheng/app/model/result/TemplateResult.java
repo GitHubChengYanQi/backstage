@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.crm.model.result.ContractClassResult;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,6 +25,7 @@ public class TemplateResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private ContractClassResult classResult;
     /**
      * 合同分类id
      */

@@ -20,6 +20,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -49,7 +50,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Autowired
     private CrmCustomerLevelService levelService;
     @Autowired
-    private PurchaseQuotationService quotationService;
+    private SupplierBrandService supplierBrandService;
 
 
     @Override
@@ -58,6 +59,30 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         Supply entity = getEntity(param);
         this.save(entity);
     }
+
+    /**
+     * 当前物料下所有的供应商
+     *
+     * @param skuId
+     * @return
+     */
+    @Override
+    public List<CustomerResult> getSupplierBySku(Long skuId) {
+        if (ToolUtil.isEmpty(skuId)) {
+            throw new ServiceException(500, "请选择物料");
+        }
+
+        List<Supply> supplies = this.query().eq("sku_id", skuId).list();
+        List<Long> custoemrIds = new ArrayList<>();
+        for (Supply supply : supplies) {
+            custoemrIds.add(supply.getCustomerId());
+        }
+
+        List<CustomerResult> results = customerService.getResults(custoemrIds);
+        supplierBrandService.getBrand(results);
+        return results;
+    }
+
 
     @Override
     public void delete(SupplyParam param) {
@@ -263,7 +288,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         for (SupplyResult datum : data) {
             for (SkuResult skuResult : skuResults) {
-                if (datum.getSkuId().equals(skuResult.getSkuId())){
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
                 }
             }

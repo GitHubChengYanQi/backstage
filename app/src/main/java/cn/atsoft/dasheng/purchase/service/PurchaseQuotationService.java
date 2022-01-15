@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.service;
 
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;

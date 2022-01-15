@@ -25,7 +25,7 @@ public interface PhoneService extends IService<Phone> {
      * @author cheng
      * @Date 2021-08-12
      */
-    void add(PhoneParam param);
+    Phone add(PhoneParam param);
 
     /**
      * 删除

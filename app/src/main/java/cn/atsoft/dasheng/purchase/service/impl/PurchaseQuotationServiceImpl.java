@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -22,15 +25,18 @@ import cn.atsoft.dasheng.purchase.mapper.PurchaseQuotationMapper;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseQuotationParam;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.pojo.QuotationParam;
+import cn.atsoft.dasheng.purchase.pojo.SupplierResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.hibernate.validator.internal.util.Contracts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import oshi.jna.platform.mac.SystemB;
@@ -67,6 +73,9 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private InquiryTaskServiceImpl taskService;
     @Autowired
     private CrmCustomerLevelService levelService;
+    @Autowired
+    private SupplierBrandService supplierBrandService;
+
 
     @Override
     public void add(PurchaseQuotationParam param) {
@@ -137,7 +146,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         if (ToolUtil.isEmpty(supplier)) {
             throw new ServiceException(500, "当前供应商不存在");
         }
-        if (supplier.getSupply() != 2) {
+        if (supplier.getSupply() != 1) {
             throw new ServiceException(500, "请选择正确供应商");
         }
     }
@@ -369,6 +378,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         return quotationResults;
     }
+
+
 
     private Serializable getKey(PurchaseQuotationParam param) {
         return param.getPurchaseQuotationId();

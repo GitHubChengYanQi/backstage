@@ -25,16 +25,23 @@ public class GetRegionServiceImp implements GetRegionService {
             RegionResult regionResult = new RegionResult();
 
             CommonArea Area = commonAreaService.lambdaQuery().eq(CommonArea::getId, area).one();
-            regionResult.setArea(Area.getTitle());
 
-            CommonArea city = commonAreaService.lambdaQuery().eq(CommonArea::getId, Area.getParentid()).one();
-            regionResult.setCity(city.getTitle());
+            if (ToolUtil.isNotEmpty(Area)){
+                regionResult.setArea(Area.getTitle());
+                CommonArea city = commonAreaService.lambdaQuery().eq(CommonArea::getId, Area.getParentid()).one();
+                if (ToolUtil.isNotEmpty(city)){
+                    regionResult.setCity(city.getTitle());
+                    CommonArea province = commonAreaService.lambdaQuery().eq(CommonArea::getId, city.getParentid()).one();
+                    if (ToolUtil.isNotEmpty(province)){
+                        regionResult.setProvince(province.getTitle());
+                        CommonArea countries = commonAreaService.lambdaQuery().eq(CommonArea::getId, province.getParentid()).one();
+                        if (ToolUtil.isNotEmpty(countries)){
+                            regionResult.setCountries(countries.getTitle());
+                        }
+                    }
 
-            CommonArea province = commonAreaService.lambdaQuery().eq(CommonArea::getId, city.getParentid()).one();
-            regionResult.setProvince(province.getTitle());
-
-            CommonArea countries = commonAreaService.lambdaQuery().eq(CommonArea::getId, province.getParentid()).one();
-            regionResult.setCountries(countries.getTitle());
+                }
+            }
             return regionResult;
         }
 

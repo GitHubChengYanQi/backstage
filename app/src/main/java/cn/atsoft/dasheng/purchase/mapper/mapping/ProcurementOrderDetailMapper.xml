@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.purchase.mapper.ProcurementOrderDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail">
+        <id column="order_detail_id" property="orderDetailId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="number" property="number"/>
+        <result column="procurement_order_id" property="procurementOrderId"/>
+        <result column="display" property="display"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deptId" property="deptId"/>
+        <result column="detail_id" property="detailId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        order_detail_id
+        AS "orderDetailId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", number AS "number", procurement_order_id AS "procurementOrderId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+, detail_id AS "detailId"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_procurement_order_detail where 1 = 1
+        <if test="paramCondition.orderDetailId != null">
+            and order_detail_id like CONCAT('%',#{paramCondition.orderDetailId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.procurementOrderId != null">
+            and procurement_order_id like CONCAT('%',#{paramCondition.procurementOrderId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_procurement_order_detail where 1 = 1
+        <if test="paramCondition.orderDetailId != null">
+            and order_detail_id like CONCAT('%',#{paramCondition.orderDetailId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.procurementOrderId != null">
+            and procurement_order_id like CONCAT('%',#{paramCondition.procurementOrderId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_procurement_order_detail where 1 = 1
+        <if test="paramCondition.orderDetailId != null">
+            and order_detail_id like CONCAT('%',#{paramCondition.orderDetailId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.procurementOrderId != null">
+            and procurement_order_id like CONCAT('%',#{paramCondition.procurementOrderId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_procurement_order_detail where 1 = 1
+        <if test="paramCondition.orderDetailId != null">
+            and order_detail_id like CONCAT('%',#{paramCondition.orderDetailId},'%')
+        </if>
+        <if test="paramCondition.skuId != null">
+            and sku_id like CONCAT('%',#{paramCondition.skuId},'%')
+        </if>
+        <if test="paramCondition.brandId != null">
+            and brand_id like CONCAT('%',#{paramCondition.brandId},'%')
+        </if>
+        <if test="paramCondition.customerId != null">
+            and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
+        </if>
+        <if test="paramCondition.number != null">
+            and number like CONCAT('%',#{paramCondition.number},'%')
+        </if>
+        <if test="paramCondition.procurementOrderId != null">
+            and procurement_order_id like CONCAT('%',#{paramCondition.procurementOrderId},'%')
+        </if>
+        <if test="paramCondition.display != null">
+            and display like CONCAT('%',#{paramCondition.display},'%')
+        </if>
+        <if test="paramCondition.createUser != null">
+            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
+        </if>
+        <if test="paramCondition.updateUser != null">
+            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
+        </if>
+        <if test="paramCondition.createTime != null and paramCondition.createTime != ''">
+            and create_time like CONCAT('%',#{paramCondition.createTime},'%')
+        </if>
+        <if test="paramCondition.updateTime != null and paramCondition.updateTime != ''">
+            and update_time like CONCAT('%',#{paramCondition.updateTime},'%')
+        </if>
+        <if test="paramCondition.deptId != null">
+            and deptId like CONCAT('%',#{paramCondition.deptId},'%')
+        </if>
+    </select>
+
+</mapper>

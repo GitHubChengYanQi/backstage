@@ -195,7 +195,7 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
             skuIds.add(datum.getSkuId());
             planIds.add(datum.getPlanId());
         }
-//        List<ProcurementPlanBindResult> bindResultList = bindService.getDetail(planIds);
+
         List<Sku> skus = skuService.listByIds(skuIds);
 
         List<SkuResult> skuResults = new ArrayList<>();
@@ -213,12 +213,6 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
                 }
             }
 
-//            for (ProcurementPlanBindResult bindResult : bindResultList) {
-//                if (bindResult.getProcurementPlanId().equals(datum.getPlanId())) {
-//                    datum.setPlanBindResult(bindResult);
-//                    break;
-//                }
-//            }
         }
     }
 }

@@ -538,6 +538,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
         IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
         format(page.getRecords());
+
+
         return PageFactory.createPageInfo(page);
     }
 
