@@ -199,7 +199,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
-                                    this.refuseTask(taskId);
+                                    this.refuseTask(task);
                                     auditCheck = false;
                                 }
                             } else {
@@ -212,7 +212,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 setStatus(logs, activitiProcessLog.getLogId());
                                 //拒绝走拒绝方法
                                 if (status.equals(0)) {
-                                    this.refuseTask(taskId);
+                                    this.refuseTask(task);
                                     auditCheck = false;
                                 }
                             } else {
@@ -233,7 +233,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                     if (status.equals(0)) {
-                        this.refuseTask(taskId);
+                        this.refuseTask(task);
                         auditCheck = false;
                     }
                 }
@@ -266,11 +266,19 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             /**
              * 流程结束
              */
-            ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
-            endProcessTask.setProcessTaskId(taskId);
-            endProcessTask.setStatus(1);
-            activitiProcessTaskService.updateById(endProcessTask);
-            this.updateStatus(endProcessTask);
+            //如果上级审批为 同意（通过）则更新状态为完成
+            //否则 在上面代码中  审核时已经更改单据和审批流程为否决 不再次更改
+            if (auditCheck){
+
+                ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
+                ToolUtil.copyProperties(task,endProcessTask);
+                endProcessTask.setStatus(0);
+                //更新任务状态
+                activitiProcessTaskService.updateById(endProcessTask);
+                //更新任务关联单据状态
+                this.updateStatus(task);
+            }
+            //推送流程结束消息
             endSend.endSend(task.getProcessTaskId());
         }
     }
@@ -287,13 +295,25 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
         }
     }
+    private void updateRefuseStatus(ActivitiProcessTask processTask){
+        switch (processTask.getType()){
+            case "purchasePlan":
+                procurementPlanService.updateRefuseStatus(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+                purchaseAskService.updateRefuseStatus(processTask);
+                break;
+        }
+    }
 
-    private void refuseTask(Long taskId) {
-        ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-        activitiProcessTask.setProcessTaskId(taskId);
-        activitiProcessTask.setStatus(0);
-        activitiProcessTaskService.updateById(activitiProcessTask);
-        taskSend.refuseTask(taskId);
+    private void refuseTask(ActivitiProcessTask processTask) {
+        processTask.setStatus(0);
+        activitiProcessTaskService.updateById(processTask);
+        this.updateRefuseStatus(processTask);
+        taskSend.refuseTask(processTask.getProcessTaskId());
     }
 
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck) {
@@ -319,6 +339,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
                 List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps);
+
 
                 if (processLogs.size() > 0) {
                     for (ActivitiProcessLog processLog : processLogs) {

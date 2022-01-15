@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanBind;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.entity.PurchaseListing;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementPlanMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanBindParam;
@@ -21,11 +22,8 @@ import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
-import cn.atsoft.dasheng.purchase.service.ProcurementPlanBindService;
-import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
-import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
+import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
-import cn.atsoft.dasheng.purchase.service.PurchaseListingService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -34,6 +32,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -67,7 +66,11 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     @Autowired
     private ActivitiProcessLogService activitiProcessLogService;
 
+    @Autowired
+    private PurchaseListingService purchaseListingService;
+
     @Override
+    @Transactional
     public void add(ProcurementPlanParam param) {
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
@@ -92,6 +95,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
         }
+
     }
 
     @Override
@@ -120,6 +124,31 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         ProcurementPlan procurementPlan = this.getById(processTask.getFormId());
         procurementPlan.setStatus(98);
         this.updateById(procurementPlan);
+    }
+    @Override
+    public void updateRefuseStatus(ActivitiProcessTask processTask) {
+
+        ProcurementPlan procurementPlan = this.getById(processTask.getFormId());
+        procurementPlan.setStatus(97);
+        this.updateById(procurementPlan);
+        //如果采购申请拒绝   将采购申请 里面的 物料数据 回滚
+        //从bind表中查找出对应购买申请的 数据
+        List<ProcurementPlanBind> detailList = bindService.lambdaQuery().eq(ProcurementPlanBind::getProcurementPlanId, processTask.getFormId()).list();
+        List<Long> askDetailIds = new ArrayList<>();
+        for (ProcurementPlanBind procurementPlanBind : detailList) {
+            askDetailIds.add(procurementPlanBind.getAskDetailId());
+        }
+        //取购买申请里查出数据状态
+        List<PurchaseListing> purchaseListings = purchaseListingService.list(new QueryWrapper<PurchaseListing>() {{
+            in("purchase_listing_id", askDetailIds);
+        }});
+        //修改为未创建的状态
+        for (PurchaseListing purchaseListing : purchaseListings) {
+            purchaseListing.setStatus(0);
+        }
+        //更新
+        purchaseListingService.updateBatchById(purchaseListings);
+
     }
 
     @Override

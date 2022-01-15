@@ -119,12 +119,15 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             activitiProcessTaskParam.setQTaskId(entity.getPurchaseAskId());
             activitiProcessTaskParam.setUserId(param.getCreateUser());
             activitiProcessTaskParam.setFormId(entity.getPurchaseAskId());
-            activitiProcessTaskParam.setType("purchase");
+            activitiProcessTaskParam.setType("purchaseAsk");
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
             activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getPurchaseAskId(), "purchaseAsk");
             activitiProcessLogService.autoAudit(taskId, 1);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("processTask");
+            wxCpSendTemplate.setSourceId(taskId);
         } else {
             throw new ServiceException(500, "请创建质检流程！");
         }
@@ -204,9 +207,22 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
      */
     @Override
     public void updateStatus(ActivitiProcessTask param) {
-        if (param.getType().equals("purchase")) {
+        if (param.getType().equals("purchaseAsk")) {
             PurchaseAsk ask = this.getById(param.getFormId());
-            ask.setStatus(99);
+            ask.setStatus(2);
+            this.updateById(ask);
+        }
+    }
+
+    /**
+     * 驳回状态更改方法
+     * @param param
+     */
+    @Override
+    public void updateRefuseStatus(ActivitiProcessTask param) {
+        if (param.getType().equals("purchaseAsk")) {
+            PurchaseAsk ask = this.getById(param.getFormId());
+            ask.setStatus(1);
             this.updateById(ask);
         }
     }
