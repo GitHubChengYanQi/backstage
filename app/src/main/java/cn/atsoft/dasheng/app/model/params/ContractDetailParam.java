@@ -42,7 +42,9 @@ public class ContractDetailParam implements Serializable, BaseValidatingParam {
      * 物品id
      */
     @ApiModelProperty("物品id")
-    private Long itemId;
+    private Long skuId;
+
+    private Long customerId;
 
     /**
      * 物品数量

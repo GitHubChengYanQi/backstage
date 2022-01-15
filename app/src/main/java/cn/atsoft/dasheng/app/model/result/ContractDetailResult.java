@@ -32,6 +32,8 @@ public class ContractDetailResult implements Serializable {
 
     private Long brandId;
 
+    private Long customerId;
+
     /**
      * 合同id
      */
@@ -42,7 +44,7 @@ public class ContractDetailResult implements Serializable {
      * 物品id
      */
     @ApiModelProperty("物品id")
-    private Long itemId;
+    private Long skuId;
 
     /**
      * 物品数量
