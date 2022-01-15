@@ -68,7 +68,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
                 if (detailedParam.getQuantity() == 0) {
                     throw new ServiceException(500, "注意产品数量");
                 }
-                map = judge(param.getContractId(), detailedParam.getItemId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
+                map = judge(param.getContractId(), detailedParam.getSkuId(), detailedParam.getBrandId(), detailedParam.getQuantity(), detailedParam.getSalePrice());
 
 
             }
@@ -90,7 +90,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
             businessDetailedByMap.setContractId(contractId);
             businessDetailedByMap.setQuantity(number);
             businessDetailedByMap.setBrandId(brandIds);
-            businessDetailedByMap.setItemId(itemIds);
+            businessDetailedByMap.setSkuId(itemIds);
             businessDetailedByMap.setSalePrice(money);
             businessDetailedByMap.setTotalPrice(money * number);
             businessDetailedByMap.setDisplay(1);
@@ -100,14 +100,14 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
 
         //判断商机详情是否有粗存在物品  有的直接叠加数量
         for (ContractDetail businessDetailed : businessDetaileds) {
-            if (businessDetailed.getItemId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {
+            if (businessDetailed.getSkuId().equals(itemIds) && businessDetailed.getBrandId().equals(brandIds)) {
                 int i = businessDetailed.getQuantity() + number;
                 int newMoney = i * money;
                 businessDetailed.setSalePrice(money);
                 businessDetailed.setTotalPrice(newMoney);
                 businessDetailed.setQuantity(i);
                 businessDetailed.setDisplay(1);
-                map.put(businessDetailed.getItemId() + businessDetailed.getBrandId(), businessDetailed);
+                map.put(businessDetailed.getSkuId() + businessDetailed.getBrandId(), businessDetailed);
                 break;
             }
 
@@ -120,7 +120,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
             businessDetailed.setContractId(contractId);
             businessDetailed.setQuantity(number);
             businessDetailed.setBrandId(brandIds);
-            businessDetailed.setItemId(itemIds);
+            businessDetailed.setSkuId(itemIds);
             businessDetailed.setSalePrice(money);
             businessDetailed.setTotalPrice(money * number);
             businessDetailed.setDisplay(1);
@@ -168,7 +168,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
         List<Long> detailIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         for (ContractDetailResult record : page.getRecords()) {
-            detailIds.add(record.getItemId());
+            detailIds.add(record.getSkuId());
             brandIds.add(record.getBrandId());
         }
         QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
@@ -181,7 +181,7 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
 
         for (ContractDetailResult record : page.getRecords()) {
             for (Items items : list) {
-                if (items.getItemId().equals(record.getItemId())) {
+                if (items.getItemId().equals(record.getSkuId())) {
                     ItemsResult itemsResult = new ItemsResult();
                     ToolUtil.copyProperties(items, itemsResult);
                     record.setItemsResult(itemsResult);

@@ -36,10 +36,13 @@ public class ContractDetail implements Serializable {
     /**
      * 物品id
      */
-    @TableField("item_id")
-    private Long itemId;
+    @TableField("sku_id")
+    private Long skuId;
     @TableField("brand_id")
     private Long brandId;
+
+    @TableField("customer_id")
+    private Long customerId;
 
     public Long getBrandId() {
         return brandId;
@@ -126,14 +129,6 @@ public class ContractDetail implements Serializable {
         this.contractId = contractId;
     }
 
-    public Long getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
-    }
-
     public Integer getQuantity() {
         return quantity;
     }
@@ -214,12 +209,27 @@ public class ContractDetail implements Serializable {
         this.deptId = deptId;
     }
 
+    public Long getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(Long skuId) {
+        this.skuId = skuId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public String toString() {
         return "ContractDetail{" +
         "id=" + id +
         ", contractId=" + contractId +
-        ", itemId=" + itemId +
         ", quantity=" + quantity +
         ", processId=" + processId +
         ", createUser=" + createUser +

@@ -138,7 +138,7 @@ public class CrmBusinessServiceImpl extends ServiceImpl<CrmBusinessMapper, CrmBu
                 for (CrmBusinessDetailed crmBusinessDetailed : list) {
                     ContractDetailParam contractDetail = new ContractDetailParam();
                     contractDetail.setContractId(contractId);
-                    contractDetail.setItemId(crmBusinessDetailed.getItemId());
+                    contractDetail.setSkuId(crmBusinessDetailed.getItemId());
                     contractDetail.setBrandId(crmBusinessDetailed.getBrandId());
                     contractDetail.setQuantity(crmBusinessDetailed.getQuantity());
                     contractDetail.setSalePrice(crmBusinessDetailed.getSalePrice());
