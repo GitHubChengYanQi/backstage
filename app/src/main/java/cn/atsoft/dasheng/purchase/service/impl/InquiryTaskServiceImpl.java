@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
+import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -13,6 +15,7 @@ import cn.atsoft.dasheng.purchase.mapper.InquiryTaskMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
 
+import cn.atsoft.dasheng.purchase.model.result.InquiryTaskDetailResult;
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 
@@ -50,6 +53,8 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private PurchaseQuotationService quotationService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CrmCustomerLevelService levelService;
 
     @Autowired
     private SupplyService supplyService;
@@ -129,16 +134,43 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
     private void format(List<InquiryTaskResult> data) {
         List<Long> userIds = new ArrayList<>();
-
+        List<Long> levelId = new ArrayList<>();
+        List<Long> id = new ArrayList<>();
         for (InquiryTaskResult datum : data) {
             userIds.add(datum.getCreateUser());
+            levelId.add(datum.getSupplierLevel());
+            id.add(datum.getInquiryTaskId());
         }
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
+        List<CrmCustomerLevel> crmCustomerLevels = levelId.size() == 0 ? new ArrayList<>() : levelService.listByIds(levelId);
+
+
+        List<InquiryTaskDetail> taskDetails = id.size() == 0 ? new ArrayList<>() : detailService.lambdaQuery().in(InquiryTaskDetail::getInquiryTaskId, id).eq(InquiryTaskDetail::getDisplay, 1).list();
+
+
         for (InquiryTaskResult datum : data) {
+
+            Integer number = 0;
+            Integer type = 0;
+            for (InquiryTaskDetail taskDetail : taskDetails) {
+                if (taskDetail.getInquiryTaskId().equals(datum.getInquiryTaskId())) {
+                    number = number + taskDetail.getTotal();
+                    type++;
+                }
+            }
+            datum.setNumber(number);
+            datum.setType(type);
+
             for (User user : users) {
                 if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
                     datum.setUser(user);
+                    break;
+                }
+            }
+            for (CrmCustomerLevel crmCustomerLevel : crmCustomerLevels) {
+                if (ToolUtil.isNotEmpty(datum.getSupplierLevel()) && crmCustomerLevel.getCustomerLevelId().equals(datum.getSupplierLevel())) {
+                    datum.setCrmCustomerLevel(crmCustomerLevel);
                     break;
                 }
             }
@@ -154,6 +186,16 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         ToolUtil.copyProperties(inquiryTask, taskResult);
 
         List<PurchaseQuotationResult> bySource = quotationService.getListBySource(taskResult.getInquiryTaskId());
+        User user = userService.getById(taskResult.getUserId());
+        taskResult.setUser(user);
+
+        User createUser = userService.getById(taskResult.getCreateUser());
+        taskResult.setFounder(createUser);
+
+        List<InquiryTaskDetailResult> detail = detailService.getDetailByInquiryId(taskResult.getInquiryTaskId());
+
+        taskResult.setDetailResults(detail);
+
         taskResult.setQuotationResults(bySource);
 
         List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());

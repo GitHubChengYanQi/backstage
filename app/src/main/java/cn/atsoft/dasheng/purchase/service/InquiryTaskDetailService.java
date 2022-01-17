@@ -68,5 +68,7 @@ public interface InquiryTaskDetailService extends IService<InquiryTaskDetail> {
 
      List<InquiryTaskDetailResult> getDetails (Long taskId);
 
+    List<InquiryTaskDetailResult> getDetailByInquiryId(Long inQuiruId);
+
     List<Long> getSku(Long taskId);
 }

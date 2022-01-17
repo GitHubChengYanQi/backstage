@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -32,8 +33,15 @@ public class InquiryTaskResult implements Serializable {
 
     private List<CustomerResult> customerResults;
 
+    private CrmCustomerLevel crmCustomerLevel;
 
+    private User founder;
 
+    private Integer number;
+
+    private Integer type;
+
+    private List<InquiryTaskDetailResult> detailResults;
 
     /**
      * 询价任务id

@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 询价任务详情
@@ -21,6 +26,7 @@ public class InquiryTaskDetailResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private SkuResult skuResult;
     /**
      * 详情id
      */

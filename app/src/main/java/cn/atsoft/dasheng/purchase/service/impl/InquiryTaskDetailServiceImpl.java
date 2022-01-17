@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
 import cn.atsoft.dasheng.purchase.mapper.InquiryTaskDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
@@ -12,6 +15,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -28,6 +32,8 @@ import java.util.List;
  */
 @Service
 public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailMapper, InquiryTaskDetail> implements InquiryTaskDetailService {
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public void add(InquiryTaskDetailParam param) {
@@ -100,6 +106,42 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
     }
 
     private void format(List<InquiryTaskDetailResult> data) {
+
+    }
+
+    /**
+     * 通过父表主键查询
+     *
+     * @param inQuiruId
+     * @return
+     */
+    @Override
+    public List<InquiryTaskDetailResult> getDetailByInquiryId(Long inQuiruId) {
+        if (ToolUtil.isEmpty(inQuiruId)) {
+            throw new ServiceException(500, "请确定参数");
+        }
+        List<InquiryTaskDetail> taskDetails = this.lambdaQuery().eq(InquiryTaskDetail::getInquiryTaskId, inQuiruId).eq(InquiryTaskDetail::getDisplay, 1).list();
+        List<InquiryTaskDetailResult> inquiryTaskDetailResults = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+
+        for (InquiryTaskDetail taskDetail : taskDetails) {
+            InquiryTaskDetailResult detailResult = new InquiryTaskDetailResult();
+            ToolUtil.copyProperties(taskDetail, detailResult);
+            inquiryTaskDetailResults.add(detailResult);
+            skuIds.add(taskDetail.getSkuId());
+        }
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (InquiryTaskDetailResult inquiryTaskDetailResult : inquiryTaskDetailResults) {
+            for (SkuResult skuResult : skuResults) {
+                if (inquiryTaskDetailResult.getSkuId().equals(skuResult.getSkuId())) {
+                    inquiryTaskDetailResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+        return inquiryTaskDetailResults;
 
     }
 

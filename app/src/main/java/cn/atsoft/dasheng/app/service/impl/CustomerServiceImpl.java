@@ -81,6 +81,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private SupplierBrandService supplierBrandService;
 
+
     @Override
     @FreedLog
     @Transactional
@@ -195,6 +196,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             throw new ServiceException(500, "数据不存在");
         } else {
             Customer newEntity = getEntity(param);
+            if (ToolUtil.isNotEmpty(param.getSupply()) && !oldEntity.getSupply().equals(param.getSupply())) {
+                throw new ServiceException(500, "当前供应商不可修改");
+            }
+            if (oldEntity.getSupply().equals(1)) {  //修改品牌名称
+                List<SupplierBrand> brands = supplierBrandService.query().in("customer_id", newEntity.getCustomerId()).list();
+                List<Long> brandIds = new ArrayList<>();
+                for (SupplierBrand brand : brands) {
+                    brandIds.add(brand.getBrandId());
+                }
+                Brand brand = new Brand();
+                brand.setBrandName(newEntity.getCustomerName());
+                brandService.update(brand, new QueryWrapper<Brand>() {{
+                    in("brand_id", brandIds);
+                }});
+            }
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
             return oldEntity;
@@ -204,10 +220,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
     @Override
     public CustomerResult findBySpec(CustomerParam param) {
-
-
         return null;
-
     }
 
     @Override

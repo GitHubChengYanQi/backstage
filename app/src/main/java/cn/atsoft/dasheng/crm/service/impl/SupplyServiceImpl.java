@@ -220,7 +220,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-        List<Supply> supplies = this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
+        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
 
         List<Long> customerIds = new ArrayList<>();
         for (Supply supply : supplies) {
@@ -231,7 +231,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
         List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
         for (CustomerResult customerResult : customerResults) {
-            if (customerResult.getCustomerLevelId() >= supplierLevel) {
+            if (ToolUtil.isNotEmpty(customerResult.getCustomerLevelId()) && customerResult.getCustomerLevelId() >= supplierLevel) {
                 levelCustomerResult.add(customerResult);
             }
         }

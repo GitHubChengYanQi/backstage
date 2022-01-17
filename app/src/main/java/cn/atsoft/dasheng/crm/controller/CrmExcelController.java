@@ -11,15 +11,19 @@ import cn.atsoft.dasheng.Tool.VoUtilsTool;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.app.service.AdressService;
 import cn.atsoft.dasheng.app.service.ContactsService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.PhoneService;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.crm.entity.CompanyRole;
 import cn.atsoft.dasheng.crm.entity.excel.AdressExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.ContactsExcelItem;
 import cn.atsoft.dasheng.crm.entity.excel.CustomerExcelItem;
+import cn.atsoft.dasheng.crm.service.CompanyRoleService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.orCode.entity.OrCode;
@@ -75,6 +79,10 @@ public class CrmExcelController {
     private OrCodeService orCodeService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private PhoneService phoneService;
+    @Autowired
+    private CompanyRoleService roleService;
 
 
     /**
@@ -83,21 +91,48 @@ public class CrmExcelController {
     @RequestMapping("/importCustomer")
     @ResponseBody
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) {
+
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
+
         try {
             File excelFile = new File(fileSavePath + name);
             file.transferTo(excelFile);
             try {
                 ImportParams params = new ImportParams();
-                params.setTitleRows(1);
-                params.setHeadRows(1);
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
-
                 List<Customer> costomerList = new ArrayList<>();
+
+                List<CompanyRole> roleList = roleService.list();
+                Integer i = 0;
                 for (CustomerExcelItem customerExcelItem : result) {
+                    i++;
+                    Contacts contacts = new Contacts();
+
+                    for (CompanyRole companyRole : roleList) {
+                        if (ToolUtil.isNotEmpty(companyRole.getPosition()) && companyRole.getPosition().equals(customerExcelItem.getRole())) {
+                            contacts.setCompanyRole(companyRole.getCompanyRoleId());
+                        }
+                    }
+                    if (ToolUtil.isEmpty(contacts.getCompanyRole())) {
+                        CompanyRole companyRole = new CompanyRole();
+                        companyRole.setPosition(companyRole.getPosition());
+                        roleService.save(companyRole);
+                        contacts.setCompanyRole(companyRole.getCompanyRoleId());
+                    }
+
+                    contacts.setContactsName(customerExcelItem.getUserName());
+                    contactsService.save(contacts);
+
+                    Phone phone = new Phone();
+                    phone.setPhoneNumber(customerExcelItem.getPhone());
+                    phone.setContactsId(contacts.getContactsId());
+                    phoneService.save(phone);
+
                     Customer customer = new Customer();
-                    ToolUtil.copyProperties(costomerList, customer);
+                    customer.setDefaultContacts(contacts.getContactsId());
+                    customer.setSupply(1);
+                    customer.setCustomerName(customerExcelItem.getCustomerName());
                     costomerList.add(customer);
                 }
                 customerService.saveBatch(costomerList);
@@ -195,7 +230,7 @@ public class CrmExcelController {
     @ApiOperation("导出")
     public void qrCodetoExcel(HttpServletResponse response, Long type, String url) throws IOException {
         String title = "二维码导出表单";
-        String[] header = {"序号", "Id", "地址","请扫描"};
+        String[] header = {"序号", "Id", "地址", "请扫描"};
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -212,7 +247,6 @@ public class CrmExcelController {
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
         titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         ti.setCellStyle(titleStyle);
-
 
 
         HSSFRow headrow = sheet.createRow(1);

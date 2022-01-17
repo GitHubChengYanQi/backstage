@@ -126,6 +126,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         List<PurchaseQuotation> purchaseQuotations = new ArrayList<>();
 
+
         for (PurchaseQuotationParam purchaseQuotationParam : params) {
             if (ToolUtil.isEmpty(purchaseQuotationParam.getCustomerId())) {
                 throw new ServiceException(500, "请添加供应商");
@@ -134,8 +135,10 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             PurchaseQuotation purchaseQuotation = new PurchaseQuotation();
             ToolUtil.copyProperties(purchaseQuotationParam, purchaseQuotation);
             purchaseQuotations.add(purchaseQuotation);
+
         }
         this.saveBatch(purchaseQuotations);
+
     }
 
     /**
@@ -174,6 +177,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                     throw new ServiceException(500, "当前供应商等级不够");
                 }
                 break;
+
             default:
                 throw new ServiceException(500, "请确定方式");
         }
@@ -378,7 +382,6 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         return quotationResults;
     }
-
 
 
     private Serializable getKey(PurchaseQuotationParam param) {
