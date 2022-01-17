@@ -6,20 +6,20 @@ import cn.atsoft.dasheng.app.entity.CrmBusinessDetailed;
 import cn.atsoft.dasheng.app.entity.Items;
 import cn.atsoft.dasheng.app.model.params.BusinessDetailedParam;
 import cn.atsoft.dasheng.app.model.params.CrmBusinessDetailedParam;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.CrmBusinessDetailedResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.ItemsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.ContractDetail;
 import cn.atsoft.dasheng.app.mapper.ContractDetailMapper;
 import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
-import cn.atsoft.dasheng.app.model.result.ContractDetailResult;
-import  cn.atsoft.dasheng.app.service.ContractDetailService;
+import cn.atsoft.dasheng.app.service.ContractDetailService;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,14 +50,20 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
     private ItemsService itemsService;
     @Autowired
     private BrandService brandService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
-    public void add(ContractDetailParam param){
+    public void add(ContractDetailParam param) {
+
         ContractDetail entity = getEntity(param);
         this.save(entity);
     }
 
     Map<Long, ContractDetail> map;
+
     @Override
     public void addAll(BusinessDetailedParam param) {
         map = new HashMap<>();
@@ -131,17 +137,14 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
     }
 
 
-
-
-
     @Override
-    public void delete(ContractDetailParam param){
+    public void delete(ContractDetailParam param) {
         param.setDisplay(0);
         this.update(param);
     }
 
     @Override
-    public void update(ContractDetailParam param){
+    public void update(ContractDetailParam param) {
         ContractDetail oldEntity = getOldEntity(param);
         ContractDetail newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
@@ -149,58 +152,26 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
     }
 
     @Override
-    public ContractDetailResult findBySpec(ContractDetailParam param){
+    public ContractDetailResult findBySpec(ContractDetailParam param) {
         return null;
     }
 
     @Override
-    public List<ContractDetailResult> findListBySpec(ContractDetailParam param){
+    public List<ContractDetailResult> findListBySpec(ContractDetailParam param) {
         return null;
     }
 
     @Override
-    public PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope ){
+    public PageInfo<ContractDetailResult> findPageBySpec(ContractDetailParam param, DataScope dataScope) {
         Page<ContractDetailResult> pageContext = getPageContext();
-        IPage<ContractDetailResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
+        IPage<ContractDetailResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
 
-
-        List<Long> detailIds = new ArrayList<>();
-        List<Long> brandIds = new ArrayList<>();
-        for (ContractDetailResult record : page.getRecords()) {
-            detailIds.add(record.getSkuId());
-            brandIds.add(record.getBrandId());
-        }
-        QueryWrapper<Items> queryWrapper = new QueryWrapper<>();
-        queryWrapper.in("item_id", detailIds);
-        List<Items> list = detailIds.size() == 0 ? new ArrayList<>() : itemsService.list(queryWrapper);
-
-        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        brandQueryWrapper.in("brand_id", brandIds);
-        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
-
-        for (ContractDetailResult record : page.getRecords()) {
-            for (Items items : list) {
-                if (items.getItemId().equals(record.getSkuId())) {
-                    ItemsResult itemsResult = new ItemsResult();
-                    ToolUtil.copyProperties(items, itemsResult);
-                    record.setItemsResult(itemsResult);
-                    break;
-                }
-            }
-            for (Brand brands : brandList) {
-                if (brands.getBrandId().equals(record.getBrandId())) {
-                    BrandResult brandsResult = new BrandResult();
-                    ToolUtil.copyProperties(brands, brandsResult);
-                    record.setBrandResult(brandsResult);
-                    break;
-                }
-            }
-        }
+        format(page.getRecords());
 
         return PageFactory.createPageInfo(page);
     }
 
-    private Serializable getKey(ContractDetailParam param){
+    private Serializable getKey(ContractDetailParam param) {
         return param.getId();
     }
 
@@ -218,4 +189,52 @@ public class ContractDetailServiceImpl extends ServiceImpl<ContractDetailMapper,
         return entity;
     }
 
+    private void format(List<ContractDetailResult> data) {
+
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+        for (ContractDetailResult record : data) {
+            skuIds.add(record.getSkuId());
+            brandIds.add(record.getBrandId());
+            customerIds.add(record.getCustomerId());
+        }
+
+
+        QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
+        brandQueryWrapper.in("brand_id", brandIds);
+        List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.list(brandQueryWrapper);
+
+
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
+
+        for (ContractDetailResult record : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (ToolUtil.isNotEmpty(record.getSkuId()) && skuResult.getSkuId().equals(record.getSkuId())) {
+                    record.setSkuResult(skuResult);
+                    break;
+                }
+            }
+
+
+            for (Brand brands : brandList) {
+                if (ToolUtil.isNotEmpty(record.getBrandId()) && brands.getBrandId().equals(record.getBrandId())) {
+                    BrandResult brandsResult = new BrandResult();
+                    ToolUtil.copyProperties(brands, brandsResult);
+                    record.setBrandResult(brandsResult);
+                    break;
+                }
+            }
+
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(record.getCustomerId()) && customerResult.getCustomerId().equals(record.getCustomerId())) {
+                    record.setCustomerResult(customerResult);
+                    break;
+                }
+            }
+        }
+
+    }
 }

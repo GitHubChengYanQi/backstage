@@ -45,6 +45,8 @@ public interface ProcurementPlanService extends IService<ProcurementPlan> {
 
     void updateState(ActivitiProcessTask processTask);
 
+    void updateRefuseStatus(ActivitiProcessTask processTask);
+
     void updateStatus(Long planId) throws Exception;
 
     /**

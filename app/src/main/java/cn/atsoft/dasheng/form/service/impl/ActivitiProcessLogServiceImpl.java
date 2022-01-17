@@ -81,6 +81,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private ProcurementPlanService procurementPlanService;
 
+    @Autowired PurchaseAskService purchaseAskService;
+
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
         for (ActivitiAudit activitiAudit : activitiAudits) {
@@ -100,8 +102,8 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
     @Override
     public void audit(Long taskId, Integer status) {
-        //判断采购申请状态
-        askService.updateStatus(taskId, status);
+//        //判断采购申请状态
+//        askService.updateStatus(taskId, status);
         this.auditPerson(taskId, status);
     }
 
@@ -131,7 +133,6 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             throw new ServiceException(500, "没有找到该任务，无法进行审批");
         }
 
-//       QualityTask qualityTask = qualityTaskService.getById(task.getFormId());
         List<ActivitiProcessLog> logs = listByTaskId(taskId);
         List<ActivitiProcessLog> audit = this.getAudit(taskId);
         /**
@@ -185,16 +186,20 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             }
             RuleType auditType = activitiAudit.getRule().getType();
 
-
+            /**
+             * 判断是否审批节点 不是则自动通过  是则看传入参数
+             */
             if (!"audit".equals(auditType.toString())) {
                 if (activitiAudit.getType().equals("process")) {
                     switch (task.getType()) {
                         case "quality_task":
                             if (checkQualityTask.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
+                                //更新状态
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
+                                //拒绝走拒绝方法
                                 if (status.equals(0)) {
-                                    this.refuseTask(taskId);
+                                    this.refuseTask(task);
                                     auditCheck = false;
                                 }
                             } else {
@@ -205,8 +210,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
+                                //拒绝走拒绝方法
                                 if (status.equals(0)) {
-                                    this.refuseTask(taskId);
+                                    this.refuseTask(task);
                                     auditCheck = false;
                                 }
                             } else {
@@ -227,7 +233,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                     setStatus(logs, activitiProcessLog.getLogId());
                     //判断审批是否通过  不通过推送发起人审批状态  通过 在方法最后发送下一级执行
                     if (status.equals(0)) {
-                        this.refuseTask(taskId);
+                        this.refuseTask(task);
                         auditCheck = false;
                     }
                 }
@@ -247,21 +253,32 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
             this.updateBatchById(processLogs);
         }
-
+        /**
+         * 自动审批 抄送节点以及判断上级更新上级路由与分支
+         */
         loopNext(task, activitiAudits, allSteps, auditCheck);
         /**
-         * 流程结束需要重新获取
+         * 流程结束需要重新获取需要审批的节点
          */
         audit = this.getAudit(taskId);
+        //如果查询下级需要审批节点  为空  则审批流程已经没有了 下级节点  则流程结束
         if (ToolUtil.isEmpty(audit)) {
             /**
              * 流程结束
              */
-            ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
-            endProcessTask.setProcessTaskId(taskId);
-            endProcessTask.setStatus(1);
-            activitiProcessTaskService.updateById(endProcessTask);
-            this.updateStatus(endProcessTask);
+            //如果上级审批为 同意（通过）则更新状态为完成
+            //否则 在上面代码中  审核时已经更改单据和审批流程为否决 不再次更改
+            if (auditCheck){
+
+                ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
+                ToolUtil.copyProperties(task,endProcessTask);
+                endProcessTask.setStatus(0);
+                //更新任务状态
+                activitiProcessTaskService.updateById(endProcessTask);
+                //更新任务关联单据状态
+                this.updateStatus(task);
+            }
+            //推送流程结束消息
             endSend.endSend(task.getProcessTaskId());
         }
     }
@@ -274,17 +291,29 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "outQuality":
                 break;
             case "purchaseAsk":
-//                purchaseAskService.updateStatus(processTask);
+                purchaseAskService.updateStatus(processTask);
+                break;
+        }
+    }
+    private void updateRefuseStatus(ActivitiProcessTask processTask){
+        switch (processTask.getType()){
+            case "purchasePlan":
+                procurementPlanService.updateRefuseStatus(processTask);
+                break;
+            case "inQuality":
+            case "outQuality":
+                break;
+            case "purchaseAsk":
+                purchaseAskService.updateRefuseStatus(processTask);
                 break;
         }
     }
 
-    private void refuseTask(Long taskId) {
-        ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
-        activitiProcessTask.setProcessTaskId(taskId);
-        activitiProcessTask.setStatus(0);
-        activitiProcessTaskService.updateById(activitiProcessTask);
-        taskSend.refuseTask(taskId);
+    private void refuseTask(ActivitiProcessTask processTask) {
+        processTask.setStatus(0);
+        activitiProcessTaskService.updateById(processTask);
+        this.updateRefuseStatus(processTask);
+        taskSend.refuseTask(processTask.getProcessTaskId());
     }
 
     private void loopNext(ActivitiProcessTask task, List<ActivitiAudit> activitiAuditList, List<ActivitiSteps> allSteps, Boolean auditCheck) {
@@ -310,6 +339,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
 
                 ActivitiSteps activitiSteps = getSteps(allSteps, activitiProcessLog.getSetpsId());
                 List<ActivitiProcessLog> processLogs = updateSupper(allSteps, logs, activitiSteps);
+
 
                 if (processLogs.size() > 0) {
                     for (ActivitiProcessLog processLog : processLogs) {

@@ -86,7 +86,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     @Override
     public void add(StorehousePositionsParam param) {
         if (ToolUtil.isNotEmpty(param.getPid())) {
-            StockDetails stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).one();
+            List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).list();
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
             }

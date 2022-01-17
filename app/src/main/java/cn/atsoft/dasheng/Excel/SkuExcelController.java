@@ -39,6 +39,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
 
 @Controller
@@ -127,7 +128,10 @@ public class SkuExcelController {
             i++;
             try {
                 Sku one = skuService.query().eq("standard", skuExcelItem.get成品码()).eq("display", 1).one();
-                if (ToolUtil.isEmpty(one)) {
+                if (ToolUtil.isNotEmpty(one)) {
+                    skuExcelItem.setLine(i);
+                    errorList.add(skuExcelItem);
+                } else {
                     Sku sku = new Sku();
                     //防止添加已有数据-------------------------------------------------------------------------------------
                     if (ToolUtil.isEmpty(skuExcelItem.get型号())) {
@@ -241,6 +245,7 @@ public class SkuExcelController {
                     String md5 = SecureUtil.md5(spuId + sku.getSkuValue());
                     sku.setSkuValueMd5(md5);
                     if (skuList.stream().anyMatch(item -> item.getStandard().equals(sku.getStandard()))) {
+                        skuExcelItem.setLine(i);
                         errorList.add(skuExcelItem);
                     } else {
                         skuList.add(sku);
@@ -249,8 +254,9 @@ public class SkuExcelController {
                 }
 
             } catch (Exception e) {
+                skuExcelItem.setLine(i);
                 errorList.add(skuExcelItem);
-                logger.error("第" + i + "行" + skuExcelItem + "错误");
+                logger.error("第" + i + "行" + skuExcelItem + "错误" + e);
             }
         }
         skuService.saveBatch(skuList);
