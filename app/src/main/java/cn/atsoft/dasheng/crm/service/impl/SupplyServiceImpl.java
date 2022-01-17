@@ -218,44 +218,37 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     }
 
     @Override
-    public List<CustomerResult> getSupplyBySku(List<Long> skuIds) {
-        List<Supply> supplies = this.query().in("sku_id", skuIds).list();
-        List<Long> customerIds = new ArrayList<>();
+    public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<Supply> supplies = this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
 
+        List<Long> customerIds = new ArrayList<>();
         for (Supply supply : supplies) {
             customerIds.add(supply.getCustomerId());
         }
-        List<Customer> customers = customerService.listByIds(customerIds);
 
-        List<CustomerResult> customerResults = new ArrayList<>();
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
 
-
-        for (Customer customer : customers) {
-            CustomerResult customerResult = new CustomerResult();
-            ToolUtil.copyProperties(customer, customerResult);
-            customerResults.add(customerResult);
-
-        }
-        skuIds.clear();
-        List<Supply> supplyList = this.query().in("customer_id", customerIds).list();
-        for (Supply supply : supplyList) {
-            skuIds.add(supply.getSkuId());
-        }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-        //取供应商的供应的物料
-        Map<Long, List<SkuResult>> map = new HashMap<>();
-        for (Supply supply : supplyList) {
-            List<SkuResult> skuResultList = new ArrayList<>();
-            if (ToolUtil.isNotEmpty(supply.getCustomerId())) {
-                for (SkuResult skuResult : skuResults) {
-                    if (skuResult.getSkuId().equals(supply.getSkuId())) {
-                        skuResultList.add(skuResult);
-                    }
-                }
-                map.put(supply.getCustomerId(), skuResultList);
+        List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
+        for (CustomerResult customerResult : customerResults) {
+            if (customerResult.getCustomerLevelId() >= supplierLevel) {
+                levelCustomerResult.add(customerResult);
             }
         }
-        for (CustomerResult customerResult : customerResults) {
+
+        //取供应商的供应的物料
+        Map<Long, List<SkuResult>> map = new HashMap<>();
+        for (Supply supply : supplies) {
+            List<SkuResult> skuResultList = new ArrayList<>();
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(supply.getSkuId())) {
+                    skuResultList.add(skuResult);
+                }
+            }
+            map.put(supply.getCustomerId(), skuResultList);
+        }
+
+        for (CustomerResult customerResult : levelCustomerResult) {
             List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
             customerResult.setSkuResultList(skuResultList);
         }

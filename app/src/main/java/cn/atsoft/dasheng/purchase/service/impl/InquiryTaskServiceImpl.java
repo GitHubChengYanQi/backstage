@@ -137,7 +137,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
         for (InquiryTaskResult datum : data) {
             for (User user : users) {
-                if (datum.getUserId().equals(user.getUserId())) {
+                if (ToolUtil.isNotEmpty(datum.getUserId()) && datum.getUserId().equals(user.getUserId())) {
                     datum.setUser(user);
                     break;
                 }
@@ -159,9 +159,8 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
 
         //返回供应商
-        List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku);
+        List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, taskResult.getSupplierLevel());
         taskResult.setCustomerResults(suppliers);
-
 
 
         return taskResult;

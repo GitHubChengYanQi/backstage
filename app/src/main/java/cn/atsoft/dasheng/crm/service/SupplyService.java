@@ -85,6 +85,6 @@ public interface SupplyService extends IService<Supply> {
      * @param skuIds
      * @return
      */
-    List<CustomerResult> getSupplyBySku(List<Long> skuIds);
+    List<CustomerResult> getSupplyBySku(List<Long> skuIds,Long supplierLevel);
 
 }
