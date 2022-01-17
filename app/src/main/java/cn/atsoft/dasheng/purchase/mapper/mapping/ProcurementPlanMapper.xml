@@ -28,7 +28,7 @@
     <select id="customList" resultType="cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult" parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_procurement_plan where 1 = 1
+        from daoxin_procurement_plan where 1 = 1 and status != 0
             <if test="paramCondition.procurementPlanId != null">
                 and procurement_plan_id like CONCAT('%',#{paramCondition.procurementPlanId},'%')
             </if>
@@ -73,7 +73,7 @@
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_procurement_plan where 1 = 1
+        from daoxin_procurement_plan where 1 = 1  and status != 0
                 <if test="paramCondition.procurementPlanId != null">
                         and procurement_plan_id like CONCAT('%',#{paramCondition.procurementPlanId},'%')
                 </if>
@@ -118,7 +118,7 @@
     <select id="customPageList" resultType="cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult" parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_procurement_plan where 1 = 1
+        from daoxin_procurement_plan where 1 = 1 and status != 0
                 <if test="paramCondition.procurementPlanId != null">
                         and procurement_plan_id like CONCAT('%',#{paramCondition.procurementPlanId},'%')
                 </if>
@@ -163,7 +163,7 @@
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_procurement_plan where 1 = 1
+        from daoxin_procurement_plan where 1 = 1 and status != 0
                 <if test="paramCondition.procurementPlanId != null">
                         and procurement_plan_id like CONCAT('%',#{paramCondition.procurementPlanId},'%')
                 </if>

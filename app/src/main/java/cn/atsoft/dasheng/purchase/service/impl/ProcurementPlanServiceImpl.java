@@ -81,6 +81,11 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     @Override
     @Transactional
     public void add(ProcurementPlanParam param) {
+        param.getProcurementPlanName();
+        Integer count = this.query().eq("procurement_plan_id", param.getProcurementPlanName()).eq("display", 1).count();
+        if (count>0){
+            throw new ServiceException(500,"已有相同名称采购计划,请更换名称");
+        }
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
 
@@ -103,6 +108,9 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
+        }else {
+            entity.setStatus(98);
+            this.updateById(entity);
         }
 
     }
