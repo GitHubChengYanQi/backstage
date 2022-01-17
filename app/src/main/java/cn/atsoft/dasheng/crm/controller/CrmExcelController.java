@@ -8,14 +8,8 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 
 import cn.afterturn.easypoi.excel.entity.params.ExcelExportEntity;
 import cn.atsoft.dasheng.Tool.VoUtilsTool;
-import cn.atsoft.dasheng.app.entity.Adress;
-import cn.atsoft.dasheng.app.entity.Contacts;
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.Phone;
-import cn.atsoft.dasheng.app.service.AdressService;
-import cn.atsoft.dasheng.app.service.ContactsService;
-import cn.atsoft.dasheng.app.service.CustomerService;
-import cn.atsoft.dasheng.app.service.PhoneService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
 import cn.atsoft.dasheng.base.pojo.page.LayuiPageInfo;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -32,6 +26,8 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeExcel;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
+import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -67,8 +63,7 @@ import java.util.Map;
 @Slf4j
 public class CrmExcelController {
 
-    @Autowired
-    private UserService userService;
+
     @Autowired
     private AdressService adressService;
     @Autowired
@@ -83,6 +78,10 @@ public class CrmExcelController {
     private PhoneService phoneService;
     @Autowired
     private CompanyRoleService roleService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private SupplierBrandService supplierBrandService;
 
 
     /**
@@ -101,46 +100,55 @@ public class CrmExcelController {
             try {
                 ImportParams params = new ImportParams();
                 List<CustomerExcelItem> result = ExcelImportUtil.importExcel(excelFile, CustomerExcelItem.class, params);
-                List<Customer> costomerList = new ArrayList<>();
 
                 List<CompanyRole> roleList = roleService.list();
                 Integer i = 0;
                 for (CustomerExcelItem customerExcelItem : result) {
                     i++;
-                    Contacts contacts = new Contacts();
+                    Customer oldCustomer = customerService.query().eq("customer_name", customerExcelItem.getCustomerName()).one();
+                    if (ToolUtil.isEmpty(oldCustomer)) {
+                        Contacts contacts = new Contacts();
 
-                    for (CompanyRole companyRole : roleList) {
-                        if (ToolUtil.isNotEmpty(companyRole.getPosition()) && companyRole.getPosition().equals(customerExcelItem.getRole())) {
+                        for (CompanyRole companyRole : roleList) {
+                            if (ToolUtil.isNotEmpty(companyRole.getPosition()) && companyRole.getPosition().equals(customerExcelItem.getRole())) {
+                                contacts.setCompanyRole(companyRole.getCompanyRoleId());
+                            }
+                        }
+                        if (ToolUtil.isEmpty(contacts.getCompanyRole())) {
+                            CompanyRole companyRole = new CompanyRole();
+                            companyRole.setPosition(companyRole.getPosition());
+                            roleService.save(companyRole);
                             contacts.setCompanyRole(companyRole.getCompanyRoleId());
                         }
+
+                        contacts.setContactsName(customerExcelItem.getUserName());
+                        contactsService.save(contacts);
+
+                        Phone phone = new Phone();
+                        phone.setPhoneNumber(customerExcelItem.getPhone());
+                        phone.setContactsId(contacts.getContactsId());
+                        phoneService.save(phone);
+
+                        Customer customer = new Customer();
+                        customer.setDefaultContacts(contacts.getContactsId());
+                        customer.setSupply(1);
+                        customer.setCustomerName(customerExcelItem.getCustomerName());
+                        customerService.save(customer);
+
+                        Brand brand = new Brand();
+                        brand.setBrandName(customerExcelItem.getCustomerName());
+                        brandService.save(brand);
+
+                        SupplierBrand supplierBrand = new SupplierBrand();
+                        supplierBrand.setCustomerId(customer.getCustomerId());
+                        supplierBrand.setBrandId(brand.getBrandId());
+                        supplierBrandService.save(supplierBrand);
                     }
-                    if (ToolUtil.isEmpty(contacts.getCompanyRole())) {
-                        CompanyRole companyRole = new CompanyRole();
-                        companyRole.setPosition(companyRole.getPosition());
-                        roleService.save(companyRole);
-                        contacts.setCompanyRole(companyRole.getCompanyRoleId());
-                    }
-
-                    contacts.setContactsName(customerExcelItem.getUserName());
-                    contactsService.save(contacts);
-
-                    Phone phone = new Phone();
-                    phone.setPhoneNumber(customerExcelItem.getPhone());
-                    phone.setContactsId(contacts.getContactsId());
-                    phoneService.save(phone);
-
-                    Customer customer = new Customer();
-                    customer.setDefaultContacts(contacts.getContactsId());
-                    customer.setSupply(1);
-                    customer.setCustomerName(customerExcelItem.getCustomerName());
-                    costomerList.add(customer);
                 }
-                customerService.saveBatch(costomerList);
                 return ResponseData.success();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         } catch (Exception e) {
             log.error("上传那文件出错！", e);
             throw new ServiceException(BizExceptionEnum.UPLOAD_ERROR);
