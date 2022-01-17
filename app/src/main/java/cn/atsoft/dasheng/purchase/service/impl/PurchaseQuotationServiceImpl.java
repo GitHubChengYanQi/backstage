@@ -138,6 +138,26 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         }
         this.saveBatch(purchaseQuotations);
+        //回填供应商绑定供应物料表  如果有新物料供应  则新增
+        List<Long> customerIds = new ArrayList<>();
+        for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
+            customerIds.add(purchaseQuotation.getCustomerId());
+        }
+//        List<Customer> customerList = customerService.query().in("customer_id", customerIds).eq("display", 1).list();
+        customerService.list(new QueryWrapper<Customer>(){{
+            eq("display",1);
+        }});
+        List<Supply> supplyList =    supplyService.query().in("customer_id",customerIds).eq("display", 1).list();
+        List<Supply> saveEntity = new ArrayList<>();
+        for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
+            if (supplyList.stream().noneMatch(supply -> supply.getCustomerId().equals(purchaseQuotation.getCustomerId()) && supply.getSkuId().equals(purchaseQuotation.getSkuId()))) {
+                Supply supply = new Supply();
+                supply.setCustomerId(purchaseQuotation.getCustomerId());
+                supply.setSkuId(purchaseQuotation.getSkuId());
+                saveEntity.add(supply);
+            }
+        }
+        this.supplyService.saveBatch(saveEntity);
 
     }
 
