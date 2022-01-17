@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.controller;
 
+import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
@@ -46,6 +47,7 @@ public class ProcurementPlanController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
+    @Permission
     public ResponseData addItem(@RequestBody ProcurementPlanParam procurementPlanParam) {
         this.procurementPlanService.add(procurementPlanParam);
         return ResponseData.success();
@@ -86,6 +88,7 @@ public class ProcurementPlanController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
+    @Permission
     public ResponseData<ProcurementPlanResult> detail(@RequestBody ProcurementPlanParam procurementPlanParam) {
         ProcurementPlan detail = this.procurementPlanService.getById(procurementPlanParam.getProcurementPlanId());
         if (ToolUtil.isEmpty(detail)){
@@ -115,6 +118,7 @@ public class ProcurementPlanController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
+    @Permission
     public PageInfo<ProcurementPlanResult> list(@RequestBody(required = false) ProcurementPlanParam procurementPlanParam) {
         if(ToolUtil.isEmpty(procurementPlanParam)){
             procurementPlanParam = new ProcurementPlanParam();
