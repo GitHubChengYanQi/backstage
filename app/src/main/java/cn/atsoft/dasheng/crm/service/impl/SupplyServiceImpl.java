@@ -219,7 +219,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds) {
-        List<Supply> supplies = this.query().in("sku_id", skuIds).list();
+        List<Supply> supplies = skuIds.size() > 0 ? this.query().in("sku_id", skuIds).list() : new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
 
         for (Supply supply : supplies) {
