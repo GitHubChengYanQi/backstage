@@ -47,6 +47,8 @@ public interface ProcurementPlanService extends IService<ProcurementPlan> {
 
     void updateRefuseStatus(ActivitiProcessTask processTask);
 
+    void updateStatus(Long planId) throws Exception;
+
     /**
      * 查询单条数据，Specification模式
      *
