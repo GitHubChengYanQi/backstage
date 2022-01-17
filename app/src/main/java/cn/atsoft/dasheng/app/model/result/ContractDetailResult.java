@@ -1,11 +1,16 @@
 package cn.atsoft.dasheng.app.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 合同产品明细
@@ -22,7 +27,8 @@ public class ContractDetailResult implements Serializable {
 
     private ItemsResult itemsResult;
     private BrandResult brandResult;
-
+    private SkuResult skuResult;
+    private CustomerResult customerResult;
 
     /**
      * id

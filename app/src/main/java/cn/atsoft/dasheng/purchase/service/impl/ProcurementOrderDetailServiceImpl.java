@@ -2,7 +2,9 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -38,6 +40,9 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
 
     @Autowired
     private BrandService brandService;
+
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -98,13 +103,16 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
     private void format(List<ProcurementOrderDetailResult> data) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (ProcurementOrderDetailResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
+            customerIds.add(datum.getCustomerId());
         }
 
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<CustomerResult> results = customerService.getResults(customerIds);
 
         for (ProcurementOrderDetailResult datum : data) {
 
@@ -118,6 +126,13 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
             for (BrandResult brandResult : brandResults) {
                 if (brandResult.getBrandId().equals(datum.getBrandId())) {
                     datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
+
+            for (CustomerResult result : results) {
+                if (datum.getCustomerId().equals(result.getCustomerId())) {
+                    datum.setCustomerResult(result);
                     break;
                 }
             }
