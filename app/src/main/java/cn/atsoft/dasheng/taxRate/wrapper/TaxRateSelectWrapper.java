@@ -15,7 +15,7 @@ public class TaxRateSelectWrapper extends BaseControllerWrapper {
 
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
-        String label = Convert.toStr(map.get("tax_rate_name"));
+        String label = Convert.toStr(map.get("tax_rate_value"));
         String value = Convert.toStr(map.get("tax_rate_id"));
         map.clear();
         map.put("label", label);

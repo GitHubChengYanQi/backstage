@@ -112,8 +112,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     contactsBindService.add(contactsBindParam);
                     //添加默认联系人
                     entity.setDefaultContacts(contacts.getContactsId());
-                } else {
-                    throw new ServiceException(500, "请填写正确联系人信息");
                 }
             }
         }
