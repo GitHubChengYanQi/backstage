@@ -85,7 +85,6 @@ public class SkuBrandBindController extends BaseController {
         SkuBrandBindResult result = new SkuBrandBindResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

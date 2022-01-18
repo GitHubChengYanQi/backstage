@@ -13,8 +13,10 @@ import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
+import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -59,12 +61,24 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private PhoneService phoneService;
     @Autowired
     private AdressService adressService;
-
+    @Autowired
+    private SkuBrandBindService brandBindService;
 
     @Override
     public void add(SupplyParam param) {
         Supply entity = getEntity(param);
         this.save(entity);
+        List<SkuBrandBind> skuBrandBinds = brandBindService.query().eq("sku_id", param.getSkuId()).list();
+        List<SkuBrandBind> skuBrandBindList = new ArrayList<>();
+        for (BrandParam brandParam : param.getBrandParams()) {
+            if (skuBrandBinds.stream().noneMatch(i -> i.getBrandId().equals(brandParam.getBrandId()) && i.getSkuId().equals(param.getSkuId()))) {
+                SkuBrandBind skuBrandBind = new SkuBrandBind();
+                skuBrandBind.setSkuId(param.getSkuId());
+                skuBrandBind.setBrandId(brandParam.getBrandId());
+                skuBrandBindList.add(skuBrandBind);
+            }
+        }
+        brandBindService.saveBatch(skuBrandBindList);
     }
 
     /**
