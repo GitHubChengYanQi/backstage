@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -25,6 +26,7 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -63,6 +65,9 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private AdressService adressService;
     @Autowired
     private SkuBrandBindService brandBindService;
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
+
 
     @Override
     public void add(SupplyParam param) {
@@ -107,7 +112,22 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public void delete(SupplyParam param) {
-        this.removeById(getKey(param));
+        Supply entity = getOldEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
+        //删除sku 品牌对应关系
+        List<BrandResult> brandsBySuppliers = supplierBrandService.getBrandsBySupplierId(entity.getCustomerId());
+        List<Long> brandIds = new ArrayList<>();
+
+        for (BrandResult brandsBySupplier : brandsBySuppliers) {
+            brandIds.add(brandsBySupplier.getBrandId());
+        }
+        SkuBrandBind skuBrandBind = new SkuBrandBind();
+        skuBrandBind.setDisplay(0);
+        skuBrandBindService.update(skuBrandBind, new QueryWrapper<SkuBrandBind>() {{
+            eq("sku_id", entity.getSkuId());
+            in("brand_id", brandIds);
+        }});
     }
 
     @Override
