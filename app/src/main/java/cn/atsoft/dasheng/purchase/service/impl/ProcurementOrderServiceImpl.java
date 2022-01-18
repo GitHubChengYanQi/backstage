@@ -167,8 +167,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         }
 
         //-------------------------------------------------------------------------------------------------------
-
-        List<Contract> contracts = new ArrayList<>();
         for (Customer customer : customerList) {
 
             Contract contract = new Contract();

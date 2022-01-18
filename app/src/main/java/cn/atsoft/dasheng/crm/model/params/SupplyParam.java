@@ -30,6 +30,9 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     private List<SupplyParam> supplyParams;
 
     @NotNull
+    private Long levelId;
+
+    @NotNull
     private List<BrandParam> brandParams;
 
     private List<Long> skuIds;

@@ -66,32 +66,7 @@ public class PurchaseQuotationController extends BaseController {
     }
 
 
-    /**
-     * 编辑接口
-     *
-     * @author Captain_Jazz
-     * @Date 2021-12-22
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
 
-        this.purchaseQuotationService.update(purchaseQuotationParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author Captain_Jazz
-     * @Date 2021-12-22
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody PurchaseQuotationParam purchaseQuotationParam) {
-        this.purchaseQuotationService.delete(purchaseQuotationParam);
-        return ResponseData.success();
-    }
 
     /**
      * 查看详情接口

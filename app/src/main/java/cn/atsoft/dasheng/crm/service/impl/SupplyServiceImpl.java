@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.crm.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.model.params.BrandParam;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
@@ -13,8 +14,10 @@ import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
+import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -23,6 +26,7 @@ import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,24 +63,27 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private PhoneService phoneService;
     @Autowired
     private AdressService adressService;
+    @Autowired
+    private SkuBrandBindService brandBindService;
+    @Autowired
+    private SkuBrandBindService skuBrandBindService;
 
 
     @Override
     public void add(SupplyParam param) {
         Supply entity = getEntity(param);
         this.save(entity);
-
-        List<SupplierBrand> supplierBrands = new ArrayList<>();
-        List<SupplierBrand> brands = supplierBrandService.query().eq("customer_id", param.getCustomerId()).eq("display", 1).list();
+        List<SkuBrandBind> skuBrandBinds = brandBindService.query().eq("sku_id", param.getSkuId()).list();
+        List<SkuBrandBind> skuBrandBindList = new ArrayList<>();
         for (BrandParam brandParam : param.getBrandParams()) {
-            if (brands.stream().noneMatch(brand -> brand.getBrandId().equals(brandParam.getBrandId()))) {
-                SupplierBrand supplierBrand = new SupplierBrand();
-                supplierBrand.setBrandId(brandParam.getBrandId());
-                supplierBrand.setCustomerId(param.getCustomerId());
-                supplierBrands.add(supplierBrand);
+            if (skuBrandBinds.stream().noneMatch(i -> i.getBrandId().equals(brandParam.getBrandId()) && i.getSkuId().equals(param.getSkuId()))) {
+                SkuBrandBind skuBrandBind = new SkuBrandBind();
+                skuBrandBind.setSkuId(param.getSkuId());
+                skuBrandBind.setBrandId(brandParam.getBrandId());
+                skuBrandBindList.add(skuBrandBind);
             }
         }
-        supplierBrandService.saveBatch(supplierBrands);
+        brandBindService.saveBatch(skuBrandBindList);
     }
 
     /**
@@ -105,7 +112,22 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public void delete(SupplyParam param) {
-        this.removeById(getKey(param));
+        Supply entity = getOldEntity(param);
+        entity.setDisplay(0);
+        this.updateById(entity);
+        //删除sku 品牌对应关系
+        List<BrandResult> brandsBySuppliers = supplierBrandService.getBrandsBySupplierId(entity.getCustomerId());
+        List<Long> brandIds = new ArrayList<>();
+
+        for (BrandResult brandsBySupplier : brandsBySuppliers) {
+            brandIds.add(brandsBySupplier.getBrandId());
+        }
+        SkuBrandBind skuBrandBind = new SkuBrandBind();
+        skuBrandBind.setDisplay(0);
+        skuBrandBindService.update(skuBrandBind, new QueryWrapper<SkuBrandBind>() {{
+            eq("sku_id", entity.getSkuId());
+            in("brand_id", brandIds);
+        }});
     }
 
     @Override
@@ -184,7 +206,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<Supply> supplies = this.query().eq("customer_id", customerId).list();
 
 
-        for(Supply supply : supplies) {
+        for (Supply supply : supplies) {
             SupplyResult supplyResult = new SupplyResult();
             ToolUtil.copyProperties(supply, supplyResult);
             supplyResults.add(supplyResult);
@@ -199,7 +221,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      * @return
      */
     @Override
-    public List<CustomerResult> getSupplyByLevel(Long levelId) {
+    public List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds) {
         List<CrmCustomerLevel> levels = levelService.list();
         CrmCustomerLevel level = levelService.getById(levelId);
         //比较等级
@@ -214,9 +236,22 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             }
 
         }
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.eq("supply", 1);
+        customerQueryWrapper.in("customer_level_id", levelIds);
+
+        // sku条件查询
+        if (ToolUtil.isNotEmpty(skuIds)) {
+            List<Supply> supplies = this.query().in("sku_id", skuIds).eq("display", 1).list();
+            List<Long> supplierIds = new ArrayList<>();
+            for (Supply supply : supplies) {
+                supplierIds.add(supply.getCustomerId());
+            }
+            customerQueryWrapper.in("customer_id", supplierIds);
+        }
 
         //达到级别的供应商
-        List<Customer> customers = customerService.query().eq("supply", 1).in("customer_level_id", levelIds).list();
+        List<Customer> customers = customerService.list(customerQueryWrapper);
         List<Long> customerIds = new ArrayList<>();
         List<CustomerResult> customerResults = new ArrayList<>();
 

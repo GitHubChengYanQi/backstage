@@ -146,10 +146,10 @@ public class SupplyController extends BaseController {
      * @author song
      * @Date 2021-12-20
      */
-    @RequestMapping(value = "/getSupplyByLevel", method = RequestMethod.GET)
+    @RequestMapping(value = "/getSupplyByLevel", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData getSupplyByLevel(@Param("levelId") Long levelId) {
-        List<CustomerResult> level = this.supplyService.getSupplyByLevel(levelId);
+    public ResponseData getSupplyByLevel(@RequestBody SupplyParam supplyParam) {
+        List<CustomerResult> level = this.supplyService.getSupplyByLevel(supplyParam.getLevelId(), supplyParam.getSkuIds());
         return ResponseData.success(level);
     }
 
