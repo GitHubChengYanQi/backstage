@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.purchase.controller;
 
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,8 @@ public class ProcurementPlanController extends BaseController {
 
     @Autowired
     private ProcurementPlanDetalService procurementPlanDetalService;
+    @Autowired
+    private SkuService skuService;
 
     /**
      * 新增接口
@@ -91,7 +96,7 @@ public class ProcurementPlanController extends BaseController {
     @Permission
     public ResponseData<ProcurementPlanResult> detail(@RequestBody ProcurementPlanParam procurementPlanParam) {
         ProcurementPlan detail = this.procurementPlanService.getById(procurementPlanParam.getProcurementPlanId());
-        if (ToolUtil.isEmpty(detail)){
+        if (ToolUtil.isEmpty(detail)) {
             return null;
         }
         ProcurementPlanResult result = new ProcurementPlanResult();
@@ -99,10 +104,22 @@ public class ProcurementPlanController extends BaseController {
 
         List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, detail.getProcurementPlanId()).list();
         List<ProcurementPlanDetalResult> detalResultList = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
         for (ProcurementPlanDetal procurementPlanDetal : procurementPlanDetals) {
             ProcurementPlanDetalResult procurementPlanDetalResult = new ProcurementPlanDetalResult();
-            ToolUtil.copyProperties(procurementPlanDetal,procurementPlanDetalResult);
+            ToolUtil.copyProperties(procurementPlanDetal, procurementPlanDetalResult);
             detalResultList.add(procurementPlanDetalResult);
+            skuIds.add(procurementPlanDetal.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (SkuResult skuResult : skuResults) {
+            for (ProcurementPlanDetalResult planDetalResult : detalResultList) {
+                if (skuResult.getSkuId().equals(planDetalResult.getSkuId())) {
+                    planDetalResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
         }
 
         result.setDetalResults(detalResultList);
@@ -120,13 +137,11 @@ public class ProcurementPlanController extends BaseController {
     @ApiOperation("列表")
     @Permission
     public PageInfo<ProcurementPlanResult> list(@RequestBody(required = false) ProcurementPlanParam procurementPlanParam) {
-        if(ToolUtil.isEmpty(procurementPlanParam)){
+        if (ToolUtil.isEmpty(procurementPlanParam)) {
             procurementPlanParam = new ProcurementPlanParam();
         }
         return this.procurementPlanService.findPageBySpec(procurementPlanParam);
     }
-
-
 
 
 }

@@ -3,7 +3,6 @@ package cn.atsoft.dasheng.app.controller;
 import cn.atsoft.dasheng.app.wrapper.AdressSelectWrapper;
 import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
-import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.model.params.AdressParam;
@@ -13,15 +12,11 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.atsoft.dasheng.sys.modular.system.warpper.UserWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +90,7 @@ public class AdressController extends BaseController {
 
     public ResponseData<AdressResult> detail(@RequestBody AdressParam adressParam) {
         if (LoginContextHolder.getContext().isAdmin()) {
-            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam,null );
+            PageInfo<AdressResult> adress = adressService.findPageBySpec(adressParam, null);
             return ResponseData.success(adress.getData().get(0));
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
@@ -145,7 +140,6 @@ public class AdressController extends BaseController {
         List<Map<String, Object>> result = adressSelectWrapper.wrap();
         return ResponseData.success(result);
     }
-
 
 
 //    @RequestMapping(value = "/test", method = RequestMethod.POST)

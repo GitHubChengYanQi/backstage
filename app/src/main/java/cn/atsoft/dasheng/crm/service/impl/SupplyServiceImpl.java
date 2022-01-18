@@ -56,8 +56,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     @Autowired
     private ContactsService contactsService;
     @Autowired
-    private ContactsBindService contactsBindService;
-    @Autowired
     private PhoneService phoneService;
     @Autowired
     private AdressService adressService;
@@ -69,11 +67,14 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         this.save(entity);
 
         List<SupplierBrand> supplierBrands = new ArrayList<>();
+        List<SupplierBrand> brands = supplierBrandService.query().eq("customer_id", param.getCustomerId()).eq("display", 1).list();
         for (BrandParam brandParam : param.getBrandParams()) {
-            SupplierBrand supplierBrand = new SupplierBrand();
-            supplierBrand.setBrandId(brandParam.getBrandId());
-            supplierBrand.setCustomerId(param.getCustomerId());
-            supplierBrands.add(supplierBrand);
+            if (brands.stream().noneMatch(brand -> brand.getBrandId().equals(brandParam.getBrandId()))) {
+                SupplierBrand supplierBrand = new SupplierBrand();
+                supplierBrand.setBrandId(brandParam.getBrandId());
+                supplierBrand.setCustomerId(param.getCustomerId());
+                supplierBrands.add(supplierBrand);
+            }
         }
         supplierBrandService.saveBatch(supplierBrands);
     }
@@ -183,7 +184,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<Supply> supplies = this.query().eq("customer_id", customerId).list();
 
 
-        for (Supply supply : supplies) {
+        for(Supply supply : supplies) {
             SupplyResult supplyResult = new SupplyResult();
             ToolUtil.copyProperties(supply, supplyResult);
             supplyResults.add(supplyResult);
@@ -191,6 +192,12 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return supplyResults;
     }
 
+    /**
+     * 通过等级获取供应商
+     *
+     * @param levelId
+     * @return
+     */
     @Override
     public List<CustomerResult> getSupplyByLevel(Long levelId) {
         List<CrmCustomerLevel> levels = levelService.list();
@@ -207,6 +214,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             }
 
         }
+
         //达到级别的供应商
         List<Customer> customers = customerService.query().eq("supply", 1).in("customer_level_id", levelIds).list();
         List<Long> customerIds = new ArrayList<>();
