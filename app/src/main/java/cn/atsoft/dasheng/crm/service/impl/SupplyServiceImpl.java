@@ -221,7 +221,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      * @return
      */
     @Override
-    public List<CustomerResult> getSupplyByLevel(Long levelId) {
+    public List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds) {
         List<CrmCustomerLevel> levels = levelService.list();
         CrmCustomerLevel level = levelService.getById(levelId);
         //比较等级
@@ -237,8 +237,22 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
         }
 
+        QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
+        customerQueryWrapper.eq("supply", 1);
+        customerQueryWrapper.in("customer_level_id", levelIds);
+
+        // sku条件查询
+        if (ToolUtil.isNotEmpty(skuIds)) {
+            List<Supply> supplies = this.query().in("sku_id", skuIds).eq("display", 1).list();
+            List<Long> supplierIds = new ArrayList<>();
+            for (Supply supply : supplies) {
+                supplierIds.add(supply.getCustomerId());
+            }
+            customerQueryWrapper.in("customer_id", supplierIds);
+        }
+
         //达到级别的供应商
-        List<Customer> customers = customerService.query().eq("supply", 1).in("customer_level_id", levelIds).list();
+        List<Customer> customers = customerService.list(customerQueryWrapper);
         List<Long> customerIds = new ArrayList<>();
         List<CustomerResult> customerResults = new ArrayList<>();
 
