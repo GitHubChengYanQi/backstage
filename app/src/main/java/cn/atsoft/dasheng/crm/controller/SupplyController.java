@@ -53,6 +53,16 @@ public class SupplyController extends BaseController {
         return ResponseData.success();
     }
 
+    /**
+     *
+     * @param supplyParam
+     * @return
+     */
+    @RequestMapping(value = "/getSupplyBySku", method = RequestMethod.POST)
+    public ResponseData getSupplyBySku(@RequestBody SupplyParam supplyParam) {
+        List<CustomerResult> supplyBySku = this.supplyService.getSupplyBySku(supplyParam.getSkuIds(), supplyParam.getLevelId());
+        return ResponseData.success(supplyBySku);
+    }
 
     /**
      * 批量增加

@@ -194,12 +194,12 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
         List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
 
-        //按等级返回供应商
-        CrmCustomerLevel customerLevel = levelService.getById(taskResult.getSupplierLevel());
-        if (ToolUtil.isNotEmpty(customerLevel)) {
-            List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, customerLevel.getRank());
-            taskResult.setCustomerResults(suppliers);
-        }
+//        //按等级返回供应商
+//        CrmCustomerLevel customerLevel = levelService.getById(taskResult.getSupplierLevel());
+//        if (ToolUtil.isNotEmpty(customerLevel)) {
+//            List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, customerLevel.getRank());
+//            taskResult.setCustomerResults(suppliers);
+//        }
         return taskResult;
     }
 

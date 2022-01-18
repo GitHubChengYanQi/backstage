@@ -280,6 +280,14 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {
+        if (ToolUtil.isEmpty(supplierLevel)) {
+            throw new ServiceException(500, "请提交等级");
+        }
+        CrmCustomerLevel level = levelService.getById(supplierLevel);
+
+        if (ToolUtil.isEmpty(level)) {
+            throw new ServiceException(500, "请确定等级");
+        }
 
         List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
 
@@ -292,7 +300,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
         List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
         for (CustomerResult customerResult : customerResults) {
-            if (ToolUtil.isNotEmpty(customerResult.getLevel()) && customerResult.getLevel().getRank() >= supplierLevel) {
+            if (ToolUtil.isNotEmpty(customerResult.getLevel()) && customerResult.getLevel().getRank() >= level.getRank()) {
                 levelCustomerResult.add(customerResult);
             }
         }

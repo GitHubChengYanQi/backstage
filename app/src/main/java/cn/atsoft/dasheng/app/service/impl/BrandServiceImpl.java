@@ -25,7 +25,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -95,6 +98,10 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
             return brandResults;
         }
         List<Brand> brands = this.query().in("brand_id", brandIds).list();
+
+//        List<BrandResult> list = Collections.singletonList((BrandResult) brands.stream().skip(0).collect(Collectors.toList()));
+
+
         if (ToolUtil.isEmpty(brands)) {
             return brandResults;
         }
