@@ -236,7 +236,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             }
 
         }
-
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.eq("supply", 1);
         customerQueryWrapper.in("customer_level_id", levelIds);
