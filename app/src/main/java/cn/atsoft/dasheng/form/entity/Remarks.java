@@ -24,6 +24,12 @@ public class Remarks implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField("source_id")
+    private Long sourceId;
+
+    @TableField("source")
+    private String source;
+
     /**
      * 备注id
      */
@@ -177,6 +183,22 @@ public class Remarks implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -47,20 +48,12 @@ public class SupplyController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody SupplyParam supplyParam) {
+    public ResponseData addItem(@Valid @RequestBody SupplyParam supplyParam) {
         this.supplyService.add(supplyParam);
         return ResponseData.success();
     }
 
-    /**
-     * 通过物料查询供应商
-     */
 
-//    @RequestMapping(value = "/getSupplyBySku", method = RequestMethod.POST)
-//    public ResponseData getSupplyBySku(@RequestBody SupplyParam supplyParam) {
-//        this.supplyService.getSupplyBySku()
-//        return ResponseData.success();
-//    }
     /**
      * 批量增加
      *

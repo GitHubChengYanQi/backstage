@@ -2,6 +2,8 @@ package cn.atsoft.dasheng.app.model.result;
 
 import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.Contacts;
+import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
+import cn.atsoft.dasheng.app.entity.Phone;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.region.RegionResult;
@@ -60,6 +62,8 @@ public class CustomerResult implements Serializable {
     private Adress address;
     private Integer supply;
     private List<BrandResult> brandResults;
+    private CrmCustomerLevel level;
+    private Phone phone;
     /**
      * 客户id
      */

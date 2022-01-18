@@ -1,16 +1,17 @@
 package cn.atsoft.dasheng.crm.service.impl;
 
 
-import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
-import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.BrandParam;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
-import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
-import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.ContactsBind;
 import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.crm.mapper.SupplyMapper;
 import cn.atsoft.dasheng.crm.model.params.SupplyParam;
+import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
+import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -51,13 +53,29 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private CrmCustomerLevelService levelService;
     @Autowired
     private SupplierBrandService supplierBrandService;
+    @Autowired
+    private ContactsService contactsService;
+    @Autowired
+    private ContactsBindService contactsBindService;
+    @Autowired
+    private PhoneService phoneService;
+    @Autowired
+    private AdressService adressService;
 
 
     @Override
     public void add(SupplyParam param) {
-
         Supply entity = getEntity(param);
         this.save(entity);
+
+        List<SupplierBrand> supplierBrands = new ArrayList<>();
+        for (BrandParam brandParam : param.getBrandParams()) {
+            SupplierBrand supplierBrand = new SupplierBrand();
+            supplierBrand.setBrandId(brandParam.getBrandId());
+            supplierBrand.setCustomerId(param.getCustomerId());
+            supplierBrands.add(supplierBrand);
+        }
+        supplierBrandService.saveBatch(supplierBrands);
     }
 
     /**
@@ -219,7 +237,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
         List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
 
         List<Long> customerIds = new ArrayList<>();
@@ -231,10 +249,12 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
         List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
         for (CustomerResult customerResult : customerResults) {
-            if (ToolUtil.isNotEmpty(customerResult.getCustomerLevelId()) && customerResult.getCustomerLevelId() >= supplierLevel) {
+            if (ToolUtil.isNotEmpty(customerResult.getLevel()) && customerResult.getLevel().getRank() >= supplierLevel) {
                 levelCustomerResult.add(customerResult);
             }
         }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
 
         //取供应商的供应的物料
         Map<Long, List<SkuResult>> map = new HashMap<>();
@@ -248,11 +268,41 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             map.put(supply.getCustomerId(), skuResultList);
         }
 
+        List<Long> contactsIds = new ArrayList<>();
+        List<Long> adressIds = new ArrayList<>();
         for (CustomerResult customerResult : levelCustomerResult) {
             List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
             customerResult.setSkuResultList(skuResultList);
+            contactsIds.add(customerResult.getDefaultContacts());
+            adressIds.add(customerResult.getDefaultAddress());
         }
-        return customerResults;
+
+        List<Contacts> contacts = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.lambdaQuery()
+                .in(Contacts::getContactsId, contactsIds).eq(Contacts::getDisplay, 1).list();
+
+        List<Adress> adresses = adressService.lambdaQuery().in(Adress::getAdressId, adressIds).eq(Adress::getDisplay, 1).list();
+
+        for (CustomerResult customerResult : levelCustomerResult) {
+
+            for (Contacts contact : contacts) {
+                if (ToolUtil.isNotEmpty(customerResult.getDefaultContacts())
+                        && customerResult.getDefaultContacts()
+                        .equals(contact.getContactsId())) {
+                    Phone phone = phoneService.lambdaQuery().eq(Phone::getContactsId, contact.getContactsId()).one();
+                    customerResult.setPhone(phone);
+                    customerResult.setContact(contact);
+
+                }
+            }
+            for (Adress adress : adresses) {
+                if (ToolUtil.isNotEmpty(customerResult.getDefaultAddress()) && customerResult.getDefaultAddress().equals(adress.getAdressId())) {
+                    customerResult.setAddress(adress);
+                }
+            }
+
+        }
+
+        return levelCustomerResult;
     }
 
     private Serializable getKey(SupplyParam param) {

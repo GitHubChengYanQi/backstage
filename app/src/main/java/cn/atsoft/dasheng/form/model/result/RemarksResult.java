@@ -26,6 +26,10 @@ public class RemarksResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ActivitiProcessTaskResult taskResult;
+
+    private Long sourceId;
+
+    private String source;
     /**
      * 备注id
      */

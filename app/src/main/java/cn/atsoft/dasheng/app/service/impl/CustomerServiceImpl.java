@@ -80,6 +80,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private BrandService brandService;
     @Autowired
     private SupplierBrandService supplierBrandService;
+    @Autowired
+    private CrmCustomerLevelService levelService;
 
 
     @Override
@@ -108,6 +110,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                     contactsBindParam.setCustomerId(entity.getCustomerId());
                     contactsBindParam.setContactsId(contacts.getContactsId());
                     contactsBindService.add(contactsBindParam);
+                    //添加默认联系人
+                    entity.setDefaultContacts(contacts.getContactsId());
                 } else {
                     throw new ServiceException(500, "请填写正确联系人信息");
                 }
@@ -119,7 +123,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             for (AdressParam adressParam : param.getAdressParams()) {
                 if (ToolUtil.isNotEmpty(adressParam.getMap()) && !adressParam.getMap().getAddress().equals("")) {
                     adressParam.setCustomerId(entity.getCustomerId());
-                    adressService.add(adressParam);
+                    Adress adress = adressService.add(adressParam);
+
+                    entity.setDefaultAddress(adress.getAdressId());
                 }
             }
         }
@@ -134,6 +140,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             supplierBrandService.save(supplierBrand);
         }
 
+        this.updateById(entity);
         return entity;
 
     }
@@ -248,6 +255,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> customerIds = new ArrayList<>();
         List<Long> invoiceIds = new ArrayList<>();
         Long customerId = null;
+
 
 
         for (CustomerResult record : data) {
@@ -490,8 +498,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         this.format(results);
 
         Contacts contacts = contactsService.getById(customer.getDefaultContacts());
-
         Adress adress = adressService.getById(customer.getDefaultAddress());
+        //返回品牌
+        if (customerResult.getSupply().equals(1)) {
+            List<BrandResult> brands = supplierBrandService.getBrandsBySupplierId(customerResult.getCustomerId());
+            customerResult.setBrandResults(brands);
+        }
 
         customerResult.setAddress(adress);
         customerResult.setContact(contacts);
@@ -509,10 +521,21 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             return new ArrayList<>();
         }
         List<CustomerResult> results = new ArrayList<>();
+        List<Long> levelIds = new ArrayList<>();
         for (Customer customer : customerList) {
             CustomerResult customerResult = new CustomerResult();
             ToolUtil.copyProperties(customer, customerResult);
             results.add(customerResult);
+            levelIds.add(customer.getCustomerLevelId());
+        }
+        List<CrmCustomerLevel> levels = levelService.listByIds(levelIds);  //映射等级
+
+        for (CrmCustomerLevel level : levels) {
+            for (CustomerResult result : results) {
+                if (ToolUtil.isNotEmpty(result.getCustomerLevelId()) && result.getCustomerLevelId().equals(level.getCustomerLevelId())) {
+                    result.setLevel(level);
+                }
+            }
         }
         return results;
     }

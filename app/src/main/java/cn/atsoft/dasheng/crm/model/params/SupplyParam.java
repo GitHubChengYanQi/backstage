@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.params;
 
+import cn.atsoft.dasheng.app.model.params.BrandParam;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +29,8 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
 
     private List<SupplyParam> supplyParams;
 
+    @NotNull
+    private List<BrandParam> brandParams;
 
     private List<Long> skuIds;
 
@@ -36,6 +40,7 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     /**
      * sku
      */
+    @NotNull
     @ApiModelProperty("sku")
     private Long skuId;
 
@@ -43,6 +48,7 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
      * 供应商id
      */
     @ApiModelProperty("供应商id")
+    @NotNull
     private Long customerId;
 
     /**

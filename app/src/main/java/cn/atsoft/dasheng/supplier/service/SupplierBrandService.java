@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.supplier.service;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
@@ -44,6 +45,8 @@ public interface SupplierBrandService extends IService<SupplierBrand> {
     void update(SupplierBrandParam param);
 
     void getBrand(List<CustomerResult> customerResults);
+
+    List<BrandResult> getBrandsBySupplierId(Long supplierId);
 
     /**
      * 查询单条数据，Specification模式

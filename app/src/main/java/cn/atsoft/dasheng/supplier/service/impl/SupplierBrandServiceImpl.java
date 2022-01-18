@@ -83,6 +83,26 @@ public class SupplierBrandServiceImpl extends ServiceImpl<SupplierBrandMapper, S
     }
 
     /**
+     * 通过供应商返回多个品牌
+     *
+     * @param supplierId
+     * @return
+     */
+    @Override
+    public List<BrandResult> getBrandsBySupplierId(Long supplierId) {
+        if (ToolUtil.isEmpty(supplierId)) {
+            return new ArrayList<>();
+        }
+        List<SupplierBrand> brandList = this.query().eq("customer_id", supplierId).eq("display", 1).list();
+
+        List<Long> brandIds = new ArrayList<>();
+        for (SupplierBrand supplierBrand : brandList) {
+            brandIds.add(supplierBrand.getBrandId());
+        }
+        return brandService.getBrandResults(brandIds);
+    }
+
+    /**
      * 供应商  品牌组合
      *
      * @param customerResult

@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
@@ -50,14 +51,10 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     @Autowired
     private UserService userService;
     @Autowired
-    private PurchaseQuotationService quotationService;
-    @Autowired
-    private CustomerService customerService;
-    @Autowired
     private CrmCustomerLevelService levelService;
-
     @Autowired
     private SupplyService supplyService;
+
 
     @Override
     public void add(InquiryTaskParam param) {
@@ -185,26 +182,26 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         InquiryTaskResult taskResult = new InquiryTaskResult();
         ToolUtil.copyProperties(inquiryTask, taskResult);
 
-        List<PurchaseQuotationResult> bySource = quotationService.getListBySource(taskResult.getInquiryTaskId());
         User user = userService.getById(taskResult.getUserId());
         taskResult.setUser(user);
 
         User createUser = userService.getById(taskResult.getCreateUser());
         taskResult.setFounder(createUser);
 
-        List<InquiryTaskDetailResult> detail = detailService.getDetailByInquiryId(taskResult.getInquiryTaskId());
+        List<InquiryTaskDetailResult> detail = detailService.getDetailByInquiryId(taskResult.getInquiryTaskId()); //询价详情
 
         taskResult.setDetailResults(detail);
 
-        taskResult.setQuotationResults(bySource);
-
         List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
 
-        //返回供应商
-        List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, taskResult.getSupplierLevel());
-        taskResult.setCustomerResults(suppliers);
-
-
+        //按等级返回供应商
+        CrmCustomerLevel customerLevel = levelService.getById(taskResult.getSupplierLevel());
+        if (ToolUtil.isNotEmpty(customerLevel)) {
+            List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, customerLevel.getRank());
+            taskResult.setCustomerResults(suppliers);
+        }
         return taskResult;
     }
+
+
 }
