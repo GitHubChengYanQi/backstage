@@ -65,18 +65,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     public void add(SupplyParam param) {
         Supply entity = getEntity(param);
         this.save(entity);
-
-        List<SupplierBrand> supplierBrands = new ArrayList<>();
-        List<SupplierBrand> brands = supplierBrandService.query().eq("customer_id", param.getCustomerId()).eq("display", 1).list();
-        for (BrandParam brandParam : param.getBrandParams()) {
-            if (brands.stream().noneMatch(brand -> brand.getBrandId().equals(brandParam.getBrandId()))) {
-                SupplierBrand supplierBrand = new SupplierBrand();
-                supplierBrand.setBrandId(brandParam.getBrandId());
-                supplierBrand.setCustomerId(param.getCustomerId());
-                supplierBrands.add(supplierBrand);
-            }
-        }
-        supplierBrandService.saveBatch(supplierBrands);
     }
 
     /**
@@ -184,7 +172,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<Supply> supplies = this.query().eq("customer_id", customerId).list();
 
 
-        for(Supply supply : supplies) {
+        for (Supply supply : supplies) {
             SupplyResult supplyResult = new SupplyResult();
             ToolUtil.copyProperties(supply, supplyResult);
             supplyResults.add(supplyResult);
