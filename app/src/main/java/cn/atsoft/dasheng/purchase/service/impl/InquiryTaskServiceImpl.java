@@ -54,6 +54,8 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
     private CrmCustomerLevelService levelService;
     @Autowired
     private SupplyService supplyService;
+    @Autowired
+    private PurchaseQuotationService quotationService;
 
 
     @Override
@@ -182,6 +184,10 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         InquiryTaskResult taskResult = new InquiryTaskResult();
         ToolUtil.copyProperties(inquiryTask, taskResult);
 
+        List<PurchaseQuotationResult> bySource = quotationService.getListBySource(taskResult.getInquiryTaskId());
+        taskResult.setQuotationResults(bySource);
+
+
         User user = userService.getById(taskResult.getUserId());
         taskResult.setUser(user);
 
@@ -192,7 +198,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
         taskResult.setDetailResults(detail);
 
-        List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
+//        List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
 
 //        //按等级返回供应商
 //        CrmCustomerLevel customerLevel = levelService.getById(taskResult.getSupplierLevel());

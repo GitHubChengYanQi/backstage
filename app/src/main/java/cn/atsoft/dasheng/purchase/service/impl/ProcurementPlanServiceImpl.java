@@ -6,6 +6,8 @@ import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
@@ -23,6 +25,7 @@ import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanDetalParam;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -77,14 +80,18 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
 
     @Autowired
     private PurchaseListingService purchaseListingService;
+    @Autowired
+    private SkuService skuService;
+    @Autowired
+    private PurchaseQuotationService quotationService;
 
     @Override
     @Transactional
     public void add(ProcurementPlanParam param) {
         param.getProcurementPlanName();
         Integer count = this.query().eq("procurement_plan_id", param.getProcurementPlanName()).eq("display", 1).count();
-        if (count>0){
-            throw new ServiceException(500,"已有相同名称采购计划,请更换名称");
+        if (count > 0) {
+            throw new ServiceException(500, "已有相同名称采购计划,请更换名称");
         }
         ProcurementPlan entity = getEntity(param);
         this.save(entity);
@@ -108,7 +115,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
             //添加log
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
-        }else {
+        } else {
             entity.setStatus(98);
             this.updateById(entity);
         }
@@ -142,6 +149,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         procurementPlan.setStatus(98);
         this.updateById(procurementPlan);
     }
+
     @Override
     public void updateRefuseStatus(ActivitiProcessTask processTask) {
 
@@ -167,6 +175,35 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
         purchaseListingService.updateBatchById(purchaseListings);
 
     }
+
+    @Override
+    public void detail(ProcurementPlanResult result) {
+        List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, result.getProcurementPlanId()).list();
+        List<ProcurementPlanDetalResult> detalResultList = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        for (ProcurementPlanDetal procurementPlanDetal : procurementPlanDetals) {
+            ProcurementPlanDetalResult procurementPlanDetalResult = new ProcurementPlanDetalResult();
+            ToolUtil.copyProperties(procurementPlanDetal, procurementPlanDetalResult);
+            detalResultList.add(procurementPlanDetalResult);
+            skuIds.add(procurementPlanDetal.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (SkuResult skuResult : skuResults) {
+            for (ProcurementPlanDetalResult planDetalResult : detalResultList) {
+                if (skuResult.getSkuId().equals(planDetalResult.getSkuId())) {
+                    planDetalResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
+        List<PurchaseQuotationResult> source = quotationService.getListBySource(result.getProcurementPlanId());
+        result.setQuotationResults(source);
+
+        result.setDetalResults(detalResultList);
+
+    }
+
 
     /**
      * 更新采购计划状态

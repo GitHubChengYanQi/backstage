@@ -9,11 +9,13 @@ import cn.atsoft.dasheng.purchase.entity.ProcurementPlanDetal;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementPlanParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanDetalResult;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
+import cn.atsoft.dasheng.purchase.model.result.PurchaseQuotationResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,11 +41,6 @@ public class ProcurementPlanController extends BaseController {
     @Autowired
     private ProcurementPlanService procurementPlanService;
 
-    @Autowired
-    private ProcurementPlanDetalService procurementPlanDetalService;
-    @Autowired
-    private SkuService skuService;
-
     /**
      * 新增接口
      *
@@ -58,32 +55,6 @@ public class ProcurementPlanController extends BaseController {
         return ResponseData.success();
     }
 
-    /**
-     * 编辑接口
-     *
-     * @author song
-     * @Date 2021-12-21
-     */
-//    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-//    @ApiOperation("编辑")
-//    public ResponseData update(@RequestBody ProcurementPlanParam procurementPlanParam) {
-//
-//        this.procurementPlanService.update(procurementPlanParam);
-//        return ResponseData.success();
-//    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2021-12-21
-     */
-//    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-//    @ApiOperation("删除")
-//    public ResponseData delete(@RequestBody ProcurementPlanParam procurementPlanParam)  {
-//        this.procurementPlanService.delete(procurementPlanParam);
-//        return ResponseData.success();
-//    }
 
     /**
      * 查看详情接口
@@ -102,27 +73,7 @@ public class ProcurementPlanController extends BaseController {
         ProcurementPlanResult result = new ProcurementPlanResult();
         ToolUtil.copyProperties(detail, result);
 
-        List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, detail.getProcurementPlanId()).list();
-        List<ProcurementPlanDetalResult> detalResultList = new ArrayList<>();
-        List<Long> skuIds = new ArrayList<>();
-        for (ProcurementPlanDetal procurementPlanDetal : procurementPlanDetals) {
-            ProcurementPlanDetalResult procurementPlanDetalResult = new ProcurementPlanDetalResult();
-            ToolUtil.copyProperties(procurementPlanDetal, procurementPlanDetalResult);
-            detalResultList.add(procurementPlanDetalResult);
-            skuIds.add(procurementPlanDetal.getSkuId());
-        }
-        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
-        for (SkuResult skuResult : skuResults) {
-            for (ProcurementPlanDetalResult planDetalResult : detalResultList) {
-                if (skuResult.getSkuId().equals(planDetalResult.getSkuId())) {
-                    planDetalResult.setSkuResult(skuResult);
-                    break;
-                }
-            }
-        }
-
-        result.setDetalResults(detalResultList);
+        procurementPlanService.detail(result);
 
         return ResponseData.success(result);
     }

@@ -37,7 +37,9 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -255,7 +257,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> customerIds = new ArrayList<>();
         List<Long> invoiceIds = new ArrayList<>();
         Long customerId = null;
-
 
 
         for (CustomerResult record : data) {
@@ -522,21 +523,48 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         }
         List<CustomerResult> results = new ArrayList<>();
         List<Long> levelIds = new ArrayList<>();
+        List<Long> adressIds = new ArrayList<>();
+        List<Long> contactsIds = new ArrayList<>();
+
         for (Customer customer : customerList) {
             CustomerResult customerResult = new CustomerResult();
             ToolUtil.copyProperties(customer, customerResult);
             results.add(customerResult);
             levelIds.add(customer.getCustomerLevelId());
+            adressIds.add(customer.getDefaultAddress());
+            contactsIds.add(customer.getDefaultContacts());
         }
-        List<CrmCustomerLevel> levels = levelService.listByIds(levelIds);  //映射等级
 
-        for (CrmCustomerLevel level : levels) {
-            for (CustomerResult result : results) {
+
+        List<CrmCustomerLevel> levels = levelIds.size() == 0 ? new ArrayList<>() : levelService.listByIds(levelIds);  //映射等级
+        List<Adress> adresses = adressIds.size() == 0 ? new ArrayList<>() : adressService.listByIds(adressIds); //映射地址
+        List<Contacts> contacts = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.listByIds(contactsIds); //映射联系人
+        List<Phone> phones = contactsIds.size() == 0 ? new ArrayList<>() : phoneService.query().in("contacts_id", contactsIds).list();//映射电话
+
+        Map<Long, Phone> phoneMap = new HashMap<>();
+        for (Phone phone : phones) {
+            phoneMap.put(phone.getContactsId(), phone);
+        }
+        for (CustomerResult result : results) {
+            for (CrmCustomerLevel level : levels) {
                 if (ToolUtil.isNotEmpty(result.getCustomerLevelId()) && result.getCustomerLevelId().equals(level.getCustomerLevelId())) {
                     result.setLevel(level);
                 }
             }
+            for (Adress adress : adresses) {
+                if (ToolUtil.isNotEmpty(result.getDefaultAddress()) && result.getDefaultAddress().equals(adress.getAdressId())) {
+                    result.setAddress(adress);
+                }
+            }
+            for (Contacts contact : contacts) {
+                if (ToolUtil.isNotEmpty(result.getDefaultContacts())&& result.getDefaultContacts().equals(contact.getContactsId())) {
+                    result.setContact(contact);
+                    result.setPhone(phoneMap.get(contact.getContactsId()));
+                }
+            }
         }
+
+
         return results;
     }
 

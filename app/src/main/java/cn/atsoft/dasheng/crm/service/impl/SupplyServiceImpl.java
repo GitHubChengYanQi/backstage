@@ -298,59 +298,42 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
 
+        List<Long> supplierIds = new ArrayList<>();
         List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
+
         for (CustomerResult customerResult : customerResults) {
             if (ToolUtil.isNotEmpty(customerResult.getLevel()) && customerResult.getLevel().getRank() >= level.getRank()) {
                 levelCustomerResult.add(customerResult);
+                supplierIds.add(customerResult.getCustomerId());
             }
         }
+        List<Supply> supplyList = this.query().in("customer_id", supplierIds).list();
+        skuIds.clear();
+
+        for (Supply supply : supplyList) {
+            skuIds.add(supply.getSkuId());
+        }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
-
         //取供应商的供应的物料
         Map<Long, List<SkuResult>> map = new HashMap<>();
         for (Supply supply : supplies) {
+
             List<SkuResult> skuResultList = new ArrayList<>();
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(supply.getSkuId())) {
                     skuResultList.add(skuResult);
                 }
             }
+            List<SkuResult> results = map.get(supply.getCustomerId());
+            if (ToolUtil.isNotEmpty(results)) {
+                skuResultList.addAll(results);
+            }
             map.put(supply.getCustomerId(), skuResultList);
         }
 
-        List<Long> contactsIds = new ArrayList<>();
-        List<Long> adressIds = new ArrayList<>();
         for (CustomerResult customerResult : levelCustomerResult) {
             List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
             customerResult.setSkuResultList(skuResultList);
-            contactsIds.add(customerResult.getDefaultContacts());
-            adressIds.add(customerResult.getDefaultAddress());
-        }
-
-        List<Contacts> contacts = contactsIds.size() == 0 ? new ArrayList<>() : contactsService.lambdaQuery()
-                .in(Contacts::getContactsId, contactsIds).eq(Contacts::getDisplay, 1).list();
-
-        List<Adress> adresses = adressService.lambdaQuery().in(Adress::getAdressId, adressIds).eq(Adress::getDisplay, 1).list();
-
-        for (CustomerResult customerResult : levelCustomerResult) {
-
-            for (Contacts contact : contacts) {
-                if (ToolUtil.isNotEmpty(customerResult.getDefaultContacts())
-                        && customerResult.getDefaultContacts()
-                        .equals(contact.getContactsId())) {
-                    Phone phone = phoneService.lambdaQuery().eq(Phone::getContactsId, contact.getContactsId()).one();
-                    customerResult.setPhone(phone);
-                    customerResult.setContact(contact);
-
-                }
-            }
-            for (Adress adress : adresses) {
-                if (ToolUtil.isNotEmpty(customerResult.getDefaultAddress()) && customerResult.getDefaultAddress().equals(adress.getAdressId())) {
-                    customerResult.setAddress(adress);
-                }
-            }
-
         }
 
         return levelCustomerResult;
