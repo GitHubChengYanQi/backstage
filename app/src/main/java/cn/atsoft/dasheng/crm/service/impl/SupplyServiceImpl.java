@@ -28,11 +28,13 @@ import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,23 +69,28 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private SkuBrandBindService brandBindService;
     @Autowired
     private SkuBrandBindService skuBrandBindService;
-
+    @Autowired
+    private BrandService brandService;
 
     @Override
+    @Transactional
     public void add(SupplyParam param) {
-        Supply entity = getEntity(param);
-        this.save(entity);
-        List<SkuBrandBind> skuBrandBinds = brandBindService.query().eq("sku_id", param.getSkuId()).list();
-        List<SkuBrandBind> skuBrandBindList = new ArrayList<>();
-        for (BrandParam brandParam : param.getBrandParams()) {
-            if (skuBrandBinds.stream().noneMatch(i -> i.getBrandId().equals(brandParam.getBrandId()) && i.getSkuId().equals(param.getSkuId()))) {
-                SkuBrandBind skuBrandBind = new SkuBrandBind();
-                skuBrandBind.setSkuId(param.getSkuId());
-                skuBrandBind.setBrandId(brandParam.getBrandId());
-                skuBrandBindList.add(skuBrandBind);
+
+        List<Supply> supplies = this.query().eq("sku_id", param.getSkuId()).list();
+        List<Supply> supplyList = new ArrayList<>();
+
+        for (Long brandId : param.getBrandIds()) {
+            if (supplies.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSkuId()) && i.getCustomerId().equals(param.getCustomerId()))) {
+                Supply supply = new Supply();
+                supply.setSkuId(param.getSkuId());
+                supply.setBrandId(brandId);
+                supply.setCustomerId(param.getCustomerId());
+                if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(brandId) && i.getSkuId().equals(param.getSupplyId()) && i.getCustomerId().equals(param.getCustomerId()))) {
+                    supplyList.add(supply);
+                }
             }
         }
-        brandBindService.saveBatch(skuBrandBindList);
+        this.saveBatch(supplyList);
     }
 
     /**
@@ -281,6 +288,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return customerResults;
     }
 
+
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {
         if (ToolUtil.isEmpty(supplierLevel)) {
@@ -342,6 +350,49 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         return levelCustomerResult;
     }
 
+    @Override
+    public List<SupplyResult> getSupplyBySupplierId(Long supplierId) {
+        if (ToolUtil.isEmpty(supplierId)) {
+            return new ArrayList<>();
+        }
+        List<Supply> supplies = this.query().eq("customer_id", supplierId).eq("display", 1).list();
+        if (ToolUtil.isEmpty(supplies)) {
+            return new ArrayList<>();
+        }
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        List<SupplyResult> supplyResults = new ArrayList<>();
+
+        for (Supply supply : supplies) {
+            SupplyResult supplyResult = new SupplyResult();
+            ToolUtil.copyProperties(supply, supplyResult);
+            supplyResults.add(supplyResult);
+            skuIds.add(supply.getSkuId());
+            brandIds.add(supply.getBrandId());
+        }
+
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (SupplyResult supplyResult : supplyResults) {
+
+            for (BrandResult brandResult : brandResults) {
+                if (supplyResult.getBrandId().equals(brandResult.getBrandId())) {
+                    supplyResult.setBrandResult(brandResult);
+                    break;
+                }
+            }
+            for (SkuResult skuResult : skuResults) {
+                if (skuResult.getSkuId().equals(supplyResult.getSkuId())) {
+                    supplyResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+
+        }
+        return supplyResults;
+    }
+
     private Serializable getKey(SupplyParam param) {
         return param.getSupplyId();
     }
@@ -362,14 +413,24 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     private void format(List<SupplyResult> data) {
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (SupplyResult datum : data) {
             skuIds.add(datum.getSkuId());
+            brandIds.add(datum.getBrandId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
         for (SupplyResult datum : data) {
             for (SkuResult skuResult : skuResults) {
                 if (datum.getSkuId().equals(skuResult.getSkuId())) {
                     datum.setSkuResult(skuResult);
+                }
+            }
+
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
                 }
             }
         }

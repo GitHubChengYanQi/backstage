@@ -8,6 +8,7 @@ import cn.atsoft.dasheng.purchase.pojo.ListingPlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -74,6 +75,6 @@ public interface PurchaseListingService extends IService<PurchaseListing> {
      *
      * @return
      */
-    List<ListingPlan> plans();
+    Set<ListingPlan> plans();
 
 }

@@ -12,10 +12,12 @@
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
+        <result column="brand_id" property="brandId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
+    <sql id="Base_Column_List">brand_id
+    AS "brandId",
         supply_id
         AS "supplyId", sku_id AS "skuId", customer_id AS "customerId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>

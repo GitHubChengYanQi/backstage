@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.crm.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -26,9 +27,16 @@ public class SupplyResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private Long brandId;
+
     private SkuResult skuResult;
     @ApiModelProperty("")
     private Long supplyId;
+
+
+    private BrandResult brandResult;
+
+    private List<BrandResult> brandResults;
 
     /**
      * sku

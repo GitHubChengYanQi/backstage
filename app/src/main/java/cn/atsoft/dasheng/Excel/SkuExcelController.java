@@ -115,14 +115,7 @@ public class SkuExcelController {
         if (skuExcelItems.size() > 1000) {
             throw new ServiceException(500, "最多只可导入1000个");
         }
-//判断重复---------------------------------------------------------------------------------------------------------------
-        List<String> removal = new ArrayList<>();
-        for (SkuExcelItem skuExcelItem : skuExcelItems) {
-            removal.add(skuExcelItem.getStandard());
-        }
-        if (removal.size() != skuExcelItems.size()) {
-            throw new ServiceException(500, "有重复数据");
-        }
+
 //----------------------------------------------------------------------------------------------------------------------
 
         Integer i = 0;
@@ -142,8 +135,6 @@ public class SkuExcelController {
             try {
                 for (Sku sku : skus) {
                     if (sku.getStandard().equals(skuExcelItem.getStandard())) {
-                        errorList.add(skuExcelItem);
-                        skuExcelItem.setLine(i);
                         throw new ServiceException(500, "编码以重复");
                     }
                 }
@@ -168,6 +159,8 @@ public class SkuExcelController {
                 for (SpuClassification item : items) {
                     if (skuExcelItem.getClassItem().equals(item.getName())) {
                         itemId = item.getSpuClassificationId();
+                        item.setPid(classId);
+                        classificationService.updateById(item);
                     }
                 }
                 if (ToolUtil.isEmpty(itemId)) {

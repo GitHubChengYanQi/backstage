@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -114,7 +115,7 @@ public class PurchaseListingController extends BaseController {
     @RequestMapping(value = "/planList", method = RequestMethod.POST)
     @ApiOperation("待买")
     public ResponseData planList() {
-        List<ListingPlan> plans = this.purchaseListingService.plans();
+        Set<ListingPlan> plans = this.purchaseListingService.plans();
         return ResponseData.success(plans);
     }
 

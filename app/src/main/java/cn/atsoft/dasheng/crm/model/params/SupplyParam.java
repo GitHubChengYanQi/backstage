@@ -28,11 +28,13 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     private static final long serialVersionUID = 1L;
 
     private List<SupplyParam> supplyParams;
+    @NotNull
+    private List<Long> brandIds;
 
     @NotNull
     private Long levelId;
 
-    @NotNull
+
     private List<BrandParam> brandParams;
 
     private List<Long> skuIds;

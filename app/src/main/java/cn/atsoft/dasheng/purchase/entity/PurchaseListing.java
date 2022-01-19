@@ -24,6 +24,13 @@ public class PurchaseListing implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
+    /**
+     * 品牌
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
     /**
      * 采购清单id
      */
@@ -214,6 +221,14 @@ public class PurchaseListing implements Serializable {
 
     public void setDeptId(Long deptId) {
         this.deptId = deptId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     @Override
