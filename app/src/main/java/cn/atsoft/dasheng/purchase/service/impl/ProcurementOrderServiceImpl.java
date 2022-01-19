@@ -220,12 +220,12 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
 
             Contract contract = new Contract();
 
-            Contacts contacts = customer.getDefaultContacts() == null ? new Contacts() : contactsService.getById(customer.getDefaultContacts());
+            Contacts contacts = customer.getDefaultContacts() == null ? null : contactsService.getById(customer.getDefaultContacts());
 
-            Adress adress = customer.getDefaultAddress() == null ? new Adress() : adressService.getById(customer.getDefaultAddress());
+            Adress adress = customer.getDefaultAddress() == null ? null : adressService.getById(customer.getDefaultAddress());
             Phone phone = null;
             if (ToolUtil.isNotEmpty(contacts) && ToolUtil.isNotEmpty(contacts.getContactsId())) {
-                phone = contacts.getContactsId() == null ? new Phone() : phoneService.query().eq("contacts_id", contacts.getContactsId()).list().get(0);
+                phone = contacts.getContactsId() == null ? null : phoneService.query().eq("contacts_id", contacts.getContactsId()).list().get(0);
             }
 
             String templateContent = template.getContent();
@@ -291,6 +291,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
                 contractDetail.setSkuId(procurementOrderDetailParam.getSkuId());
                 contractDetail.setTotalPrice(procurementOrderDetailParam.getMoney());
                 contractDetail.setBrandId(procurementOrderDetailParam.getBrandId());
+                contractDetail.setQuantity(Math.toIntExact(procurementOrderDetailParam.getNumber()));
                 contractDetail.setContractId(contract.getContractId());
                 contractDetails.add(contractDetail);
             }

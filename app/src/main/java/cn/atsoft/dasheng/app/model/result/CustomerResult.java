@@ -64,6 +64,7 @@ public class CustomerResult implements Serializable {
     private List<BrandResult> brandResults;
     private CrmCustomerLevel level;
     private Phone phone;
+
     /**
      * 客户id
      */

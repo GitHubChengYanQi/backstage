@@ -35,6 +35,7 @@ public class SupplierBrandServiceImpl extends ServiceImpl<SupplierBrandMapper, S
     @Autowired
     private BrandService brandService;
 
+
     @Override
     public void add(SupplierBrandParam param) {
         SupplierBrand entity = getEntity(param);

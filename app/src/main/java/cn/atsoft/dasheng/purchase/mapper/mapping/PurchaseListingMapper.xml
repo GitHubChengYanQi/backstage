@@ -18,11 +18,12 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="status" property="status"/>
+        <result column="brand_id" property="brandId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">status
-    AS "status",
+    AS "status",brand_id AS "brandId",
         purchase_listing_id
         AS "purchaseListingId", purchase_ask_id AS "purchaseAskId", sku_id AS "skuId", apply_number AS "applyNumber", available_number AS "availableNumber", delivery_date AS "deliveryDate", note AS "note", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId"
     </sql>

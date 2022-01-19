@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.SkuRequest;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -45,6 +47,8 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     private PurchaseAskService askService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public void add(PurchaseListingParam param) {
@@ -116,7 +120,7 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
     }
 
     @Override
-    public List<ListingPlan> plans() {
+    public Set<ListingPlan> plans() {
         List<ListingPlan> plans = new ArrayList<>();
         List<PurchaseAsk> asks = askService.query().eq("status", 2).list();
         List<Long> askIds = new ArrayList<>();
@@ -125,51 +129,58 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
         }
         //查询所有申请通过的物料
         List<PurchaseListing> purchaseListingList = askIds.size() == 0 ? new ArrayList<>() : this.query().in("purchase_ask_id", askIds).eq("status", 0).list();
-        HashSet<Long> skuSet = new HashSet<>();
+
+
+        Set<ListingPlan> listingPlanSet = new HashSet<>();
+        for (PurchaseListing purchaseListing : purchaseListingList) {
+            ListingPlan plan = new ListingPlan();
+            plan.setSkuId(purchaseListing.getSkuId());
+            plan.setBrandId(purchaseListing.getBrandId());
+            listingPlanSet.add(plan);
+        }
 
         List<PurchaseListingResult> results = new ArrayList<>();
         for (PurchaseListing purchaseListing : purchaseListingList) {
             PurchaseListingResult listingResult = new PurchaseListingResult();
             ToolUtil.copyProperties(purchaseListing, listingResult);
-            skuSet.add(listingResult.getSkuId());
             results.add(listingResult);
         }
         format(results);
 
-        //过滤相同sku 重新组合
-        for (Long aLong : skuSet) {
-            List<PurchaseListingResult> newListing = new ArrayList<>();
-            ListingPlan plan = new ListingPlan();
-            plan.setSkuId(aLong);
+        for (ListingPlan plan : listingPlanSet) {
+
+            List<PurchaseListingResult> resultList = new ArrayList<>();
+            Long number = 0L;
             for (PurchaseListingResult result : results) {
-                if (result.getSkuId().equals(aLong)) {
-                    newListing.add(result);
+                if (ToolUtil.isNotEmpty(result.getBrandId()) && ToolUtil.isNotEmpty(result.getSkuId())
+                        && plan.getSkuId().equals(result.getSkuId()) && plan.getBrandId().equals(result.getBrandId())) {
+                    number = number + result.getApplyNumber();
+                    resultList.add(result);
                     plan.setSkuResult(result.getSkuResult());
+                    plan.setBrandResult(result.getBrandResult());
                 }
             }
-            plan.setChildren(newListing);
-            plans.add(plan);
-        }
-        //计算总数
-        for (ListingPlan plan : plans) {
-            Long number = 0L;
-            for (PurchaseListingResult listingResult : plan.getChildren()) {
-                number = number + listingResult.getApplyNumber();
-            }
+            plan.setChildren(resultList);
             plan.setApplyNumber(number);
         }
-        return plans;
+
+        return listingPlanSet;
+
     }
 
     public void format(List<PurchaseListingResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (PurchaseListingResult result : param) {
             skuIds.add(result.getSkuId());
             userIds.add(result.getCreateUser());
+            brandIds.add(result.getBrandId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<User> userList = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
 
         for (PurchaseListingResult result : param) {
             for (SkuResult skuResult : skuResults) {
@@ -182,6 +193,13 @@ public class PurchaseListingServiceImpl extends ServiceImpl<PurchaseListingMappe
             for (User user : userList) {
                 if (user.getUserId().equals(result.getCreateUser())) {
                     result.setUser(user);
+                    break;
+                }
+            }
+
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(result.getBrandId())) {
+                    result.setBrandResult(brandResult);
                     break;
                 }
             }

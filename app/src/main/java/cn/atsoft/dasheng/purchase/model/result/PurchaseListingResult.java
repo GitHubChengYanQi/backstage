@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
@@ -27,6 +28,9 @@ public class PurchaseListingResult implements Serializable {
     private static final long serialVersionUID = 1L;
     private SkuResult skuResult;
 
+    private Long brandId;
+
+    private BrandResult brandResult;
 
     private User user;
     /**

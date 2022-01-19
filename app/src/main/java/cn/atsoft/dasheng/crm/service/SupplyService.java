@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.swagger.models.auth.In;
+import org.aspectj.apache.bcel.generic.LineNumberGen;
 
 import java.util.List;
 
@@ -77,7 +78,7 @@ public interface SupplyService extends IService<Supply> {
 
     List<SupplyResult> getListByCustomerId(Long customerId);
 
-    List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds);
+    List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds, List<Long> brandIds);
 
     /**
      * 通过物料查询供应商
@@ -86,5 +87,7 @@ public interface SupplyService extends IService<Supply> {
      * @return
      */
     List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel);
+
+    List<SupplyResult> getSupplyBySupplierId (Long supplierId);
 
 }

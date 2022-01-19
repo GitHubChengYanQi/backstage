@@ -1,11 +1,15 @@
 package cn.atsoft.dasheng.app.model.result;
 
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * 品牌表
@@ -26,6 +30,9 @@ public class BrandResult implements Serializable {
      */
     @ApiModelProperty("品牌id")
     private Long brandId;
+
+
+
 
     /**
      * 品牌名称

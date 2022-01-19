@@ -191,8 +191,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         PurchaseAsk detail = this.getById(param.getPurchaseAskId());
         PurchaseAskResult result = new PurchaseAskResult();
         ToolUtil.copyProperties(detail, result);
-
-
+        User user = userService.getById(result.getCreateUser());
+        result.setUser(user);
         List<PurchaseListingResult> purchaseListing = purchaseListingService.getByAskId(param.getPurchaseAskId());
         result.setPurchaseListingResults(purchaseListing);
 
@@ -201,9 +201,9 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 
     /**
      * 修改采购申请状态
-     *
-//     * @param taskId
-//     * @param status
+     * <p>
+     * //     * @param taskId
+     * //     * @param status
      */
     @Override
     public void updateStatus(ActivitiProcessTask param) {
@@ -216,6 +216,7 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
 
     /**
      * 驳回状态更改方法
+     *
      * @param param
      */
     @Override

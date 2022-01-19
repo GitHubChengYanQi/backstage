@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.crm.entity.Invoice;
 import cn.atsoft.dasheng.crm.entity.TrackMessage;
 import cn.atsoft.dasheng.crm.model.params.ContactsBindParam;
 import cn.atsoft.dasheng.crm.model.result.InvoiceResult;
+import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
@@ -500,8 +501,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Adress adress = adressService.getById(customer.getDefaultAddress());
         //返回品牌
         if (customerResult.getSupply().equals(1)) {
-            List<BrandResult> brands = supplierBrandService.getBrandsBySupplierId(customerResult.getCustomerId());
-            customerResult.setBrandResults(brands);
+            List<SupplyResult> supply = supplyService.getSupplyBySupplierId(customerResult.getCustomerId());
+            customerResult.setSupplyResults(supply);
         }
 
         customerResult.setAddress(adress);
@@ -555,7 +556,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 }
             }
             for (Contacts contact : contacts) {
-                if (ToolUtil.isNotEmpty(result.getDefaultContacts())&& result.getDefaultContacts().equals(contact.getContactsId())) {
+                if (ToolUtil.isNotEmpty(result.getDefaultContacts()) && result.getDefaultContacts().equals(contact.getContactsId())) {
                     result.setContact(contact);
                     result.setPhone(phoneMap.get(contact.getContactsId()));
                 }
