@@ -79,8 +79,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     public void add(PurchaseQuotationParam param) {
         PurchaseQuotation entity = getEntity(param);
         this.save(entity);
-        List<Supply> supplyList = supplyService.query().in("customer_id",param.getCustomerId()).eq("display", 1).list();
-        supplyList.stream().noneMatch(supply -> supply.get)
+
     }
 
     @Override
@@ -145,14 +144,14 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
             customerIds.add(purchaseQuotation.getCustomerId());
         }
-//        List<Customer> customerList = customerService.query().in("customer_id", customerIds).eq("display", 1).list();
+
         customerService.list(new QueryWrapper<Customer>(){{
             eq("display",1);
         }});
         List<Supply> supplyList =    supplyService.query().in("customer_id",customerIds).eq("display", 1).list();
         List<Supply> saveEntity = new ArrayList<>();
         for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
-            if (supplyList.stream().noneMatch(supply -> supply.getCustomerId().equals(purchaseQuotation.getCustomerId()) && supply.getSkuId().equals(purchaseQuotation.getSkuId()))) {
+            if (supplyList.stream().noneMatch(supply -> supply.getCustomerId().equals(purchaseQuotation.getCustomerId()) && supply.getBrandId().equals(purchaseQuotation.getBrandId()) && supply.getSkuId().equals(purchaseQuotation.getSkuId()))) {
                 Supply supply = new Supply();
                 supply.setCustomerId(purchaseQuotation.getCustomerId());
                 supply.setSkuId(purchaseQuotation.getSkuId());
@@ -208,37 +207,28 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         if (ToolUtil.isEmpty(customer) && customer.getSupply() != 1) {
             throw new ServiceException(500, "请选择供应商");
         }
-
-        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
-        //过滤相同sku
-        HashSet<Long> skuSst = new HashSet<>();
-        for (Supply supply : supplies) {
-            skuSst.add(supply.getSkuId());
-        }
-
         List<PurchaseQuotation> quotations = new ArrayList<>();
-
+        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
+        List<Supply> supplyList = new ArrayList<>();
         for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
             PurchaseQuotation quotation = new PurchaseQuotation();
             ToolUtil.copyProperties(quotationParam, quotation);
             quotation.setSource(param.getSource());
             quotation.setSourceId(param.getSourceId());
-            quotations.add(quotation);
             quotation.setCustomerId(customer.getCustomerId());
-            skuSst.add(quotationParam.getSkuId());
+            quotations.add(quotation);
+
+            //去重添加绑定
+            if (supplies.stream().noneMatch(supply -> supply.getCustomerId().equals(quotationParam.getCustomerId()) && supply.getSkuId().equals(quotationParam.getSkuId()) && supply.getBrandId().equals(quotationParam.getBrandId()))){
+                Supply supply = new Supply();
+                supply.setBrandId(quotationParam.getBrandId());
+                supply.setCustomerId(quotationParam.getCustomerId());
+                supply.setSkuId(quotationParam.getSkuId());
+                supplyList.add(supply);
+            }
         }
 
-        supplyService.remove(new QueryWrapper<Supply>() {{
-            eq("customer_id", customer.getCustomerId());
-        }});
-        //添加供应商绑定物料
-        List<Supply> supplyList = new ArrayList<>();
-        for (Long aLong : skuSst) {
-            Supply supply = new Supply();
-            supply.setSkuId(aLong);
-            supply.setCustomerId(customer.getCustomerId());
-            supplyList.add(supply);
-        }
+
         supplyService.saveBatch(supplyList);
         this.saveBatch(quotations);
     }

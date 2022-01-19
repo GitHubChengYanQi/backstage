@@ -37,6 +37,13 @@ public class Supply implements Serializable {
     @TableField("sku_id")
     private Long skuId;
 
+
+    /**
+     * sku
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
     /**
      * 供应商id
      */
@@ -84,6 +91,14 @@ public class Supply implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+    
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public Integer getDisplay() {
