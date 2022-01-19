@@ -307,7 +307,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 supplierIds.add(customerResult.getCustomerId());
             }
         }
-        List<Supply> supplyList = this.query().in("customer_id", supplierIds).list();
+        List<Supply> supplyList = supplierIds.size() == 0 ? new ArrayList<>() : this.query().in("customer_id", supplierIds).list();
         skuIds.clear();
 
         for (Supply supply : supplyList) {
