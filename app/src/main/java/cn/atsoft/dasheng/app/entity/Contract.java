@@ -48,6 +48,9 @@ public class Contract implements Serializable {
 
     @TableField("audit")
     private Integer audit;
+
+    @TableField("allMoney")
+    private Integer allMoney;
     /**
      * 付款信息
      */
@@ -128,6 +131,13 @@ public class Contract implements Serializable {
     @TableField("display")
     private Integer display;
 
+    public Integer getAllMoney() {
+        return allMoney;
+    }
+
+    public void setAllMoney(Integer allMoney) {
+        this.allMoney = allMoney;
+    }
 
     public Long getPartyA() {
         return partyA;

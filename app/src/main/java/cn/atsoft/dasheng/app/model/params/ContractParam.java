@@ -41,6 +41,7 @@ public class ContractParam implements Serializable, BaseValidatingParam {
     private Long contractId;
 
     private Integer audit;
+    private Integer allMoney;
 
 
     private Long partyAPhone;
