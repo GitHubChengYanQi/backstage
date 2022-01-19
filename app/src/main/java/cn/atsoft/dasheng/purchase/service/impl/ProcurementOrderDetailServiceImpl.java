@@ -9,12 +9,16 @@ import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementOrderDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -43,6 +47,8 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private ProcurementOrderService orderService;
 
 
     @Override
@@ -82,9 +88,32 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
         return PageFactory.createPageInfo(page);
     }
 
+    /**
+     * 更新采购单总价格
+     *
+     * @param orderId
+     */
+    @Override
+    public void updateMoney(Long orderId) {
+        if (ToolUtil.isEmpty(orderId)) {
+            throw new ServiceException(500, "采购单不正确");
+        }
+        List<ProcurementOrderDetail> orderDetails = this.query().eq("procurement_order_id", orderId).list();
+        Integer countMoney = 0;
+        for (ProcurementOrderDetail orderDetail : orderDetails) {
+            countMoney = countMoney + orderDetail.getMoney();
+        }
+        ProcurementOrder order = new ProcurementOrder();
+        order.setMoney(countMoney);
+        orderService.update(order, new QueryWrapper<ProcurementOrder>() {{
+            eq("procurement_order_id", orderId);
+        }});
+    }
+
     private Serializable getKey(ProcurementOrderDetailParam param) {
         return param.getOrderDetailId();
     }
+
 
     private Page<ProcurementOrderDetailResult> getPageContext() {
         return PageFactory.defaultPage();

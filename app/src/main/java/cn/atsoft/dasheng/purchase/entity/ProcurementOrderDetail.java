@@ -2,15 +2,19 @@ package cn.atsoft.dasheng.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.models.auth.In;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author song
@@ -21,11 +25,16 @@ public class ProcurementOrderDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 采购单详情id
      */
-      @TableId(value = "order_detail_id", type = IdType.ID_WORKER)
+    @TableId(value = "order_detail_id", type = IdType.ID_WORKER)
     private Long orderDetailId;
+
+
+    @TableField("money")
+    private Integer money;
 
     @TableField("sku_id")
     private Long skuId;
@@ -66,16 +75,16 @@ public class ProcurementOrderDetail implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -189,21 +198,29 @@ public class ProcurementOrderDetail implements Serializable {
         this.detailId = detailId;
     }
 
+    public Integer getMoney() {
+        return money;
+    }
+
+    public void setMoney(Integer money) {
+        this.money = money;
+    }
+
     @Override
     public String toString() {
         return "ProcurementOrderDetail{" +
-        "orderDetailId=" + orderDetailId +
-        ", skuId=" + skuId +
-        ", brandId=" + brandId +
-        ", customerId=" + customerId +
-        ", number=" + number +
-        ", procurementOrderId=" + procurementOrderId +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", deptId=" + deptId +
-        "}";
+                "orderDetailId=" + orderDetailId +
+                ", skuId=" + skuId +
+                ", brandId=" + brandId +
+                ", customerId=" + customerId +
+                ", number=" + number +
+                ", procurementOrderId=" + procurementOrderId +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", deptId=" + deptId +
+                "}";
     }
 }

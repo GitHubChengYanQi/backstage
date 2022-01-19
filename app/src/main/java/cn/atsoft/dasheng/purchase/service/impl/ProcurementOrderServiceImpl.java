@@ -158,7 +158,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
-//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getProcurementOrderId(), "procurementOrder");
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
             //添加小铃铛
@@ -167,15 +166,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         } else {
             entity.setStatus(98);
             this.updateById(entity);
-//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//            wxCpTemplate.setTitle("新的采购单");
-//            wxCpTemplate.setDescription(user.getName() + "发起的采购申请");
-//            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
-//                add(user.getId());
-//            }});
-////            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + processTask.getProcessTaskId();
-//           wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//           wxCpSendTemplate.sendTemplate();
         }
     }
 
@@ -271,6 +261,12 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
                 templateContent = templateContent.replace("${{BCustomer}}", customer.getCustomerName());
                 contract.setPartyB(customer.getCustomerId());
             }
+            Integer totalMoney = 0;
+            List<ProcurementOrderDetailParam> detailParams = supplierMap.get(customer.getCustomerId());
+            for (ProcurementOrderDetailParam detailParam : detailParams) {
+                totalMoney = totalMoney + detailParam.getMoney();
+            }
+
             contract.setContent(templateContent);
             contract.setName(customer.getCustomerName() + "的采购合同");
             contractService.save(contract);
@@ -278,10 +274,12 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             List<ProcurementOrderDetailParam> detailParamList = supplierMap.get(customer.getCustomerId());
 
             List<ContractDetail> contractDetails = new ArrayList<>();
+
             for (ProcurementOrderDetailParam procurementOrderDetailParam : detailParamList) {
                 ContractDetail contractDetail = new ContractDetail();
                 contractDetail.setCustomerId(procurementOrderDetailParam.getCustomerId());
                 contractDetail.setSkuId(procurementOrderDetailParam.getSkuId());
+                contractDetail.setTotalPrice(procurementOrderDetailParam.getMoney());
                 contractDetail.setBrandId(procurementOrderDetailParam.getBrandId());
                 contractDetail.setContractId(contract.getContractId());
                 contractDetails.add(contractDetail);

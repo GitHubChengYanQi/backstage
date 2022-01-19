@@ -33,6 +33,8 @@ public class ProcurementOrderParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("采购单")
     private Long procurementOrderId;
 
+
+    private Integer money;
     /**
      * 采购计划id
      */
