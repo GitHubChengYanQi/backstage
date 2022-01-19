@@ -79,6 +79,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     public void add(PurchaseQuotationParam param) {
         PurchaseQuotation entity = getEntity(param);
         this.save(entity);
+        List<Supply> supplyList = supplyService.query().in("customer_id",param.getCustomerId()).eq("display", 1).list();
+        supplyList.stream().noneMatch(supply -> supply.get)
     }
 
     @Override
