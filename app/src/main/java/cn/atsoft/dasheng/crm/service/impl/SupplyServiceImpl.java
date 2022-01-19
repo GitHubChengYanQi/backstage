@@ -268,7 +268,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             ToolUtil.copyProperties(customer, customerResult);
             customerResults.add(customerResult);
         }
-        List<Supply> supplies = customerIds.size() == 0 ? new ArrayList<>() : this.query().in("customer_id", customerIds).list();
+        List<Supply> supplies = customerIds.size() == 0 ? new ArrayList<>() : this.query().in("customer_id", customerIds).eq("display", 1).list();
 
         //组合数据
         for (CustomerResult customerResult : customerResults) {
