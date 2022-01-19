@@ -28,7 +28,19 @@ import java.io.Serializable;
 public class Contract implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 来源
+     */
+    @TableField("source")
+    private String source;
 
+    @TableField("contract_class_id")
+    private Long contractClassId;
+    /**
+     * 来源id
+     */
+    @TableField("source_id")
+    private Long sourceId;
     /**
      * 合同id
      */
@@ -101,6 +113,11 @@ public class Contract implements Serializable {
     @TableField("content")
     private String content;
 
+
+    @TableField("deptId")
+    private Long deptId;
+
+
     /**
      * 创建者
      */
@@ -133,6 +150,22 @@ public class Contract implements Serializable {
 
     public Integer getAllMoney() {
         return allMoney;
+    }
+
+    public Long getContractClassId() {
+        return contractClassId;
+    }
+
+    public void setContractClassId(Long contractClassId) {
+        this.contractClassId = contractClassId;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
     }
 
     public void setAllMoney(Integer allMoney) {
@@ -315,6 +348,21 @@ public class Contract implements Serializable {
         this.payment = payment;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
 
     @Override
     public String toString() {

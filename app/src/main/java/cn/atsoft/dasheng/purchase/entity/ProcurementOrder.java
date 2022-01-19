@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.purchase.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -20,11 +23,16 @@ import java.io.Serializable;
 public class ProcurementOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 总价格
+     */
+    @TableField("money")
+    private Integer money;
 
     /**
      * 采购单
      */
-      @TableId(value = "procurement_order_id", type = IdType.ID_WORKER)
+    @TableId(value = "procurement_order_id", type = IdType.ID_WORKER)
     private Long procurementOrderId;
 
     /**
@@ -51,16 +59,16 @@ public class ProcurementOrder implements Serializable {
     @TableField("display")
     private Integer display;
 
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -68,8 +76,6 @@ public class ProcurementOrder implements Serializable {
      */
     @TableField("deptId")
     private Long deptId;
-
-
 
 
     public Long getProcurementOrderId() {
@@ -152,21 +158,27 @@ public class ProcurementOrder implements Serializable {
         this.deptId = deptId;
     }
 
+    public Integer getMoney() {
+        return money;
+    }
 
+    public void setMoney(Integer money) {
+        this.money = money;
+    }
 
     @Override
     public String toString() {
         return "ProcurementOrder{" +
-        "procurementOrderId=" + procurementOrderId +
-        ", procurementPlanId=" + procurementPlanId +
-        ", status=" + status +
-        ", note=" + note +
-        ", display=" + display +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", deptId=" + deptId +
+                "procurementOrderId=" + procurementOrderId +
+                ", procurementPlanId=" + procurementPlanId +
+                ", status=" + status +
+                ", note=" + note +
+                ", display=" + display +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", deptId=" + deptId +
                 "}";
     }
 }

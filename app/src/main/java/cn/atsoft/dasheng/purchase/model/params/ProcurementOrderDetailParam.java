@@ -28,6 +28,7 @@ public class ProcurementOrderDetailParam implements Serializable, BaseValidating
 
     private Long planDetailId;
 
+    private Integer money;
 
     private Integer status;
     /**

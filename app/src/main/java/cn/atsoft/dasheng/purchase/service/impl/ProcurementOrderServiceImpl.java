@@ -140,7 +140,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
             customerIds.add(longListEntry.getKey());
         }
-        addContract(customerIds, supplierMap);
+        addContract(customerIds, supplierMap, entity.getProcurementOrderId());
         detailService.saveBatch(details);
         /**
          * 添加进入流程审批
@@ -158,7 +158,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
             Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
             //添加log
-//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getProcurementOrderId(), "procurementOrder");
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
             //添加小铃铛
@@ -167,15 +166,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         } else {
             entity.setStatus(98);
             this.updateById(entity);
-//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//            wxCpTemplate.setTitle("新的采购单");
-//            wxCpTemplate.setDescription(user.getName() + "发起的采购申请");
-//            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
-//                add(user.getId());
-//            }});
-////            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + processTask.getProcessTaskId();
-//           wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
-//           wxCpSendTemplate.sendTemplate();
         }
     }
 
@@ -210,7 +200,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     }
 
 
-    private void addContract(List<Long> customerId, Map<Long, List<ProcurementOrderDetailParam>> supplierMap) {
+    private void addContract(List<Long> customerId, Map<Long, List<ProcurementOrderDetailParam>> supplierMap, Long orderId) {
         Template template = templateService.query().eq("module", "procurement").one();
         if (ToolUtil.isEmpty(template)) {
             throw new ServiceException(500, "请先设置采购合同模板");
@@ -230,9 +220,9 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
 
             Contract contract = new Contract();
 
-            Contacts contacts = contactsService.getById(customer.getDefaultContacts());
+            Contacts contacts = customer.getDefaultContacts() == null ? new Contacts() : contactsService.getById(customer.getDefaultContacts());
 
-            Adress adress = adressService.getById(customer.getDefaultAddress());
+            Adress adress = customer.getDefaultAddress() == null ? new Adress() : adressService.getById(customer.getDefaultAddress());
             Phone phone = null;
             if (ToolUtil.isNotEmpty(contacts) && ToolUtil.isNotEmpty(contacts.getContactsId())) {
                 phone = contacts.getContactsId() == null ? new Phone() : phoneService.query().eq("contacts_id", contacts.getContactsId()).list().get(0);
@@ -241,12 +231,11 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             String templateContent = template.getContent();
             if (templateContent.contains("${{Acontacts}}")) {  //甲方联系人
                 templateContent = templateContent.replace("${{Acontacts}}", daoxinman.getContactsName());
-                contract.setPartyAContactsId(daoxinman.getContactsId());
             }
-            if (templateContent.contains("${{Bcontacts}}")) {  //乙方联系人
+            if (ToolUtil.isNotEmpty(contacts) && templateContent.contains("${{Bcontacts}}")) {  //乙方联系人
                 templateContent = templateContent.replace("${{Bcontacts}}", contacts.getContactsName());
-                contract.setPartyBContactsId(contacts.getContactsId());
             }
+
             if (templateContent.contains("${{AAddress}}") && ToolUtil.isNotEmpty(daoxinadrss)) {  //甲方地址
                 templateContent = templateContent.replace("${{AAddress}}", daoxinadrss.getLocation());
                 contract.setPartyAAdressId(daoxinadrss.getAdressId());
@@ -257,31 +246,50 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             }
             if (templateContent.contains("${{APhone}}") && ToolUtil.isNotEmpty(daoxinphone)) {  //甲方电话
                 templateContent = templateContent.replace("${{APhone}}", daoxinphone.getPhoneNumber().toString());
-                contract.setPartyAPhone(daoxinphone.getPhoneId());
+
             }
             if (templateContent.contains("${{BPhone}}") && ToolUtil.isNotEmpty(phone)) { //乙方电话
                 templateContent = templateContent.replace("${{BPhone}}", phone.getPhoneNumber().toString());
-                contract.setPartyBPhone(phone.getPhoneId());
             }
             if (templateContent.contains("${{ACustomer}}")) {  //甲方客户
                 templateContent = templateContent.replace("${{ACustomer}}", daoxin.getCustomerName());
-                contract.setPartyA(daoxin.getCustomerId());
             }
             if (templateContent.contains("${{BCustomer}}")) {  //乙方客户
                 templateContent = templateContent.replace("${{BCustomer}}", customer.getCustomerName());
-                contract.setPartyB(customer.getCustomerId());
             }
+            Integer totalMoney = 0;
+            List<ProcurementOrderDetailParam> detailParams = supplierMap.get(customer.getCustomerId());
+            for (ProcurementOrderDetailParam detailParam : detailParams) {
+                totalMoney = totalMoney + detailParam.getMoney();
+            }
+            contract.setPartyAPhone(daoxinphone.getPhoneId());
+            if (ToolUtil.isNotEmpty(phone)) {
+                contract.setPartyBPhone(phone.getPhoneId());
+            }
+            contract.setPartyA(daoxin.getCustomerId());
+            contract.setPartyB(customer.getCustomerId());
+
+            contract.setPartyAContactsId(daoxinman.getContactsId());
+            if (ToolUtil.isNotEmpty(contacts)) {
+                contract.setPartyBContactsId(contacts.getContactsId());
+            }
+            contract.setAllMoney(totalMoney);
             contract.setContent(templateContent);
             contract.setName(customer.getCustomerName() + "的采购合同");
+            contract.setSource("采购单");
+            contract.setDisplay(0);
+            contract.setSourceId(orderId);
             contractService.save(contract);
 
             List<ProcurementOrderDetailParam> detailParamList = supplierMap.get(customer.getCustomerId());
 
             List<ContractDetail> contractDetails = new ArrayList<>();
+
             for (ProcurementOrderDetailParam procurementOrderDetailParam : detailParamList) {
                 ContractDetail contractDetail = new ContractDetail();
                 contractDetail.setCustomerId(procurementOrderDetailParam.getCustomerId());
                 contractDetail.setSkuId(procurementOrderDetailParam.getSkuId());
+                contractDetail.setTotalPrice(procurementOrderDetailParam.getMoney());
                 contractDetail.setBrandId(procurementOrderDetailParam.getBrandId());
                 contractDetail.setContractId(contract.getContractId());
                 contractDetails.add(contractDetail);
@@ -316,6 +324,12 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         ProcurementOrder entity = this.getById(processTask.getFormId());
         entity.setStatus(99);
         this.updateById(entity);
+        List<Contract> contractList = contractService.query().eq("source_id", processTask.getFormId()).eq("source", "采购单").list();
+        for (Contract contract : contractList) {
+            contract.setDisplay(1);
+        }
+        contractService.updateBatchById(contractList);
+
     }
 
     @Override

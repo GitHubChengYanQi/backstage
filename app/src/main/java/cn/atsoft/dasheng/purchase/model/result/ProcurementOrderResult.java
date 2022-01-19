@@ -20,7 +20,7 @@ public class ProcurementOrderResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private Integer money;
     /**
      * 采购单
      */

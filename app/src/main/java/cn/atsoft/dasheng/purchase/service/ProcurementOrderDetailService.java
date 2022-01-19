@@ -66,4 +66,5 @@ public interface ProcurementOrderDetailService extends IService<ProcurementOrder
      */
      PageInfo<ProcurementOrderDetailResult> findPageBySpec(ProcurementOrderDetailParam param);
 
+    void updateMoney(Long orderId);
 }

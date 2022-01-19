@@ -144,7 +144,6 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
 
     @Override
     public void updateState(ActivitiProcessTask processTask) {
-        processTask.getFormId();
         ProcurementPlan procurementPlan = this.getById(processTask.getFormId());
         procurementPlan.setStatus(98);
         this.updateById(procurementPlan);
