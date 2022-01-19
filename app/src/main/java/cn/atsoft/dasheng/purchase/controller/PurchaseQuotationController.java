@@ -100,6 +100,21 @@ public class PurchaseQuotationController extends BaseController {
     }
 
     /**
+     * 查询列表
+     *
+     * @author Captain_Jazz
+     * @Date 2021-12-22
+     */
+    @RequestMapping(value = "/allList", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public List<PurchaseQuotationResult> allList(@RequestBody(required = false) PurchaseQuotationParam purchaseQuotationParam) {
+        if (ToolUtil.isEmpty(purchaseQuotationParam)) {
+            purchaseQuotationParam = new PurchaseQuotationParam();
+        }
+        return this.purchaseQuotationService.findListBySpec(purchaseQuotationParam);
+    }
+
+    /**
      * 通过sku查询
      *
      * @author Captain_Jazz

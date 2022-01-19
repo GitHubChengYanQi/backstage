@@ -103,7 +103,9 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
     @Override
     public List<PurchaseQuotationResult> findListBySpec(PurchaseQuotationParam param) {
-        return null;
+        List<PurchaseQuotationResult> purchaseQuotationResults = this.baseMapper.customList(param);
+        format(purchaseQuotationResults);
+        return purchaseQuotationResults;
     }
 
     @Override
