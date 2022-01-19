@@ -12,6 +12,7 @@
         <result column="user_id" property="userId"/>
         <result column="template_id" property="templateId"/>
         <result column="note" property="note"/>
+        <result column="allMoney" property="allMoney"/>
         <result column="contract_class_id" property="contractClassId"/>
         <result column="party_a_adress_id" property="partyAAdressId"/>
         <result column="party_b_adress_id" property="partyBAdressId"/>
@@ -36,7 +37,7 @@
     <sql id="Base_Column_List">  contract_class_id AS "contractClassId",payment AS "payment" ,party_a_phone
     AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",
         party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit
-        AS "audit" ,template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
+        AS "audit" ,template_id AS "templateId",party_a AS "partyA",party_b AS "partyB",contract_id AS "contractId", name AS "name",allMoney AS "allMoney", user_id AS "userId", note AS "note", time AS "time", content AS "content", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display"
     </sql>
 
 

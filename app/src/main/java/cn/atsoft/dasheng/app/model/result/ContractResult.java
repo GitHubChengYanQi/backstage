@@ -60,6 +60,7 @@ public class ContractResult implements Serializable {
 
     private Long templateId;
     private Integer audit;
+    private Integer allMoney;
 
     private PhoneResult phoneA;
     private PhoneResult phoneB;
