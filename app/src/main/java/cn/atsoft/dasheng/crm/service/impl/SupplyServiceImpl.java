@@ -247,7 +247,10 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             for (Supply supply : supplies) {
                 supplierIds.add(supply.getCustomerId());
             }
-            customerQueryWrapper.in("customer_id", supplierIds);
+            if (supplierIds.size() > 0){
+                customerQueryWrapper.in("customer_id", supplierIds);
+            }
+
         }
 
         //达到级别的供应商
