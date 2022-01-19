@@ -39,6 +39,12 @@ public class PurchaseQuotationParam implements Serializable, BaseValidatingParam
     private Long skuId;
 
     /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
      * 价格
      */
     @ApiModelProperty("价格")

@@ -47,6 +47,12 @@ public class PurchaseQuotation implements Serializable {
     private Long skuId;
 
     /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    /**
      * 价格
      */
     @TableField("price")
@@ -191,6 +197,14 @@ public class PurchaseQuotation implements Serializable {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public Date getPeriodOfValidity() {
