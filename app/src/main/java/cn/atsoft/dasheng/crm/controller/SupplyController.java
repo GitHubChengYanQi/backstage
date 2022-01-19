@@ -48,7 +48,7 @@ public class SupplyController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody SupplyParam supplyParam) {
+    public ResponseData addItem(@Valid @RequestBody SupplyParam supplyParam) {
         this.supplyService.add(supplyParam);
         return ResponseData.success();
     }
@@ -158,7 +158,7 @@ public class SupplyController extends BaseController {
     @RequestMapping(value = "/getSupplyByLevel", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData getSupplyByLevel(@RequestBody SupplyParam supplyParam) {
-        List<CustomerResult> level = this.supplyService.getSupplyByLevel(supplyParam.getLevelId(), supplyParam.getSkuIds(), supplyParam.getBrandIds());
+        List<CustomerResult> level = this.supplyService.getSupplyByLevel(supplyParam.getLevelId(), supplyParam.getSkuIds());
         return ResponseData.success(level);
     }
 

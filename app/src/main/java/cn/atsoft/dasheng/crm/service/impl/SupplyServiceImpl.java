@@ -28,6 +28,7 @@ import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
 import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,7 +228,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
      * @return
      */
     @Override
-    public List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds, List<Long> brandIds) {
+    public List<CustomerResult> getSupplyByLevel(Long levelId, List<Long> skuIds) {
         List<CrmCustomerLevel> levels = levelService.list();
         CrmCustomerLevel level = levelService.getById(levelId);
         //比较等级
@@ -247,18 +248,14 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         customerQueryWrapper.in("customer_level_id", levelIds);
 
         // sku条件查询
-        if (ToolUtil.isNotEmpty(skuIds) && ToolUtil.isNotEmpty(brandIds)) {
-            List<Supply> supplies = this.query().in("sku_id", skuIds).in("brand_id", brandIds).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(skuIds)) {
+            List<Supply> supplies = this.query().in("sku_id", skuIds).eq("display", 1).list();
             List<Long> supplierIds = new ArrayList<>();
             for (Supply supply : supplies) {
                 supplierIds.add(supply.getCustomerId());
             }
-            if (ToolUtil.isNotEmpty(supplierIds)) {
-                customerQueryWrapper.in("customer_id", supplierIds);
-            }
-
+            customerQueryWrapper.in("customer_id", supplierIds);
         }
-
 
         //达到级别的供应商
         List<Customer> customers = customerService.list(customerQueryWrapper);
@@ -287,6 +284,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         }
         return customerResults;
     }
+
 
     @Override
     public List<CustomerResult> getSupplyBySku(List<Long> skuIds, Long supplierLevel) {

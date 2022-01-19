@@ -73,8 +73,6 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private InquiryTaskServiceImpl taskService;
     @Autowired
     private CrmCustomerLevelService levelService;
-    @Autowired
-    private SupplierBrandService supplierBrandService;
 
 
     @Override
@@ -376,12 +374,10 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
 
         List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-        List<CustomerResult> customerResults = new ArrayList<>();
 
         for (Customer customer : customerList) {
             CustomerResult customerResult = new CustomerResult();
             ToolUtil.copyProperties(customer, customerResult);
-            customerResults.add(customerResult);
         }
 
         for (PurchaseQuotationResult quotationResult : quotationResults) {
