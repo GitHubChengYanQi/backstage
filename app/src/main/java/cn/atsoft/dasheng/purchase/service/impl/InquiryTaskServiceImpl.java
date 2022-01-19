@@ -5,13 +5,24 @@ import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.CrmCustomerLevelService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.service.SupplyService;
+import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.entity.InquiryTaskDetail;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.mapper.InquiryTaskMapper;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskDetailParam;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
@@ -24,6 +35,8 @@ import cn.atsoft.dasheng.purchase.service.InquiryTaskDetailService;
 import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -31,6 +44,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,15 +62,36 @@ import java.util.List;
 public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, InquiryTask> implements InquiryTaskService {
     @Autowired
     private InquiryTaskDetailService detailService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private CrmCustomerLevelService levelService;
+
     @Autowired
     private SupplyService supplyService;
 
+    @Autowired
+    private QualityTaskService qualityTaskService;
+
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+
+    @Autowired
+    private MobileService mobileService;
 
     @Override
+    @Transactional
     public void add(InquiryTaskParam param) {
         InquiryTask entity = getEntity(param);
         this.save(entity);
@@ -78,6 +113,40 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             details.add(taskDetail);
         }
         detailService.saveBatch(details);
+
+
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "inquiry").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            qualityTaskService.power(activitiProcess);//检查创建权限
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "发起的询价任务"+param.getInquiryTaskCode());
+            activitiProcessTaskParam.setQTaskId(entity.getInquiryTaskId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getInquiryTaskId());
+            activitiProcessTaskParam.setType("inquiry");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("inquiry");
+            wxCpSendTemplate.setSourceId(taskId);
+        } else {
+            entity.setStatus(98);
+            this.updateById(entity);
+            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+            wxCpTemplate.setTitle("新的采购单");
+            wxCpTemplate.setDescription(user.getName() + "发起的采购申请");
+            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+                add(param.getUserId());
+            }});
+            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" ;
+            wxCpTemplate.setUrl(url);
+           wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+           wxCpSendTemplate.sendTemplate();
+        }
     }
 
     @Override
@@ -203,5 +272,17 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
         return taskResult;
     }
 
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        InquiryTask entity = this.getById(processTask.getFormId());
+        entity.setStatus(98);
+        this.updateById(entity);
+    }
 
+    @Override
+    public void updateRefuseStatus(ActivitiProcessTask processTask) {
+        InquiryTask entity = this.getById(processTask.getFormId());
+        entity.setStatus(97);
+        this.updateById(entity);
+    }
 }

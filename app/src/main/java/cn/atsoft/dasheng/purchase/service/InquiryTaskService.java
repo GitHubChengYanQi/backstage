@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.entity.InquiryTask;
 import cn.atsoft.dasheng.purchase.model.params.InquiryTaskParam;
 import cn.atsoft.dasheng.purchase.model.result.InquiryTaskResult;
@@ -67,4 +68,8 @@ public interface InquiryTaskService extends IService<InquiryTask> {
      PageInfo<InquiryTaskResult> findPageBySpec(InquiryTaskParam param);
 
     InquiryTaskResult detail(Long taskId);
+
+    void updateStatus(ActivitiProcessTask processTask);
+
+    void updateRefuseStatus(ActivitiProcessTask processTask);
 }

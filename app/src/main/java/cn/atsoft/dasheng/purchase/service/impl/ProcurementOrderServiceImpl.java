@@ -3,10 +3,20 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 import cn.atsoft.dasheng.app.entity.*;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.ContractClass;
 import cn.atsoft.dasheng.crm.service.ContractClassService;
+import cn.atsoft.dasheng.erp.config.MobileService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
+import cn.atsoft.dasheng.form.model.params.ActivitiProcessTaskParam;
+import cn.atsoft.dasheng.form.service.ActivitiProcessLogService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessService;
+import cn.atsoft.dasheng.form.service.ActivitiProcessTaskService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
@@ -21,6 +31,8 @@ import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
+import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
+import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -65,6 +77,18 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     private PhoneService phoneService;
     @Autowired
     private ContractDetailService contractDetailService;
+    @Autowired
+    private QualityTaskService qualityTaskService;
+    @Autowired
+    private ActivitiProcessService activitiProcessService;
+    @Autowired
+    private ActivitiProcessTaskService activitiProcessTaskService;
+    @Autowired
+    private ActivitiProcessLogService activitiProcessLogService;
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
+    @Autowired
+    private MobileService mobileService;
 
     @Override
     @Transactional
@@ -118,6 +142,41 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         }
         addContract(customerIds, supplierMap);
         detailService.saveBatch(details);
+        /**
+         * 添加进入流程审批
+         */
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchaseOrder").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            qualityTaskService.power(activitiProcess);//检查创建权限
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "新的采购单");
+            activitiProcessTaskParam.setQTaskId(entity.getProcurementOrderId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getProcurementOrderId());
+            activitiProcessTaskParam.setType("procurementOrder");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加log
+//            activitiProcessLogService.addLogJudgeBranch(activitiProcess.getProcessId(), taskId, entity.getProcurementOrderId(), "procurementOrder");
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("procurementOrder");
+            wxCpSendTemplate.setSourceId(taskId);
+        } else {
+            entity.setStatus(98);
+            this.updateById(entity);
+//            WxCpTemplate wxCpTemplate = new WxCpTemplate();
+//            wxCpTemplate.setTitle("新的采购单");
+//            wxCpTemplate.setDescription(user.getName() + "发起的采购申请");
+//            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+//                add(user.getId());
+//            }});
+////            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/Work/Workflow?id=" + processTask.getProcessTaskId();
+//           wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);
+//           wxCpSendTemplate.sendTemplate();
+        }
     }
 
     @Override
@@ -250,6 +309,20 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         ProcurementOrder entity = new ProcurementOrder();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    @Override
+    public void updateStatus(ActivitiProcessTask processTask) {
+        ProcurementOrder entity = this.getById(processTask.getFormId());
+        entity.setStatus(99);
+        this.updateById(entity);
+    }
+
+    @Override
+    public void updateRefuseStatus(ActivitiProcessTask processTask) {
+        ProcurementOrder entity = this.getById(processTask.getFormId());
+        entity.setStatus(97);
+        this.updateById(entity);
     }
 
 }
