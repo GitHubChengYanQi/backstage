@@ -324,6 +324,11 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         ProcurementOrder entity = this.getById(processTask.getFormId());
         entity.setStatus(99);
         this.updateById(entity);
+        List<Contract> contractList = contractService.query().eq("source_id", processTask.getFormId()).eq("source", "采购单").list();
+        for (Contract contract : contractList) {
+            contract.setDisplay(1);
+        }
+        contractService.updateBatchById(contractList);
 
     }
 
