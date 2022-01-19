@@ -270,8 +270,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
     }
 
-
-    private void power(ActivitiProcess activitiProcess) {
+    @Override
+    public void power(ActivitiProcess activitiProcess) {
         ActivitiSteps startSteps = stepsService.query().eq("process_id", activitiProcess.getProcessId()).eq("type", START).one();
         if (ToolUtil.isNotEmpty(startSteps)) {
             ActivitiAudit audit = auditService.query().eq("setps_id", startSteps.getSetpsId()).one();

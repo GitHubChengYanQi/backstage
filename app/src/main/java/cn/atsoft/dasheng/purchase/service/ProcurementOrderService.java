@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.form.entity.ActivitiProcessTask;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementOrderParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderResult;
@@ -66,4 +67,7 @@ public interface ProcurementOrderService extends IService<ProcurementOrder> {
      */
      PageInfo<ProcurementOrderResult> findPageBySpec(ProcurementOrderParam param);
 
+    void updateStatus(ActivitiProcessTask processTask);
+
+    void updateRefuseStatus(ActivitiProcessTask processTask);
 }

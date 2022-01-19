@@ -21,7 +21,10 @@ import cn.atsoft.dasheng.form.pojo.AuditRule;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
 import cn.atsoft.dasheng.purchase.entity.PurchaseAsk;
+import cn.atsoft.dasheng.purchase.service.InquiryTaskService;
+import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.purchase.service.impl.CheckPurchaseAsk;
@@ -81,7 +84,13 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
     @Autowired
     private ProcurementPlanService procurementPlanService;
 
-    @Autowired PurchaseAskService purchaseAskService;
+    @Autowired
+    private PurchaseAskService purchaseAskService;
+
+    @Autowired
+    private ProcurementOrderService procurementOrderService;
+    @Autowired
+    private InquiryTaskService inquiryTaskService;
 
     @Override
     public ActivitiAudit getRule(List<ActivitiAudit> activitiAudits, Long stepId) {
@@ -268,10 +277,10 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
              */
             //如果上级审批为 同意（通过）则更新状态为完成
             //否则 在上面代码中  审核时已经更改单据和审批流程为否决 不再次更改
-            if (auditCheck){
+            if (auditCheck) {
 
                 ActivitiProcessTask endProcessTask = new ActivitiProcessTask();
-                ToolUtil.copyProperties(task,endProcessTask);
+                ToolUtil.copyProperties(task, endProcessTask);
                 endProcessTask.setStatus(0);
                 //更新任务状态
                 activitiProcessTaskService.updateById(endProcessTask);
@@ -282,8 +291,9 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             endSend.endSend(task.getProcessTaskId());
         }
     }
-    private void updateStatus(ActivitiProcessTask processTask){
-        switch (processTask.getType()){
+
+    private void updateStatus(ActivitiProcessTask processTask) {
+        switch (processTask.getType()) {
             case "purchasePlan":
                 procurementPlanService.updateState(processTask);
                 break;
@@ -293,10 +303,17 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
             case "purchaseAsk":
                 purchaseAskService.updateStatus(processTask);
                 break;
+            case "procurementOrder":
+                procurementOrderService.updateStatus(processTask);
+                break;
+            case "inquiry":
+                inquiryTaskService.updateStatus(processTask);
+                break;
         }
     }
-    private void updateRefuseStatus(ActivitiProcessTask processTask){
-        switch (processTask.getType()){
+
+    private void updateRefuseStatus(ActivitiProcessTask processTask) {
+        switch (processTask.getType()) {
             case "purchasePlan":
                 procurementPlanService.updateRefuseStatus(processTask);
                 break;
@@ -305,6 +322,12 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 break;
             case "purchaseAsk":
                 purchaseAskService.updateRefuseStatus(processTask);
+                break;
+            case "procurementOrder":
+                procurementOrderService.updateRefuseStatus(processTask);
+                break;
+            case "inquiry":
+                inquiryTaskService.updateRefuseStatus(processTask);
                 break;
         }
     }
@@ -849,6 +872,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                 loopAddJudgeBranch(stepResult, taskId, purchaseAsk);
                 viewService.addView(taskId);
                 break;
+
         }
 
     }

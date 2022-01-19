@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.pojo.FormDataRequest;
 import cn.atsoft.dasheng.erp.pojo.QualityTaskChild;
 import cn.atsoft.dasheng.erp.pojo.TaskComplete;
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.form.entity.ActivitiProcess;
 import cn.atsoft.dasheng.form.entity.ActivitiProcessLog;
 import cn.atsoft.dasheng.form.entity.ActivitiSteps;
 import cn.atsoft.dasheng.form.model.result.ActivitiStepsResult;
@@ -54,6 +55,8 @@ public interface QualityTaskService extends IService<QualityTask> {
      * @Date 2021-11-16
      */
     void detailFormat(QualityTaskResult result);
+
+    void power(ActivitiProcess activitiProcess);
 
     /**
      * 删除

@@ -103,6 +103,12 @@ public class InquiryTask implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+
 
     public Long getInquiryTaskId() {
         return inquiryTaskId;
@@ -135,6 +141,7 @@ public class InquiryTask implements Serializable {
     public void setDeadline(Date deadline) {
         this.deadline = deadline;
     }
+
     public String getInquiryTaskCode() {
         return inquiryTaskCode;
     }
@@ -207,6 +214,15 @@ public class InquiryTask implements Serializable {
         this.deptId = deptId;
     }
 
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "InquiryTask{" +
@@ -222,6 +238,7 @@ public class InquiryTask implements Serializable {
                 ", updateUser=" + updateUser +
                 ", display=" + display +
                 ", deptId=" + deptId +
+                ", status=" + status +
                 "}";
     }
 }
