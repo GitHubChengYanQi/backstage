@@ -1,33 +1,39 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
 @Data
+
 public class SkuExcelItem {
 
 
-    private String 成品码;
+    private String standard;
 
 
-    private String 分类;
+    private String spuClass;
 
 
-    private String 产品;
+    private String classItem;
 
 
-    private String 型号;
+    private String spuName;
 
 
-    private String 单位;
+    private String unit;
 
-    private String 是否批量;
+
+    private String isNotBatch;
 
 
     private List<String> attributes;
+
 
     private Integer line;
 
