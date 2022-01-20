@@ -129,7 +129,7 @@ public class SkuExcelController {
         List<SpuClassification> items = classificationService.query().eq("display", 1).eq("type", 2).list();//所有产品
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Unit> units = unitService.query().eq("display", 1).list();
-
+        List<Category> categories = categoryService.query().eq("display", 1).list();
 
         for (SkuExcelItem skuExcelItem : skuExcelItems) {
             i++;
@@ -153,6 +153,8 @@ public class SkuExcelController {
                     SpuClassification spuClassification = new SpuClassification();
                     spuClassification.setName(skuExcelItem.getSpuClass());
                     classificationService.save(spuClassification);
+                    spuClassifications.add(spuClassification);
+
                     classId = spuClassification.getSpuClassificationId();
                 }
                 //产品--------------------------------------------------------------------------------------------
@@ -170,11 +172,23 @@ public class SkuExcelController {
                     newClass.setType(2L);
                     newClass.setPid(classId);
                     classificationService.save(newClass);
+                    items.add(newClass);
                     itemId = newClass.getSpuClassificationId();
                 }
-
-                //物品分类------------------------------------------------------------------------------------------
-
+                //物料分类------------------------------------------------------------------------------------------
+                Long categoryId = null;
+                for (Category category : categories) {
+                    if (skuExcelItem.getSpuName().equals(category.getCategoryName())) {
+                        categoryId = category.getCategoryId();
+                    }
+                }
+                if (ToolUtil.isEmpty(categoryId)) {
+                    Category category = new Category();
+                    category.setCategoryName(skuExcelItem.getSpuName());
+                    categoryService.save(category);
+                    categories.add(category);
+                    categoryId = category.getCategoryId();
+                }
 
                 //型号----------------------------------------------------------------------------------------------
                 Long spuId = null;
@@ -186,17 +200,13 @@ public class SkuExcelController {
                         spuId = spu.getSpuId();
                     }
                 }
-
                 if (ToolUtil.isEmpty(spuId)) {
-                    Category category = new Category();
-                    category.setCategoryName(skuExcelItem.getSpuName());
-                    categoryService.save(category);
-
                     Spu newSpu = new Spu();
                     newSpu.setSpuClassificationId(itemId);
                     newSpu.setName(skuExcelItem.getSpuName());
-                    newSpu.setCategoryId(category.getCategoryId());
+                    newSpu.setCategoryId(categoryId);
                     spuService.save(newSpu);
+                    spuList.add(newSpu);
                     sku.setSpuId(newSpu.getSpuId());
                     spuId = newSpu.getSpuId();
                 }
@@ -212,6 +222,7 @@ public class SkuExcelController {
                     Unit newUnit = new Unit();
                     newUnit.setUnitName(skuExcelItem.getUnit());
                     unitService.save(newUnit);
+                    units.add(newUnit);
                     unitId = newUnit.getUnitId();
                 }
                 spuById.setUnitId(unitId);
@@ -230,6 +241,7 @@ public class SkuExcelController {
 
                     ItemAttribute itemAttribute = new ItemAttribute();
                     itemAttribute.setAttribute(attr);
+                    itemAttribute.setCategoryId(categoryId);
                     attributeService.save(itemAttribute);
 
                     AttributeValues values = new AttributeValues();

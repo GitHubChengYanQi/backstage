@@ -102,12 +102,17 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                 SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-                if (ToolUtil.isNotEmpty(classification) && ToolUtil.isNotEmpty(classification.getCodingClass()) && classification.getDisplay() != 0) {
-                    String replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                if (ToolUtil.isNotEmpty(classification)  && classification.getDisplay() != 0) {
+                    String replace = "";
+                    if (ToolUtil.isNotEmpty(classification.getCodingClass())){
+                        replace = backCoding.replace("${skuClass}", classification.getCodingClass());
+                    }else {
+                        replace = backCoding.replace("${skuClass}", "");
+                    }
+
                     param.setStandard(replace);
                     param.setCoding(replace);
-                } else {
-                    throw new ServiceException(500, "请选择分类！");
+
                 }
             }
             /**
