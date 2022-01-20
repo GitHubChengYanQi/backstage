@@ -50,6 +50,8 @@ public interface SkuService extends IService<Sku> {
      */
     void update(SkuParam param);
 
+    List<SkuResult> getSkuResultListAndFormat(List<Long> ids);
+
     /**
      * 查询单条数据，Specification模式
      *

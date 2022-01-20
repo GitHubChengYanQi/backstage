@@ -3,6 +3,7 @@ package cn.atsoft.dasheng.erp.service;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -65,5 +66,6 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      * @Date 2022-01-20
      */
     PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param);
+
 
 }
