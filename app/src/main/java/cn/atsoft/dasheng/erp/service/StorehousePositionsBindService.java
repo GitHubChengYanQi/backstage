@@ -24,7 +24,7 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      * @author song
      * @Date 2022-01-20
      */
-    void add(StorehousePositionsBindParam param);
+    StorehousePositionsBind add(StorehousePositionsBindParam param);
 
     /**
      * 删除
@@ -64,6 +64,6 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      * @author song
      * @Date 2022-01-20
      */
-     PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param);
+    PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param);
 
 }

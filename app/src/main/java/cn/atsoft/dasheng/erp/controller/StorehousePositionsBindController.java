@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class StorehousePositionsBindController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
-        this.storehousePositionsBindService.add(storehousePositionsBindParam);
-        return ResponseData.success();
+        StorehousePositionsBind bind = this.storehousePositionsBindService.add(storehousePositionsBindParam);
+        return ResponseData.success(bind);
     }
 
     /**
@@ -67,7 +68,7 @@ public class StorehousePositionsBindController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam)  {
+    public ResponseData delete(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
         this.storehousePositionsBindService.delete(storehousePositionsBindParam);
         return ResponseData.success();
     }
@@ -98,13 +99,11 @@ public class StorehousePositionsBindController extends BaseController {
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StorehousePositionsBindResult> list(@RequestBody(required = false) StorehousePositionsBindParam storehousePositionsBindParam) {
-        if(ToolUtil.isEmpty(storehousePositionsBindParam)){
+        if (ToolUtil.isEmpty(storehousePositionsBindParam)) {
             storehousePositionsBindParam = new StorehousePositionsBindParam();
         }
         return this.storehousePositionsBindService.findPageBySpec(storehousePositionsBindParam);
     }
-
-
 
 
 }

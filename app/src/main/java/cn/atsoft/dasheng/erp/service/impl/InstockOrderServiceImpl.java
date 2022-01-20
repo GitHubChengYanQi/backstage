@@ -153,8 +153,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
 //            wxCpTemplate.setUrl(url);
             wxCpTemplate.setTitle("新的入库提醒");
-            wxCpTemplate.setDescription(createUser.getName()+"您有新的入库任务"+entity.getCoding());
-            wxCpTemplate.setUserIds(new ArrayList<Long>(){{
+            wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
+            wxCpTemplate.setUserIds(new ArrayList<Long>() {{
                 add(entity.getUserId());
             }});
             wxCpSendTemplate.setSource("入库");
@@ -273,54 +273,46 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "已入库");
         }
 
-        if (ToolUtil.isEmpty(freeInStockParam.getCodeIds())) {
-            throw new ServiceException(500, "请扫描二维码");
-        }
         List<OrCodeBind> codeBinds = bindService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
         if (ToolUtil.isEmpty(codeBinds)) {
             throw new ServiceException(500, "二维码不正确");
         }
+
         List<Long> inkindIds = new ArrayList<>();
         for (OrCodeBind codeBind : codeBinds) {
             inkindIds.add(codeBind.getFormId());
         }
+
+
         List<Inkind> inkinds = inkindService.query().in("inkind_id", inkindIds).eq("type", 0).list();
 
         if (ToolUtil.isEmpty(inkinds) && inkinds.size() != freeInStockParam.getCodeIds().size()) {   //判断实物
             throw new ServiceException(500, "有错误二维码");
         }
-        List<Long> distinct = new ArrayList<>();
+
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        Map<Long, Long> inkindNumber = new HashMap<>();
+
         for (Inkind inkind : inkinds) {
-            distinct.add(inkind.getSkuId() + inkind.getBrandId());
-        }
-        long count = distinct.stream().distinct().count();
-        if (count != 1) {
-            throw new ServiceException(500, "批次物料有不相同");
+            brandIds.add(inkind.getBrandId());
+            skuIds.add(inkind.getSkuId());
+
+            Long aLong = inkindNumber.get(inkind.getInkindId());   //计算相同实物的数量
+            if (ToolUtil.isEmpty(aLong)) {
+                inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
+            } else {
+                inkindNumber.put(inkind.getInkindId(), inkind.getNumber() + inkind.getNumber());
+            }
         }
 
-        Stock stock = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询仓库
-                .eq(Stock::getSkuId, inkinds.get(0).getSkuId())
-                .eq(Stock::getBrandId, inkinds.get(0).getBrandId())
-                .one();
 
-        Long inkindNumber = 0L;   //入库的数量
-        for (Inkind inkind : inkinds) {
-            inkindNumber = inkindNumber + inkind.getNumber();
-        }
-        Long stockId = null;
-        if (ToolUtil.isNotEmpty(stock)) {  //有相同物料 叠加数量
-            stock.setInventory(stock.getInventory() + inkindNumber);
-            stockService.updateById(stock);
-            stockId = stock.getStockId();
-        } else {                          //没有相同物料 创建新物料
-            Stock newStock = new Stock();
-            newStock.setInventory(inkindNumber);
-            newStock.setBrandId(inkinds.get(0).getBrandId());
-            newStock.setSkuId(inkinds.get(0).getSkuId());
-            newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
-            stockService.save(newStock);
-            stockId = newStock.getStockId();
-        }
+        List<Stock> stockList = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询库存
+                .eq(Stock::getSkuId, skuIds)
+                .in(Stock::getBrandId, brandIds)
+                .list();
+
+
         Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
         for (OrCodeBind codeBind : codeBinds) {
             for (Long codeId : freeInStockParam.getCodeIds()) {
@@ -332,7 +324,23 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         List<StockDetails> stockDetailsList = new ArrayList<>();
-        for (Inkind inkind : inkinds) {    //添加库存详情
+
+        for (Inkind inkind : inkinds) {
+            Long stockId = null;
+            Stock exist = judgeStockExist(inkind, stockList);
+            if (ToolUtil.isNotEmpty(exist)) {
+                exist.setInventory(inkindNumber.get(inkind.getInkindId()));
+                stockService.updateById(exist);
+                stockId = exist.getStockId();
+            } else {  //没有相同库存
+                Stock newStock = new Stock();
+                newStock.setInventory(inkindNumber.get(inkind.getInkindId()));
+                newStock.setBrandId(inkind.getBrandId());
+                newStock.setSkuId(inkind.getSkuId());
+                newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+                stockService.save(newStock);
+                stockId = newStock.getStockId();
+            }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
@@ -346,9 +354,30 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);
             inkind.setType("1");
+
         }
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
+    }
+
+    /**
+     * 判断实物有无库存
+     *
+     * @param inkind
+     * @param stocks
+     * @return
+     */
+    private Stock judgeStockExist(Inkind inkind, List<Stock> stocks) {
+        if (ToolUtil.isEmpty(stocks)) {
+            return null;
+        }
+
+        for (Stock stock : stocks) {
+            if (stock.getSkuId().equals(inkind.getSkuId()) && stock.getBrandId().equals(inkind.getBrandId())) {
+                return stock;
+            }
+        }
+        return null;
     }
 
 

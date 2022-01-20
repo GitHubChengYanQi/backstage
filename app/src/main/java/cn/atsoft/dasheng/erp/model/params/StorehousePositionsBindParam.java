@@ -8,6 +8,7 @@ import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class StorehousePositionsBindParam implements Serializable, BaseValidatin
     /**
      * 库位id
      */
+    @NotNull
     @ApiModelProperty("库位id")
     private Long positionId;
 
