@@ -3,11 +3,15 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
@@ -19,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +38,9 @@ import java.util.List;
 public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePositionsBindMapper, StorehousePositionsBind> implements StorehousePositionsBindService {
     @Autowired
     private StorehousePositionsService positionsService;
+
+    @Autowired
+    private SkuService skuService;
 
     @Override
     public StorehousePositionsBind add(StorehousePositionsBindParam param) {
@@ -74,7 +82,41 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     public PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param) {
         Page<StorehousePositionsBindResult> pageContext = getPageContext();
         IPage<StorehousePositionsBindResult> page = this.baseMapper.customPageList(pageContext, param);
+        this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
+    }
+
+    public void format(List<StorehousePositionsBindResult> param){
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+
+        for (StorehousePositionsBindResult bindResult : param) {
+            skuIds.add(bindResult.getSkuId());
+            positionIds.add(bindResult.getPositionId());
+        }
+
+        List<SkuResult> skuResults = skuService.getSkuResultListAndFormat(skuIds);
+        List<StorehousePositions> storehousePositions = positionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
+        for (StorehousePositions storehousePosition : storehousePositions) {
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePosition,storehousePositionsResult);
+            storehousePositionsResults.add(storehousePositionsResult);
+        }
+
+        for (StorehousePositionsBindResult storehousePositionsBindResult : param) {
+            for (SkuResult skuResult : skuResults) {
+                if (storehousePositionsBindResult.getSkuId().equals(skuResult.getSkuId())) {
+                    storehousePositionsBindResult.setSkuResult(skuResult);
+                }
+            }
+            for (StorehousePositionsResult storehousePositionResult : storehousePositionsResults) {
+                if (storehousePositionsBindResult.getPositionId().equals(storehousePositionResult.getStorehousePositionsId())) {
+                    storehousePositionsBindResult.setStorehousePositionsResult(storehousePositionResult);
+                }
+            }
+        }
+
     }
 
     private Serializable getKey(StorehousePositionsBindParam param) {
@@ -94,5 +136,6 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
 
 }

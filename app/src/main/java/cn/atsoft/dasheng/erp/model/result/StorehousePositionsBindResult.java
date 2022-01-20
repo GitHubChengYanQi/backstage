@@ -18,6 +18,9 @@ import java.util.List;
 @ApiModel
 public class StorehousePositionsBindResult implements Serializable {
 
+    private SkuResult skuResult;
+    private StorehousePositionsResult storehousePositionsResult;
+
     private static final long serialVersionUID = 1L;
 
 
