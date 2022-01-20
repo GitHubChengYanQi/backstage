@@ -41,8 +41,8 @@ public class SerialNumberController extends BaseController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody SerialNumberParam serialNumberParam) {
-        this.serialNumberService.add(serialNumberParam);
-        return ResponseData.success();
+
+        return ResponseData.success(this.serialNumberService.add(serialNumberParam));
     }
 
     /**
