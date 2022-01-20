@@ -46,7 +46,6 @@
         <if test="paramCondition.customerId != null">
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
-
         <choose>
             <when test="paramCondition.nameSource != null and paramCondition.nameSource='品牌' ">
                 and brand_id in (select brand_id from daoxin_erp_brand where brand_name like

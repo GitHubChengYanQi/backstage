@@ -10,7 +10,7 @@ public class FreeInStockParam {
     @NotNull
     private Long storeHouseId;
     @NotNull
-    private List<Long> codeIds;
+    private List<Long> inkindIds;
     @NotNull
     private Long positionsId;
 

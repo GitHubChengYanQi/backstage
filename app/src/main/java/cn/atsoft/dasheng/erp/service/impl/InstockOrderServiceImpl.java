@@ -266,27 +266,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "请选择最下级库位");
         }
 
-        List<StockDetails> detailsList = stockDetailsService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
-        if (ToolUtil.isNotEmpty(detailsList)) {
-            throw new ServiceException(500, "已入库");
-        }
 
-        List<OrCodeBind> codeBinds = bindService.query().in("qr_code_id", freeInStockParam.getCodeIds()).list();
-        if (ToolUtil.isEmpty(codeBinds)) {
-            throw new ServiceException(500, "二维码不正确");
-        }
-
-        List<Long> inkindIds = new ArrayList<>();
-        for (OrCodeBind codeBind : codeBinds) {
-            inkindIds.add(codeBind.getFormId());
-        }
+        List<Inkind> inkinds = inkindService.query().in("inkind_id", freeInStockParam.getInkindIds()).eq("type", 0).list();
 
 
-        List<Inkind> inkinds = inkindService.query().in("inkind_id", inkindIds).eq("type", 0).list();
-
-        if (ToolUtil.isEmpty(inkinds) && inkinds.size() != freeInStockParam.getCodeIds().size()) {   //判断实物
-            throw new ServiceException(500, "有错误二维码");
-        }
+        List<OrCodeBind> orCodeBinds = bindService.query().in("form_id", new ArrayList<Long>() {{
+            for (Inkind inkind : inkinds) {
+                add(inkind.getInkindId());
+            }
+        }}).list();
 
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
@@ -300,7 +288,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             if (ToolUtil.isEmpty(number)) {
                 inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
             } else {
-                inkindNumber.put(inkind.getInkindId(),number +inkind.getNumber());
+                inkindNumber.put(inkind.getInkindId(), number + inkind.getNumber());
             }
         }
 
@@ -312,10 +300,10 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
         Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
-        for (OrCodeBind codeBind : codeBinds) {
-            for (Long codeId : freeInStockParam.getCodeIds()) {
-                if (codeBind.getOrCodeId().equals(codeId)) {
-                    map.put(codeBind.getFormId(), codeId);
+        for (OrCodeBind codeBind : orCodeBinds) {
+            for (Long codeId : freeInStockParam.getInkindIds()) {
+                if (codeBind.getFormId().equals(codeId)) {
+                    map.put(codeBind.getFormId(), codeBind.getOrCodeId());
                     break;
                 }
             }

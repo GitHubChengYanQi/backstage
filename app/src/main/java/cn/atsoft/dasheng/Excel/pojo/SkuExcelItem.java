@@ -31,10 +31,11 @@ public class SkuExcelItem {
 
     private String isNotBatch;
 
-
-    private List<String> attributes;
+    private String itemRule;
 
 
     private Integer line;
+
+    private List<Specifications> specifications;
 
 }

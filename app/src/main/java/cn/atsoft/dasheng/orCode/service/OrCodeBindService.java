@@ -99,4 +99,6 @@ public interface OrCodeBindService extends IService<OrCodeBind> {
      */
     List<Long> getFormIds(List<Long> qrcodeIds);
 
+    List<Long> getCodeIds(List<Long> fromIds);
+
 }
