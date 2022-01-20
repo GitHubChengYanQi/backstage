@@ -6,10 +6,15 @@ import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.SpuParam;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -47,6 +52,10 @@ public class StorehousePositionsController extends BaseController {
     private StorehousePositionsService storehousePositionsService;
     @Autowired
     private StorehouseService storehouseService;
+    @Autowired
+    private StorehousePositionsBindService storehousePositionsBindService;
+    @Autowired
+    private SkuService skuService;
 
 
     /**
@@ -118,6 +127,15 @@ public class StorehousePositionsController extends BaseController {
         StorehousePositions detail = this.storehousePositionsService.getById(storehousePositionsParam.getStorehousePositionsId());
         StorehousePositionsResult result = new StorehousePositionsResult();
         ToolUtil.copyProperties(detail, result);
+        List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", detail.getStorehousePositionsId()).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (StorehousePositionsBind bind : binds) {
+            skuIds.add(bind.getSkuId());
+        }
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+
+        result.setSkuResults(skuResults);
+
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         List<String> parentValue = StorehousePositionsSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
