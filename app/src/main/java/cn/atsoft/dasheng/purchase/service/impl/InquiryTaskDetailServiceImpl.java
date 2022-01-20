@@ -156,7 +156,7 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
         List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
         for (InquiryTaskDetailResult inquiryTaskDetailResult : inquiryTaskDetailResults) {
             for (Brand brand : brands) {
-                if (inquiryTaskDetailResult.getBrandId().equals(brand.getBrandId())) {
+                if (ToolUtil.isNotEmpty(inquiryTaskDetailResult.getBrandId()) && inquiryTaskDetailResult.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult =  new BrandResult();
                     ToolUtil.copyProperties(brand,brandResult);
                     inquiryTaskDetailResult.setBrandResult(brandResult);
