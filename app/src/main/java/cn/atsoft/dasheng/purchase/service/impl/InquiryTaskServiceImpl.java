@@ -100,7 +100,7 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
         List<Long> skuIds = new ArrayList<>();
         for (InquiryTaskDetailParam detailParam : param.getDetailParams()) {
-            skuIds.add(detailParam.getSkuId());
+            skuIds.add(detailParam.getSkuId()+detailParam.getBrandId());
         }
         long count = skuIds.stream().distinct().count();
         if (param.getDetailParams().size() != count) {
