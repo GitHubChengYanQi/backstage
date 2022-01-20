@@ -1,9 +1,11 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
 import cn.atsoft.dasheng.app.entity.Contract;
 import cn.atsoft.dasheng.app.entity.CrmCustomerLevel;
 import cn.atsoft.dasheng.app.entity.Customer;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ContractService;
@@ -73,6 +75,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private InquiryTaskServiceImpl taskService;
     @Autowired
     private CrmCustomerLevelService levelService;
+    @Autowired
+    private BrandService brandService;
 
 
     @Override
@@ -416,17 +420,18 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
-
+        List<Long> brandIds = new ArrayList<>();
         for (PurchaseQuotationResult datum : data) {
             skuIds.add(datum.getSkuId());
             userIds.add(datum.getCreateUser());
             customerIds.add(datum.getCustomerId());
+            brandIds.add(datum.getBrandId());
         }
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
-
+        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.listByIds(brandIds);
         for (PurchaseQuotationResult datum : data) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(datum.getSkuId())) {
@@ -446,6 +451,13 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                     ToolUtil.copyProperties(customer, customerResult);
                     datum.setCustomerResult(customerResult);
                     break;
+                }
+            }
+            for (Brand brand : brands) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
+                    BrandResult brandResult = new BrandResult();
+                    ToolUtil.copyProperties(brand,brandResult);
+                    datum.setBrandResult(brandResult);
                 }
             }
         }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
@@ -32,6 +33,7 @@ public class PurchaseQuotationResult implements Serializable {
     private Long taxPrice;
     private CustomerResult customerResult;
     private User user;
+    private BrandResult brandResult;
 
     /**
      * 采购报价id
