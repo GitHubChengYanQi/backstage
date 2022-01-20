@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class StorehousePositionsBindController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+    public ResponseData addItem(@Valid @RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
         StorehousePositionsBind bind = this.storehousePositionsBindService.add(storehousePositionsBindParam);
         return ResponseData.success(bind);
     }

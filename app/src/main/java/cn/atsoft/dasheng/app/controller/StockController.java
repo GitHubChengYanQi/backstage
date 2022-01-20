@@ -37,49 +37,8 @@ public class StockController extends BaseController {
     @Autowired
     private StockService stockService;
 
-    /**
-     * 新增接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    @ApiOperation("新增")
-    @Permission
-    public ResponseData addItem(@RequestBody StockParam stockParam) {
-        Long add = this.stockService.add(stockParam);
-        return ResponseData.success(add);
 
-    }
 
-    /**
-     * 编辑接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    @Permission
-    public ResponseData update(@RequestBody StockParam stockParam) {
-
-        this.stockService.update(stockParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author
-     * @Date 2021-07-15
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    @Permission
-    public ResponseData delete(@RequestBody StockParam stockParam) {
-        this.stockService.delete(stockParam);
-        return ResponseData.success();
-    }
 
     /**
      * 查看详情接口

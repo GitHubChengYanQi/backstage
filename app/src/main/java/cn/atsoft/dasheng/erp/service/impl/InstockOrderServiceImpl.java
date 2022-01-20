@@ -259,9 +259,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      */
     @Override
     public void freeInstock(FreeInStockParam freeInStockParam) {
-        if (ToolUtil.isEmpty(freeInStockParam.getPositionsId())) {
-            throw new ServiceException(500, "请选择库位");
-        }
+
         //判断库位
         List<StorehousePositions> pid = positionsService.query().eq("pid", freeInStockParam.getPositionsId()).list();
         if (ToolUtil.isNotEmpty(pid)) {
@@ -294,15 +292,15 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Long> skuIds = new ArrayList<>();
         Map<Long, Long> inkindNumber = new HashMap<>();
 
-        for (Inkind inkind : inkinds) {
+        for (Inkind inkind : inkinds) {     //计算相同实物的数量
             brandIds.add(inkind.getBrandId());
             skuIds.add(inkind.getSkuId());
 
-            Long aLong = inkindNumber.get(inkind.getInkindId());   //计算相同实物的数量
-            if (ToolUtil.isEmpty(aLong)) {
+            Long number = inkindNumber.get(inkind.getInkindId());
+            if (ToolUtil.isEmpty(number)) {
                 inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
             } else {
-                inkindNumber.put(inkind.getInkindId(), inkind.getNumber() + inkind.getNumber());
+                inkindNumber.put(inkind.getInkindId(),number +inkind.getNumber());
             }
         }
 
@@ -324,13 +322,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         List<StockDetails> stockDetailsList = new ArrayList<>();
+        List<Long> stockIds = new ArrayList<>();
 
         for (Inkind inkind : inkinds) {
             Long stockId = null;
             Stock exist = judgeStockExist(inkind, stockList);
             if (ToolUtil.isNotEmpty(exist)) {
-                exist.setInventory(inkindNumber.get(inkind.getInkindId()));
-                stockService.updateById(exist);
                 stockId = exist.getStockId();
             } else {  //没有相同库存
                 Stock newStock = new Stock();
@@ -346,7 +343,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
             Long codeId = map.get(inkind.getInkindId());
-            stockDetails.setQrCodeid(codeId);
+            stockDetails.setQrCodeId(codeId);
             stockDetails.setInkindId(inkind.getInkindId());
             stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
 
@@ -355,9 +352,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetailsList.add(stockDetails);
             inkind.setType("1");
 
+            stockIds.add(stockId);
         }
+
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
+        stockService.updateNumber(stockIds);
     }
 
     /**
