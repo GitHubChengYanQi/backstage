@@ -63,8 +63,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
     private StorehousePositionsService positionsService;
     @Autowired
     private StockService stockService;
-    @Autowired
-    private InstockOrderService instockOrderService;
+
     @Autowired
     private OrCodeBindService codeBindService;
     @Autowired
@@ -243,7 +242,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(numberMap.get(inkind.getInkindId()));
             stockDetails.setStorehousePositionsId(positionId);
-            stockDetails.setQrCodeid(codeMap.get(inkind.getInkindId()));
+            stockDetails.setQrCodeId(codeMap.get(inkind.getInkindId()));
             stockDetails.setInkindId(inkind.getInkindId());
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setStorehouseId(storeHouseId);
@@ -320,7 +319,7 @@ public class InventoryServiceImpl extends ServiceImpl<InventoryMapper, Inventory
 
                 StockDetailsResult detailsResult = new StockDetailsResult();
                 ToolUtil.copyProperties(stockDetail, detailsResult);
-                detailsResult.setQrCodeId(stockDetail.getQrCodeid());
+                detailsResult.setQrCodeId(stockDetail.getQrCodeId());
                 detailsResults.add(detailsResult);
             }
 

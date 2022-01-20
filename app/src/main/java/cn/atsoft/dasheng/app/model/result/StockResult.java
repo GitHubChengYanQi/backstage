@@ -30,6 +30,7 @@ public class StockResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
+    private Long customerId;
 
     private StorehouseResult storehouseResult;
     private BrandResult brandResult;

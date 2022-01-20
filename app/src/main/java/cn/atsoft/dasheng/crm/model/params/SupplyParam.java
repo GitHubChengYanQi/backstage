@@ -31,9 +31,13 @@ public class SupplyParam implements Serializable, BaseValidatingParam {
     @NotNull
     private List<Long> brandIds;
 
+    private String nameSource; //模糊查询
+
+    private String name;       //模糊查询
     @NotNull
     private Long levelId;
 
+    private Long brandId;
 
     private List<BrandParam> brandParams;
 

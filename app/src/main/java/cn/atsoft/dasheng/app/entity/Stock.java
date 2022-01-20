@@ -41,6 +41,9 @@ public class Stock implements Serializable {
         this.deptId = deptId;
     }
 
+    @TableField("customer_id")
+    private Long customerId;
+
     /**
      * skuId
      */
@@ -99,6 +102,14 @@ public class Stock implements Serializable {
      */
     @TableField("display")
     private Integer display;
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
     public Long getStockId() {
         return stockId;

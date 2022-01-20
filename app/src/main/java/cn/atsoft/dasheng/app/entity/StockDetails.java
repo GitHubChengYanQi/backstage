@@ -29,6 +29,12 @@ public class StockDetails implements Serializable {
     private Long deptId;
 
     /**
+     * 供应商
+     */
+    @TableField("customer_id")
+    private Long custoemrId;
+
+    /**
      * 实物id
      */
     @TableField("inkind_id")
@@ -38,7 +44,7 @@ public class StockDetails implements Serializable {
     private Long number;
 
     @TableField("qr_code_id")
-    private Long qrCodeid;
+    private Long qrCodeId;
 
     @TableField("outstock_order_id")
     private Long outStockOrderId;
@@ -141,12 +147,12 @@ public class StockDetails implements Serializable {
         this.number = number;
     }
 
-    public Long getQrCodeid() {
-        return qrCodeid;
+    public Long getQrCodeId() {
+        return qrCodeId;
     }
 
-    public void setQrCodeid(Long qrCodeid) {
-        this.qrCodeid = qrCodeid;
+    public void setQrCodeId(Long qrCodeId) {
+        this.qrCodeId = qrCodeId;
     }
 
     public static long getSerialVersionUID() {
@@ -303,6 +309,15 @@ public class StockDetails implements Serializable {
 
     public void setInkindId(Long inkindId) {
         this.inkindId = inkindId;
+    }
+
+
+    public Long getCustoemrId() {
+        return custoemrId;
+    }
+
+    public void setCustoemrId(Long custoemrId) {
+        this.custoemrId = custoemrId;
     }
 
     @Override

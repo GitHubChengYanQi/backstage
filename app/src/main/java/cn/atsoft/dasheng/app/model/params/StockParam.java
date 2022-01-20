@@ -3,10 +3,13 @@ package cn.atsoft.dasheng.app.model.params;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -14,7 +17,7 @@ import java.util.List;
  * 仓库总表
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 @Data
@@ -23,10 +26,11 @@ public class StockParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private String  iname;
-    private  String pname;
-    private  String bname;
+    private String iname;
+    private String pname;
+    private String bname;
     private Long stockNumber;
+    private Long customerId;
 
     /**
      * skuId
@@ -96,6 +100,7 @@ public class StockParam implements Serializable, BaseValidatingParam {
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
     private Long deptId;
+
     @Override
     public String checkParam() {
         return null;

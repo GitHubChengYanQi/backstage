@@ -20,11 +20,12 @@
         <result column="number" property="number"/>
         <result column="source_id" property="sourceId"/>
         <result column="source" property="source"/>
+        <result column="customer_id" property="customerId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">number
-    AS "number",source AS "source", source_id AS "sourceId",
+    AS "number",source AS "source", source_id AS "sourceId",customer_id AS "customerId",
 spu_id
     AS "spuId", cost_price AS "costPrice" , selling_price AS "sellingPrice" ,brand_id AS "brandId",
         inkind_id

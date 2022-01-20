@@ -34,6 +34,8 @@ public class StockDetailsParam implements Serializable, BaseValidatingParam {
     private Long qrCodeid;
     private Long inkindId;
     private String skuName;
+
+    private Long customerId;
     /**
      * 库位id
      */

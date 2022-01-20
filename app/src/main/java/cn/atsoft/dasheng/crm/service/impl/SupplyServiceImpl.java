@@ -153,8 +153,11 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
 
     @Override
     public List<SupplyResult> findListBySpec(SupplyParam param) {
-        return null;
+        List<SupplyResult> supplyResults = this.baseMapper.customList(param);
+        format(supplyResults);
+        return supplyResults;
     }
+
 
     @Override
     public PageInfo<SupplyResult> findPageBySpec(SupplyParam param) {
@@ -443,12 +446,15 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private void format(List<SupplyResult> data) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (SupplyResult datum : data) {
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
+            customerIds.add(datum.getCustomerId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+        List<CustomerResult> customerResults = customerService.getResults(customerIds);
 
         for (SupplyResult datum : data) {
             for (SkuResult skuResult : skuResults) {
@@ -460,6 +466,12 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             for (BrandResult brandResult : brandResults) {
                 if (brandResult.getBrandId().equals(datum.getBrandId())) {
                     datum.setBrandResult(brandResult);
+                }
+            }
+
+            for (CustomerResult customerResult : customerResults) {
+                if (customerResult.getCustomerId().equals(datum.getCustomerId())) {
+                    datum.setCustomerResult(customerResult);
                 }
             }
         }

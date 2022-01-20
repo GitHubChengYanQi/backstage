@@ -54,6 +54,16 @@ public class SupplyController extends BaseController {
     }
 
     /**
+     * 条件查询
+     * @param supplyParam
+     * @return
+     */
+    @RequestMapping(value = "/conditionList", method = RequestMethod.POST)
+    public ResponseData conditionList(@RequestBody SupplyParam supplyParam) {
+        return ResponseData.success(this.supplyService.findListBySpec(supplyParam));
+    }
+
+    /**
      * @param supplyParam
      * @return
      */

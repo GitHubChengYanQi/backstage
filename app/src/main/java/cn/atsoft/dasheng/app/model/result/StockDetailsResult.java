@@ -56,6 +56,8 @@ public class StockDetailsResult implements Serializable {
      * skuId
      */
     private Long skuId;
+
+    private Long customerId;
     /**
      * 明细id
      */

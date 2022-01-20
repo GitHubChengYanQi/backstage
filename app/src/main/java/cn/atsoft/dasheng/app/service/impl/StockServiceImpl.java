@@ -163,7 +163,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         stockDetails.setStockId(stockId);
         stockDetails.setNumber(stockParam.getNumber());
         stockDetails.setStorehousePositionsId(positionsService.judgePosition(stockParam.getPositionsId()));
-        stockDetails.setQrCodeid(stockParam.getCodeId());
+        stockDetails.setQrCodeId(stockParam.getCodeId());
         stockDetails.setInkindId(stockParam.getInkindId());
         stockDetails.setBrandId(stockParam.getBrandId());
         stockDetails.setStorehouseId(stockParam.getStoreHouseId());

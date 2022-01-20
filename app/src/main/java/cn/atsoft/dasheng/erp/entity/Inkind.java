@@ -24,6 +24,12 @@ public class Inkind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 供应商
+     */
+    @TableField("customer_id")
+    private Long customerId;
+
     @TableField("source")
     private String source;
 
@@ -233,6 +239,14 @@ public class Inkind implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     @Override

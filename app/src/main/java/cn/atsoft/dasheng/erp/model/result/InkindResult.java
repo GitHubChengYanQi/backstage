@@ -29,18 +29,32 @@ public class InkindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String source;
+
     private Brand brand;
+
     private BrandResult brandResult;
+
     private Long sourceId;
+
     private Long outstockOrderId;
+
     private QualityTaskDetail taskDetail;
+
     private List<BackSku> backSku;
+
     private SkuResult skuResult;
+
     private Long number;
+
     private Map<String, Object> inkindDetail;
+
     private StorehousePositionsResult positionsResult;
+
     private PrintTemplateResult printTemplateResult;
+
     private Boolean inNotStock;
+
+    private Long customerId;
     /**
      * 品牌
      */

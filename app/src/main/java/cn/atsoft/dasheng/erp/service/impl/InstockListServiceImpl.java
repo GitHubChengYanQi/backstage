@@ -258,7 +258,7 @@ public class InstockListServiceImpl extends ServiceImpl<InstockListMapper, Insto
             stockDetail.setSkuId(request.getInkind().getSkuId());
             stockDetail.setBrandId(request.getInkind().getBrandId());
             stockDetail.setStockId(stockId);
-            stockDetail.setQrCodeid(request.getCodeId());
+            stockDetail.setQrCodeId(request.getCodeId());
             stockDetail.setStorehouseId(param.getStoreHouseId());
             stockDetail.setStorehousePositionsId(param.getStorehousePositionsId());
             Long inkindId = getInkindId(request.getCodeId());

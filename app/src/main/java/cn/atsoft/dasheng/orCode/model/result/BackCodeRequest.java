@@ -6,7 +6,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class BackCodeRequest {
+public class
+BackCodeRequest {
     private Long codeId;
     private String source;
     private Long Id;
@@ -18,4 +19,5 @@ public class BackCodeRequest {
     private Long number;
     private String inkindType;
     private Long sourceId;
+    private Long customerId;
 }

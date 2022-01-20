@@ -580,7 +580,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
 
         for (StockDetails detail : details) {
             for (InKindRequest.BatchOutStockParam batchOutStockParam : batchOutStockParams) {
-                if (detail.getQrCodeid().equals(batchOutStockParam.getCodeId())) {
+                if (detail.getQrCodeId().equals(batchOutStockParam.getCodeId())) {
                     if (detail.getNumber() < batchOutStockParam.getNumber()) {
                         throw new ServiceException(500, "库存数量不足");
                     }
@@ -1015,6 +1015,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
                 inkindParam.setBrandId(codeRequest.getBrandId());
                 inkindParam.setSource(codeRequest.getInkindType());
                 inkindParam.setSourceId(codeRequest.getSourceId());
+                inkindParam.setCustomerId(codeRequest.getCustomerId());
                 formId = inkindService.add(inkindParam);
                 break;
         }
@@ -1046,6 +1047,7 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             inkindParam.setBrandId(codeRequest.getBrandId());
             inkindParam.setSource(codeRequest.getInkindType());
             inkindParam.setSourceId(codeRequest.getSourceId());
+            inkindParam.setCustomerId(codeRequest.getCustomerId());
             Long formId = inkindService.add(inkindParam);
             //二维码绑定关联
             OrCodeBindParam bindParam = new OrCodeBindParam();
