@@ -38,11 +38,6 @@ public class Supply implements Serializable {
     private Long skuId;
 
 
-    /**
-     * sku
-     */
-    @TableField("brand_id")
-    private Long brandId;
 
     /**
      * 供应商id
@@ -139,14 +134,6 @@ public class Supply implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
     }
 
     @Override
