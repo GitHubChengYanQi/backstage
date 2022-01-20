@@ -118,6 +118,10 @@ public class SkuController extends BaseController {
             if (ToolUtil.isNotEmpty(spu.getSpuClassificationId())) {
                 SpuClassification spuClassification = spuClassificationService.getById(spu.getSpuClassificationId());
                 sku.setSpuClassification(spuClassification);
+                if (spuClassification.getType() == 1){
+                    SpuClassification spuClassification1 = spuClassificationService.getById(spuClassification.getSpuClassificationId());
+                    sku.setSkuClass(spuClassification1);
+                }
             }
         }
         if (ToolUtil.isNotEmpty(sku.getQualityPlanId())) {

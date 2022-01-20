@@ -37,6 +37,8 @@ public class Supply implements Serializable {
     @TableField("sku_id")
     private Long skuId;
 
+
+
     /**
      * 供应商id
      */
@@ -85,6 +87,14 @@ public class Supply implements Serializable {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
+    
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
 
     public Integer getDisplay() {
         return display;
@@ -124,14 +134,6 @@ public class Supply implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public Long getBrandId() {
-        return brandId;
-    }
-
-    public void setBrandId(Long brandId) {
-        this.brandId = brandId;
     }
 
     @Override

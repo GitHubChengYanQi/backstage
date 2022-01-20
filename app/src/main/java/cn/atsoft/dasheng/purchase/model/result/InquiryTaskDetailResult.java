@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -27,11 +28,19 @@ public class InquiryTaskDetailResult implements Serializable {
 
 
     private SkuResult skuResult;
+
+    private BrandResult brandResult;
     /**
      * 详情id
      */
     @ApiModelProperty("详情id")
     private Long inquiryDetailId;
+
+    /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
 
     /**
      * 主表id

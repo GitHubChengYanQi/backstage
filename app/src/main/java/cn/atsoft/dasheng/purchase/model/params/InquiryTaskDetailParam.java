@@ -32,6 +32,12 @@ public class InquiryTaskDetailParam implements Serializable, BaseValidatingParam
     private Long inquiryDetailId;
 
     /**
+     * 品牌id
+     */
+    @ApiModelProperty("品牌id")
+    private Long brandId;
+
+    /**
      * 主表id
      */
     @ApiModelProperty("主表id")

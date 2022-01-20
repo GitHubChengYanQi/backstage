@@ -40,6 +40,12 @@ public class InquiryTaskDetail implements Serializable {
     private Long skuId;
 
     /**
+     * 品牌id
+     */
+    @TableField("brand_id")
+    private Long brandId;
+
+    /**
      * 数量
      */
     @TableField("total")
@@ -110,6 +116,14 @@ public class InquiryTaskDetail implements Serializable {
 
     public void setSkuId(Long skuId) {
         this.skuId = skuId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public Integer getTotal() {

@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
@@ -34,6 +37,9 @@ import java.util.List;
 public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailMapper, InquiryTaskDetail> implements InquiryTaskDetailService {
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private BrandService brandService;
 
     @Override
     public void add(InquiryTaskDetailParam param) {
@@ -138,6 +144,22 @@ public class InquiryTaskDetailServiceImpl extends ServiceImpl<InquiryTaskDetailM
                 if (inquiryTaskDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     inquiryTaskDetailResult.setSkuResult(skuResult);
                     break;
+                }
+            }
+        }
+
+        //返回品牌详情
+        List<Long> brandIds = new ArrayList<>();
+        for (InquiryTaskDetail taskDetail : taskDetails) {
+            brandIds.add(taskDetail.getBrandId());
+        }
+        List<Brand> brands = brandIds.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_id", brandIds).list();
+        for (InquiryTaskDetailResult inquiryTaskDetailResult : inquiryTaskDetailResults) {
+            for (Brand brand : brands) {
+                if (inquiryTaskDetailResult.getBrandId().equals(brand.getBrandId())) {
+                    BrandResult brandResult =  new BrandResult();
+                    ToolUtil.copyProperties(brand,brandResult);
+                    inquiryTaskDetailResult.setBrandResult(brandResult);
                 }
             }
         }
