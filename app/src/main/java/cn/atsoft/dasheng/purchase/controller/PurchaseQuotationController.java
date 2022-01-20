@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,28 +46,24 @@ public class PurchaseQuotationController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody QuotationParam param) {
-        if (ToolUtil.isEmpty(param.getCustomerId())) {
-            throw new ServiceException(500, "供应商参数错误");
-        }
+    public ResponseData addItem(@Valid @RequestBody QuotationParam param) {
+
         this.purchaseQuotationService.addList(param);
         return ResponseData.success();
     }
 
-    /**
-     * 批量增加
-     *
-     * @author Captain_Jazz
-     * @Date 2021-12-22
-     */
-    @RequestMapping(value = "/addbatch", method = RequestMethod.POST)
-    @ApiOperation("批量增加")
-    public ResponseData addbatch(@RequestBody QuotationParam param) {
-        this.purchaseQuotationService.batchAdd(param);
-        return ResponseData.success();
-    }
-
-
+//    /**
+//     * 批量增加
+//     *
+//     * @author Captain_Jazz
+//     * @Date 2021-12-22
+//     */
+//    @RequestMapping(value = "/addbatch", method = RequestMethod.POST)
+//    @ApiOperation("批量增加")
+//    public ResponseData addbatch(@RequestBody QuotationParam param) {
+//        this.purchaseQuotationService.batchAdd(param);
+//        return ResponseData.success();
+//    }
 
 
     /**

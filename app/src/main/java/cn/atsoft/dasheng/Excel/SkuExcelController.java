@@ -130,6 +130,7 @@ public class SkuExcelController {
         List<Spu> spuList = spuService.query().eq("display", 1).list();
         List<Unit> units = unitService.query().eq("display", 1).list();
 
+
         for (SkuExcelItem skuExcelItem : skuExcelItems) {
             i++;
             try {
@@ -171,6 +172,10 @@ public class SkuExcelController {
                     classificationService.save(newClass);
                     itemId = newClass.getSpuClassificationId();
                 }
+
+                //物品分类------------------------------------------------------------------------------------------
+
+
                 //型号----------------------------------------------------------------------------------------------
                 Long spuId = null;
                 for (Spu spu : spuList) {
@@ -181,6 +186,7 @@ public class SkuExcelController {
                         spuId = spu.getSpuId();
                     }
                 }
+
                 if (ToolUtil.isEmpty(spuId)) {
                     Category category = new Category();
                     category.setCategoryName(skuExcelItem.getSpuName());

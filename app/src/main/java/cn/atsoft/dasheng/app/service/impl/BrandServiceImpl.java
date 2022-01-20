@@ -47,10 +47,12 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public Long add(BrandParam param) {
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
+        if (brandName > 0) {
+            throw new ServiceException(500, "名字以重复");
+        }
         Brand entity = getEntity(param);
         this.save(entity);
-
-
         return entity.getBrandId();
     }
 
@@ -67,6 +69,10 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
 
     @Override
     public void update(BrandParam param) {
+        Integer brandName = this.query().eq("brand_name", param.getBrandName()).count();
+        if (brandName > 1) {
+            throw new ServiceException(500, "名字以重复");
+        }
         Brand oldEntity = getOldEntity(param);
         Brand newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);

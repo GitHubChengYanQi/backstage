@@ -4,9 +4,11 @@ import lombok.Data;
 import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
 
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -35,12 +37,14 @@ public class PurchaseQuotationParam implements Serializable, BaseValidatingParam
     /**
      * 物料id
      */
+    @NotNull
     @ApiModelProperty("物料id")
     private Long skuId;
 
     /**
      * 品牌id
      */
+    @NotNull
     @ApiModelProperty("品牌id")
     private Long brandId;
 
@@ -53,6 +57,7 @@ public class PurchaseQuotationParam implements Serializable, BaseValidatingParam
     /**
      * 供应商id
      */
+    @NotNull
     @ApiModelProperty("供应商id")
     private Long customerId;
 

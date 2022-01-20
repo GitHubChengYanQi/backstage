@@ -73,6 +73,8 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     private InquiryTaskServiceImpl taskService;
     @Autowired
     private CrmCustomerLevelService levelService;
+    @Autowired
+    private BrandService brandService;
 
 
     @Override
@@ -144,10 +146,10 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             customerIds.add(purchaseQuotation.getCustomerId());
         }
 //        List<Customer> customerList = customerService.query().in("customer_id", customerIds).eq("display", 1).list();
-        customerService.list(new QueryWrapper<Customer>(){{
-            eq("display",1);
+        customerService.list(new QueryWrapper<Customer>() {{
+            eq("display", 1);
         }});
-        List<Supply> supplyList =    supplyService.query().in("customer_id",customerIds).eq("display", 1).list();
+        List<Supply> supplyList = supplyService.query().in("customer_id", customerIds).eq("display", 1).list();
         List<Supply> saveEntity = new ArrayList<>();
         for (PurchaseQuotation purchaseQuotation : purchaseQuotations) {
             if (supplyList.stream().noneMatch(supply -> supply.getCustomerId().equals(purchaseQuotation.getCustomerId()) && supply.getSkuId().equals(purchaseQuotation.getSkuId()))) {
@@ -197,48 +199,50 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                     throw new ServiceException(500, "当前供应商等级不够");
                 }
                 break;
-
+            case "sku":
+                List<Customer> customers = customerService.listByIds(new ArrayList<Long>() {{
+                    for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
+                        add(quotationParam.getCustomerId());
+                    }
+                }});
+                for (Customer cmer : customers) {
+                    if (cmer.getSupply() != 1) {
+                        throw new ServiceException(500, "请选择供应商");
+                    }
+                }
+                break;
             default:
                 throw new ServiceException(500, "请确定方式");
         }
 
-        Customer customer = customerService.getById(param.getCustomerId());
-        if (ToolUtil.isEmpty(customer) && customer.getSupply() != 1) {
-            throw new ServiceException(500, "请选择供应商");
-        }
-
-        List<Supply> supplies = supplyService.query().eq("customer_id", customer.getCustomerId()).list();
-        //过滤相同sku
-        HashSet<Long> skuSst = new HashSet<>();
-        for (Supply supply : supplies) {
-            skuSst.add(supply.getSkuId());
-        }
-
         List<PurchaseQuotation> quotations = new ArrayList<>();
-
+        List<Long> customerIds = new ArrayList<>();
         for (PurchaseQuotationParam quotationParam : param.getQuotationParams()) {
             PurchaseQuotation quotation = new PurchaseQuotation();
             ToolUtil.copyProperties(quotationParam, quotation);
             quotation.setSource(param.getSource());
             quotation.setSourceId(param.getSourceId());
+            quotation.setCustomerId(quotationParam.getCustomerId());
             quotations.add(quotation);
-            quotation.setCustomerId(customer.getCustomerId());
-            skuSst.add(quotationParam.getSkuId());
+            customerIds.add(quotation.getCustomerId());
         }
 
-        supplyService.remove(new QueryWrapper<Supply>() {{
-            eq("customer_id", customer.getCustomerId());
-        }});
-        //添加供应商绑定物料
-        List<Supply> supplyList = new ArrayList<>();
-        for (Long aLong : skuSst) {
-            Supply supply = new Supply();
-            supply.setSkuId(aLong);
-            supply.setCustomerId(customer.getCustomerId());
-            supplyList.add(supply);
-        }
-        supplyService.saveBatch(supplyList);
         this.saveBatch(quotations);
+
+        List<Supply> supplyList = supplyService.query().eq("customer_id", customerIds).eq("display", 1).list();
+        //回填绑定
+
+        List<Supply> list = new ArrayList<>();
+        for (PurchaseQuotation quotation : quotations) {
+            if (supplyList.stream().noneMatch(i -> i.getBrandId().equals(quotation.getBrandId()) && i.getSkuId().equals(quotation.getSkuId()) && i.getCustomerId().equals(quotation.getCustomerId()))) {
+                Supply supply = new Supply();
+                supply.setSkuId(quotation.getSkuId());
+                supply.setBrandId(quotation.getBrandId());
+                supply.setCustomerId(quotation.getCustomerId());
+                list.add(supply);
+            }
+        }
+        supplyService.saveBatch(list);
     }
 
     @Override
@@ -424,16 +428,18 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         List<Long> skuIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
         List<Long> customerIds = new ArrayList<>();
-
+        List<Long> brandIds = new ArrayList<>();
         for (PurchaseQuotationResult datum : data) {
             skuIds.add(datum.getSkuId());
             userIds.add(datum.getCreateUser());
             customerIds.add(datum.getCustomerId());
+            brandIds.add(datum.getBrandId());
         }
 
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
         List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
 
         for (PurchaseQuotationResult datum : data) {
             for (SkuResult skuResult : skuResults) {
