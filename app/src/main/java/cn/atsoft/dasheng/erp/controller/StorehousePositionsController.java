@@ -152,7 +152,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public  List<StorehousePositions> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
+    public  List<StorehousePositionsResult> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
@@ -163,8 +163,34 @@ public class StorehousePositionsController extends BaseController {
             queryWrapper.in("storehouse_id", storehousePositionsParam.getStorehouseId());
         }
         List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
+        List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositions storehousePositions : storehousePositionsList) {
+            positionIds.add(storehousePositions.getStorehousePositionsId());
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePositions,storehousePositionsResult);
+            storehousePositionsResults.add(storehousePositionsResult);
+        }
+        List<StorehousePositionsBind> binds = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("position_id", positionIds).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (StorehousePositionsBind bind : binds) {
+            skuIds.add(bind.getSkuId());
+        }
+        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        skuService.format(skuList);
+        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
+            List<SkuResult> skuResults = new ArrayList<>();
+            for (StorehousePositionsBind bind : binds) {
+                for (SkuResult result : skuList) {
+                    if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
+                        skuResults.add(result);
+                    }
+                }
+            }
+            storehousePositions.setSkuResults(skuResults);
+        }
 
-        return storehousePositionsList;
+        return storehousePositionsResults;
     }
 
     /**
