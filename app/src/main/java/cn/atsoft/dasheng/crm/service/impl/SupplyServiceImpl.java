@@ -33,6 +33,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.util.resources.cldr.nmg.LocaleNames_nmg;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -254,7 +255,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             for (Supply supply : supplies) {
                 supplierIds.add(supply.getCustomerId());
             }
-            if (supplierIds.size() > 0){
+            if (supplierIds.size() > 0) {
                 customerQueryWrapper.in("customer_id", supplierIds);
             }
 
@@ -303,11 +304,31 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
 
         List<Long> customerIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+
         for (Supply supply : supplies) {
             customerIds.add(supply.getCustomerId());
+            brandIds.add(supply.getBrandId());
         }
 
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
+        Map<Long, List<BrandResult>> brandMap = new HashMap<>();   //通过sku筛选品牌
+        for (Supply supply : supplies) {
+            List<BrandResult> brandResultList = new ArrayList<>();
+
+            for (BrandResult brandResult : brandResults) {
+                brandResultList.add(brandResult);
+                List<BrandResult> results = brandMap.get(supply.getSkuId());
+                if (ToolUtil.isEmpty(results)) {
+                    brandMap.put(supply.getSkuId(), results);
+                } else {
+                    results.addAll(brandResultList);
+                    brandMap.put(supply.getSkuId(), results);
+                }
+            }
+        }
 
         List<Long> supplierIds = new ArrayList<>();
         List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
@@ -325,6 +346,12 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             skuIds.add(supply.getSkuId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+
+        for (SkuResult skuResult : skuResults) {
+            List<BrandResult> results = brandMap.get(skuResult.getSkuId());
+            skuResult.setBrandResultList(results);
+        }
+
         //取供应商的供应的物料
         Map<Long, List<SkuResult>> map = new HashMap<>();
         for (Supply supply : supplies) {
@@ -340,6 +367,8 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                 skuResultList.addAll(results);
             }
             map.put(supply.getCustomerId(), skuResultList);
+
+
         }
 
         for (CustomerResult customerResult : levelCustomerResult) {

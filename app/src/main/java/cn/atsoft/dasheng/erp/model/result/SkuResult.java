@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.model.result;
 
 import cn.atsoft.dasheng.app.entity.Unit;
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.entity.QualityPlan;
 import cn.atsoft.dasheng.erp.entity.SkuValues;
 import cn.atsoft.dasheng.erp.entity.Spu;
@@ -52,7 +53,7 @@ public class SkuResult implements Serializable {
     private Integer batch;
     private SkuRequest skuTree;
     private SpuClassification skuClass;
-
+    private List<BrandResult> brandResultList;
 
     /**
      * 之间方案id
