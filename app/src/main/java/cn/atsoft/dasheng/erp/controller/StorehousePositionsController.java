@@ -133,6 +133,7 @@ public class StorehousePositionsController extends BaseController {
             skuIds.add(bind.getSkuId());
         }
         List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        skuService.format(skuResults);
 
         result.setSkuResults(skuResults);
 
