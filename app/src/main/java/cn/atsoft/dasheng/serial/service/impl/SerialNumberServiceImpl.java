@@ -13,12 +13,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.list.SynchronizedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +42,7 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
     @Override
     public String add(SerialNumberParam param) {
         SerialNumber entity = getEntity(param);
-        SerialNumber num = this.getSerial();
+        SerialNumber num = this.getSerial(param);
         if (ToolUtil.isEmpty(num)) {
             entity.setNum(1L);
         } else {
@@ -60,28 +62,48 @@ public class SerialNumberServiceImpl extends ServiceImpl<SerialNumberMapper, Ser
     }
 
     @Override
-    public void addBatch(SerialNumberParam param) {
+    public List<String> addBatch(SerialNumberParam param) {
         SerialNumber entity = getEntity(param);
-        SerialNumber num = this.getSerial();
+        SerialNumber num = this.getSerial(param);
         Long number = 0L;
         if (ToolUtil.isEmpty(num)) {
-            number = 0L;
+            number = 1L;
         } else {
             number = num.getNum() + 1;
         }
         List<SerialNumber> serialNumbers = new ArrayList<>();
+        if (ToolUtil.isEmpty(param.getCont())){
+            param.setCont(0L);
+        }
         for (int i = 0; i < param.getCont(); i++) {
             SerialNumber serialNumber = new SerialNumber();
             ToolUtil.copyProperties(param, serialNumber);
             serialNumber.setNum(number + i);
+            serialNumber.setDate(new Date());
             serialNumbers.add(serialNumber);
         }
         serialNumberService.saveBatch(serialNumbers);
+        List<String> serialStr = new ArrayList<>();
+        for (SerialNumber serialNumber : serialNumbers) {
+            NumberFormat nf = NumberFormat.getInstance();
+            nf.setGroupingUsed(false);
+            int max = entity.getSerialLength().intValue();
+
+            nf.setMaximumIntegerDigits(max);
+            nf.setMinimumIntegerDigits(max);
+            Long snum = serialNumber.getNum();
+            serialStr.add(nf.format(snum));
+        }
+        return serialStr;
     }
 
-    public SerialNumber getSerial() {
+    public SerialNumber getSerial(SerialNumberParam param) {
         QueryWrapper<SerialNumber> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("date_format(create_time,'%Y-%m-%d')=date_format(now(),'%Y-%m-%d')").orderByDesc("num");
+        if(ToolUtil.isNotEmpty(param.getDate())){
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String date = simpleDateFormat.format(param.getDate());
+            queryWrapper.apply("date_format(create_time,'%Y-%m-%d') = date_format('"+date+"','%Y-%m-%d')").orderByDesc("num");
+        }
         SerialNumber num = this.baseMapper.selectOne(queryWrapper.orderByDesc("num").last("limit 1"));
         return num;
     }

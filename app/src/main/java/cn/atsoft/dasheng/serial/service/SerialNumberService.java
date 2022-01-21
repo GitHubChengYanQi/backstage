@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
 import cn.atsoft.dasheng.serial.model.result.SerialNumberResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,7 +31,8 @@ public interface SerialNumberService extends IService<SerialNumber> {
      * 指定数量新增
      * @param param
      */
-    void addBatch(SerialNumberParam param);
+    List<String> addBatch(SerialNumberParam param);
+
 
     /**
      * 删除

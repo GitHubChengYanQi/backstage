@@ -46,6 +46,18 @@ public class StorehousePositionsBindController extends BaseController {
         StorehousePositionsBind bind = this.storehousePositionsBindService.add(storehousePositionsBindParam);
         return ResponseData.success(bind);
     }
+  /**
+     * 批量新增接口
+     *
+     * @author song
+     * @Date 2022-01-20
+     */
+    @RequestMapping(value = "/addBatch", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addBatch(@Valid @RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+        this.storehousePositionsBindService.bindBatch(storehousePositionsBindParam);
+        return ResponseData.success();
+    }
 
 
     @RequestMapping(value = "/SpuAddBind", method = RequestMethod.POST)
