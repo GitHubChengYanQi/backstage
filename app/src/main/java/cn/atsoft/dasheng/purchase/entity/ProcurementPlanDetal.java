@@ -27,6 +27,8 @@ public class ProcurementPlanDetal implements Serializable {
     @TableId(value = "detail_id", type = IdType.ID_WORKER)
     private Long detailId;
 
+    @TableField("brand_id")
+    private Long brandId;
 
     @TableField("status")
     private Integer status;
@@ -61,6 +63,13 @@ public class ProcurementPlanDetal implements Serializable {
     @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
+    }
 
     public Integer getStatus() {
         return status;
@@ -141,6 +150,8 @@ public class ProcurementPlanDetal implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+
 
     @Override
     public String toString() {

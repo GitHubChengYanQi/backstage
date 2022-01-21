@@ -54,7 +54,7 @@ public class OutstockOrderController extends BaseController {
     }
 
     /**
-     * 新增接口
+     * 自由出库
      *
      * @author cheng
      * @Date 2021-08-16

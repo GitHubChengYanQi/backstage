@@ -24,8 +24,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.PurchaseQuotation;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
-import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
-import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
@@ -58,8 +57,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     private SkuService skuService;
     @Autowired
     private CrmCustomerLevelService levelService;
-    @Autowired
-    private SupplierBrandService supplierBrandService;
     @Autowired
     private ContactsService contactsService;
     @Autowired
@@ -94,28 +91,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         this.saveBatch(supplyList);
     }
 
-    /**
-     * 当前物料下所有的供应商
-     *
-     * @param skuId
-     * @return
-     */
-    @Override
-    public List<CustomerResult> getSupplierBySku(Long skuId) {
-        if (ToolUtil.isEmpty(skuId)) {
-            throw new ServiceException(500, "请选择物料");
-        }
 
-        List<Supply> supplies = this.query().eq("sku_id", skuId).list();
-        List<Long> custoemrIds = new ArrayList<>();
-        for (Supply supply : supplies) {
-            custoemrIds.add(supply.getCustomerId());
-        }
-
-        List<CustomerResult> results = customerService.getResults(custoemrIds);
-        supplierBrandService.getBrand(results);
-        return results;
-    }
 
 
     @Override

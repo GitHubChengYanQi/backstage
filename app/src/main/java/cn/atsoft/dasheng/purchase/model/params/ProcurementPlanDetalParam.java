@@ -37,6 +37,8 @@ public class ProcurementPlanDetalParam implements Serializable, BaseValidatingPa
 
     private Integer status;
 
+    private Long brandId;
+
     /**
      * 数量
      */

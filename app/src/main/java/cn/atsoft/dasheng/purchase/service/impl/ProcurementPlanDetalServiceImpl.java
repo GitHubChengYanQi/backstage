@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -50,9 +52,7 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
     @Autowired
     private SkuService skuService;
     @Autowired
-    private ProcurementPlanService planService;
-    @Autowired
-    private ProcurementPlanBindService bindService;
+    private BrandService brandService;
 
     @Override
     public void add(ProcurementPlanDetalParam param) {
@@ -138,13 +138,16 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
         List<ProcurementPlanDetal> planDetals = this.query().in("plan_id", ids).list();
 
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (ProcurementPlanDetal planDetal : planDetals) {
             skuIds.add(planDetal.getSkuId());
+            brandIds.add(planDetal.getBrandId());
             ProcurementPlanDetalResult planDetalResult = new ProcurementPlanDetalResult();
             ToolUtil.copyProperties(planDetal, planDetalResult);
             detalResults.add(planDetalResult);
         }
         List<Sku> skus = skuService.listByIds(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
@@ -156,6 +159,12 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
             for (SkuResult skuResult : skuResults) {
                 if (detalResult.getSkuId().equals(skuResult.getSkuId())) {
                     detalResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(detalResult.getBrandId()) && brandResult.getBrandId().equals(detalResult.getBrandId())) {
+                    detalResult.setBrandResult(brandResult);
                     break;
                 }
             }
@@ -191,12 +200,16 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
     private void format(List<ProcurementPlanDetalResult> data) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> planIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (ProcurementPlanDetalResult datum : data) {
             skuIds.add(datum.getSkuId());
             planIds.add(datum.getPlanId());
+            brandIds.add(datum.getBrandId());
         }
 
         List<Sku> skus = skuService.listByIds(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
+
 
         List<SkuResult> skuResults = new ArrayList<>();
         for (Sku sku : skus) {
@@ -212,7 +225,12 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
                     break;
                 }
             }
-
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(datum.getBrandId()) && brandResult.getBrandId().equals(datum.getBrandId())) {
+                    datum.setBrandResult(brandResult);
+                    break;
+                }
+            }
         }
     }
 }

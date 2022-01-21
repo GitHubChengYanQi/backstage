@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
 
@@ -29,6 +30,8 @@ public class ProcurementPlanDetalResult implements Serializable {
 
     private ProcurementPlanBindResult planBindResult;
 
+    private BrandResult brandResult;
+
     @ApiModelProperty("")
     private Long detailId;
 
@@ -39,6 +42,8 @@ public class ProcurementPlanDetalResult implements Serializable {
 
     @ApiModelProperty("")
     private Long skuId;
+
+    private Long brandId;
 
     /**
      * 数量

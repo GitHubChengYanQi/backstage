@@ -102,11 +102,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
 //                SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", spuClassificationId).one();
                 SpuClassification classification = spuClassificationService.query().eq("spu_classification_id", param.getSpuClass()).one();
-                if (ToolUtil.isNotEmpty(classification)  && classification.getDisplay() != 0) {
+                if (ToolUtil.isNotEmpty(classification) && classification.getDisplay() != 0) {
                     String replace = "";
-                    if (ToolUtil.isNotEmpty(classification.getCodingClass())){
+                    if (ToolUtil.isNotEmpty(classification.getCodingClass())) {
                         replace = backCoding.replace("${skuClass}", classification.getCodingClass());
-                    }else {
+                    } else {
                         replace = backCoding.replace("${skuClass}", "");
                     }
 
@@ -201,7 +201,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            String oldMd52 = SecureUtil.md5(spuId + entity.getSkuValue());
 
             entity.setSkuValueMd5(md5);
-            if (ToolUtil.isNotEmpty(codingRules)){
+            if (ToolUtil.isNotEmpty(codingRules)) {
                 Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
                 if (skuCount > 0) {
                     throw new ServiceException(500, "该物料已经存在");
@@ -507,18 +507,21 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
     }
+
     @Override
-    public List<SkuResult> getSkuResultListAndFormat(List<Long> ids){
+    public List<SkuResult> getSkuResultListAndFormat(List<Long> ids) {
         List<Sku> skuList = ids.size() == 0 ? new ArrayList<>() : this.skuService.listByIds(ids);
         List<SkuResult> skuResults = new ArrayList<>();
+
         for (Sku sku : skuList) {
             SkuResult result = new SkuResult();
-            ToolUtil.copyProperties(sku,result);
+            ToolUtil.copyProperties(sku, result);
             skuResults.add(result);
         }
         this.format(skuResults);
         return skuResults;
     }
+
     @Override
     public SkuResult findBySpec(SkuParam param) {
         return null;
@@ -794,7 +797,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuResults.add(skuResult);
         }
         this.format(skuResults);
- 
+
         return skuResults;
     }
 

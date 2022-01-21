@@ -303,10 +303,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
         Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
+
         for (OrCodeBind codeBind : orCodeBinds) {
             for (Long codeId : freeInStockParam.getInkindIds()) {
                 if (codeBind.getFormId().equals(codeId)) {
-                    map.put(codeBind.getFormId(), codeId);
+                    map.put(codeBind.getFormId(), codeBind.getOrCodeId());
                     break;
                 }
             }

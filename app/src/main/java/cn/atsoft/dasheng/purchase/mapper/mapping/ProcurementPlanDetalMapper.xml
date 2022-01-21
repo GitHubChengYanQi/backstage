@@ -14,11 +14,12 @@
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="status" property="status"/>
+        <result column="brand_id" property="brandId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">status
-    AS "status",
+    AS "status",brand_id AS "brandId",
         detail_id
         AS "detailId", plan_id AS "planId", sku_id AS "skuId", total AS "total", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime"
     </sql>
