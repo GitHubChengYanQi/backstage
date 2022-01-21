@@ -179,8 +179,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             for (CustomerResult result : results) {
                 if (result.getCustomerId().equals(datum.getCustomerId())) {
                     datum.setCustomerResult(result);
+                    break;
                 }
-                break;
             }
 
             if (ToolUtil.isNotEmpty(datum.getSkuId())) {
