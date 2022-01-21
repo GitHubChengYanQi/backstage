@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.message.topic.TopicMessage;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.serial.model.params.SerialNumberParam;
+import cn.atsoft.dasheng.serial.service.SerialNumberService;
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.poi.excel.ExcelReader;
@@ -62,6 +64,10 @@ public class SkuExcelController {
     private SpuClassificationService classificationService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CodingRulesService codingRulesService;
+    @Autowired
+    private SerialNumberService serialNumberService;
 
     protected static final Logger logger = LoggerFactory.getLogger(SkuExcelController.class);
 
@@ -92,12 +98,18 @@ public class SkuExcelController {
             List<Specifications> specificationsList = new ArrayList<>();
             skuExcelItem.setLine(i + 1);
 
-            for (int j = 0; j < hang.size(); j++) {
+            for (int j = 0; j < readRow.size(); j++) {
                 Object header = readRow.get(j);
                 Object data = hang.get(j);
                 switch (header.toString()) {
                     case "成品码":
-                        skuExcelItem.setStandard(data.toString());
+                        if (ToolUtil.isEmpty(data)) {
+                            data = null;
+                            skuExcelItem.setStandard(null);
+                        }else {
+                            skuExcelItem.setStandard(data.toString());
+                        }
+
                         break;
                     case "分类":
                         skuExcelItem.setSpuClass(data.toString());
@@ -171,7 +183,11 @@ public class SkuExcelController {
                     newItem.setName(skuExcelItem.getClassItem());
                     newItem.setType(2L);
                     //TODO 产品替换编码
-                    newItem.setCodingClass("自动替换");
+
+                    CodingRules codingRules = codingRulesService.query().eq("name", skuExcelItem.getItemRule()).eq("display", 1).one();
+                    String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
+
+                    newItem.setCodingClass(backCoding);
                     newItem.setPid(spuClass.getSpuClassificationId());
                     classificationService.save(newItem);
                     items.add(newItem);
@@ -237,7 +253,10 @@ public class SkuExcelController {
                     //TODO excel导入自动生成  成品码
                     spuClass.getCodingClass(); //分类编码
                     newItem.getCodingClass();   //产品编码
-                    newSku.setStandard("自动生成的编码");
+                    String serial = serialNumberService.add(new SerialNumberParam() {{
+                        setSerialLength(5L);
+                    }});
+                    newSku.setStandard(spuClass.getCodingClass()+newItem.getCodingClass()+serial);
                 }
                 for (Sku sku : skus) {
                     if (sku.getStandard().equals(skuExcelItem.getStandard())) {
