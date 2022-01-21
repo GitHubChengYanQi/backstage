@@ -188,6 +188,9 @@ public class SkuExcelController {
                     //TODO 产品替换编码
 
                     CodingRules codingRules = codingRulesService.query().eq("name", skuExcelItem.getItemRule()).eq("display", 1).one();
+                    if (ToolUtil.isEmpty(codingRules)) {
+                        throw new ServiceException(500,"编码规则不存在");
+                    }
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
 
                     newItem.setCodingClass(backCoding);
@@ -260,30 +263,33 @@ public class SkuExcelController {
                         setSerialLength(5L);
                     }});
                     newSku.setStandard(spuClass.getCodingClass() + newItem.getCodingClass() + serial);
-                }
-                for (Sku sku : skus) {
-                    if (sku.getStandard().equals(skuExcelItem.getStandard())) {
-                        errorList.add(skuExcelItem);
-                        throw new ServiceException(500, "编码以重复");
+                } else {
+                    for (Sku sku : skus) {
+                        if (sku.getStandard().equals(skuExcelItem.getStandard())) {
+                            errorList.add(skuExcelItem);
+                            throw new ServiceException(500, "编码以重复");
+                        }
                     }
+                    newSku.setStandard(skuExcelItem.getStandard());
                 }
-                newSku.setStandard(skuExcelItem.getStandard());
+
                 //属性-----------------------------------------------------------------------------------------------
                 List<AttributeValues> list = new ArrayList<>();
 
                 for (Specifications specifications : skuExcelItem.getSpecifications()) {
+                    if (ToolUtil.isNotEmpty(specifications.getAttribute())&& ToolUtil.isNotEmpty(specifications.getValue())) {
+                        ItemAttribute itemAttribute = new ItemAttribute();
+                        itemAttribute.setAttribute(specifications.getAttribute());
+                        itemAttribute.setCategoryId(categoryId);
+                        attributeService.save(itemAttribute);
 
-                    ItemAttribute itemAttribute = new ItemAttribute();
-                    itemAttribute.setAttribute(specifications.getAttribute());
-                    itemAttribute.setCategoryId(categoryId);
-                    attributeService.save(itemAttribute);
+                        AttributeValues values = new AttributeValues();
+                        values.setAttributeValues(specifications.getValue());
+                        values.setAttributeId(itemAttribute.getAttributeId());
+                        valuesService.save(values);
 
-                    AttributeValues values = new AttributeValues();
-                    values.setAttributeValues(specifications.getValue());
-                    values.setAttributeId(itemAttribute.getAttributeId());
-                    valuesService.save(values);
-
-                    list.add(values);
+                        list.add(values);
+                    }
                 }
                 if (ToolUtil.isNotEmpty(list) && list.size() > 0) {
                     list.sort(Comparator.comparing(AttributeValues::getAttributeId));
