@@ -47,12 +47,12 @@
             and customer_id like CONCAT('%',#{paramCondition.customerId},'%')
         </if>
         <choose>
-            <when test="paramCondition.nameSource != null and paramCondition.nameSource='品牌' ">
-                and brand_id in (select brand_id from daoxin_erp_brand where brand_name like
+            <when test="paramCondition.nameSource == '供应商'">
+                and customer_id in (select customer_id from daoxin_crm_customer where customer_name like
                 CONCAT('%',#{paramCondition.name},'%'))
             </when>
-            <when test="paramCondition.nameSource != null and paramCondition.nameSource='供应商'">
-                and customer_id in (select customer_id from daoxin_crm_customer where customer_name like
+            <when test="paramCondition.nameSource == '品牌' ">
+                and brand_id in (select brand_id from daoxin_erp_brand where brand_name like
                 CONCAT('%',#{paramCondition.name},'%'))
             </when>
         </choose>
@@ -94,6 +94,16 @@
         <if test="paramCondition.display != null">
             and display like CONCAT('%',#{paramCondition.display},'%')
         </if>
+        <choose>
+            <when test="paramCondition.nameSource == '供应商'">
+                and customer_id in (select customer_id from daoxin_crm_customer where customer_name like
+                CONCAT('%',#{paramCondition.name},'%'))
+            </when>
+            <when test="paramCondition.nameSource == '品牌' ">
+                and brand_id in (select brand_id from daoxin_erp_brand where brand_name like
+                CONCAT('%',#{paramCondition.name},'%'))
+            </when>
+        </choose>
     </select>
 
     <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.crm.model.params.SupplyParam">

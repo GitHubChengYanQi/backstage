@@ -57,6 +57,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,7 +128,7 @@ public class OrCodeController extends BaseController {
      * 批量自动生成二维码绑定
      */
     @RequestMapping(value = "/batchAutomaticBinding", method = RequestMethod.POST)
-    public ResponseData batchAutomaticBinding(@RequestBody BatchAutomatic batchAutomatic) {
+    public ResponseData batchAutomaticBinding(@Valid @RequestBody BatchAutomatic batchAutomatic) {
         List<AutomaticBindResult> bindResults = this.orCodeService.batchAutomaticBinding(batchAutomatic);
         return ResponseData.success(bindResults);
     }

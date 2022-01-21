@@ -139,6 +139,6 @@
                 and inventory &gt;= #{paramCondition.stockNumber}
             </otherwise>
         </choose>
-        group by sku_id
+
     </select>
 </mapper>

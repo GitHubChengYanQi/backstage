@@ -285,6 +285,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             brandIds.add(inkind.getBrandId());
             skuIds.add(inkind.getSkuId());
             customerIds.add(inkind.getCustomerId());
+
             Long number = inkindNumber.get(inkind.getInkindId());
             if (ToolUtil.isEmpty(number)) {
                 inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
@@ -295,7 +296,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
 
         List<Stock> stockList = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询库存
-                .eq(Stock::getSkuId, skuIds)
+                .in(Stock::getSkuId, skuIds)
                 .in(Stock::getBrandId, brandIds)
                 .in(Stock::getCustomerId, customerIds)
                 .list();
@@ -305,7 +306,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         for (OrCodeBind codeBind : orCodeBinds) {
             for (Long codeId : freeInStockParam.getInkindIds()) {
                 if (codeBind.getFormId().equals(codeId)) {
-                    map.put(codeBind.getFormId(), codeBind.getOrCodeId());
+                    map.put(codeBind.getFormId(), codeId);
                     break;
                 }
             }
@@ -316,27 +317,29 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (Inkind inkind : inkinds) {
             Long stockId = null;
-
-
-            Stock newStock = new Stock();
-            newStock.setInventory(inkind.getNumber());
-            newStock.setBrandId(inkind.getBrandId());
-            newStock.setSkuId(inkind.getSkuId());
-            newStock.setCustomerId(inkind.getCustomerId());
-            newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
-            stockService.save(newStock);
-            stockId = newStock.getStockId();
-
+            Stock exist = judgeStockExist(inkind, stockList);
+            if (ToolUtil.isNotEmpty(exist)) {
+                stockId = exist.getStockId();
+            } else {  //没有相同库存
+                Stock newStock = new Stock();
+                newStock.setInventory(inkindNumber.get(inkind.getInkindId()));
+                newStock.setBrandId(inkind.getBrandId());
+                newStock.setSkuId(inkind.getSkuId());
+                newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+                newStock.setCustomerId(inkind.getCustomerId());
+                stockService.save(newStock);
+                stockList.add(newStock);
+                stockId = newStock.getStockId();
+            }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
             Long codeId = map.get(inkind.getInkindId());
             stockDetails.setQrCodeId(codeId);
-            stockDetails.setCustoemrId(inkind.getCustomerId());
             stockDetails.setInkindId(inkind.getInkindId());
             stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
-
+            stockDetails.setCustomerId(inkind.getCustomerId());
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);

@@ -32,7 +32,7 @@ public class StockDetails implements Serializable {
      * 供应商
      */
     @TableField("customer_id")
-    private Long custoemrId;
+    private Long customerId;
 
     /**
      * 实物id
@@ -312,12 +312,12 @@ public class StockDetails implements Serializable {
     }
 
 
-    public Long getCustoemrId() {
-        return custoemrId;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setCustoemrId(Long custoemrId) {
-        this.custoemrId = custoemrId;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     @Override
