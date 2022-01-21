@@ -197,7 +197,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
                 }
                 Customer customer = customerService.getById(param.getCustomerId());
                 Boolean level = judgeLevel(inquiryTask.getSupplierLevel(), customer);
-                if (!level) {
+                if (level) {
                     throw new ServiceException(500, "当前供应商等级不够");
                 }
                 break;
@@ -473,6 +473,13 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         }
     }
 
+    /**
+     * 判断供应商等级
+     *
+     * @param levelId
+     * @param customer
+     * @return
+     */
     private Boolean judgeLevel(Long levelId, Customer customer) {
 
         if (ToolUtil.isEmpty(customer.getCustomerLevelId())) {
@@ -484,20 +491,13 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         if (ToolUtil.isEmpty(level)) {
             throw new ServiceException(500, "当前供应商等级不合法");
         }
-        List<CrmCustomerLevel> customerLevels = levelService.list();
 
-        List<Long> levelIds = new ArrayList<>();
 
-        for (CrmCustomerLevel customerLevel : customerLevels) {
-            if (level.getRank() <= crmCustomerLevel.getRank()) {
-                levelIds.add(customerLevel.getCustomerLevelId());
-            }
+        if (level.getRank() <= crmCustomerLevel.getRank()) {
+            return false;
         }
-        for (Long id : levelIds) {
-            if (customer.getCustomerLevelId().equals(id)) {
-                return true;
-            }
-        }
-        return false;
+
+
+        return true;
     }
 }
