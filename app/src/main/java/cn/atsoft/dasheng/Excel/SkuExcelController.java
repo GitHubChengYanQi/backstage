@@ -163,7 +163,6 @@ public class SkuExcelController {
             try {
                 //分类----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getSpuClass())) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "参数错误");
                 }
                 SpuClassification spuClass = null;
@@ -174,12 +173,10 @@ public class SkuExcelController {
                     }
                 }
                 if (ToolUtil.isEmpty(spuClass)) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "没有分类");
                 }
                 //产品--------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getClassItem()) || "".equals(skuExcelItem.getItemRule())) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "参数错误");
                 }
                 SpuClassification newItem = null;
@@ -197,12 +194,10 @@ public class SkuExcelController {
                     newItem.setType(2L);
                     //TODO 产品替换编码
                     if (ToolUtil.isEmpty(skuExcelItem.getItemRule())) {
-                        errorList.add(skuExcelItem);
                         throw new ServiceException(500, "未填写编码规则");
                     }
                     CodingRules codingRules = codingRulesService.query().eq("name", skuExcelItem.getItemRule()).eq("display", 1).one();
                     if (ToolUtil.isEmpty(codingRules)) {
-                        errorList.add(skuExcelItem);
                         throw new ServiceException(500, "编码规则不存在");
                     }
                     String backCoding = codingRulesService.backCoding(codingRules.getCodingRulesId());
@@ -230,7 +225,6 @@ public class SkuExcelController {
 
                 //型号----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getSpuName())) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "参数错误");
                 }
                 Long spuId = null;
@@ -255,7 +249,6 @@ public class SkuExcelController {
                 }
                 //单位------------------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getUnit())) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "参数错误");
                 }
                 Spu spuById = spuService.getById(spuId);
@@ -277,7 +270,6 @@ public class SkuExcelController {
                 spuService.updateById(spuById);
                 //批量-----------------------------------------------------------------------------------------------
                 if ("".equals(skuExcelItem.getIsNotBatch())) {
-                    errorList.add(skuExcelItem);
                     throw new ServiceException(500, "参数错误");
                 }
                 if (skuExcelItem.getIsNotBatch().equals("是")) {
@@ -295,7 +287,6 @@ public class SkuExcelController {
                 } else {
                     for (Sku sku : skus) {
                         if (sku.getStandard().equals(skuExcelItem.getStandard())) {
-                            errorList.add(skuExcelItem);
                             throw new ServiceException(500, "编码以重复");
                         }
                     }
@@ -308,6 +299,8 @@ public class SkuExcelController {
 
                 for (Specifications specifications : skuExcelItem.getSpecifications()) {
                     if (ToolUtil.isNotEmpty(specifications.getAttribute()) && ToolUtil.isNotEmpty(specifications.getValue())) {
+                        AttributeValues value = new AttributeValues();
+
                         ItemAttribute itemAttribute = new ItemAttribute();
                         itemAttribute.setAttribute(specifications.getAttribute());
                         itemAttribute.setCategoryId(categoryId);
@@ -318,7 +311,10 @@ public class SkuExcelController {
                         values.setAttributeId(itemAttribute.getAttributeId());
                         valuesService.save(values);
 
-                        list.add(values);
+
+                        value.setAttributeId(itemAttribute.getAttributeId());
+                        value.setAttributeValuesId(values.getAttributeValuesId());
+                        list.add(value);
                     }
                 }
                 if (ToolUtil.isNotEmpty(list) && list.size() > 0) {
