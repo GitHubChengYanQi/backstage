@@ -571,6 +571,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
+
         for (SkuResult skuResult : param) {
             spuIds.add(skuResult.getSpuId());
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
@@ -794,6 +795,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
             skuResults.add(skuResult);
         }
         this.format(skuResults);
+ 
         return skuResults;
     }
 

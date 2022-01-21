@@ -123,19 +123,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         Supply entity = getOldEntity(param);
         entity.setDisplay(0);
         this.updateById(entity);
-        //删除sku 品牌对应关系
-        List<BrandResult> brandsBySuppliers = supplierBrandService.getBrandsBySupplierId(entity.getCustomerId());
-        List<Long> brandIds = new ArrayList<>();
 
-        for (BrandResult brandsBySupplier : brandsBySuppliers) {
-            brandIds.add(brandsBySupplier.getBrandId());
-        }
-        SkuBrandBind skuBrandBind = new SkuBrandBind();
-        skuBrandBind.setDisplay(0);
-        skuBrandBindService.update(skuBrandBind, new QueryWrapper<SkuBrandBind>() {{
-            eq("sku_id", entity.getSkuId());
-            in("brand_id", brandIds);
-        }});
     }
 
     @Override
