@@ -26,8 +26,7 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeExcel;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
-import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
-import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
+
 import cn.atsoft.dasheng.sys.core.exception.enums.BizExceptionEnum;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -80,8 +79,7 @@ public class CrmExcelController {
     private CompanyRoleService roleService;
     @Autowired
     private BrandService brandService;
-    @Autowired
-    private SupplierBrandService supplierBrandService;
+
 
 
     /**
@@ -139,10 +137,6 @@ public class CrmExcelController {
                         brand.setBrandName(customerExcelItem.getCustomerName());
                         brandService.save(brand);
 
-                        SupplierBrand supplierBrand = new SupplierBrand();
-                        supplierBrand.setCustomerId(customer.getCustomerId());
-                        supplierBrand.setBrandId(brand.getBrandId());
-                        supplierBrandService.save(supplierBrand);
                     }
                 }
                 return ResponseData.success();

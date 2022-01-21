@@ -22,8 +22,7 @@ import cn.atsoft.dasheng.crm.service.InvoiceService;
 import cn.atsoft.dasheng.crm.service.TrackMessageService;
 import cn.atsoft.dasheng.crm.service.SupplyService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
-import cn.atsoft.dasheng.supplier.entity.SupplierBrand;
-import cn.atsoft.dasheng.supplier.service.SupplierBrandService;
+
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -81,8 +80,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private InvoiceService invoiceService;
     @Autowired
     private BrandService brandService;
-    @Autowired
-    private SupplierBrandService supplierBrandService;
+
     @Autowired
     private CrmCustomerLevelService levelService;
 
@@ -131,15 +129,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             }
         }
 
-        if (param.getSupply() == 1) {   //创建品牌
-            Brand brand = new Brand();
-            brand.setBrandName(param.getCustomerName());
-            brandService.save(brand);
-            SupplierBrand supplierBrand = new SupplierBrand();
-            supplierBrand.setBrandId(brand.getBrandId());
-            supplierBrand.setCustomerId(entity.getCustomerId());
-            supplierBrandService.save(supplierBrand);
-        }
+
 
         this.updateById(entity);
         return entity;
@@ -204,21 +194,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             throw new ServiceException(500, "数据不存在");
         } else {
             Customer newEntity = getEntity(param);
-            if (ToolUtil.isNotEmpty(param.getSupply()) && !oldEntity.getSupply().equals(param.getSupply())) {
-                throw new ServiceException(500, "当前供应商不可修改");
-            }
-            if (oldEntity.getSupply().equals(1)) {  //修改品牌名称
-                List<SupplierBrand> brands = supplierBrandService.query().in("customer_id", newEntity.getCustomerId()).list();
-                List<Long> brandIds = new ArrayList<>();
-                for (SupplierBrand brand : brands) {
-                    brandIds.add(brand.getBrandId());
-                }
-                Brand brand = new Brand();
-                brand.setBrandName(newEntity.getCustomerName());
-                brandService.update(brand, new QueryWrapper<Brand>() {{
-                    in("brand_id", brandIds);
-                }});
-            }
             ToolUtil.copyProperties(newEntity, oldEntity);
             this.updateById(oldEntity);
             return oldEntity;
