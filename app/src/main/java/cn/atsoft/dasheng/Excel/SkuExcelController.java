@@ -98,44 +98,47 @@ public class SkuExcelController {
             List<Specifications> specificationsList = new ArrayList<>();
             skuExcelItem.setLine(i + 1);
 
-            for (int j = 0; j < readRow.size(); j++) {
-                Object header = readRow.get(j);
-                Object data = hang.get(j);
-                switch (header.toString()) {
-                    case "成品码":
-                        if (ToolUtil.isEmpty(data)) {
-                            data = null;
-                            skuExcelItem.setStandard(null);
-                        }else {
-                            skuExcelItem.setStandard(data.toString());
-                        }
-
-                        break;
-                    case "分类":
-                        skuExcelItem.setSpuClass(data.toString());
-                        break;
-                    case "产品":
-                        skuExcelItem.setClassItem(data.toString());
-                        break;
-                    case "型号":
-                        skuExcelItem.setSpuName(data.toString());
-                        break;
-                    case "单位":
-                        skuExcelItem.setUnit(data.toString());
-                        break;
-                    case "是否批量":
-                        skuExcelItem.setIsNotBatch(data.toString());
-                        break;
-                    case "规则名称":
-                        skuExcelItem.setItemRule(data.toString());
-                        break;
-                    default:
-                        if (ToolUtil.isNotEmpty(header) && ToolUtil.isNotEmpty(data)) {
-                            Specifications specifications = new Specifications();
-                            specifications.setAttribute(header.toString());
-                            specifications.setValue(data.toString());
-                            specificationsList.add(specifications);
-                        }
+            for (int j = 0; j < readRow.size() + hang.size(); j++) {
+                try {
+                    Object header = readRow.get(j);
+                    Object data = hang.get(j);
+                    switch (header.toString()) {
+                        case "成品码":
+                            if (ToolUtil.isEmpty(data)) {
+                                data = null;
+                                skuExcelItem.setStandard(null);
+                            } else {
+                                skuExcelItem.setStandard(data.toString());
+                            }
+                            break;
+                        case "分类":
+                            skuExcelItem.setSpuClass(data.toString());
+                            break;
+                        case "产品":
+                            skuExcelItem.setClassItem(data.toString());
+                            break;
+                        case "型号":
+                            skuExcelItem.setSpuName(data.toString());
+                            break;
+                        case "单位":
+                            skuExcelItem.setUnit(data.toString());
+                            break;
+                        case "是否批量":
+                            skuExcelItem.setIsNotBatch(data.toString());
+                            break;
+                        case "规则名称":
+                            skuExcelItem.setItemRule(data.toString());
+                            break;
+                        default:
+                            if (ToolUtil.isNotEmpty(header) && ToolUtil.isNotEmpty(data)) {
+                                Specifications specifications = new Specifications();
+                                specifications.setAttribute(header.toString());
+                                specifications.setValue(data.toString());
+                                specificationsList.add(specifications);
+                            }
+                    }
+                } catch (Exception e) {
+                    logger.error("读取异常:" + e.toString());
                 }
             }
             skuExcelItem.setSpecifications(specificationsList);
@@ -256,7 +259,7 @@ public class SkuExcelController {
                     String serial = serialNumberService.add(new SerialNumberParam() {{
                         setSerialLength(5L);
                     }});
-                    newSku.setStandard(spuClass.getCodingClass()+newItem.getCodingClass()+serial);
+                    newSku.setStandard(spuClass.getCodingClass() + newItem.getCodingClass() + serial);
                 }
                 for (Sku sku : skus) {
                     if (sku.getStandard().equals(skuExcelItem.getStandard())) {
@@ -296,7 +299,7 @@ public class SkuExcelController {
 
             } catch (Exception e) {
                 errorList.add(skuExcelItem);
-                logger.error("第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);
+                logger.error("写入异常:" + "第" + skuExcelItem.getLine() + "行" + skuExcelItem + "错误" + e);
             }
         }
         skuService.saveBatch(skuList);
