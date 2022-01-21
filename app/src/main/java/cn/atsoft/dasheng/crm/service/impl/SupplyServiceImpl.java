@@ -315,6 +315,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         }
 
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
+
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
         Map<Long, List<BrandResult>> brandMap = new HashMap<>();   //通过sku筛选品牌
@@ -378,6 +379,19 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
             customerResult.setSkuResultList(skuResultList);
         }
+
+        for (Supply supply : supplyList) {
+            for (CustomerResult customerResult : levelCustomerResult) {
+                for (SkuResult skuResult : customerResult.getSkuResultList()) {
+                    for (BrandResult brandResult : brandResults) {
+                        if (supply.getSkuId().equals(skuResult.getSkuId()) && supply.getCustomerId().equals(customerResult.getCustomerId()) && supply.getBrandId().equals(brandResult.getBrandId())){
+                            skuResult.setBrandResult(brandResult);
+                        }
+                    }
+                }
+            }
+        }
+
 
         return levelCustomerResult;
     }
