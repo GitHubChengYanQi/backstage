@@ -2,16 +2,13 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
-import cn.atsoft.dasheng.app.model.result.BrandResult;
-import cn.atsoft.dasheng.app.model.result.ItemsResult;
-import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.model.result.*;
 import cn.atsoft.dasheng.app.pojo.AddStockParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.mapper.StockMapper;
 import cn.atsoft.dasheng.app.model.params.StockParam;
-import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Inkind;
@@ -59,6 +56,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     private InkindService inkindService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     public Long add(StockParam param) {
@@ -228,11 +227,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         List<Long> brandIds = new ArrayList<>();
         List<Long> stockIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (StockResult datum : data) {
             storeIds.add(datum.getStorehouseId());
             skuIds.add(datum.getSkuId());
             brandIds.add(datum.getBrandId());
             stockIds.add(datum.getStockId());
+            customerIds.add(datum.getCustomerId());
         }
 
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
@@ -247,6 +248,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             brandQueryWrapper.in("brand_id", brandIds);
         }
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.query().in("sku_id", skuIds).list();
+
+        List<CustomerResult> results = customerService.getResults(customerIds);
 
         List<Brand> brandList = brandService.list(brandQueryWrapper);
         List<StockDetails> stockDetails = new ArrayList<>();
@@ -264,6 +267,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             List<BackSku> backSkus = skuService.backSku(datum.getSkuId());
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
+
+            for (CustomerResult result : results) {
+                if (result.getCustomerId().equals(datum.getCustomerId())) {
+                    datum.setCustomerResult(result);
+                }
+            }
+
 
             if (ToolUtil.isNotEmpty(datum.getSkuId())) {
                 Sku sku = skuService.getById(datum.getSkuId());

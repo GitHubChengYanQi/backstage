@@ -47,6 +47,7 @@ public class StockDetailsResult implements Serializable {
     private List<StockDetailRequest> stockDetailRequests;
     private Long inkindId;
     private InkindResult inkindResult;
+    private CustomerResult customerResult;
     /**
      * 库位id
      */

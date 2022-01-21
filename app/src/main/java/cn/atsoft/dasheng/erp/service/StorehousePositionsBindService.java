@@ -27,6 +27,8 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
      */
     StorehousePositionsBind add(StorehousePositionsBindParam param);
 
+    void SpuAddBind(StorehousePositionsBindParam param);
+
     /**
      * 删除
      *

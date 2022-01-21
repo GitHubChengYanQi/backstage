@@ -122,9 +122,6 @@
         select
         <include refid="Base_Column_List"/>
         from daoxin_erp_stock where display = 1
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
-        </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
         </if>
@@ -142,5 +139,6 @@
                 and inventory &gt;= #{paramCondition.stockNumber}
             </otherwise>
         </choose>
+        group by sku_id
     </select>
 </mapper>

@@ -47,6 +47,13 @@ public class StorehousePositionsBindController extends BaseController {
         return ResponseData.success(bind);
     }
 
+
+    @RequestMapping(value = "/SpuAddBind", method = RequestMethod.POST)
+    public ResponseData SpuAddBind(@Valid @RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+        this.storehousePositionsBindService.SpuAddBind(storehousePositionsBindParam);
+        return ResponseData.success();
+    }
+
     /**
      * 编辑接口
      *

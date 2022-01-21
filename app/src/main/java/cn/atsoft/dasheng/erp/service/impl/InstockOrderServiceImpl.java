@@ -278,12 +278,13 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<Long> brandIds = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         Map<Long, Long> inkindNumber = new HashMap<>();
 
         for (Inkind inkind : inkinds) {     //计算相同实物的数量
             brandIds.add(inkind.getBrandId());
             skuIds.add(inkind.getSkuId());
-
+            customerIds.add(inkind.getCustomerId());
             Long number = inkindNumber.get(inkind.getInkindId());
             if (ToolUtil.isEmpty(number)) {
                 inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
@@ -296,6 +297,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Stock> stockList = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询库存
                 .eq(Stock::getSkuId, skuIds)
                 .in(Stock::getBrandId, brandIds)
+                .in(Stock::getCustomerId, customerIds)
                 .list();
 
 
@@ -314,24 +316,24 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (Inkind inkind : inkinds) {
             Long stockId = null;
-            Stock exist = judgeStockExist(inkind, stockList);
-            if (ToolUtil.isNotEmpty(exist)) {
-                stockId = exist.getStockId();
-            } else {  //没有相同库存
-                Stock newStock = new Stock();
-                newStock.setInventory(inkindNumber.get(inkind.getInkindId()));
-                newStock.setBrandId(inkind.getBrandId());
-                newStock.setSkuId(inkind.getSkuId());
-                newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
-                stockService.save(newStock);
-                stockId = newStock.getStockId();
-            }
+
+
+            Stock newStock = new Stock();
+            newStock.setInventory(inkind.getNumber());
+            newStock.setBrandId(inkind.getBrandId());
+            newStock.setSkuId(inkind.getSkuId());
+            newStock.setCustomerId(inkind.getCustomerId());
+            newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+            stockService.save(newStock);
+            stockId = newStock.getStockId();
+
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
             Long codeId = map.get(inkind.getInkindId());
             stockDetails.setQrCodeId(codeId);
+            stockDetails.setCustoemrId(inkind.getCustomerId());
             stockDetails.setInkindId(inkind.getInkindId());
             stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
 

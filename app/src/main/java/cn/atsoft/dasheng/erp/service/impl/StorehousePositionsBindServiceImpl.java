@@ -48,11 +48,31 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         if (ToolUtil.isNotEmpty(positions)) {
             throw new ServiceException(500, "当前库位不是最下级");
         }
-
-
         StorehousePositionsBind entity = getEntity(param);
         this.save(entity);
         return entity;
+    }
+
+    @Override
+    public void SpuAddBind(StorehousePositionsBindParam param) {
+
+        List<StorehousePositions> positions = positionsService.query().eq("pid", param.getPositionId()).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(positions)) {
+            throw new ServiceException(500, "当前库位不是最下级");
+        }
+        List<StorehousePositionsBind> storehousePositionsBinds = new ArrayList<>();
+
+        List<Sku> skus = skuService.query().eq("spu_id", param.getSpuId()).eq("display", 1).list();
+        List<StorehousePositionsBind> positionsBinds = this.query().eq("position_id", param.getPositionId()).eq("display", 1).list();
+        for (Sku sku : skus) {
+            if (positionsBinds.stream().noneMatch(i -> i.getPositionId().equals(param.getPositionId()) && i.getSkuId().equals(sku.getSkuId()))) {
+                StorehousePositionsBind bind = new StorehousePositionsBind();
+                bind.setSkuId(sku.getSkuId());
+                bind.setPositionId(param.getPositionId());
+                storehousePositionsBinds.add(bind);
+            }
+        }
+        this.saveBatch(storehousePositionsBinds);
     }
 
     @Override
@@ -86,7 +106,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         return PageFactory.createPageInfo(page);
     }
 
-    public void format(List<StorehousePositionsBindResult> param){
+    public void format(List<StorehousePositionsBindResult> param) {
         List<Long> skuIds = new ArrayList<>();
         List<Long> positionIds = new ArrayList<>();
 
@@ -95,12 +115,12 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             positionIds.add(bindResult.getPositionId());
         }
 
-        List<SkuResult> skuResults = skuService.getSkuResultListAndFormat(skuIds);
-        List<StorehousePositions> storehousePositions = positionsService.listByIds(positionIds);
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.getSkuResultListAndFormat(skuIds);
+        List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePosition,storehousePositionsResult);
+            ToolUtil.copyProperties(storehousePosition, storehousePositionsResult);
             storehousePositionsResults.add(storehousePositionsResult);
         }
 

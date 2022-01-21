@@ -158,22 +158,23 @@ public class SkuExcelController {
                     throw new ServiceException(500, "没有分类");
                 }
                 //产品--------------------------------------------------------------------------------------------
-                Long itemId = null;
+                SpuClassification newItem = null;
                 for (SpuClassification item : items) {
                     if (skuExcelItem.getClassItem().equals(item.getName())) {
-                        itemId = item.getSpuClassificationId();
+                        newItem = item;
                         item.setPid(spuClass.getSpuClassificationId());
                         classificationService.updateById(item);
                     }
                 }
-                if (ToolUtil.isEmpty(itemId)) {
-                    SpuClassification newClass = new SpuClassification();
-                    newClass.setName(skuExcelItem.getClassItem());
-                    newClass.setType(2L);
-                    newClass.setPid(spuClass.getSpuClassificationId());
-                    classificationService.save(newClass);
-                    items.add(newClass);
-                    itemId = newClass.getSpuClassificationId();
+                if (ToolUtil.isEmpty(newItem)) {
+                    newItem = new SpuClassification();
+                    newItem.setName(skuExcelItem.getClassItem());
+                    newItem.setType(2L);
+                    //TODO 产品替换编码
+                    newItem.setCodingClass("自动替换");
+                    newItem.setPid(spuClass.getSpuClassificationId());
+                    classificationService.save(newItem);
+                    items.add(newItem);
                 }
                 //物料分类------------------------------------------------------------------------------------------
                 Long categoryId = null;
@@ -195,14 +196,14 @@ public class SkuExcelController {
                 for (Spu spu : spuList) {
                     if (spu.getName().equals(skuExcelItem.getSpuName())) {
                         newSku.setSpuId(spu.getSpuId());
-                        spu.setSpuClassificationId(itemId);
+                        spu.setSpuClassificationId(newItem.getSpuClassificationId());
                         spuService.updateById(spu);
                         spuId = spu.getSpuId();
                     }
                 }
                 if (ToolUtil.isEmpty(spuId)) {
                     Spu newSpu = new Spu();
-                    newSpu.setSpuClassificationId(itemId);
+                    newSpu.setSpuClassificationId(newItem.getSpuClassificationId());
                     newSpu.setName(skuExcelItem.getSpuName());
                     newSpu.setCategoryId(categoryId);
                     spuService.save(newSpu);
@@ -232,11 +233,14 @@ public class SkuExcelController {
                     newSku.setBatch(1);
                 }
                 //成品码-------------------------------------------------------------------------------------------------
+                if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
+                    //TODO excel导入自动生成  成品码
+                    spuClass.getCodingClass(); //分类编码
+                    newItem.getCodingClass();   //产品编码
+                    newSku.setStandard("自动生成的编码");
+                }
                 for (Sku sku : skus) {
-                    if (ToolUtil.isEmpty(skuExcelItem.getStandard())) {
-                        //TODO excel导入自动生成  成品码
-                        newSku.setStandard("自动生成的编码");
-                    } else if (sku.getStandard().equals(skuExcelItem.getStandard())) {
+                    if (sku.getStandard().equals(skuExcelItem.getStandard())) {
                         errorList.add(skuExcelItem);
                         throw new ServiceException(500, "编码以重复");
                     }

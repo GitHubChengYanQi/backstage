@@ -47,6 +47,8 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     private StorehousePositionsService positionsService;
     @Autowired
     private SkuService skuService;
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -117,8 +119,6 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     }
 
 
-
-
     private Serializable getKey(StockDetailsParam param) {
         return param.getStockItemId();
     }
@@ -145,14 +145,15 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
     public void format(List<StockDetailsResult> data) {
         List<Long> pIds = new ArrayList<>();
         List<Long> stoIds = new ArrayList<>();
-
+        List<Long> customerIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
         for (StockDetailsResult datum : data) {
             stoIds.add(datum.getStorehouseId());
-
+            customerIds.add(datum.getCustomerId());
             brandIds.add(datum.getBrandId());
             pIds.add(datum.getStorehousePositionsId());
         }
+        List<CustomerResult> results = customerService.getResults(customerIds);
 
         List<StorehousePositions> positions = pIds.size() == 0 ? new ArrayList<>() : positionsService.query().in("storehouse_positions_id", pIds).list();
 
@@ -174,6 +175,12 @@ public class StockDetailsServiceImpl extends ServiceImpl<StockDetailsMapper, Sto
             SpuResult spuResult = skuService.backSpu(datum.getSkuId());
             datum.setBackSkus(backSkus);
             datum.setSpuResult(spuResult);
+
+            for (CustomerResult result : results) {
+                if (result.getCustomerId().equals(datum.getCustomerId())) {
+                    datum.setCustomerResult(result);
+                }
+            }
 
             if (ToolUtil.isNotEmpty(datum.getSkuId())) {
                 Sku sku = skuService.getById(datum.getSkuId());

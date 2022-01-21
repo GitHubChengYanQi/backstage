@@ -27,6 +27,8 @@ public class StorehousePositionsBind implements Serializable {
       @TableId(value = "bind_id", type = IdType.ID_WORKER)
     private Long bindId;
 
+
+
     /**
      * 库位id
      */

@@ -26,7 +26,7 @@ public class StorehousePositionsBindParam implements Serializable, BaseValidatin
 
     private static final long serialVersionUID = 1L;
 
-
+    private Long SpuId;
     /**
      * id
      */
