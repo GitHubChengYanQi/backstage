@@ -25,7 +25,7 @@ import java.util.List;
 public class StorehousePositionsBindParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-
+    private List<Long> skuIds;
 
     /**
      * id

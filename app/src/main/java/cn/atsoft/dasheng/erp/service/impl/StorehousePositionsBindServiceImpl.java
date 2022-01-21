@@ -54,6 +54,18 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         this.save(entity);
         return entity;
     }
+    @Override
+    public void bindBatch(StorehousePositionsBindParam param){
+        List<StorehousePositionsBind> binds = new ArrayList<>();
+        for (Long skuId : param.getSkuIds()) {
+            StorehousePositionsBind bind = new StorehousePositionsBind();
+            bind.setSkuId(skuId);
+            bind.setBrandId(param.getBrandId());
+            bind.setPositionId(param.getPositionId());
+            binds.add(bind);
+        }
+        this.saveBatch(binds);
+    }
 
     @Override
     public void delete(StorehousePositionsBindParam param) {

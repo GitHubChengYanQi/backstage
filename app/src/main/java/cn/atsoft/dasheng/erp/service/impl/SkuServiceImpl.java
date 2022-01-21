@@ -84,7 +84,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              * 查询分类  添加分类
              */
             Category one1 = categoryService.lambdaQuery().eq(Category::getCategoryName, param.getSpu().getName()).and(i -> i.eq(Category::getDisplay, 1)).one();
-            Long categoryId = null;
+            Long categoryId;
             if (ToolUtil.isNotEmpty(one1)) {
                 categoryId = one1.getCategoryId();
             } else {
@@ -201,7 +201,12 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 //            String oldMd52 = SecureUtil.md5(spuId + entity.getSkuValue());
 
             entity.setSkuValueMd5(md5);
-
+            if (ToolUtil.isNotEmpty(codingRules)){
+                Integer skuCount = skuService.lambdaQuery().eq(Sku::getSkuValueMd5, md5).and(i -> i.eq(Sku::getDisplay, 1)).count();
+                if (skuCount > 0) {
+                    throw new ServiceException(500, "该物料已经存在");
+                }
+            }
 //
             /**
              * //TODO 原 SKU防重复判断
@@ -322,6 +327,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } else {
             spuClassificationId = spuClassification.getSpuClassificationId();
         }
+        param.setSpuClass(spuClassificationId);
         return spuClassificationId;
     }
 
