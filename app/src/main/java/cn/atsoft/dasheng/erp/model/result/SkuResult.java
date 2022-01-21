@@ -54,6 +54,7 @@ public class SkuResult implements Serializable {
     private SkuRequest skuTree;
     private SpuClassification skuClass;
     private List<BrandResult> brandResultList;
+    private BrandResult brandResult;
 
     /**
      * 之间方案id

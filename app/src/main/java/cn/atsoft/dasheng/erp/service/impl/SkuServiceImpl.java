@@ -275,7 +275,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                 } else {
                     this.save(entity);
                 }
-
             }
 
         }
