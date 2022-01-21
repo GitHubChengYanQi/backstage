@@ -350,6 +350,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
                     for (BrandResult brandResult : brandResults) {
                         if (supply.getSkuId().equals(skuResult.getSkuId()) && supply.getCustomerId().equals(customerResult.getCustomerId()) && supply.getBrandId().equals(brandResult.getBrandId())){
                             skuResult.setBrandResult(brandResult);
+                            skuResult.setBrandId(brandResult.getBrandId());
                         }
                     }
                 }
