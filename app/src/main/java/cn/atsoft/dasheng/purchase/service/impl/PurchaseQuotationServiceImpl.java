@@ -466,7 +466,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
             for (Brand brand : brands) {
                 if (ToolUtil.isNotEmpty(datum.getBrandId()) && datum.getBrandId().equals(brand.getBrandId())) {
                     BrandResult brandResult = new BrandResult();
-                    ToolUtil.copyProperties(brand,brandResult);
+                    ToolUtil.copyProperties(brand, brandResult);
                     datum.setBrandResult(brandResult);
                 }
             }
@@ -474,9 +474,12 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
     }
 
     private Boolean judgeLevel(Long levelId, Customer customer) {
+
         if (ToolUtil.isEmpty(customer.getCustomerLevelId())) {
             throw new ServiceException(500, "请先设置供应商等级");
         }
+        CrmCustomerLevel crmCustomerLevel = levelService.getById(customer.getCustomerLevelId());
+
         CrmCustomerLevel level = levelService.getById(levelId);
         if (ToolUtil.isEmpty(level)) {
             throw new ServiceException(500, "当前供应商等级不合法");
@@ -486,7 +489,7 @@ public class PurchaseQuotationServiceImpl extends ServiceImpl<PurchaseQuotationM
         List<Long> levelIds = new ArrayList<>();
 
         for (CrmCustomerLevel customerLevel : customerLevels) {
-            if (level.getRank() <= customerLevel.getRank()) {
+            if (level.getRank() <= crmCustomerLevel.getRank()) {
                 levelIds.add(customerLevel.getCustomerLevelId());
             }
         }
