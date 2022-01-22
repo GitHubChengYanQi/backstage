@@ -12,4 +12,5 @@ public class FreeOutStockParam {
     private Long number;
 
     private String type;
+
 }

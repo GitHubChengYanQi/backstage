@@ -1,6 +1,8 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.ContractService;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -73,9 +75,6 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     private ActivitiProcessLogService activitiProcessLogService;
 
     @Autowired
-    private ContractService contractService;
-
-    @Autowired
     private ProcurementPlanBindService planBindService;
 
     @Autowired
@@ -84,6 +83,8 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
     private SkuService skuService;
     @Autowired
     private PurchaseQuotationService quotationService;
+    @Autowired
+    private BrandService brandService;
 
     @Override
     @Transactional
@@ -177,21 +178,30 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
 
     @Override
     public void detail(ProcurementPlanResult result) {
-        List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, result.getProcurementPlanId()).list();
+        List<ProcurementPlanDetal> procurementPlanDetals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, result.getProcurementPlanId()).eq(ProcurementPlanDetal::getDisplay, 1).list();
         List<ProcurementPlanDetalResult> detalResultList = new ArrayList<>();
         List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
         for (ProcurementPlanDetal procurementPlanDetal : procurementPlanDetals) {
             ProcurementPlanDetalResult procurementPlanDetalResult = new ProcurementPlanDetalResult();
             ToolUtil.copyProperties(procurementPlanDetal, procurementPlanDetalResult);
             detalResultList.add(procurementPlanDetalResult);
             skuIds.add(procurementPlanDetal.getSkuId());
+            brandIds.add(procurementPlanDetal.getBrandId());
         }
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
-        for (SkuResult skuResult : skuResults) {
-            for (ProcurementPlanDetalResult planDetalResult : detalResultList) {
+        for (ProcurementPlanDetalResult planDetalResult : detalResultList) {
+            for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(planDetalResult.getSkuId())) {
                     planDetalResult.setSkuResult(skuResult);
+                    break;
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (ToolUtil.isNotEmpty(planDetalResult.getBrandId()) && brandResult.getBrandId().equals(planDetalResult.getBrandId())) {
+                    planDetalResult.setBrandResult(brandResult);
                     break;
                 }
             }

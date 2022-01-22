@@ -185,6 +185,7 @@ public class OutstockOrderServiceImpl extends ServiceImpl<OutstockOrderMapper, O
         inkind.setSkuId(stockDetails.getSkuId());
         inkind.setBrandId(stockDetails.getBrandId());
         inkind.setType("2");
+        inkind.setCustomerId(stockDetails.getCustomerId());
         inkind.setNumber(freeOutStockParam.getNumber());
         inkindService.save(inkind);
 

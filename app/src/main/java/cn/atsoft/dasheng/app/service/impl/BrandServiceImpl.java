@@ -101,7 +101,7 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         if (ToolUtil.isEmpty(brandIds)) {
             return brandResults;
         }
-        List<Brand> brands = this.query().in("brand_id", brandIds).list();
+        List<Brand> brands = this.query().in("brand_id", brandIds).eq("display", 1).list();
 
 //        List<BrandResult> list = Collections.singletonList((BrandResult) brands.stream().skip(0).collect(Collectors.toList()));
 

@@ -92,8 +92,6 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
     }
 
 
-
-
     @Override
     public void delete(SupplyParam param) {
         Supply entity = getOldEntity(param);
@@ -201,16 +199,19 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         CrmCustomerLevel level = levelService.getById(levelId);
         //比较等级
         List<Long> levelIds = new ArrayList<>();
-        for (CrmCustomerLevel crmCustomerLevel : levels) {
-            if (ToolUtil.isNotEmpty(level)) {
+
+        if (ToolUtil.isEmpty(level)) {  //没有等级 全取
+            for (CrmCustomerLevel crmCustomerLevel : levels) {
+                levelIds.add(crmCustomerLevel.getCustomerLevelId());
+            }
+        } else {   //有等级 取大于等于
+            for (CrmCustomerLevel crmCustomerLevel : levels) {
                 if (level.getRank() <= crmCustomerLevel.getRank()) {
                     levelIds.add(crmCustomerLevel.getCustomerLevelId());
                 }
-            } else {
-                levelIds.add(crmCustomerLevel.getCustomerLevelId());
             }
-
         }
+
         QueryWrapper<Customer> customerQueryWrapper = new QueryWrapper<>();
         customerQueryWrapper.eq("supply", 1);
         customerQueryWrapper.in("customer_level_id", levelIds);
@@ -283,9 +284,9 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
 
         Map<Long, List<BrandResult>> brandMap = new HashMap<>();   //通过sku筛选品牌
+
         for (Supply supply : supplies) {
             List<BrandResult> brandResultList = new ArrayList<>();
-
             for (BrandResult brandResult : brandResults) {
                 brandResultList.add(brandResult);
                 List<BrandResult> results = brandMap.get(supply.getSkuId());
@@ -348,7 +349,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             for (CustomerResult customerResult : levelCustomerResult) {
                 for (SkuResult skuResult : customerResult.getSkuResultList()) {
                     for (BrandResult brandResult : brandResults) {
-                        if (supply.getSkuId().equals(skuResult.getSkuId()) && supply.getCustomerId().equals(customerResult.getCustomerId()) && supply.getBrandId().equals(brandResult.getBrandId())){
+                        if (supply.getSkuId().equals(skuResult.getSkuId()) && supply.getCustomerId().equals(customerResult.getCustomerId()) && supply.getBrandId().equals(brandResult.getBrandId())) {
                             skuResult.setBrandResult(brandResult);
                             skuResult.setBrandId(brandResult.getBrandId());
                         }
