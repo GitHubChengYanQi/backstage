@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -82,6 +84,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Autowired
     private OrCodeService codeService;
+
+    @Autowired
+    private StorehousePositionsBindService storehousePositionsBindService;
 
     @Override
     public void add(StorehousePositionsParam param) {
@@ -257,6 +262,21 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + codeId;
             String qrCode = qrCodeCreateService.createQrCode(url);
             templete = templete.replace("${qrCode}", qrCode);
+        }
+        if (templete.contains("${bind}")){
+            List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).list();
+            List<Long> skuIds = new ArrayList<>();
+            for (StorehousePositionsBind bind : binds) {
+                skuIds.add(bind.getSkuId());
+            }
+            StringBuffer stringBuffer = new StringBuffer();
+            List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
+            for (SkuResult skuResult : skuResultListAndFormat) {
+                String name = skuResult.getSpuResult().getName();
+                String name1 = skuResult.getStandard();
+                stringBuffer.append(name1).append("/").append(name).append("<br/>");
+            }
+            templete = templete.replace("${bind}", stringBuffer.toString());
         }
         if (templete.contains("${name}")) {
             templete = templete.replace("${name}", param.getName());

@@ -96,7 +96,6 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         ProcurementOrder entity = getEntity(param);
         this.save(entity);
 
-
         ProcurementPlan procurementPlan = planService.getById(param.getProcurementPlanId());
         if (ToolUtil.isEmpty(procurementPlan)) {
             throw new ServiceException(500, "请确认采购计划");
@@ -164,8 +163,13 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             wxCpSendTemplate.setSource("procurementOrder");
             wxCpSendTemplate.setSourceId(taskId);
         } else {
-            entity.setStatus(98);
+            entity.setStatus(99);
             this.updateById(entity);
+            List<Contract> contractList = contractService.query().eq("source_id", entity.getProcurementOrderId()).eq("source", "采购单").list();
+            for (Contract contract : contractList) {
+                contract.setDisplay(1);
+            }
+            contractService.updateBatchById(contractList);
         }
     }
 

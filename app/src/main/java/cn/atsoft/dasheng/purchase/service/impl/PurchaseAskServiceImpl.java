@@ -129,7 +129,8 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
             wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
         } else {
-            throw new ServiceException(500, "请创建质检流程！");
+            entity.setStatus(2);
+            this.updateById(entity);
         }
 
     }
