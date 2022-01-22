@@ -2,7 +2,6 @@ package cn.atsoft.dasheng.erp.controller;
 
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.service.UnitService;
-import cn.atsoft.dasheng.base.auth.annotion.Permission;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.*;
@@ -57,7 +56,6 @@ public class SkuController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    @Permission
     public ResponseData addItem(@RequestBody SkuParam skuParam) {
         this.skuService.add(skuParam);
         return ResponseData.success();
@@ -126,6 +124,7 @@ public class SkuController extends BaseController {
                     SpuClassification spuClassification1 = spuClassificationService.getById(spuClassification.getPid());
                     sku.setSkuClass(spuClassification1);
                 }
+
             }
         }
         if (ToolUtil.isNotEmpty(sku.getQualityPlanId())) {
@@ -136,6 +135,7 @@ public class SkuController extends BaseController {
         sku.setCreateUserName(user.getName());
 
         return ResponseData.success(sku);
+
     }
 
 
