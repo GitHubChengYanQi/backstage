@@ -31,6 +31,8 @@ public class ProcurementPlanResult implements Serializable {
 
     private List<PurchaseQuotationResult> quotationResults;
 
+    private User founder;
+
 
     private User user;
     /**
