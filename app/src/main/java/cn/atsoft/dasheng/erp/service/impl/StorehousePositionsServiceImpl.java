@@ -198,6 +198,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositions positions = new StorehousePositions();
         positions.setName(param.getName());
         positions.setSort(param.getSort());
+        positions.setPid(param.getPid());
+
         this.update(positions, new QueryWrapper<StorehousePositions>() {{
             eq("storehouse_positions_id", param.getStorehousePositionsId());
         }});
