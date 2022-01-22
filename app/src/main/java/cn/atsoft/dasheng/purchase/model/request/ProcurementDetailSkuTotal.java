@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProcurementDetailSkuTotal {
     private Long skuId;
+    private Long brandId;
     private Long total;
 }
