@@ -324,9 +324,6 @@ public class SkuExcelController {
                         }else {
                             valueId = attributeValues.getAttributeValuesId();
                         }
-
-
-
                         value.setAttributeId(attributeId);
                         value.setAttributeValuesId(valueId);
                         list.add(value);

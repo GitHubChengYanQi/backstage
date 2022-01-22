@@ -13,6 +13,7 @@ import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -20,6 +21,7 @@ import cn.atsoft.dasheng.erp.model.result.InkindResult;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
@@ -83,16 +85,24 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     @Autowired
     private OrCodeService codeService;
 
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
+
     @Override
     public void add(StorehousePositionsParam param) {
         if (ToolUtil.isNotEmpty(param.getPid())) {
-            List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).list();
+            List<StockDetails> stockDetails = stockDetailsService.query().eq("storehouse_positions_id", param.getPid()).eq("display", 1).list();
             if (ToolUtil.isNotEmpty(stockDetails)) {
                 throw new ServiceException(500, "上级库位以使用，不能再创建下级库位");
             }
+            List<StorehousePositionsBind> binds = positionsBindService.lambdaQuery().eq(StorehousePositionsBind::getPositionId, param.getPid()).list();
+            if (ToolUtil.isNotEmpty(binds)) {
+                throw new ServiceException(500, "上级库位已绑定物料吗，不可再创建下级库位");
+            }
         }
 
-        Integer count = this.query().eq("name", param.getName()).eq("pid",param.getPid()).eq("display", 1).count();
+
+        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
