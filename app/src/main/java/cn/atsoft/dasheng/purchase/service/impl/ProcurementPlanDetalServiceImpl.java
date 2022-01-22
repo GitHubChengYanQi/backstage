@@ -75,12 +75,13 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
             ProcurementDetailSkuTotal pdst = new ProcurementDetailSkuTotal();
             pdst.setSkuId(purchaseListing.getSkuId());
             pdst.setTotal(purchaseListing.getApplyNumber());
+            pdst.setBrandId(purchaseListing.getBrandId());
             pdstList.add(pdst);
         }
         List<ProcurementDetailSkuTotal> totalList = new ArrayList<>();
         pdstList.parallelStream().collect(Collectors.groupingBy(ProcurementDetailSkuTotal::getSkuId, Collectors.toList())).forEach(
                 (id, transfer) -> {
-                    transfer.stream().reduce((a, b) -> new ProcurementDetailSkuTotal(a.getSkuId(), a.getTotal() + b.getTotal())).ifPresent(totalList::add);
+                    transfer.stream().reduce((a, b) -> new ProcurementDetailSkuTotal(a.getSkuId(),a.getBrandId(), a.getTotal() + b.getTotal())).ifPresent(totalList::add);
                 }
         );
         List<ProcurementPlanDetal> entityList = new ArrayList<>();

@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.print.DocFlavor;
 import javax.sound.midi.Soundbank;
+import javax.tools.Tool;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
@@ -300,20 +301,34 @@ public class SkuExcelController {
                 for (Specifications specifications : skuExcelItem.getSpecifications()) {
                     if (ToolUtil.isNotEmpty(specifications.getAttribute()) && ToolUtil.isNotEmpty(specifications.getValue())) {
                         AttributeValues value = new AttributeValues();
+                        Long attributeId = 0L;
+                        ItemAttribute attribute = attributeService.query().eq("attribute", specifications.getAttribute()).eq("category_id", categoryId).eq("display", 1).one();
+                        if (ToolUtil.isEmpty(attribute)) {
+                            ItemAttribute itemAttribute = new ItemAttribute();
+                            itemAttribute.setAttribute(specifications.getAttribute());
+                            itemAttribute.setCategoryId(categoryId);
+                            attributeService.save(itemAttribute);
+                            attributeId = itemAttribute.getAttributeId();
+                        }else {
+                            attributeId = attribute.getAttributeId();
+                        }
 
-                        ItemAttribute itemAttribute = new ItemAttribute();
-                        itemAttribute.setAttribute(specifications.getAttribute());
-                        itemAttribute.setCategoryId(categoryId);
-                        attributeService.save(itemAttribute);
+                        Long valueId = 0L;
+                        AttributeValues attributeValues = valuesService.query().eq("attribute", specifications.getAttribute()).eq("attribute_values", specifications.getValue()).eq("display", 1).one();
+                        if (ToolUtil.isEmpty(attributeValues)){
+                            AttributeValues values = new AttributeValues();
+                            values.setAttributeValues(specifications.getValue());
+                            values.setAttributeId(attributeId);
+                            valuesService.save(values);
+                            valueId = values.getAttributeValuesId();
+                        }else {
+                            valueId = attributeValues.getAttributeValuesId();
+                        }
 
-                        AttributeValues values = new AttributeValues();
-                        values.setAttributeValues(specifications.getValue());
-                        values.setAttributeId(itemAttribute.getAttributeId());
-                        valuesService.save(values);
 
 
-                        value.setAttributeId(itemAttribute.getAttributeId());
-                        value.setAttributeValuesId(values.getAttributeValuesId());
+                        value.setAttributeId(attributeId);
+                        value.setAttributeValuesId(valueId);
                         list.add(value);
                     }
                 }
