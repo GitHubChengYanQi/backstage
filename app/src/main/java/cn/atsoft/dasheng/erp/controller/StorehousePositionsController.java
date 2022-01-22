@@ -132,10 +132,10 @@ public class StorehousePositionsController extends BaseController {
         for (StorehousePositionsBind bind : binds) {
             skuIds.add(bind.getSkuId());
         }
-        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
-        skuService.format(skuResults);
 
-        result.setSkuResults(skuResults);
+        List<SkuResult> results = skuService.formatSkuResult(skuIds);
+
+        result.setSkuResults(results);
 
 
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
@@ -152,7 +152,7 @@ public class StorehousePositionsController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public  List<StorehousePositionsResult> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
+    public List<StorehousePositionsResult> list(@RequestBody(required = false) StorehousePositionsParam storehousePositionsParam) {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
@@ -168,7 +168,7 @@ public class StorehousePositionsController extends BaseController {
         for (StorehousePositions storehousePositions : storehousePositionsList) {
             positionIds.add(storehousePositions.getStorehousePositionsId());
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePositions,storehousePositionsResult);
+            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
             storehousePositionsResults.add(storehousePositionsResult);
         }
         List<StorehousePositionsBind> binds = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("position_id", positionIds).list();
