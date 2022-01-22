@@ -16,6 +16,8 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.purchase.service.PurchaseQuotationService;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,8 @@ public class ProcurementPlanController extends BaseController {
 
     @Autowired
     private ProcurementPlanService procurementPlanService;
+    @Autowired
+    private UserService userService;
 
     /**
      * 新增接口
@@ -73,6 +77,8 @@ public class ProcurementPlanController extends BaseController {
         ProcurementPlanResult result = new ProcurementPlanResult();
         ToolUtil.copyProperties(detail, result);
 
+        User user = userService.getById(result.getCreateUser());
+        result.setFounder(user);
         procurementPlanService.detail(result);
 
         return ResponseData.success(result);
