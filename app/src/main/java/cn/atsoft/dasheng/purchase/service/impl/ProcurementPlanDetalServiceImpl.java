@@ -70,7 +70,9 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
         if (purchaseListingList.size() != param.getListingIds().size()) {
             throw new ServiceException(500, "申请单详情不合法");
         }
+
         List<ProcurementDetailSkuTotal> pdstList = new ArrayList<>();
+
         for (PurchaseListing purchaseListing : purchaseListingList) {
             ProcurementDetailSkuTotal pdst = new ProcurementDetailSkuTotal();
             pdst.setSkuId(purchaseListing.getSkuId());
@@ -78,18 +80,23 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
             pdst.setBrandId(purchaseListing.getBrandId());
             pdstList.add(pdst);
         }
+
         List<ProcurementDetailSkuTotal> totalList = new ArrayList<>();
-        pdstList.parallelStream().collect(Collectors.groupingBy(ProcurementDetailSkuTotal::getSkuId, Collectors.toList())).forEach(
+
+        pdstList.parallelStream().collect(Collectors.groupingBy(item->item.getSkuId()+'_'+item.getBrandId(),Collectors.toList())).forEach(
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new ProcurementDetailSkuTotal(a.getSkuId(),a.getBrandId(), a.getTotal() + b.getTotal())).ifPresent(totalList::add);
                 }
         );
+
+
         List<ProcurementPlanDetal> entityList = new ArrayList<>();
         for (ProcurementDetailSkuTotal procurementDetailSkuTotal : totalList) {
             ProcurementPlanDetal entity = new ProcurementPlanDetal();
             entity.setPlanId(param.getProcurementPlanId());
             entity.setSkuId(procurementDetailSkuTotal.getSkuId());
             entity.setTotal(procurementDetailSkuTotal.getTotal());
+            entity.setBrandId(procurementDetailSkuTotal.getBrandId());
             entityList.add(entity);
         }
         this.saveBatch(entityList);
