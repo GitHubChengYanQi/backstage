@@ -84,7 +84,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Autowired
     private OrCodeService codeService;
-
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
 
@@ -97,7 +96,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         }
 
-        Integer count = this.query().eq("name", param.getName()).eq("pid",param.getPid()).eq("display", 1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -196,18 +195,27 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public void update(StorehousePositionsParam param) {
-        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
-        if (count > 1) {
-            throw new ServiceException(500, "名字以重复");
-        }
-        StorehousePositions positions = new StorehousePositions();
-        positions.setName(param.getName());
-        positions.setSort(param.getSort());
-        positions.setPid(param.getPid());
 
-        this.update(positions, new QueryWrapper<StorehousePositions>() {{
-            eq("storehouse_positions_id", param.getStorehousePositionsId());
-        }});
+        StorehousePositions oldEntity = getOldEntity(param);
+        StorehousePositions newEntity = getEntity(param);
+
+        if (ToolUtil.isNotEmpty(param.getPid()) && !newEntity.getPid().equals(oldEntity.getPid())) {
+            List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query()
+                    .eq("position_id", newEntity.getPid()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(positionsBinds)) {
+                throw new ServiceException(500, "上级库位已绑定物料，不可修改位置");
+            }
+        }
+
+        if (!oldEntity.getName().equals(newEntity.getName())) {
+            Integer count = this.query().eq("name", newEntity.getName()).eq("pid", newEntity.getPid()).count();
+            if (count > 0) {
+                throw new ServiceException(500, "名字以重复");
+            }
+        }
+
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
     }
 
     @Override
@@ -263,7 +271,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String qrCode = qrCodeCreateService.createQrCode(url);
             templete = templete.replace("${qrCode}", qrCode);
         }
-        if (templete.contains("${bind}")){
+        if (templete.contains("${bind}")) {
             List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {

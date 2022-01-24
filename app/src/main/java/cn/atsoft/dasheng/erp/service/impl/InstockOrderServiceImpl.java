@@ -82,6 +82,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
     @Override
     @Transactional
@@ -266,6 +268,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             throw new ServiceException(500, "请选择最下级库位");
         }
 
+        //判断库位绑定
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", freeInStockParam.getPositionsId()).list();
+        if (ToolUtil.isEmpty(positionsBinds)) {
+            throw new ServiceException(500, "当前库位未绑定物料，请选择正确库位");
+        }
 
         List<Inkind> inkinds = inkindService.query().in("inkind_id", freeInStockParam.getInkindIds()).eq("type", 0).list();
 
@@ -319,6 +326,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         for (Inkind inkind : inkinds) {
             Long stockId = null;
             Stock exist = judgeStockExist(inkind, stockList);
+            Boolean position = judgePosition(positionsBinds, inkind);
+            if (position) {
+                throw new ServiceException(500, "入库的物料 未和库位绑定");
+            }
+
             if (ToolUtil.isNotEmpty(exist)) {
                 stockId = exist.getStockId();
             } else {  //没有相同库存
@@ -372,6 +384,23 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
         return null;
+    }
+
+    /**
+     * 当前物料和库位是否绑定
+     *
+     * @param positionsBinds
+     * @param inkind
+     * @return
+     */
+    private Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind) {
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            if (positionsBind.getSkuId().equals(inkind.getSkuId())) {
+                return true;
+            }
+        }
+        return true;
     }
 
 
