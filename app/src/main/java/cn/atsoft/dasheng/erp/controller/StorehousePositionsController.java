@@ -20,8 +20,14 @@ import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
+import cn.atsoft.dasheng.orCode.service.OrCodeService;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -35,6 +41,7 @@ import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,7 +63,8 @@ public class StorehousePositionsController extends BaseController {
     private StorehousePositionsBindService storehousePositionsBindService;
     @Autowired
     private SkuService skuService;
-
+    @Autowired
+    private OrCodeBindService orCodeBindService;
 
     /**
      * 新增接口
@@ -264,7 +272,38 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success(results);
     }
 
+    public ResponseData testShow(Long qrCodeId) {
+        OrCodeBind codeBind = orCodeBindService.query().eq("qr_code_id", qrCodeId).one();
+        StorehousePositions storehousePositions = storehousePositionsService.getById(codeBind.getFormId());
+
+        JSONArray objects = JSONArray.parseArray(storehousePositions.getChildrens());
+        List<Long> positionIds = new ArrayList<>();
+        for (Object object : objects) {
+            positionIds.add((long) object);
+        }
+        if (positionIds.size() == 0) {
+            positionIds.add(codeBind.getFormId());
+        }
+        List<Long> skuIds = new ArrayList<>();
+        List<StorehousePositionsBind> bind = storehousePositionsBindService.query().in("position_id", positionIds).list();
+        for (StorehousePositionsBind storehousePositionsBind : bind) {
+            skuIds.add(storehousePositionsBind.getSkuId());
+        }
+        List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
+
+
+        return ResponseData.success();
+
+    }
+
+
+
+
+
+
+
+
+
+
 
 }
-
-
