@@ -115,6 +115,12 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    public ResponseData detail(@RequestParam Long id) {
+        StorehousePositionsResult detail = this.storehousePositionsService.detail(id);
+        return ResponseData.success(detail);
+    }
+
     /**
      * 查看详情接口
      *

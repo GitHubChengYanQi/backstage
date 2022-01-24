@@ -135,11 +135,11 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
 
         //添加合同
 
-        List<Long> customerIds = new ArrayList<>();
-        for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
-            customerIds.add(longListEntry.getKey());
-        }
-        addContract(customerIds, supplierMap, entity.getProcurementOrderId());
+//        List<Long> customerIds = new ArrayList<>();
+//        for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
+//            customerIds.add(longListEntry.getKey());
+//        }
+//        addContract(customerIds, supplierMap, entity.getProcurementOrderId());
         detailService.saveBatch(details);
         /**
          * 添加进入流程审批

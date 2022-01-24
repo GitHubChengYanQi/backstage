@@ -405,6 +405,63 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         return resultMap;
     }
 
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public StorehousePositionsResult detail(Long id) {
+        StorehousePositions positions = this.getById(id);
+        StorehousePositionsResult result = new StorehousePositionsResult();
+        ToolUtil.copyProperties(positions, result);
+
+        JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens()); //查询所有子集
+        List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+        List<StorehousePositionsResult> results = positionsResults(longs);
+
+        recursive(result, results);
+        return result;
+    }
+
+    /**
+     * 返回多个
+     * @param ids
+     * @return
+     */
+    public List<StorehousePositionsResult> positionsResults(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<StorehousePositions> storehousePositions = this.listByIds(ids);
+        List<StorehousePositionsResult> results = new ArrayList<>();
+
+        for (StorehousePositions storehousePosition : storehousePositions) {
+            StorehousePositionsResult positionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePosition, positionsResult);
+            results.add(positionsResult);
+        }
+        return results;
+    }
+
+    /**
+     * 递归取下级
+     * @param result
+     * @param results
+     */
+    private void recursive(StorehousePositionsResult result, List<StorehousePositionsResult> results) {
+        List<StorehousePositionsResult> positionsList = new ArrayList<>();
+
+        for (StorehousePositionsResult storehousePositionsResult : results) {
+            if (storehousePositionsResult.getPid().equals(result.getStorehousePositionsId())) {
+                positionsList.add(storehousePositionsResult);
+                recursive(storehousePositionsResult, results);
+            }
+        }
+        result.setStorehousePositionsResults(positionsList);
+    }
+
     private Serializable getKey(StorehousePositionsParam param) {
         return param.getStorehousePositionsId();
     }

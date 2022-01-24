@@ -82,5 +82,5 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     Map<String, Map<String,Object>> takeStock (StorehousePositionsParam param);
 
 
-
+    StorehousePositionsResult detail(Long id);
 }

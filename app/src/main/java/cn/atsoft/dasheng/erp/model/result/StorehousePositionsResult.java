@@ -40,6 +40,8 @@ public class StorehousePositionsResult implements Serializable {
     private List<StockDetailsResult> detailsResults;
 
     private List<SkuResult> skuResults;
+
+    private List<StorehousePositionsResult> storehousePositionsResults;
     /**
      * 仓库库位id
      */
