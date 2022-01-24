@@ -109,15 +109,14 @@ public class CustomerController extends BaseController {
             return ResponseData.success(detail);
         }else {
             CustomerResult customerResult = new CustomerResult();
-            Customer customer1 = customerService.query().eq("status", 99).eq("display", 1).one();
-            if (ToolUtil.isNotEmpty(customer1)){
-
-                ToolUtil.copyProperties(customer1,customerResult);
-            }else {
-                Customer customer = new Customer();
-                customer.setStatus(99);
-                this.customerService.save(customer);
+            Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
+            if (ToolUtil.isNotEmpty(customer)){
                 ToolUtil.copyProperties(customer,customerResult);
+            }else {
+                Customer entity = new Customer();
+                entity.setStatus(99);
+                this.customerService.save(entity);
+                ToolUtil.copyProperties(entity,customerResult);
             }
             return ResponseData.success(customerResult);
         }
