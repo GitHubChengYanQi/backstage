@@ -50,7 +50,7 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Override
     @Transactional
     public Long add(SpuClassificationParam param) {
-        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).and(i->i.eq(SpuClassification::getType,1)).count();
+        Integer count = this.lambdaQuery().in(SpuClassification::getDisplay, 1).in(SpuClassification::getName, param.getName()).and(i -> i.eq(SpuClassification::getType, 1)).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -67,8 +67,8 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("spu_classification_id", entity.getPid());
         SpuClassification spuClass = this.getById(entity.getPid());
-        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2){
-            throw new ServiceException(500,"产品不可以有下级分类");
+        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2) {
+            throw new ServiceException(500, "产品不可以有下级分类");
         }
         this.update(spuClassification, QueryWrapper);
 
@@ -99,10 +99,10 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         //如果设为顶级 修改所有当前节点的父级
         SpuClassification classification = this.getById(param.getSpuClassificationId());
         SpuClassification pid = this.getById(classification.getPid());
-        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2){
-            throw new ServiceException(500,"产品不可以有下级分类");
+        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2) {
+            throw new ServiceException(500, "产品不可以有下级分类");
         }
-        
+
         if (classification.getPid() == 0) {
             List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
             for (SpuClassification spuClassification : spuClassifications) {
@@ -125,16 +125,15 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
         }
 
         if (ToolUtil.isNotEmpty(param.getPid())) {
-            List<SpuClassification> spuClassifications = this.query().in("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).list();
-            for (SpuClassification spuClassification : spuClassifications) {
-                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
-                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                for (Long aLong : longs) {
-                    if (param.getPid().equals(aLong)) {
-                        throw new ServiceException(500, "请勿循环添加");
-                    }
+            SpuClassification one = this.query().eq("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).one();
+            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : longs) {
+                if (param.getPid().equals(aLong)) {
+                    throw new ServiceException(500, "请勿循环添加");
                 }
             }
+
         }
 
 

@@ -10,10 +10,7 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -46,11 +43,9 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
@@ -111,7 +106,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("storehouse_positions_id", entity.getPid());
         this.update(positions, QueryWrapper);
-
         updateChildren(entity.getPid());
     }
 
@@ -128,17 +122,17 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         };
 
-        List<Long> skuIds = new ArrayList<>();
+        List<Long> idSet = new ArrayList<>();
         StorehousePositions positions = this.query().eq("storehouse_positions_id", id).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(positions)) {
             List<StorehousePositions> details = this.query().eq("pid", positions.getStorehousePositionsId()).eq("display", 1).list();
             for (StorehousePositions detail : details) {
-                skuIds.add(detail.getStorehousePositionsId());
+                idSet.add(detail.getStorehousePositionsId());
                 childrensSkuIds.add(detail.getStorehousePositionsId());
                 Map<String, List<Long>> childrenMap = this.getChildrens(detail.getStorehousePositionsId());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
-            result.put("children", skuIds);
+            result.put("children", idSet);
             result.put("childrens", childrensSkuIds);
         }
         return result;
@@ -150,6 +144,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void updateChildren(Long id) {
         List<StorehousePositions> positions = this.query().like("children", id).eq("display", 1).list();
         for (StorehousePositions storehousePositions : positions) {
+
             Map<String, List<Long>> childrenMap = getChildrens(id);
             JSONArray childrensjsonArray = JSONUtil.parseArray(storehousePositions.getChildrens());
             List<Long> longs = JSONUtil.toList(childrensjsonArray, Long.class);
@@ -194,10 +189,72 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
+    @Transactional
     public void update(StorehousePositionsParam param) {
 
         StorehousePositions oldEntity = getOldEntity(param);
         StorehousePositions newEntity = getEntity(param);
+
+        if (!oldEntity.getPid().equals(newEntity.getPid())) {
+            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
+            for (StorehousePositions positions : storehousePositions) {
+
+                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
+                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
+
+                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+                List<Long> newChildrenList = new ArrayList<>();
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                longs.remove(param.getStorehousePositionsId());
+
+                for (Long aLong : oldchildrenList) {
+                    if (aLong.equals(param.getStorehousePositionsId())) {
+                        newChildrenList.remove(aLong);
+                    }
+                }
+                positions.setChildren(JSONUtil.toJsonStr(newChildrenList));
+                positions.setChildrens(JSONUtil.toJsonStr(longs));
+                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
+            }
+
+        }
+
+        if (ToolUtil.isNotEmpty(param.getPid())) {
+            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
+            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : longs) {
+                if (param.getPid().equals(aLong)) {
+                    throw new ServiceException(500, "请勿循环添加");
+                }
+            }
+
+        }
+
+        // 更新当前节点，及下级
+        StorehousePositions storehousePositions = new StorehousePositions();
+        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+        List<Long> childrens = childrenMap.get("childrens");
+
+        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+            childrens.add(param.getStorehousePositionsId());
+        }
+
+        storehousePositions.setChildrens(JSON.toJSONString(childrens));
+        List<Long> children = childrenMap.get("children");
+
+        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+            children.add(param.getStorehousePositionsId());
+        }
+
+        storehousePositions.setChildren(JSON.toJSONString(children));
+        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("storehouse_positions_id", param.getPid());
+        this.update(storehousePositions, QueryWrapper);
+
+        updateChildren(param.getPid());
+        //---------------------------------------------------------------------------------------------------------------------
+
 
         if (ToolUtil.isNotEmpty(param.getPid()) && !newEntity.getPid().equals(oldEntity.getPid())) {
             List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query()
@@ -216,6 +273,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
         ToolUtil.copyProperties(newEntity, oldEntity);
         this.updateById(newEntity);
+
+
     }
 
     @Override
