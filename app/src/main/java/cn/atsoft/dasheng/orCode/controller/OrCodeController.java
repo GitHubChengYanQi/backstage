@@ -259,11 +259,12 @@ public class OrCodeController extends BaseController {
                     if (ToolUtil.isEmpty(sku)) {
                         throw new ServiceException(500, "当前物料不存在");
                     }
-                    SkuResult skuResult = new SkuResult();
-                    ToolUtil.copyProperties(sku, skuResult);
+                    List<Long> skuIds = new ArrayList<>();
+                    skuIds.add(sku.getSkuId());
+                    List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
                     SkuRequest skuRequest = new SkuRequest();
                     skuRequest.setType("sku");
-                    skuRequest.setResult(skuResult);
+                    skuRequest.setResult(skuResultListAndFormat.size() > 0 ? skuResultListAndFormat.get(0) : null);
                     return ResponseData.success(skuRequest);
                 case "spu":
                     Spu spu = spuService.query().eq("spu_id", codeBind.getFormId()).one();

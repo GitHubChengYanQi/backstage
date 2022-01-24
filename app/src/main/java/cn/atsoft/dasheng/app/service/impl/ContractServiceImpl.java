@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.app.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.ContractDetailParam;
 import cn.atsoft.dasheng.app.model.params.ErpOrderParam;
 import cn.atsoft.dasheng.app.model.params.OrderDetailsParam;
 import cn.atsoft.dasheng.app.model.result.*;
@@ -56,6 +57,8 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
     private OrderDetailsService orderDetailsService;
     @Autowired
     private ContractClassService contractClassService;
+    @Autowired
+    private ContractDetailService contractDetailService;
 
 
     @Override
@@ -75,7 +78,6 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
         Customer customer = customerService.getById(param.getPartyA());
         if (ToolUtil.isEmpty(customer)) {
             throw new ServiceException(500, "数据不存在");
-
         } else {
             Contract entity = getEntity(param);
             this.save(entity);
@@ -86,6 +88,16 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
                 add(contractResult);
             }};
             format(results);
+
+            if (ToolUtil.isNotEmpty(param.getContractDetailList()) && param.getContractDetailList().size() > 0){
+                for (ContractDetail contractDetail : param.getContractDetailList()) {
+                    contractDetail.setContractId(entity.getContractId());
+                    contractDetail.setTotalPrice(contractDetail.getSalePrice() * contractDetail.getQuantity());
+                }
+                contractDetailService.saveBatch(param.getContractDetailList());
+            }
+
+
             return results.get(0);
         }
     }
