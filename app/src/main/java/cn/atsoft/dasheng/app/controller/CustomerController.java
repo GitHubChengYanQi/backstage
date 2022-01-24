@@ -115,6 +115,7 @@ public class CustomerController extends BaseController {
             }else {
                 Customer entity = new Customer();
                 entity.setStatus(99);
+                entity.setSupply(99);
                 this.customerService.save(entity);
                 ToolUtil.copyProperties(entity,customerResult);
             }
