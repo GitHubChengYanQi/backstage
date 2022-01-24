@@ -5,6 +5,7 @@ import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -71,4 +72,5 @@ public interface StorehousePositionsBindService extends IService<StorehousePosit
     PageInfo<StorehousePositionsBindResult> findPageBySpec(StorehousePositionsBindParam param);
 
 
+    List<StorehousePositionsResult> sku2position(Long skuId);
 }

@@ -25,6 +25,7 @@ import cn.atsoft.dasheng.orCode.model.params.OrCodeExcel;
 import cn.atsoft.dasheng.orCode.model.params.OrCodeParam;
 import cn.atsoft.dasheng.orCode.model.result.*;
 import cn.atsoft.dasheng.orCode.model.result.InstockRequest;
+import cn.atsoft.dasheng.orCode.model.result.SkuRequest;
 import cn.atsoft.dasheng.orCode.model.result.StockRequest;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
@@ -80,6 +81,8 @@ public class OrCodeController extends BaseController {
     private OrCodeService orCodeService;
     @Autowired
     private OrCodeBindService orCodeBindService;
+    @Autowired
+    private SkuService skuService;
     @Autowired
     private SpuService spuService;
     @Autowired
@@ -251,6 +254,17 @@ public class OrCodeController extends BaseController {
         } else {
             String source = codeBind.getSource();
             switch (source) {
+                case "sku":
+                    Sku sku = skuService.query().eq("sku_id", codeBind.getFormId()).one();
+                    if (ToolUtil.isEmpty(sku)) {
+                        throw new ServiceException(500, "当前物料不存在");
+                    }
+                    SkuResult skuResult = new SkuResult();
+                    ToolUtil.copyProperties(sku, skuResult);
+                    SkuRequest skuRequest = new SkuRequest();
+                    skuRequest.setType("sku");
+                    skuRequest.setResult(skuResult);
+                    return ResponseData.success(skuRequest);
                 case "spu":
                     Spu spu = spuService.query().eq("spu_id", codeBind.getFormId()).one();
                     if (ToolUtil.isEmpty(spu)) {

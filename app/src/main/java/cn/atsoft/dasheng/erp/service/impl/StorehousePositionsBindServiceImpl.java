@@ -150,7 +150,22 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
 
     }
-
+    @Override
+    public List<StorehousePositionsResult> sku2position(Long skuId){
+        List<StorehousePositionsBind> positionsBinds = this.query().eq("sku_id", skuId).eq("display", 1).list();
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            positionIds.add(positionsBind.getPositionId());
+        }
+        List<StorehousePositions> storehousePositions = positionsService.listByIds(positionIds);
+        List<StorehousePositionsResult> results = new ArrayList<>();
+        for (StorehousePositions storehousePosition : storehousePositions) {
+            StorehousePositionsResult result = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePosition,result);
+            results.add(result);
+        }
+        return results;
+    }
     private Serializable getKey(StorehousePositionsBindParam param) {
         return param.getBindId();
     }
