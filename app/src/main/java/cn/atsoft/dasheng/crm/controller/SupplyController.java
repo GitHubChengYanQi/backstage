@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -171,6 +172,14 @@ public class SupplyController extends BaseController {
     public ResponseData getSupplyByLevel(@RequestBody SupplyParam supplyParam) {
         List<CustomerResult> level = this.supplyService.getSupplyByLevel(supplyParam.getLevelId(), supplyParam.getSkuIds());
         return ResponseData.success(level);
+    }
+
+    @RequestMapping(value = "/getSupplyByCustomer", method = RequestMethod.GET)
+    public ResponseData getSupplyByCustomer(@RequestParam Long id) {
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        List<SupplyResult> supplyByCustomerIds = this.supplyService.getSupplyByCustomerIds(ids);
+        return ResponseData.success(supplyByCustomerIds);
     }
 
 }

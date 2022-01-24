@@ -14,6 +14,7 @@ import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -102,9 +103,25 @@ public class CustomerController extends BaseController {
     @ApiOperation("详情")
     @Permission
     public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
-        Long customerId = customerParam.getCustomerId();
-        CustomerResult detail = customerService.detail(customerId);
-        return ResponseData.success(detail);
+        if (ToolUtil.isNotEmpty(customerParam) && ToolUtil.isNotEmpty(customerParam.getCustomerId())) {
+            Long customerId = customerParam.getCustomerId();
+            CustomerResult detail = customerService.detail(customerId);
+            return ResponseData.success(detail);
+        }else {
+            CustomerResult customerResult = new CustomerResult();
+            Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
+            if (ToolUtil.isNotEmpty(customer)){
+                ToolUtil.copyProperties(customer,customerResult);
+            }else {
+                Customer entity = new Customer();
+                entity.setStatus(99);
+                entity.setSupply(99);
+                this.customerService.save(entity);
+                ToolUtil.copyProperties(entity,customerResult);
+            }
+            return ResponseData.success(customerResult);
+        }
+
     }
 
     /**

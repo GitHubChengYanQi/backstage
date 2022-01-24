@@ -1,6 +1,9 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Storehouse;
+import cn.atsoft.dasheng.app.model.result.StorehouseResult;
+import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -40,6 +43,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
     private StorehousePositionsService positionsService;
 
     @Autowired
+    private StorehouseService storehouseService;
+
+    @Autowired
     private SkuService skuService;
 
     @Override
@@ -52,8 +58,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         this.save(entity);
         return entity;
     }
+
     @Override
-    public void bindBatch(StorehousePositionsBindParam param){
+    public void bindBatch(StorehousePositionsBindParam param) {
         List<StorehousePositionsBind> binds = new ArrayList<>();
         for (Long skuId : param.getSkuIds()) {
             StorehousePositionsBind bind = new StorehousePositionsBind();
@@ -150,22 +157,36 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
 
     }
+
     @Override
-    public List<StorehousePositionsResult> sku2position(Long skuId){
+    public List<StorehousePositionsResult> sku2position(Long skuId) {
         List<StorehousePositionsBind> positionsBinds = this.query().eq("sku_id", skuId).eq("display", 1).list();
+
+        List<Storehouse> storehouseList = storehouseService.list();
+
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositionsBind positionsBind : positionsBinds) {
             positionIds.add(positionsBind.getPositionId());
         }
-        List<StorehousePositions> storehousePositions = positionsService.listByIds(positionIds);
+        List<StorehousePositions> storehousePositions = positionIds.size() > 0 ? positionsService.listByIds(positionIds) : new ArrayList<>();
         List<StorehousePositionsResult> results = new ArrayList<>();
+
         for (StorehousePositions storehousePosition : storehousePositions) {
             StorehousePositionsResult result = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePosition,result);
+            ToolUtil.copyProperties(storehousePosition, result);
+            for (Storehouse storehouse : storehouseList) {
+                if (storehouse.getStorehouseId().equals(storehousePosition.getStorehouseId())){
+                    StorehouseResult storehouseResult = new StorehouseResult();
+                    ToolUtil.copyProperties(storehouse,storehouseResult);
+                    result.setStorehouseResult(storehouseResult);
+                }
+            }
             results.add(result);
         }
+
         return results;
     }
+
     private Serializable getKey(StorehousePositionsBindParam param) {
         return param.getBindId();
     }

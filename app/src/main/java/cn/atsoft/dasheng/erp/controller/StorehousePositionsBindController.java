@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -46,7 +47,8 @@ public class StorehousePositionsBindController extends BaseController {
         StorehousePositionsBind bind = this.storehousePositionsBindService.add(storehousePositionsBindParam);
         return ResponseData.success(bind);
     }
-  /**
+
+    /**
      * 批量新增接口
      *
      * @author song
@@ -108,6 +110,24 @@ public class StorehousePositionsBindController extends BaseController {
 
 
         return ResponseData.success(result);
+    }
+
+    /**
+     * 通过sku获取库位
+     *
+     * @author song
+     * @Date 2022-01-20
+     */
+    @RequestMapping(value = "/getPositions", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public List<StorehousePositionsResult> getPositions(@RequestBody StorehousePositionsBindParam storehousePositionsBindParam) {
+
+        if (ToolUtil.isNotEmpty(storehousePositionsBindParam.getSkuId())) {
+            return storehousePositionsBindService.sku2position(storehousePositionsBindParam.getSkuId());
+        }
+
+
+        return null;
     }
 
     /**

@@ -98,7 +98,7 @@
             parameterType="cn.atsoft.dasheng.app.model.params.CustomerParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_crm_customer where display = 1 and blacklist = 0
+        from daoxin_crm_customer where display = 1 and blacklist = 0 and status != 99
         <if test="paramCondition.customerName != null">
             and customer_name like CONCAT('%',#{paramCondition.customerName},'%')
         </if>
