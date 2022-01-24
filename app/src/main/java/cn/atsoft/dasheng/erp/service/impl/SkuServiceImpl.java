@@ -120,6 +120,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
             int count = skuService.count(new QueryWrapper<Sku>() {{
                 eq("standard", param.getStandard());
+                eq("display",1);
             }});
             if (count > 0) {
                 throw new ServiceException(500, "编码/成品码重复");
