@@ -15,6 +15,7 @@ import cn.atsoft.dasheng.crm.model.params.SupplyParam;
 import cn.atsoft.dasheng.crm.service.ContactsBindService;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.SkuBrandBind;
+import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.crm.model.result.SupplyResult;
 import cn.atsoft.dasheng.erp.service.SkuBrandBindService;
@@ -456,5 +457,43 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             }
         }
 
+    }
+
+    /**
+     * 根据供应商ids 查询绑定物料品牌返回
+     * @param customerIds
+     * @return
+     */
+    @Override
+    public List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds){
+        if (ToolUtil.isEmpty(customerIds)) {
+            return null;
+        }
+        List<Supply> supplies = this.query().in("customer_id", customerIds).eq("display", 1).list();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> brandIds = new ArrayList<>();
+        for (Supply supply : supplies) {
+            skuIds.add(supply.getSkuId());
+            brandIds.add(supply.getBrandId());
+        }
+        List<SkuResult> skuResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.getSkuResultListAndFormat(skuIds);
+        List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
+        List<SupplyResult> results = new ArrayList<>();
+        for (Supply supply : supplies) {
+            SupplyResult supplyResult = new SupplyResult();
+            ToolUtil.copyProperties(supply,supplyResult);
+            for (SkuResult skuResult : skuResults) {
+                if (supplyResult.getSkuId().equals(skuResult.getSkuId())){
+                    supplyResult.setSkuResult(skuResult);
+                }
+            }
+            for (BrandResult brandResult : brandResults) {
+                if (supplyResult.getBrandId().equals(brandResult.getBrandId())) {
+                    supplyResult.setBrandResult(brandResult);
+                }
+            }
+            results.add(supplyResult);
+        }
+        return results;
     }
 }

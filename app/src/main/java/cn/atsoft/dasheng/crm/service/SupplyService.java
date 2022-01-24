@@ -90,4 +90,5 @@ public interface SupplyService extends IService<Supply> {
 
     List<SupplyResult> getSupplyBySupplierId (Long supplierId);
 
+    List<SupplyResult> getSupplyByCustomerIds(List<Long> customerIds);
 }
