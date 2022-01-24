@@ -34,6 +34,8 @@ public class ProcurementPlanDetalResult implements Serializable {
 
     @ApiModelProperty("")
     private Long detailId;
+    private Integer money;
+
 
     private Integer status;
 

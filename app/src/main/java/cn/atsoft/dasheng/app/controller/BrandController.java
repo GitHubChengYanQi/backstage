@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import cn.atsoft.dasheng.app.wrapper.BrandSelectWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -120,9 +121,17 @@ public class BrandController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) BrandParam brandParam) {
         QueryWrapper<Brand> brandQueryWrapper = new QueryWrapper<>();
-        brandQueryWrapper.in("display", 1);
+        brandQueryWrapper.eq("display", 1);
+        if (ToolUtil.isNotEmpty(brandParam)){
+            if (brandParam.getIds() != null){
+                if (brandParam.getIds().size() == 0){
+                    return ResponseData.success(new ArrayList<>());
+                }
+                brandQueryWrapper.in("brand_id",brandParam.getIds());
+            }
+        }
         List<Map<String, Object>> list = this.brandService.listMaps(brandQueryWrapper);
         BrandSelectWrapper factory = new BrandSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();

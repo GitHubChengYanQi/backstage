@@ -174,6 +174,23 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
     }
 
     @Override
+    @Transactional
+    public void addOrder(ProcurementOrderParam param) throws Exception {
+        ProcurementOrder entity = getEntity(param);
+        this.save(entity);
+        List<ProcurementOrderDetailParam> params = param.getDetailParams();
+        List<ProcurementOrderDetail> details = new ArrayList<>();
+        for (ProcurementOrderDetailParam procurementOrderDetailParam : params) {
+            procurementOrderDetailParam.setProcurementOrderId(entity.getProcurementOrderId());
+            ProcurementOrderDetail procurementOrderDetail = new ProcurementOrderDetail();
+            ToolUtil.copyProperties(procurementOrderDetailParam, procurementOrderDetail);
+            details.add(procurementOrderDetail);
+
+        }
+        detailService.saveBatch(details);
+    }
+
+    @Override
     public void delete(ProcurementOrderParam param) {
         this.removeById(getKey(param));
     }

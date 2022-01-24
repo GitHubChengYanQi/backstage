@@ -32,6 +32,8 @@ public class ProcurementPlanDetalParam implements Serializable, BaseValidatingPa
     @ApiModelProperty("")
     private Long planId;
 
+    private Integer money;
+
     @ApiModelProperty("")
     private Long skuId;
 
