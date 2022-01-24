@@ -257,8 +257,10 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             } else {
                 codeId = orCodeBind.getOrCodeId();
             }
-            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + codeId;
-            String qrCode = qrCodeCreateService.createQrCode(url);
+//            String url = mobileService.getMobileConfig().getUrl() + "/cp/#/OrCode?id=" + codeId;
+//            String qrCode = qrCodeCreateService.createQrCode(url);
+            //二维码中只存放id
+            String qrCode = qrCodeCreateService.createQrCode(codeId.toString());
             templete = templete.replace("${qrCode}", qrCode);
         }
         if (templete.contains("${bind}")){
