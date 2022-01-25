@@ -256,7 +256,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     /**
-     * 自由入库
+     * 通过物料自由入库
      *
      * @param freeInStockParam
      */
@@ -299,8 +299,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
         List<Stock> stocks = stockService.getStockByInKind(inkinds, stockParam.getStoreHouseId());
-
-
         instock(inkinds, stocks, positionsMap, positionsBinds, stockParam.getStoreHouseId());  //入库
     }
 

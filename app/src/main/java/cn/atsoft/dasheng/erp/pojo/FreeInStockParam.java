@@ -21,7 +21,6 @@ public class FreeInStockParam {
     @Data
     public class PositionsInStock {
         private Long inkind;
-        private Long number;
         private Long positionsId;
     }
 }
