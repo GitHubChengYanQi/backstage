@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.purchase.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.model.params.ContractParam;
 import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -175,19 +176,88 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
 
     @Override
     @Transactional
-    public void addOrder(ProcurementOrderParam param) throws Exception {
+    public Long addOrder(ProcurementOrderParam param) throws Exception {
         ProcurementOrder entity = getEntity(param);
         this.save(entity);
-        List<ProcurementOrderDetailParam> params = param.getDetailParams();
         List<ProcurementOrderDetail> details = new ArrayList<>();
-        for (ProcurementOrderDetailParam procurementOrderDetailParam : params) {
-            procurementOrderDetailParam.setProcurementOrderId(entity.getProcurementOrderId());
-            ProcurementOrderDetail procurementOrderDetail = new ProcurementOrderDetail();
-            ToolUtil.copyProperties(procurementOrderDetailParam, procurementOrderDetail);
-            details.add(procurementOrderDetail);
+        if (ToolUtil.isNotEmpty(param.getContractId())) {
+            Contract contract = new Contract();
+            contract.setContractId(param.getContractId());
+            contract.setSource("采购单");
+            contract.setSourceId(entity.getProcurementOrderId());
+            contractService.updateById(contract);
+            List<ContractDetail> contractDetails = contractDetailService.lambdaQuery().eq(ContractDetail::getContractId, param.getContractId()).list();
+            for (ContractDetail contractDetail : contractDetails) {
+                ProcurementOrderDetail procurementOrderDetail = new ProcurementOrderDetail();
+                procurementOrderDetail.setProcurementOrderId(entity.getProcurementOrderId());
+                procurementOrderDetail.setBrandId(contractDetail.getBrandId());
+                procurementOrderDetail.setSkuId(contractDetail.getSkuId());
+                procurementOrderDetail.setCustomerId(contractDetail.getCustomerId());
+                procurementOrderDetail.setMoney(contractDetail.getSalePrice());
+                procurementOrderDetail.setNumber(Long.valueOf(contractDetail.getQuantity()));
+                details.add(procurementOrderDetail);
+            }
+        } else {
+            List<ProcurementOrderDetailParam> params = param.getDetailParams();
+            if (ToolUtil.isNotEmpty(param.getProcurementPlanId())){
+                ProcurementPlan procurementPlan = planService.getById(param.getProcurementPlanId());
+                if (ToolUtil.isEmpty(procurementPlan)) {
+                    throw new ServiceException(500, "请确认采购计划");
+                }
 
+                List<ProcurementPlanDetal> planDetals = new ArrayList<>();
+                for (ProcurementOrderDetailParam procurementOrderDetailParam : params) {
+
+                    ProcurementPlanDetal planDetal = new ProcurementPlanDetal();//更改采购计划详情状态
+                    planDetal.setDetailId(procurementOrderDetailParam.getDetailId());
+                    planDetal.setStatus(procurementOrderDetailParam.getStatus());
+                    planDetals.add(planDetal);
+
+                }
+                planDetailService.updateBatchById(planDetals);
+                planService.updateStatus(procurementPlan.getProcurementPlanId());
+            }
+            for (ProcurementOrderDetailParam procurementOrderDetailParam : params) {
+                procurementOrderDetailParam.setProcurementOrderId(entity.getProcurementOrderId());
+                ProcurementOrderDetail procurementOrderDetail = new ProcurementOrderDetail();
+                ToolUtil.copyProperties(procurementOrderDetailParam, procurementOrderDetail);
+                details.add(procurementOrderDetail);
+            }
         }
         detailService.saveBatch(details);
+
+        /**
+         * 添加进入流程审批
+         */
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "purchase").eq("status", 99).eq("module", "purchaseOrder").one();
+        if (ToolUtil.isNotEmpty(activitiProcess)) {
+            qualityTaskService.power(activitiProcess);//检查创建权限
+            ActivitiProcessTaskParam activitiProcessTaskParam = new ActivitiProcessTaskParam();
+            activitiProcessTaskParam.setTaskName(user.getName() + "新的采购单");
+            activitiProcessTaskParam.setQTaskId(entity.getProcurementOrderId());
+            activitiProcessTaskParam.setUserId(param.getCreateUser());
+            activitiProcessTaskParam.setFormId(entity.getProcurementOrderId());
+            activitiProcessTaskParam.setType("procurementOrder");
+            activitiProcessTaskParam.setProcessId(activitiProcess.getProcessId());
+            Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+            //添加log
+            activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
+            activitiProcessLogService.autoAudit(taskId, 1);
+            //添加小铃铛
+            wxCpSendTemplate.setSource("procurementOrder");
+            wxCpSendTemplate.setSourceId(taskId);
+        } else {
+            entity.setStatus(99);
+            this.updateById(entity);
+            List<Contract> contractList = contractService.query().eq("source_id", entity.getProcurementOrderId()).eq("source", "采购单").list();
+            for (Contract contract : contractList) {
+                contract.setDisplay(1);
+            }
+            contractService.updateBatchById(contractList);
+        }
+
+        return entity.getProcurementOrderId();
     }
 
     @Override
