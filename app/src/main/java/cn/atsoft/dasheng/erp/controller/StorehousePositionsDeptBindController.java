@@ -85,7 +85,7 @@ public class StorehousePositionsDeptBindController extends BaseController {
         StorehousePositionsDeptBindResult result = new StorehousePositionsDeptBindResult();
         ToolUtil.copyProperties(detail, result);
 
-        result.setValue(parentValue);
+//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 

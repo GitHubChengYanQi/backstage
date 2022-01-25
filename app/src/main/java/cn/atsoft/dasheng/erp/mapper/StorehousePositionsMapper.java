@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.erp.mapper;
 
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -27,7 +28,7 @@ public interface StorehousePositionsMapper extends BaseMapper<StorehousePosition
      * @author song
      * @Date 2021-10-29
      */
-    List<StorehousePositionsResult> customList(@Param("paramCondition") StorehousePositionsParam paramCondition);
+    List<StorehousePositionsResult> customList(@Param("paramCondition") StorehousePositionsParam paramCondition, @Param("dataScope")DataScope dataScope);
 
     /**
      * 获取map列表

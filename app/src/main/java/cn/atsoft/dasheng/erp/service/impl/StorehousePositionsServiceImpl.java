@@ -9,6 +9,7 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.Category;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -294,9 +295,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param) {
+    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param,DataScope dataScope) {
 
-        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param);
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param,dataScope);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
             positionIds.add(storehousePositions.getStorehousePositionsId());
