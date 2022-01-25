@@ -68,10 +68,6 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
     @Autowired
     private ActivitiAuditService auditService;
     @Autowired
-    private ActivitiProcessTaskService taskService;
-    @Autowired
-    private ActivitiProcessLogService logService;
-    @Autowired
     private CodingRulesService rulesService;
     @Autowired
     private WxCpSendTemplate wxCpSendTemplate;
@@ -265,7 +261,6 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         }
 
         List<PurchaseAsk> purchaseAsks = this.listByIds(askIds);
-
         List<Long> userIds = new ArrayList<>();
         for (PurchaseAsk purchaseAsk : purchaseAsks) {
             PurchaseAskResult askResult = new PurchaseAskResult();

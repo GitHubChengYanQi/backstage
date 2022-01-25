@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -345,6 +346,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 stockId = newStock.getStockId();
             }
             StockDetails stockDetails = new StockDetails();
+            Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
+            stockDetails.setDeptId(deptId);
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
             stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());

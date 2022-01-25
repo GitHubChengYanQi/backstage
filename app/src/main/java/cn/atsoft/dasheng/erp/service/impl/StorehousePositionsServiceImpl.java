@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -284,9 +285,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     @Override
     public StorehousePositionsResult positionsResultById(Long Id) {
 
-
         StorehousePositions storehousePositions = this.getById(Id);
-
 
         if (ToolUtil.isNotEmpty(storehousePositions) && ToolUtil.isEmpty(storehousePositions.getChildren())) {
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
@@ -457,6 +456,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      */
     private void recursive(StorehousePositionsResult result, List<StorehousePositionsResult> results) {
         List<StorehousePositionsResult> positionsList = new ArrayList<>();
+
 
         for (StorehousePositionsResult storehousePositionsResult : results) {
             if (storehousePositionsResult.getPid().equals(result.getStorehousePositionsId())) {

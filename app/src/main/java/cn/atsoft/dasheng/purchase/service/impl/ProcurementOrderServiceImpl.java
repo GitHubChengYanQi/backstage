@@ -33,6 +33,8 @@ import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -179,15 +181,12 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
         ProcurementOrder entity = getEntity(param);
         this.save(entity);
         List<ProcurementOrderDetailParam> params = param.getDetailParams();
-        List<ProcurementOrderDetail> details = new ArrayList<>();
+
         for (ProcurementOrderDetailParam procurementOrderDetailParam : params) {
             procurementOrderDetailParam.setProcurementOrderId(entity.getProcurementOrderId());
-            ProcurementOrderDetail procurementOrderDetail = new ProcurementOrderDetail();
-            ToolUtil.copyProperties(procurementOrderDetailParam, procurementOrderDetail);
-            details.add(procurementOrderDetail);
-
         }
-        detailService.saveBatch(details);
+        List<ProcurementOrderDetail> procurementOrderDetails = BeanUtil.copyToList(params, ProcurementOrderDetail.class, new CopyOptions());
+        detailService.saveBatch(procurementOrderDetails);
     }
 
     @Override
