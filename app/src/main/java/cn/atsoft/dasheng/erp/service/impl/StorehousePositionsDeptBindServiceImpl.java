@@ -65,7 +65,7 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
     }
 
     private Serializable getKey(StorehousePositionsDeptBindParam param){
-        return null;
+        return param.getBindId();
     }
 
     private Page<StorehousePositionsDeptBindResult> getPageContext() {

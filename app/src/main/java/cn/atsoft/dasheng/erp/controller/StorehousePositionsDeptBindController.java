@@ -22,7 +22,7 @@ import java.util.Map;
  * 库位权限绑定表控制器
  *
  * @author 
- * @Date 2022-01-25 09:18:11
+ * @Date 2022-01-25 09:24:15
  */
 @RestController
 @RequestMapping("/storehousePositionsDeptBind")
@@ -81,7 +81,7 @@ public class StorehousePositionsDeptBindController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     public ResponseData<StorehousePositionsDeptBindResult> detail(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
-        StorehousePositionsDeptBind detail = this.storehousePositionsDeptBindService.getById(storehousePositionsDeptBindParam.get());
+        StorehousePositionsDeptBind detail = this.storehousePositionsDeptBindService.getById(storehousePositionsDeptBindParam.getBindId());
         StorehousePositionsDeptBindResult result = new StorehousePositionsDeptBindResult();
         ToolUtil.copyProperties(detail, result);
 
