@@ -4,8 +4,10 @@ import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
@@ -179,10 +181,16 @@ public class StorehousePositionsController extends BaseController {
 //        List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
 
         //----------------------------换到service里面调用list---------------------------------------
-        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsService.findListBySpec(storehousePositionsParam);
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.storehousePositionsService.findListBySpec(storehousePositionsParam,null);
+        }else{
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.storehousePositionsService.findListBySpec(storehousePositionsParam,dataScope);
+        }
+//        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsService.findListBySpec(storehousePositionsParam);
 
 
-        return storehousePositionsResults;
+//        return storehousePositionsResults;
     }
 
     /**

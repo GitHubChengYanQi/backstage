@@ -366,9 +366,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param) {
+    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param,DataScope dataScope) {
 
-        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param);
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param,dataScope);
         List<Long> positionIds = new ArrayList<>();
         for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
             positionIds.add(storehousePositions.getStorehousePositionsId());
