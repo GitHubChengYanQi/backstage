@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.app.model.result.StockResult;
 import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -76,4 +77,5 @@ public interface StockService extends IService<Stock> {
 
      void batchDelete(List<Long> Ids);
 
+    List<Stock> getStockByInKind(List<Inkind> inkinds, Long houseId);
 }

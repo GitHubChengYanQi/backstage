@@ -15,4 +15,13 @@ public class FreeInStockParam {
     private Long positionsId;
 
     private String type;
+
+    private List<PositionsInStock> inStocks;  //库位入库
+
+    @Data
+    public class PositionsInStock {
+        private Long inkind;
+        private Long number;
+        private Long positionsId;
+    }
 }
