@@ -44,9 +44,6 @@ public class CustomerController extends BaseController {
     @Autowired
     private CustomerService customerService;
 
-    @Autowired
-    private UserService userService;
-
     /**
      * 新增接口
      *
@@ -59,8 +56,19 @@ public class CustomerController extends BaseController {
     public ResponseData addItem(@RequestBody CustomerParam customerParam) {
         Customer add = this.customerService.add(customerParam);
         return ResponseData.success(add);
+    }
 
 
+    /**
+     * 新增接口
+     *
+     * @author
+     * @Date 2021-07-23
+     */
+    @RequestMapping(value = "/enterprise", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public Customer enterprise() {
+        return this.customerService.lambdaQuery().eq(Customer::getStatus, 99).one();
     }
 
 
@@ -111,7 +119,7 @@ public class CustomerController extends BaseController {
             CustomerResult customerResult = new CustomerResult();
             Customer customer = customerService.query().eq("status", 99).eq("display", 1).one();
             if (ToolUtil.isNotEmpty(customer)){
-                ToolUtil.copyProperties(customer,customerResult);
+                customerResult = customerService.detail(customer.getCustomerId());
             }else {
                 Customer entity = new Customer();
                 entity.setStatus(99);
