@@ -56,8 +56,6 @@ public class ProcurementPlanDetalServiceImpl extends ServiceImpl<ProcurementPlan
 
     @Override
     public void add(ProcurementPlanDetalParam param) {
-
-
         ProcurementPlanDetal entity = getEntity(param);
         this.save(entity);
 

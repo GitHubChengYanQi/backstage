@@ -48,6 +48,19 @@ public class ProcurementOrderController extends BaseController {
     }
 
     /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2022-01-13
+     */
+    @RequestMapping(value = "/addOrder", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addOrder(@RequestBody ProcurementOrderParam procurementOrderParam) throws Exception {
+        this.procurementOrderService.addOrder(procurementOrderParam);
+        return ResponseData.success();
+    }
+
+    /**
      * 编辑接口
      *
      * @author song
