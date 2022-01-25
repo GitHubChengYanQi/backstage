@@ -271,7 +271,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                 skuIds.add(bind.getSkuId());
             }
             StringBuffer stringBuffer = new StringBuffer();
-            List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
+            List<SkuResult> skuResultListAndFormat = skuService.formatSkuResult(skuIds);
             for (SkuResult skuResult : skuResultListAndFormat) {
                 String name = skuResult.getSpuResult().getName();
                 String name1 = skuResult.getStandard();
