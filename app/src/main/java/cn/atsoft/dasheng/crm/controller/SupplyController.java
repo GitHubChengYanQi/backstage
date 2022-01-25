@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Param;
+import org.omg.CORBA.LongHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -176,8 +177,9 @@ public class SupplyController extends BaseController {
 
     @RequestMapping(value = "/getSupplyByCustomer", method = RequestMethod.GET)
     public ResponseData getSupplyByCustomer(@RequestParam Long id) {
-        List<Long> ids = new ArrayList<>();
-        ids.add(id);
+        List<Long> ids = new ArrayList<Long>(){{
+            add(id);
+        }};
         List<SupplyResult> supplyByCustomerIds = this.supplyService.getSupplyByCustomerIds(ids);
         return ResponseData.success(supplyByCustomerIds);
     }
