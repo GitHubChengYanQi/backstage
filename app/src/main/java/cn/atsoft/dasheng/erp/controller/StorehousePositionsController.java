@@ -270,40 +270,6 @@ public class StorehousePositionsController extends BaseController {
         //DeptTreeWrapper.clearNull(results);
 
         return ResponseData.success(results);
-    }
-
-    public ResponseData testShow(Long qrCodeId) {
-        OrCodeBind codeBind = orCodeBindService.query().eq("qr_code_id", qrCodeId).one();
-        StorehousePositions storehousePositions = storehousePositionsService.getById(codeBind.getFormId());
-
-        JSONArray objects = JSONArray.parseArray(storehousePositions.getChildrens());
-        List<Long> positionIds = new ArrayList<>();
-        for (Object object : objects) {
-            positionIds.add((long) object);
-        }
-        if (positionIds.size() == 0) {
-            positionIds.add(codeBind.getFormId());
-        }
-        List<Long> skuIds = new ArrayList<>();
-        List<StorehousePositionsBind> bind = storehousePositionsBindService.query().in("position_id", positionIds).list();
-        for (StorehousePositionsBind storehousePositionsBind : bind) {
-            skuIds.add(storehousePositionsBind.getSkuId());
-        }
-        List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
-
-
-        return ResponseData.success();
-
-    }
-
-
-
-
-
-
-
-
-
-
+    }   
 
 }
