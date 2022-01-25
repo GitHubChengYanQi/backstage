@@ -25,7 +25,7 @@ public class StockDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableField(value = "deptId", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "deptId", fill = FieldFill.INSERT)
     private Long deptId;
 
     /**
