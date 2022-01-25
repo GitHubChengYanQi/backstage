@@ -372,9 +372,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param, DataScope dataScope) {
+    public PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param) {
         Page<StorehousePositionsResult> pageContext = getPageContext();
-        IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
+        IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param);
         return PageFactory.createPageInfo(page);
     }
 
@@ -437,6 +437,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
      * @param ids
      * @return
      */
+    @Override
     public List<StorehousePositionsResult> positionsResults(List<Long> ids) {
         if (ToolUtil.isEmpty(ids)) {
             return new ArrayList<>();

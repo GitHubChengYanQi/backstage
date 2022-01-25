@@ -83,4 +83,6 @@ public interface StorehousePositionsService extends IService<StorehousePositions
 
 
     StorehousePositionsResult detail(Long id);
+
+    List<StorehousePositionsResult> positionsResults(List<Long> ids);
 }
