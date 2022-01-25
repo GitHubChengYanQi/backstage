@@ -116,9 +116,9 @@ public class StorehousePositionsController extends BaseController {
     }
 
     @RequestMapping(value = "/detail", method = RequestMethod.GET)
-    public ResponseData detail(@RequestParam Long id) {
-        StorehousePositionsResult detail = this.storehousePositionsService.detail(id);
-        return ResponseData.success(detail);
+    public ResponseData detail(@RequestParam  Long id) {
+        this.storehousePositionsService.detail(id);
+        return ResponseData.success();
     }
 
     /**

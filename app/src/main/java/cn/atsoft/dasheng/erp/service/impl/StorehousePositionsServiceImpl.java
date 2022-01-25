@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
@@ -9,6 +10,7 @@ import cn.atsoft.dasheng.app.service.StorehouseService;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
@@ -30,6 +32,8 @@ import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
@@ -368,9 +372,9 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param) {
+    public PageInfo<StorehousePositionsResult> findPageBySpec(StorehousePositionsParam param, DataScope dataScope) {
         Page<StorehousePositionsResult> pageContext = getPageContext();
-        IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<StorehousePositionsResult> page = this.baseMapper.customPageList(pageContext, param, dataScope);
         return PageFactory.createPageInfo(page);
     }
 
@@ -417,16 +421,19 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         StorehousePositionsResult result = new StorehousePositionsResult();
         ToolUtil.copyProperties(positions, result);
 
-        JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens()); //查询所有子集
-        List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-        List<StorehousePositionsResult> results = positionsResults(longs);
+        if (ToolUtil.isNotEmpty(positions)) {
+            JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens()); //查询所有子集
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            List<StorehousePositionsResult> results = positionsResults(longs);
 
-        recursive(result, results);
+            recursive(result, results);
+        }
         return result;
     }
 
     /**
      * 返回多个
+     *
      * @param ids
      * @return
      */
@@ -435,18 +442,15 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             return new ArrayList<>();
         }
         List<StorehousePositions> storehousePositions = this.listByIds(ids);
-        List<StorehousePositionsResult> results = new ArrayList<>();
 
-        for (StorehousePositions storehousePosition : storehousePositions) {
-            StorehousePositionsResult positionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePosition, positionsResult);
-            results.add(positionsResult);
-        }
-        return results;
+        List<StorehousePositionsResult> storehousePositionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+
+        return storehousePositionsResults;
     }
 
     /**
      * 递归取下级
+     *
      * @param result
      * @param results
      */
