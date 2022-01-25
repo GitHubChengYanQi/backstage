@@ -367,7 +367,31 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Override
     public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param) {
-        return null;
+
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param);
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
+            positionIds.add(storehousePositions.getStorehousePositionsId());
+        }
+        List<StorehousePositionsBind> binds = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("position_id", positionIds).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (StorehousePositionsBind bind : binds) {
+            skuIds.add(bind.getSkuId());
+        }
+        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        skuService.format(skuList);
+        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
+            List<SkuResult> skuResults = new ArrayList<>();
+            for (StorehousePositionsBind bind : binds) {
+                for (SkuResult result : skuList) {
+                    if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
+                        skuResults.add(result);
+                    }
+                }
+            }
+            storehousePositions.setSkuResults(skuResults);
+        }
+        return storehousePositionsResults;
     }
 
     @Override
