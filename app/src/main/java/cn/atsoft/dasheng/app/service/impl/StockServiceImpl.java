@@ -212,9 +212,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
      * @return
      */
     @Override
-    public List<Stock> getStockByInKind(List<Inkind> inkinds, Long houseId) {
+    public List<Stock> getStockByInKind(List<Inkind> inkinds, List<Long> houseId) {
         if (ToolUtil.isEmpty(inkinds)) {
-            throw  new ServiceException(500,"没有实物");
+            throw new ServiceException(500, "没有实物");
         }
 
         List<Long> brandIds = new ArrayList<>();
@@ -227,12 +227,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             customerIds.add(inkind.getCustomerId());
         }
 
-        List<Stock> stocks = this.query().in("sku_id", skuIds)
+        return this.query().in("sku_id", skuIds)
                 .in("brand_id", brandIds)
                 .in("customer_id", customerIds)
-                .eq("storehouse_id", houseId).list();
-
-        return stocks;
+                .in("storehouse_id", houseId).list();
     }
 
 

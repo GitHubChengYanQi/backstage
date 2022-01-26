@@ -268,12 +268,16 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", freeInStockParam.getPositionsId()).list();
         List<Inkind> inkinds = inkindService.listByIds(freeInStockParam.getInkindIds());
         Map<Long, Long> positionsMap = new HashMap<>();
-
+        Map<Long, Long> houseMap = new HashMap<>();
         for (Inkind inkind : inkinds) {
             positionsMap.put(inkind.getInkindId(), freeInStockParam.getPositionsId());
+            houseMap.put(inkind.getInkindId(), freeInStockParam.getStoreHouseId());
         }
-        List<Stock> stocks = stockService.getStockByInKind(inkinds, freeInStockParam.getStoreHouseId());
-        instock(inkinds, stocks, positionsMap, positionsBinds, freeInStockParam.getStoreHouseId());  //入库
+
+        List<Stock> stocks = stockService.getStockByInKind(inkinds, new ArrayList<Long>() {{
+            add(freeInStockParam.getStoreHouseId());
+        }});
+        instock(inkinds, stocks, positionsMap, positionsBinds, houseMap);  //入库
     }
 
     /**
@@ -286,10 +290,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<FreeInStockParam.PositionsInStock> inStocks = stockParam.getInStocks();
         List<Long> inkindIds = new ArrayList<>();
         Map<Long, Long> positionsMap = new HashMap<>();
+        Map<Long, Long> houseMap = new HashMap<>();
 
         for (FreeInStockParam.PositionsInStock inStock : inStocks) {  //先取实物
             inkindIds.add(inStock.getInkind());
             positionsMap.put(inStock.getInkind(), inStock.getPositionsId());  //实物对应的库位
+            houseMap.put(inStock.getInkind(), inStock.getStoreHouseId());
         }
 
         List<Long> positionsIds = new ArrayList<Long>() {{
@@ -301,8 +307,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", positionsIds).list();
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
-        List<Stock> stocks = stockService.getStockByInKind(inkinds, stockParam.getStoreHouseId());
-        instock(inkinds, stocks, positionsMap, positionsBinds, stockParam.getStoreHouseId());  //入库
+        List<Stock> stocks = stockService.getStockByInKind(inkinds, new ArrayList<Long>() {{
+            for (FreeInStockParam.PositionsInStock inStock : inStocks) {
+                add(inStock.getStoreHouseId());
+            }
+        }});
+        instock(inkinds, stocks, positionsMap, positionsBinds, houseMap);  //入库
     }
 
     /**
@@ -314,7 +324,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param binds     绑定关系
      * @param houseId   仓库
      */
-    private void instock(List<Inkind> inkinds, List<Stock> stocks, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Long houseId) {
+    private void instock(List<Inkind> inkinds, List<Stock> stocks, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Map<Long, Long> houseId) {
 
         List<StockDetails> stockDetailsList = new ArrayList<>();
         List<Long> stockIds = new ArrayList<>();
@@ -347,7 +357,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
                 newStock.setInventory(inkind.getNumber());
                 newStock.setBrandId(inkind.getBrandId());
                 newStock.setSkuId(inkind.getSkuId());
-                newStock.setStorehouseId(houseId);
+                newStock.setStorehouseId(houseId.get(inkind.getInkindId()));
                 newStock.setCustomerId(inkind.getCustomerId());
                 stockService.save(newStock);
                 stocks.add(newStock);
@@ -359,7 +369,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));
             stockDetails.setQrCodeId(qrMap.get(inkind.getInkindId()));
             stockDetails.setInkindId(inkind.getInkindId());
-            stockDetails.setStorehouseId(houseId);
+            stockDetails.setStorehouseId(houseId.get(inkind.getInkindId()));
             stockDetails.setCustomerId(inkind.getCustomerId());
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setSkuId(inkind.getSkuId());

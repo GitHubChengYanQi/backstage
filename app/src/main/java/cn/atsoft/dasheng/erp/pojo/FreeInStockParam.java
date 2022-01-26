@@ -22,5 +22,6 @@ public class FreeInStockParam {
     public class PositionsInStock {
         private Long inkind;
         private Long positionsId;
+        private Long storeHouseId;
     }
 }
