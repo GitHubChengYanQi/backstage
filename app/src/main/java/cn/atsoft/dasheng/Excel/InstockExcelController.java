@@ -2,22 +2,23 @@ package cn.atsoft.dasheng.Excel;
 
 
 import cn.atsoft.dasheng.Excel.pojo.InstockExcel;
-import cn.atsoft.dasheng.app.entity.Brand;
-import cn.atsoft.dasheng.app.entity.Customer;
-import cn.atsoft.dasheng.app.entity.Storehouse;
-import cn.atsoft.dasheng.app.service.BrandService;
-import cn.atsoft.dasheng.app.service.CustomerService;
-import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.app.entity.*;
+import cn.atsoft.dasheng.app.service.*;
 import cn.atsoft.dasheng.base.consts.ConstantsContext;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.service.SkuService;
-import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.entity.*;
+import cn.atsoft.dasheng.erp.model.params.InkindParam;
+import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.orCode.entity.OrCode;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
+import cn.atsoft.dasheng.orCode.model.params.OrCodeBindParam;
 import cn.atsoft.dasheng.orCode.model.result.BackCodeRequest;
 import cn.atsoft.dasheng.orCode.pojo.AutomaticBindResult;
 import cn.atsoft.dasheng.orCode.pojo.BatchAutomatic;
+import cn.atsoft.dasheng.orCode.service.OrCodeBindService;
 import cn.atsoft.dasheng.orCode.service.OrCodeService;
+import cn.hutool.core.map.BiMap;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import com.sun.org.apache.bcel.internal.generic.NEW;
@@ -32,7 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/Excel")
@@ -50,6 +53,19 @@ public class InstockExcelController {
     private StorehouseService storehouseService;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private InkindService inkindService;
+    @Autowired
+    private OrCodeBindService codeBindService;
+    @Autowired
+    private InstockOrderService orderService;
+    @Autowired
+    private StockService stockService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
+    @Autowired
+    private StockDetailsService stockDetailsService;
+
 
     /**
      * 上传excel填报
@@ -81,6 +97,8 @@ public class InstockExcelController {
         List<String> suppliers = new ArrayList<>();
         List<String> houses = new ArrayList<>();
         List<String> positions = new ArrayList<>();
+        List<InstockExcel> errorList = new ArrayList<>();
+
 
         for (InstockExcel instockExcel : instockExcels) {
             standards.add(instockExcel.getStandard());
@@ -89,15 +107,11 @@ public class InstockExcelController {
             houses.add(instockExcel.getHouse());
             positions.add(instockExcel.getPosition());
         }
-
         List<Sku> skus = standards.size() == 0 ? new ArrayList<>() : skuService.query().in("standard", standards).eq("display", 1).list();
         List<Brand> brandList = brands.size() == 0 ? new ArrayList<>() : brandService.query().in("brand_name", brands).eq("display", 1).list();
         List<Customer> customers = suppliers.size() == 0 ? new ArrayList<>() : customerService.query().in("customer_name", suppliers).eq("display", 1).list();
         List<Storehouse> storehouses = houses.size() == 0 ? new ArrayList<>() : storehouseService.query().eq("name", houses).eq("display", 1).list();
         List<StorehousePositions> positionsList = positions.size() == 0 ? new ArrayList<>() : positionsService.query().eq("name", positions).eq("display", 1).list();
-
-
-        List<BackCodeRequest> backCodeRequests = new ArrayList<>();
         for (InstockExcel instockExcel : instockExcels) {
 
             BackCodeRequest backCodeRequest = new BackCodeRequest();
@@ -139,15 +153,119 @@ public class InstockExcelController {
                     break;
                 }
             }
-            backCodeRequests.add(backCodeRequest);
+
+        }  //添加物料信息
+
+        for (InstockExcel instockExcel : instockExcels) {
+            if (ToolUtil.isEmpty(instockExcel.getSkuId())
+                    || ToolUtil.isEmpty(instockExcel.getBrandId())
+                    || ToolUtil.isEmpty(instockExcel.getSupplierId())
+                    || ToolUtil.isEmpty(instockExcel.getNumber())
+                    || ToolUtil.isEmpty(instockExcel.getPositionId())
+                    || ToolUtil.isEmpty(instockExcel.getHouseId())
+            ) {
+                errorList.add(instockExcel);
+                break;
+            }
+//            Map<Long, Inkind> inkindMap = createInkind(instockExcel.getSkuId(), instockExcel.getBrandId(), instockExcel.getSupplierId(), instockExcel.getNumber());
+//            BiMap biMap = new BiMap(inkindMap);
+//
+//            instockExcel.setInkind(inkind);
+
+
+        }//创建实物
+
+        List<InstockExcel> instock = instock(instockExcels);
+        errorList.addAll(instock);
+        return ResponseData.success(errorList);
+    }
+
+    /**
+     * 绑定实物
+     *
+     * @param skuId
+     * @param brandId
+     * @param supplierId
+     * @param number
+     * @return
+     */
+    private AutomaticBindResult createInkind(Long skuId, Long brandId, Long supplierId, Long number) {
+
+
+        OrCode orCode = new OrCode();
+        orCode.setType("excel入库导入");
+        orCode.setState(1);
+        orCodeService.save(orCode);
+
+        Inkind inkind = new Inkind();
+        inkind.setSkuId(skuId);
+        inkind.setType("0");
+        inkind.setNumber(number);
+        inkind.setBrandId(brandId);
+        inkind.setSource("excel入库导入");
+        inkind.setCustomerId(supplierId);
+        inkindService.save(inkind);
+
+        OrCodeBind orCodeBind = new OrCodeBind();
+        orCodeBind.setOrCodeId(orCode.getOrCodeId());
+        orCodeBind.setFormId(inkind.getInkindId());
+        orCodeBind.setSource("excel入库导入");
+        codeBindService.save(orCodeBind);
+
+        return null;
+    }
+
+    private List<InstockExcel> instock(List<InstockExcel> instockExcels) {
+        List<InstockExcel> errorList = new ArrayList<>();
+        List<Long> stockIds = new ArrayList<>();
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        List<Inkind> inkinds = new ArrayList<>();
+
+        for (InstockExcel instockExcel : instockExcels) {
+            Inkind inkind = instockExcel.getInkind();
+            List<Stock> stocks = stockService.list();
+            Stock stock = orderService.judgeStockExist(inkind, stocks);
+            Boolean position = orderService.judgePosition(positionsBindService.list(), inkind);
+            if (position) {
+                errorList.add(instockExcel);
+            } else {
+                Long stockId = null;
+                if (ToolUtil.isNotEmpty(stock)) {
+                    stockId = stock.getStockId();
+                } else {  //没有相同库存
+                    Stock newStock = new Stock();
+                    newStock.setInventory(inkind.getNumber());
+                    newStock.setBrandId(inkind.getBrandId());
+                    newStock.setSkuId(inkind.getSkuId());
+                    newStock.setStorehouseId(instockExcel.getHouseId());
+                    newStock.setCustomerId(inkind.getCustomerId());
+                    stockService.save(newStock);
+                    stocks.add(newStock);
+                    stockId = newStock.getStockId();
+                }
+                StockDetails stockDetails = new StockDetails();
+                stockDetails.setStockId(stockId);
+                stockDetails.setNumber(inkind.getNumber());
+                stockDetails.setStorehousePositionsId(instockExcel.getPositionId());
+//                stockDetails.setQrCodeId();
+                stockDetails.setInkindId(inkind.getInkindId());
+                stockDetails.setStorehouseId(instockExcel.getHouseId());
+                stockDetails.setCustomerId(inkind.getCustomerId());
+                stockDetails.setBrandId(inkind.getBrandId());
+                stockDetails.setSkuId(inkind.getSkuId());
+                stockDetailsList.add(stockDetails);
+                inkind.setType("1");
+                inkinds.add(inkind);
+                stockIds.add(stockId);
+            }
+
         }
 
-        BatchAutomatic batchAutomatic = new BatchAutomatic();
-        batchAutomatic.setCodeRequests(backCodeRequests);
-
-        List<AutomaticBindResult> bindResults = orCodeService.batchAutomaticBinding(batchAutomatic);
-
-
-        return ResponseData.success();
+        stockDetailsService.saveBatch(stockDetailsList);
+        inkindService.updateBatchById(inkinds);
+        stockService.updateNumber(stockIds);
+        return errorList;
     }
+
+
 }

@@ -389,7 +389,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param stocks
      * @return
      */
-    private Stock judgeStockExist(Inkind inkind, List<Stock> stocks) {
+    @Override
+    public Stock judgeStockExist(Inkind inkind, List<Stock> stocks) {
         if (ToolUtil.isEmpty(stocks)) {
             return null;
         }
@@ -410,11 +411,12 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      * @param inkind
      * @return
      */
-    private Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind) {
+    @Override
+    public Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind) {
 
         for (StorehousePositionsBind positionsBind : positionsBinds) {
             if (positionsBind.getSkuId().equals(inkind.getSkuId())) {
-                return true;
+                return false;
             }
         }
         return true;

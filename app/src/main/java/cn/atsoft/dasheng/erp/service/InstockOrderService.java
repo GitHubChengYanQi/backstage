@@ -1,7 +1,10 @@
 package cn.atsoft.dasheng.erp.service;
 
+import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
 import cn.atsoft.dasheng.erp.model.request.InstockParams;
 import cn.atsoft.dasheng.erp.model.result.InstockOrderResult;
@@ -10,6 +13,7 @@ import cn.atsoft.dasheng.erp.pojo.InstockListRequest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -88,4 +92,9 @@ public interface InstockOrderService extends IService<InstockOrder> {
      * @param stockParam
      */
     void freeInStockByPositions(FreeInStockParam stockParam);
+
+
+    Stock judgeStockExist(Inkind inkind, List<Stock> stocks);
+
+    Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind);
 }

@@ -1,5 +1,7 @@
 package cn.atsoft.dasheng.Excel.pojo;
 
+import cn.atsoft.dasheng.erp.entity.Inkind;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 @Data
@@ -17,15 +19,19 @@ public class InstockExcel {
     private String supplier;        //供应商
 
 
-
+    @JSONField
     private Long skuId;
-
+    @JSONField
     private Long brandId;
-
+    @JSONField
     private Long supplierId;
-
+    @JSONField
     private Long positionId;
-
+    @JSONField
     private Long houseId;
+    @JSONField
+    private Inkind inkind;
+    @JSONField
+    private Long qrCodeId;
 
 }
