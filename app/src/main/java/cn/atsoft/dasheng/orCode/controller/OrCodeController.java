@@ -261,7 +261,7 @@ public class OrCodeController extends BaseController {
                     }
                     List<Long> skuIds = new ArrayList<>();
                     skuIds.add(sku.getSkuId());
-                    List<SkuResult> skuResultListAndFormat = skuService.getSkuResultListAndFormat(skuIds);
+                    List<SkuResult> skuResultListAndFormat = skuService.formatSkuResult(skuIds);
                     SkuRequest skuRequest = new SkuRequest();
                     skuRequest.setType("sku");
                     skuRequest.setResult(skuResultListAndFormat.size() > 0 ? skuResultListAndFormat.get(0) : null);
