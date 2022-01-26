@@ -8,4 +8,5 @@ import java.util.List;
 @Data
 public class BatchAutomatic {
     private List<BackCodeRequest> codeRequests;
+
 }

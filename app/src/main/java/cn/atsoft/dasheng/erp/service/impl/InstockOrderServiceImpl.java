@@ -269,7 +269,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         List<Inkind> inkinds = inkindService.listByIds(freeInStockParam.getInkindIds());
         Map<Long, Long> positionsMap = new HashMap<>();
 
-        for (Inkind inkind : inkinds) {     //计算相同实物的数量
+        for (Inkind inkind : inkinds) {
             positionsMap.put(inkind.getInkindId(), freeInStockParam.getPositionsId());
         }
         List<Stock> stocks = stockService.getStockByInKind(inkinds, freeInStockParam.getStoreHouseId());
@@ -291,11 +291,14 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             inkindIds.add(inStock.getInkind());
             positionsMap.put(inStock.getInkind(), inStock.getPositionsId());  //实物对应的库位
         }
-        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", new ArrayList<Long>() {{
+
+        List<Long> positionsIds = new ArrayList<Long>() {{
             for (FreeInStockParam.PositionsInStock inStock : inStocks) {
                 add(inStock.getPositionsId());
             }
-        }}).list();
+        }};
+
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", positionsIds).list();
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
         List<Stock> stocks = stockService.getStockByInKind(inkinds, stockParam.getStoreHouseId());
@@ -305,11 +308,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     /**
      * 入库操作逻辑
      *
-     * @param inkinds
-     * @param stocks
-     * @param positions
-     * @param binds
-     * @param houseId
+     * @param inkinds   实物
+     * @param stocks    库存
+     * @param positions 库位
+     * @param binds     绑定关系
+     * @param houseId   仓库
      */
     private void instock(List<Inkind> inkinds, List<Stock> stocks, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Long houseId) {
 
@@ -334,8 +337,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         for (Inkind inkind : inkinds) {
             Long stockId = null;
             Stock exist = judgeStockExist(inkind, stocks);
-            Boolean position = judgePosition(binds, inkind);
-            if (position) {
+            if (!judgePosition(binds, inkind)) {
                 throw new ServiceException(500, "入库的物料 未和库位绑定");
             }
             if (ToolUtil.isNotEmpty(exist)) {
