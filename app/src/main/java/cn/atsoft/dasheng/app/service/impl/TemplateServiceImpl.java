@@ -86,7 +86,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 
         for (TemplateResult datum : data) {
             for (ContractClass contractClass : contractClasses) {
-                if (datum.getContractClassId().equals(contractClass.getContractClassId())) {
+                if (ToolUtil.isNotEmpty(datum.getContractClassId()) && datum.getContractClassId().equals(contractClass.getContractClassId())) {
                     ContractClassResult classResult = new ContractClassResult();
                     ToolUtil.copyProperties(contractClass, classResult);
                     datum.setClassResult(classResult);

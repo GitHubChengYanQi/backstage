@@ -34,6 +34,8 @@ import cn.atsoft.dasheng.purchase.service.ProcurementPlanDetalService;
 import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -136,11 +138,11 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
 
         //添加合同
 
-        List<Long> customerIds = new ArrayList<>();
-        for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
-            customerIds.add(longListEntry.getKey());
-        }
-        addContract(customerIds, supplierMap, entity.getProcurementOrderId());
+//        List<Long> customerIds = new ArrayList<>();
+//        for (Map.Entry<Long, List<ProcurementOrderDetailParam>> longListEntry : supplierMap.entrySet()) {
+//            customerIds.add(longListEntry.getKey());
+//        }
+//        addContract(customerIds, supplierMap, entity.getProcurementOrderId());
         detailService.saveBatch(details);
         /**
          * 添加进入流程审批

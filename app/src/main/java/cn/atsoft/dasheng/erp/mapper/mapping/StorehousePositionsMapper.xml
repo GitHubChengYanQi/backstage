@@ -31,7 +31,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_storehouse_positions where 1 = 1
+        from daoxin_erp_storehouse_positions where 1 = 1 and display = 1
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
@@ -53,13 +53,14 @@
         <if test="paramCondition.pid != null">
             and pid = #{paramCondition.pid}
         </if>
+         order by sort ASC
     </select>
 
     <select id="customMapList" resultType="map"
             parameterType="cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_storehouse_positions where 1 = 1
+        from daoxin_erp_storehouse_positions where 1 = 1 display = 1
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>
@@ -115,7 +116,7 @@
             parameterType="cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_erp_storehouse_positions where 1 = 1
+        from daoxin_erp_storehouse_positions where 1 = 1 display = 1
         <if test="paramCondition.storehousePositionsId != null">
             and storehouse_positions_id like CONCAT('%',#{paramCondition.storehousePositionsId},'%')
         </if>

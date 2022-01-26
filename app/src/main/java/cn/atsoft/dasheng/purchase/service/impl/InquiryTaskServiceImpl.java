@@ -209,13 +209,10 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
             levelId.add(datum.getSupplierLevel());
             id.add(datum.getInquiryTaskId());
         }
+
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
-
         List<CrmCustomerLevel> crmCustomerLevels = levelId.size() == 0 ? new ArrayList<>() : levelService.listByIds(levelId);
-
-
         List<InquiryTaskDetail> taskDetails = id.size() == 0 ? new ArrayList<>() : detailService.lambdaQuery().in(InquiryTaskDetail::getInquiryTaskId, id).eq(InquiryTaskDetail::getDisplay, 1).list();
-
 
         for (InquiryTaskResult datum : data) {
 
@@ -267,14 +264,6 @@ public class InquiryTaskServiceImpl extends ServiceImpl<InquiryTaskMapper, Inqui
 
         taskResult.setDetailResults(detail);
 
-//        List<Long> sku = detailService.getSku(taskResult.getInquiryTaskId());
-
-//        //按等级返回供应商
-//        CrmCustomerLevel customerLevel = levelService.getById(taskResult.getSupplierLevel());
-//        if (ToolUtil.isNotEmpty(customerLevel)) {
-//            List<CustomerResult> suppliers = supplyService.getSupplyBySku(sku, customerLevel.getRank());
-//            taskResult.setCustomerResults(suppliers);
-//        }
         return taskResult;
     }
 

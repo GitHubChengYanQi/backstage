@@ -887,7 +887,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     }
                 }
             }
-            sb.deleteCharAt(sb.length() - 1);
+            if(sb.length()>1) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
             skuResult.setSkuTextValue(sb.toString());
             results.add(skuResult);
         }

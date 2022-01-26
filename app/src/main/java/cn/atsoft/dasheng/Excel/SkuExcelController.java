@@ -314,7 +314,7 @@ public class SkuExcelController {
                         }
 
                         Long valueId = 0L;
-                        AttributeValues attributeValues = valuesService.query().eq("attribute", specifications.getAttribute()).eq("attribute_values", specifications.getValue()).eq("display", 1).one();
+                        AttributeValues attributeValues = valuesService.query().eq("attribute_values", specifications.getAttribute()).eq("attribute_values", specifications.getValue()).eq("display", 1).one();
                         if (ToolUtil.isEmpty(attributeValues)){
                             AttributeValues values = new AttributeValues();
                             values.setAttributeValues(specifications.getValue());
@@ -324,9 +324,6 @@ public class SkuExcelController {
                         }else {
                             valueId = attributeValues.getAttributeValuesId();
                         }
-
-
-
                         value.setAttributeId(attributeId);
                         value.setAttributeValuesId(valueId);
                         list.add(value);

@@ -1,19 +1,19 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Adress;
 import cn.atsoft.dasheng.app.entity.StockDetails;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.config.MobileService;
-import cn.atsoft.dasheng.erp.entity.Category;
-import cn.atsoft.dasheng.erp.entity.Sku;
-import cn.atsoft.dasheng.erp.entity.StorehousePositions;
-import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
+import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
@@ -33,6 +33,8 @@ import cn.atsoft.dasheng.orCode.service.impl.QrCodeCreateService;
 import cn.atsoft.dasheng.printTemplate.entity.PrintTemplate;
 import cn.atsoft.dasheng.printTemplate.model.result.PrintTemplateResult;
 import cn.atsoft.dasheng.printTemplate.service.PrintTemplateService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
@@ -46,11 +48,9 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.atsoft.dasheng.form.pojo.PrintTemplateEnum.PHYSICALDETAIL;
@@ -84,7 +84,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
 
     @Autowired
     private OrCodeService codeService;
-
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
 
@@ -97,7 +96,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         }
 
-        Integer count = this.query().eq("name", param.getName()).eq("pid",param.getPid()).eq("display", 1).count();
+        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
         if (count > 0) {
             throw new ServiceException(500, "名字以重复");
         }
@@ -112,7 +111,6 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
         QueryWrapper.eq("storehouse_positions_id", entity.getPid());
         this.update(positions, QueryWrapper);
-
         updateChildren(entity.getPid());
     }
 
@@ -129,17 +127,17 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             }
         };
 
-        List<Long> skuIds = new ArrayList<>();
+        List<Long> idSet = new ArrayList<>();
         StorehousePositions positions = this.query().eq("storehouse_positions_id", id).eq("display", 1).one();
         if (ToolUtil.isNotEmpty(positions)) {
             List<StorehousePositions> details = this.query().eq("pid", positions.getStorehousePositionsId()).eq("display", 1).list();
             for (StorehousePositions detail : details) {
-                skuIds.add(detail.getStorehousePositionsId());
+                idSet.add(detail.getStorehousePositionsId());
                 childrensSkuIds.add(detail.getStorehousePositionsId());
                 Map<String, List<Long>> childrenMap = this.getChildrens(detail.getStorehousePositionsId());
                 childrensSkuIds.addAll(childrenMap.get("childrens"));
             }
-            result.put("children", skuIds);
+            result.put("children", idSet);
             result.put("childrens", childrensSkuIds);
         }
         return result;
@@ -151,6 +149,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     public void updateChildren(Long id) {
         List<StorehousePositions> positions = this.query().like("children", id).eq("display", 1).list();
         for (StorehousePositions storehousePositions : positions) {
+
             Map<String, List<Long>> childrenMap = getChildrens(id);
             JSONArray childrensjsonArray = JSONUtil.parseArray(storehousePositions.getChildrens());
             List<Long> longs = JSONUtil.toList(childrensjsonArray, Long.class);
@@ -195,25 +194,98 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
+    @Transactional
     public void update(StorehousePositionsParam param) {
-        Integer count = this.query().eq("name", param.getName()).eq("pid", param.getPid()).eq("display", 1).count();
-        if (count > 1) {
-            throw new ServiceException(500, "名字以重复");
+
+        StorehousePositions oldEntity = getOldEntity(param);
+        StorehousePositions newEntity = getEntity(param);
+
+        if (!oldEntity.getPid().equals(newEntity.getPid())) {
+            List<StorehousePositions> storehousePositions = this.query().like("childrens", param.getStorehousePositionsId()).list();
+            for (StorehousePositions positions : storehousePositions) {
+
+                JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens());
+                JSONArray childrenJson = JSONUtil.parseArray(positions.getChildren());
+
+                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+                List<Long> newChildrenList = new ArrayList<>();
+                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+                longs.remove(param.getStorehousePositionsId());
+
+                for (Long aLong : oldchildrenList) {
+                    if (aLong.equals(param.getStorehousePositionsId())) {
+                        newChildrenList.remove(aLong);
+                    }
+                }
+                positions.setChildren(JSONUtil.toJsonStr(newChildrenList));
+                positions.setChildrens(JSONUtil.toJsonStr(longs));
+                this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
+            }
+
         }
-        StorehousePositions positions = new StorehousePositions();
-        positions.setName(param.getName());
-        positions.setSort(param.getSort());
-        this.update(positions, new QueryWrapper<StorehousePositions>() {{
-            eq("storehouse_positions_id", param.getStorehousePositionsId());
-        }});
+
+        if (ToolUtil.isNotEmpty(param.getPid())) {
+            StorehousePositions one = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).eq("display", 1).one();
+            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            for (Long aLong : longs) {
+                if (param.getPid().equals(aLong)) {
+                    throw new ServiceException(500, "请勿循环添加");
+                }
+            }
+
+        }
+
+        // 更新当前节点，及下级
+        StorehousePositions storehousePositions = new StorehousePositions();
+        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+        List<Long> childrens = childrenMap.get("childrens");
+
+        if (childrens.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+            childrens.add(param.getStorehousePositionsId());
+        }
+
+        storehousePositions.setChildrens(JSON.toJSONString(childrens));
+        List<Long> children = childrenMap.get("children");
+
+        if (children.stream().noneMatch(i -> i.equals(param.getStorehousePositionsId()))) {
+            children.add(param.getStorehousePositionsId());
+        }
+
+        storehousePositions.setChildren(JSON.toJSONString(children));
+        QueryWrapper<StorehousePositions> QueryWrapper = new QueryWrapper<>();
+        QueryWrapper.eq("storehouse_positions_id", param.getPid());
+        this.update(storehousePositions, QueryWrapper);
+
+        updateChildren(param.getPid());
+        //---------------------------------------------------------------------------------------------------------------------
+
+
+        if (ToolUtil.isNotEmpty(param.getPid()) && !newEntity.getPid().equals(oldEntity.getPid())) {
+            List<StorehousePositionsBind> positionsBinds = storehousePositionsBindService.query()
+                    .eq("position_id", newEntity.getPid()).eq("display", 1).list();
+            if (ToolUtil.isNotEmpty(positionsBinds)) {
+                throw new ServiceException(500, "上级库位已绑定物料，不可修改位置");
+            }
+        }
+
+        if (!oldEntity.getName().equals(newEntity.getName())) {
+            Integer count = this.query().eq("name", newEntity.getName()).eq("pid", newEntity.getPid()).count();
+            if (count > 0) {
+                throw new ServiceException(500, "名字以重复");
+            }
+        }
+
+        ToolUtil.copyProperties(newEntity, oldEntity);
+        this.updateById(newEntity);
+
+
     }
 
     @Override
     public StorehousePositionsResult positionsResultById(Long Id) {
 
-
         StorehousePositions storehousePositions = this.getById(Id);
-
 
         if (ToolUtil.isNotEmpty(storehousePositions) && ToolUtil.isEmpty(storehousePositions.getChildren())) {
             StorehousePositionsResult positionsResult = new StorehousePositionsResult();
@@ -263,7 +335,7 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
             String qrCode = qrCodeCreateService.createQrCode(codeId.toString());
             templete = templete.replace("${qrCode}", qrCode);
         }
-        if (templete.contains("${bind}")){
+        if (templete.contains("${bind}")) {
             List<StorehousePositionsBind> binds = storehousePositionsBindService.query().eq("position_id", param.getStorehousePositionsId()).list();
             List<Long> skuIds = new ArrayList<>();
             for (StorehousePositionsBind bind : binds) {
@@ -294,8 +366,32 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
     }
 
     @Override
-    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param) {
-        return null;
+    public List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param,DataScope dataScope) {
+
+        List<StorehousePositionsResult> storehousePositionsResults = this.baseMapper.customList(param,dataScope);
+        List<Long> positionIds = new ArrayList<>();
+        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
+            positionIds.add(storehousePositions.getStorehousePositionsId());
+        }
+        List<StorehousePositionsBind> binds = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("position_id", positionIds).list();
+        List<Long> skuIds = new ArrayList<>();
+        for (StorehousePositionsBind bind : binds) {
+            skuIds.add(bind.getSkuId());
+        }
+        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
+        skuService.format(skuList);
+        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
+            List<SkuResult> skuResults = new ArrayList<>();
+            for (StorehousePositionsBind bind : binds) {
+                for (SkuResult result : skuList) {
+                    if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
+                        skuResults.add(result);
+                    }
+                }
+            }
+            storehousePositions.setSkuResults(skuResults);
+        }
+        return storehousePositionsResults;
     }
 
     @Override
@@ -334,6 +430,65 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
         }
         System.out.println(listArrayList);
         return resultMap;
+    }
+
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public StorehousePositionsResult detail(Long id) {
+        StorehousePositions positions = this.getById(id);
+        StorehousePositionsResult result = new StorehousePositionsResult();
+        ToolUtil.copyProperties(positions, result);
+
+        if (ToolUtil.isNotEmpty(positions)) {
+            JSONArray jsonArray = JSONUtil.parseArray(positions.getChildrens()); //查询所有子集
+            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+            List<StorehousePositionsResult> results = positionsResults(longs);
+
+            recursive(result, results);
+        }
+        return result;
+    }
+
+    /**
+     * 返回多个
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<StorehousePositionsResult> positionsResults(List<Long> ids) {
+        if (ToolUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<StorehousePositions> storehousePositions = this.listByIds(ids);
+
+        List<StorehousePositionsResult> storehousePositionsResults = BeanUtil.copyToList(storehousePositions, StorehousePositionsResult.class, new CopyOptions());
+
+        return storehousePositionsResults;
+    }
+
+    /**
+     * 递归取下级
+     *
+     * @param result
+     * @param results
+     */
+    private void recursive(StorehousePositionsResult result, List<StorehousePositionsResult> results) {
+        List<StorehousePositionsResult> positionsList = new ArrayList<>();
+
+
+        for (StorehousePositionsResult storehousePositionsResult : results) {
+            if (storehousePositionsResult.getPid().equals(result.getStorehousePositionsId())) {
+                positionsList.add(storehousePositionsResult);
+                recursive(storehousePositionsResult, results);
+            }
+        }
+        result.setStorehousePositionsResults(positionsList);
     }
 
     private Serializable getKey(StorehousePositionsParam param) {

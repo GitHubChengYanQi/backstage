@@ -13,13 +13,16 @@ import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.Sku;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.model.result.BackSku;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.SpuResult;
 import cn.atsoft.dasheng.erp.service.InkindService;
 import cn.atsoft.dasheng.erp.service.SkuService;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.orCode.entity.OrCodeBind;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -58,6 +61,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     private StorehousePositionsService positionsService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
     @Override
     public Long add(StockParam param) {
@@ -198,6 +203,38 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         stockQueryWrapper.in("stock_id", Ids);
         this.update(stock, stockQueryWrapper);
     }
+
+    /**
+     * 通过实物查找库存
+     *
+     * @param inkinds
+     * @param houseId
+     * @return
+     */
+    @Override
+    public List<Stock> getStockByInKind(List<Inkind> inkinds, Long houseId) {
+        if (ToolUtil.isEmpty(inkinds)) {
+            throw  new ServiceException(500,"没有实物");
+        }
+
+        List<Long> brandIds = new ArrayList<>();
+        List<Long> skuIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
+
+        for (Inkind inkind : inkinds) {
+            brandIds.add(inkind.getBrandId());
+            skuIds.add(inkind.getSkuId());
+            customerIds.add(inkind.getCustomerId());
+        }
+
+        List<Stock> stocks = this.query().in("sku_id", skuIds)
+                .in("brand_id", brandIds)
+                .in("customer_id", customerIds)
+                .eq("storehouse_id", houseId).list();
+
+        return stocks;
+    }
+
 
     private Serializable getKey(StockParam param) {
         return param.getStockId();

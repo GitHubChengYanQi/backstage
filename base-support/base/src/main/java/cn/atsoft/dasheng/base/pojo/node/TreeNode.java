@@ -56,8 +56,12 @@ public class TreeNode implements Tree {
     @ApiModelProperty("Tree组件子集")
     private List<TreeNode> children;
 
+
     @ApiModelProperty("排序")
     private String sort;
+
+    @ApiModelProperty("备注")
+    private String note;
 
     /**
      * 创建tree的父级节点

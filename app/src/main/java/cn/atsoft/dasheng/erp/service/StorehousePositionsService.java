@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
@@ -62,7 +63,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
      * @author song
      * @Date 2021-10-29
      */
-    List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param);
+    List<StorehousePositionsResult> findListBySpec(StorehousePositionsParam param, DataScope dataScope);
 
     /**
      * 查询分页数据，Specification模式
@@ -82,5 +83,7 @@ public interface StorehousePositionsService extends IService<StorehousePositions
     Map<String, Map<String,Object>> takeStock (StorehousePositionsParam param);
 
 
+    StorehousePositionsResult detail(Long id);
 
+    List<StorehousePositionsResult> positionsResults(List<Long> ids);
 }

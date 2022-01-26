@@ -6,6 +6,7 @@ import cn.atsoft.dasheng.app.model.params.BusinessTrackParam;
 import cn.atsoft.dasheng.app.model.params.StockDetailsParam;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.*;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -82,6 +83,8 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     private WxCpSendTemplate wxCpSendTemplate;
     @Autowired
     private StorehousePositionsService positionsService;
+    @Autowired
+    private StorehousePositionsBindService positionsBindService;
 
     @Override
     @Transactional
@@ -253,102 +256,115 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
     }
 
     /**
-     * 自由入库
+     * 通过物料自由入库
      *
      * @param freeInStockParam
      */
     @Override
+    @Transactional
     public void freeInstock(FreeInStockParam freeInStockParam) {
 
-        //判断库位
-        List<StorehousePositions> pid = positionsService.query().eq("pid", freeInStockParam.getPositionsId()).list();
-        if (ToolUtil.isNotEmpty(pid)) {
-            throw new ServiceException(500, "请选择最下级库位");
+        //判断库位绑定
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", freeInStockParam.getPositionsId()).list();
+        List<Inkind> inkinds = inkindService.listByIds(freeInStockParam.getInkindIds());
+        Map<Long, Long> positionsMap = new HashMap<>();
+
+        for (Inkind inkind : inkinds) {     //计算相同实物的数量
+            positionsMap.put(inkind.getInkindId(), freeInStockParam.getPositionsId());
         }
+        List<Stock> stocks = stockService.getStockByInKind(inkinds, freeInStockParam.getStoreHouseId());
+        instock(inkinds, stocks, positionsMap, positionsBinds, freeInStockParam.getStoreHouseId());  //入库
+    }
 
+    /**
+     * 通过库位自由入库
+     */
+    @Override
+    @Transactional
+    public void freeInStockByPositions(FreeInStockParam stockParam) {
 
-        List<Inkind> inkinds = inkindService.query().in("inkind_id", freeInStockParam.getInkindIds()).eq("type", 0).list();
+        List<FreeInStockParam.PositionsInStock> inStocks = stockParam.getInStocks();
+        List<Long> inkindIds = new ArrayList<>();
+        Map<Long, Long> positionsMap = new HashMap<>();
 
-
-        List<OrCodeBind> orCodeBinds = bindService.query().in("form_id", new ArrayList<Long>() {{
-            for (Inkind inkind : inkinds) {
-                add(inkind.getInkindId());
+        for (FreeInStockParam.PositionsInStock inStock : inStocks) {  //先取实物
+            inkindIds.add(inStock.getInkind());
+            positionsMap.put(inStock.getInkind(), inStock.getPositionsId());  //实物对应的库位
+        }
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", new ArrayList<Long>() {{
+            for (FreeInStockParam.PositionsInStock inStock : inStocks) {
+                add(inStock.getPositionsId());
             }
         }}).list();
 
-        List<Long> brandIds = new ArrayList<>();
-        List<Long> skuIds = new ArrayList<>();
-        List<Long> customerIds = new ArrayList<>();
-        Map<Long, Long> inkindNumber = new HashMap<>();
+        List<Inkind> inkinds = inkindService.listByIds(inkindIds);
+        List<Stock> stocks = stockService.getStockByInKind(inkinds, stockParam.getStoreHouseId());
+        instock(inkinds, stocks, positionsMap, positionsBinds, stockParam.getStoreHouseId());  //入库
+    }
 
-        for (Inkind inkind : inkinds) {     //计算相同实物的数量
-            brandIds.add(inkind.getBrandId());
-            skuIds.add(inkind.getSkuId());
-            customerIds.add(inkind.getCustomerId());
+    /**
+     * 入库操作逻辑
+     *
+     * @param inkinds
+     * @param stocks
+     * @param positions
+     * @param binds
+     * @param houseId
+     */
+    private void instock(List<Inkind> inkinds, List<Stock> stocks, Map<Long, Long> positions, List<StorehousePositionsBind> binds, Long houseId) {
 
-            Long number = inkindNumber.get(inkind.getInkindId());
-            if (ToolUtil.isEmpty(number)) {
-                inkindNumber.put(inkind.getInkindId(), inkind.getNumber());
-            } else {
-                inkindNumber.put(inkind.getInkindId(), number + inkind.getNumber());
-            }
+        List<StockDetails> stockDetailsList = new ArrayList<>();
+        List<Long> stockIds = new ArrayList<>();
+        List<Long> inkindIds = new ArrayList<>();
+
+        for (Inkind inkind : inkinds) {  //获取二维码
+            inkindIds.add(inkind.getInkindId());
         }
+        List<OrCodeBind> codeBinds = bindService.query().in("form_id", inkindIds).list();
+        Map<Long, Long> qrMap = new HashMap<>();
 
-
-        List<Stock> stockList = stockService.lambdaQuery().eq(Stock::getStorehouseId, freeInStockParam.getStoreHouseId())  //查询库存
-                .in(Stock::getSkuId, skuIds)
-                .in(Stock::getBrandId, brandIds)
-                .in(Stock::getCustomerId, customerIds)
-                .list();
-
-
-        Map<Long, Long> map = new HashMap<>();  //实物 组合 二维码id
-
-        for (OrCodeBind codeBind : orCodeBinds) {
-            for (Long codeId : freeInStockParam.getInkindIds()) {
-                if (codeBind.getFormId().equals(codeId)) {
-                    map.put(codeBind.getFormId(), codeBind.getOrCodeId());
-                    break;
+        for (OrCodeBind bind : codeBinds) {
+            for (Inkind inkind : inkinds) {
+                if (bind.getFormId().equals(inkind.getInkindId())) {
+                    qrMap.put(inkind.getInkindId(), bind.getOrCodeId());
                 }
             }
         }
 
-        List<StockDetails> stockDetailsList = new ArrayList<>();
-        List<Long> stockIds = new ArrayList<>();
-
         for (Inkind inkind : inkinds) {
             Long stockId = null;
-            Stock exist = judgeStockExist(inkind, stockList);
+            Stock exist = judgeStockExist(inkind, stocks);
+            Boolean position = judgePosition(binds, inkind);
+            if (position) {
+                throw new ServiceException(500, "入库的物料 未和库位绑定");
+            }
             if (ToolUtil.isNotEmpty(exist)) {
                 stockId = exist.getStockId();
             } else {  //没有相同库存
                 Stock newStock = new Stock();
-                newStock.setInventory(inkindNumber.get(inkind.getInkindId()));
+                newStock.setInventory(inkind.getNumber());
                 newStock.setBrandId(inkind.getBrandId());
                 newStock.setSkuId(inkind.getSkuId());
-                newStock.setStorehouseId(freeInStockParam.getStoreHouseId());
+                newStock.setStorehouseId(houseId);
                 newStock.setCustomerId(inkind.getCustomerId());
                 stockService.save(newStock);
-                stockList.add(newStock);
+                stocks.add(newStock);
                 stockId = newStock.getStockId();
             }
             StockDetails stockDetails = new StockDetails();
             stockDetails.setStockId(stockId);
             stockDetails.setNumber(inkind.getNumber());
-            stockDetails.setStorehousePositionsId(freeInStockParam.getPositionsId());
-            Long codeId = map.get(inkind.getInkindId());
-            stockDetails.setQrCodeId(codeId);
+            stockDetails.setStorehousePositionsId(positions.get(inkind.getInkindId()));
+            stockDetails.setQrCodeId(qrMap.get(inkind.getInkindId()));
             stockDetails.setInkindId(inkind.getInkindId());
-            stockDetails.setStorehouseId(freeInStockParam.getStoreHouseId());
+            stockDetails.setStorehouseId(houseId);
             stockDetails.setCustomerId(inkind.getCustomerId());
             stockDetails.setBrandId(inkind.getBrandId());
             stockDetails.setSkuId(inkind.getSkuId());
             stockDetailsList.add(stockDetails);
             inkind.setType("1");
-
             stockIds.add(stockId);
         }
-
         stockDetailsService.saveBatch(stockDetailsList);
         inkindService.updateBatchById(inkinds);
         stockService.updateNumber(stockIds);
@@ -372,6 +388,24 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }
         return null;
+    }
+
+
+    /**
+     * 当前物料和库位是否绑定
+     *
+     * @param positionsBinds
+     * @param inkind
+     * @return
+     */
+    private Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind) {
+
+        for (StorehousePositionsBind positionsBind : positionsBinds) {
+            if (positionsBind.getSkuId().equals(inkind.getSkuId())) {
+                return true;
+            }
+        }
+        return true;
     }
 
 

@@ -264,103 +264,78 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
         if (ToolUtil.isEmpty(supplierLevel)) {
             throw new ServiceException(500, "请提交等级");
         }
-        CrmCustomerLevel level = levelService.getById(supplierLevel);
+        CrmCustomerLevel level = levelService.getById(supplierLevel);   //当前等级
 
         if (ToolUtil.isEmpty(level)) {
             throw new ServiceException(500, "请确定等级");
         }
 
-        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
+        List<SupplyResult> supplyBySku = getSupplyBySku(skuIds);//查询物料供应商对应关系
 
         List<Long> customerIds = new ArrayList<>();
         List<Long> brandIds = new ArrayList<>();
 
-        for (Supply supply : supplies) {
+        for (SupplyResult supply : supplyBySku) {
             customerIds.add(supply.getCustomerId());
             brandIds.add(supply.getBrandId());
         }
 
         List<CustomerResult> customerResults = customerService.getResults(customerIds);
-
-        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-
-        Map<Long, List<BrandResult>> brandMap = new HashMap<>();   //通过sku筛选品牌
-
-        for (Supply supply : supplies) {
-            List<BrandResult> brandResultList = new ArrayList<>();
-            for (BrandResult brandResult : brandResults) {
-                brandResultList.add(brandResult);
-                List<BrandResult> results = brandMap.get(supply.getSkuId());
-                if (ToolUtil.isEmpty(results)) {
-                    brandMap.put(supply.getSkuId(), results);
-                } else {
-                    results.addAll(brandResultList);
-                    brandMap.put(supply.getSkuId(), results);
-                }
-            }
-        }
-
-        List<Long> supplierIds = new ArrayList<>();
-        List<CustomerResult> levelCustomerResult = new ArrayList<>();  //过滤等级
-
+        List<CustomerResult> levelCustomerResult = new ArrayList<>();  //取等级合格的供应商
         for (CustomerResult customerResult : customerResults) {
             if (ToolUtil.isNotEmpty(customerResult.getLevel()) && customerResult.getLevel().getRank() >= level.getRank()) {
                 levelCustomerResult.add(customerResult);
-                supplierIds.add(customerResult.getCustomerId());
             }
         }
-        List<Supply> supplyList = supplierIds.size() == 0 ? new ArrayList<>() : this.query().in("customer_id", supplierIds).list();
-        skuIds.clear();
 
-        for (Supply supply : supplyList) {
-            skuIds.add(supply.getSkuId());
-        }
+        List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
         List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
 
-        for (SkuResult skuResult : skuResults) {
-            List<BrandResult> results = brandMap.get(skuResult.getSkuId());
-            skuResult.setBrandResultList(results);
-        }
-
-        //取供应商的供应的物料
-        Map<Long, List<SkuResult>> map = new HashMap<>();
-        for (Supply supply : supplies) {
-
-            List<SkuResult> skuResultList = new ArrayList<>();
+        //组合
+        for (SupplyResult supply : supplyBySku) {
             for (SkuResult skuResult : skuResults) {
                 if (skuResult.getSkuId().equals(supply.getSkuId())) {
-                    skuResultList.add(skuResult);
+                    supply.setSkuResult(skuResult);
+                    break;
                 }
             }
-            List<SkuResult> results = map.get(supply.getCustomerId());
-            if (ToolUtil.isNotEmpty(results)) {
-                skuResultList.addAll(results);
+            for (BrandResult brandResult : brandResults) {
+                if (brandResult.getBrandId().equals(supply.getBrandId())) {
+                    supply.setBrandResult(brandResult);
+                    break;
+                }
             }
-            map.put(supply.getCustomerId(), skuResultList);
-
-
         }
 
         for (CustomerResult customerResult : levelCustomerResult) {
-            List<SkuResult> skuResultList = map.get(customerResult.getCustomerId());
-            customerResult.setSkuResultList(skuResultList);
-        }
-
-        for (Supply supply : supplyList) {
-            for (CustomerResult customerResult : levelCustomerResult) {
-                for (SkuResult skuResult : customerResult.getSkuResultList()) {
-                    for (BrandResult brandResult : brandResults) {
-                        if (supply.getSkuId().equals(skuResult.getSkuId()) && supply.getCustomerId().equals(customerResult.getCustomerId()) && supply.getBrandId().equals(brandResult.getBrandId())) {
-                            skuResult.setBrandResult(brandResult);
-                            skuResult.setBrandId(brandResult.getBrandId());
-                        }
-                    }
+            List<SupplyResult> supplyResults = new ArrayList<>();
+            for (SupplyResult supplyResult : supplyBySku) {
+                if (supplyResult.getCustomerId().equals(customerResult.getCustomerId())) {
+                    supplyResults.add(supplyResult);
                 }
             }
+            customerResult.setSupplyResults(supplyResults);
         }
 
-
         return levelCustomerResult;
+    }
+
+    /**
+     * 通过sku查询对应关系
+     *
+     * @param skuIds
+     * @return
+     */
+    public List<SupplyResult> getSupplyBySku(List<Long> skuIds) {
+        List<Supply> supplies = skuIds.size() == 0 ? new ArrayList<>() : this.query().in("sku_id", skuIds).list();  //查询物料供应商对应关系
+
+        List<SupplyResult> supplyResults = new ArrayList<>();
+        for (Supply supply : supplies) {
+            SupplyResult supplyResult = new SupplyResult();
+            ToolUtil.copyProperties(supply, supplyResult);
+            supplyResults.add(supplyResult);
+        }
+        return supplyResults;
     }
 
     @Override

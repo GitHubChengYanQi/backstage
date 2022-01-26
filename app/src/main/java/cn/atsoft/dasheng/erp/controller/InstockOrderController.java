@@ -66,6 +66,13 @@ public class InstockOrderController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/freeInStockByPositions", method = RequestMethod.POST)
+    @ApiOperation("通过库位自由入库")
+    public ResponseData freeInStockByPositions(@RequestBody FreeInStockParam freeInStockParam) {
+        this.instockOrderService.freeInStockByPositions(freeInStockParam);
+        return ResponseData.success();
+    }
+
     /**
      * 自由入库
      *

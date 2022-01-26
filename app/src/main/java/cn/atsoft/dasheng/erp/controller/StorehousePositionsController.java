@@ -4,8 +4,10 @@ import cn.atsoft.dasheng.app.entity.BusinessTrack;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.service.BusinessTrackService;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
 import cn.atsoft.dasheng.erp.entity.Sku;
 import cn.atsoft.dasheng.erp.entity.StorehousePositions;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
@@ -28,6 +30,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -38,9 +41,7 @@ import cn.atsoft.dasheng.erp.wrapper.StorehousePositionsSelectWrapper;
 import cn.atsoft.dasheng.base.pojo.node.TreeNode;
 import cn.atsoft.dasheng.core.treebuild.DefaultTreeBuildFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -123,6 +124,12 @@ public class StorehousePositionsController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    public ResponseData detail(@RequestParam Long id) {
+        this.storehousePositionsService.detail(id);
+        return ResponseData.success();
+    }
+
     /**
      * 查看详情接口
      *
@@ -164,41 +171,25 @@ public class StorehousePositionsController extends BaseController {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
-        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("display", 1);
-        queryWrapper.orderByAsc("sort");
-        if (ToolUtil.isNotEmpty(storehousePositionsParam.getStorehouseId())) {
-            queryWrapper.in("storehouse_id", storehousePositionsParam.getStorehouseId());
-        }
-        List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
-        List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
-        List<Long> positionIds = new ArrayList<>();
-        for (StorehousePositions storehousePositions : storehousePositionsList) {
-            positionIds.add(storehousePositions.getStorehousePositionsId());
-            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePositions, storehousePositionsResult);
-            storehousePositionsResults.add(storehousePositionsResult);
-        }
-        List<StorehousePositionsBind> binds = positionIds.size() == 0 ? new ArrayList<>() : storehousePositionsBindService.query().in("position_id", positionIds).list();
-        List<Long> skuIds = new ArrayList<>();
-        for (StorehousePositionsBind bind : binds) {
-            skuIds.add(bind.getSkuId());
-        }
-        List<SkuResult> skuList = skuIds.size() == 0 ? new ArrayList<>() : skuService.backSkuList(skuIds);
-        skuService.format(skuList);
-        for (StorehousePositionsResult storehousePositions : storehousePositionsResults) {
-            List<SkuResult> skuResults = new ArrayList<>();
-            for (StorehousePositionsBind bind : binds) {
-                for (SkuResult result : skuList) {
-                    if (storehousePositions.getStorehousePositionsId().equals(bind.getPositionId()) && bind.getSkuId().equals(result.getSkuId())) {
-                        skuResults.add(result);
-                    }
-                }
-            }
-            storehousePositions.setSkuResults(skuResults);
-        }
+//        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("display", 1);
+//        queryWrapper.orderByAsc("sort");
+//        if (ToolUtil.isNotEmpty(storehousePositionsParam.getStorehouseId())) {
+//            queryWrapper.in("storehouse_id", storehousePositionsParam.getStorehouseId());
+//        }
+//        List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
 
-        return storehousePositionsResults;
+        //----------------------------换到service里面调用list---------------------------------------
+        if (LoginContextHolder.getContext().isAdmin()) {
+            return this.storehousePositionsService.findListBySpec(storehousePositionsParam, null);
+        } else {
+            DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
+            return this.storehousePositionsService.findListBySpec(storehousePositionsParam, dataScope);
+        }
+//        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsService.findListBySpec(storehousePositionsParam);
+
+
+//        return storehousePositionsResults;
     }
 
     /**
@@ -210,6 +201,9 @@ public class StorehousePositionsController extends BaseController {
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
     public ResponseData<List<Map<String, Object>>> listSelect() {
+
+
+
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         StorehousePositionsSelectWrapper factory = new StorehousePositionsSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();
@@ -259,6 +253,7 @@ public class StorehousePositionsController extends BaseController {
             treeNode.setTitle(Convert.toStr(item.get("name")));
             treeNode.setLabel(Convert.toStr(item.get("name")));
             treeNode.setSort(Convert.toStr(item.get("sort")));
+            treeNode.setNote(Convert.toStr(item.get("note")));
             treeViewNodes.add(treeNode);
         }
         //构建树
@@ -270,6 +265,6 @@ public class StorehousePositionsController extends BaseController {
         //DeptTreeWrapper.clearNull(results);
 
         return ResponseData.success(results);
-    }   
+    }
 
 }

@@ -83,4 +83,9 @@ public interface InstockOrderService extends IService<InstockOrder> {
      */
     void freeInstock(FreeInStockParam freeInStockParam);
 
+    /**
+     * 多个库位入库
+     * @param stockParam
+     */
+    void freeInStockByPositions(FreeInStockParam stockParam);
 }
