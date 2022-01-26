@@ -19,7 +19,7 @@ public class FreeInStockParam {
     private List<PositionsInStock> inStocks;  //库位入库
 
     @Data
-    public class PositionsInStock {
+    public static class PositionsInStock {
         private Long inkind;
         private Long positionsId;
         private Long storeHouseId;

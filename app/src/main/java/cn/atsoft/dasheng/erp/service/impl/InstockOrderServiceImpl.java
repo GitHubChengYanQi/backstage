@@ -345,9 +345,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         for (Inkind inkind : inkinds) {
-            Long stockId = null;
+            Long stockId;
             Stock exist = judgeStockExist(inkind, stocks);
-            if (!judgePosition(binds, inkind)) {
+            if (judgePosition(binds, inkind)) {
                 throw new ServiceException(500, "入库的物料 未和库位绑定");
             }
             if (ToolUtil.isNotEmpty(exist)) {
