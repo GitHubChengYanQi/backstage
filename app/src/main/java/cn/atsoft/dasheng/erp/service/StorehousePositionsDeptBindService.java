@@ -58,6 +58,8 @@ public interface StorehousePositionsDeptBindService extends IService<StorehouseP
      */
     List<StorehousePositionsDeptBindResult> findListBySpec(StorehousePositionsDeptBindParam param);
 
+    List<StorehousePositionsDeptBindResult> getBindByPositionIds(List<Long> positionIds);
+
     /**
      * 查询分页数据，Specification模式
      *

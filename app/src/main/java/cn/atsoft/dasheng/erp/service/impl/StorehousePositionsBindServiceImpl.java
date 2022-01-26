@@ -15,10 +15,12 @@ import cn.atsoft.dasheng.erp.mapper.StorehousePositionsBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsBindParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsBindResult;
+import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsResult;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -50,6 +52,9 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
 
     @Autowired
     private SkuService skuService;
+
+    @Autowired
+    private StorehousePositionsDeptBindService storehousePositionsDeptBindService;
 
     @Override
     public StorehousePositionsBind add(StorehousePositionsBindParam param) {
@@ -171,37 +176,34 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         for (StorehousePositionsBind positionsBind : positionsBinds) {
             positionIds.add(positionsBind.getPositionId());
         }
-        List<StorehousePositions> storehousePositions = positionIds.size() > 0 ? positionsService.listByIds(positionIds) : new ArrayList<>();
-        List<StorehousePositionsResult> results = new ArrayList<>();
+        List<StorehousePositionsDeptBindResult> bindByPositionIds = positionIds.size() > 0 ? storehousePositionsDeptBindService.getBindByPositionIds(positionIds) : new ArrayList<>();
+        positionIds.clear();
         Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
+        List<StorehousePositionsResult> results = new ArrayList<>();
+        for (StorehousePositionsDeptBindResult bindByPositionId : bindByPositionIds) {
+            if (bindByPositionId.getDeptIds().stream().anyMatch(i->i.equals(deptId))){
+                positionIds.add(bindByPositionId.getStorehousePositionsId());
+            }
+        }
 
 
+        List<StorehousePositions> storehousePositions = positionIds.size() > 0 ? positionsService.listByIds(positionIds) : new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {
-            StorehousePositionsResult result = new StorehousePositionsResult();
-            ToolUtil.copyProperties(storehousePosition, result);
+            StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
+            ToolUtil.copyProperties(storehousePosition, storehousePositionsResult);
             for (Storehouse storehouse : storehouseList) {
                 if (storehouse.getStorehouseId().equals(storehousePosition.getStorehouseId())){
                     StorehouseResult storehouseResult = new StorehouseResult();
                     ToolUtil.copyProperties(storehouse,storehouseResult);
-                    result.setStorehouseResult(storehouseResult);
+                    storehousePositionsResult.setStorehouseResult(storehouseResult);
                 }
             }
-            results.add(result);
+            results.add(storehousePositionsResult);
         }
 
         return results;
     }
-    private  void getBind(List<Long> positionIds){
-        List<StorehousePositionsBind> storehousePositionsBinds = this.list(new QueryWrapper<StorehousePositionsBind>() {{
-            in("position_id", positionIds);
-            eq("display", 1);
-        }});
-        for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
-            if (ToolUtil.isNotEmpty(storehousePositionsBind.getDeptId())){
-                
-            }
-        }
-    }
+
 
     private Serializable getKey(StorehousePositionsBindParam param) {
         return param.getBindId();

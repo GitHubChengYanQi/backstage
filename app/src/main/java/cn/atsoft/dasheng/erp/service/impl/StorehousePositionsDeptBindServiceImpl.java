@@ -3,19 +3,24 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsDeptBind;
 import cn.atsoft.dasheng.erp.mapper.StorehousePositionsDeptBindMapper;
 import cn.atsoft.dasheng.erp.model.params.StorehousePositionsDeptBindParam;
 import cn.atsoft.dasheng.erp.model.result.StorehousePositionsDeptBindResult;
 import  cn.atsoft.dasheng.erp.service.StorehousePositionsDeptBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -56,7 +61,25 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
     public List<StorehousePositionsDeptBindResult> findListBySpec(StorehousePositionsDeptBindParam param){
         return null;
     }
-
+    @Override
+    public  List<StorehousePositionsDeptBindResult> getBindByPositionIds(List<Long> positionIds){
+        List<StorehousePositionsDeptBind> positionsDeptBinds = this.list(new QueryWrapper<StorehousePositionsDeptBind>() {{
+            in("position_id", positionIds);
+            eq("display", 1);
+        }});
+        List<StorehousePositionsDeptBindResult> results = new ArrayList<>();
+        for (StorehousePositionsDeptBind storehousePositionsDeptBind : positionsDeptBinds) {
+            StorehousePositionsDeptBindResult result = new StorehousePositionsDeptBindResult();
+            ToolUtil.copyProperties(storehousePositionsDeptBind,result);
+            List<Long> deptId = new ArrayList<>();
+            if (ToolUtil.isNotEmpty(storehousePositionsDeptBind.getDeptId())){
+                deptId  =  Arrays.asList(storehousePositionsDeptBind.getDeptId().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            }
+            result.setDeptIds(deptId);
+            results.add(result);
+        }
+        return results;
+    }
     @Override
     public PageInfo<StorehousePositionsDeptBindResult> findPageBySpec(StorehousePositionsDeptBindParam param){
         Page<StorehousePositionsDeptBindResult> pageContext = getPageContext();
