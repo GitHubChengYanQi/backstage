@@ -4,6 +4,8 @@ package cn.atsoft.dasheng.erp.service.impl;
 import cn.atsoft.dasheng.app.entity.Storehouse;
 import cn.atsoft.dasheng.app.model.result.StorehouseResult;
 import cn.atsoft.dasheng.app.service.StorehouseService;
+import cn.atsoft.dasheng.base.auth.context.LoginContext;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.Sku;
@@ -19,6 +21,7 @@ import cn.atsoft.dasheng.erp.service.StorehousePositionsBindService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.erp.service.StorehousePositionsService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -170,6 +173,8 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
         List<StorehousePositions> storehousePositions = positionIds.size() > 0 ? positionsService.listByIds(positionIds) : new ArrayList<>();
         List<StorehousePositionsResult> results = new ArrayList<>();
+        Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
+
 
         for (StorehousePositions storehousePosition : storehousePositions) {
             StorehousePositionsResult result = new StorehousePositionsResult();
@@ -185,6 +190,17 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         }
 
         return results;
+    }
+    private  void getBind(List<Long> positionIds){
+        List<StorehousePositionsBind> storehousePositionsBinds = this.list(new QueryWrapper<StorehousePositionsBind>() {{
+            in("position_id", positionIds);
+            eq("display", 1);
+        }});
+        for (StorehousePositionsBind storehousePositionsBind : storehousePositionsBinds) {
+            if (ToolUtil.isNotEmpty(storehousePositionsBind.getDeptId())){
+                
+            }
+        }
     }
 
     private Serializable getKey(StorehousePositionsBindParam param) {
