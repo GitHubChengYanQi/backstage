@@ -975,6 +975,8 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
     }
 
 
+
+
     /**
      * 自动绑定
      *

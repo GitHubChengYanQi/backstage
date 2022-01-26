@@ -16,7 +16,7 @@ import java.util.List;
  * 仓库总表 服务类
  * </p>
  *
- * @author 
+ * @author
  * @since 2021-07-15
  */
 public interface StockService extends IService<Stock> {
@@ -24,7 +24,7 @@ public interface StockService extends IService<Stock> {
     /**
      * 新增
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     Long add(StockParam param);
@@ -32,7 +32,7 @@ public interface StockService extends IService<Stock> {
     /**
      * 删除
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     void delete(StockParam param);
@@ -40,16 +40,16 @@ public interface StockService extends IService<Stock> {
     /**
      * 更新
      *
-     * @author 
-     * @Date 2021-07-15
      * @return
+     * @author
+     * @Date 2021-07-15
      */
     Long update(StockParam param);
 
     /**
      * 查询单条数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     StockResult findBySpec(StockParam param);
@@ -57,7 +57,7 @@ public interface StockService extends IService<Stock> {
     /**
      * 查询列表，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
     List<StockResult> findListBySpec(StockParam param);
@@ -70,12 +70,12 @@ public interface StockService extends IService<Stock> {
     /**
      * 查询分页数据，Specification模式
      *
-     * @author 
+     * @author
      * @Date 2021-07-15
      */
-     PageInfo<StockResult> findPageBySpec(StockParam param, DataScope dataScope );
+    PageInfo<StockResult> findPageBySpec(StockParam param, DataScope dataScope);
 
-     void batchDelete(List<Long> Ids);
+    void batchDelete(List<Long> Ids);
 
-    List<Stock> getStockByInKind(List<Inkind> inkinds, Long houseId);
+    List<Stock> getStockByInKind(List<Inkind> inkinds, List<Long> houseId);
 }
