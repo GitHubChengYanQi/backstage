@@ -52,7 +52,7 @@ public class ProcurementOrderDetailResult implements Serializable {
      */
     @ApiModelProperty("品牌id")
     private Long brandId;
-    
+
     private Integer money;
 
     /**

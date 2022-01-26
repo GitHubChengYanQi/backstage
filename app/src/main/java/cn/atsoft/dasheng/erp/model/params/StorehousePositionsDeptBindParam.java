@@ -38,7 +38,7 @@ public class StorehousePositionsDeptBindParam implements Serializable, BaseValid
      * 部门id
      */
     @ApiModelProperty("部门id")
-    private Long deptId;
+    private String deptId;
 
     /**
      * 创建者

@@ -22,7 +22,7 @@ public class StorehousePositionsDeptBindResult implements Serializable {
 
 
     @ApiModelProperty("")
-    private Long bindId;
+    private String bindId;
 
     /**
      * 库位id
