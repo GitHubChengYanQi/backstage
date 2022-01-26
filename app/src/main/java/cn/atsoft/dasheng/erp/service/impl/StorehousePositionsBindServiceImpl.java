@@ -134,7 +134,7 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
             positionIds.add(bindResult.getPositionId());
         }
 
-        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.getSkuResultListAndFormat(skuIds);
+        List<SkuResult> skuResults = skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         List<StorehousePositions> storehousePositions = positionIds.size() == 0 ? new ArrayList<>() : positionsService.listByIds(positionIds);
         List<StorehousePositionsResult> storehousePositionsResults = new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {

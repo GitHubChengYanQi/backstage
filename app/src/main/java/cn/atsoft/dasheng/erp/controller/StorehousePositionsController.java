@@ -58,10 +58,10 @@ public class StorehousePositionsController extends BaseController {
 
     @Autowired
     private StorehousePositionsService storehousePositionsService;
-    @Autowired
-    private StorehouseService storehouseService;
+
     @Autowired
     private StorehousePositionsBindService storehousePositionsBindService;
+
     @Autowired
     private SkuService skuService;
     @Autowired
@@ -93,7 +93,6 @@ public class StorehousePositionsController extends BaseController {
         StorehousePositionsResult positionsResult = this.storehousePositionsService.positionsResultById(id);
         return ResponseData.success(positionsResult);
     }
-
 
     /**
      * 编辑接口
@@ -147,12 +146,8 @@ public class StorehousePositionsController extends BaseController {
         for (StorehousePositionsBind bind : binds) {
             skuIds.add(bind.getSkuId());
         }
-
         List<SkuResult> results = skuService.formatSkuResult(skuIds);
-
         result.setSkuResults(results);
-
-
         List<Map<String, Object>> list = this.storehousePositionsService.listMaps();
         List<String> parentValue = StorehousePositionsSelectWrapper.fetchParentKey(list, Convert.toStr(detail.getPid()));
         result.setPidValue(parentValue);
@@ -171,25 +166,13 @@ public class StorehousePositionsController extends BaseController {
         if (ToolUtil.isEmpty(storehousePositionsParam)) {
             storehousePositionsParam = new StorehousePositionsParam();
         }
-//        QueryWrapper<StorehousePositions> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("display", 1);
-//        queryWrapper.orderByAsc("sort");
-//        if (ToolUtil.isNotEmpty(storehousePositionsParam.getStorehouseId())) {
-//            queryWrapper.in("storehouse_id", storehousePositionsParam.getStorehouseId());
-//        }
-//        List<StorehousePositions> storehousePositionsList = storehousePositionsService.list(queryWrapper);
-
-        //----------------------------换到service里面调用list---------------------------------------
         if (LoginContextHolder.getContext().isAdmin()) {
             return this.storehousePositionsService.findListBySpec(storehousePositionsParam, null);
         } else {
             DataScope dataScope = new DataScope(LoginContextHolder.getContext().getDeptDataScope());
             return this.storehousePositionsService.findListBySpec(storehousePositionsParam, dataScope);
         }
-//        List<StorehousePositionsResult> storehousePositionsResults = storehousePositionsService.findListBySpec(storehousePositionsParam);
 
-
-//        return storehousePositionsResults;
     }
 
     /**
