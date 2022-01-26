@@ -64,7 +64,7 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
     @Override
     public  List<StorehousePositionsDeptBindResult> getBindByPositionIds(List<Long> positionIds){
         List<StorehousePositionsDeptBind> positionsDeptBinds = this.list(new QueryWrapper<StorehousePositionsDeptBind>() {{
-            in("position_id", positionIds);
+            in("storehouse_positions_id", positionIds);
             eq("display", 1);
         }});
         List<StorehousePositionsDeptBindResult> results = new ArrayList<>();

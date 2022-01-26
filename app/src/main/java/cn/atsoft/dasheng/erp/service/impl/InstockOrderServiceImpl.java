@@ -291,7 +291,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             inkindIds.add(inStock.getInkind());
             positionsMap.put(inStock.getInkind(), inStock.getPositionsId());  //实物对应的库位
         }
-        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", new ArrayList<Long>() {{
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("position_id", new ArrayList<Long>() {{
             for (FreeInStockParam.PositionsInStock inStock : inStocks) {
                 add(inStock.getPositionsId());
             }
@@ -402,7 +402,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
 
         for (StorehousePositionsBind positionsBind : positionsBinds) {
             if (positionsBind.getSkuId().equals(inkind.getSkuId())) {
-                return true;
+                return false;
             }
         }
         return true;
