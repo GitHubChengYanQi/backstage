@@ -35,7 +35,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">  contract_class_id
+    <sql id="Base_Column_List">  source_id AS "sourceId", source AS "source",contract_class_id
     AS "contractClassId",payment AS "payment" ,party_a_phone
     AS "partyAPhone",  party_b_phone AS "partyBPhone" ,deptId AS "deptId",
         party_a_adress_id AS "partyAAdressId", party_b_adress_id AS "partyBAdressId", party_a_contacts_id AS "partyAContactsId", party_b_contacts_id AS "partyBContactsId", audit
@@ -96,6 +96,12 @@
         </if>
         <if test="paramCondition.audit != null">
             and audit = #{paramCondition.audit}
+        </if>
+        <if test="paramCondition.source != null">
+            and source = #{paramCondition.source}
+        </if>
+        <if test="paramCondition.sourceId != null">
+            and source_id = #{paramCondition.sourceId}
         </if>
         <if test="paramCondition.deptId != null and paramCondition.deptId != 0">
             and (deptId = #{paramCondition.deptId} or deptId in ( select dept_id from sys_dept where pids like
