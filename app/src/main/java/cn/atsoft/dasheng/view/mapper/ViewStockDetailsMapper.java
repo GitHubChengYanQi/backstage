@@ -1,7 +1,9 @@
 package cn.atsoft.dasheng.view.mapper;
 
 import cn.atsoft.dasheng.view.entity.ViewStockDetails;
+import cn.atsoft.dasheng.view.model.params.TableViewParam;
 import cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam;
+import cn.atsoft.dasheng.view.model.result.TableViewResult;
 import cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -22,12 +24,28 @@ import java.util.Map;
 public interface ViewStockDetailsMapper extends BaseMapper<ViewStockDetails> {
 
     /**
-     * 获取列表
+     * 获取产品列表
      *
-     * @author 
-     * @Date 2022-01-27
+     * @author
+     * @Date 2021-11-04
      */
-    List<ViewStockDetailsResult> customList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+    List<ViewStockDetailsResult> classNameList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+
+    /**
+     * 获取型号列表
+     *
+     * @author
+     * @Date 2021-11-04
+     */
+    List<ViewStockDetailsResult> spuList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
+
+    /**
+     * 获取物料列表
+     *
+     * @author
+     * @Date 2021-11-04
+     */
+    List<ViewStockDetailsResult> skuList(@Param("paramCondition") ViewStockDetailsParam paramCondition);
 
     /**
      * 获取map列表

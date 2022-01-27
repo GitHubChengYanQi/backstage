@@ -1,8 +1,10 @@
 package cn.atsoft.dasheng.view.service.impl;
 
 
+import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.view.entity.ViewStockDetails;
 import cn.atsoft.dasheng.view.mapper.ViewStockDetailsMapper;
 import cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam;
@@ -12,6 +14,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -28,6 +31,9 @@ import java.util.List;
 @Service
 public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMapper, ViewStockDetails> implements ViewStockDetailsService {
 
+    @Autowired
+    StockDetailsService stockDetailsService;
+
 
     @Override
     public ViewStockDetailsResult findBySpec(ViewStockDetailsParam param) {
@@ -36,8 +42,16 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
 
     @Override
     public List<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param) {
-        List<ViewStockDetailsResult> results = this.baseMapper.customList(param);
-        return results;
+        switch (param.getType()){
+            case "sku":
+                return this.baseMapper.skuList(param);
+            case "className":
+                return this.baseMapper.classNameList(param);
+            case "spu":
+                return this.baseMapper.spuList(param);
+            default:
+                return null;
+        }
     }
 
     @Override

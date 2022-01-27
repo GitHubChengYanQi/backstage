@@ -26,6 +26,8 @@ public class ViewStockDetailsParam implements Serializable, BaseValidatingParam 
     @ApiModelProperty("")
     private Long skuId;
 
+    private String type;
+
     /**
      * 物品Id
      */
