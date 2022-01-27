@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.purchase.model.result;
 
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -21,6 +22,8 @@ public class ProcurementOrderResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer money;
+
+    private User user;
     /**
      * 采购单
      */
