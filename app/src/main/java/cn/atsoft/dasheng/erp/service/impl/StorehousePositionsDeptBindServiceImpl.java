@@ -36,9 +36,10 @@ public class StorehousePositionsDeptBindServiceImpl extends ServiceImpl<Storehou
     @Override
     public void add(StorehousePositionsDeptBindParam param){
         StorehousePositionsDeptBind entity = getEntity(param);
-        StorehousePositionsDeptBind storehousePositionsDeptBind = this.query().eq("storehouse_position_id", param.getStorehousePositionsId()).one();
+        StorehousePositionsDeptBind storehousePositionsDeptBind = this.query().eq("storehouse_positions_id", param.getStorehousePositionsId()).one();
         if (ToolUtil.isNotEmpty(storehousePositionsDeptBind)){
-            this.updateById(entity);
+            storehousePositionsDeptBind.setDeptId(param.getDeptId());
+            this.updateById(storehousePositionsDeptBind);
         }else {
             this.save(entity);
         }

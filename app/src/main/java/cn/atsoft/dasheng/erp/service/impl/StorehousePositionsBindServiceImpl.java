@@ -179,13 +179,13 @@ public class StorehousePositionsBindServiceImpl extends ServiceImpl<StorehousePo
         List<StorehousePositionsDeptBindResult> bindByPositionIds = positionIds.size() > 0 ? storehousePositionsDeptBindService.getBindByPositionIds(positionIds) : new ArrayList<>();
         List<StorehousePositionsResult> results = new ArrayList<>();
 
-//        positionIds.clear();
-//        Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
-//        for (StorehousePositionsDeptBindResult bindByPositionId : bindByPositionIds) {
-//            if (bindByPositionId.getDeptIds().stream().anyMatch(i->i.equals(deptId))){
-//                positionIds.add(bindByPositionId.getStorehousePositionsId());
-//            }
-//        }
+        positionIds.clear();
+        Long deptId = LoginContextHolder.getContext().getUser().getDeptId();
+        for (StorehousePositionsDeptBindResult bindByPositionId : bindByPositionIds) {
+            if (bindByPositionId.getDeptIds().stream().anyMatch(i->i.equals(deptId))){
+                positionIds.add(bindByPositionId.getStorehousePositionsId());
+            }
+        }
         List<StorehousePositions> storehousePositions = positionIds.size() > 0 ? positionsService.listByIds(positionIds) : new ArrayList<>();
         for (StorehousePositions storehousePosition : storehousePositions) {
             StorehousePositionsResult storehousePositionsResult = new StorehousePositionsResult();
