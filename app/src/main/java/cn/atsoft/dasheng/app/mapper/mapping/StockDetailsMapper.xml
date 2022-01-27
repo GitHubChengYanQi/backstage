@@ -41,12 +41,10 @@ stage
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
+
         from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}
-        </if>
-        <if test="paramCondition.itemId != null">
-            and item_id = #{paramCondition.itemId}
         </if>
         <if test="paramCondition.storehouseId != null">
             and storehouse_id = #{paramCondition.storehouseId}
@@ -54,8 +52,7 @@ stage
         <if test="paramCondition.brandId != null">
             and brand_id = #{paramCondition.brandId}
         </if>
-
-    </select>
+     </select>
 
     <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
@@ -125,6 +122,7 @@ stage
             parameterType="cn.atsoft.dasheng.app.model.params.StockDetailsParam">
         select
         <include refid="Base_Column_List"/>
+
         from daoxin_erp_stock_details where 1 = 1
         <if test="paramCondition.stockId != null">
             and stock_id = #{paramCondition.stockId}

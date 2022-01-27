@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.app.controller;
 
+import cn.atsoft.dasheng.app.model.params.StockParam;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.app.entity.StockDetails;
@@ -57,6 +58,12 @@ public class StockDetailsController extends BaseController {
 
         this.stockDetailsService.update(stockDetailsParam);
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "/groupList", method = RequestMethod.POST)
+    public ResponseData groupList(@RequestBody(required = false) StockDetailsParam stockDetailsParam) {
+        List<StockDetailsResult> listBySpec = this.stockDetailsService.findListBySpec(stockDetailsParam);
+        return ResponseData.success(listBySpec);
     }
 
     /**

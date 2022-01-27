@@ -53,8 +53,6 @@ public class StockController extends BaseController {
         Stock detail = this.stockService.getById(stockParam.getStockId());
         StockResult result = new StockResult();
         ToolUtil.copyProperties(detail, result);
-
-//        result.setValue(parentValue);
         return ResponseData.success(result);
     }
 
@@ -108,6 +106,8 @@ public class StockController extends BaseController {
         stockService.batchDelete(stockRequest.getStockId());
         return ResponseData.success();
     }
+
+
 }
 
 

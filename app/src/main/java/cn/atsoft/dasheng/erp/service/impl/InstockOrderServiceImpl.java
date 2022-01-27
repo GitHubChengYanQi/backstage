@@ -11,6 +11,7 @@ import cn.atsoft.dasheng.base.log.BussinessLog;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.crm.entity.Data;
+import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.*;
 import cn.atsoft.dasheng.erp.mapper.InstockOrderMapper;
 import cn.atsoft.dasheng.erp.model.params.InstockOrderParam;
@@ -391,9 +392,6 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
      */
     @Override
     public Stock judgeStockExist(Inkind inkind, List<Stock> stocks) {
-        if (ToolUtil.isEmpty(stocks)) {
-            return null;
-        }
 
         for (Stock stock : stocks) {
             if (stock.getSkuId().equals(inkind.getSkuId()) && stock.getBrandId().equals(inkind.getBrandId())) {
@@ -403,6 +401,27 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         return null;
     }
 
+    /**
+     * 判断物料 供应商 品牌 是否绑定
+     *
+     * @param inkind
+     * @param supplies
+     * @return
+     */
+    @Override
+    public boolean judgeSkuBind(Inkind inkind, List<Supply> supplies) {
+        try {
+            for (Supply supply : supplies) {
+                if (inkind.getSkuId().equals(supply.getSkuId()) && inkind.getBrandId().equals(supply.getBrandId()) && supply.getCustomerId().equals(inkind.getCustomerId())) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return true;
+        }
+        return true;
+    }
 
     /**
      * 当前物料和库位是否绑定

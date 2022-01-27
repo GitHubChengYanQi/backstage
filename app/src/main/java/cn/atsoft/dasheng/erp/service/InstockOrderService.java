@@ -2,6 +2,7 @@ package cn.atsoft.dasheng.erp.service;
 
 import cn.atsoft.dasheng.app.entity.Stock;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.crm.entity.Supply;
 import cn.atsoft.dasheng.erp.entity.Inkind;
 import cn.atsoft.dasheng.erp.entity.InstockOrder;
 import cn.atsoft.dasheng.erp.entity.StorehousePositionsBind;
@@ -95,6 +96,8 @@ public interface InstockOrderService extends IService<InstockOrder> {
 
 
     Stock judgeStockExist(Inkind inkind, List<Stock> stocks);
+
+    boolean judgeSkuBind(Inkind inkind, List<Supply> supplies);
 
     Boolean judgePosition(List<StorehousePositionsBind> positionsBinds, Inkind inkind);
 }

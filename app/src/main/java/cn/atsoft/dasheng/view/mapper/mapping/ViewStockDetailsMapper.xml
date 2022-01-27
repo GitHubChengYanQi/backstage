@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.view.mapper.ViewStockDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.view.entity.ViewStockDetails">
+        <result column="sku_id" property="skuId"/>
+        <result column="spu_id" property="spuId"/>
+        <result column="spu_classification_id" property="spuClassificationId"/>
+        <result column="class_name" property="className"/>
+        <result column="number" property="number"/>
+        <result column="storehouse_positions_id" property="storehousePositionsId"/>
+        <result column="spu_name" property="spuName"/>
+        <result column="storehouse_id" property="storehouseId"/>
+        <result column="stock_id" property="stockId"/>
+        <result column="brand_id" property="brandId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sku_id
+        AS "skuId", spu_id AS "spuId", spu_classification_id AS "spuClassificationId", class_name AS "className", storehouse_positions_id AS "storehousePositionsId", spu_name AS "spuName", storehouse_id AS "storehouseId", stock_id AS "stockId", brand_id AS "brandId"
+    </sql>
+
+    <select id="customList" resultType="cn.atsoft.dasheng.view.model.result.ViewStockDetailsResult"
+            parameterType="cn.atsoft.dasheng.view.model.params.ViewStockDetailsParam">
+        select
+        <include refid="Base_Column_List"/>
+        ,sum(number) AS number
+        from view_stock_details where 1 = 1
+        group by spu_classification_id
+    </select>
+
+
+</mapper>
