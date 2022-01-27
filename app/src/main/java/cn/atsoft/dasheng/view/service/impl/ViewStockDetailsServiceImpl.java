@@ -4,6 +4,8 @@ package cn.atsoft.dasheng.view.service.impl;
 import cn.atsoft.dasheng.app.service.StockDetailsService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.atsoft.dasheng.view.entity.ViewStockDetails;
 import cn.atsoft.dasheng.view.mapper.ViewStockDetailsMapper;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +36,8 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
 
     @Autowired
     StockDetailsService stockDetailsService;
+    @Autowired
+    private SkuService skuService;
 
 
     @Override
@@ -42,16 +47,22 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
 
     @Override
     public List<ViewStockDetailsResult> findListBySpec(ViewStockDetailsParam param) {
-        switch (param.getType()){
+        List<ViewStockDetailsResult> results = null;
+        switch (param.getType()) {
             case "sku":
-                return this.baseMapper.skuList(param);
+                results = this.baseMapper.skuList(param);
+                break;
             case "className":
-                return this.baseMapper.classNameList(param);
+                results = this.baseMapper.classNameList(param);
+                break;
             case "spu":
-                return this.baseMapper.spuList(param);
+                results = this.baseMapper.spuList(param);
+                break;
             default:
                 return null;
         }
+        format(results);
+        return results;
     }
 
     @Override
@@ -77,6 +88,23 @@ public class ViewStockDetailsServiceImpl extends ServiceImpl<ViewStockDetailsMap
         ViewStockDetails entity = new ViewStockDetails();
         ToolUtil.copyProperties(param, entity);
         return entity;
+    }
+
+    private void format(List<ViewStockDetailsResult> data) {
+        List<Long> skuIds = new ArrayList<>();
+
+        for (ViewStockDetailsResult dutm : data) {
+            skuIds.add(dutm.getSkuId());
+        }
+        List<SkuResult> skuResults = skuService.formatSkuResult(skuIds);
+        for (ViewStockDetailsResult datum : data) {
+            for (SkuResult skuResult : skuResults) {
+                if (datum.getSkuId().equals(skuResult.getSkuId())) {
+                    datum.setSkuResult(skuResult);
+                    break;
+                }
+            }
+        }
     }
 
 }

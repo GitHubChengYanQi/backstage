@@ -1,17 +1,22 @@
 package cn.atsoft.dasheng.view.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.SkuResult;
 import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
+
 /**
  * <p>
  * VIEW
  * </p>
  *
- * @author 
+ * @author
  * @since 2022-01-27
  */
 @Data
@@ -20,6 +25,7 @@ public class ViewStockDetailsResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private SkuResult skuResult;
 
     @ApiModelProperty("")
     private Long skuId;
