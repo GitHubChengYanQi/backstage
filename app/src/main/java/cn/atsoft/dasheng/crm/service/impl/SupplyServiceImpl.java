@@ -451,7 +451,7 @@ public class SupplyServiceImpl extends ServiceImpl<SupplyMapper, Supply> impleme
             skuIds.add(supply.getSkuId());
             brandIds.add(supply.getBrandId());
         }
-        List<SkuResult> skuResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.getSkuResultListAndFormat(skuIds);
+        List<SkuResult> skuResults =skuIds.size() == 0 ? new ArrayList<>() : skuService.formatSkuResult(skuIds);
         List<BrandResult> brandResults = brandIds.size() == 0 ? new ArrayList<>() : brandService.getBrandResults(brandIds);
         List<SupplyResult> results = new ArrayList<>();
         for (Supply supply : supplies) {

@@ -9,6 +9,7 @@
         <result column="brand_id" property="brandId"/>
         <result column="customer_id" property="customerId"/>
         <result column="number" property="number"/>
+        <result column="money" property="money"/>
         <result column="procurement_order_id" property="procurementOrderId"/>
         <result column="display" property="display"/>
         <result column="create_user" property="createUser"/>
@@ -22,7 +23,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         order_detail_id
-        AS "orderDetailId", sku_id AS "skuId", brand_id AS "brandId", customer_id AS "customerId", number AS "number", procurement_order_id AS "procurementOrderId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
+        AS "orderDetailId", sku_id AS "skuId", brand_id AS "brandId", money AS "money",customer_id AS "customerId", number AS "number", procurement_order_id AS "procurementOrderId", display AS "display", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", deptId AS "deptId"
 , detail_id AS "detailId"
     </sql>
 

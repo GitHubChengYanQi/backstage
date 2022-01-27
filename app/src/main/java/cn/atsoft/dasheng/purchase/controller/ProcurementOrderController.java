@@ -56,8 +56,8 @@ public class ProcurementOrderController extends BaseController {
     @RequestMapping(value = "/addOrder", method = RequestMethod.POST)
     @ApiOperation("新增")
     public ResponseData addOrder(@RequestBody ProcurementOrderParam procurementOrderParam) throws Exception {
-        this.procurementOrderService.addOrder(procurementOrderParam);
-        return ResponseData.success();
+        Long addOrderId = this.procurementOrderService.addOrder(procurementOrderParam);
+        return ResponseData.success(addOrderId);
     }
 
     /**

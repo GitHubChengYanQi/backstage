@@ -330,7 +330,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         hashMap.put("roleName", ConstantFactory.me().getRoleName(user.getRoleId()));
         hashMap.put("deptName", ConstantFactory.me().getDeptName(user.getDeptId()));
 
-        hashMap.put("positionIds", ConstantFactory.me().getPositionIds(userId));
+        hashMap.put("positionIds", ConstantFactory.me().getPositionIds(userId).split(","));
         hashMap.put("positionNames", ConstantFactory.me().getPositionName(userId));
 
         return hashMap;

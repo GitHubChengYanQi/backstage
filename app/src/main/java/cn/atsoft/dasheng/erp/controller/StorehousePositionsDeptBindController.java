@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import java.util.Map;
 /**
  * 库位权限绑定表控制器
  *
- * @author 
+ * @author
  * @Date 2022-01-25 09:24:15
  */
 @RestController
@@ -35,7 +36,7 @@ public class StorehousePositionsDeptBindController extends BaseController {
     /**
      * 新增接口
      *
-     * @author 
+     * @author
      * @Date 2022-01-25
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -45,10 +46,26 @@ public class StorehousePositionsDeptBindController extends BaseController {
         return ResponseData.success();
     }
 
+    @RequestMapping(value = "/getDeptIds", method = RequestMethod.GET)
+    @ApiOperation("新增")
+    public List<String> getDeptIds(Long positionId) {
+        List<String> deptIds = new ArrayList<>();
+        if (ToolUtil.isNotEmpty(positionId)) {
+            StorehousePositionsDeptBind detail = storehousePositionsDeptBindService.lambdaQuery().eq(StorehousePositionsDeptBind::getStorehousePositionsId, positionId).one();
+            if (ToolUtil.isNotEmpty(detail)) {
+                String[] split = detail.getDeptId().split(",");
+                for (String deptId : split) {
+                    deptIds.add(deptId);
+                }
+            }
+        }
+        return deptIds;
+    }
+
     /**
      * 编辑接口
      *
-     * @author 
+     * @author
      * @Date 2022-01-25
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -62,12 +79,12 @@ public class StorehousePositionsDeptBindController extends BaseController {
     /**
      * 删除接口
      *
-     * @author 
+     * @author
      * @Date 2022-01-25
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam)  {
+    public ResponseData delete(@RequestBody StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
         this.storehousePositionsDeptBindService.delete(storehousePositionsDeptBindParam);
         return ResponseData.success();
     }
@@ -75,7 +92,7 @@ public class StorehousePositionsDeptBindController extends BaseController {
     /**
      * 查看详情接口
      *
-     * @author 
+     * @author
      * @Date 2022-01-25
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
@@ -92,19 +109,17 @@ public class StorehousePositionsDeptBindController extends BaseController {
     /**
      * 查询列表
      *
-     * @author 
+     * @author
      * @Date 2022-01-25
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
     public PageInfo<StorehousePositionsDeptBindResult> list(@RequestBody(required = false) StorehousePositionsDeptBindParam storehousePositionsDeptBindParam) {
-        if(ToolUtil.isEmpty(storehousePositionsDeptBindParam)){
+        if (ToolUtil.isEmpty(storehousePositionsDeptBindParam)) {
             storehousePositionsDeptBindParam = new StorehousePositionsDeptBindParam();
         }
         return this.storehousePositionsDeptBindService.findPageBySpec(storehousePositionsDeptBindParam);
     }
-
-
 
 
 }

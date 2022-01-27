@@ -27,7 +27,7 @@ public interface ProcurementOrderService extends IService<ProcurementOrder> {
      */
     void add(ProcurementOrderParam param) throws Exception;
 
-    void addOrder(ProcurementOrderParam param) throws Exception;
+    Long addOrder(ProcurementOrderParam param) throws Exception;
 
     /**
      * 删除

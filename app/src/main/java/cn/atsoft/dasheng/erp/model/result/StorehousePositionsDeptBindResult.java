@@ -20,9 +20,9 @@ public class StorehousePositionsDeptBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
+    private List<Long> deptIds;
     @ApiModelProperty("")
-    private Long bindId;
+    private String bindId;
 
     /**
      * 库位id

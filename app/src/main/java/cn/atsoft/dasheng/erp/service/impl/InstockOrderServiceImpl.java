@@ -305,7 +305,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             }
         }};
 
-        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().eq("position_id", positionsIds).list();
+        List<StorehousePositionsBind> positionsBinds = positionsBindService.query().in("position_id", positionsIds).list();
 
         List<Inkind> inkinds = inkindService.listByIds(inkindIds);
         List<Stock> stocks = stockService.getStockByInKind(inkinds, new ArrayList<Long>() {{
@@ -346,9 +346,9 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
         }
 
         for (Inkind inkind : inkinds) {
-            Long stockId = null;
+            Long stockId;
             Stock exist = judgeStockExist(inkind, stocks);
-            if (!judgePosition(binds, inkind)) {
+            if (judgePosition(binds, inkind)) {
                 throw new ServiceException(500, "入库的物料 未和库位绑定");
             }
             if (ToolUtil.isNotEmpty(exist)) {

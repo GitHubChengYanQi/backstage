@@ -510,20 +510,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
-    public List<SkuResult> getSkuResultListAndFormat(List<Long> ids) {
-        List<Sku> skuList = ids.size() == 0 ? new ArrayList<>() : this.skuService.listByIds(ids);
-        List<SkuResult> skuResults = new ArrayList<>();
-
-        for (Sku sku : skuList) {
-            SkuResult result = new SkuResult();
-            ToolUtil.copyProperties(sku, result);
-            skuResults.add(result);
-        }
-        this.format(skuResults);
-        return skuResults;
-    }
-
-    @Override
     public SkuResult findBySpec(SkuParam param) {
         return null;
     }
@@ -559,8 +545,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         } else {
             spuIds = new ArrayList<>();
         }
-
-
         IPage<SkuResult> page = this.baseMapper.customPageList(spuIds, pageContext, param);
         format(page.getRecords());
 
