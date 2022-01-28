@@ -311,6 +311,7 @@ public class RestUserService extends ServiceImpl<RestUserMapper, RestUser> {
         result.put("menus", menus);
         result.put("avatar", DefaultImages.defaultAvatarUrl());
         result.put("name", user.getName());
+        result.put("id", user.getId());
 
         return result;
     }
