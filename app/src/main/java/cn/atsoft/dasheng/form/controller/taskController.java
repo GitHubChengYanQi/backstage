@@ -12,8 +12,14 @@ import cn.atsoft.dasheng.form.pojo.AuditParam;
 import cn.atsoft.dasheng.form.pojo.RuleType;
 import cn.atsoft.dasheng.form.service.*;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
+import cn.atsoft.dasheng.purchase.entity.ProcurementPlan;
 import cn.atsoft.dasheng.purchase.model.params.PurchaseAskParam;
+import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderResult;
+import cn.atsoft.dasheng.purchase.model.result.ProcurementPlanResult;
 import cn.atsoft.dasheng.purchase.model.result.PurchaseAskResult;
+import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
+import cn.atsoft.dasheng.purchase.service.ProcurementPlanService;
 import cn.atsoft.dasheng.purchase.service.PurchaseAskService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -61,6 +67,10 @@ public class taskController extends BaseController {
 
     @Autowired
     private RemarksService remarksService;
+    @Autowired
+    private ProcurementOrderService procurementOrderService;
+    @Autowired
+    private ProcurementPlanService procurementPlanService;
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     @ApiOperation("新增")
@@ -92,10 +102,32 @@ public class taskController extends BaseController {
                 taskResult.setObject(task);
                 break;
             case "purchase":
+            case "purchaseAsk":
                 PurchaseAskParam param = new PurchaseAskParam();
                 param.setPurchaseAskId(taskResult.getFormId());
                 PurchaseAskResult askResult = askService.detail(param);
                 taskResult.setObject(askResult);
+                break;
+            case "procurementOrder":
+                ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
+                ProcurementOrderResult result = new ProcurementOrderResult();
+                ToolUtil.copyProperties(detail, result);
+                taskResult.setObject(result);
+
+                break;
+            case "purchasePlan":
+                ProcurementPlan procurementPlan = this.procurementPlanService.getById(taskResult.getFormId());
+                if (ToolUtil.isEmpty(procurementPlan)) {
+                    return null;
+                }
+                ProcurementPlanResult procurementPlanResult = new ProcurementPlanResult();
+                ToolUtil.copyProperties(procurementPlan, procurementPlanResult);
+
+                User user = userService.getById(procurementPlanResult.getCreateUser());
+                procurementPlanResult.setFounder(user);
+                procurementPlanService.detail(procurementPlanResult);
+                taskResult.setObject(procurementPlanResult);
+
                 break;
         }
         //树形结构
