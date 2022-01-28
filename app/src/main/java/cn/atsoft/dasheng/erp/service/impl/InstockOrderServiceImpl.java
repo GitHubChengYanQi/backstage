@@ -161,7 +161,7 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
                 add(entity.getUserId());
             }});
-            wxCpSendTemplate.setSource("入库");
+            wxCpSendTemplate.setSource("instock");
             wxCpSendTemplate.setSourceId(aLong);
             wxCpTemplate.setType(0);
             wxCpSendTemplate.setWxCpTemplate(wxCpTemplate);

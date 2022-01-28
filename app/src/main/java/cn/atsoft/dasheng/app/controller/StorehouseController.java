@@ -123,9 +123,9 @@ public class StorehouseController extends BaseController {
         }
 //        return this.storehouseService.findPageBySpec(storehouseParam);
 
-            return this.storehouseService.findPageBySpec(storehouseParam, null);
+        return this.storehouseService.findPageBySpec(storehouseParam, null);
 
-        
+
     }
 
     /**
@@ -136,9 +136,12 @@ public class StorehouseController extends BaseController {
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
     @ApiOperation("Select数据接口")
-    public ResponseData<List<Map<String, Object>>> listSelect() {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) StorehouseParam storehouseParam) {
         QueryWrapper<Storehouse> storehouseQueryWrapper = new QueryWrapper<>();
-        storehouseQueryWrapper.in("display",1);
+        storehouseQueryWrapper.in("display", 1);
+        if (ToolUtil.isNotEmpty(storehouseParam) && ToolUtil.isNotEmpty(storehouseParam.getName())) {
+            storehouseQueryWrapper.like("name", storehouseParam.getName());
+        }
         List<Map<String, Object>> list = this.storehouseService.listMaps(storehouseQueryWrapper);
         StorehouseSelectWrapper factory = new StorehouseSelectWrapper(list);
         List<Map<String, Object>> result = factory.wrap();

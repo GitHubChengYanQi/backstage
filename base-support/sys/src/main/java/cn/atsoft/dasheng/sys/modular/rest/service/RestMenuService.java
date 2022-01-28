@@ -285,7 +285,7 @@ public class RestMenuService extends ServiceImpl<RestMenuMapper, RestMenu> {
     public RestMenu menuSetPcode(MenuDto menuParam) {
 
         RestMenu resultMenu = new RestMenu();
-        BeanUtil.copyProperties(menuParam, resultMenu);
+        ToolUtil.copyProperties(menuParam, resultMenu);
 
         if (ToolUtil.isEmpty(menuParam.getPid()) || menuParam.getPid().equals(0L)) {
             resultMenu.setPcode("0");

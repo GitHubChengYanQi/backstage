@@ -14,7 +14,7 @@ public class DictTypeWrapper extends BaseControllerWrapper {
     @Override
     protected void wrapTheMap(Map<String, Object> map) {
         String label = Convert.toStr(map.get("name"));
-        String value = Convert.toStr(map.get("dict_type_id"));
+        String value = Convert.toStr(map.get("dictTypeId"));
         map.clear();
         map.put("label",label);
         map.put("value",value);
