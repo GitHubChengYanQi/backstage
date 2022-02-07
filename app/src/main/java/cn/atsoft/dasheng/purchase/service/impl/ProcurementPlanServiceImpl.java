@@ -220,7 +220,7 @@ public class ProcurementPlanServiceImpl extends ServiceImpl<ProcurementPlanMappe
      * @param planId
      */
     @Override
-    public void updateStatus(Long planId) throws Exception {
+    public void updateStatus(Long planId)  {
         List<ProcurementPlanDetal> detals = procurementPlanDetalService.lambdaQuery().eq(ProcurementPlanDetal::getPlanId, planId).list();
         if (ToolUtil.isEmpty(detals)) {
             throw new ServiceException(500, "请确当前数据");

@@ -49,7 +49,7 @@ public interface ProcurementPlanService extends IService<ProcurementPlan> {
 
     void detail(ProcurementPlanResult result);
 
-    void updateStatus(Long planId) throws Exception;
+    void updateStatus(Long planId) ;
 
     /**
      * 查询单条数据，Specification模式

@@ -32,6 +32,10 @@ public class ProcurementOrderDetailResult implements Serializable {
     private BrandResult brandResult;
 
     private CustomerResult customerResult;
+
+    private Long realizedNumber;
+
+    private Integer status;
     /**
      * 采购单详情id
      */

@@ -112,6 +112,8 @@ public class taskController extends BaseController {
                 ProcurementOrder detail = this.procurementOrderService.getById(taskResult.getFormId());
                 ProcurementOrderResult result = new ProcurementOrderResult();
                 ToolUtil.copyProperties(detail, result);
+                User user1 = userService.getById(result.getCreateUser());
+                result.setUser(user1);
                 taskResult.setObject(result);
 
                 break;
@@ -122,12 +124,10 @@ public class taskController extends BaseController {
                 }
                 ProcurementPlanResult procurementPlanResult = new ProcurementPlanResult();
                 ToolUtil.copyProperties(procurementPlan, procurementPlanResult);
-
                 User user = userService.getById(procurementPlanResult.getCreateUser());
                 procurementPlanResult.setFounder(user);
                 procurementPlanService.detail(procurementPlanResult);
                 taskResult.setObject(procurementPlanResult);
-
                 break;
         }
         //树形结构

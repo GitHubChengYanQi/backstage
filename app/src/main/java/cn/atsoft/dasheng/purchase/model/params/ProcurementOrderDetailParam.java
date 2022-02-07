@@ -31,6 +31,8 @@ public class ProcurementOrderDetailParam implements Serializable, BaseValidating
     private Integer money;
 
     private Integer status;
+
+    private Long realizedNumber;
     /**
      * 采购单详情id
      */

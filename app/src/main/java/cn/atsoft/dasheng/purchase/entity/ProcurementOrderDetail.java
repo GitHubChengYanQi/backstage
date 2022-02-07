@@ -32,6 +32,16 @@ public class ProcurementOrderDetail implements Serializable {
     @TableId(value = "order_detail_id", type = IdType.ID_WORKER)
     private Long orderDetailId;
 
+    /**
+     * 状态
+     */
+    @TableField("status")
+    private Integer status;
+    /**
+     * 到货数量
+     */
+    @TableField("realized_number")
+    private Long realizedNumber;
 
     @TableField("money")
     private Integer money;
@@ -93,6 +103,13 @@ public class ProcurementOrderDetail implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getOrderDetailId() {
         return orderDetailId;
@@ -204,6 +221,14 @@ public class ProcurementOrderDetail implements Serializable {
 
     public void setMoney(Integer money) {
         this.money = money;
+    }
+
+    public Long getRealizedNumber() {
+        return realizedNumber;
+    }
+
+    public void setRealizedNumber(Long realizedNumber) {
+        this.realizedNumber = realizedNumber;
     }
 
     @Override

@@ -70,6 +70,7 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
         this.updateById(newEntity);
     }
 
+
     @Override
     public ProcurementOrderDetailResult findBySpec(ProcurementOrderDetailParam param) {
         return null;
