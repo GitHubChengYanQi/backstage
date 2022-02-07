@@ -160,7 +160,7 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
             throw new ServiceException(500, "采购单不正确");
         }
         List<ProcurementOrderDetail> orderDetails = this.query().eq("procurement_order_id", orderId).list();
-        Integer countMoney = 0;
+        int countMoney = 0;
         for (ProcurementOrderDetail orderDetail : orderDetails) {
             countMoney = countMoney + orderDetail.getMoney();
         }

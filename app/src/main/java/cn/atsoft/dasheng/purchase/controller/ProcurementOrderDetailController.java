@@ -55,8 +55,8 @@ public class ProcurementOrderDetailController extends BaseController {
      * @Date 2022-01-13
      */
     @RequestMapping(value = "/edit", method = RequestMethod.GET)
-    public ResponseData update(@RequestParam Long codeId) {
-        this.procurementOrderDetailService.updateOrderStatus(codeId);
+    public ResponseData update(@RequestParam Long Id) {
+        this.procurementOrderDetailService.updateOrderStatus(Id);
         return ResponseData.success();
     }
 
