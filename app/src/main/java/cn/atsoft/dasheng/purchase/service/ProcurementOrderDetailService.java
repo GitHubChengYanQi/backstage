@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult;
+import cn.atsoft.dasheng.purchase.pojo.ProcurementAOG;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public interface ProcurementOrderDetailService extends IService<ProcurementOrder
      */
     void update(ProcurementOrderDetailParam param);
 
+    void AOG(ProcurementAOG aog);
+
     /**
      * 查询单条数据，Specification模式
      *
@@ -64,7 +67,9 @@ public interface ProcurementOrderDetailService extends IService<ProcurementOrder
      * @author song
      * @Date 2022-01-13
      */
-     PageInfo<ProcurementOrderDetailResult> findPageBySpec(ProcurementOrderDetailParam param);
+    List<ProcurementOrderDetailResult> findPageBySpec(ProcurementOrderDetailParam param);
 
     void updateMoney(Long orderId);
+
+
 }

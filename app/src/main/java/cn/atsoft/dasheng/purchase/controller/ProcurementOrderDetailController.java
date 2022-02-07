@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult;
+import cn.atsoft.dasheng.purchase.pojo.ProcurementAOG;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderDetailService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +70,22 @@ public class ProcurementOrderDetailController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProcurementOrderDetailParam procurementOrderDetailParam)  {
+    public ResponseData delete(@RequestBody ProcurementOrderDetailParam procurementOrderDetailParam) {
         this.procurementOrderDetailService.delete(procurementOrderDetailParam);
+        return ResponseData.success();
+    }
+
+
+    /**
+     * 到货
+     *
+     * @author song
+     * @Date 2022-01-13
+     */
+    @RequestMapping(value = "/AOG", method = RequestMethod.POST)
+    @ApiOperation("到货")
+    public ResponseData AOG(@RequestBody @Valid ProcurementAOG aog) {
+        this.procurementOrderDetailService.AOG(aog);
         return ResponseData.success();
     }
 
@@ -96,16 +113,12 @@ public class ProcurementOrderDetailController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<ProcurementOrderDetailResult> list(@RequestBody(required = false) ProcurementOrderDetailParam procurementOrderDetailParam) {
-        if(ToolUtil.isEmpty(procurementOrderDetailParam)){
+    public List<ProcurementOrderDetailResult> list(@RequestBody(required = false) ProcurementOrderDetailParam procurementOrderDetailParam) {
+        if (ToolUtil.isEmpty(procurementOrderDetailParam)) {
             procurementOrderDetailParam = new ProcurementOrderDetailParam();
         }
-        return this.procurementOrderDetailService.findPageBySpec(procurementOrderDetailParam);
+        return procurementOrderDetailService.findPageBySpec(procurementOrderDetailParam);
     }
-
-
-
-
 }
 
 

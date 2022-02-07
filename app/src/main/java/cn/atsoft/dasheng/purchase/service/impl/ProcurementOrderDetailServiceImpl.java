@@ -7,7 +7,12 @@ import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.QualityTask;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
+import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
+import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.SkuService;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.atsoft.dasheng.purchase.entity.ProcurementOrder;
@@ -15,6 +20,7 @@ import cn.atsoft.dasheng.purchase.entity.ProcurementOrderDetail;
 import cn.atsoft.dasheng.purchase.mapper.ProcurementOrderDetailMapper;
 import cn.atsoft.dasheng.purchase.model.params.ProcurementOrderDetailParam;
 import cn.atsoft.dasheng.purchase.model.result.ProcurementOrderDetailResult;
+import cn.atsoft.dasheng.purchase.pojo.ProcurementAOG;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
@@ -23,8 +29,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +55,11 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
 
     @Autowired
     private CustomerService customerService;
+
     @Autowired
     private ProcurementOrderService orderService;
+    @Autowired
+    private QualityTaskService taskService;
 
 
     @Override
@@ -70,6 +81,73 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
         this.updateById(newEntity);
     }
 
+    /**
+     * 到货
+     */
+    @Override
+    @Transactional
+    public void AOG(ProcurementAOG aog) {
+
+        List<Long> detailIds = new ArrayList<>();
+        List<QualityTaskDetailParam> taskDetails = new ArrayList<>();
+
+        for (ProcurementAOG.AOGDetails aogDetail : aog.getAogDetails()) {  //货期采购单详情
+            detailIds.add(aogDetail.getDetailsId());
+        }
+        List<ProcurementOrderDetail> details = this.listByIds(detailIds);
+
+        for (ProcurementOrderDetail detail : details) {
+            for (ProcurementAOG.AOGDetails aogDetail : aog.getAogDetails()) {
+                if (aogDetail.getDetailsId().equals(detail.getOrderDetailId())) {
+                    long number = detail.getRealizedNumber() + aogDetail.getNumber();
+
+                    if (number > detail.getNumber()) {
+                        throw new ServiceException(500, "当前物料数量不符");
+                    } else if (number == detail.getNumber()) {
+                        detail.setStatus(99);
+                    }
+                    detail.setRealizedNumber(number);  //修改采购单详情到货数量
+
+
+                    QualityTaskDetailParam param = new QualityTaskDetailParam(); //质检任务详情
+                    param.setSkuId(detail.getSkuId());
+                    param.setBrandId(detail.getBrandId());
+                    param.setCustomerId(detail.getCustomerId());
+                    param.setNewNumber(Math.toIntExact(aogDetail.getNumber()));
+                    param.setNumber(Math.toIntExact(aogDetail.getNumber()));
+                    taskDetails.add(param);
+                    break;
+                }
+            }
+        }
+        QualityTaskParam taskParam = new QualityTaskParam();
+        taskParam.setDetails(taskDetails);
+        taskParam.setCoding("采购编码待定");
+        taskParam.setType("采购");
+        taskService.add(taskParam);      //添加质检
+        this.updateBatchById(details);  //修改采购单详情
+        updateOrderStatus(aog.getOrderId());
+    }
+
+    /**
+     * 更新采购单状态
+     */
+    private void updateOrderStatus(Long orderId) {
+        List<ProcurementOrderDetail> details = this.query().eq("procurement_order_id", orderId).eq("display", 1).list();
+        boolean t = true;
+        for (ProcurementOrderDetail detail : details) {
+            if (detail.getStatus() != 99) {
+                t = false;
+                break;
+            }
+        }
+        if (t) {
+            ProcurementOrder order = new ProcurementOrder();
+            order.setStatus(98);
+            order.setProcurementOrderId(orderId);
+            orderService.updateById(order);
+        }
+    }
 
     @Override
     public ProcurementOrderDetailResult findBySpec(ProcurementOrderDetailParam param) {
@@ -82,11 +160,10 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
     }
 
     @Override
-    public PageInfo<ProcurementOrderDetailResult> findPageBySpec(ProcurementOrderDetailParam param) {
-        Page<ProcurementOrderDetailResult> pageContext = getPageContext();
-        IPage<ProcurementOrderDetailResult> page = this.baseMapper.customPageList(pageContext, param);
-        format(page.getRecords());
-        return PageFactory.createPageInfo(page);
+    public List<ProcurementOrderDetailResult> findPageBySpec(ProcurementOrderDetailParam param) {
+        List<ProcurementOrderDetailResult> procurementOrderDetailResults = this.baseMapper.customList(param);
+        format(procurementOrderDetailResults);
+        return procurementOrderDetailResults;
     }
 
     /**

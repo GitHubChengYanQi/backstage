@@ -32,6 +32,8 @@ public class ProcurementOrderDetail implements Serializable {
     @TableId(value = "order_detail_id", type = IdType.ID_WORKER)
     private Long orderDetailId;
 
+
+
     /**
      * 状态
      */

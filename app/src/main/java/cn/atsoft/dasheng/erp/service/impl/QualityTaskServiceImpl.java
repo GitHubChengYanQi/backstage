@@ -157,8 +157,12 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
             String type2Activiti = null;
             if (param.getType().equals("出厂")) {
                 type2Activiti = "outQuality";
-            } else if (param.getType().equals("入厂")) {
+            }
+            if (param.getType().equals("入厂")) {
                 type2Activiti = "inQuality";
+            }
+            if (param.getType().equals("采购")) {
+                type2Activiti = "purchaseQuality";
             }
 
             ActivitiProcess activitiProcess = activitiProcessService.query().eq("type", "quality").eq("status", 99).eq("module", type2Activiti).one();
@@ -389,7 +393,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         QualityTask task = new QualityTask();
         task.setDataId(data.getDataId());
         this.update(task, new QueryWrapper<QualityTask>() {{
-            eq("quality_task_id",formDataPojo.getQualityTaskId());
+            eq("quality_task_id", formDataPojo.getQualityTaskId());
         }});
 
         //通过质检项详情添加dataValue
