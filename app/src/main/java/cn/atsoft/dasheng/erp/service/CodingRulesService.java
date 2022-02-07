@@ -69,9 +69,15 @@ public interface CodingRulesService extends IService<CodingRules> {
     /**
      * 自动生成编码
      *
-     * @param id
+     * @param ids
      * @return
      */
     String backCoding(Long ids);
 
+    /**
+     * 通过模块获取编码
+     * @param module
+     * @return
+     */
+    String getCodingByModule(Long module);
 }

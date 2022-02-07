@@ -261,6 +261,20 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         return rules;
     }
 
+    /**
+     * 通过模块返回编码
+     *
+     * @param module
+     * @return
+     */
+    @Override
+    public String getCodingByModule(Long module) {
+        CodingRules rules = this.query().eq("module", module).eq("state", 1).one();
+        if (ToolUtil.isEmpty(rules)) {
+            return "${type}";
+        }
+        return this.backCoding(rules.getCodingRulesId());
+    }
 
     private Serializable getKey(CodingRulesParam param) {
         return param.getCodingRulesId();

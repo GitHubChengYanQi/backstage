@@ -80,7 +80,7 @@ public class ProcurementOrderDetailController extends BaseController {
      * 到货
      *
      * @author song
-     * @Date 2022-01-13
+     * @Date 2022-02-07
      */
     @RequestMapping(value = "/AOG", method = RequestMethod.POST)
     @ApiOperation("到货")
