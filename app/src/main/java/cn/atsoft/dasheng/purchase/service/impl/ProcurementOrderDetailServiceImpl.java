@@ -5,12 +5,15 @@ import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.app.service.CustomerService;
+import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
+import cn.atsoft.dasheng.base.auth.model.LoginUser;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.erp.entity.QualityTask;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskDetailParam;
 import cn.atsoft.dasheng.erp.model.params.QualityTaskParam;
 import cn.atsoft.dasheng.erp.model.result.SkuResult;
+import cn.atsoft.dasheng.erp.service.CodingRulesService;
 import cn.atsoft.dasheng.erp.service.QualityTaskDetailService;
 import cn.atsoft.dasheng.erp.service.QualityTaskService;
 import cn.atsoft.dasheng.erp.service.SkuService;
@@ -60,6 +63,8 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
     private ProcurementOrderService orderService;
     @Autowired
     private QualityTaskService taskService;
+    @Autowired
+    private CodingRulesService rulesService;
 
 
     @Override
@@ -101,9 +106,7 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
                 if (aogDetail.getDetailsId().equals(detail.getOrderDetailId())) {
                     long number = detail.getRealizedNumber() + aogDetail.getNumber();
 
-                    if (number > detail.getNumber()) {
-                        throw new ServiceException(500, "当前物料数量不符");
-                    } else if (number == detail.getNumber()) {
+                    if (number >= detail.getNumber()) {
                         detail.setStatus(99);
                     }
                     detail.setRealizedNumber(number);  //修改采购单详情到货数量
@@ -120,13 +123,16 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
                 }
             }
         }
-        QualityTaskParam taskParam = new QualityTaskParam();
-        taskParam.setDetails(taskDetails);
-        taskParam.setCoding("采购编码待定");
-        taskParam.setType("采购");
-        taskService.add(taskParam);      //添加质检
         this.updateBatchById(details);  //修改采购单详情
         updateOrderStatus(aog.getOrderId());
+
+        QualityTaskParam taskParam = new QualityTaskParam(); //添加质检
+        LoginUser user = LoginContextHolder.getContext().getUser();
+        taskParam.setDetails(taskDetails);
+        taskParam.setCoding(rulesService.getCodingByModule(4L).replace("${type}","AOG"));
+        taskParam.setType("采购");
+        taskParam.setUserId(user.getId());
+        taskService.add(taskParam);
     }
 
     /**
