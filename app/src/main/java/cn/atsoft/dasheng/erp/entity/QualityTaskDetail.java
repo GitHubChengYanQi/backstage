@@ -26,6 +26,10 @@ public class QualityTaskDetail implements Serializable {
 
     @TableId(value = "quality_task_detail_id", type = IdType.ID_WORKER)
     private Long qualityTaskDetailId;
+
+    @TableField("customer_id")
+    private Long customerId;
+
     /**
      * 实物id
      */
@@ -114,6 +118,13 @@ public class QualityTaskDetail implements Serializable {
     @TableField("batch")
     private Integer batch;
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 
     public String getNote() {
         return note;
@@ -130,7 +141,6 @@ public class QualityTaskDetail implements Serializable {
     public void setNumber(Integer number) {
         this.number = number;
     }
-
 
 
     public String getInkindId() {

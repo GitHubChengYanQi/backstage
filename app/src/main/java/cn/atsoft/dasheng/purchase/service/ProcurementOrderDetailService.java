@@ -27,23 +27,10 @@ public interface ProcurementOrderDetailService extends IService<ProcurementOrder
      */
     void add(ProcurementOrderDetailParam param);
 
-    /**
-     * 删除
-     *
-     * @author song
-     * @Date 2022-01-13
-     */
-    void delete(ProcurementOrderDetailParam param);
-
-    /**
-     * 更新
-     *
-     * @author song
-     * @Date 2022-01-13
-     */
-    void update(ProcurementOrderDetailParam param);
 
     void AOG(ProcurementAOG aog);
+
+    void updateOrderStatus(Long orderId);
 
     /**
      * 查询单条数据，Specification模式

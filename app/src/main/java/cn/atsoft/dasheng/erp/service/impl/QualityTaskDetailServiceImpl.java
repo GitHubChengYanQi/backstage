@@ -2,9 +2,12 @@ package cn.atsoft.dasheng.erp.service.impl;
 
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Unit;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.app.service.UnitService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
@@ -34,6 +37,10 @@ import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.Role;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.Hutool;
+import cn.hutool.core.bean.BeanDesc;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -85,7 +92,8 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
     private QualityTaskService taskService;
     @Autowired
     private QualityTaskRefuseService refuseService;
-
+    @Autowired
+    private CustomerService customerService;
 
     @Override
     public void add(QualityTaskDetailParam param) {
@@ -276,23 +284,26 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         //质检项id
         List<Long> planIds = new ArrayList<>();
         List<Long> userIds = new ArrayList<>();
-
+        List<Long> customerIds = new ArrayList<>();
 
         for (QualityTaskDetailResult qualityTaskDetailResult : param) {
             skuIds.add(qualityTaskDetailResult.getSkuId());
             brandIds.add(qualityTaskDetailResult.getBrandId());
             planIds.add(qualityTaskDetailResult.getQualityPlanId());
+            customerIds.add(qualityTaskDetailResult.getCustomerId());
             if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getUserIds())) {
-                qualityTaskDetailResult.setUserIdList(Arrays.asList(qualityTaskDetailResult.getUserIds().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
+                qualityTaskDetailResult.setUserIdList(Arrays.stream(qualityTaskDetailResult.getUserIds().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList()));
                 userIds.addAll(qualityTaskDetailResult.getUserIdList());
             }
 
         }
+        //供应商
+        List<Customer> customerList = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+        List<CustomerResult> customerResults = BeanUtil.copyToList(customerList, CustomerResult.class, new CopyOptions());
         //查询用户
         List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.list(new QueryWrapper<User>() {{
             in("user_id", userIds);
         }});
-
         //查询品牌
         List<Brand> brandList = brandIds.size() == 0 ? new ArrayList<>() : brandService.lambdaQuery().in(Brand::getBrandId, brandIds).and(i -> i.eq(Brand::getDisplay, 1)).list();
         //查询质检项目
@@ -300,6 +311,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
         //查询sku
         List<SkuResult> skuResults = new ArrayList<>();
         List<Sku> skus = skuIds.size() == 0 ? new ArrayList<>() : skuService.lambdaQuery().in(Sku::getSkuId, skuIds).and(i -> i.eq(Sku::getDisplay, 1)).list();
+
         for (Sku sku : skus) {
             SkuResult skuResult = new SkuResult();
             ToolUtil.copyProperties(sku, skuResult);
@@ -329,11 +341,18 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
             }
             qualityTaskDetailResult.setUsers(usersName);
 
+            for (CustomerResult customerResult : customerResults) {
+                if (ToolUtil.isNotEmpty(qualityTaskDetailResult.getCustomerId()) && qualityTaskDetailResult.getCustomerId().equals(customerResult.getCustomerId())) {
+                    qualityTaskDetailResult.setCustomerResult(customerResult);
+                    break;
+                }
+            }
 
             //格式化sku数据
             for (SkuResult skuResult : skuResults) {
                 if (qualityTaskDetailResult.getSkuId().equals(skuResult.getSkuId())) {
                     qualityTaskDetailResult.setSkuResult(skuResult);
+                    break;
                 }
             }
             //格式化品牌
@@ -342,6 +361,7 @@ public class QualityTaskDetailServiceImpl extends ServiceImpl<QualityTaskDetailM
                     BrandResult brandResult = new BrandResult();
                     ToolUtil.copyProperties(brand, brandResult);
                     qualityTaskDetailResult.setBrand(brandResult);
+                    break;
                 }
             }
 

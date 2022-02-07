@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.purchase.service.impl;
 
 
+import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
@@ -27,6 +28,7 @@ import cn.atsoft.dasheng.purchase.pojo.ProcurementAOG;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderDetailService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.purchase.service.ProcurementOrderService;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -73,19 +75,6 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
         this.save(entity);
     }
 
-    @Override
-    public void delete(ProcurementOrderDetailParam param) {
-        this.removeById(getKey(param));
-    }
-
-    @Override
-    public void update(ProcurementOrderDetailParam param) {
-        ProcurementOrderDetail oldEntity = getOldEntity(param);
-        ProcurementOrderDetail newEntity = getEntity(param);
-        ToolUtil.copyProperties(newEntity, oldEntity);
-        this.updateById(newEntity);
-    }
-
     /**
      * 到货
      */
@@ -105,14 +94,12 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
             for (ProcurementAOG.AOGDetails aogDetail : aog.getAogDetails()) {
                 if (aogDetail.getDetailsId().equals(detail.getOrderDetailId())) {
                     long number = detail.getRealizedNumber() + aogDetail.getNumber();
-
                     if (number >= detail.getNumber()) {
                         detail.setStatus(99);
                     }
                     detail.setRealizedNumber(number);  //修改采购单详情到货数量
-
-
-                    QualityTaskDetailParam param = new QualityTaskDetailParam(); //质检任务详情
+                    //创建质检任务详情
+                    QualityTaskDetailParam param = new QualityTaskDetailParam();
                     param.setSkuId(detail.getSkuId());
                     param.setBrandId(detail.getBrandId());
                     param.setCustomerId(detail.getCustomerId());
@@ -124,8 +111,6 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
             }
         }
         this.updateBatchById(details);  //修改采购单详情
-        updateOrderStatus(aog.getOrderId());
-
         QualityTaskParam taskParam = new QualityTaskParam(); //添加质检
         LoginUser user = LoginContextHolder.getContext().getUser();
         taskParam.setDetails(taskDetails);
@@ -133,26 +118,18 @@ public class ProcurementOrderDetailServiceImpl extends ServiceImpl<ProcurementOr
         taskParam.setType("采购");
         taskParam.setUserId(user.getId());
         taskService.add(taskParam);
+
     }
 
     /**
      * 更新采购单状态
      */
-    private void updateOrderStatus(Long orderId) {
-        List<ProcurementOrderDetail> details = this.query().eq("procurement_order_id", orderId).eq("display", 1).list();
-        boolean t = true;
-        for (ProcurementOrderDetail detail : details) {
-            if (detail.getStatus() != 99) {
-                t = false;
-                break;
-            }
-        }
-        if (t) {
-            ProcurementOrder order = new ProcurementOrder();
-            order.setStatus(98);
-            order.setProcurementOrderId(orderId);
-            orderService.updateById(order);
-        }
+    @Override
+    public void updateOrderStatus(Long orderId) {
+        ProcurementOrder order = new ProcurementOrder();
+        order.setStatus(98);
+        order.setProcurementOrderId(orderId);
+        orderService.updateById(order);
     }
 
     @Override

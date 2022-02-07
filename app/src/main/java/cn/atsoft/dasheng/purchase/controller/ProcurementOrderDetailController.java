@@ -54,24 +54,9 @@ public class ProcurementOrderDetailController extends BaseController {
      * @author song
      * @Date 2022-01-13
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    @ApiOperation("编辑")
-    public ResponseData update(@RequestBody ProcurementOrderDetailParam procurementOrderDetailParam) {
-
-        this.procurementOrderDetailService.update(procurementOrderDetailParam);
-        return ResponseData.success();
-    }
-
-    /**
-     * 删除接口
-     *
-     * @author song
-     * @Date 2022-01-13
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    @ApiOperation("删除")
-    public ResponseData delete(@RequestBody ProcurementOrderDetailParam procurementOrderDetailParam) {
-        this.procurementOrderDetailService.delete(procurementOrderDetailParam);
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public ResponseData update(@RequestParam Long codeId) {
+        this.procurementOrderDetailService.updateOrderStatus(codeId);
         return ResponseData.success();
     }
 

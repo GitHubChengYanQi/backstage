@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
 import cn.atsoft.dasheng.app.service.BrandService;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
@@ -39,6 +40,7 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -151,8 +153,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         QualityTask entity = getEntity(param);
         this.save(entity);
-        //主任务
 
+
+        //主任务
         if (ToolUtil.isEmpty(param.getParentId())) {
             String type2Activiti = null;
             if (param.getType().equals("出厂")) {
@@ -263,12 +266,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
                 }
 
-                if (param.getState().equals(-1)) {
-
-                } else {
+                if (param.getState()!=-1) {
                     qualityMessageSend.dispatchSend(entity.getQualityTaskId(), param);
                 }
-
             }
         }
 
