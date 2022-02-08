@@ -117,8 +117,8 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
                         newChildrenList.add(aLong);
                     }
                 }
-                spuClassification.setChildren(JSONUtil.toJsonStr(newChildrenList));
-                spuClassification.setChildrens(JSONUtil.toJsonStr(longs));
+                spuClassification.setChildren(JSON.toJSONString(newChildrenList));
+                spuClassification.setChildrens(JSON.toJSONString(longs));
                 this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
             }
 

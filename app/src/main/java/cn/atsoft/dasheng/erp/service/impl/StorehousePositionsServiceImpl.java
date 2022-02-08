@@ -217,8 +217,8 @@ public class StorehousePositionsServiceImpl extends ServiceImpl<StorehousePositi
                         newChildrenList.remove(aLong);
                     }
                 }
-                positions.setChildren(JSONUtil.toJsonStr(newChildrenList));
-                positions.setChildrens(JSONUtil.toJsonStr(longs));
+                positions.setChildren(JSON.toJSONString(newChildrenList));
+                positions.setChildrens(JSON.toJSONString(longs));
                 this.update(positions, new QueryWrapper<StorehousePositions>().in("storehouse_positions_id", positions.getStorehousePositionsId()));
             }
 

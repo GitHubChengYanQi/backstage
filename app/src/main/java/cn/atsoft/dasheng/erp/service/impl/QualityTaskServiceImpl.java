@@ -47,6 +47,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -553,9 +554,9 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
         taskResult.setCreateName(createUser.getName());
 
 
-        //判断是否可以入库
-        QualityTask FatherTask = this.getById(taskResult.getParentId());
-        ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fatherTask.getQualityTaskId()).one();
+//        //判断是否可以入库
+//        QualityTask FatherTask = this.getById(taskResult.getParentId());
+//        ActivitiProcessTask processTask = processTaskService.query().eq("form_id", fatherTask.getQualityTaskId()).one();
 
 
         RuleType ruleType = quality_dispatch;
@@ -688,7 +689,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
 
         FormDataValue dataValue = new FormDataValue();
-        dataValue.setValue(JSONUtil.toJsonStr(formValues.getDataValues()));
+        dataValue.setValue(JSON.toJSONString(formValues.getDataValues()));
         formDataValueService.update(dataValue, new QueryWrapper<FormDataValue>() {{
             eq("value_id", formValues.getId());
         }});

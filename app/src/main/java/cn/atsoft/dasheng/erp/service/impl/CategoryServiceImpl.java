@@ -154,8 +154,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                         newChildrenList.add(aLong);
                     }
                 }
-                category.setChildren(JSONUtil.toJsonStr(newChildrenList));
-                category.setChildrens(JSONUtil.toJsonStr(longs));
+                category.setChildren(JSON.toJSONString(newChildrenList));
+                category.setChildrens(JSON.toJSONString(longs));
                 this.update(category, new QueryWrapper<Category>().in("category_id", category.getCategoryId()));
             }
 

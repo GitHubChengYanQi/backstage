@@ -82,7 +82,7 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         productOrderRequest.setContactsId(param.getContactsId());
         productOrderRequest.setPhoneId(param.getPhoneId());
         productOrderRequest.setCustomerId(param.getCustomerId());
-        String toJsonStr = JSONUtil.toJsonStr(productOrderRequest);
+        String toJsonStr = JSON.toJSONString(productOrderRequest);
         param.setCustomer(toJsonStr);
 
         ProductOrder entity = getEntity(param);
@@ -142,7 +142,7 @@ public class ProductOrderServiceImpl extends ServiceImpl<ProductOrderMapper, Pro
         productOrderRequest.setContactsId(param.getContactsId());
         productOrderRequest.setPhoneId(param.getPhoneId());
         productOrderRequest.setCustomerId(param.getCustomerId());
-        String toJsonStr = JSONUtil.toJsonStr(productOrderRequest);
+        String toJsonStr = JSON.toJSONString(productOrderRequest);
         param.setCustomer(toJsonStr);
 
         ProductOrder oldEntity = getOldEntity(param);

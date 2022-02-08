@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -52,7 +53,7 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     @Transactional
     @Override
     public void add(QualityCheckParam param) {
-        String jsonStr = JSONUtil.toJsonStr(param.getTools());
+        String jsonStr = JSON.toJSONString(param.getTools());
         Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
         if (count > 0) {
             throw new ServiceException(500, "已有相同质检");
@@ -72,7 +73,7 @@ public class QualityCheckServiceImpl extends ServiceImpl<QualityCheckMapper, Qua
     @Override
     @Transactional
     public void update(QualityCheckParam param) {
-        String jsonStr = JSONUtil.toJsonStr(param.getTools());
+        String jsonStr = JSON.toJSONString(param.getTools());
         param.setTool(jsonStr);
 //        Integer count = this.query().eq("name", param.getName()).eq("tool", jsonStr).eq("quality_check_classification_id", param.getQualityCheckClassificationId()).count();
 //        if (count > 0) {

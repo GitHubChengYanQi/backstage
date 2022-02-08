@@ -95,7 +95,7 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         Sku sku = new Sku();
         if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
             partsParam.getSkuRequests().sort(Comparator.comparing(SkuRequest::getAttributeId));
-            String json = JSONUtil.toJsonStr(partsParam.getSkuRequests());
+            String json = JSON.toJSONString(partsParam.getSkuRequests());
             Integer count = skuService.query().like("sku_value", json).count();
             if (count > 0) {
                 throw new ServiceException(500, "已有相同物料");
