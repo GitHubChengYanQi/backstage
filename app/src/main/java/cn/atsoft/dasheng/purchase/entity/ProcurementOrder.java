@@ -22,12 +22,19 @@ import java.io.Serializable;
 @TableName("daoxin_procurement_order")
 public class ProcurementOrder implements Serializable {
 
+
     private static final long serialVersionUID = 1L;
     /**
      * 总价格
      */
     @TableField("money")
     private Integer money;
+
+    /**
+     * 编码
+     */
+    @TableField("coding")
+    private String coding;
 
     /**
      * 采购单
@@ -164,6 +171,14 @@ public class ProcurementOrder implements Serializable {
 
     public void setMoney(Integer money) {
         this.money = money;
+    }
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
     }
 
     @Override
