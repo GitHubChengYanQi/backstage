@@ -994,9 +994,11 @@ public class OrCodeServiceImpl extends ServiceImpl<OrCodeMapper, OrCode> impleme
             case "item":
                 if (codeRequest.getInkindType().equals("质检")) {
                     QualityTaskDetail detail = detailService.getById(codeRequest.getSourceId());
-                    String[] split = detail.getInkindId().split(",");//判断质检详情数量
-                    if (split.length > detail.getNumber()) {
-                        throw new ServiceException(500, "绑定次数不对");
+                    if (ToolUtil.isNotEmpty(detail.getInkindId())) {
+                        String[] split = detail.getInkindId().split(",");//判断质检详情数量
+                        if (split.length > detail.getNumber()) {
+                            throw new ServiceException(500, "绑定次数不对");
+                        }
                     }
                 }
                 if (codeRequest.getInkindType().equals("入库")) {

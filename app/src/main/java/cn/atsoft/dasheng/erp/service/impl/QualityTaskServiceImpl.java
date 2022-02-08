@@ -1,9 +1,12 @@
 package cn.atsoft.dasheng.erp.service.impl;
 
 import cn.atsoft.dasheng.app.entity.Brand;
+import cn.atsoft.dasheng.app.entity.Customer;
 import cn.atsoft.dasheng.app.entity.Message;
 import cn.atsoft.dasheng.app.model.result.BrandResult;
+import cn.atsoft.dasheng.app.model.result.CustomerResult;
 import cn.atsoft.dasheng.app.service.BrandService;
+import cn.atsoft.dasheng.app.service.CustomerService;
 import cn.atsoft.dasheng.base.auth.context.LoginContext;
 import cn.atsoft.dasheng.base.auth.context.LoginContextHolder;
 import cn.atsoft.dasheng.base.auth.model.LoginUser;
@@ -40,6 +43,8 @@ import cn.atsoft.dasheng.sendTemplate.WxCpSendTemplate;
 import cn.atsoft.dasheng.sendTemplate.WxCpTemplate;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -108,15 +113,14 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     private QualityCheckService checkService;
     @Autowired
     private ActivitiProcessTaskService processTaskService;
-
     @Autowired
     private QualityMessageSend qualityMessageSend;
-
     @Autowired
     private ActivitiProcessTaskSend activitiProcessTaskSend;
-
     @Autowired
     private QualityTaskRefuseService refuseService;
+    @Autowired
+    private CustomerService customerService;
 
 
     @Override
@@ -266,7 +270,7 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     activitiProcessLogService.autoAudit(processTask.getProcessTaskId(), 1);
                 }
 
-                if (param.getState()!=-1) {
+                if (param.getState() != -1) {
                     qualityMessageSend.dispatchSend(entity.getQualityTaskId(), param);
                 }
             }
@@ -505,14 +509,17 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
 
         List<Long> brandIds = new ArrayList<>();
         List<Long> planIds = new ArrayList<>();
+        List<Long> customerIds = new ArrayList<>();
         for (QualityTaskDetailResult taskDetail : taskDetailResults) {
             brandIds.add(taskDetail.getBrandId());
             planIds.add(taskDetail.getQualityPlanId());
+            customerIds.add(taskDetail.getCustomerId());
         }
 
         List<BrandResult> brandResults = brandService.getBrandResults(brandIds);
-
         List<QualityPlanResult> planResults = planService.getPlanResults(planIds);
+        List<Customer> customers = customerIds.size() == 0 ? new ArrayList<>() : customerService.listByIds(customerIds);
+        List<CustomerResult> customerResults = BeanUtil.copyToList(customers, CustomerResult.class, new CopyOptions());
 
         //组合数据
         for (QualityTaskDetailResult taskDetail : taskDetailResults) {
@@ -521,17 +528,23 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                     SkuResult skuResult = skuService.getSku(taskDetail.getSkuId());
                     taskDetail.setSkuResult(skuResult);
                     taskDetail.setBrand(brandResult);
+                    break;
                 }
             }
-        }
-        for (QualityTaskDetailResult detailResult : taskDetailResults) {
             for (QualityPlanResult qualityPlan : planResults) {
-                if (detailResult.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
-                    detailResult.setQualityPlanResult(qualityPlan);
+                if (taskDetail.getQualityPlanId().equals(qualityPlan.getQualityPlanId())) {
+                    taskDetail.setQualityPlanResult(qualityPlan);
+                    break;
                 }
             }
-
+            for (CustomerResult customerResult : customerResults) {
+                if (customerResult.getCustomerId().equals(taskDetail.getCustomerId())) {
+                    taskDetail.setCustomerResult(customerResult);
+                    break;
+                }
+            }
         }
+
         taskResult.setDetails(taskDetailResults);
 
         taskResult.setFatherTask(fatherTask);
