@@ -252,7 +252,7 @@ public class ProcurementOrderServiceImpl extends ServiceImpl<ProcurementOrderMap
             activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
             activitiProcessLogService.autoAudit(taskId, 1);
             //添加小铃铛
-            wxCpSendTemplate.setSource("procurementOrder");
+            wxCpSendTemplate.setSource("processTask");
             wxCpSendTemplate.setSourceId(taskId);
         } else {
             entity.setStatus(99);
