@@ -80,8 +80,10 @@ public class RemarksController extends BaseController {
      */
     @RequestMapping(value = "/auditList", method = RequestMethod.POST)
     @ApiOperation("我所有未审核的")
-    public ResponseData auditList(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
-
+    public ResponseData auditList(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
+        if (ToolUtil.isEmpty(activitiProcessLogParam)) {
+            activitiProcessLogParam = new ActivitiProcessLogParam();
+        }
         List<ActivitiProcessLogResult> logResults = logService.auditList(activitiProcessLogParam);
         return ResponseData.success(logResults);
     }
@@ -94,7 +96,10 @@ public class RemarksController extends BaseController {
      */
     @RequestMapping(value = "/sendList", method = RequestMethod.POST)
     @ApiOperation("我所有推送的")
-    public ResponseData sendList(@RequestBody ActivitiProcessLogParam activitiProcessLogParam) {
+    public ResponseData sendList(@RequestBody(required = false) ActivitiProcessLogParam activitiProcessLogParam) {
+        if (ToolUtil.isEmpty(activitiProcessLogParam)) {
+            activitiProcessLogParam = new ActivitiProcessLogParam();
+        }
         List<ActivitiProcessLogResult> logResults = logService.sendList(activitiProcessLogParam);
         return ResponseData.success(logResults);
     }

@@ -44,6 +44,8 @@ public class PartsResult implements Serializable {
     @JSONField(serialize = false)
     private String children;
 
+    private String type;
+
     @JSONField(serialize = false)
     private String childrens;
 

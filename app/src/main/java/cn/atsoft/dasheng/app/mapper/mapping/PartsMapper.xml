@@ -15,6 +15,7 @@
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="display" property="display"/>
+        <result column="type" property="type"/>
         <result column="deptId" property="deptId"/>
         <result column="part_name" property="partName"/>
         <result column="note" property="note"/>
@@ -27,7 +28,7 @@
     <sql id="Base_Column_List">sku_id
     AS "skuId", children AS "children",childrens AS "childrens",
         parts_id
-        AS "partsId", spu_id AS "spuId",skus AS "skus", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
+        AS "partsId", spu_id AS "spuId",skus AS "skus",type AS "type", attribute AS "attribute", pid AS "pid", number AS "number", create_time AS "createTime", update_time AS "updateTime", create_user AS "createUser", update_user AS "updateUser", display AS "display", deptId AS "deptId", part_name AS "partName", note AS "note"
     </sql>
 
 
@@ -166,6 +167,9 @@
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')
         </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
+        </if>
     </select>
 
     <select id="oldCustomPageList" resultType="cn.atsoft.dasheng.app.model.result.PartsResult"
@@ -211,6 +215,9 @@
         </if>
         <if test="paramCondition.partName != null and paramCondition.partName != ''">
             and part_name like CONCAT('%',#{paramCondition.partName},'%')
+        </if>
+        <if test="paramCondition.type != null and paramCondition.type != ''">
+            and type like CONCAT('%',#{paramCondition.type},'%')
         </if>
         <if test="paramCondition.note != null and paramCondition.note != ''">
             and note like CONCAT('%',#{paramCondition.note},'%')

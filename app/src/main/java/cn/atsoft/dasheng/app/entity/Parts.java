@@ -30,6 +30,9 @@ public class Parts implements Serializable {
 
     @TableField("childrens")
     private String childrens;
+
+    @TableField("type")
+    private String type;
     /**
      * skuId
      */
@@ -230,6 +233,14 @@ public class Parts implements Serializable {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Long getSkuId() {
