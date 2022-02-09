@@ -110,7 +110,7 @@ public class CustomerController extends BaseController {
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
     @Permission
-    public ResponseData<CustomerResult> detail(@RequestBody CustomerParam customerParam) {
+    public ResponseData<CustomerResult> detail(@RequestBody(required = false) CustomerParam customerParam) {
         if (ToolUtil.isNotEmpty(customerParam) && ToolUtil.isNotEmpty(customerParam.getCustomerId())) {
             Long customerId = customerParam.getCustomerId();
             CustomerResult detail = customerService.detail(customerId);
