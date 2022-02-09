@@ -35,6 +35,7 @@ public class ProcurementOrderParam implements Serializable, BaseValidatingParam 
 
     private Long contractId;
 
+    private Long adressId;
 
     private Integer money;
     /**

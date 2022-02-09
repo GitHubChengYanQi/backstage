@@ -30,6 +30,9 @@ public class ProcurementOrder implements Serializable {
     @TableField("money")
     private Integer money;
 
+    @TableField("adress_id")
+    private Long adressId;
+
     /**
      * 编码
      */
@@ -84,6 +87,13 @@ public class ProcurementOrder implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public Long getAdressId() {
+        return adressId;
+    }
+
+    public void setAdressId(Long adressId) {
+        this.adressId = adressId;
+    }
 
     public Long getProcurementOrderId() {
         return procurementOrderId;

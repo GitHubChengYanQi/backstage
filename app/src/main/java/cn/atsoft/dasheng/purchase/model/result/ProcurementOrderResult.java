@@ -23,6 +23,8 @@ public class ProcurementOrderResult implements Serializable {
 
     private Integer money;
 
+    private Long adressId;
+
     private User user;
     /**
      * 采购单
