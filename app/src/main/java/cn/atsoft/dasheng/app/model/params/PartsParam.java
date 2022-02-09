@@ -37,6 +37,8 @@ public class PartsParam implements Serializable, BaseValidatingParam {
 
     private String skuNote;
 
+    private String type;
+
     private List<ErpPartsDetailParam> parts;
 
     private Long pSkuId;
