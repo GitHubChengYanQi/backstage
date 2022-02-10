@@ -1,36 +1,32 @@
 package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.production.entity.DaoxinShipSetp;
-import cn.atsoft.dasheng.production.model.params.DaoxinShipSetpParam;
-import cn.atsoft.dasheng.production.model.result.DaoxinShipSetpResult;
-import cn.atsoft.dasheng.production.service.DaoxinShipSetpService;
+import cn.atsoft.dasheng.production.entity.ShipSetpClass;
+import cn.atsoft.dasheng.production.model.params.ShipSetpClassParam;
+import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
+import cn.atsoft.dasheng.production.service.ShipSetpClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
-import cn.hutool.core.convert.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 /**
- * 工序表控制器
+ * 工序分类表控制器
  *
  * @author song
  * @Date 2022-02-10 09:16:24
  */
 @RestController
-@RequestMapping("/daoxinShipSetp")
-@Api(tags = "工序表")
-public class DaoxinShipSetpController extends BaseController {
+@RequestMapping("/ShipSetpClass")
+@Api(tags = "工序分类表")
+public class ShipSetpClassController extends BaseController {
 
     @Autowired
-    private DaoxinShipSetpService daoxinShipSetpService;
+    private ShipSetpClassService shipSetpClassService;
 
     /**
      * 新增接口
@@ -40,8 +36,8 @@ public class DaoxinShipSetpController extends BaseController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ApiOperation("新增")
-    public ResponseData addItem(@RequestBody DaoxinShipSetpParam daoxinShipSetpParam) {
-        this.daoxinShipSetpService.add(daoxinShipSetpParam);
+    public ResponseData addItem(@RequestBody ShipSetpClassParam shipSetpClassParam) {
+        this.shipSetpClassService.add(shipSetpClassParam);
         return ResponseData.success();
     }
 
@@ -53,9 +49,9 @@ public class DaoxinShipSetpController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @ApiOperation("编辑")
-    public ResponseData update(@RequestBody DaoxinShipSetpParam daoxinShipSetpParam) {
+    public ResponseData update(@RequestBody ShipSetpClassParam shipSetpClassParam) {
 
-        this.daoxinShipSetpService.update(daoxinShipSetpParam);
+        this.shipSetpClassService.update(shipSetpClassParam);
         return ResponseData.success();
     }
 
@@ -67,8 +63,8 @@ public class DaoxinShipSetpController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @ApiOperation("删除")
-    public ResponseData delete(@RequestBody DaoxinShipSetpParam daoxinShipSetpParam)  {
-        this.daoxinShipSetpService.delete(daoxinShipSetpParam);
+    public ResponseData delete(@RequestBody ShipSetpClassParam shipSetpClassParam)  {
+        this.shipSetpClassService.delete(shipSetpClassParam);
         return ResponseData.success();
     }
 
@@ -80,11 +76,10 @@ public class DaoxinShipSetpController extends BaseController {
      */
     @RequestMapping(value = "/detail", method = RequestMethod.POST)
     @ApiOperation("详情")
-    public ResponseData<DaoxinShipSetpResult> detail(@RequestBody DaoxinShipSetpParam daoxinShipSetpParam) {
-        DaoxinShipSetp detail = this.daoxinShipSetpService.getById(daoxinShipSetpParam.getShipSetpId());
-        DaoxinShipSetpResult result = new DaoxinShipSetpResult();
+    public ResponseData<ShipSetpClassResult> detail(@RequestBody ShipSetpClassParam shipSetpClassParam) {
+        ShipSetpClass detail = this.shipSetpClassService.getById(shipSetpClassParam.getShipSetpClassId());
+        ShipSetpClassResult result = new ShipSetpClassResult();
         ToolUtil.copyProperties(detail, result);
-
 
         return ResponseData.success(result);
     }
@@ -97,11 +92,11 @@ public class DaoxinShipSetpController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @ApiOperation("列表")
-    public PageInfo<DaoxinShipSetpResult> list(@RequestBody(required = false) DaoxinShipSetpParam daoxinShipSetpParam) {
-        if(ToolUtil.isEmpty(daoxinShipSetpParam)){
-            daoxinShipSetpParam = new DaoxinShipSetpParam();
+    public PageInfo<ShipSetpClassResult> list(@RequestBody(required = false) ShipSetpClassParam shipSetpClassParam) {
+        if(ToolUtil.isEmpty(shipSetpClassParam)){
+            shipSetpClassParam = new ShipSetpClassParam();
         }
-        return this.daoxinShipSetpService.findPageBySpec(daoxinShipSetpParam);
+        return this.shipSetpClassService.findPageBySpec(shipSetpClassParam);
     }
 
 

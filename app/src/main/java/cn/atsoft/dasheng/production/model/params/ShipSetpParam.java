@@ -1,11 +1,15 @@
-package cn.atsoft.dasheng.production.model.result;
+package cn.atsoft.dasheng.production.model.params;
 
 import lombok.Data;
-import java.util.Date;
+import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
+
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Date;
 import java.util.List;
+
 /**
  * <p>
  * 工序表
@@ -16,7 +20,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DaoxinShipSetpResult implements Serializable {
+public class ShipSetpParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +41,7 @@ public class DaoxinShipSetpResult implements Serializable {
      * 工序分类
      */
     @ApiModelProperty("工序分类")
-    private Long shipSetpClass;
+    private Long shipSetpClassId;
 
     /**
      * 备注
@@ -98,6 +102,13 @@ public class DaoxinShipSetpResult implements Serializable {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
+
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
+
+    @Override
+    public String checkParam() {
+        return null;
+    }
+
 }

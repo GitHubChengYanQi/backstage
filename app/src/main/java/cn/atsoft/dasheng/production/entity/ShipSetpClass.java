@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2022-02-10
  */
 @TableName("daoxin_ship_setp_class")
-public class DaoxinShipSetpClass implements Serializable {
+public class ShipSetpClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

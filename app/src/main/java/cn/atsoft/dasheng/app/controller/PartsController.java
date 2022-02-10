@@ -60,16 +60,19 @@ public class PartsController extends BaseController {
     @ApiOperation("新增")
     public ResponseData addItem(@RequestBody PartsParam partsParam) {
 
-        if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
-            Sku sku = skuService.getById(partsParam.getItem().getSkuId());
-            if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
-                partsParam.setSpuId(sku.getSpuId());
-            }
-        } else {
-            if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
-                partsParam.setSpuId(partsParam.getItem().getSpuId());
+        if (ToolUtil.isNotEmpty(partsParam) && ToolUtil.isEmpty(partsParam.getSkuId())){
+            if (ToolUtil.isNotEmpty(partsParam.getItem().getSkuId())) {
+                Sku sku = skuService.getById(partsParam.getItem().getSkuId());
+                if (ToolUtil.isNotEmpty(sku) && ToolUtil.isNotEmpty(sku.getSpuId())) {
+                    partsParam.setSpuId(sku.getSpuId());
+                }
+            } else {
+                if (ToolUtil.isNotEmpty(partsParam.getItem().getSpuId())) {
+                    partsParam.setSpuId(partsParam.getItem().getSpuId());
+                }
             }
         }
+
         this.partsService.add(partsParam);
         return ResponseData.success();
     }
@@ -246,8 +249,8 @@ public class PartsController extends BaseController {
      */
     @RequestMapping(value = "/backDetails", method = RequestMethod.GET)
     @ApiOperation("返回子表集合")
-    public ResponseData backDetails(@RequestParam Long id, Long partsId) {
-        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId);
+    public ResponseData backDetails(@RequestParam Long id, Long partsId,String type) {
+        List<ErpPartsDetailResult> detailResults = this.partsService.backDetails(id, partsId,type);
         return ResponseData.success(detailResults);
     }
 

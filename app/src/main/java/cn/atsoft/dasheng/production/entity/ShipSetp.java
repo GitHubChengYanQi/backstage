@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2022-02-10
  */
 @TableName("daoxin_ship_setp")
-public class DaoxinShipSetp implements Serializable {
+public class ShipSetp implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,8 +36,8 @@ public class DaoxinShipSetp implements Serializable {
     /**
      * 工序分类
      */
-    @TableField("ship_setp_class")
-    private Long shipSetpClass;
+    @TableField("ship_setp_classId")
+    private Long shipSetpClassId;
 
     /**
      * 备注
@@ -116,12 +116,12 @@ public class DaoxinShipSetp implements Serializable {
         this.shipSetpName = shipSetpName;
     }
 
-    public Long getShipSetpClass() {
-        return shipSetpClass;
+    public Long getShipSetpClassId() {
+        return shipSetpClassId;
     }
 
-    public void setShipSetpClass(Long shipSetpClass) {
-        this.shipSetpClass = shipSetpClass;
+    public void setShipSetpClassId(Long shipSetpClass) {
+        this.shipSetpClassId = shipSetpClass;
     }
 
     public String getRemark() {
@@ -209,7 +209,7 @@ public class DaoxinShipSetp implements Serializable {
         return "DaoxinShipSetp{" +
         "shipSetpId=" + shipSetpId +
         ", shipSetpName=" + shipSetpName +
-        ", shipSetpClass=" + shipSetpClass +
+        ", shipSetpClass=" + shipSetpClassId +
         ", remark=" + remark +
         ", userId=" + userId +
         ", productionStationId=" + productionStationId +
