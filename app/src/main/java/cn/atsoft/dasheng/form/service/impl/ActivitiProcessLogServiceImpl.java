@@ -215,7 +215,7 @@ public class ActivitiProcessLogServiceImpl extends ServiceImpl<ActivitiProcessLo
                                 auditCheck = false;
                             }
                             break;
-                        case "purchase":
+                        case "purchaseAsk":
                             if (checkPurchaseAsk.checkTask(task.getFormId(), activitiAudit.getRule().getType())) {
                                 updateStatus(activitiProcessLog.getLogId(), status);
                                 setStatus(logs, activitiProcessLog.getLogId());
