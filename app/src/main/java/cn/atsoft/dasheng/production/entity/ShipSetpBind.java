@@ -10,72 +10,48 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 工序表
+ * 工序关联绑定工具与设备表
  * </p>
  *
  * @author song
  * @since 2022-02-10
  */
-@TableName("daoxin_ship_setp")
-public class ShipSetp implements Serializable {
+@TableName("daoxin_ship_setp_bind")
+public class ShipSetpBind implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 工序
+     * 绑定表
      */
-      @TableId(value = "ship_setp_id", type = IdType.ID_WORKER)
+      @TableId(value = "ship_setp_bind_id", type = IdType.ID_WORKER)
+    private Long shipSetpBindId;
+
+    /**
+     * 分类
+     */
+    @TableField("ship_setp_id")
     private Long shipSetpId;
 
-    /**
-     * 工序名称	
-     */
-    @TableField("ship_setp_name")
-    private String shipSetpName;
+
 
     /**
-     * 工序分类
+     * 分类
      */
-    @TableField("ship_setp_classId")
-    private Long shipSetpClassId;
+    @TableField("type")
+    private String type;
 
     /**
-     * 编码
+     * 所属id
      */
-    @TableField("coding")
-    private String coding;
-
-    public String getCoding() {
-        return coding;
-    }
-
-    public void setCoding(String coding) {
-        this.coding = coding;
-    }
+    @TableField("from_id")
+    private Long fromId;
 
     /**
-     * 备注
+     * 是否常用
      */
-    @TableField("remark")
-    private String remark;
-
-    /**
-     * 人员id
-     */
-    @TableField("user_id")
-    private Long userId;
-
-    /**
-     * 工位id
-     */
-    @TableField("production_station_id")
-    private Long productionStationId;
-
-    /**
-     * 附件
-     */
-    @TableField("accessories")
-    private String accessories;
+    @TableField("is_common")
+    private Integer isCommon;
 
     /**
      * 创建者
@@ -114,6 +90,22 @@ public class ShipSetp implements Serializable {
     private Long deptId;
 
 
+    public Long getShipSetpBindId() {
+        return shipSetpBindId;
+    }
+
+    public void setShipSetpBindId(Long shipSetpBindId) {
+        this.shipSetpBindId = shipSetpBindId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Long getShipSetpId() {
         return shipSetpId;
     }
@@ -122,52 +114,20 @@ public class ShipSetp implements Serializable {
         this.shipSetpId = shipSetpId;
     }
 
-    public String getShipSetpName() {
-        return shipSetpName;
+    public Long getFromId() {
+        return fromId;
     }
 
-    public void setShipSetpName(String shipSetpName) {
-        this.shipSetpName = shipSetpName;
+    public void setFromId(Long fromId) {
+        this.fromId = fromId;
     }
 
-    public Long getShipSetpClassId() {
-        return shipSetpClassId;
+    public Integer getIsCommon() {
+        return isCommon;
     }
 
-    public void setShipSetpClassId(Long shipSetpClass) {
-        this.shipSetpClassId = shipSetpClass;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getProductionStationId() {
-        return productionStationId;
-    }
-
-    public void setProductionStationId(Long productionStationId) {
-        this.productionStationId = productionStationId;
-    }
-
-    public String getAccessories() {
-        return accessories;
-    }
-
-    public void setAccessories(String accessories) {
-        this.accessories = accessories;
+    public void setIsCommon(Integer isCommon) {
+        this.isCommon = isCommon;
     }
 
     public Long getCreateUser() {
@@ -220,14 +180,11 @@ public class ShipSetp implements Serializable {
 
     @Override
     public String toString() {
-        return "DaoxinShipSetp{" +
-        "shipSetpId=" + shipSetpId +
-        ", shipSetpName=" + shipSetpName +
-        ", shipSetpClass=" + shipSetpClassId +
-        ", remark=" + remark +
-        ", userId=" + userId +
-        ", productionStationId=" + productionStationId +
-        ", accessories=" + accessories +
+        return "ShipSetpBind{" +
+        "shipSetpBindId=" + shipSetpBindId +
+        ", type=" + type +
+        ", fromId=" + fromId +
+        ", isCommon=" + isCommon +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

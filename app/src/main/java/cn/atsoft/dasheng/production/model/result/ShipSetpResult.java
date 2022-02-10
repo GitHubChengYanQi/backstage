@@ -21,8 +21,12 @@ import java.util.List;
 public class ShipSetpResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     private UserResult userResult;
+
     private ShipSetpClassResult shipSetpClassResult;
+
+    private List<ShipSetpBindResult> shipSetpBindResults;
 
     /**
      * 工序
@@ -41,6 +45,12 @@ public class ShipSetpResult implements Serializable {
      */
     @ApiModelProperty("工序分类")
     private Long shipSetpClassId;
+
+    /**
+     * 工序名称
+     */
+    @ApiModelProperty("编码")
+    private String coding;
 
     /**
      * 备注

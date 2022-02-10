@@ -1,18 +1,14 @@
-package cn.atsoft.dasheng.production.model.params;
+package cn.atsoft.dasheng.production.model.result;
 
 import lombok.Data;
-import cn.atsoft.dasheng.model.validator.BaseValidatingParam;
-
+import java.util.Date;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Date;
 import java.util.List;
-
 /**
  * <p>
- * 工序表
+ * 工序关联绑定工具与设备表
  * </p>
  *
  * @author song
@@ -20,58 +16,40 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class ShipSetpParam implements Serializable, BaseValidatingParam {
+public class ShipSetpBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 工序
+     * 绑定表
      */
-    @ApiModelProperty("工序")
+    @ApiModelProperty("绑定表")
+    private Long shipSetpBindId;
+
+    /**
+     * 工序id
+     */
+    @ApiModelProperty("工序id")
     private Long shipSetpId;
 
     /**
-     * 工序名称	
+     * 分类
      */
-    @ApiModelProperty("工序名称	")
-    private String shipSetpName;
+    @ApiModelProperty("分类")
+    private String type;
 
     /**
-     * 工序名称
+     * 所属id
      */
-    @ApiModelProperty("编码")
-    private String coding;
+    @ApiModelProperty("所属id")
+    private Long fromId;
 
     /**
-     * 工序分类
+     * 是否常用
      */
-    @ApiModelProperty("工序分类")
-    private Long shipSetpClassId;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String remark;
-
-    /**
-     * 人员id
-     */
-    @ApiModelProperty("人员id")
-    private Long userId;
-
-    /**
-     * 工位id
-     */
-    @ApiModelProperty("工位id")
-    private Long productionStationId;
-
-    /**
-     * 附件
-     */
-    @ApiModelProperty("附件")
-    private String accessories;
+    @ApiModelProperty("是否常用")
+    private Integer isCommon;
 
     /**
      * 创建者
@@ -108,13 +86,6 @@ public class ShipSetpParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("部门id")
     private Long deptId;
-
     @ApiModelProperty("父ID顺序数组")
     private List<String> pidValue;
-
-    @Override
-    public String checkParam() {
-        return null;
-    }
-
 }
