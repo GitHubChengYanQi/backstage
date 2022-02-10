@@ -4,6 +4,7 @@ import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.model.params.SopParam;
 import cn.atsoft.dasheng.production.model.result.SopResult;
+import cn.atsoft.dasheng.production.pojo.ImgParam;
 import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,13 @@ public class SopController extends BaseController {
     public ResponseData addItem(@RequestBody SopParam sopParam) {
         this.sopService.add(sopParam);
         return ResponseData.success();
+    }
+
+
+    @RequestMapping(value = "/getImgUrls", method = RequestMethod.POST)
+    public ResponseData getImgUrls(@Valid @RequestBody ImgParam imgParam) {
+        List<String> imgUrls = this.sopService.getImgUrls(imgParam.getImgs());
+        return ResponseData.success(imgUrls);
     }
 
     /**

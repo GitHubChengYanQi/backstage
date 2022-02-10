@@ -30,6 +30,7 @@ public class SopResult implements Serializable {
     private List<SopResult> oldSop;
     private User user;
     private List<String> mediaUrls;
+    private ShipSetpResult shipSetpResult;
     /**
      * 修改原因
      */

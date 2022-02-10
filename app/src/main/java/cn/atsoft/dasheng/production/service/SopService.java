@@ -44,6 +44,8 @@ public interface SopService extends IService<Sop> {
 
     SopResult detail(Long sopId);
 
+    List<String> getImgUrls(List<Long> ids);
+
     void addShip(Long sopId, Long shipId);
 
     /**

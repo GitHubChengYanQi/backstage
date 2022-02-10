@@ -124,6 +124,7 @@ public class MediaController extends BaseController {
         return null;
     }
 
+
     @RequestMapping("/getObject")
     @ApiOperation("获取浏览地址")
     public ResponseData getObject(@Param("mediaId") Long mediaId) {

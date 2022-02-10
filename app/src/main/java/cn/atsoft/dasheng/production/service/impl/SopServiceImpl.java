@@ -5,13 +5,16 @@ import cn.atsoft.dasheng.appBase.entity.Media;
 import cn.atsoft.dasheng.appBase.service.MediaService;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.entity.SopDetail;
 import cn.atsoft.dasheng.production.mapper.SopMapper;
 import cn.atsoft.dasheng.production.model.params.SopDetailParam;
 import cn.atsoft.dasheng.production.model.params.SopParam;
+import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
 import cn.atsoft.dasheng.production.model.result.SopDetailResult;
 import cn.atsoft.dasheng.production.model.result.SopResult;
+import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.production.service.SopDetailService;
 import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -50,6 +53,9 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ShipSetpService shipSetpService;
 
     @Override
     public Long add(SopParam param) {
@@ -94,6 +100,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         ToolUtil.copyProperties(sop, sopResult);
 
         List<SopDetailResult> resultBySopId = sopDetailService.getResultBySopId(sop.getSopId()); //获取详情
+
         List<SopResult> oldSop = getOldSopByPid(sop.getSopId());  //获取修改记录
         List<Long> imgId = Arrays.stream(sopResult.getFinishedPicture().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
 
@@ -106,6 +113,22 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         sopResult.setOldSop(oldSop);
         sopResult.setSopDetailResults(resultBySopId);
         return sopResult;
+    }
+
+    /**
+     * 获取多个图片路径
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<String> getImgUrls(List<Long> ids) {
+        List<String> mediaUrls = new ArrayList<>();
+        for (Long id : ids) {
+            String mediaUrl = mediaService.getMediaUrl(id, 0L); //成品图
+            mediaUrls.add(mediaUrl);
+        }
+        return mediaUrls;
     }
 
     /**
@@ -136,6 +159,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
     public PageInfo<SopResult> findPageBySpec(SopParam param) {
         Page<SopResult> pageContext = getPageContext();
         IPage<SopResult> page = this.baseMapper.customPageList(pageContext, param);
+        format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
 
@@ -189,10 +213,22 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
     }
 
     private void format(List<SopResult> data) {
-        
+        List<Long> shipId = new ArrayList<>();
         for (SopResult datum : data) {
-
+            shipId.add(datum.getShipSetpId());
         }
+        List<ShipSetp> shipSetps = shipSetpService.listByIds(shipId);
+        List<ShipSetpResult> setpResults = BeanUtil.copyToList(shipSetps, ShipSetpResult.class, new CopyOptions());
+
+        for (SopResult datum : data) {
+            for (ShipSetpResult setpResult : setpResults) {
+                if (ToolUtil.isNotEmpty(datum.getShipSetpId()) && datum.getShipSetpId().equals(setpResult.getShipSetpId())) {
+                    datum.setShipSetpResult(setpResult);
+                    break;
+                }
+            }
+        }
+
     }
 
 }
