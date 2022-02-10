@@ -1,9 +1,9 @@
 package cn.atsoft.dasheng.production.service;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
-import cn.atsoft.dasheng.production.entity.DaoxinShipSetpClass;
-import cn.atsoft.dasheng.production.model.params.DaoxinShipSetpClassParam;
-import cn.atsoft.dasheng.production.model.result.DaoxinShipSetpClassResult;
+import cn.atsoft.dasheng.production.entity.ShipSetpClass;
+import cn.atsoft.dasheng.production.model.params.ShipSetpClassParam;
+import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author song
  * @since 2022-02-10
  */
-public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass> {
+public interface ShipSetpClassService extends IService<ShipSetpClass> {
 
     /**
      * 新增
@@ -24,7 +24,7 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-    void add(DaoxinShipSetpClassParam param);
+    void add(ShipSetpClassParam param);
 
     /**
      * 删除
@@ -32,7 +32,7 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-    void delete(DaoxinShipSetpClassParam param);
+    void delete(ShipSetpClassParam param);
 
     /**
      * 更新
@@ -40,7 +40,7 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-    void update(DaoxinShipSetpClassParam param);
+    void update(ShipSetpClassParam param);
 
     /**
      * 查询单条数据，Specification模式
@@ -48,7 +48,7 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-    DaoxinShipSetpClassResult findBySpec(DaoxinShipSetpClassParam param);
+    ShipSetpClassResult findBySpec(ShipSetpClassParam param);
 
     /**
      * 查询列表，Specification模式
@@ -56,7 +56,7 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-    List<DaoxinShipSetpClassResult> findListBySpec(DaoxinShipSetpClassParam param);
+    List<ShipSetpClassResult> findListBySpec(ShipSetpClassParam param);
 
     /**
      * 查询分页数据，Specification模式
@@ -64,6 +64,6 @@ public interface DaoxinShipSetpClassService extends IService<DaoxinShipSetpClass
      * @author song
      * @Date 2022-02-10
      */
-     PageInfo<DaoxinShipSetpClassResult> findPageBySpec(DaoxinShipSetpClassParam param);
+     PageInfo<ShipSetpClassResult> findPageBySpec(ShipSetpClassParam param);
 
 }

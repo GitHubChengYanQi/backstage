@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 /**
  * <p>
- * 工序表
+ * 工序分类表
  * </p>
  *
  * @author song
@@ -16,52 +16,22 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DaoxinShipSetpResult implements Serializable {
+public class ShipSetpClassResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 工序
+     * 工序分类id
      */
-    @ApiModelProperty("工序")
-    private Long shipSetpId;
+    @ApiModelProperty("工序分类id")
+    private Long shipSetpClassId;
 
     /**
-     * 工序名称	
+     * 工序分类名称
      */
-    @ApiModelProperty("工序名称	")
-    private String shipSetpName;
-
-    /**
-     * 工序分类
-     */
-    @ApiModelProperty("工序分类")
-    private Long shipSetpClass;
-
-    /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String remark;
-
-    /**
-     * 人员id
-     */
-    @ApiModelProperty("人员id")
-    private Long userId;
-
-    /**
-     * 工位id
-     */
-    @ApiModelProperty("工位id")
-    private Long productionStationId;
-
-    /**
-     * 附件
-     */
-    @ApiModelProperty("附件")
-    private String accessories;
+    @ApiModelProperty("工序分类名称")
+    private String shipSetpClassName;
 
     /**
      * 创建者

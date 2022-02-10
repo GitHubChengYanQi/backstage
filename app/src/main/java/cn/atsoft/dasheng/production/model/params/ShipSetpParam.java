@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- * 工序分类表
+ * 工序表
  * </p>
  *
  * @author song
@@ -20,22 +20,52 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DaoxinShipSetpClassParam implements Serializable, BaseValidatingParam {
+public class ShipSetpParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
 
     /**
-     * 工序分类id
+     * 工序
      */
-    @ApiModelProperty("工序分类id")
-    private Long shipSetpClassId;
+    @ApiModelProperty("工序")
+    private Long shipSetpId;
 
     /**
-     * 工序分类名称
+     * 工序名称	
      */
-    @ApiModelProperty("工序分类名称")
-    private String shipSetpClassName;
+    @ApiModelProperty("工序名称	")
+    private String shipSetpName;
+
+    /**
+     * 工序分类
+     */
+    @ApiModelProperty("工序分类")
+    private Long shipSetpClass;
+
+    /**
+     * 备注
+     */
+    @ApiModelProperty("备注")
+    private String remark;
+
+    /**
+     * 人员id
+     */
+    @ApiModelProperty("人员id")
+    private Long userId;
+
+    /**
+     * 工位id
+     */
+    @ApiModelProperty("工位id")
+    private Long productionStationId;
+
+    /**
+     * 附件
+     */
+    @ApiModelProperty("附件")
+    private String accessories;
 
     /**
      * 创建者

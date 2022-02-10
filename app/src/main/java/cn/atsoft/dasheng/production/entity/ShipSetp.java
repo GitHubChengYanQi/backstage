@@ -10,28 +10,58 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 工序分类表
+ * 工序表
  * </p>
  *
  * @author song
  * @since 2022-02-10
  */
-@TableName("daoxin_ship_setp_class")
-public class DaoxinShipSetpClass implements Serializable {
+@TableName("daoxin_ship_setp")
+public class ShipSetp implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 工序分类id
+     * 工序
      */
-      @TableId(value = "ship_setp_class_id", type = IdType.ID_WORKER)
-    private Long shipSetpClassId;
+      @TableId(value = "ship_setp_id", type = IdType.ID_WORKER)
+    private Long shipSetpId;
 
     /**
-     * 工序分类名称
+     * 工序名称	
      */
-    @TableField("ship_setp_class_name")
-    private String shipSetpClassName;
+    @TableField("ship_setp_name")
+    private String shipSetpName;
+
+    /**
+     * 工序分类
+     */
+    @TableField("ship_setp_class")
+    private Long shipSetpClass;
+
+    /**
+     * 备注
+     */
+    @TableField("remark")
+    private String remark;
+
+    /**
+     * 人员id
+     */
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * 工位id
+     */
+    @TableField("production_station_id")
+    private Long productionStationId;
+
+    /**
+     * 附件
+     */
+    @TableField("accessories")
+    private String accessories;
 
     /**
      * 创建者
@@ -70,20 +100,60 @@ public class DaoxinShipSetpClass implements Serializable {
     private Long deptId;
 
 
-    public Long getShipSetpClassId() {
-        return shipSetpClassId;
+    public Long getShipSetpId() {
+        return shipSetpId;
     }
 
-    public void setShipSetpClassId(Long shipSetpClassId) {
-        this.shipSetpClassId = shipSetpClassId;
+    public void setShipSetpId(Long shipSetpId) {
+        this.shipSetpId = shipSetpId;
     }
 
-    public String getShipSetpClassName() {
-        return shipSetpClassName;
+    public String getShipSetpName() {
+        return shipSetpName;
     }
 
-    public void setShipSetpClassName(String shipSetpClassName) {
-        this.shipSetpClassName = shipSetpClassName;
+    public void setShipSetpName(String shipSetpName) {
+        this.shipSetpName = shipSetpName;
+    }
+
+    public Long getShipSetpClass() {
+        return shipSetpClass;
+    }
+
+    public void setShipSetpClass(Long shipSetpClass) {
+        this.shipSetpClass = shipSetpClass;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getProductionStationId() {
+        return productionStationId;
+    }
+
+    public void setProductionStationId(Long productionStationId) {
+        this.productionStationId = productionStationId;
+    }
+
+    public String getAccessories() {
+        return accessories;
+    }
+
+    public void setAccessories(String accessories) {
+        this.accessories = accessories;
     }
 
     public Long getCreateUser() {
@@ -136,9 +206,14 @@ public class DaoxinShipSetpClass implements Serializable {
 
     @Override
     public String toString() {
-        return "DaoxinShipSetpClass{" +
-        "shipSetpClassId=" + shipSetpClassId +
-        ", shipSetpClassName=" + shipSetpClassName +
+        return "DaoxinShipSetp{" +
+        "shipSetpId=" + shipSetpId +
+        ", shipSetpName=" + shipSetpName +
+        ", shipSetpClass=" + shipSetpClass +
+        ", remark=" + remark +
+        ", userId=" + userId +
+        ", productionStationId=" + productionStationId +
+        ", accessories=" + accessories +
         ", createUser=" + createUser +
         ", updateUser=" + updateUser +
         ", createTime=" + createTime +

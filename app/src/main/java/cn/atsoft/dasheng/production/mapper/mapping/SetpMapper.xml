@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.atsoft.dasheng.production.mapper.DaoxinShipSetpMapper">
+<mapper namespace="cn.atsoft.dasheng.production.mapper.ShipSetpMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.DaoxinShipSetp">
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.ShipSetp">
         <id column="ship_setp_id" property="shipSetpId" />
         <result column="ship_setp_name" property="shipSetpName" />
         <result column="ship_setp_class" property="shipSetpClass" />
@@ -25,7 +25,7 @@
     </sql>
 
 
-    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.DaoxinShipSetpResult" parameterType="cn.atsoft.dasheng.production.model.params.DaoxinShipSetpParam">
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.ShipSetpResult" parameterType="cn.atsoft.dasheng.production.model.params.ShipSetpParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_ship_setp where 1 = 1
@@ -64,7 +64,7 @@
             </if>
     </select>
 
-    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.DaoxinShipSetpParam">
+    <select id="customMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ShipSetpParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_ship_setp where 1 = 1
@@ -103,7 +103,7 @@
                 </if>
     </select>
 
-    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.DaoxinShipSetpResult" parameterType="cn.atsoft.dasheng.production.model.params.DaoxinShipSetpParam">
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.ShipSetpResult" parameterType="cn.atsoft.dasheng.production.model.params.ShipSetpParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_ship_setp where 1 = 1
@@ -142,7 +142,7 @@
                 </if>
     </select>
 
-    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.DaoxinShipSetpParam">
+    <select id="customPageMapList" resultType="map" parameterType="cn.atsoft.dasheng.production.model.params.ShipSetpParam">
         select
         <include refid="Base_Column_List"/>
         from daoxin_ship_setp where 1 = 1
