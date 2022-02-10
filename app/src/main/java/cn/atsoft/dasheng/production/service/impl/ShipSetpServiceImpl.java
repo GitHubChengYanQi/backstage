@@ -9,16 +9,19 @@ import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.ShipSetpBind;
 import cn.atsoft.dasheng.production.entity.ShipSetpClass;
+import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.mapper.ShipSetpMapper;
 import cn.atsoft.dasheng.production.model.params.ShipSetpBindParam;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpBindResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
+import cn.atsoft.dasheng.production.model.result.SopResult;
 import cn.atsoft.dasheng.production.service.ShipSetpBindService;
 import cn.atsoft.dasheng.production.service.ShipSetpClassService;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.production.service.SopService;
 import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import cn.atsoft.dasheng.sys.modular.system.model.result.UserResult;
 import cn.atsoft.dasheng.sys.modular.system.service.UserService;
@@ -55,6 +58,9 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     @Autowired
     private ShipSetpClassService shipSetpClassService;
 
+    @Autowired
+    private SopService sopService;
+
     @Override
     public void add(ShipSetpParam param) {
         ShipSetp entity = getEntity(param);
@@ -69,6 +75,9 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             }
             shipSetpBindService.saveBatch(bindEntityList);
         }
+        if (ToolUtil.isNotEmpty(param.getSopId())){
+            sopService.addShip(param.getSopId(),entity.getShipSetpId());
+        }
     }
 
     @Override
@@ -81,7 +90,29 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         ShipSetp oldEntity = getOldEntity(param);
         ShipSetp newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);
+        if (ToolUtil.isNotEmpty(param.getBinds())) {
+            List<ShipSetpBind> binds = shipSetpBindService.query().eq("ship_setp_id", oldEntity.getShipSetpId()).eq("display", 1).list();
+            for (ShipSetpBind bind : binds) {
+                bind.setDisplay(0);
+            }
+            shipSetpBindService.updateBatchById(binds);//删除老的绑定
+            List<ShipSetpBind> bindEntityList = new ArrayList<>();
+            for (ShipSetpBindParam bindParam : param.getBinds()) {
+                bindParam.setShipSetpId(oldEntity.getShipSetpId());
+                ShipSetpBind bind = new ShipSetpBind();
+                ToolUtil.copyProperties(bindParam, bind);
+                bindEntityList.add(bind);
+            }
+            shipSetpBindService.saveBatch(bindEntityList);
+        }
+        if (ToolUtil.isNotEmpty(param.getSopId())){
+            Sop sop = sopService.query().eq("ship_setp_id", oldEntity.getShipSetpId()).eq("display", 1).one();
+            sop.setShipSetpId(null);
+            sopService.updateById(sop);
+            sopService.addShip(param.getSopId(),oldEntity.getShipSetpId());
+        }
         this.updateById(newEntity);
+
     }
 
     @Override
@@ -138,6 +169,16 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             }
         }
 
+        //查询SOP
+        List<Sop> list = sopService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
+        List<SopResult> sopResults = new ArrayList<>();
+        for (Sop sop : list) {
+            SopResult sopResult = new SopResult();
+            ToolUtil.copyProperties(sop,sopResult);
+            sopResults.add(sopResult);
+        }
+        sopService.format(sopResults);
+
 
         //查询创建人
         List<User> userList = createUserIds.size() == 0 ? new ArrayList<>() : userService.listByIds(createUserIds);
@@ -173,8 +214,13 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
 
                 shipSetpResult.setBinds(shipSetpBindResults);
             }
-
+            for (SopResult sopResult : sopResults) {
+                if (sopResult.getShipSetpId().equals(shipSetpResult.getShipSetpId())){
+                    shipSetpResult.setSopResult(sopResult);
+                }
+            }
         }
+
 
     }
 

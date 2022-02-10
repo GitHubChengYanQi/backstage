@@ -24,7 +24,7 @@ public class ShipSetpParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
     private List<ShipSetpBindParam> binds;
-
+    private Long sopId;
 
     /**
      * 工序

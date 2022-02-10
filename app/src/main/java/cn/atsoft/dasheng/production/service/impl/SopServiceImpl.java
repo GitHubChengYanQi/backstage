@@ -165,7 +165,9 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
 
     @Override
     public List<SopResult> findListBySpec(SopParam param) {
-        return null;
+        List<SopResult> sopResults = this.baseMapper.customList(param);
+        format(sopResults);
+        return sopResults;
     }
 
     @Override
@@ -227,8 +229,8 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
-
-    private void format(List<SopResult> data) {
+    @Override
+    public void format(List<SopResult> data) {
         List<Long> shipId = new ArrayList<>();
         for (SopResult datum : data) {
             shipId.add(datum.getShipSetpId());
