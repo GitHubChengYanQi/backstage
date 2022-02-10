@@ -66,4 +66,5 @@ public interface ShipSetpService extends IService<ShipSetp> {
      */
      PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param);
 
+    void format(List<ShipSetpResult> param);
 }

@@ -1,5 +1,6 @@
 package cn.atsoft.dasheng.production.model.result;
 
+import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import lombok.Data;
 import java.util.Date;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ShipSetpBindResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    private ToolResult toolResult;
 
     /**
      * 绑定表

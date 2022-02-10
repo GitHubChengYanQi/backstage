@@ -23,7 +23,7 @@ import java.util.List;
 public class ShipSetpParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
-    private List<ShipSetpBindParam> bindParams;
+    private List<ShipSetpBindParam> binds;
 
 
     /**

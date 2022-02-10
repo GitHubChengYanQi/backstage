@@ -26,7 +26,7 @@ public class ShipSetpResult implements Serializable {
 
     private ShipSetpClassResult shipSetpClassResult;
 
-    private List<ShipSetpBindResult> shipSetpBindResults;
+    private List<ShipSetpBindResult> binds;
 
     /**
      * 工序
