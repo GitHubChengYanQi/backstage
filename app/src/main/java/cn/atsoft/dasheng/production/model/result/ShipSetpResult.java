@@ -28,6 +28,8 @@ public class ShipSetpResult implements Serializable {
 
     private List<ShipSetpBindResult> binds;
     private SopResult sopResult;
+    private Long sopId;
+
 
     /**
      * 工序

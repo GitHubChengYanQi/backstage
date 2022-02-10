@@ -170,7 +170,7 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         }
 
         //查询SOP
-        List<Sop> list = sopService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
+        List<Sop> list = shipSetpIds.size() == 0 ? new ArrayList<>() : sopService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
         List<SopResult> sopResults = new ArrayList<>();
         for (Sop sop : list) {
             SopResult sopResult = new SopResult();
@@ -217,6 +217,7 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             for (SopResult sopResult : sopResults) {
                 if (sopResult.getShipSetpId().equals(shipSetpResult.getShipSetpId())){
                     shipSetpResult.setSopResult(sopResult);
+                    shipSetpResult.setSopId(sopResult.getSopId());
                 }
             }
         }
