@@ -7,6 +7,7 @@ import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.ShipSetpBind;
 import cn.atsoft.dasheng.production.entity.ShipSetpClass;
 import cn.atsoft.dasheng.production.mapper.ShipSetpMapper;
+import cn.atsoft.dasheng.production.model.params.ShipSetpBindParam;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpBindResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
@@ -51,6 +52,16 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     public void add(ShipSetpParam param) {
         ShipSetp entity = getEntity(param);
         this.save(entity);
+        if (ToolUtil.isNotEmpty(param.getBindParams())) {
+            List<ShipSetpBind> bindEntityList = new ArrayList<>();
+            for (ShipSetpBindParam bindParam : param.getBindParams()) {
+                bindParam.setShipSetpId(entity.getShipSetpId());
+                ShipSetpBind bind = new ShipSetpBind();
+                ToolUtil.copyProperties(bindParam,bind);
+                bindEntityList.add(bind);
+            }
+            shipSetpBindService.saveBatch(bindEntityList);
+        }
     }
 
     @Override

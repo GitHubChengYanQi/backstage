@@ -59,8 +59,8 @@ public class TopicMessage {
             case MESSAGE:
                 if (ToolUtil.isNotEmpty(messageEntity.getMessage().getSource()) && ToolUtil.isNotEmpty(messageEntity.getMessage().getSourceId())) {
                     messageService.save(messageEntity.getMessage());
+                    logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 }
-                logger.info("小铃铛保存" + JSON.toJSONString(messageEntity.getCpData().getDescription()));
                 break;
             default:
         }
