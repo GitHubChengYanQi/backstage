@@ -289,7 +289,13 @@ public class PartsServiceImpl extends ServiceImpl<PartsMapper, Parts> implements
         if (ToolUtil.isEmpty(skuId)) {
             throw new ServiceException(500, "沒傳入skuId");
         }
-        Parts one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).one();
+        Parts one;
+        if (ToolUtil.isNotEmpty(partsId)){
+            one = this.getById(partsId);
+        }else {
+            one = this.query().eq("sku_id", skuId).eq("display", 1).eq("type", type).one();
+        }
+
 
         if (ToolUtil.isNotEmpty(one)) {
             List<ErpPartsDetail> details = erpPartsDetailService.query().eq("parts_id", one.getPartsId()).eq("display", 1).list();
