@@ -2,10 +2,13 @@ package cn.atsoft.dasheng.production.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
+
 import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 
 /**
@@ -24,11 +27,11 @@ public class ShipSetp implements Serializable {
     /**
      * 工序
      */
-      @TableId(value = "ship_setp_id", type = IdType.ID_WORKER)
+    @TableId(value = "ship_setp_id", type = IdType.ID_WORKER)
     private Long shipSetpId;
 
     /**
-     * 工序名称	
+     * 工序名称
      */
     @TableField("ship_setp_name")
     private String shipSetpName;
@@ -36,7 +39,7 @@ public class ShipSetp implements Serializable {
     /**
      * 工序分类
      */
-    @TableField("ship_setp_classId")
+    @TableField("ship_setp_class_id")
     private Long shipSetpClassId;
 
     /**
@@ -66,25 +69,25 @@ public class ShipSetp implements Serializable {
     /**
      * 创建者
      */
-      @TableField(value = "create_user", fill = FieldFill.INSERT)
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改者
      */
-      @TableField(value = "update_user", fill = FieldFill.UPDATE)
+    @TableField(value = "update_user", fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
      * 创建时间
      */
-      @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
-      @TableField(value = "update_time", fill = FieldFill.UPDATE)
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     private Date updateTime;
 
     /**
@@ -207,19 +210,19 @@ public class ShipSetp implements Serializable {
     @Override
     public String toString() {
         return "DaoxinShipSetp{" +
-        "shipSetpId=" + shipSetpId +
-        ", shipSetpName=" + shipSetpName +
-        ", shipSetpClass=" + shipSetpClassId +
-        ", remark=" + remark +
-        ", userId=" + userId +
-        ", productionStationId=" + productionStationId +
-        ", accessories=" + accessories +
-        ", createUser=" + createUser +
-        ", updateUser=" + updateUser +
-        ", createTime=" + createTime +
-        ", updateTime=" + updateTime +
-        ", display=" + display +
-        ", deptId=" + deptId +
-        "}";
+                "shipSetpId=" + shipSetpId +
+                ", shipSetpName=" + shipSetpName +
+                ", shipSetpClass=" + shipSetpClassId +
+                ", remark=" + remark +
+                ", userId=" + userId +
+                ", productionStationId=" + productionStationId +
+                ", accessories=" + accessories +
+                ", createUser=" + createUser +
+                ", updateUser=" + updateUser +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", display=" + display +
+                ", deptId=" + deptId +
+                "}";
     }
 }

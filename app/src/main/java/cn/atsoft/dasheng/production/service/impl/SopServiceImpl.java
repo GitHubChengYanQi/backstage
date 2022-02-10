@@ -62,11 +62,11 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         Sop entity = getEntity(param);
         this.save(entity);
 
-        for (SopDetailParam sopDetailParam : param.getSopDetailParams()) {
+        for (SopDetailParam sopDetailParam : param.getSopDetails()) {
             sopDetailParam.setSopId(entity.getSopId());
         }
 
-        List<SopDetail> sopDetails = BeanUtil.copyToList(param.getSopDetailParams(), SopDetail.class, new CopyOptions());
+        List<SopDetail> sopDetails = BeanUtil.copyToList(param.getSopDetails(), SopDetail.class, new CopyOptions());
         sopDetailService.saveBatch(sopDetails);
         return entity.getSopId();
     }
@@ -79,9 +79,13 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
     @Override
     public void update(SopParam param) {
         Long oldId = param.getSopId();
-        String alter = param.getAlter();
+        String alter = param.getAlterWhy();
 
-        param.setAlter(null);
+        for (SopDetailParam sopDetail : param.getSopDetails()) {
+            sopDetail.setSopDetailId(null);
+        }
+
+        param.setAlterWhy(null);
         param.setSopId(null);
         Long newId = add(param);
 
@@ -89,7 +93,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         sop.setSopId(oldId);
         sop.setPid(newId);
         sop.setDisplay(0);
-        sop.setAlter(alter);
+        sop.setAlterWhy(alter);
         this.updateById(sop);
     }
 
@@ -111,7 +115,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         }
         sopResult.setMediaUrls(mediaUrls);
         sopResult.setOldSop(oldSop);
-        sopResult.setSopDetailResults(resultBySopId);
+        sopResult.setSopDetails(resultBySopId);
         return sopResult;
     }
 
@@ -182,6 +186,9 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
             return new ArrayList<>();
         }
         List<Sop> sops = this.query().eq("pid", pid).list();
+        if (ToolUtil.isEmpty(sops)) {
+            return new ArrayList<>();
+        }
         List<SopResult> sopResults = BeanUtil.copyToList(sops, SopResult.class, new CopyOptions());
 
         List<Long> userIds = new ArrayList<>();
@@ -217,7 +224,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         for (SopResult datum : data) {
             shipId.add(datum.getShipSetpId());
         }
-        List<ShipSetp> shipSetps = shipSetpService.listByIds(shipId);
+        List<ShipSetp> shipSetps = shipId.size() == 0 ? new ArrayList<>() : shipSetpService.listByIds(shipId);
         List<ShipSetpResult> setpResults = BeanUtil.copyToList(shipSetps, ShipSetpResult.class, new CopyOptions());
 
         for (SopResult datum : data) {

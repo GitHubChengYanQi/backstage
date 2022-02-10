@@ -36,8 +36,8 @@ public class Sop implements Serializable {
     /**
      * 修改原因
      */
-    @TableField("alter")
-    private String alter;
+    @TableField("alter_why")
+    private String alterWhy;
     /**
      * 编号
      */
@@ -60,7 +60,7 @@ public class Sop implements Serializable {
      * 版本号
      */
     @TableField("version_number")
-    private Long versionNumber;
+    private String versionNumber;
 
     /**
      * 成品图
@@ -110,6 +110,13 @@ public class Sop implements Serializable {
     @TableField("deptId")
     private Long deptId;
 
+    public String getAlterWhy() {
+        return alterWhy;
+    }
+
+    public void setAlterWhy(String alterWhy) {
+        this.alterWhy = alterWhy;
+    }
 
     public Long getSopId() {
         return sopId;
@@ -143,11 +150,11 @@ public class Sop implements Serializable {
         this.name = name;
     }
 
-    public Long getVersionNumber() {
+    public String getVersionNumber() {
         return versionNumber;
     }
 
-    public void setVersionNumber(Long versionNumber) {
+    public void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }
 
@@ -221,14 +228,6 @@ public class Sop implements Serializable {
 
     public void setPid(Long pid) {
         this.pid = pid;
-    }
-
-    public String getAlter() {
-        return alter;
-    }
-
-    public void setAlter(String alter) {
-        this.alter = alter;
     }
 
     @Override

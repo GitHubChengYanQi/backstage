@@ -87,6 +87,8 @@ public interface SkuService extends IService<Sku> {
      */
     Map<Long, List<BackSku>> sendSku(List<Long> skuiIds);
 
+    List<SkuResult> AllSku();
+
     void format(List<SkuResult> param);
 
 

@@ -18,12 +18,12 @@
         <result column="display" property="display"/>
         <result column="deptId" property="deptId"/>
         <result column="pid" property="pid"/>
-        <result column="alter" property="alter"/>
+        <result column="alter_why" property="alterWhy"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">alter
-    AS "alter", pid AS "pid",
+    <sql id="Base_Column_List">alter_why
+    AS "alterWhy", pid AS "pid",
         sop_id
         AS "sopId", coding AS "coding", ship_setp_id AS "shipSetpId", name AS "name", version_number AS "versionNumber", finished_picture AS "finishedPicture", note AS "note", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
@@ -88,7 +88,7 @@
             parameterType="cn.atsoft.dasheng.production.model.params.SopParam">
         select
         <include refid="Base_Column_List"/>
-        from daoxin_production_sop where 1 = 1 and display
+        from daoxin_production_sop where 1 = 1 and display = 1
         <if test="paramCondition.sopId != null">
             and sop_id like CONCAT('%',#{paramCondition.sopId},'%')
         </if>
@@ -103,12 +103,6 @@
         </if>
         <if test="paramCondition.versionNumber != null">
             and version_number like CONCAT('%',#{paramCondition.versionNumber},'%')
-        </if>
-        <if test="paramCondition.createUser != null">
-            and create_user like CONCAT('%',#{paramCondition.createUser},'%')
-        </if>
-        <if test="paramCondition.updateUser != null">
-            and update_user like CONCAT('%',#{paramCondition.updateUser},'%')
         </if>
     </select>
 

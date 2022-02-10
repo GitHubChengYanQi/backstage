@@ -154,6 +154,13 @@ public class SkuController extends BaseController {
         return this.skuService.findPageBySpec(skuParam);
     }
 
+
+    @RequestMapping(value = "/Alllist", method = RequestMethod.POST)
+    public ResponseData Alllist() {
+        List<SkuResult> skuResults = this.skuService.AllSku();
+        return ResponseData.success(skuResults);
+    }
+
     /**
      * 选择列表
      *

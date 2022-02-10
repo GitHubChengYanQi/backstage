@@ -26,7 +26,7 @@ public class SopParam implements Serializable, BaseValidatingParam {
 
     private static final long serialVersionUID = 1L;
 
-    private List<SopDetailParam> sopDetailParams;
+    private List<SopDetailParam> sopDetails;
     /**
      * sopId
      */
@@ -39,7 +39,7 @@ public class SopParam implements Serializable, BaseValidatingParam {
     /**
      * 修改原因
      */
-    private String alter;
+    private String alterWhy;
     /**
      * 编号
      */
@@ -62,7 +62,7 @@ public class SopParam implements Serializable, BaseValidatingParam {
      * 版本号
      */
     @ApiModelProperty("版本号")
-    private Long versionNumber;
+    private String versionNumber;
 
     /**
      * 成品图
@@ -75,7 +75,6 @@ public class SopParam implements Serializable, BaseValidatingParam {
      */
     @ApiModelProperty("注意事项")
     private String note;
-
 
 
     @ApiModelProperty("父ID顺序数组")

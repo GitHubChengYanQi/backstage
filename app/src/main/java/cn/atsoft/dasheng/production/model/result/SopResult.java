@@ -25,7 +25,7 @@ public class SopResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private List<SopDetailResult> sopDetailResults;
+    private List<SopDetailResult> sopDetails;
     private Long pid;
     private List<SopResult> oldSop;
     private User user;
@@ -34,7 +34,7 @@ public class SopResult implements Serializable {
     /**
      * 修改原因
      */
-    private String alter;
+    private String alterWhy;
     /**
      * sopId
      */
@@ -63,7 +63,7 @@ public class SopResult implements Serializable {
      * 版本号
      */
     @ApiModelProperty("版本号")
-    private Long versionNumber;
+    private String versionNumber;
 
     /**
      * 成品图

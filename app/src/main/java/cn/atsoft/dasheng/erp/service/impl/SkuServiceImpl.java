@@ -120,7 +120,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
              */
             int count = skuService.count(new QueryWrapper<Sku>() {{
                 eq("standard", param.getStandard());
-                eq("display",1);
+                eq("display", 1);
             }});
             if (count > 0) {
                 throw new ServiceException(500, "编码/成品码重复");
@@ -553,6 +553,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     }
 
     @Override
+    public List<SkuResult> AllSku() {
+        List<SkuResult> skuResults = this.baseMapper.customList(new SkuParam());
+        format(skuResults);
+        return skuResults;
+    }
+
+    @Override
     public void format(List<SkuResult> param) {
 
         List<Long> spuIds = new ArrayList<>();
@@ -871,7 +878,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
                     }
                 }
             }
-            if(sb.length()>1) {
+            if (sb.length() > 1) {
                 sb.deleteCharAt(sb.length() - 1);
             }
             skuResult.setSkuTextValue(sb.toString());
