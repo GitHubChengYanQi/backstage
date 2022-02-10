@@ -3,6 +3,9 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.erp.entity.Tool;
+import cn.atsoft.dasheng.erp.model.result.ToolResult;
+import cn.atsoft.dasheng.erp.service.ToolService;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
 import cn.atsoft.dasheng.production.entity.ShipSetpBind;
 import cn.atsoft.dasheng.production.entity.ShipSetpClass;
@@ -47,17 +50,21 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     private ShipSetpBindService shipSetpBindService;
 
     @Autowired
+    private ToolService toolService;
+
+    @Autowired
     private ShipSetpClassService shipSetpClassService;
+
     @Override
     public void add(ShipSetpParam param) {
         ShipSetp entity = getEntity(param);
         this.save(entity);
-        if (ToolUtil.isNotEmpty(param.getBindParams())) {
+        if (ToolUtil.isNotEmpty(param.getBinds())) {
             List<ShipSetpBind> bindEntityList = new ArrayList<>();
-            for (ShipSetpBindParam bindParam : param.getBindParams()) {
+            for (ShipSetpBindParam bindParam : param.getBinds()) {
                 bindParam.setShipSetpId(entity.getShipSetpId());
                 ShipSetpBind bind = new ShipSetpBind();
-                ToolUtil.copyProperties(bindParam,bind);
+                ToolUtil.copyProperties(bindParam, bind);
                 bindEntityList.add(bind);
             }
             shipSetpBindService.saveBatch(bindEntityList);
@@ -101,11 +108,36 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         List<Long> shipSetpIds = new ArrayList<>();
         for (ShipSetpResult shipSetpResult : param) {
             createUserIds.add(shipSetpResult.getCreateUser());
-            shipSetpClassIds.add(shipSetpResult .getShipSetpClassId());
+            shipSetpClassIds.add(shipSetpResult.getShipSetpClassId());
             shipSetpIds.add(shipSetpResult.getShipSetpId());
         }
+
+
         //查询工具&设备绑定表
         List<ShipSetpBind> shipSetpBindList = shipSetpIds.size() == 0 ? new ArrayList<>() : shipSetpBindService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
+        List<Long> toolIds = new ArrayList<>();
+        List<ShipSetpBindResult> shipSetpBindResultList = new ArrayList<>();
+        for (ShipSetpBind shipSetpBind : shipSetpBindList) {
+            ShipSetpBindResult shipSetpBindResult = new ShipSetpBindResult();
+            ToolUtil.copyProperties(shipSetpBind, shipSetpBindResult);
+            shipSetpBindResultList.add(shipSetpBindResult);
+            toolIds.add(shipSetpBind.getFromId());
+        }
+        List<Tool> tools = toolIds.size() == 0 ? new ArrayList<>() : toolService.listByIds(toolIds);
+        List<ToolResult> toolResults = new ArrayList<>();
+        for (Tool tool : tools) {
+            ToolResult toolResult = new ToolResult();
+            ToolUtil.copyProperties(tool, toolResult);
+            toolResults.add(toolResult);
+        }
+        for (ShipSetpBindResult shipSetpBindResult : shipSetpBindResultList) {
+            for (ToolResult toolResult : toolResults) {
+                if (shipSetpBindResult.getFromId().equals(toolResult.getToolId())) {
+                    shipSetpBindResult.setToolResult(toolResult);
+                }
+            }
+        }
+
 
         //查询创建人
         List<User> userList = createUserIds.size() == 0 ? new ArrayList<>() : userService.listByIds(createUserIds);
@@ -118,30 +150,30 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         for (ShipSetpResult shipSetpResult : param) {
             //返回创建人
             for (User user : userList) {
-               if (shipSetpResult.getCreateUser().equals(user.getUserId())){
-                   UserResult userResult = new UserResult();
-                   ToolUtil.copyProperties(user,userResult);
-                   shipSetpResult.setUserResult(userResult);
-               }
+                if (shipSetpResult.getCreateUser().equals(user.getUserId())) {
+                    UserResult userResult = new UserResult();
+                    ToolUtil.copyProperties(user, userResult);
+                    shipSetpResult.setUserResult(userResult);
+                }
             }
             //返回工序分类
             for (ShipSetpClass shipSetpClass : shipSetpClassList) {
                 if (shipSetpResult.getShipSetpClassId().equals(shipSetpClass.getShipSetpClassId())) {
-                    ShipSetpClassResult shipSetpClassResult = new ShipSetpClassResult() ;
-                    ToolUtil.copyProperties(shipSetpClass,shipSetpClassResult);
+                    ShipSetpClassResult shipSetpClassResult = new ShipSetpClassResult();
+                    ToolUtil.copyProperties(shipSetpClass, shipSetpClassResult);
                     shipSetpResult.setShipSetpClassResult(shipSetpClassResult);
                 }
             }
             //返回绑定工序
             List<ShipSetpBindResult> shipSetpBindResults = new ArrayList<>();
-            for (ShipSetpBind shipSetpBind : shipSetpBindList) {
-                if (shipSetpResult.getShipSetpId().equals(shipSetpBind.getShipSetpId())) {
-                    ShipSetpBindResult shipSetpBindResult = new ShipSetpBindResult();
-                    ToolUtil.copyProperties(shipSetpBind,shipSetpBindResult);
+            for (ShipSetpBindResult shipSetpBindResult : shipSetpBindResultList) {
+                if (shipSetpResult.getShipSetpId().equals(shipSetpBindResult.getShipSetpId())) {
                     shipSetpBindResults.add(shipSetpBindResult);
                 }
+
+                shipSetpResult.setBinds(shipSetpBindResults);
             }
-            shipSetpResult.setShipSetpBindResults(shipSetpBindResults);
+
         }
 
     }
