@@ -119,30 +119,35 @@ public class UserResult implements Serializable {
     /**
      * 创建时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date createTime;
 
     /**
      * 创建人
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long createUser;
 
     /**
      * 更新时间
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Date updateTime;
 
     /**
      * 更新人
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Long updateUser;
 
     /**
      * 乐观锁
      */
+    @JSONField(serialize = false)
     @ApiModelProperty(hidden = true)
     private Integer version;
     @ApiModelProperty("父ID顺序数组")

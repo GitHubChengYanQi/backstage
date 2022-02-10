@@ -64,6 +64,10 @@ public class ShipSetpClassServiceImpl extends ServiceImpl<ShipSetpClassMapper, S
         return PageFactory.createPageInfo(page);
     }
 
+    private void format(List<ShipSetpClassResult> param){
+
+    }
+
     private Serializable getKey(ShipSetpClassParam param){
         return param.getShipSetpClassId();
     }
