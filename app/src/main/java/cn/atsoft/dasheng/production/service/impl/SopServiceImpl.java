@@ -89,6 +89,15 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         param.setSopId(null);
         Long newId = add(param);
 
+        List<SopResult> oldSopByPid = this.getOldSopByPid(oldId);   //修改当前下 所有的修改记录
+        if (ToolUtil.isNotEmpty(oldSopByPid)) {
+            List<Sop> sops = BeanUtil.copyToList(oldSopByPid, Sop.class, new CopyOptions());
+            for (Sop sop : sops) {
+                sop.setPid(newId);
+            }
+            this.updateBatchById(sops);
+        }
+
         Sop sop = new Sop();  //修改记录
         sop.setSopId(oldId);
         sop.setPid(newId);
