@@ -41,7 +41,7 @@ public class ShipSetpParam implements Serializable, BaseValidatingParam {
      * 工序分类
      */
     @ApiModelProperty("工序分类")
-    private Long shipSetpClass;
+    private Long shipSetpClassId;
 
     /**
      * 备注
