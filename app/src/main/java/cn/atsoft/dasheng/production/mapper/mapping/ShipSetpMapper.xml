@@ -23,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        ship_setp_id AS "shipSetpId", ship_setp_name AS "shipSetpName", ship_setp_class_id AS "shipSetpClass_Id", coding AS "coding" ,remark AS "remark", user_id AS "userId", production_station_id AS "productionStationId", accessories AS "accessories", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        ship_setp_id AS "shipSetpId", ship_setp_name AS "shipSetpName", ship_setp_class_id AS "shipSetpClassId", coding AS "coding" ,remark AS "remark", user_id AS "userId", production_station_id AS "productionStationId", accessories AS "accessories", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
