@@ -123,6 +123,8 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private WxCpSendTemplate wxCpSendTemplate;
 
     @Override
     @Transactional
@@ -187,9 +189,15 @@ public class QualityTaskServiceImpl extends ServiceImpl<QualityTaskMapper, Quali
                 ActivitiProcessTask activitiProcessTask = new ActivitiProcessTask();
                 ToolUtil.copyProperties(activitiProcessTaskParam, activitiProcessTask);
                 Long taskId = activitiProcessTaskService.add(activitiProcessTaskParam);
+                //添加铃铛
+                wxCpSendTemplate.setSource("Quality");
+                wxCpSendTemplate.setSourceId(taskId);
                 //添加log
                 activitiProcessLogService.addLog(activitiProcess.getProcessId(), taskId);
                 activitiProcessLogService.autoAudit(taskId, 1);
+
+
+
             } else {
                 throw new ServiceException(500, "请创建质检流程！");
             }
