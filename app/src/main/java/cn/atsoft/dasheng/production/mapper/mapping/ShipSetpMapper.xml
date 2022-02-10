@@ -7,7 +7,9 @@
         <id column="ship_setp_id" property="shipSetpId" />
         <result column="ship_setp_name" property="shipSetpName" />
         <result column="ship_setp_class_id" property="shipSetpClassId" />
+        <result column="coding" property="coding" />
         <result column="remark" property="remark" />
+        <result column="user_id" property="userId" />
         <result column="user_id" property="userId" />
         <result column="production_station_id" property="productionStationId" />
         <result column="accessories" property="accessories" />
@@ -21,7 +23,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        ship_setp_id AS "shipSetpId", ship_setp_name AS "shipSetpName", ship_setp_class_id AS "shipSetpClassId", remark AS "remark", user_id AS "userId", production_station_id AS "productionStationId", accessories AS "accessories", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
+        ship_setp_id AS "shipSetpId", ship_setp_name AS "shipSetpName", ship_setp_class_id AS "shipSetpClass_Id", coding AS "coding" ,remark AS "remark", user_id AS "userId", production_station_id AS "productionStationId", accessories AS "accessories", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId"
     </sql>
 
 
@@ -35,8 +37,11 @@
             <if test="paramCondition.shipSetpName != null and paramCondition.shipSetpName != ''">
                 and ship_setp_name like CONCAT('%',#{paramCondition.shipSetpName},'%')
             </if>
-            <if test="paramCondition.shipSetpClass != null">
-                and ship_setp_class like CONCAT('%',#{paramCondition.shipSetpClass},'%')
+            <if test="paramCondition.shipSetpClassId != null">
+                and ship_setp_class_id like CONCAT('%',#{paramCondition.shipSetpClassId},'%')
+            </if>
+            <if test="paramCondition.coding != null and paramCondition.coding != ''">
+                and coding like CONCAT('%',#{paramCondition.coding},'%')
             </if>
             <if test="paramCondition.remark != null and paramCondition.remark != ''">
                 and remark like CONCAT('%',#{paramCondition.remark},'%')
@@ -74,8 +79,11 @@
                 <if test="paramCondition.shipSetpName != null and paramCondition.shipSetpName != ''">
                         and ship_setp_name like CONCAT('%',#{paramCondition.shipSetpName},'%')
                 </if>
-                <if test="paramCondition.shipSetpClass != null">
-                        and ship_setp_class like CONCAT('%',#{paramCondition.shipSetpClass},'%')
+                <if test="paramCondition.shipSetpClassId != null">
+                        and ship_setp_class_id like CONCAT('%',#{paramCondition.shipSetpClassId},'%')
+                </if>
+                <if test="paramCondition.coding != null and paramCondition.coding != ''">
+                   and coding like CONCAT('%',#{paramCondition.coding},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
@@ -113,11 +121,14 @@
                 <if test="paramCondition.shipSetpName != null and paramCondition.shipSetpName != ''">
                         and ship_setp_name like CONCAT('%',#{paramCondition.shipSetpName},'%')
                 </if>
-                <if test="paramCondition.shipSetpClass != null">
-                        and ship_setp_class like CONCAT('%',#{paramCondition.shipSetpClass},'%')
+                <if test="paramCondition.shipSetpClassId != null">
+                        and ship_setp_class_id like CONCAT('%',#{paramCondition.shipSetpClassId},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')
+                </if>
+                <if test="paramCondition.coding != null and paramCondition.coding != ''">
+                    and coding like CONCAT('%',#{paramCondition.coding},'%')
                 </if>
                 <if test="paramCondition.accessories != null and paramCondition.accessories != ''">
                         and accessories like CONCAT('%',#{paramCondition.accessories},'%')
@@ -152,8 +163,11 @@
                 <if test="paramCondition.shipSetpName != null and paramCondition.shipSetpName != ''">
                         and ship_setp_name like CONCAT('%',#{paramCondition.shipSetpName},'%')
                 </if>
-                <if test="paramCondition.shipSetpClass != null">
-                        and ship_setp_class like CONCAT('%',#{paramCondition.shipSetpClass},'%')
+                <if test="paramCondition.shipSetpClassId != null">
+                        and ship_setp_class_id like CONCAT('%',#{paramCondition.shipSetpClassId},'%')
+                </if>
+                <if test="paramCondition.coding != null and paramCondition.coding != ''">
+                    and coding like CONCAT('%',#{paramCondition.coding},'%')
                 </if>
                 <if test="paramCondition.remark != null and paramCondition.remark != ''">
                         and remark like CONCAT('%',#{paramCondition.remark},'%')

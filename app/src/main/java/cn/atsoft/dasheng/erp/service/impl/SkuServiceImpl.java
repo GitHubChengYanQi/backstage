@@ -475,7 +475,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     @Override
     @BussinessLog
     public void update(SkuParam param) {
-
+        List<ErpPartsDetail> partsDetailList = partsDetailService.lambdaQuery().eq(ErpPartsDetail::getSkuId, param.getSkuId()).list();
+        List<Parts> partList = partsService.lambdaQuery().eq(Parts::getSkuId, param.getSkuId()).and(i -> i.eq(Parts::getDisplay, 1)).list();
+        if (ToolUtil.isNotEmpty(partsDetailList) || ToolUtil.isNotEmpty(partList)) {
+            throw new ServiceException(500, "清单中有此物品数据,不可修改");
+        }
         Sku oldEntity = getOldEntity(param);
         Sku newEntity = getEntity(param);
         ToolUtil.copyProperties(newEntity, oldEntity);

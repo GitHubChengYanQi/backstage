@@ -4,11 +4,14 @@ package cn.atsoft.dasheng.production.service.impl;
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ShipSetp;
+import cn.atsoft.dasheng.production.entity.ShipSetpBind;
 import cn.atsoft.dasheng.production.entity.ShipSetpClass;
 import cn.atsoft.dasheng.production.mapper.ShipSetpMapper;
 import cn.atsoft.dasheng.production.model.params.ShipSetpParam;
+import cn.atsoft.dasheng.production.model.result.ShipSetpBindResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
 import cn.atsoft.dasheng.production.model.result.ShipSetpResult;
+import cn.atsoft.dasheng.production.service.ShipSetpBindService;
 import cn.atsoft.dasheng.production.service.ShipSetpClassService;
 import cn.atsoft.dasheng.production.service.ShipSetpService;
 import cn.atsoft.dasheng.core.util.ToolUtil;
@@ -38,6 +41,9 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ShipSetpBindService shipSetpBindService;
 
     @Autowired
     private ShipSetpClassService shipSetpClassService;
@@ -81,10 +87,15 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     private void format(List<ShipSetpResult> param) {
         List<Long> createUserIds = new ArrayList<>();
         List<Long> shipSetpClassIds = new ArrayList<>();
+        List<Long> shipSetpIds = new ArrayList<>();
         for (ShipSetpResult shipSetpResult : param) {
             createUserIds.add(shipSetpResult.getCreateUser());
             shipSetpClassIds.add(shipSetpResult .getShipSetpClassId());
+            shipSetpIds.add(shipSetpResult.getShipSetpId());
         }
+        //查询工具&设备绑定表
+        List<ShipSetpBind> shipSetpBindList = shipSetpIds.size() == 0 ? new ArrayList<>() : shipSetpBindService.query().in("ship_setp_id", shipSetpIds).eq("display", 1).list();
+
         //查询创建人
         List<User> userList = createUserIds.size() == 0 ? new ArrayList<>() : userService.listByIds(createUserIds);
 
@@ -110,6 +121,16 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
                     shipSetpResult.setShipSetpClassResult(shipSetpClassResult);
                 }
             }
+            //返回绑定工序
+            List<ShipSetpBindResult> shipSetpBindResults = new ArrayList<>();
+            for (ShipSetpBind shipSetpBind : shipSetpBindList) {
+                if (shipSetpResult.getShipSetpId().equals(shipSetpBind.getShipSetpId())) {
+                    ShipSetpBindResult shipSetpBindResult = new ShipSetpBindResult();
+                    ToolUtil.copyProperties(shipSetpBind,shipSetpBindResult);
+                    shipSetpBindResults.add(shipSetpBindResult);
+                }
+            }
+            shipSetpResult.setShipSetpBindResults(shipSetpBindResults);
         }
 
     }

@@ -43,6 +43,20 @@ public class ShipSetp implements Serializable {
     private Long shipSetpClassId;
 
     /**
+     * 编码
+     */
+    @TableField("coding")
+    private String coding;
+
+    public String getCoding() {
+        return coding;
+    }
+
+    public void setCoding(String coding) {
+        this.coding = coding;
+    }
+
+    /**
      * 备注
      */
     @TableField("remark")
