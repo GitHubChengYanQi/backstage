@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.atsoft.dasheng.production.mapper.SopDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.atsoft.dasheng.production.entity.SopDetail">
+        <id column="sop_detail_id" property="sopDetailId"/>
+        <result column="sop_id" property="sopId"/>
+        <result column="step_name" property="stepName"/>
+        <result column="img" property="img"/>
+        <result column="instructions" property="instructions"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="display" property="display"/>
+        <result column="deptId" property="deptId"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        sop_detail_id
+        AS "sopDetailId", sop_id AS "sopId", step_name AS "stepName", img AS "img", instructions AS "instructions", create_user AS "createUser", update_user AS "updateUser", create_time AS "createTime", update_time AS "updateTime", display AS "display", deptId AS "deptId", sort AS "sort"
+    </sql>
+
+
+    <select id="customList" resultType="cn.atsoft.dasheng.production.model.result.SopDetailResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.SopDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_sop_detail where 1 = 1
+        <if test="paramCondition.sopDetailId != null">
+            and sop_detail_id like CONCAT('%',#{paramCondition.sopDetailId},'%')
+        </if>
+        <if test="paramCondition.sopId != null">
+            and sop_id like CONCAT('%',#{paramCondition.sopId},'%')
+        </if>
+        <if test="paramCondition.stepName != null and paramCondition.stepName != ''">
+            and step_name like CONCAT('%',#{paramCondition.stepName},'%')
+        </if>
+        <if test="paramCondition.img != null and paramCondition.img != ''">
+            and img like CONCAT('%',#{paramCondition.img},'%')
+        </if>
+        <if test="paramCondition.instructions != null and paramCondition.instructions != ''">
+            and instructions like CONCAT('%',#{paramCondition.instructions},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+    </select>
+
+    <select id="customMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.SopDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_sop_detail where 1 = 1
+        <if test="paramCondition.sopDetailId != null">
+            and sop_detail_id like CONCAT('%',#{paramCondition.sopDetailId},'%')
+        </if>
+        <if test="paramCondition.sopId != null">
+            and sop_id like CONCAT('%',#{paramCondition.sopId},'%')
+        </if>
+        <if test="paramCondition.stepName != null and paramCondition.stepName != ''">
+            and step_name like CONCAT('%',#{paramCondition.stepName},'%')
+        </if>
+        <if test="paramCondition.img != null and paramCondition.img != ''">
+            and img like CONCAT('%',#{paramCondition.img},'%')
+        </if>
+        <if test="paramCondition.instructions != null and paramCondition.instructions != ''">
+            and instructions like CONCAT('%',#{paramCondition.instructions},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+    </select>
+
+    <select id="customPageList" resultType="cn.atsoft.dasheng.production.model.result.SopDetailResult"
+            parameterType="cn.atsoft.dasheng.production.model.params.SopDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_sop_detail where 1 = 1
+        <if test="paramCondition.sopDetailId != null">
+            and sop_detail_id like CONCAT('%',#{paramCondition.sopDetailId},'%')
+        </if>
+        <if test="paramCondition.sopId != null">
+            and sop_id like CONCAT('%',#{paramCondition.sopId},'%')
+        </if>
+        <if test="paramCondition.stepName != null and paramCondition.stepName != ''">
+            and step_name like CONCAT('%',#{paramCondition.stepName},'%')
+        </if>
+        <if test="paramCondition.img != null and paramCondition.img != ''">
+            and img like CONCAT('%',#{paramCondition.img},'%')
+        </if>
+        <if test="paramCondition.instructions != null and paramCondition.instructions != ''">
+            and instructions like CONCAT('%',#{paramCondition.instructions},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+        order by sort
+    </select>
+
+    <select id="customPageMapList" resultType="map"
+            parameterType="cn.atsoft.dasheng.production.model.params.SopDetailParam">
+        select
+        <include refid="Base_Column_List"/>
+        from daoxin_production_sop_detail where 1 = 1
+        <if test="paramCondition.sopDetailId != null">
+            and sop_detail_id like CONCAT('%',#{paramCondition.sopDetailId},'%')
+        </if>
+        <if test="paramCondition.sopId != null">
+            and sop_id like CONCAT('%',#{paramCondition.sopId},'%')
+        </if>
+        <if test="paramCondition.stepName != null and paramCondition.stepName != ''">
+            and step_name like CONCAT('%',#{paramCondition.stepName},'%')
+        </if>
+        <if test="paramCondition.img != null and paramCondition.img != ''">
+            and img like CONCAT('%',#{paramCondition.img},'%')
+        </if>
+        <if test="paramCondition.instructions != null and paramCondition.instructions != ''">
+            and instructions like CONCAT('%',#{paramCondition.instructions},'%')
+        </if>
+        <if test="paramCondition.sort != null">
+            and sort like CONCAT('%',#{paramCondition.sort},'%')
+        </if>
+    </select>
+
+</mapper>

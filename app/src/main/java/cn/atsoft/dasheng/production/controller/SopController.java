@@ -1,0 +1,107 @@
+package cn.atsoft.dasheng.production.controller;
+
+import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.production.entity.Sop;
+import cn.atsoft.dasheng.production.model.params.SopParam;
+import cn.atsoft.dasheng.production.model.result.SopResult;
+import cn.atsoft.dasheng.production.service.SopService;
+import cn.atsoft.dasheng.core.base.controller.BaseController;
+import cn.atsoft.dasheng.core.util.ToolUtil;
+import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.hutool.core.convert.Convert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * sop主表控制器
+ *
+ * @author song
+ * @Date 2022-02-10 09:21:35
+ */
+@RestController
+@RequestMapping("/sop")
+@Api(tags = "sop主表")
+public class SopController extends BaseController {
+
+    @Autowired
+    private SopService sopService;
+
+    /**
+     * 新增接口
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ApiOperation("新增")
+    public ResponseData addItem(@RequestBody SopParam sopParam) {
+        this.sopService.add(sopParam);
+        return ResponseData.success();
+    }
+
+    /**
+     * 编辑接口
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ApiOperation("编辑")
+    public ResponseData update(@RequestBody SopParam sopParam) {
+        this.sopService.update(sopParam);
+        return ResponseData.success();
+    }
+
+
+    /**
+     * 添加工序
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/addShip", method = RequestMethod.POST)
+    @ApiOperation("添加工序")
+    public ResponseData addShip(@RequestBody SopParam sopParam) {
+        this.sopService.addShip(sopParam.getSopId(), sopParam.getShipSetpId());
+        return ResponseData.success();
+    }
+
+    /**
+     * 查看详情接口
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/detail", method = RequestMethod.POST)
+    @ApiOperation("详情")
+    public ResponseData<SopResult> detail(@RequestBody SopParam sopParam) {
+        SopResult result = this.sopService.detail(sopParam.getSopId());
+        return ResponseData.success(result);
+    }
+
+    /**
+     * 查询列表
+     *
+     * @author song
+     * @Date 2022-02-10
+     */
+    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public PageInfo<SopResult> list(@RequestBody(required = false) SopParam sopParam) {
+        if (ToolUtil.isEmpty(sopParam)) {
+            sopParam = new SopParam();
+        }
+        return this.sopService.findPageBySpec(sopParam);
+    }
+
+
+}
+
+
