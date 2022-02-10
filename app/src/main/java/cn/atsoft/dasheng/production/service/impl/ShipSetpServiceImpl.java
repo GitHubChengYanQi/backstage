@@ -94,8 +94,8 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
-
-    private void format(List<ShipSetpResult> param) {
+    @Override
+    public void format(List<ShipSetpResult> param) {
         List<Long> createUserIds = new ArrayList<>();
         List<Long> shipSetpClassIds = new ArrayList<>();
         List<Long> shipSetpIds = new ArrayList<>();
