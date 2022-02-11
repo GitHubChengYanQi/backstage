@@ -35,28 +35,28 @@ public class PicturController {
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) throws IOException, InvalidFormatException {
 
 
+
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
         File excelFile = new File(fileSavePath + name);
         //创建流
-        FileInputStream inputStream = new FileInputStream(excelFile);
+        FileInputStream inputStream = new FileInputStream(excelFile.getPath());
         //创建workbook
         Workbook wb = null;
         //创建sheet
         Sheet sheet = null;
         //根据后缀判断excel
         if (excelFile.getPath().endsWith("xls")) {
-            wb = (HSSFWorkbook) WorkbookFactory.create(inputStream);
+            wb = new HSSFWorkbook(inputStream);
         } else {
             wb = new XSSFWorkbook(inputStream);
         }
-        //获取excel  sheet总数
-        int sheetNumbers = wb.getNumberOfSheets();
 
         // sheet list
         List<Map<String, PictureData>> sheetList = new ArrayList<Map<String, PictureData>>();
 
         sheet = wb.getSheetAt(0);
+
         Map<String, XSSFPictureData> pictures = getPictures((XSSFSheet) sheet);
         // map等待存储excel图片
         Map<String, PictureData> sheetIndexPicMap;
@@ -65,7 +65,9 @@ public class PicturController {
         if (excelFile.getPath().endsWith("xls")) {
             sheetIndexPicMap = getSheetPictrues03(0, (HSSFSheet) sheet, (HSSFWorkbook) wb);
         } else {
-            sheetIndexPicMap = getSheetPictrues07(0, (XSSFSheet) sheet, (XSSFWorkbook) wb);
+//            sheetIndexPicMap = getSheetPictrues07(0, (XSSFSheet) sheet, (XSSFWorkbook) wb);
+            sheetIndexPicMap = getPictures2((XSSFSheet) sheet);
+
         }
         // 将当前sheet图片map存入list
         sheetList.add(sheetIndexPicMap);
@@ -187,12 +189,6 @@ public class PicturController {
     }
 
     /**
-     * @see Cell#CELL_TYPE_BLANK
-     * @see Cell#CELL_TYPE_NUMERIC
-     * @see Cell#CELL_TYPE_STRING
-     * @see Cell#CELL_TYPE_FORMULA
-     * @see Cell#CELL_TYPE_BOOLEAN
-     * @see Cell#CELL_TYPE_ERROR
      * @param cell
      * @return
      */
@@ -218,4 +214,32 @@ public class PicturController {
         return str;
 
     }
+
+
+    /**
+     * 获取图片和位置 (xlsx)
+     *
+     * @param sheet
+     * @return
+     * @throws IOException
+     */
+    public static Map<String, PictureData> getPictures2(XSSFSheet sheet) throws IOException {
+        Map<String, PictureData> map = new HashMap<String, PictureData>();
+        List<POIXMLDocumentPart> list = sheet.getRelations();
+        for (POIXMLDocumentPart part : list) {
+            if (part instanceof XSSFDrawing) {
+                XSSFDrawing drawing = (XSSFDrawing) part;
+                List<XSSFShape> shapes = drawing.getShapes();
+                for (XSSFShape shape : shapes) {
+                    XSSFPicture picture = (XSSFPicture) shape;
+                    XSSFClientAnchor anchor = picture.getPreferredSize();
+                    CTMarker marker = anchor.getFrom();
+                    String key = marker.getRow() + "-" + marker.getCol();
+                    map.put(key, picture.getPictureData());
+                }
+            }
+        }
+        return map;
+    }
+
 }
