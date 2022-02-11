@@ -101,6 +101,7 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
                 bindParam.setShipSetpId(oldEntity.getShipSetpId());
                 ShipSetpBind bind = new ShipSetpBind();
                 ToolUtil.copyProperties(bindParam, bind);
+                bind.setShipSetpBindId(null); //把传入数据主键滞空，不然保存报错 传入数据将之前的绑定表数据原封不动带入 带有主键无法保存
                 bindEntityList.add(bind);
             }
             shipSetpBindService.saveBatch(bindEntityList);
