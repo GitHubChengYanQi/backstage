@@ -148,14 +148,11 @@ public class InstockOrderServiceImpl extends ServiceImpl<InstockOrderMapper, Ins
             backCodeRequest.setSource("instock");
             Long aLong = orCodeService.backCode(backCodeRequest);
 
-
-//            String url = param.getUrl().replace("codeId", aLong.toString());
-
-
+            String url = param.getUrl().replace("codeId", aLong.toString());
             User createUser = userService.getById(entity.getCreateUser());
             //新微信推送
             WxCpTemplate wxCpTemplate = new WxCpTemplate();
-//            wxCpTemplate.setUrl(url);
+            wxCpTemplate.setUrl(url);
             wxCpTemplate.setTitle("新的入库提醒");
             wxCpTemplate.setDescription(createUser.getName() + "您有新的入库任务" + entity.getCoding());
             wxCpTemplate.setUserIds(new ArrayList<Long>() {{
