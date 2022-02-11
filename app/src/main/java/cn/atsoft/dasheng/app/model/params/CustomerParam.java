@@ -46,6 +46,7 @@ public class CustomerParam implements Serializable, BaseValidatingParam {
     private String url;
     private Long rank;
     private String originName;
+    private String abbreviation;
     private String levelName;
     private Long industryId;
     private String industryName;

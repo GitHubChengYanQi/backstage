@@ -83,11 +83,11 @@ public class PurchaseAskServiceImpl extends ServiceImpl<PurchaseAskMapper, Purch
         }
         PurchaseAsk entity = getEntity(param);
         this.save(entity);
-        //防止重复添加sku
-        List<Long> longs = param.getPurchaseListingParams().stream().map(PurchaseListingParam::getSkuId).distinct().collect(Collectors.toList());
-        if (longs.size() != param.getPurchaseListingParams().size()) {
-            throw new ServiceException(500, "单据中出现重复物料");
-        }
+//        //防止重复添加sku
+//        List<Long> longs = param.getPurchaseListingParams().stream().map(PurchaseListingParam::getSkuId).distinct().collect(Collectors.toList());
+//        if (longs.size() != param.getPurchaseListingParams().size()) {
+//            throw new ServiceException(500, "单据中出现重复物料");
+//        }
 
         int totalCount = 0;
         int totalType = param.getPurchaseListingParams().size();
