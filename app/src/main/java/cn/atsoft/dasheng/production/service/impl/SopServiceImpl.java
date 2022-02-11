@@ -152,6 +152,13 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
      */
     @Override
     public void addShip(Long sopId, Long shipId) {
+        List<Sop> sops = this.query().eq("ship_setp_id", shipId).eq("display", 1).list();
+        if (ToolUtil.isNotEmpty(sops)) {    //sop 更换绑定工序
+            for (Sop sop : sops) {
+                sop.setShipSetpId(null);
+            }
+            this.updateBatchById(sops);
+        }
         Sop sop = new Sop();
         sop.setSopId(sopId);
         sop.setShipSetpId(shipId);
@@ -229,6 +236,7 @@ public class SopServiceImpl extends ServiceImpl<SopMapper, Sop> implements SopSe
         ToolUtil.copyProperties(param, entity);
         return entity;
     }
+
     @Override
     public void format(List<SopResult> data) {
         List<Long> shipId = new ArrayList<>();

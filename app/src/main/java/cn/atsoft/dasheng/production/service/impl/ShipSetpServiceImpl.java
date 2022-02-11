@@ -107,9 +107,9 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
             shipSetpBindService.saveBatch(bindEntityList);
         }
         if (ToolUtil.isNotEmpty(param.getSopId())){
-            Sop sop = sopService.query().eq("ship_setp_id", oldEntity.getShipSetpId()).eq("display", 1).one();
-            sop.setShipSetpId(null);
-            sopService.updateById(sop);
+//            Sop sop = sopService.query().eq("ship_setp_id", oldEntity.getShipSetpId()).eq("display", 1).one();
+//            sop.setShipSetpId(null);
+//            sopService.updateById(sop);
             sopService.addShip(param.getSopId(),oldEntity.getShipSetpId());
         }
         this.updateById(newEntity);
