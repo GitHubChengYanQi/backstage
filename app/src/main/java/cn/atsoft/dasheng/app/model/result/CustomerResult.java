@@ -51,6 +51,7 @@ public class CustomerResult implements Serializable {
     private String industryName;
     private Integer agent;
     private String region;
+    private String abbreviation;
     private RegionResult regionResult;
     private InvoiceResult invoiceResult;
     private Integer businessCount;

@@ -58,6 +58,9 @@ public class Customer implements Serializable {
     @TableField("region")
     private String region;
 
+    @TableField("abbreviation")
+    private String abbreviation;
+
     /**
      * 客户名称
      */
@@ -253,6 +256,14 @@ public class Customer implements Serializable {
 
     public Long getOriginId() {
         return originId;
+    }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
     }
 
     public void setOriginId(Long originId) {
