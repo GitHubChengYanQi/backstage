@@ -88,16 +88,16 @@ public class Sku implements Serializable {
         return isBan;
     }
 
-//    @TableField("specifications")
-//    public String specifications;
+    @TableField("specifications")
+    public String specifications;
 
-//    public String getSpecifications() {
-//        return specifications;
-//    }
-//
-//    public void setSpecifications(String specifications) {
-//        this.specifications = specifications;
-//    }
+    public String getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(String specifications) {
+        this.specifications = specifications;
+    }
 
     public void setIsBan(Integer isBan) {
         this.isBan = isBan;
@@ -108,6 +108,7 @@ public class Sku implements Serializable {
 
     @TableField("sku_value_md5")
     private String skuValueMd5;
+
 
     public String getSkuValueMd5() {
         return skuValueMd5;
