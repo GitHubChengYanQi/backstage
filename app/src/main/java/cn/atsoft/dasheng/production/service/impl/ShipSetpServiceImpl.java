@@ -3,6 +3,8 @@ package cn.atsoft.dasheng.production.service.impl;
 
 import cn.atsoft.dasheng.base.pojo.page.PageFactory;
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
+import cn.atsoft.dasheng.core.datascope.DataScope;
+import cn.atsoft.dasheng.crm.entity.Data;
 import cn.atsoft.dasheng.erp.entity.Tool;
 import cn.atsoft.dasheng.erp.model.result.ToolResult;
 import cn.atsoft.dasheng.erp.service.ToolService;
@@ -127,9 +129,9 @@ public class ShipSetpServiceImpl extends ServiceImpl<ShipSetpMapper, ShipSetp> i
     }
 
     @Override
-    public PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param) {
+    public PageInfo<ShipSetpResult> findPageBySpec(ShipSetpParam param, DataScope dataScope) {
         Page<ShipSetpResult> pageContext = getPageContext();
-        IPage<ShipSetpResult> page = this.baseMapper.customPageList(pageContext, param);
+        IPage<ShipSetpResult> page = this.baseMapper.customPageList(pageContext, param,dataScope);
         this.format(page.getRecords());
         return PageFactory.createPageInfo(page);
     }
