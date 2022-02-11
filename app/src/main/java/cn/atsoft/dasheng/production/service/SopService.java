@@ -72,4 +72,5 @@ public interface SopService extends IService<Sop> {
      */
      PageInfo<SopResult> findPageBySpec(SopParam param);
 
+    void format(List<SopResult> data);
 }

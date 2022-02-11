@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * 工序表控制器
@@ -21,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
  * @Date 2022-02-10 09:16:24
  */
 @RestController
-@RequestMapping("/ShipSetp")
+@RequestMapping("/shipSetp")
 @Api(tags = "工序表")
 public class ShipSetpController extends BaseController {
 
@@ -78,11 +81,16 @@ public class ShipSetpController extends BaseController {
     @ApiOperation("详情")
     public ResponseData<ShipSetpResult> detail(@RequestBody ShipSetpParam shipSetpParam) {
         ShipSetp detail = this.shipSetpService.getById(shipSetpParam.getShipSetpId());
-        ShipSetpResult result = new ShipSetpResult();
-        ToolUtil.copyProperties(detail, result);
+        ShipSetpResult  result= new ShipSetpResult();
+        ToolUtil.copyProperties(detail,result);
+        List<ShipSetpResult> results = new ArrayList<ShipSetpResult>(){{
+            add(result);
+        }};
+        this.shipSetpService.format(results);
 
 
-        return ResponseData.success(result);
+
+        return ResponseData.success(ToolUtil.isEmpty(results)? new ShipSetpResult() : results.get(0));
     }
 
     /**

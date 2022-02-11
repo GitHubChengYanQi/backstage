@@ -2,16 +2,23 @@ package cn.atsoft.dasheng.production.controller;
 
 import cn.atsoft.dasheng.base.pojo.page.PageInfo;
 import cn.atsoft.dasheng.production.entity.ShipSetpClass;
+import cn.atsoft.dasheng.production.entity.Sop;
 import cn.atsoft.dasheng.production.model.params.ShipSetpClassParam;
 import cn.atsoft.dasheng.production.model.result.ShipSetpClassResult;
 import cn.atsoft.dasheng.production.service.ShipSetpClassService;
 import cn.atsoft.dasheng.core.base.controller.BaseController;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.response.ResponseData;
+import cn.atsoft.dasheng.production.wrapper.ShipSetpClassSelectWrapper;
+import cn.atsoft.dasheng.production.wrapper.SopSelectWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -21,7 +28,7 @@ import io.swagger.annotations.ApiOperation;
  * @Date 2022-02-10 09:16:24
  */
 @RestController
-@RequestMapping("/ShipSetpClass")
+@RequestMapping("/shipSetpClass")
 @Api(tags = "工序分类表")
 public class ShipSetpClassController extends BaseController {
 
@@ -97,6 +104,17 @@ public class ShipSetpClassController extends BaseController {
             shipSetpClassParam = new ShipSetpClassParam();
         }
         return this.shipSetpClassService.findPageBySpec(shipSetpClassParam);
+    }
+
+    @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
+    @ApiOperation("列表")
+    public ResponseData<List<Map<String, Object>>> listSelect() {
+        QueryWrapper<ShipSetpClass> contactsQueryWrapper = new QueryWrapper<>();
+        contactsQueryWrapper.in("display", 1);
+        List<Map<String, Object>> list = this.shipSetpClassService.listMaps(contactsQueryWrapper);
+        ShipSetpClassSelectWrapper contactsSelectWrapper = new ShipSetpClassSelectWrapper(list);
+        List<Map<String, Object>> result = contactsSelectWrapper.wrap();
+        return ResponseData.success(result);
     }
 
 

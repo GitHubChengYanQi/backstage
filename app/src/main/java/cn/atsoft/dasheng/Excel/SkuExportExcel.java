@@ -97,7 +97,7 @@ public class SkuExportExcel extends BaseController {
 
 
 
-        int i = 2;
+        int i = 1;
 //        for (Map<String, String> longStringMap : list) {
 //
 //            HSSFRow row1 = sheet.createRow(i);
@@ -111,27 +111,36 @@ public class SkuExportExcel extends BaseController {
 //
 //        }
         for (SkuResult skuResult : skuResults) {
+            i++;
             HSSFRow row1 = sheet.createRow(i);
-            HSSFCell coding = row1.createCell(1);
-            HSSFCell classes = row1.createCell(2);
-            HSSFCell spuName = row1.createCell(3);
-            HSSFCell sku = row1.createCell(4);
-            HSSFCell unit = row1.createCell(5);
-            HSSFCell isAll = row1.createCell(6);
-            HSSFCell attributeValue = row1.createCell(7);
+            HSSFCell coding = row1.createCell(0);
+            HSSFCell classes = row1.createCell(1);
+            HSSFCell spuName = row1.createCell(2);
+            HSSFCell sku = row1.createCell(3);
+            HSSFCell unit = row1.createCell(4);
+            HSSFCell isAll = row1.createCell(5);
+            HSSFCell attributeValue = row1.createCell(6);
 
             HSSFRichTextString codingStr = new HSSFRichTextString(skuResult.getStandard());
-            HSSFRichTextString classesStr = new HSSFRichTextString(skuResult.getSkuJsons().get(0).getValues().getAttributeValues());
-            HSSFRichTextString spuNameStr = new HSSFRichTextString(skuResult.getSpuResult().getName());
-            HSSFRichTextString skuStr = new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
+
+            HSSFRichTextString classesStr = new HSSFRichTextString();
+
+            HSSFRichTextString spuNameStr =ToolUtil.isEmpty(skuResult.getSpuResult()) ? new HSSFRichTextString() : new HSSFRichTextString(skuResult.getSpuResult().getName());
+            HSSFRichTextString skuStr =new HSSFRichTextString();
+            if (ToolUtil.isNotEmpty(skuResult.getSpuResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult()) && ToolUtil.isNotEmpty(skuResult.getSpuResult().getSpuClassificationResult().getName()) ){
+                skuStr =  new HSSFRichTextString(skuResult.getSpuResult().getSpuClassificationResult().getName());
+            }
             HSSFRichTextString unitStr = ToolUtil.isEmpty(skuResult.getUnit()) || ToolUtil.isEmpty(skuResult.getUnit().getUnitName())  ? new HSSFRichTextString(" ") : new HSSFRichTextString(skuResult.getUnit().getUnitName());
             HSSFRichTextString isAllStr = new HSSFRichTextString();
-            if (ToolUtil.isEmpty(skuResult.getBatch())&&skuResult.getBatch().equals(1)) {
+            if (ToolUtil.isNotEmpty(skuResult.getBatch())&&skuResult.getBatch().equals(1)) {
                  isAllStr = new HSSFRichTextString("是");
             }else {
                  isAllStr = new HSSFRichTextString("否");
             }
-            HSSFRichTextString attributeValueStr = new HSSFRichTextString(skuResult.getSkuJsons().get(0).getValues().getAttributeValues());
+            HSSFRichTextString attributeValueStr = new HSSFRichTextString();
+            if (ToolUtil.isNotEmpty(skuResult.getSkuJsons()) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0)) && ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues())&&ToolUtil.isNotEmpty(skuResult.getSkuJsons().get(0).getValues().getAttributeValues()) ) {
+                attributeValueStr = new HSSFRichTextString(skuResult.getSkuJsons().get(0).getValues().getAttributeValues());
+            }
 
             coding.setCellValue(codingStr);
             classes.setCellValue(classesStr);
