@@ -80,4 +80,8 @@ public interface CodingRulesService extends IService<CodingRules> {
      * @return
      */
     String getCodingByModule(Long module);
+
+    String defaultEncoding();
+
+    String encoding(int module);
 }

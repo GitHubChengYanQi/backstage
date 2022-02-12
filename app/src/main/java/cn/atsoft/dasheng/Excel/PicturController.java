@@ -34,13 +34,11 @@ public class PicturController {
     @ResponseBody
     public ResponseData uploadExcel(@RequestParam("file") MultipartFile file) throws IOException, InvalidFormatException {
 
-
-
         String name = file.getOriginalFilename();
         String fileSavePath = ConstantsContext.getFileUploadPath();
         File excelFile = new File(fileSavePath + name);
         //创建流
-        FileInputStream inputStream = new FileInputStream(excelFile.getPath());
+        FileInputStream inputStream = new FileInputStream(fileSavePath + name);
         //创建workbook
         Workbook wb = null;
         //创建sheet

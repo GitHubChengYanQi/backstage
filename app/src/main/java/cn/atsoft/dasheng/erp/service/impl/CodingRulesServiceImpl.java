@@ -29,6 +29,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xkcoding.http.util.StringUtil;
+import org.omg.CORBA.INTERNAL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -273,7 +274,9 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         if (ToolUtil.isEmpty(rules)) {
             return "${type}";
         }
+
         return this.backCoding(rules.getCodingRulesId());
+
     }
 
     private Serializable getKey(CodingRulesParam param) {
@@ -294,4 +297,52 @@ public class CodingRulesServiceImpl extends ServiceImpl<CodingRulesMapper, Codin
         return entity;
     }
 
+    /**
+     * 默认编码
+     *
+     * @return
+     */
+    @Override
+    public String defaultEncoding() {
+        DateTime dateTime = new DateTime();
+        //年
+        int year = dateTime.year();
+        String yy = String.valueOf(Integer.parseInt(String.valueOf(year).substring(2)));
+
+        //月
+        Month month = dateTime.monthEnum();
+        String monthValue = String.valueOf(month.getValue());
+
+        //日
+        String dayOfMonth = String.valueOf(dateTime.dayOfMonth());
+
+        String serial = serialNumberService.add(new SerialNumberParam() {{  //流水号
+            setSerialLength(5L);
+        }});
+
+
+        return yy + monthValue + dayOfMonth + serial;
+    }
+
+    @Override
+    public String encoding(int module) {
+        CodingRules rules = this.query().eq("module", module).eq("state", 1).one();
+
+        String coding = backCoding(rules.getCodingRulesId());
+
+        Pattern compile = Pattern.compile("\\$(.*?)\\}");
+
+        Matcher matcher = compile.matcher(coding);
+
+        String temp = null;
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            temp = "";
+            matcher.appendReplacement(sb, temp);
+            matcher.appendTail(sb);
+            return sb.toString();
+        }
+
+        return coding;
+    }
 }

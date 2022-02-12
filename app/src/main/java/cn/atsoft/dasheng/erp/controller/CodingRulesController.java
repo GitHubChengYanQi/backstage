@@ -16,6 +16,7 @@ import cn.atsoft.dasheng.erp.wrapper.CodingRulesSelectWrapper;
 import cn.atsoft.dasheng.model.response.ResponseData;
 import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
@@ -124,6 +125,22 @@ public class CodingRulesController extends BaseController {
         return this.codingRulesService.findPageBySpec(codingRulesParam);
     }
 
+    /**
+     * 默认编码
+     *
+     * @return
+     */
+    @RequestMapping(value = "/defaultEncoding", method = RequestMethod.GET)
+    public ResponseData defaultEncoding(@Param("type") Integer type) {
+        String encoding = "";
+
+        if (ToolUtil.isNotEmpty(type)) {
+            encoding = this.codingRulesService.encoding(type);
+        } else {
+            encoding = this.codingRulesService.defaultEncoding();
+        }
+        return ResponseData.success(encoding);
+    }
 
     /**
      * 生成编码
@@ -147,11 +164,11 @@ public class CodingRulesController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/listSelect", method = RequestMethod.POST)
-    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false)  CodingRulesParam codingRulesParam) {
+    public ResponseData<List<Map<String, Object>>> listSelect(@RequestBody(required = false) CodingRulesParam codingRulesParam) {
         QueryWrapper<CodingRules> codingRulesQueryWrapper = new QueryWrapper<>();
         if (ToolUtil.isNotEmpty(codingRulesParam))
             if (ToolUtil.isNotEmpty(codingRulesParam.getModule()))
-                codingRulesQueryWrapper.eq("module",codingRulesParam.getModule());
+                codingRulesQueryWrapper.eq("module", codingRulesParam.getModule());
         List<Map<String, Object>> list = this.codingRulesService.listMaps(codingRulesQueryWrapper);
         CodingRulesSelectWrapper codingRulesSelectWrapper = new CodingRulesSelectWrapper(list);
         List<Map<String, Object>> result = codingRulesSelectWrapper.wrap();

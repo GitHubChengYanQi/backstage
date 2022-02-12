@@ -21,6 +21,8 @@ import cn.atsoft.dasheng.erp.model.result.*;
 import cn.atsoft.dasheng.erp.service.*;
 import cn.atsoft.dasheng.core.util.ToolUtil;
 import cn.atsoft.dasheng.model.exception.ServiceException;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
+import cn.atsoft.dasheng.sys.modular.system.service.UserService;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -70,6 +72,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
     private SpuClassificationService spuClassificationService;
     @Autowired
     private UnitService unitService;
+    @Autowired
+    private UserService userService;
 
     @Transactional
     @Override
@@ -595,9 +599,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuIds = new ArrayList<>();
         List<Long> valuesIds = new ArrayList<>();
         List<Long> attributeIds = new ArrayList<>();
+        List<Long> userIds = new ArrayList<>();
 
         for (SkuResult skuResult : param) {
             spuIds.add(skuResult.getSpuId());
+            userIds.add(skuResult.getCreateUser());
             JSONArray jsonArray = JSONUtil.parseArray(skuResult.getSkuValue());
             List<AttributeValues> valuesRequests = JSONUtil.toList(jsonArray, AttributeValues.class);
             for (AttributeValues valuesRequest : valuesRequests) {
@@ -617,6 +623,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
         List<Long> spuClassId = new ArrayList<>();
         Map<Long, UnitResult> unitMaps = new HashMap<>();
         Map<Long, SpuClassificationResult> spuClassificationMap = new HashMap<>();
+        List<User> users = userIds.size() == 0 ? new ArrayList<>() : userService.listByIds(userIds);
 
         for (Spu spu : spus) {
             if (ToolUtil.isNotEmpty(spu.getUnitId())) {
@@ -649,6 +656,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements SkuSe
 
 
         for (SkuResult skuResult : param) {
+            for (User user : users) {
+                if (ToolUtil.isNotEmpty(skuResult.getCreateUser()) && user.getUserId().equals(skuResult.getCreateUser())) {
+                    skuResult.setUser(user);
+                    break;
+                }
+            }
+
             if (ToolUtil.isNotEmpty(spus)) {
                 for (Spu spu : spus) {
                     if (spu.getSpuId() != null && skuResult.getSpuId() != null && spu.getSpuId().equals(skuResult.getSpuId())) {
