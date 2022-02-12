@@ -1,6 +1,7 @@
 package cn.atsoft.dasheng.form.model.result;
 
 import cn.atsoft.dasheng.form.entity.ActivitiAudit;
+import cn.atsoft.dasheng.sys.modular.system.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,6 +27,8 @@ public class ActivitiProcessLogResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ActivitiStepsResult stepsResult;
+
+    private User user;
 
     private ActivitiAudit activitiAudit;
 

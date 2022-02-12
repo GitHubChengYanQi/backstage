@@ -1,13 +1,9 @@
 package cn.atsoft.dasheng.production.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+import org.apache.ibatis.type.JdbcType;
 
 import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
 
@@ -47,7 +43,8 @@ public class Sop implements Serializable {
     /**
      * 工序
      */
-    @TableField("ship_setp_id")
+    @TableField(value = "ship_setp_id", updateStrategy= FieldStrategy.IGNORED)
+//    @TableField()
     private Long shipSetpId;
 
     /**

@@ -68,10 +68,17 @@
             <foreach collection="stepIds" index="index" item="state" separator="," close=")" open="(">
                 #{state}
             </foreach>
-            and status = -1
         </if>
         <if test="paramCondition.source!= null and paramCondition.source == '质检'">
             and task_id in (select process_task_id from activiti_process_task where type ='quality_task' )
+        </if>
+        <if test="paramCondition.status!= null">
+            <if test="paramCondition.status == -1">
+                and status = -1
+            </if>
+            <if test="paramCondition.status == 1">
+                and status != -1
+            </if>
         </if>
         <if test="paramCondition.source!= null and paramCondition.source == '采购'">
             and task_id in (select process_task_id from activiti_process_task where type ='purchase' )
