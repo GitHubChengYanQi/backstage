@@ -60,19 +60,19 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
 
 
         // 更新当前节点，及下级
-        SpuClassification spuClassification = new SpuClassification();
-        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
-        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
-        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
-        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("spu_classification_id", entity.getPid());
-        SpuClassification spuClass = this.getById(entity.getPid());
-        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2) {
-            throw new ServiceException(500, "产品不可以有下级分类");
-        }
-        this.update(spuClassification, QueryWrapper);
-
-        updateChildren(entity.getPid());
+//        SpuClassification spuClassification = new SpuClassification();
+//        Map<String, List<Long>> childrenMap = getChildrens(entity.getPid());
+//        spuClassification.setChildrens(JSON.toJSONString(childrenMap.get("childrens")));
+//        spuClassification.setChildren(JSON.toJSONString(childrenMap.get("children")));
+//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("spu_classification_id", entity.getPid());
+//        SpuClassification spuClass = this.getById(entity.getPid());
+//        if (ToolUtil.isNotEmpty(spuClass) && ToolUtil.isNotEmpty(spuClass.getType()) && spuClass.getType() == 2) {
+//            throw new ServiceException(500, "产品不可以有下级分类");
+//        }
+//        this.update(spuClassification, QueryWrapper);
+//
+//        updateChildren(entity.getPid());
 
         return entity.getSpuClassificationId();
 
@@ -97,60 +97,60 @@ public class SpuClassificationServiceImpl extends ServiceImpl<SpuClassificationM
     @Transactional
     public void update(SpuClassificationParam param) {
         //如果设为顶级 修改所有当前节点的父级
-        SpuClassification classification = this.getById(param.getSpuClassificationId());
-        SpuClassification pid = this.getById(classification.getPid());
-        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2) {
-            throw new ServiceException(500, "产品不可以有下级分类");
-        }
-
-        if (classification.getPid() == 0) {
-            List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
-            for (SpuClassification spuClassification : spuClassifications) {
-                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
-                JSONArray childrenJson = JSONUtil.parseArray(spuClassification.getChildren());
-                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
-                List<Long> newChildrenList = new ArrayList<>();
-                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-                longs.remove(param.getSpuClassificationId());
-                for (Long aLong : oldchildrenList) {
-                    if (!aLong.equals(param.getSpuClassificationId())) {
-                        newChildrenList.add(aLong);
-                    }
-                }
-                spuClassification.setChildren(JSON.toJSONString(newChildrenList));
-                spuClassification.setChildrens(JSON.toJSONString(longs));
-                this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
-            }
-
-        }
-
-        if (ToolUtil.isNotEmpty(param.getPid())) {
-            SpuClassification one = this.query().eq("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).one();
-            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
-            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
-            for (Long aLong : longs) {
-                if (param.getPid().equals(aLong)) {
-                    throw new ServiceException(500, "请勿循环添加");
-                }
-            }
-
-        }
-
-
-        // 更新当前节点，及下级
-        SpuClassification spuClassification = new SpuClassification();
-        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
-        List<Long> childrens = childrenMap.get("childrens");
-        childrens.add(param.getSpuClassificationId());
-        spuClassification.setChildrens(JSON.toJSONString(childrens));
-        List<Long> children = childrenMap.get("children");
-        children.add(param.getSpuClassificationId());
-        spuClassification.setChildren(JSON.toJSONString(children));
-        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
-        QueryWrapper.eq("spu_classification_id", param.getPid());
-        this.update(spuClassification, QueryWrapper);
-
-        updateChildren(param.getPid());
+//        SpuClassification classification = this.getById(param.getSpuClassificationId());
+//        SpuClassification pid = this.getById(classification.getPid());
+//        if (ToolUtil.isNotEmpty(pid) && ToolUtil.isNotEmpty(pid.getType()) && pid.getType() == 2) {
+//            throw new ServiceException(500, "产品不可以有下级分类");
+//        }
+//
+//        if (classification.getPid() == 0) {
+//            List<SpuClassification> spuClassifications = this.query().like("childrens", param.getSpuClassificationId()).list();
+//            for (SpuClassification spuClassification : spuClassifications) {
+//                JSONArray jsonArray = JSONUtil.parseArray(spuClassification.getChildrens());
+//                JSONArray childrenJson = JSONUtil.parseArray(spuClassification.getChildren());
+//                List<Long> oldchildrenList = JSONUtil.toList(childrenJson, Long.class);
+//                List<Long> newChildrenList = new ArrayList<>();
+//                List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//                longs.remove(param.getSpuClassificationId());
+//                for (Long aLong : oldchildrenList) {
+//                    if (!aLong.equals(param.getSpuClassificationId())) {
+//                        newChildrenList.add(aLong);
+//                    }
+//                }
+//                spuClassification.setChildren(JSON.toJSONString(newChildrenList));
+//                spuClassification.setChildrens(JSON.toJSONString(longs));
+//                this.update(spuClassification, new QueryWrapper<SpuClassification>().in("spu_classification_id", spuClassification.getSpuClassificationId()));
+//            }
+//
+//        }
+//
+//        if (ToolUtil.isNotEmpty(param.getPid())) {
+//            SpuClassification one = this.query().eq("spu_classification_id", param.getSpuClassificationId()).eq("display", 1).one();
+//            JSONArray jsonArray = JSONUtil.parseArray(one.getChildrens());
+//            List<Long> longs = JSONUtil.toList(jsonArray, Long.class);
+//            for (Long aLong : longs) {
+//                if (param.getPid().equals(aLong)) {
+//                    throw new ServiceException(500, "请勿循环添加");
+//                }
+//            }
+//
+//        }
+//
+//
+//        // 更新当前节点，及下级
+//        SpuClassification spuClassification = new SpuClassification();
+//        Map<String, List<Long>> childrenMap = getChildrens(param.getPid());
+//        List<Long> childrens = childrenMap.get("childrens");
+//        childrens.add(param.getSpuClassificationId());
+//        spuClassification.setChildrens(JSON.toJSONString(childrens));
+//        List<Long> children = childrenMap.get("children");
+//        children.add(param.getSpuClassificationId());
+//        spuClassification.setChildren(JSON.toJSONString(children));
+//        QueryWrapper<SpuClassification> QueryWrapper = new QueryWrapper<>();
+//        QueryWrapper.eq("spu_classification_id", param.getPid());
+//        this.update(spuClassification, QueryWrapper);
+//
+//        updateChildren(param.getPid());
 
         SpuClassification oldEntity = getOldEntity(param);
         SpuClassification newEntity = getEntity(param);
